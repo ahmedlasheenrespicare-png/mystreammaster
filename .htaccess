@@ -1,0 +1,81 @@
+# ============================
+# .htaccess كامل لـ Hostinger - Stream Master Pro
+# نسخة مُحدَّثة أمنياً — رؤوس أمان كاملة + حماية البروكسي ولوحة التحكم
+# انسخ هذا الملف كاملاً وضعه في public_html/.htaccess (اعمل نسخة احتياطية من القديم أولاً)
+# ============================
+
+# 1) إصلاح CSP للسماح بتشغيل قنوات HLS المجانية
+<IfModule mod_headers.c>
+Header unset Content-Security-Policy
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.onesignal.com https://cdn.jsdelivr.net https://pagead2.googlesyndication.com https://*.googlesyndication.com https://cdn.ampproject.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; connect-src 'self' https: blob:; frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+Header unset X-Frame-Options
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), interest-cohort=()"
+Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" env=HTTPS
+Header always set Cross-Origin-Opener-Policy "same-origin"
+
+# لا تخزين لصفحات الإدارة والبروكسي
+<FilesMatch "^(proxy\.php)$">
+  Header always set Cache-Control "no-store"
+  Header always set X-Robots-Tag "noindex, nofollow"
+</FilesMatch>
+</IfModule>
+
+# 2) تفعيل الضغط والتخزين المؤقت (Hostinger LiteSpeed)
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+ExpiresByType image/jpg "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 year"
+ExpiresByType image/png "access plus 1 year"
+ExpiresByType image/webp "access plus 1 year"
+ExpiresByType image/avif "access plus 1 year"
+ExpiresByType video/mp4 "access plus 1 year"
+ExpiresByType application/vnd.apple.mpegurl "access plus 1 hour"
+</IfModule>
+
+# 3) إعادة التوجيه للصفحات النظيفة (Astro Static)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# لا تعيد توجيه الملفات الموجودة
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# للصفحات بدون .html (مثلاً /live-free -> /live-free.html)
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# صفحة 404 مخصصة
+ErrorDocument 404 /404.html
+</IfModule>
+
+# 4) حماية ملفات حساسة
+<FilesMatch "^\.ht|^NEW_ADMIN_PASSWORD\.txt$|^_dashboard\.html$|\.(md|yml|yaml|log|bak|sql|env)$">
+Require all denied
+</FilesMatch>
+
+# 4.1) منع ربط البروكسي من مواقع خارجية (hotlink protection)
+<IfModule mod_rewrite.c>
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?streammasterstore\.com/ [NC]
+RewriteRule ^proxy\.php$ - [F,L]
+</IfModule>
+
+# 5) منع تصفح المجلدات
+Options -Indexes
+
+# 6) السماح بـ HLS m3u8
+<IfModule mod_mime.c>
+AddType application/vnd.apple.mpegurl .m3u8
+AddType video/mp2t .ts
+</IfModule>

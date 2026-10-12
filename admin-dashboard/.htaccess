@@ -1,0 +1,14 @@
+# لوحة التحكم: البوابة هي index.php فقط
+DirectoryIndex index.php
+
+# منع الوصول المباشر لملف اللوحة — لا يُقدَّم إلا عبر index.php بعد المصادقة
+<FilesMatch "\.html$">
+  Require all denied
+</FilesMatch>
+RedirectMatch 403 ^/admin-dashboard/private/
+
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+  Header always set Cache-Control "no-store"
+  Header always set X-Frame-Options "DENY"
+</IfModule>

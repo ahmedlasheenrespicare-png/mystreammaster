@@ -1,0 +1,54 @@
+
+/* === Stream Master Pro - 3D Effects Optimized for Performance === */
+/* Lightweight - Only on cards, not entire page */
+
+.price-card, .card {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
+  position: relative;
+}
+
+.price-card::before, .card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(220, 38, 38, 0.10), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.price-card:hover::before, .card:hover::before { opacity: 1; }
+
+.price-card:hover, .card:hover {
+  box-shadow: 0 12px 40px rgba(220, 38, 38, 0.20);
+}
+
+.hero-swiper-card {
+  transition: transform 0.4s ease;
+}
+
+.btn-primary {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.35);
+}
+
+/* Remove heavy body animation - replace with static */
+body::before { display: none; }
+
+/* Disable float animation on mobile for performance */
+@media (max-width: 768px) {
+  .price-card, .card { transform: none !important; }
+  .price-card::before, .card::before { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .price-card, .card, .hero-swiper-card, .btn-primary { transition: none !important; transform: none !important; }
+}

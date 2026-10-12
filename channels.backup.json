@@ -1,0 +1,1728 @@
+{
+ "updated": "2026-10-01",
+ "count": 287,
+ "channels": [
+  {
+   "name": "الجزيرة",
+   "logo": "🟡",
+   "url": "https://live-hls-web-aja.getaj.net/AJA/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الجزيرة مباشر",
+   "logo": "🔴",
+   "url": "https://live-hls-web-ajm.getaj.net/AJM/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الجزيرة مباشر 24",
+   "logo": "🔴",
+   "url": "https://live-hls-web-ajm24-fa.getaj.net/AJM24/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الجزيرة (بديل)",
+   "logo": "🟡",
+   "url": "https://live-hls-web-aja-fa.getaj.net/AJA/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "العربية الحدث",
+   "logo": "⚫",
+   "url": "https://live.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الإخبارية السعودية",
+   "logo": "🟢",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-ekhbaria/297b3ef1cd0633ad9cfba7473a686a06/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "France 24 عربي",
+   "logo": "🔵",
+   "url": "https://static.france24.com/live/F24_AR_HI_HLS/live_web.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "DW عربي",
+   "logo": "🔷",
+   "url": "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "DW عربي 2",
+   "logo": "🔷",
+   "url": "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "العربي TV",
+   "logo": "🟠",
+   "url": "https://live.kwikmotion.com/alaraby1live/alaraby_abr/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الغد TV",
+   "logo": "🟤",
+   "url": "https://eazyvwqssi.erbvr.com/alghadtv/alghadtv.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "العراقية العامة",
+   "logo": "🇮🇶",
+   "url": "https://imn-live.esite-lab.com/hls/iraqia-general.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "العراقية سبورت",
+   "logo": "⚽",
+   "url": "https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8",
+   "cat": "رياضية"
+  },
+  {
+   "name": "أغاني أغاني",
+   "logo": "🎵",
+   "url": "https://cdn.streamlane.tv/hls/aghanitv/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Aghapy TV",
+   "logo": "✝️",
+   "url": "https://5b622f07944df.streamlock.net/aghapy.tv/aghapy.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "عجمان TV",
+   "logo": "🇦🇪",
+   "url": "https://cdn1.logichost.in/ajmantv/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Afghanistan International",
+   "logo": "🌍",
+   "url": "https://hls.afintl.com/hls/stream.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "العربية أسواق",
+   "logo": "💹",
+   "url": "https://live.alarabiya.net/alarabiapublish/aswaaq.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Big Buck Bunny 4K Demo",
+   "logo": "🐰",
+   "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Tears of Steel Demo",
+   "logo": "🎬",
+   "url": "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "NASA TV",
+   "logo": "🚀",
+   "url": "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Mix Hollywood مصر",
+   "logo": "🎬",
+   "url": "https://ml-pull-hwc.myco.io/MixTV/hls/index.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "Koogi TV أطفال",
+   "logo": "🧒",
+   "url": "https://5d658d7e9f562.streamlock.net/koogi.tv/koogi.smil/playlist.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "Coptic TV قبطية",
+   "logo": "✝️",
+   "url": "https://ctv.icopts.app/CTV/index.fmp4.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "Watan TV وطن",
+   "logo": "🇪🇬",
+   "url": "https://rp.tactivemedia.com/watantv_source/live/playlist.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "Mekameleen مكملين",
+   "logo": "📺",
+   "url": "https://mn-nl.mncdn.com/mekameleen/smil:mekameleentv.smil/playlist.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "9090 FM TV",
+   "logo": "📻",
+   "url": "https://9090video.mobtada.com/hls/stream.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "View Media",
+   "logo": "📺",
+   "url": "https://viewmedia7219.bozztv.com/wmedia/viewmedia100/web_040/Stream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Live TV",
+   "logo": "📺",
+   "url": "https://vmi747311.contaboserver.net/hls/livetv.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Mosaique FM Studio",
+   "logo": "📺",
+   "url": "https://webcam.mosaiquefm.net/mosatv/_definst_/studio/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Arabiya English",
+   "logo": "📺",
+   "url": "https://live.alarabiya.net/alarabiapublish/english/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Loud FM",
+   "logo": "📺",
+   "url": "https://radio-loud-fm.mbc.net/radio-loud-fm_1.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Peace TV Chinese",
+   "logo": "📺",
+   "url": "https://dzkyvlfyge.erbvr.com/PeaceTvChinese/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC Persia",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-persia/818ee8e4b592dc497608f066d825bfb4/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "KTV 2 Kuwait",
+   "logo": "📺",
+   "url": "https://kwtktv2ta.cdn.mangomolo.com/ktv2/smil:ktv2.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Noursat English",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/noursatenglive/noursateng.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Afarin TV 1",
+   "logo": "📺",
+   "url": "https://5dcabf026b188.streamlock.net/afarinTV/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Afarin TV 2",
+   "logo": "📺",
+   "url": "https://65f16f0fdfc51.streamlock.net/afarinTV/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Assirat",
+   "logo": "📺",
+   "url": "https://softverse.b-cdn.net/Assirat/assiratobs/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Mahriah",
+   "logo": "📺",
+   "url": "https://starmenajo.com/hls/almahriah/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Masar",
+   "logo": "📺",
+   "url": "https://starmenajo.com/hls/almasar/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Wesam",
+   "logo": "📺",
+   "url": "https://stream.addresses-sat.com/Alwesam/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Abbassia",
+   "logo": "📺",
+   "url": "https://stream.alabbassia.com/live/alabbassia/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Welat",
+   "logo": "📺",
+   "url": "https://stream.badinan.xyz/welat/tv/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Ishtar TV",
+   "logo": "📺",
+   "url": "https://stream.ishtartv.com/live/iShtarHD/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Hala TV",
+   "logo": "📺",
+   "url": "https://stream.panet.com/edge/halaTV/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Shams TV",
+   "logo": "📺",
+   "url": "https://stream.shams.tv/hls/stream.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Sky News OTT",
+   "logo": "📺",
+   "url": "https://stream.skynewsarabia.com/ott/ott.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Sky Vertical",
+   "logo": "📺",
+   "url": "https://stream.skynewsarabia.com/vertical/vertical.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Star Mena FHD",
+   "logo": "📺",
+   "url": "https://stream.starmenajo.com/hls/app/live/ts:fhd.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Najah",
+   "logo": "📺",
+   "url": "https://streaming.najah.edu:8443/hls/AlNajah.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Tchad TV",
+   "logo": "📺",
+   "url": "https://strhlslb01.streamakaci.tv/str_tchad_tchad/str_tchad_multi/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Iman",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/alimanlive/imantv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Wousta",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/alwoustalive/alwoustatv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Asharq Discovery",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/asharqdiscoverylive/asharqd.smil/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Asharq Documentary",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/asharqdocumentarylive/asharqdocumentary.smil/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Asharq Radio Vision",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/asharqradiovlive/asharqradiov/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kabla TV",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/kablatvlive/kabtv1.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Nour 1",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/nour1satlive/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Nour 4",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/nour4satlive/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Nour 8",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/nour8satlive/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Pulse 95",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/pulse95live/pulse96/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SAT7 Arabic",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/sat7arabiclive/sat7arabic.smil/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SAT7 Kids",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/sat7kidslive/sat7kids.smil/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SMC 2",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/smc2live/smc2tv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SMC Radio",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/smcradiolive/smcradiolive/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SMC Watar",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/smcwatarlive/smcwatar/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "VDL TV",
+   "logo": "📺",
+   "url": "https://svs.itworkscdn.net/vdltvlive/vdltv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Watania 1",
+   "logo": "📺",
+   "url": "https://sw1.tanitweb.net/TunisiaTV/_definst_/watania1/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Watania 2",
+   "logo": "📺",
+   "url": "https://sw1.tanitweb.net/TunisiaTV/_definst_/watania2/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TRT Arabi",
+   "logo": "📺",
+   "url": "https://tv-trtarabi.medya.trt.com.tr/master.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC Iraq",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-iraq/e38c44b1b43474e1c39cb5b90203691e/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC Masr USA",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-usa/cd8d40acdab28aac0582faa3bd3983f1/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC Mood",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-mood/78367bf48ccdba501d0d014a10c21031/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC Plus Drama",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-plus-drama/e37251ec2aac8f6c98f75cd0fa37cd28/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MTV Lebanon",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mtv-lebanon/b8ebb2a5affb812f1541712adde10e26/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Saudi TV",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-saudi-tv/2ad66056b51fd8c1b624854623112e43/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SBC",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-sbc/90e09c0c28db26435799b4a14892a167/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Thaqafeyyah",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-thaqafeyyah/28c0d2a20dbf1dc049ce15d3973f494b/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Thikrayat",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-thikrayat/8cfa8fe0c96275735745b89c683b27e3/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Oman Sport",
+   "logo": "⚽",
+   "url": "https://partneta.cdn.mgmlcdn.com/omsport/smil:omsport.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Oman Cultural",
+   "logo": "📺",
+   "url": "https://partwota.cdn.mgmlcdn.com/omcultural/smil:omcultural.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Oman Live",
+   "logo": "📺",
+   "url": "https://partwota.cdn.mgmlcdn.com/omlive/smil:omlive.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MCA TV",
+   "logo": "📺",
+   "url": "https://platform-iuoamc.uk/iptv/mca-tv/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "FastTV Archive",
+   "logo": "📺",
+   "url": "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Archive/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "FastTV Comedy",
+   "logo": "😂",
+   "url": "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Comedy/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "FastTV Drama",
+   "logo": "📺",
+   "url": "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Drama/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "FastTV Song",
+   "logo": "🎵",
+   "url": "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Song/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "FastTV Tourism",
+   "logo": "📺",
+   "url": "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Tourism/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "FastTV Cooking",
+   "logo": "🍳",
+   "url": "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/cooking/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Iqraa Fast 1",
+   "logo": "📺",
+   "url": "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv1/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Iqraa Fast 2",
+   "logo": "📺",
+   "url": "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv2/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Iqraa Fast 3",
+   "logo": "📺",
+   "url": "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv3/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Qatar Quran",
+   "logo": "🕌",
+   "url": "https://qatartv.akamaized.net/hls/live/20000612/qtvquran/master.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Palestinian TV",
+   "logo": "📺",
+   "url": "https://rp.tactivemedia.com/palestiniantv_source/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "RT Arabic",
+   "logo": "📺",
+   "url": "https://rt-arb.rttv.com/dvr/rtarab/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 001",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx001/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 002",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx002/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 004",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx004/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 008",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx008/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 010",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx010/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 011",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx011/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 012",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx012/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 019",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx019/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "TX 029",
+   "logo": "📺",
+   "url": "https://shd-amg-fast.edgenextcdn.net/tx029/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Souriya",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-souriya-tv/e3150760fa5fd62776225433b8c3d406/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Big Time Plus",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-big-time-plus/924283f994779a311c1389698ff7e736/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "KSA Now",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-ksa-now/71ed3aa814c643306c0a8bc4fcc7d17f/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC 1 USA",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1-usa/fdac3a4fc0473f1f56e07ec1d63a4b7b/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC 1",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1/15cf99af5de54063fdabfefe66adc075/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC 3 USA",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-3-usa/5d58265a862a476dc7f97694addb5ded/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC 4",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-4/24f134f1cd63db9346439e96b86ca6ed/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC 5",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-5/ee6b000cee0629411b666ab26cb13e9b/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC Bollywood",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-bollywood/546eb40d7dcf9a209255dd2496903764/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "OTV",
+   "logo": "📺",
+   "url": "https://otv.hibridcdn.net/otv/tv_abr/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Oman TV",
+   "logo": "🇴🇲",
+   "url": "https://partneta.cdn.mgmlcdn.com/omantv/smil:omantv.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Bradosti TV",
+   "logo": "📺",
+   "url": "https://live.bradosti.net/live/samaraweb_playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Channel 8 Kurdish",
+   "logo": "📺",
+   "url": "https://live.channel8.com/Channel8-Kurdish/index.fmp4.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "France 24",
+   "logo": "📺",
+   "url": "https://live.france24.com/hls/live/2037222-b/F24_AR_HI_HLS/master_5000.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "I News",
+   "logo": "📰",
+   "url": "https://live.i-news.tv/hls/stream.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Future TV",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/futurelive/ftv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Qatar TV 1",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/qtv1live/qtv1.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Qatar TV 2",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/qtv2live/qtv2.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Red TV",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/redtvlive/redtv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Roya TV",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/royatvpublic/royatv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Sajedda Radio",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/sbrksajeddahradiolive/srpksajeddahradio/chunks.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Khuzama Radio",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/sbrksakhuzamaradiolive/srpkhuzama/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Saneda Radio",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/sbrksanedaradiolive/srpksanedaradio/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Quran Radio",
+   "logo": "🕌",
+   "url": "https://live.kwikmotion.com/sbrksaquranradiolive/srpksaquranradio/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Ariyadh Radio",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/sbrksariyadhradiolive/srpksariyadhradio/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Saudia Radio",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/sbrksasaudiaradiolive/srpksasaudiaradio/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "SMC 1",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/smc1live/smc1tv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Syria TV 2",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/syriatv02live/syriatv02.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Syria TV",
+   "logo": "📺",
+   "url": "https://live.kwikmotion.com/syriatvlive/syriatv.smil/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Miracle TV",
+   "logo": "📺",
+   "url": "https://live.miracleonline.org/hls/miracle1.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Now Arabic",
+   "logo": "📺",
+   "url": "https://live.nowtelly.com/now_arabic/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Pal Today",
+   "logo": "📺",
+   "url": "https://live.paltodaytv.com/paltv/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Masirah Mubasher",
+   "logo": "📺",
+   "url": "https://live2.cdnbridge.tv/AlmasirahMubasher/Mubasher_All/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Mission Asia",
+   "logo": "📺",
+   "url": "https://livecdn.live247stream.com/missionasia/tv/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Marjaeya TV",
+   "logo": "📺",
+   "url": "https://livefa.marjaeyattv.com/mtv_ar/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MTA 6 Asia",
+   "logo": "🕌",
+   "url": "https://livemtaasia.akamaized.net/hls/live/2039224/mta6asia/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "MTA Asia 2",
+   "logo": "🕌",
+   "url": "https://livemtaasia.akamaized.net/hls/live/2039224/mtaasia2/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "قناة",
+   "logo": "📺",
+   "url": "https://media1.livaat.com/static/AL-RASHEED-HD/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "El Sharq",
+   "logo": "📺",
+   "url": "https://mn-nl.mncdn.com/elsharq_live/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Mekameleen 2",
+   "logo": "📺",
+   "url": "https://mn-nl.mncdn.com/mekameleen/smil:mekameleentv.smil/chunklist_b928000.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Pal Abroad",
+   "logo": "📺",
+   "url": "https://mn-nl.mncdn.com/palabroad/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MBC مصر",
+   "logo": "🇪🇬",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr/956eac069c78a35d47245db6cdbb1575/index.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "MBC مصر 2",
+   "logo": "🇪🇬",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-2/754931856515075b0aabf0e583495c68/index.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "MBC مصر دراما",
+   "logo": "🎭",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-drama/567b703c19ede6598222de81b0e4508b/index.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "MBC 1 Egypt",
+   "logo": "🇪🇬",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1-na/eec141533c90dd34722c503a296dd0d8/index.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "ATVSat",
+   "logo": "📺",
+   "url": "https://stream.atvsat.com/atvsatlive/smil:atvsatlive.smil/playlist.m3u8",
+   "cat": "مصرية"
+  },
+  {
+   "name": "Asil TV",
+   "logo": "📺",
+   "url": "https://live.asil.tv/asiltv/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Beit Abbas TV",
+   "logo": "🕌",
+   "url": "https://live.beitolabbas.tv/live/beitolabbastv.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "قناة 101",
+   "logo": "📺",
+   "url": "https://edge.fastpublish.me/live/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Chada TV",
+   "logo": "📺",
+   "url": "https://edge13.vedge.infomaniak.com/livecast/ik:chadatv/manifest.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 104",
+   "logo": "📺",
+   "url": "https://fl1002.bozztv.com/gf-zarintv/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Dijlah",
+   "logo": "📺",
+   "url": "https://ghaasiflu.online/Dijlah/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 106",
+   "logo": "📺",
+   "url": "https://ghaasiflu.online/alhqeqa/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 107",
+   "logo": "📺",
+   "url": "https://go5lm6a6dawb-hls-live.5centscdn.com/lwarabic/53132d996b4263ec0d7b602292c46eaf.sdp/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Halab Today",
+   "logo": "📺",
+   "url": "https://halabtoday-live.lg.mncdn.com/halabtoday/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 109",
+   "logo": "📺",
+   "url": "https://halalondon-live.ercdn.net/halalondon/halalondon.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 110",
+   "logo": "📺",
+   "url": "https://hls.dabangasudan.org/hls/stream.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Yaum",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/ALYAUM_TV/HLS/ALYAUM_TV.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kurdsat",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/KURDSAT_HD/HLS/KURDSAT_HD.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Rojava",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/ROJAVA_HD/HLS/ROJAVA_HD.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 115",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/RONAHI_TV/HLS/RONAHI_TV.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Zagros",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/ZAGROS_TV/HLS/ZAGROS_TV.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 117",
+   "logo": "📺",
+   "url": "https://hms.pfs.gdn/hms/v1/broadcast/hlmvmp2hfriode891/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 118",
+   "logo": "📺",
+   "url": "https://hms.pfs.gdn/v1/broadcast/one/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 119",
+   "logo": "📺",
+   "url": "https://hms.pfs.gdn/v1/broadcast/onefm/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 122",
+   "logo": "📺",
+   "url": "https://i24newsarabic-cdn.encoders.immergo.tv/master.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "قناة 123",
+   "logo": "📺",
+   "url": "https://jmc-live.ercdn.net/alistiqama/alistiqama.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 124",
+   "logo": "📺",
+   "url": "https://jmc-live.ercdn.net/altaghier/altaghier.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 125",
+   "logo": "📺",
+   "url": "https://jmc-live.ercdn.net/eritreatv/eritreatv.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Jordan TV",
+   "logo": "📺",
+   "url": "https://jrtv-live.ercdn.net/jordanhd/jordanhd.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 128",
+   "logo": "📺",
+   "url": "https://kilolink.pulsarstarsolutions.com/live/smil:tanasuhtv.smil/manifest.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "KTV",
+   "logo": "📺",
+   "url": "https://ktvlive.online/stream/hls/ch1.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 30",
+   "logo": "📺",
+   "url": "https://kwtethta.cdn.mangomolo.com/eth/smil:eth.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 31",
+   "logo": "📺",
+   "url": "https://kwtkbta.cdn.mangomolo.com/kb/smil:kb.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 32",
+   "logo": "📺",
+   "url": "https://kwtktv1ta.cdn.mangomolo.com/ktv1/smil:ktv1.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 33",
+   "logo": "📺",
+   "url": "https://kwtktvaqta.cdn.mangomolo.com/ktvaq/smil:tktvaq.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 34",
+   "logo": "📺",
+   "url": "https://kwtktvata.cdn.mangomolo.com/ktva/smil:tktva.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 35",
+   "logo": "📺",
+   "url": "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Kuwait 36",
+   "logo": "📺",
+   "url": "https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 138",
+   "logo": "📺",
+   "url": "https://live-hls-apps-aja-fa.getaj.net/AJA/01.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 139",
+   "logo": "📺",
+   "url": "https://live-hls-apps-ajm-fa.getaj.net/AJM/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 140",
+   "logo": "📺",
+   "url": "https://live-hls-apps-ajm2-fa.getaj.net/AJM2/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 141",
+   "logo": "📺",
+   "url": "https://live-hls-apps-ajm24-fa.getaj.net/AJM24/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "قناة 142",
+   "logo": "📺",
+   "url": "https://live-hls-web-aja2-gcp.thehlive.com/AJA2/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Asharq",
+   "logo": "📺",
+   "url": "https://live-news.asharq.com/asharq.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Sky News",
+   "logo": "📺",
+   "url": "https://live-stream.skynewsarabia.com/c-horizontal-channel/horizontal-stream/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Alawla",
+   "logo": "📺",
+   "url": "https://live.alawla.tv/hls/stream.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Test",
+   "logo": "📺",
+   "url": "https://live.alissahost.net/hls/test.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "DW عربي Master",
+   "logo": "🔷",
+   "url": "https://dwamdstream103.akamaized.net/hls/live/2015526/dwstream103/master.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Cloudfront 1",
+   "logo": "☁️",
+   "url": "https://d2ow8h651gs7dx.cloudfront.net/out/v1/371fb663da604e659a2fb99bf89d92d4/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Cloudfront 2",
+   "logo": "☁️",
+   "url": "https://d6izdil55uftn.cloudfront.net/out/v1/0a06d1d6377c47edbd48721ed724bd08/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "CGTN Arabic Test",
+   "logo": "🇨🇳",
+   "url": "https://dash3.antik.sk/live/test_cgtn_arb_tizen/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Cloudfront 3",
+   "logo": "☁️",
+   "url": "https://dphwv2ufgnfsq.cloudfront.net/out/v1/59cd80dfe93a479eb8b4d79bc6f225ca/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "JWP Channel",
+   "logo": "📺",
+   "url": "https://cdn.fast.jwp.services/v1/channel/1_jB6940Ei_TvhvIHDL/manifest.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "AL24 News",
+   "logo": "🇩🇿",
+   "url": "https://cdn.live.easybroadcast.io/abr_corp/66_al24_u4yga6h/corp/66_al24_u4yga6h_240p/chunks.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Medi1 TV Arabic",
+   "logo": "🇲🇦",
+   "url": "https://cdn.live.easybroadcast.io/abr_corp/83_medi1tv-arabic_g90v4ec/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Medi1 Maghreb",
+   "logo": "🇲🇦",
+   "url": "https://cdn.live.easybroadcast.io/abr_corp/83_medi1tv-maghreb_jnbspmg/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "LTV",
+   "logo": "📺",
+   "url": "https://cdn.streamlane.tv/hls/ltv/master.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Wowza Live 1",
+   "logo": "📺",
+   "url": "https://cdn3.wowza.com/1/YStGZlJRdktzZkdK/VXROZWNW/hls/live/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Hayat Live",
+   "logo": "✝️",
+   "url": "https://cdn3.wowza.com/5/OE5HREpIcEkySlNT/alhayat-live/ngrp:livestream_all/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Ch4 TeenDoc",
+   "logo": "📺",
+   "url": "https://ch14.tv/live/ch4teendoc/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "MTA 1",
+   "logo": "🕌",
+   "url": "https://chlivemta1.akamaized.net/hls/live/2008145/mta1/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "MTA 2",
+   "logo": "🕌",
+   "url": "https://chlivemta1.akamaized.net/hls/live/2008145/mta2/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "MTA 3 Arabia",
+   "logo": "🕌",
+   "url": "https://chlivemta1.akamaized.net/hls/live/2010556/mta3alarabia/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Rasd TV 2",
+   "logo": "📺",
+   "url": "https://cloud.streamingconnect.tv/hls/rasdtv2/rasdtv.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "CNBC",
+   "logo": "💹",
+   "url": "https://cnbc-live.akamaized.net/cnbc/master.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Alpha TV",
+   "logo": "📺",
+   "url": "https://alpha.tv.online.tm/hls/ch007.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Rayyan 1",
+   "logo": "🇶🇦",
+   "url": "https://alrayyancdn.vidgyor.com/pub-noalrayy3pwz0l/liveabr/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Rayyan 2",
+   "logo": "🇶🇦",
+   "url": "https://alrayyancdn.vidgyor.com/pub-nooldraybinbdh/liveabr/playlist_dvr.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Wasat TV",
+   "logo": "🇱🇾",
+   "url": "https://alwasattv.hibridcdn.net/alwasattv/alwasat_abr/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Al Shallal",
+   "logo": "📺",
+   "url": "https://amg01480-alshallalfze-alshallal-ono-q0hfg.amagi.tv/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Amman TV",
+   "logo": "🇯🇴",
+   "url": "https://ammantv-live.ercdn.net/ammantvhd/ammantvhd.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Assahat TV",
+   "logo": "📺",
+   "url": "https://assahat.b-cdn.net/Assahat/assahatobs/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Brightstar Arabic",
+   "logo": "⭐",
+   "url": "https://brightstar-arabic-pull-secure.akamaized.net/brightstararabic/stream.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Ma Channels",
+   "logo": "📺",
+   "url": "https://bucharest.zeuscdn724.com/lb0/CH-AL-MA/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Libya Al Watanya",
+   "logo": "🇱🇾",
+   "url": "https://cdn-globecast.akamaized.net/live/eds/libya_al_watanya/hls_roku/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Sudan TV",
+   "logo": "🇸🇩",
+   "url": "https://cdn-globecast.akamaized.net/live/eds/sudan_tv/hls_roku/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Karma ME2",
+   "logo": "✝️",
+   "url": "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmame2.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Karma PA",
+   "logo": "✝️",
+   "url": "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmapa.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "My Stream",
+   "logo": "📺",
+   "url": "https://5a3ed7a72ed4b.streamlock.net/live/SMIL:myStream.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Karma AU",
+   "logo": "✝️",
+   "url": "https://5a8308add0b31.streamlock.net/alkarmatv.com/alkarmaau.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Karma NA1",
+   "logo": "✝️",
+   "url": "https://5aafcc5de91f1.streamlock.net/alkarmatv.com/alkarmana1.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Karma US",
+   "logo": "✝️",
+   "url": "https://5aafcc5de91f1.streamlock.net/alkarmatv.com/alkarmaus.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Magd 2",
+   "logo": "📺",
+   "url": "https://5aafcc5de91f1.streamlock.net/almagd.tv/almagd.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Atfal TV",
+   "logo": "🧒",
+   "url": "https://5aafcc5de91f1.streamlock.net/atfal1.com/atfal2/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Bahrain Sports 2",
+   "logo": "🇧🇭",
+   "url": "https://5c7b683162943.streamlock.net/live/ngrp:bahrainsportstwo_all/playlist.m3u8",
+   "cat": "رياضية"
+  },
+  {
+   "name": "Bahrain TV",
+   "logo": "🇧🇭",
+   "url": "https://5c7b683162943.streamlock.net/live/ngrp:bahraintvmain_all/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Sports One",
+   "logo": "⚽",
+   "url": "https://5c7b683162943.streamlock.net/live/ngrp:sportsone_all/playlist.m3u8",
+   "cat": "رياضية"
+  },
+  {
+   "name": "Live Stream",
+   "logo": "📺",
+   "url": "https://652930de05533.streamlock.net/live/ngrp:livestream_all/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Muslim Network",
+   "logo": "🕌",
+   "url": "https://afghantv.app/hls2/muslimnetwork/index.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Aimma TV",
+   "logo": "🕌",
+   "url": "https://alaimma.tv/live/index.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Live 8443",
+   "logo": "📺",
+   "url": "https://659605a54e9a6.streamlock.net:8443/live/livestream/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Story Channel",
+   "logo": "📖",
+   "url": "https://136044159.r.cdnsun.net/storychannel.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Aqsa TV",
+   "logo": "🕌",
+   "url": "https://43869de4e1a0d641.servers.dvcloud.tv/hls/al_aqsa_channel/6udfi7v8a3eof6nlps6e9ovfrs65c7l7.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Karma NA2",
+   "logo": "✝️",
+   "url": "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmaNA2.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Karma ME1",
+   "logo": "✝️",
+   "url": "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmame1.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Magd TV",
+   "logo": "📺",
+   "url": "https://597f64b67707a.streamlock.net/almagd.tv/almagd.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Bahrain International",
+   "logo": "🇧🇭",
+   "url": "https://5c7b683162943.streamlock.net/live/ngrp:bahraininternational_all/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Bahrain Quran",
+   "logo": "🕌",
+   "url": "https://5c7b683162943.streamlock.net/live/ngrp:bahrainquran_all/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Fady TV",
+   "logo": "📺",
+   "url": "https://5d658d7e9f562.streamlock.net/alfadytv.tv/alfadytv.smil/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Logos TV",
+   "logo": "✝️",
+   "url": "https://5a8308add0b31.streamlock.net/logoschannel.com/logostv.smil/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Sky News عربية",
+   "logo": "☁️",
+   "url": "https://stream.skynewsarabia.com/hls/sna.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الجزيرة مباشر 2",
+   "logo": "🔴",
+   "url": "https://live-hls-web-ajm2-fa.getaj.net/AJM2/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "العربية برامج",
+   "logo": "🔴",
+   "url": "https://live.alarabiya.net/alarabiapublish/aaprograms.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الجزيرة صوت",
+   "logo": "🎙️",
+   "url": "https://live-hls-audio-web-aja.getaj.net/VOICE-AJA/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "DW عربي 3",
+   "logo": "🔷",
+   "url": "https://dwamdstream103.akamaized.net/hls/live/2015526/dwstream103/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "2M Monde +1",
+   "logo": "🇲🇦",
+   "url": "https://d2qh3gh0k5vp3v.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-n6pess5lwbghr/2M_ES.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Abdulmajeed Abdullah",
+   "logo": "🎵",
+   "url": "https://d2hng5r56zpsbw.cloudfront.net/out/v1/9c4c990f44bb4767bb46271f326dd574/index.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "ABNsat",
+   "logo": "✝️",
+   "url": "https://mediaserver.abnvideos.com/streams/abnsat.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "Al Araby 2",
+   "logo": "🟠",
+   "url": "https://live.kwikmotion.com/alaraby2live/alaraby2.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Al Arabiya",
+   "logo": "🔴",
+   "url": "https://live.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Al Mayadeen",
+   "logo": "🟡",
+   "url": "https://mdnlv.cdn.octivid.com/almdn/smil:mpegts.stream.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Al Masirah",
+   "logo": "🔴",
+   "url": "https://live.cdnbridge.tv/Almasirah/Almasirah_all/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Al Qamar",
+   "logo": "🌙",
+   "url": "https://streamer3.premio.link/alqamar/playlist.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "Al Hiwar",
+   "logo": "💬",
+   "url": "https://mn-nl.mncdn.com/alhiwar_live/smil:alhiwar.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "Avar TV",
+   "logo": "📺",
+   "url": "https://avr.host247.net/live/AvarTv/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "فرانس 24 عربي",
+   "logo": "🇫🇷",
+   "url": "https://static.france24.com/live/F24_AR_LO_HLS/live_ios.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "فرانس 24 إنجليزي",
+   "logo": "🇫🇷",
+   "url": "https://static.france24.com/live/F24_EN_LO_HLS/live_ios.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "فرانس 24 فرنسي",
+   "logo": "🇫🇷",
+   "url": "https://static.france24.com/live/F24_FR_LO_HLS/live_ios.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "DW عربية",
+   "logo": "🇩🇪",
+   "url": "https://dwamdstream106.akamaized.net/hls/live/2017965/dwstream106/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "TRT World",
+   "logo": "🇹🇷",
+   "url": "https://tv-trtworld.medya.trt.com.tr/master.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "إذاعة الشارقة للقرآن",
+   "logo": "🕌",
+   "url": "https://live.kwikmotion.com/smcquranlive/quranradiolive/playlist.m3u8",
+   "cat": "دينية"
+  },
+  {
+   "name": "كردستان 24",
+   "logo": "🟡",
+   "url": "https://hlspackager.akamaized.net/live/DB/K24/HLS/K24.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "كردسات نيوز",
+   "logo": "📰",
+   "url": "https://hlspackager.akamaized.net/live/DB/KURDSAT_NEWS/HLS/KURDSAT_NEWS.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "بيام TV",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/PAYAM_TV/HLS/PAYAM_TV.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "رووداو",
+   "logo": "📰",
+   "url": "https://hlspackager.akamaized.net/live/DB/RUDAW/HLS/RUDAW.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "وار TV",
+   "logo": "📺",
+   "url": "https://hlspackager.akamaized.net/live/DB/WAAR_HD/HLS/WAAR_HD.m3u8",
+   "cat": "منوعات"
+  },
+  {
+   "name": "الأردن الرياضية",
+   "logo": "⚽",
+   "url": "https://jrtv-live.ercdn.net/jordansporthd/jordansporthd.m3u8",
+   "cat": "رياضية"
+  },
+  {
+   "name": "ميدي 1 إفريقيا",
+   "logo": "🌍",
+   "url": "https://cdn.live.easybroadcast.io/abr_corp/83_medi1tv-afrique_tm7tu45/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "موزاييك FM",
+   "logo": "🎙️",
+   "url": "https://webcam.mosaiquefm.net/mosatv/_definst_/studio/playlist.m3u8?DVR",
+   "cat": "منوعات"
+  },
+  {
+   "name": "العراقية الإخبارية",
+   "logo": "🇮🇶",
+   "url": "https://imn-live.esite-lab.com/hls/iraqia-news.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الوطنية 2 التونسية",
+   "logo": "🇹🇳",
+   "url": "https://sw1.tanitweb.net/TunisiaTV/_definst_/watania2/playlist.m3u8?DVR",
+   "cat": "منوعات"
+  },
+  {
+   "name": "فلسطين اليوم",
+   "logo": "🇵🇸",
+   "url": "https://live.paltodaytv.com/paltv/live/playlist_sfm4s.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "ABC News الأمريكية",
+   "logo": "🇺🇸",
+   "url": "https://abcnews-streams.akamaized.net/hls/live/2023560/abcnewshudson1/master.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "أفريكانيوز إنجليزي",
+   "logo": "🌍",
+   "url": "https://cdn-euronews.akamaized.net/live/eds/africanews-en/25049/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "أفريكانيوز فرنسي",
+   "logo": "🌍",
+   "url": "https://cdn-euronews.akamaized.net/live/eds/africanews-fr/25050/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "الجزيرة الإنجليزية",
+   "logo": "🔵",
+   "url": "https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "أريرانغ",
+   "logo": "🇰🇷",
+   "url": "https://amdlive-ch02-ctnd-com.akamaized.net/arirang_2ch/smil:arirang_2ch.smil/playlist.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "CBC الإخبارية",
+   "logo": "🇨🇦",
+   "url": "https://d2ny9lo79ujali.cloudfront.net/CBC_News_International.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "DW إسباني",
+   "logo": "🇩🇪",
+   "url": "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/master.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "يورونيوز",
+   "logo": "🇪🇺",
+   "url": "https://cdn-euronews.akamaized.net/live/eds/euronews-pl/26382/index.m3u8",
+   "cat": "إخبارية"
+  },
+  {
+   "name": "فرانس 24 (بث بديل)",
+   "logo": "🇫🇷",
+   "url": "https://live.france24.com/hls/live/2037179-b/F24_FR_HI_HLS/master_5000.m3u8",
+   "cat": "إخبارية"
+  }
+ ]
+}

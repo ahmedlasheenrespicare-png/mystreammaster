@@ -1,0 +1,43 @@
+/_assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/*.css
+  Cache-Control: public, max-age=604800
+/*.js
+  Cache-Control: public, max-age=604800
+/*.jpg
+  Cache-Control: public, max-age=2592000
+/*.png
+  Cache-Control: public, max-age=2592000
+/*.webp
+  Cache-Control: public, max-age=2592000
+/*.avif
+  Cache-Control: public, max-age=2592000
+/*.svg
+  Cache-Control: public, max-age=2592000
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+/OneSignalSDKWorker.js
+  Cache-Control: public, max-age=0, must-revalidate
+/offline.html
+  Cache-Control: public, max-age=0, must-revalidate
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  X-XSS-Protection: 1; mode=block
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.onesignal.com https://cdn.jsdelivr.net https://pagead2.googlesyndication.com https://*.googlesyndication.com https://cdn.ampproject.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; connect-src 'self' https://api.frankfurter.app https://worldcup26.ir https://*.onesignal.com https:; frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+/admin-dashboard/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: no-store
+  X-Frame-Options: DENY
+/live-free*
+  X-Robots-Tag: noindex, nofollow, noarchive
+/proxy.php
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+/admin/*
+  X-Robots-Tag: noindex, nofollow, noarchive

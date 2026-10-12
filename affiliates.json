@@ -1,0 +1,17 @@
+{
+  "_ملاحظة": "ضع هنا رابط الأفلييت الخاص بك مكان url عند اعتماد برنامج الشركاء. slug هو ما يظهر في /go.php?p=slug",
+  "partners": {
+    "bein":      { "name": "beIN SPORTS",  "url": "https://www.beinsports.com/ar-mena/subscribe", "cat": "رياضة" },
+    "tod":       { "name": "TOD",          "url": "https://www.tod.tv/",                          "cat": "رياضة" },
+    "shahid":    { "name": "شاهد VIP",     "url": "https://shahid.mbc.net/ar/subscribe",          "cat": "رياضة/دراما" },
+    "dazn":      { "name": "DAZN",         "url": "https://www.dazn.com/",                        "cat": "رياضة" },
+    "fifaplus":  { "name": "FIFA+",        "url": "https://www.plus.fifa.com/",                   "cat": "مجاني" },
+    "netflix":   { "name": "Netflix",      "url": "https://www.netflix.com/",                     "cat": "أفلام" },
+    "osn":       { "name": "OSN+",         "url": "https://stream.osn.com/ar",                    "cat": "أفلام" },
+    "prime":     { "name": "Prime Video",  "url": "https://www.primevideo.com/",                  "cat": "أفلام" },
+    "starzplay": { "name": "StarzPlay",    "url": "https://www.starzplay.com/",                   "cat": "أفلام" },
+    "disney":    { "name": "Disney+",      "url": "https://www.disneyplus.com/",                  "cat": "أفلام" },
+    "pluto":     { "name": "Pluto TV",     "url": "https://pluto.tv/",                            "cat": "مجاني" },
+    "youtube":   { "name": "يوتيوب رسمي",  "url": "https://www.youtube.com/results?search_query=%D8%A8%D8%AB+%D9%85%D8%A8%D8%A7%D8%B4%D8%B1+%D9%82%D9%86%D8%A7%D8%A9", "cat": "مجاني" }
+  }
+}

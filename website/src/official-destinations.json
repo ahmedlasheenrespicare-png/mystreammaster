@@ -1,0 +1,1172 @@
+[
+  {
+    "name": "فرانس 24",
+    "english": "France 24",
+    "icon": "F24",
+    "cat": "أخبار",
+    "url": "https://www.france24.com/ar/",
+    "description": "تعرّف على فرانس 24 وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "beIN SPORTS",
+    "english": "بي إن سبورت beIN Sports",
+    "icon": "beIN",
+    "cat": "رياضة",
+    "url": "https://www.bein.com/",
+    "description": "اطّلع على محتوى beIN SPORTS والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "TOD",
+    "english": "تود TOD",
+    "icon": "TOD",
+    "cat": "منصات",
+    "url": "https://www.tod.tv/",
+    "description": "اطّلع على محتوى TOD والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "OSN+",
+    "english": "او اس ان OSN Plus",
+    "icon": "OSN+",
+    "cat": "منصات",
+    "url": "https://osnplus.com/",
+    "description": "اطّلع على محتوى OSN+ والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "شاهد",
+    "english": "Shahid MBC VIP",
+    "icon": "SH",
+    "cat": "منصات",
+    "url": "https://shahid.mbc.net/",
+    "description": "تعرّف على شاهد وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Netflix",
+    "english": "نتفليكس",
+    "icon": "N",
+    "cat": "منصات",
+    "url": "https://www.netflix.com/",
+    "description": "اطّلع على محتوى Netflix والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "ثمانية",
+    "english": "Thmanyah رياضة ثمانية",
+    "icon": "8",
+    "cat": "رياضة",
+    "url": "https://thmanyah.com/",
+    "description": "تعرّف على ثمانية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الجزيرة",
+    "english": "Al Jazeera",
+    "icon": "AJ",
+    "cat": "أخبار",
+    "url": "https://www.aljazeera.net/",
+    "description": "تعرّف على الجزيرة وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "العربية",
+    "english": "Al Arabiya",
+    "icon": "AR",
+    "cat": "أخبار",
+    "url": "https://www.alarabiya.net/",
+    "description": "تعرّف على العربية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "DW",
+    "english": "Deutsche Welle دويتشه فيله",
+    "icon": "DW",
+    "cat": "أخبار",
+    "url": "https://www.dw.com/ar/",
+    "description": "تعرّف على DW وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Prime Video",
+    "english": "أمازون برايم",
+    "icon": "PV",
+    "cat": "منصات",
+    "url": "https://www.primevideo.com/",
+    "description": "اطّلع على محتوى Prime Video والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Disney+",
+    "english": "ديزني بلس",
+    "icon": "D+",
+    "cat": "منصات",
+    "url": "https://www.disneyplus.com/",
+    "description": "اطّلع على محتوى Disney+ والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Apple TV",
+    "english": "آبل تي في",
+    "icon": "TV",
+    "cat": "منصات",
+    "url": "https://tv.apple.com/",
+    "description": "اطّلع على محتوى Apple TV والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Paramount+",
+    "english": "باراماونت",
+    "icon": "P+",
+    "cat": "منصات",
+    "url": "https://www.paramountplus.com/",
+    "description": "اطّلع على محتوى Paramount+ والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "HBO Max",
+    "english": "اتش بي او ماكس",
+    "icon": "MAX",
+    "cat": "منصات",
+    "url": "https://www.hbomax.com/",
+    "description": "اطّلع على محتوى HBO Max والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Crunchyroll",
+    "english": "كرانشي رول أنمي",
+    "icon": "CR",
+    "cat": "منصات",
+    "url": "https://www.crunchyroll.com/",
+    "description": "اطّلع على محتوى Crunchyroll والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "DAZN",
+    "english": "دازن",
+    "icon": "DAZN",
+    "cat": "منصات",
+    "url": "https://www.dazn.com/",
+    "description": "اطّلع على محتوى DAZN والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "STARZPLAY",
+    "english": "ستارز بلاي",
+    "icon": "SP",
+    "cat": "منصات",
+    "url": "https://www.starzplay.com/",
+    "description": "اطّلع على محتوى STARZPLAY والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "discovery+",
+    "english": "ديسكفري بلس",
+    "icon": "d+",
+    "cat": "منصات",
+    "url": "https://www.discoveryplus.com/",
+    "description": "اطّلع على محتوى discovery+ والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "OSNtv",
+    "english": "او اس ان قنوات",
+    "icon": "OSN",
+    "cat": "منصات",
+    "url": "https://www.osn.com/",
+    "description": "اطّلع على محتوى OSNtv والباقات والرسوم ومتطلبات الوصول عبر موقعها الرسمي. توافر الخدمة والمحتوى يختلف بحسب منطقتك.",
+    "paid": true,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "beIN SPORTS XTRA",
+    "english": "بي إن اكسترا",
+    "icon": "XTRA",
+    "cat": "رياضة",
+    "url": "https://beinsportsxtra.com/",
+    "description": "تعرّف على beIN SPORTS XTRA وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "أبوظبي الرياضية",
+    "english": "Abu Dhabi Sports",
+    "icon": "AD",
+    "cat": "رياضة",
+    "url": "https://www.adsports.ae/",
+    "description": "تعرّف على أبوظبي الرياضية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "دبي الرياضية",
+    "english": "Dubai Sports",
+    "icon": "DXB",
+    "cat": "رياضة",
+    "url": "https://www.dubaisports.ae/",
+    "description": "تعرّف على دبي الرياضية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الكأس",
+    "english": "Alkass",
+    "icon": "K",
+    "cat": "رياضة",
+    "url": "https://www.alkass.net/",
+    "description": "تعرّف على الكأس وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "ريال مدريد TV",
+    "english": "Real Madrid TV",
+    "icon": "RM",
+    "cat": "رياضة",
+    "url": "https://play.realmadrid.com/",
+    "description": "تعرّف على ريال مدريد TV وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "برشلونة — Barça One",
+    "english": "FC Barcelona Barca One",
+    "icon": "FCB",
+    "cat": "رياضة",
+    "url": "https://www.fcbarcelona.com/",
+    "description": "تعرّف على برشلونة — Barça One وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Red Bull TV",
+    "english": "ريد بول",
+    "icon": "RB",
+    "cat": "رياضة",
+    "url": "https://www.redbull.com/",
+    "description": "تعرّف على Red Bull TV وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "FIFA+",
+    "english": "فيفا بلس",
+    "icon": "FIFA",
+    "cat": "رياضة",
+    "url": "https://www.fifa.com/",
+    "description": "تعرّف على FIFA+ وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "ESPN",
+    "english": "إي إس بي إن",
+    "icon": "ESPN",
+    "cat": "رياضة",
+    "url": "https://www.espn.com/",
+    "description": "تعرّف على ESPN وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Eurosport",
+    "english": "يوروسبورت",
+    "icon": "EU",
+    "cat": "رياضة",
+    "url": "https://www.eurosport.com/",
+    "description": "تعرّف على Eurosport وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Tennis Channel",
+    "english": "قناة التنس",
+    "icon": "TC",
+    "cat": "رياضة",
+    "url": "https://www.tennischannel.com/",
+    "description": "تعرّف على Tennis Channel وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Rally.TV",
+    "english": "رالي",
+    "icon": "WRC",
+    "cat": "رياضة",
+    "url": "https://www.rally.tv/",
+    "description": "تعرّف على Rally.TV وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "FloSports",
+    "english": "فلو رياضة FloRacing FloHockey",
+    "icon": "FLO",
+    "cat": "رياضة",
+    "url": "https://www.flosports.tv/",
+    "description": "تعرّف على FloSports وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "NBA",
+    "english": "كرة السلة",
+    "icon": "NBA",
+    "cat": "رياضة",
+    "url": "https://www.nba.com/",
+    "description": "تعرّف على NBA وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "NHL",
+    "english": "هوكي الجليد",
+    "icon": "NHL",
+    "cat": "رياضة",
+    "url": "https://www.nhl.com/",
+    "description": "تعرّف على NHL وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "F1 TV",
+    "english": "فورمولا ون",
+    "icon": "F1",
+    "cat": "رياضة",
+    "url": "https://www.formula1.com/",
+    "description": "تعرّف على F1 TV وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Premier Sports",
+    "english": "بريمير سبورتس",
+    "icon": "PS",
+    "cat": "رياضة",
+    "url": "https://www.premiersports.com/",
+    "description": "تعرّف على Premier Sports وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الجزيرة مباشر",
+    "english": "Al Jazeera Mubasher",
+    "icon": "AJM",
+    "cat": "أخبار",
+    "url": "https://www.aljazeera.net/",
+    "description": "تعرّف على الجزيرة مباشر وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الجزيرة الإنجليزية",
+    "english": "Al Jazeera English",
+    "icon": "AJE",
+    "cat": "أخبار",
+    "url": "https://www.aljazeera.com/",
+    "description": "تعرّف على الجزيرة الإنجليزية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الحدث",
+    "english": "Al Hadath",
+    "icon": "H",
+    "cat": "أخبار",
+    "url": "https://www.alhadath.net/",
+    "description": "تعرّف على الحدث وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "العربية أسواق",
+    "english": "Al Arabiya Business",
+    "icon": "AR",
+    "cat": "أخبار",
+    "url": "https://www.alarabiya.net/",
+    "description": "تعرّف على العربية أسواق وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "سكاي نيوز عربية",
+    "english": "Sky News Arabia",
+    "icon": "SKY",
+    "cat": "أخبار",
+    "url": "https://www.skynewsarabia.com/",
+    "description": "تعرّف على سكاي نيوز عربية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الشرق للأخبار",
+    "english": "Asharq News",
+    "icon": "ASH",
+    "cat": "أخبار",
+    "url": "https://asharq.com/",
+    "description": "تعرّف على الشرق للأخبار وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "BBC News عربي",
+    "english": "بي بي سي",
+    "icon": "BBC",
+    "cat": "أخبار",
+    "url": "https://www.bbc.com/arabic",
+    "description": "تعرّف على BBC News عربي وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "CNN",
+    "english": "سي إن إن",
+    "icon": "CNN",
+    "cat": "أخبار",
+    "url": "https://www.cnn.com/",
+    "description": "تعرّف على CNN وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "CNN بالعربية",
+    "english": "سي إن إن عربي",
+    "icon": "CNN",
+    "cat": "أخبار",
+    "url": "https://arabic.cnn.com/",
+    "description": "تعرّف على CNN بالعربية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Sky News",
+    "english": "سكاي نيوز",
+    "icon": "SKY",
+    "cat": "أخبار",
+    "url": "https://news.sky.com/",
+    "description": "تعرّف على Sky News وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "ABC News",
+    "english": "إيه بي سي",
+    "icon": "ABC",
+    "cat": "أخبار",
+    "url": "https://abcnews.com/",
+    "description": "تعرّف على ABC News وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "CBS News",
+    "english": "سي بي إس",
+    "icon": "CBS",
+    "cat": "أخبار",
+    "url": "https://www.cbsnews.com/",
+    "description": "تعرّف على CBS News وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "NBC News",
+    "english": "إن بي سي",
+    "icon": "NBC",
+    "cat": "أخبار",
+    "url": "https://www.nbcnews.com/",
+    "description": "تعرّف على NBC News وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "CNBC",
+    "english": "سي إن بي سي",
+    "icon": "CNBC",
+    "cat": "أخبار",
+    "url": "https://www.cnbc.com/",
+    "description": "تعرّف على CNBC وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "CNBC عربية",
+    "english": "سي إن بي سي عربي",
+    "icon": "CNBC",
+    "cat": "أخبار",
+    "url": "https://www.cnbcarabia.com/",
+    "description": "تعرّف على CNBC عربية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Bloomberg",
+    "english": "بلومبرغ",
+    "icon": "B",
+    "cat": "أخبار",
+    "url": "https://www.bloomberg.com/",
+    "description": "تعرّف على Bloomberg وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Euronews",
+    "english": "يورونيوز",
+    "icon": "EU",
+    "cat": "أخبار",
+    "url": "https://www.euronews.com/",
+    "description": "تعرّف على Euronews وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Africanews",
+    "english": "أفريكانيوز",
+    "icon": "AF",
+    "cat": "أخبار",
+    "url": "https://www.africanews.com/",
+    "description": "تعرّف على Africanews وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "TRT عربي",
+    "english": "تي آر تي",
+    "icon": "TRT",
+    "cat": "أخبار",
+    "url": "https://www.trtarabi.com/",
+    "description": "تعرّف على TRT عربي وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "TRT World",
+    "english": "تي آر تي وورلد",
+    "icon": "TRT",
+    "cat": "أخبار",
+    "url": "https://www.trtworld.com/",
+    "description": "تعرّف على TRT World وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "CGTN",
+    "english": "سي جي تي إن",
+    "icon": "CGTN",
+    "cat": "أخبار",
+    "url": "https://www.cgtn.com/",
+    "description": "تعرّف على CGTN وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Reuters",
+    "english": "رويترز",
+    "icon": "R",
+    "cat": "أخبار",
+    "url": "https://www.reuters.com/",
+    "description": "تعرّف على Reuters وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "العربي TV",
+    "english": "Alaraby",
+    "icon": "A",
+    "cat": "أخبار",
+    "url": "https://www.alaraby.com/",
+    "description": "تعرّف على العربي TV وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الغد",
+    "english": "Alghad",
+    "icon": "G",
+    "cat": "أخبار",
+    "url": "https://www.alghad.tv/",
+    "description": "تعرّف على الغد وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الميادين",
+    "english": "Al Mayadeen",
+    "icon": "M",
+    "cat": "أخبار",
+    "url": "https://www.almayadeen.net/",
+    "description": "تعرّف على الميادين وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "MBC 1",
+    "english": "إم بي سي MBC 1",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC 1 وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC 2",
+    "english": "إم بي سي MBC 2",
+    "icon": "MBC",
+    "cat": "أفلام",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC 2 وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC 3",
+    "english": "إم بي سي MBC 3",
+    "icon": "MBC",
+    "cat": "أطفال",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC 3 وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC 4",
+    "english": "إم بي سي MBC 4",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC 4 وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC 5",
+    "english": "إم بي سي MBC 5",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC 5 وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC Action",
+    "english": "إم بي سي MBC Action",
+    "icon": "MBC",
+    "cat": "أفلام",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC Action وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC Max",
+    "english": "إم بي سي MBC Max",
+    "icon": "MBC",
+    "cat": "أفلام",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC Max وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC Drama",
+    "english": "إم بي سي MBC Drama",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC Drama وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC مصر",
+    "english": "إم بي سي MBC مصر",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC مصر وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC مصر 2",
+    "english": "إم بي سي MBC مصر 2",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC مصر 2 وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC مصر دراما",
+    "english": "إم بي سي MBC مصر دراما",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC مصر دراما وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC العراق",
+    "english": "إم بي سي MBC العراق",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC العراق وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC Bollywood",
+    "english": "إم بي سي MBC Bollywood",
+    "icon": "MBC",
+    "cat": "أفلام",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC Bollywood وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MBC Persia",
+    "english": "إم بي سي MBC Persia",
+    "icon": "MBC",
+    "cat": "ترفيه",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC Persia وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا سينما",
+    "english": "Rotana روتانا سينما",
+    "icon": "ROT",
+    "cat": "أفلام",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا سينما وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا سينما مصر",
+    "english": "Rotana روتانا سينما مصر",
+    "icon": "ROT",
+    "cat": "أفلام",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا سينما مصر وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا أفلام",
+    "english": "Rotana روتانا أفلام",
+    "icon": "ROT",
+    "cat": "أفلام",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا أفلام وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا كلاسيك",
+    "english": "Rotana روتانا كلاسيك",
+    "icon": "ROT",
+    "cat": "أفلام",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا كلاسيك وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا كوميدي",
+    "english": "Rotana روتانا كوميدي",
+    "icon": "ROT",
+    "cat": "ترفيه",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا كوميدي وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا دراما",
+    "english": "Rotana روتانا دراما",
+    "icon": "ROT",
+    "cat": "ترفيه",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا دراما وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا خليجية",
+    "english": "Rotana روتانا خليجية",
+    "icon": "ROT",
+    "cat": "ترفيه",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا خليجية وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا كيدز",
+    "english": "Rotana روتانا كيدز",
+    "icon": "ROT",
+    "cat": "أطفال",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا كيدز وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "روتانا موسيقى",
+    "english": "Rotana روتانا موسيقى",
+    "icon": "ROT",
+    "cat": "موسيقى",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على روتانا موسيقى وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "الرسالة",
+    "english": "Rotana الرسالة",
+    "icon": "ROT",
+    "cat": "دينية",
+    "url": "https://rotana.net/en/channels",
+    "description": "تعرّف على الرسالة وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "الشرق Discovery",
+    "english": "Asharq Discovery",
+    "icon": "DSC",
+    "cat": "وثائقيات",
+    "url": "https://now.asharq.com/discovery/",
+    "description": "تعرّف على الشرق Discovery وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الشرق الوثائقية",
+    "english": "Asharq Documentary",
+    "icon": "DOC",
+    "cat": "وثائقيات",
+    "url": "https://now.asharq.com/",
+    "description": "تعرّف على الشرق الوثائقية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "الجزيرة الوثائقية",
+    "english": "Al Jazeera Documentary",
+    "icon": "AJD",
+    "cat": "وثائقيات",
+    "url": "https://doc.aljazeera.net/",
+    "description": "تعرّف على الجزيرة الوثائقية وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "National Geographic",
+    "english": "ناشيونال جيوغرافيك",
+    "icon": "NG",
+    "cat": "وثائقيات",
+    "url": "https://www.nationalgeographic.com/",
+    "description": "تعرّف على National Geographic وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Discovery",
+    "english": "ديسكفري",
+    "icon": "DSC",
+    "cat": "وثائقيات",
+    "url": "https://www.discovery.com/",
+    "description": "تعرّف على Discovery وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "BBC Earth",
+    "english": "بي بي سي إيرث",
+    "icon": "BBC",
+    "cat": "وثائقيات",
+    "url": "https://www.bbcearth.com/",
+    "description": "تعرّف على BBC Earth وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "NASA+",
+    "english": "ناسا",
+    "icon": "N+",
+    "cat": "وثائقيات",
+    "url": "https://plus.nasa.gov/",
+    "description": "تعرّف على NASA+ وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "PBS",
+    "english": "بي بي إس",
+    "icon": "PBS",
+    "cat": "وثائقيات",
+    "url": "https://www.pbs.org/",
+    "description": "تعرّف على PBS وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Curiosity Stream",
+    "english": "كريوسيتي",
+    "icon": "CS",
+    "cat": "وثائقيات",
+    "url": "https://curiositystream.com/",
+    "description": "تعرّف على Curiosity Stream وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Cartoon Network",
+    "english": "كرتون نتورك",
+    "icon": "CN",
+    "cat": "أطفال",
+    "url": "https://www.cartoonnetwork.com/",
+    "description": "تعرّف على Cartoon Network وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Nickelodeon",
+    "english": "نيكلوديون",
+    "icon": "NICK",
+    "cat": "أطفال",
+    "url": "https://www.nick.com/",
+    "description": "تعرّف على Nickelodeon وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Disney Channel",
+    "english": "قناة ديزني",
+    "icon": "D",
+    "cat": "أطفال",
+    "url": "https://www.disney.com/",
+    "description": "تعرّف على Disney Channel وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Spacetoon",
+    "english": "سبيستون",
+    "icon": "SP",
+    "cat": "أطفال",
+    "url": "https://spacetoon.com/",
+    "description": "تعرّف على Spacetoon وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Moonbug",
+    "english": "مونبج أطفال",
+    "icon": "MB",
+    "cat": "أطفال",
+    "url": "https://www.moonbug.com/",
+    "description": "تعرّف على Moonbug وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "رؤيا",
+    "english": "Roya",
+    "icon": "RY",
+    "cat": "ترفيه",
+    "url": "https://roya.tv/",
+    "description": "تعرّف على رؤيا وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "دبي TV",
+    "english": "Dubai TV",
+    "icon": "DXB",
+    "cat": "ترفيه",
+    "url": "https://www.dubaitv.ae/",
+    "description": "تعرّف على دبي TV وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "أبوظبي TV",
+    "english": "Abu Dhabi TV",
+    "icon": "AD",
+    "cat": "ترفيه",
+    "url": "https://www.adtv.ae/",
+    "description": "تعرّف على أبوظبي TV وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "تلفزيون قطر",
+    "english": "Qatar TV",
+    "icon": "QTV",
+    "cat": "ترفيه",
+    "url": "https://www.qtv.qa/",
+    "description": "تعرّف على تلفزيون قطر وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "تلفزيون الكويت",
+    "english": "Kuwait TV",
+    "icon": "KTV",
+    "cat": "ترفيه",
+    "url": "https://www.media.gov.kw/",
+    "description": "تعرّف على تلفزيون الكويت وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "قنوات السعودية",
+    "english": "SBA Saudi TV",
+    "icon": "SBA",
+    "cat": "ترفيه",
+    "url": "https://www.sba.sa/",
+    "description": "تعرّف على قنوات السعودية وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "TRT",
+    "english": "تي آر تي التركية",
+    "icon": "TRT",
+    "cat": "ترفيه",
+    "url": "https://www.trt.net.tr/",
+    "description": "تعرّف على TRT وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "Rai",
+    "english": "راي الإيطالية",
+    "icon": "RAI",
+    "cat": "ترفيه",
+    "url": "https://www.rai.it/",
+    "description": "تعرّف على Rai وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "Mediaset",
+    "english": "ميدياسيت",
+    "icon": "MS",
+    "cat": "ترفيه",
+    "url": "https://www.mediaset.it/",
+    "description": "تعرّف على Mediaset وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "ZEE",
+    "english": "زي قنوات",
+    "icon": "ZEE",
+    "cat": "ترفيه",
+    "url": "https://www.zee.com/",
+    "description": "تعرّف على ZEE وخيارات الوصول إلى محتواها عبر موقع الشبكة الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "موقع الشبكة الرسمي"
+  },
+  {
+    "name": "MTV",
+    "english": "إم تي في",
+    "icon": "MTV",
+    "cat": "موسيقى",
+    "url": "https://www.mtv.com/",
+    "description": "تعرّف على MTV وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Vevo",
+    "english": "فيفو",
+    "icon": "VEVO",
+    "cat": "موسيقى",
+    "url": "https://www.vevo.com/",
+    "description": "تعرّف على Vevo وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "Radio Italia",
+    "english": "راديو إيطاليا",
+    "icon": "RI",
+    "cat": "موسيقى",
+    "url": "https://www.radioitalia.it/",
+    "description": "تعرّف على Radio Italia وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "MBC Loud FM",
+    "english": "لاود إف إم",
+    "icon": "FM",
+    "cat": "موسيقى",
+    "url": "https://www.mbc.net/",
+    "description": "تعرّف على MBC Loud FM وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "SAT-7",
+    "english": "سات سفن",
+    "icon": "SAT7",
+    "cat": "دينية",
+    "url": "https://www.sat7.org/",
+    "description": "تعرّف على SAT-7 وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "MTA",
+    "english": "إم تي إيه",
+    "icon": "MTA",
+    "cat": "دينية",
+    "url": "https://www.mta.tv/",
+    "description": "تعرّف على MTA وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  },
+  {
+    "name": "EWTN",
+    "english": "إي دبليو تي إن",
+    "icon": "EWTN",
+    "cat": "دينية",
+    "url": "https://www.ewtn.com/",
+    "description": "تعرّف على EWTN وخيارات الوصول إلى محتواها عبر الموقع الرسمي. راجع التوافر في منطقتك وشروط الجهة المقدّمة.",
+    "paid": false,
+    "destination": "الموقع الرسمي"
+  }
+]

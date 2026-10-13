@@ -97,8 +97,8 @@ export default function ChannelsPage() {
           </h1>
           <p className="mt-4 text-[15px] md:text-[16.5px] text-black/60 font-medium leading-relaxed">
             ابحث بين آلاف القنوات الرياضية والإخبارية والعربية وقنوات الأطفال والوثائقيات،
-            واختر التصنيف الذي يهمك. القنوات المجانية أدناه تُشاهد مباشرة من الموقع، أما باقات
-            beIN وSSC والمنصات المدفوعة فمتاحة داخل الاشتراك.
+            واختر التصنيف الذي يهمك. للوصول إلى الجهات المقدّمة للمحتوى، استخدم دليل المشاهدة
+            الرسمية في الصفحة الرئيسية؛ توافر المشاهدة ورسومها يخضعان لشروط كل جهة ومنطقتك.
           </p>
         </div>
 
@@ -231,12 +231,12 @@ export default function ChannelsPage() {
             href={to("#live-player")}
             className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
           >
-            <span className="block font-black text-[15px]">جرّب البث المباشر الآن</span>
+            <span className="block font-black text-[15px]">دليل المشاهدة الرسمية</span>
             <span className="mt-1 block text-[12.5px] text-black/50 font-medium">
-              شاهد القنوات المجانية من داخل الموقع مباشرة
+              استكشف القنوات والمنصات وانتقل إلى مواقعها الرسمية
             </span>
             <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-black text-[#2b4eff]">
-              افتح المشغل <IconArrowUpRight className="w-3.5 h-3.5" />
+              افتح الدليل <IconArrowUpRight className="w-3.5 h-3.5" />
             </span>
           </a>
         </div>

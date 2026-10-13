@@ -351,8 +351,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
 
         <Reveal variant="up" delay={260} className="mt-6">
           <p className="text-[15.5px] md:text-[18px] text-black/60 max-w-[640px] mx-auto leading-relaxed font-medium">
-            اشتراك IPTV متكامل: أكثر من 15,000 قناة حية و50,000 فيلم ومسلسل على جميع شاشاتك —
-            سيرفرات نوفا وإيستار وموكا  بثبات 99.9%.
+            استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.
           </p>
         </Reveal>
 
@@ -387,7 +386,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               <span className="w-6 h-6 rounded-full bg-black text-white grid place-items-center group-hover:bg-[#d8ff3e] group-hover:text-black transition">
                 <IconPlay className="w-2.5 h-2.5 mr-0.5" />
               </span>
-              شاهد البث المباشر
+              دليل المشاهدة الرسمية
             </a>
           </div>
         </Reveal>

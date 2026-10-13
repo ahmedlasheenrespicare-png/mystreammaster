@@ -7,7 +7,7 @@ import { Reveal } from "./motion";
    يمنح الزائر محتوى مفيداً ويمنح محركات البحث روابط داخلية لصفحات المدوّنة وصفحة القنوات */
 export default function BlogTeaser() {
   return (
-    <section className="py-20 md:py-28 bg-white border-y border-black/10">
+    <section id="blog-teaser" className="py-20 md:py-28 bg-white border-y border-black/10">
       <div className="max-w-[1370px] mx-auto px-4 sm:px-6 lg:px-8">
         <Reveal variant="up" className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div className="max-w-xl">

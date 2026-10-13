@@ -1,7 +1,85 @@
 {
- "updated": "2026-10-01",
- "count": 227,
+ "updated": "2026-10-13",
+ "count": 240,
  "channels": [
+  {
+   "name": "MBC 1 HD (العامة والمسلسلات)",
+   "logo": "🟣",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1/15cf99af5de54063fdabfefe66adc075/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Masr 1 HD (إم بي سي مصر)",
+   "logo": "🇪🇬",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr/956eac069c78a35d47245db6cdbb1575/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Masr 2 HD (مصر 2 والرياضة)",
+   "logo": "🇪🇬",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-2/754931856515075b0aabf0e583495c68/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Masr Drama HD (دراما مصر)",
+   "logo": "🎭",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-drama/567b703c19ede6598222de81b0e4508b/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Drama HD (المسلسلات والدراما)",
+   "logo": "🎭",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-drama/2c28a458e2f3253e678b07ac7d13fe71/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC 4 HD (منوعات وترفيه)",
+   "logo": "📺",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-4/24f134f1cd63db9346439e96b86ca6ed/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC 5 HD (إم بي سي 5 المغرب)",
+   "logo": "🇲🇦",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-5/ee6b000cee0629411b666ab26cb13e9b/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Bollywood HD (هندي مدبلج)",
+   "logo": "💃",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-bollywood/546eb40d7dcf9a209255dd2496903764/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Persia HD (إم بي سي أفلام)",
+   "logo": "🎬",
+   "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-persia/818ee8e4b592dc497608f066d825bfb4/index.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "العربية الحدث HD (أخبار MBC)",
+   "logo": "⚫",
+   "url": "https://live.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "العربية الإخبارية HD",
+   "logo": "🔴",
+   "url": "https://live.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "العربية أسواق 💹",
+   "logo": "💹",
+   "url": "https://live.alarabiya.net/alarabiapublish/aswaaq.smil/playlist.m3u8",
+   "cat": "قنوات MBC"
+  },
+  {
+   "name": "MBC Loud FM",
+   "logo": "📻",
+   "url": "https://radio-loud-fm.mbc.net/radio-loud-fm_1.m3u8",
+   "cat": "قنوات MBC"
+  },
   {
    "name": "الجزيرة",
    "logo": "🟡",

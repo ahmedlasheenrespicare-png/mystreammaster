@@ -1,9 +1,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type Hls from "hls.js";
-import { loadHls } from "../hls";
 import { PROXY_BASE, WHATSAPP_NUMBER } from "../config";
 import {
   ACCOUNTS_KEY,
+  ASPECT_MODES,
   FAVORITES_KEY,
   LIST_ITEM_HEIGHT,
   LIST_OVERSCAN,
@@ -18,36 +17,65 @@ import {
   createShareToken,
   daysUntil,
   filterStreams,
-  isHlsCandidateUrl,
+  findChannelByNumber,
+  getResumeAt,
   loadAccounts,
+  loadPinState,
   loadProfileList,
+  loadResumeMap,
   liveStreamUrl,
   m3uCandidates,
   m3uDownloadUrl,
   normalizeHost,
   parseM3U,
+  parseSeriesInfo,
+  parseShortEpg,
+  parseVodInfo,
   playerApiUrl,
   profileKeyFor,
   pushRecent,
   removeAccount,
   resolveWorkerBase,
   saveJSON,
+  savePinState,
   saveProfileList,
+  saveResumePosition,
   schemeOf,
+  seriesStreamUrl,
+  srtToVtt,
   sortCategories,
+  stepChannel,
   streamKey,
+  timeshiftUrl,
   toggleInList,
   upsertAccount,
+  verifyPin,
+  vodStreamUrl,
   windowRange,
 } from "../lib/xtream.mjs";
-import type { Category, DiagEntry, Stream, XtreamAccount, XtreamMode } from "../lib/xtream.mjs";
-import {
-  IconArrowUp,
+import type {
+  Category,
+  DiagEntry,
+  EpgInfo,
+  PinState,
+  ResumeMap,
+  SeriesEpisode,
+  SeriesInfo,
+  Stream,
+  VodInfo,
+  XtreamAccount,
+  XtreamMode,
+} from "../lib/xtream.mjs";
+import { clearLibrary, loadLibrary, saveLibrary } from "../lib/idb";
+import type { LibrarySnapshot } from "../lib/idb";
+import { IconArrowUp,
   IconArrowUpRight,
+  IconApple,
   IconCheck,
   IconChevronDown,
   IconClose,
   IconClock,
+  IconMonitor,
   IconPlay,
   IconSearch,
   IconShieldCheck,
@@ -55,6 +83,9 @@ import {
   IconTv,
   IconZap,
 } from "./Icons";
+import StageCell from "./StageCell";
+import type { CellState, PlayCandidate, StageCellHandle, ViewItem } from "./StageCell";
+import { ChannelDrawer, EpgBar, MediaPanel, PinDialog, SeriesDialog, VodDialog } from "./XtreamLibrary";
 import { Reveal } from "./motion";
 
 /* =========================================================================
@@ -63,20 +94,18 @@ import { Reveal } from "./motion";
    و يشاهد قنوات باقته مباشرة على الموقع — مثل IPTV Smarters لكن بتصميمك
    البيانات تُحفظ في متصفح المشترك فقط (localStorage) ولا تُرسل لأي جهة أخرى
 
-   منطق هذا القسم كامل في src/lib/xtream.mjs (دوال خالصة مُختبَرة في
-   scripts/test-xtream.mjs) وهذا الملف للواجهة فقط:
-   • تعدد الحسابات مع تبديل فوري
-   • مفضلة وسجل مشاهدة لكل حساب على حدة (لا تختلط بين مزودين)
-   • بحث عربي موحّد يعمل على كل القنوات في كل التصنيفات
-   • قائمة قنوات افتراضية (Virtual) بلا سقف 300 قناة
-   • اختيار الجودة وصورة داخل صورة وملء الشاشة
-   • تقرير تشخيص ورمز مشاركة للدعم الفني بلا كلمة سر
-
-   لماذا مسارات متعددة؟
-   • بعض اللوحات لا ترسل CORS → يحجب المتصفح الاتصال المباشر
-   • بعض اللوحات محمية بـ WAF يحجب الوسطاء
-   • الحل الشامل: تنزيل ملف القنوات (M3U) مباشرة من السيرفر ثم رفعه
-     — لا يحتاج CORS إطلاقاً ويعرض كل القنوات
+   منطق هذا القسم (URLs، EPG، الأفلام، القفل، المتابعة) في src/lib/xtream.mjs
+   (دوال خالصة مُختبَرة في scripts/test-xtream.mjs) وهذا الملف للواجهة فقط:
+   • ثلاث قوائم: البث المباشر + الأفلام (VOD) + المسلسلات مع متابعة المشاهدة
+   • دليل البرامج EPG (get_short_epg) مع شريط تقدّم «يعرض الآن / التالي»
+   • مسارات متعددة للبث: مباشر + Cloudflare Worker + /proxy.php + أصلي
+     (نفس نظام صفحة البث المباشر LivePlayer) وسقوط تلقائي بينها
+   • مpegts.js لروابط TS الخام وhls.js للم3U8
+   • تنقّل ريموت/كيبورد: ↑↓ القنوات، ←→ الصوت أو التقديم، F/M/مسافة، أرقام
+   • عدة شاشات (2 أو 4) بانتقال الصوت بنقرة واحدة
+   • مسارات صوتية/ترجمة (مع رفع srt) وأوضاع عرض 16:9 و4:3 وFill
+   • Chromecast/AirPlay، إعادة البث Catch-up، قفل أبوي برمز، وحفظ القوائم
+     في IndexedDB مع زر «تحديث القنوات»
 ========================================================================== */
 
 /* ========================================================================= */
@@ -93,8 +122,15 @@ interface UserInfo {
 }
 
 type TabId = "all" | "favorites" | "recent";
-
+type LibTab = "live" | "vod" | "series";
 type Phase = "form" | "loading" | "ready" | "error";
+
+interface PinDialogState {
+  mode: "setup" | "unlock";
+  need?: string;
+  label?: string;
+  pending?: () => void;
+}
 
 /* ========================================================================= */
 /*  أدوات مساعدة (تعتمد على المتصفح فقط — المنطق الخالص في lib/xtream.mjs)     */
@@ -333,37 +369,89 @@ function XtreamPlayerInner() {
   const [m3uName, setM3uName] = useState("");
   const [profile, setProfile] = useState(profileKeyFor(null, ""));
 
-  /* بيانات القنوات */
+  /* بيانات القنوات (المباشر) */
   const [categories, setCategories] = useState<Category[]>([]);
   const [streams, setStreams] = useState<Stream[]>([]);
   const [selectedCat, setSelectedCat] = useState<string>("");
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<TabId>("all");
 
+  /* تبويب المحتوى: مباشر / أفلام / مسلسلات */
+  const [libTab, setLibTab] = useState<LibTab>("live");
+
+  /* الأفلام (VOD) */
+  const [vodCats, setVodCats] = useState<Category[]>([]);
+  const [vodStreams, setVodStreams] = useState<Stream[]>([]);
+  const [vodLoaded, setVodLoaded] = useState(false);
+  const [vodLoading, setVodLoading] = useState(false);
+  const [vodError, setVodError] = useState("");
+  const [vodSearch, setVodSearch] = useState("");
+  const [vodCat, setVodCat] = useState("");
+  const [vodShown, setVodShown] = useState(60);
+  const [vodModal, setVodModal] = useState<{ id: number; name: string; catId: string } | null>(null);
+  const [vodDetail, setVodDetail] = useState<VodInfo | null>(null);
+  const [vodDetailLoading, setVodDetailLoading] = useState(false);
+  const [vodDetailError, setVodDetailError] = useState("");
+
+  /* المسلسلات */
+  const [seriesCats, setSeriesCats] = useState<Category[]>([]);
+  const [seriesStreams, setSeriesStreams] = useState<Stream[]>([]);
+  const [seriesLoaded, setSeriesLoaded] = useState(false);
+  const [seriesLoading, setSeriesLoading] = useState(false);
+  const [seriesError, setSeriesError] = useState("");
+  const [seriesSearch, setSeriesSearch] = useState("");
+  const [seriesCat, setSeriesCat] = useState("");
+  const [seriesShown, setSeriesShown] = useState(60);
+  const [seriesModal, setSeriesModal] = useState<{ id: number; name: string; catId: string } | null>(null);
+  const [seriesInfo, setSeriesInfo] = useState<SeriesInfo | null>(null);
+  const [seriesInfoLoading, setSeriesInfoLoading] = useState(false);
+  const [seriesInfoError, setSeriesInfoError] = useState("");
+
   /* المفضلة وسجل المشاهدة — لكل حساب على حدة */
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recents, setRecents] = useState<string[]>([]);
 
-  /* التشغيل */
-  const [playing, setPlaying] = useState<Stream | null>(null);
-  const [playError, setPlayError] = useState("");
-  const [statusMsg, setStatusMsg] = useState("");
-  const [bufferSec, setBufferSec] = useState(0);
+  /* التشغيل: خلايا (شاشة أو 2 أو 4) — الخلية النشطة تحمل الصوت */
+  const [viewCount, setViewCount] = useState<1 | 2 | 4>(1);
+  const [viewStreams, setViewStreams] = useState<(ViewItem | null)[]>([null]);
+  const [activeCell, setActiveCell] = useState(0);
+  const [cellStates, setCellStates] = useState<Record<number, Partial<CellState>>>({});
   const [isMuted, setIsMuted] = useState(true);
-  const [levels, setLevels] = useState<{ index: number; label: string }[]>([]);
-  const [levelIndex, setLevelIndex] = useState(-1);
+  const [aspect, setAspect] = useState("auto");
   const [pipOn, setPipOn] = useState(false);
+  const [epg, setEpg] = useState<EpgInfo | null>(null);
+
+  /* OSD ودرج القنوات (داخل الشاشة ليعمل في ملء الشاشة) */
+  const [osd, setOsd] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  /* القفل الأبوي ومتابعة المشاهدة */
+  const [pinState, setPinState] = useState<PinState | null>(() => loadPinState(getStorage()));
+  const [unlocked, setUnlocked] = useState<Set<string>>(() => new Set());
+  const [pinDlg, setPinDlg] = useState<PinDialogState | null>(null);
+  const [resumeMap, setResumeMap] = useState<ResumeMap>({});
+
+  /* ذاكرة القنوات المحلية (IndexedDB) */
+  const [cacheTs, setCacheTs] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshNote, setRefreshNote] = useState("");
+
+  /* Chromecast / AirPlay — كشف إمكانية الجهاز */
+  const [canCast, setCanCast] = useState(false);
+  const [canAirPlay, setCanAirPlay] = useState(false);
 
   /* القائمة الافتراضية */
   const [listScrollTop, setListScrollTop] = useState(0);
   const [viewHeight, setViewHeight] = useState(620);
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
-  const hlsRef = useRef<Hls | null>(null);
+  const cellRefs = useRef<(StageCellHandle | null)[]>([]);
   /* ذاكرة الجلسة لمسار البث الناجح (مثل needsProxySession في صفحة البث المباشر) */
   const preferredStreamModeRef = useRef<XtreamMode | null>(null);
+  const osdTimerRef = useRef(0);
+  const zapRef = useRef({ buf: "", timer: 0 });
+  const subUrlRef = useRef("");
 
   /* مفتاح الحساب الحالي — فارغ لو لا يوجد حساب (مصدر ملف M3U) */
   const keyOf = (acc: XtreamAccount | null | undefined) => (acc ? accountKey(acc) : "");
@@ -386,12 +474,12 @@ function XtreamPlayerInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, account]);
 
-  /* تحميل مفضلة/سجل الحساب الحالي عند تبديل الحساب أو المصدر */
+  /* تحميل مفضلة/سجل/متابعة المشاهدة للحساب الحالي عند تبديل الحساب أو المصدر */
   useEffect(() => {
     setFavorites(loadProfileList(storage, FAVORITES_KEY, profile));
     setRecents(loadProfileList(storage, RECENTS_KEY, profile));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile]);
+    setResumeMap(loadResumeMap(storage, profile));
+  }, [profile, storage]);
 
   /* قياس ارتفاع القائمة لرسم النطاق الظاهر فقط */
   useEffect(() => {
@@ -403,13 +491,41 @@ function XtreamPlayerInner() {
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [phase]);
+  }, [phase, libTab]);
 
   /* تصفير التمرير عند تغيير البحث أو التصنيف أو التبويب */
   useEffect(() => {
     setListScrollTop(0);
     if (listRef.current) listRef.current.scrollTop = 0;
   }, [tab, search, selectedCat, streams]);
+
+  /* كشف إمكانية AirPlay / Chromecast مرة واحدة */
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const probe = document.createElement("video") as HTMLVideoElement & {
+      webkitShowPlaybackTargetPicker?: () => void;
+      remote?: { watchAvailability?: (cb: (ok: boolean) => void) => Promise<number> | void; prompt?: () => Promise<void> };
+    };
+    if (typeof probe.webkitShowPlaybackTargetPicker === "function") setCanAirPlay(true);
+    const remote = probe.remote;
+    if (remote && typeof remote.watchAvailability === "function") {
+      let alive = true;
+      try {
+        const res = remote.watchAvailability((ok: boolean) => {
+          if (alive) setCanCast(ok);
+        });
+        if (res && typeof (res as Promise<number>).catch === "function") {
+          (res as Promise<number>).catch(() => {});
+        }
+      } catch {
+        /* غير مدعوم */
+      }
+      return () => {
+        alive = false;
+      };
+    }
+    return undefined;
+  }, []);
 
   /* ==== حفظ التغيير في المفضلة / السجل محلياً ==== */
   function setFavoritesAndSave(next: string[]) {
@@ -426,6 +542,27 @@ function XtreamPlayerInner() {
     setFavoritesAndSave(toggleInList(favorites, streamKey(stream)));
   }
 
+  /* ============ ترتيب المسارات: الناجح أولاً ثم بقية الوسائط ============ */
+  function orderedModes(preferred?: XtreamMode | null): XtreamMode[] {
+    const first = preferred ?? preferredStreamModeRef.current ?? activeMode;
+    return [first, ...modes.filter((m) => m.id !== first.id)];
+  }
+
+  /* استدعاء واجهة Xtream عبر المسارات المتاحة — للأفلام والمسلسلات وEPG */
+  async function apiAction(
+    action: string,
+    extra?: Record<string, string | number>,
+    timeoutMs = 30000
+  ): Promise<unknown | null> {
+    if (!account) return null;
+    for (const mode of orderedModes()) {
+      const url = playerApiUrl(mode.base(account.host), account.username, account.password, action, extra);
+      const res = await fetchJson(url, timeoutMs);
+      if (res.ok) return res.data;
+    }
+    return null;
+  }
+
   /* ============ الدخول: نجرّب المسارات بالترتيب مع تسجيل كل نتيجة ============ */
   async function login(acc: XtreamAccount) {
     setErrorMsg("");
@@ -439,6 +576,50 @@ function XtreamPlayerInner() {
     }
     const normAcc = { ...acc, host };
     const log: DiagEntry[] = [];
+
+    const applyUserInfo = (data: { user_info?: Record<string, unknown> }) => {
+      const info = data.user_info ?? {};
+      const expTs = info.exp_date ? Number(info.exp_date) : null;
+      setUserInfo({
+        status: String(info.status || ""),
+        expDate: expTs
+          ? new Date(expTs * 1000).toLocaleDateString("ar-EG", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          : null,
+        expTs: expTs && Number.isFinite(expTs) ? expTs : null,
+        maxConnections: String(info.max_connections || "-"),
+        isTrial: String(info.is_trial) === "1",
+        activeConnections: String(
+          info.active_cons || info.active_connections || "0"
+        ),
+      });
+    };
+
+    const finishLogin = (prof: string) => {
+      const nextAccounts = upsertAccount(accounts, normAcc);
+      setAccounts(nextAccounts);
+      saveJSON(storage, ACCOUNTS_KEY, nextAccounts);
+      saveJSON(storage, STORAGE_KEY, normAcc);
+      setProfile(prof);
+      setSelectedCat("");
+      setSearch("");
+      setTab("all");
+      setLibTab("live");
+      setVodSearch("");
+      setVodCat("");
+      setSeriesSearch("");
+      setSeriesCat("");
+      setViewCount(1);
+      setViewStreams([null]);
+      setActiveCell(0);
+      setEpg(null);
+      setDrawerOpen(false);
+      setDiag(log);
+      setPhase("ready");
+    };
 
     for (const mode of modes) {
       const base = mode.base(host);
@@ -477,7 +658,30 @@ function XtreamPlayerInner() {
         return;
       }
 
-      /* ✅ نجح الدخول بهذا المسار — نجلب التصنيفات والقنوات */
+      /* ✅ نجح الدخول بهذا المسار — أولاً: هل القوائم محفوظة محلياً (IndexedDB)؟
+         فتح فوري في أجزاء من الثانية بدل تنزيل آلاف القنوات في كل زيارة */
+      const prof = profileKeyFor(normAcc);
+      const cached = await loadLibrary(prof);
+      if (cached && Array.isArray(cached.streams) && cached.streams.length > 0 && cached.categories) {
+        log.push({
+          mode: mode.id,
+          label: mode.label,
+          status: "ok",
+          note: `قوائم محفوظة محلياً (IndexedDB) — فتح فوري: ${cached.streams.length} قناة`,
+        });
+        setActiveMode(mode);
+        setAccount(normAcc);
+        applyUserInfo(data);
+        setSource("xtream");
+        setCategories(cached.categories);
+        setStreams(cached.streams);
+        applyCachedMedia(cached);
+        setCacheTs(Number(cached.ts) || null);
+        finishLogin(prof);
+        return;
+      }
+
+      /* نجلب التصنيفات والقنوات من السيرفر */
       const [catR, strR] = await Promise.all([
         fetchJson(
           playerApiUrl(base, normAcc.username, normAcc.password, "get_live_categories"),
@@ -507,13 +711,24 @@ function XtreamPlayerInner() {
 
       const streamList: Stream[] = (
         Array.isArray(strR.data)
-          ? (strR.data as { stream_id: number; name: string; stream_icon: string; category_id: string }[])
+          ? (strR.data as {
+              stream_id: number;
+              num?: string;
+              name: string;
+              stream_icon: string;
+              category_id: string;
+              tv_archive?: string | number;
+              container_extension?: string;
+            }[])
           : []
       ).map((s) => ({
         id: Number(s.stream_id),
+        num: String(s.num ?? s.stream_id),
         name: String(s.name),
         icon: String(s.stream_icon || ""),
         catId: String(s.category_id || ""),
+        archive: Number(s.tv_archive) > 0 ? Number(s.tv_archive) : 0,
+        ext: s.container_extension ? String(s.container_extension) : undefined,
       }));
 
       log.push({
@@ -523,42 +738,22 @@ function XtreamPlayerInner() {
         note: `نجح الاتصال — ${catList.length} تصنيف و ${streamList.length} قناة`,
       });
 
-      const expTs = data.user_info.exp_date ? Number(data.user_info.exp_date) : null;
-
       setActiveMode(mode);
       setAccount(normAcc);
-      setUserInfo({
-        status: String(data.user_info.status || ""),
-        expDate: expTs
-          ? new Date(expTs * 1000).toLocaleDateString("ar-EG", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
-          : null,
-        expTs: expTs && Number.isFinite(expTs) ? expTs : null,
-        maxConnections: String(data.user_info.max_connections || "-"),
-        isTrial: String(data.user_info.is_trial) === "1",
-        activeConnections: String(
-          data.user_info.active_cons || data.user_info.active_connections || "0"
-        ),
-      });
+      applyUserInfo(data);
       setSource("xtream");
       setCategories(catList);
       setStreams(streamList);
-      setSelectedCat(""); /* نعرض «الكل» افتراضياً */
-      setSearch("");
-      setTab("all");
-      setPlaying(null);
-      setDiag(log);
-      setPhase("ready");
-
-      /* حفظ الحساب في القائمة (وقائمة الحسابات القديمة للتوافق) */
-      const nextAccounts = upsertAccount(accounts, normAcc);
-      setAccounts(nextAccounts);
-      saveJSON(storage, ACCOUNTS_KEY, nextAccounts);
-      saveJSON(storage, STORAGE_KEY, normAcc);
-      setProfile(profileKeyFor(normAcc));
+      setVodLoaded(false);
+      setVodStreams([]);
+      setVodCats([]);
+      setSeriesLoaded(false);
+      setSeriesStreams([]);
+      setSeriesCats([]);
+      setCacheTs(Date.now());
+      /* حفظ القوائم محلياً ليفتح فوراً في الزيارة القادمة */
+      saveLibrary(prof, { ts: Date.now(), categories: catList, streams: streamList }).catch(() => {});
+      finishLogin(prof);
       return;
     }
 
@@ -571,6 +766,99 @@ function XtreamPlayerInner() {
       console.warn("[مشغل الاشتراك]\n" + log.map((e) => `[${e.mode}] ${e.note}`).join("\n"));
     } catch {
       /* تجاهل */
+    }
+  }
+
+  /* استعادة الأفلام/المسلسلات المحفوظة مع نفس النسخة */
+  function applyCachedMedia(cached: LibrarySnapshot) {
+    if (cached.vodStreams && cached.vodStreams.length > 0) {
+      setVodCats(cached.vodCategories ?? []);
+      setVodStreams(cached.vodStreams);
+      setVodLoaded(true);
+    } else {
+      setVodCats([]);
+      setVodStreams([]);
+      setVodLoaded(false);
+    }
+    if (cached.seriesStreams && cached.seriesStreams.length > 0) {
+      setSeriesCats(cached.seriesCategories ?? []);
+      setSeriesStreams(cached.seriesStreams);
+      setSeriesLoaded(true);
+    } else {
+      setSeriesCats([]);
+      setSeriesStreams([]);
+      setSeriesLoaded(false);
+    }
+    setVodError("");
+    setSeriesError("");
+  }
+
+  /* دمج تغييرات جديدة في نسخة IndexedDB المحفوظة */
+  async function patchLibrary(patch: Partial<LibrarySnapshot>) {
+    if (source !== "xtream" || !profile) return;
+    try {
+      const prev = await loadLibrary(profile);
+      await saveLibrary(profile, { ...(prev ?? { ts: Date.now() }), ...patch, ts: Date.now() });
+      setCacheTs(Date.now());
+    } catch {
+      /* تجاهل */
+    }
+  }
+
+  /* زر «تحديث القنوات»: إعادة جلب القوائم وتحديث النسخة المحفوظة */
+  async function refreshLibrary() {
+    if (!account || refreshing) return;
+    setRefreshing(true);
+    setRefreshNote("");
+    try {
+      for (const mode of orderedModes()) {
+        const base = mode.base(account.host);
+        const [catR, strR] = await Promise.all([
+          fetchJson(playerApiUrl(base, account.username, account.password, "get_live_categories"), 20000),
+          fetchJson(playerApiUrl(base, account.username, account.password, "get_live_streams"), 45000),
+        ]);
+        if (!catR.ok || !strR.ok) continue;
+        const catList = sortCategories(
+          (Array.isArray(catR.data) ? (catR.data as { category_id: string; category_name: string }[]) : []).map(
+            (c) => ({ id: String(c.category_id), name: String(c.category_name) })
+          )
+        );
+        const streamList: Stream[] = (
+          Array.isArray(strR.data)
+            ? (strR.data as {
+                stream_id: number;
+                num?: string;
+                name: string;
+                stream_icon: string;
+                category_id: string;
+                tv_archive?: string | number;
+                container_extension?: string;
+              }[])
+            : []
+        ).map((s) => ({
+          id: Number(s.stream_id),
+          num: String(s.num ?? s.stream_id),
+          name: String(s.name),
+          icon: String(s.stream_icon || ""),
+          catId: String(s.category_id || ""),
+          archive: Number(s.tv_archive) > 0 ? Number(s.tv_archive) : 0,
+          ext: s.container_extension ? String(s.container_extension) : undefined,
+        }));
+        setActiveMode(mode);
+        setCategories(catList);
+        setStreams(streamList);
+        setCacheTs(Date.now());
+        await patchLibrary({ categories: catList, streams: streamList });
+        setRefreshNote(`تم التحديث — ${streamList.length.toLocaleString("en-US")} قناة`);
+        setDiag((prev) => [
+          ...prev,
+          { mode: mode.id, label: mode.label, status: "ok", note: `تحديث القوائم يدوياً — ${streamList.length} قناة` },
+        ]);
+        return;
+      }
+      setRefreshNote("تعذر التحديث — تحقق من الاتصال وأعد المحاولة.");
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -624,16 +912,14 @@ function XtreamPlayerInner() {
   }
 
   function teardownPlayer() {
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-    setPlaying(null);
-    setLevels([]);
-    setLevelIndex(-1);
-    setPlayError("");
-    setStatusMsg("");
-    setBufferSec(0);
+    setViewStreams([null]);
+    setActiveCell(0);
+    setViewCount(1);
+    setCellStates({});
+    setEpg(null);
+    setDrawerOpen(false);
+    setAspect("auto");
+    setPipOn(false);
     preferredStreamModeRef.current = null;
   }
 
@@ -668,7 +954,9 @@ function XtreamPlayerInner() {
     setSelectedCat("");
     setSearch("");
     setTab("all");
-    setPlaying(null);
+    setLibTab("live");
+    setCacheTs(null);
+    teardownPlayer();
     setProfile(profileKeyFor(null, fileName));
     setDiag([
       {
@@ -709,6 +997,7 @@ function XtreamPlayerInner() {
       const next = removeAccount(accounts, account);
       setAccounts(next);
       saveJSON(storage, ACCOUNTS_KEY, next);
+      if (profile) clearLibrary(profile).catch(() => {});
     }
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -720,11 +1009,19 @@ function XtreamPlayerInner() {
     setUserInfo(null);
     setCategories([]);
     setStreams([]);
+    setVodCats([]);
+    setVodStreams([]);
+    setVodLoaded(false);
+    setSeriesCats([]);
+    setSeriesStreams([]);
+    setSeriesLoaded(false);
+    setCacheTs(null);
     setFavorites([]);
     setRecents([]);
     setSelectedCat("");
     setSearch("");
     setTab("all");
+    setLibTab("live");
     setDiag([]);
     setM3uName("");
     setSource("xtream");
@@ -732,59 +1029,19 @@ function XtreamPlayerInner() {
     setPhase("form");
   }
 
-  /* مراقبة صحة التخزين المؤقت (Buffer) في الوقت الفعلي — مطابق لصفحة البث المباشر */
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      const v = videoRef.current;
-      if (v && v.buffered.length > 0) {
-        try {
-          const current = v.currentTime;
-          const end = v.buffered.end(v.buffered.length - 1);
-          const diff = Math.max(0, end - current);
-          setBufferSec(Math.round(diff * 10) / 10);
-        } catch {
-          /* تجاهل */
-        }
-      } else {
-        setBufferSec(0);
-      }
-    }, 1000);
-    return () => window.clearInterval(interval);
-  }, []);
+  /* ========================================================================= */
+  /*  بناء مرشّحين — نفس منطق الخلايا: مباشر → Worker → /proxy.php → أصلي        */
+  /* ========================================================================= */
 
-  /* ============ التشغيل: قائمة روابط مرشحة (مباشر + Worker + Proxy) مع سقوط تلقائي ============ */
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!playing || !video) return;
-
-    setPlayError("");
-    setStatusMsg("");
-    setBufferSec(0);
-    setLevels([]);
-    setLevelIndex(-1);
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
-
-    /* بناء الروابط المرشحة حسب المصدر — المباشر ثم Cloudflare Worker ثم بروكسي /proxy.php
-       وأخيراً مرشح native (وسم الفيديو مباشرة دون CORS — يعمل على سفاري وملفات ts) */
-    interface PlayCandidate {
-      url: string;
-      native: boolean;
-      mode?: XtreamMode;
-      label: string;
-    }
-    let candidates: PlayCandidate[] = [];
-
-    if (playing.url) {
-      /* مصدر ملف M3U: يستخدم المباشر + Worker + /proxy.php */
-      const urls = m3uCandidates(playing.url, {
+  function buildLiveCandidates(stream: Stream): PlayCandidate[] {
+    if (stream.url) {
+      /* مصدر ملف M3U: المباشر + Worker + /proxy.php */
+      const urls = m3uCandidates(stream.url, {
         proxyBase: workerBase,
         phpProxy: PHP_PROXY,
         isHttpsSite: typeof window === "undefined" ? true : window.location.protocol === "https:",
       });
-      candidates = [
+      return [
         ...urls.map((u) => ({
           url: u,
           native: false,
@@ -793,219 +1050,295 @@ function XtreamPlayerInner() {
             : u.startsWith(workerBase)
               ? "وسيط Worker"
               : "اتصال مباشر",
+          isLive: true,
         })),
-        { url: urls[0] ?? playing.url, native: true, label: "تشغيل أصلي مباشر" },
-      ];
-    } else if (account) {
-      /* مصدر xtream: المسار الناجح للبث أولاً، ثم بقية المسارات (Worker + /proxy.php)، وأخيراً native */
-      const firstMode = preferredStreamModeRef.current ?? activeMode;
-      const ordered = [firstMode, ...modes.filter((m) => m.id !== firstMode.id)];
-      const direct = ordered.find((m) => m.id === "direct-https") ?? ordered[0];
-      candidates = [
-        ...ordered.map((m) => ({
-          url: liveStreamUrl(m.base(account.host), account.username, account.password, playing.id),
-          native: false,
-          mode: m,
-          label: m.label,
-        })),
-        {
-          url: liveStreamUrl(direct.base(account.host), account.username, account.password, playing.id),
-          native: true,
-          mode: direct,
-          label: `${direct.label} (أصلي)`,
-        },
+        { url: urls[0] ?? stream.url, native: true, label: "تشغيل أصلي مباشر", isLive: true },
       ];
     }
-    if (candidates.length === 0) return;
+    if (!account) return [];
+    const ordered = orderedModes();
+    const direct = ordered.find((m) => m.id === "direct-https") ?? ordered[0];
+    return [
+      ...ordered.map((m) => ({
+        url: liveStreamUrl(m.base(account.host), account.username, account.password, stream.id),
+        native: false,
+        mode: m,
+        label: m.label,
+        isLive: true,
+      })),
+      {
+        url: liveStreamUrl(direct.base(account.host), account.username, account.password, stream.id),
+        native: true,
+        mode: direct,
+        label: `${direct.label} (أصلي)`,
+        isLive: true,
+      },
+    ];
+  }
 
-    let attempt = 0;
+  function buildMediaCandidates(
+    buildUrl: (mode: XtreamMode) => string,
+    isLive: boolean
+  ): PlayCandidate[] {
+    if (!account) return [];
+    const ordered = orderedModes();
+    return [
+      ...ordered.map((m) => ({
+        url: buildUrl(m),
+        native: false,
+        mode: m,
+        label: m.label,
+        isLive,
+      })),
+      { url: buildUrl(ordered[0]), native: true, mode: ordered[0], label: `${ordered[0].label} (أصلي)`, isLive },
+    ];
+  }
+
+  function makeLiveItem(stream: Stream): ViewItem {
+    const xtreamLive = source === "xtream" && !!account && !stream.url;
+    return {
+      stream,
+      candidates: buildLiveCandidates(stream),
+      epgStreamId: xtreamLive ? stream.id : undefined,
+      catchupStreamId: xtreamLive && (stream.archive ?? 0) > 0 ? stream.id : undefined,
+      live: true,
+    };
+  }
+
+  function setViewItem(index: number, item: ViewItem | null) {
+    setViewStreams((prev) => {
+      const next = [...prev];
+      while (next.length <= index) next.push(null);
+      next[index] = item;
+      return next;
+    });
+  }
+
+  /* ============ القفل الأبوي: يحمي التصنيفات المقفلة برمز ============ */
+  function guardLocked(need: string | undefined, label: string, run: () => void) {
+    if (!need || !pinState?.locked.includes(need) || unlocked.has(need)) {
+      run();
+      return;
+    }
+    setPinDlg({ mode: "unlock", need, label, pending: run });
+  }
+
+  function playStream(stream: Stream) {
+    guardLocked(`l:${stream.catId}`, stream.name, () => {
+      setViewItem(activeCell, makeLiveItem(stream));
+      setRecentsAndSave(pushRecent(recents, streamKey(stream)));
+    });
+  }
+
+  /* ============ EPG: دليل البرامج المختصر مع شريط تقدّم ============ */
+  useEffect(() => {
+    const item = viewStreams[activeCell];
+    if (!item?.epgStreamId || source !== "xtream" || !account) {
+      setEpg(null);
+      return undefined;
+    }
     let cancelled = false;
-    let watchdog: number | undefined;
-    let nativeHandler: (() => void) | null = null;
-    /* hls.js تُحمَّل عند أول تشغيل فقط (توفير ~460KB على كل زيارة) */
-    let HlsLib: typeof Hls | null = null;
-    let hlsLoadFailed = false;
-
-    const clearWatchdog = () => {
-      if (watchdog !== undefined) {
-        window.clearTimeout(watchdog);
-        watchdog = undefined;
-      }
-    };
-    const detachNative = () => {
-      if (nativeHandler) {
-        video.removeEventListener("error", nativeHandler);
-        nativeHandler = null;
-      }
-    };
-
-    const tryNext = () => {
+    const streamId = item.epgStreamId;
+    const load = async () => {
+      const data = await apiAction("get_short_epg", { stream_id: streamId, limit: 4 }, 12000);
       if (cancelled) return;
-      detachNative();
-      clearWatchdog();
-
-      if (attempt >= candidates.length) {
-        setStatusMsg("");
-        setPlayError("تعذر تشغيل القناة عبر كل المسارات — جرّب قناة أخرى أو أعد المحاولة بعد لحظات.");
-        return;
-      }
-      const cand = candidates[attempt];
-      const isHlsUrl = isHlsCandidateUrl(cand.url);
-      const wantsHls = !cand.native && isHlsUrl && !hlsLoadFailed;
-
-      setStatusMsg(
-        attempt === 0
-          ? `⚡ جاري الاتصال بسيرفر القناة (${cand.label})…`
-          : `🔄 جاري التبديل تلقائياً إلى ${cand.label} (${attempt + 1}/${candidates.length})…`
-      );
-
-      /* أول تشغيل: نحمّل المكتبة ثم نعيد المحاولة بنفس المرشّح بدون استهلاكه */
-      if (wantsHls && !HlsLib) {
-        loadHls()
-          .then((lib) => {
-            if (cancelled) return;
-            HlsLib = lib;
-            tryNext();
-          })
-          .catch(() => {
-            if (cancelled) return;
-            hlsLoadFailed = true; /* فشل تحميل المكتبة → نكمل بالتشغيل الأصلي */
-            tryNext();
-          });
-        /* لو تعطّل تحميل المكتبة نفسه، لا نترك الزائر ينتظر بلا نهاية */
-        watchdog = window.setTimeout(() => {
-          if (cancelled || HlsLib || hlsLoadFailed) return;
-          hlsLoadFailed = true;
-          tryNext();
-        }, 10000);
-        return;
-      }
-
-      attempt++; /* استهلكنا هذا المرشّح */
-
-      if (wantsHls && HlsLib?.isSupported()) {
-        let mediaRecovered = false;
-        /* إعدادات مشغل البث المباشر الفائقة السرعة (Web Worker + Low Latency + Buffer) */
-        const hls = new HlsLib({
-          enableWorker: true,
-          startFragPrefetch: true,
-          lowLatencyMode: true,
-          maxBufferLength: 30,
-          maxMaxBufferLength: 60,
-          backBufferLength: 30,
-          liveSyncDurationCount: 3,
-          liveMaxLatencyDurationCount: 6,
-          fragLoadingTimeOut: 15000,
-          manifestLoadingTimeOut: 10000,
-          levelLoadingTimeOut: 10000,
-          autoStartLoad: true,
-          capLevelToPlayerSize: false,
-        });
-        hlsRef.current = hls;
-        hls.loadSource(cand.url);
-        hls.attachMedia(video);
-        hls.on(HlsLib.Events.MANIFEST_PARSED, () => {
-          clearWatchdog();
-          setStatusMsg("");
-          /* حفظ المسار الناجح للجلسة حتى تعمل القنوات التالية فوراً عبر نفس الـWorker أو الـProxy */
-          if (cand.mode) {
-            preferredStreamModeRef.current = cand.mode;
-            setActiveMode(cand.mode);
-          }
-          /* مستويات الجودة المتاحة من السيرفر — تُعرض في قائمة اختيار الجودة */
-          setLevels(
-            hls.levels.map((level, index) => ({
-              index,
-              label: level.height ? `${level.height}p` : level.name || `جودة ${index + 1}`,
-            }))
-          );
-          setLevelIndex(-1);
-          video.muted = isMuted;
-          video.play().catch(() => {
-            video.muted = true;
-            setIsMuted(true);
-            video.play().catch(() => {
-              /* سيضغط المستخدم زر التشغيل */
-            });
-          });
-        });
-        hls.on(HlsLib.Events.AUDIO_TRACKS_UPDATED, (_event, data) => {
-          if (data.audioTracks && data.audioTracks.length > 0 && hls.audioTrack === -1) {
-            hls.audioTrack = 0;
-          }
-        });
-        hls.on(HlsLib.Events.LEVEL_SWITCHED, (_e, data) => {
-          /* -1 = تلقائي (يختار hls.js الأفضل حسب سرعة الشبكة) */
-          if (typeof data?.level === "number" && data.level >= 0) {
-            setLevelIndex((prev) => (prev === -1 ? prev : data.level));
-          }
-        });
-        hls.on(HlsLib.Events.ERROR, (_e, data) => {
-          if (data.fatal) {
-            if (data.type === HlsLib?.ErrorTypes.MEDIA_ERROR && !mediaRecovered) {
-              mediaRecovered = true;
-              setStatusMsg("جاري تصحيح البث…");
-              hls.recoverMediaError();
-              return;
-            }
-            hls.destroy();
-            if (hlsRef.current === hls) hlsRef.current = null;
-            tryNext();
-          }
-        });
-        watchdog = window.setTimeout(() => {
-          if (cancelled) return;
-          hls.destroy();
-          if (hlsRef.current === hls) hlsRef.current = null;
-          tryNext();
-        }, 12000);
-      } else {
-        /* تشغيل أصلي في وسم الفيديو (سفاري / الجوال / ملفات ts) — لا يحتاج CORS */
-        video.src = cand.url;
-        video.load();
-        video.muted = isMuted;
-        video.play().catch(() => {
-          video.muted = true;
-          setIsMuted(true);
-          video.play().catch(() => {
-            /* تجاهل */
-          });
-        });
-        setLevels([]);
-        nativeHandler = () => tryNext();
-        video.addEventListener("error", nativeHandler);
-        video.onplaying = () => {
-          clearWatchdog();
-          setStatusMsg("");
-          if (cand.mode) {
-            preferredStreamModeRef.current = cand.mode;
-            setActiveMode(cand.mode);
-          }
-        };
-        watchdog = window.setTimeout(() => {
-          if (!cancelled && video.readyState < 2) tryNext();
-        }, 12000);
-      }
+      setEpg(data ? parseShortEpg(data) : null);
     };
-
-    tryNext();
-
+    load();
+    const iv = window.setInterval(load, 5 * 60 * 1000);
     return () => {
       cancelled = true;
-      detachNative();
-      clearWatchdog();
-      video.onplaying = null;
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-        hlsRef.current = null;
-      }
+      window.clearInterval(iv);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, account]);
+  }, [viewStreams, activeCell, source, account]);
 
-  /* ============ التصفية والعرض ============ */
+  /* ============ تحميل الأفلام والمسلسلات عند فتح التبويب ============ */
+  useEffect(() => {
+    if (phase !== "ready" || libTab !== "vod" || source !== "xtream") return;
+    if (vodLoaded) return;
+    let cancelled = false;
+    setVodLoading(true);
+    setVodError("");
+    (async () => {
+      const [catData, strData] = await Promise.all([
+        apiAction("get_vod_categories", undefined, 20000),
+        apiAction("get_vod_streams", undefined, 45000),
+      ]);
+      if (cancelled) return;
+      setVodLoading(false);
+      if (!Array.isArray(catData) || !Array.isArray(strData)) {
+        setVodLoaded(true);
+        setVodError("تعذر تحميل قائمة الأفلام — تحقق من الاتصال ثم أعد فتح التبويب.");
+        return;
+      }
+      const cats = sortCategories(
+        catData.map((c) => ({ id: String(c.category_id), name: String(c.category_name) }))
+      );
+      const list: Stream[] = strData.map((s) => ({
+        id: Number(s.stream_id),
+        num: String(s.num ?? s.stream_id),
+        name: String(s.name),
+        icon: String(s.stream_icon || s.cover || s.movie_image || ""),
+        catId: String(s.category_id || ""),
+        rating: Number(s.rating) || 0,
+        ext: String(s.container_extension || "mp4"),
+      }));
+      setVodCats(cats);
+      setVodStreams(list);
+      setVodLoaded(true);
+      patchLibrary({ vodCategories: cats, vodStreams: list });
+    })();
+    return () => {
+      cancelled = true;
+      setVodLoading(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, libTab, source, vodLoaded, account]);
 
-  const visibleStreams = useMemo(
+  useEffect(() => {
+    if (phase !== "ready" || libTab !== "series" || source !== "xtream") return;
+    if (seriesLoaded) return;
+    let cancelled = false;
+    setSeriesLoading(true);
+    setSeriesError("");
+    (async () => {
+      const [catData, strData] = await Promise.all([
+        apiAction("get_series_categories", undefined, 20000),
+        apiAction("get_series", undefined, 45000),
+      ]);
+      if (cancelled) return;
+      setSeriesLoading(false);
+      if (!Array.isArray(catData) || !Array.isArray(strData)) {
+        setSeriesLoaded(true);
+        setSeriesError("تعذر تحميل قائمة المسلسلات — تحقق من الاتصال ثم أعد فتح التبويب.");
+        return;
+      }
+      const cats = sortCategories(
+        catData.map((c) => ({ id: String(c.category_id), name: String(c.category_name) }))
+      );
+      const list: Stream[] = strData.map((s) => ({
+        id: Number(s.series_id),
+        num: String(s.num ?? s.series_id),
+        name: String(s.name),
+        icon: String(s.cover || s.stream_icon || ""),
+        catId: String(s.category_id || ""),
+        rating: Number(s.rating) || 0,
+      }));
+      setSeriesCats(cats);
+      setSeriesStreams(list);
+      setSeriesLoaded(true);
+      patchLibrary({ seriesCategories: cats, seriesStreams: list });
+    })();
+    return () => {
+      cancelled = true;
+      setSeriesLoading(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, libTab, source, seriesLoaded, account]);
+
+  /* ============ فتح تفاصيل فيلم/مسلسل (مع حماية PIN) ============ */
+  function openVod(item: Stream) {
+    guardLocked(`v:${item.catId}`, item.name, () => {
+      setVodModal({ id: item.id, name: item.name, catId: item.catId });
+      setVodDetail(null);
+      setVodDetailError("");
+      setVodDetailLoading(true);
+      apiAction("get_vod_info", { vod_id: item.id }, 20000).then((data) => {
+        setVodDetailLoading(false);
+        if (vodModal && vodModal.id !== item.id) return;
+        if (data && typeof data === "object" && ((data as { movie_data?: unknown }).movie_data || (data as { info?: unknown }).info)) {
+          const parsed = parseVodInfo(data);
+          setVodDetail(parsed.id ? parsed : { ...parsed, id: item.id, name: parsed.name || item.name });
+        } else {
+          setVodDetailError("تعذر تحميل تفاصيل الفيلم من السيرفر — جرّب مرة أخرى.");
+        }
+      });
+    });
+  }
+
+  function openSeries(item: Stream) {
+    guardLocked(`s:${item.catId}`, item.name, () => {
+      setSeriesModal({ id: item.id, name: item.name, catId: item.catId });
+      setSeriesInfo(null);
+      setSeriesInfoError("");
+      setSeriesInfoLoading(true);
+      apiAction("get_series_info", { series_id: item.id }, 20000).then((data) => {
+        setSeriesInfoLoading(false);
+        if (data && typeof data === "object" && ((data as { episodes?: unknown }).episodes || (data as { info?: unknown }).info)) {
+          setSeriesInfo(parseSeriesInfo(data));
+        } else {
+          setSeriesInfoError("تعذر تحميل مواسم ومسلسل — جرّب مرة أخرى.");
+        }
+      });
+    });
+  }
+
+  function playVodNow(id: number, name: string, ext: string, icon: string) {
+    if (!account) return;
+    const resumeKey = `v:${id}`;
+    setViewItem(activeCell, {
+      stream: { id, name, icon, catId: "" },
+      candidates: buildMediaCandidates(
+        (m) => vodStreamUrl(m.base(account.host), account.username, account.password, id, ext),
+        false
+      ),
+      resumeKey,
+      live: false,
+    });
+    setVodModal(null);
+    showOsd(`▶ ${name}`);
+  }
+
+  function playEpisodeNow(ep: SeriesEpisode, _seasonNum: number, label: string) {
+    if (!account) return;
+    const resumeKey = `e:${ep.id}`;
+    const cover = seriesInfo?.cover || "";
+    setViewItem(activeCell, {
+      stream: { id: ep.id, name: label, icon: cover, catId: "" },
+      candidates: buildMediaCandidates(
+        (m) => seriesStreamUrl(m.base(account.host), account.username, account.password, ep.id, ep.ext),
+        false
+      ),
+      resumeKey,
+      live: false,
+    });
+    setSeriesModal(null);
+    showOsd(`▶ ${label}`);
+  }
+
+  /* ============ إعادة البث Catch-up / Timeshift ============ */
+  function playTimeshift(hours: number) {
+    const item = viewStreams[activeCell];
+    if (!item?.catchupStreamId || !account) return;
+    const streamId = item.catchupStreamId;
+    const start = Math.floor(Date.now() / 1000) - hours * 3600;
+    guardLocked(`l:${item.stream.catId}`, item.stream.name, () => {
+      setViewItem(activeCell, {
+        ...item,
+        stream: { ...item.stream, name: `${item.stream.name} — إعادة ${hours}س` },
+        candidates: buildMediaCandidates(
+          (m) => timeshiftUrl(m.base(account.host), account.username, account.password, streamId, start, hours * 60),
+          true
+        ),
+        catchupStreamId: undefined,
+        epgStreamId: undefined,
+        resumeKey: undefined,
+        live: true,
+      });
+      showOsd(`⏱ إعادة البث — آخر ${hours} ساعات`);
+    });
+  }
+
+  /* ============ OSD (رسائل داخل الشاشة) ============ */
+  function showOsd(msg: string, ms = 2400) {
+    setOsd(msg);
+    window.clearTimeout(osdTimerRef.current);
+    osdTimerRef.current = window.setTimeout(() => setOsd(""), ms);
+  }
+
+  /* ============ التنقّل بين القنوات (أزرار داخل الفيديو + ريموت) ============ */
+  const visibleLiveStreams = useMemo(
     () =>
       filterStreams(streams, {
         query: search,
@@ -1017,32 +1350,146 @@ function XtreamPlayerInner() {
     [streams, search, selectedCat, tab, favorites, recents]
   );
 
-  const range = windowRange({
-    scrollTop: listScrollTop,
-    itemHeight: LIST_ITEM_HEIGHT,
-    viewportHeight: viewHeight,
-    total: visibleStreams.length,
-    overscan: LIST_OVERSCAN,
-  });
-  const page = visibleStreams.slice(range.start, range.end);
-
-  const handleListScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    setListScrollTop(e.currentTarget.scrollTop);
-  }, []);
-
-  const daysLeft = userInfo?.expTs ? daysUntil(userInfo.expTs) : null;
-
-  function playStream(stream: Stream) {
-    setPlaying(stream);
-    setRecentsAndSave(pushRecent(recents, streamKey(stream)));
+  function stepLiveChannel(dir: number) {
+    if (visibleLiveStreams.length === 0) return;
+    const currentKey = viewStreams[activeCell]?.stream ? streamKey(viewStreams[activeCell]!.stream) : "";
+    const next = stepChannel(visibleLiveStreams, currentKey, dir);
+    if (next) {
+      playStream(next);
+      showOsd(`${next.num ? `${next.num} — ` : ""}${next.name}`);
+    }
   }
 
-  /* أزرار المشغل: جودة، صورة داخل صورة، ملء الشاشة */
+  /* أرقام القناة من الرموت: اكتب أرقاماً فتنقل للقناة رقمها */
+  function zapDigit(digit: string) {
+    const z = zapRef.current;
+    z.buf = (z.buf + digit).slice(-4);
+    showOsd(`قناة: ${z.buf}`, 1500);
+    window.clearTimeout(z.timer);
+    z.timer = window.setTimeout(() => {
+      const found = findChannelByNumber(streams, z.buf);
+      z.buf = "";
+      if (found) {
+        playStream(found);
+        showOsd(`${found.num ? `${found.num} — ` : ""}${found.name}`);
+      } else {
+        showOsd("لا توجد قناة بهذا الرقم");
+      }
+    }, 1300);
+  }
+
+  function nudgeActive(dir: number) {
+    const api = cellRefs.current[activeCell];
+    const item = viewStreams[activeCell];
+    if (!api) return;
+    if (item && !item.live) {
+      api.seekBy(dir * 10);
+      showOsd(dir > 0 ? "⏩ +10 ثوانٍ" : "⏪ -10 ثوانٍ", 1200);
+      return;
+    }
+    api.adjustVolume(dir * 0.05);
+    const v = api.getVideo();
+    const pct = Math.round((v?.volume ?? 0) * 100);
+    showOsd(`🔊 ${pct}%`, 1200);
+  }
+
+  /* ============ لوحة المفاتيح / ريموت التلفزيون ============ */
+  const keyHandlerRef = useRef<(e: KeyboardEvent) => void>(() => {});
+  useEffect(() => {
+    keyHandlerRef.current = (e: KeyboardEvent) => {
+      if (phase !== "ready") return;
+      if (vodModal || seriesModal || pinDlg) return;
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const tag = target.tagName;
+      if (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        tag === "BUTTON" ||
+        tag === "A" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (e.key === "Escape") {
+        if (drawerOpen) setDrawerOpen(false);
+        return;
+      }
+      if (source === "xtream" && /^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        zapDigit(e.key);
+        return;
+      }
+      switch (e.key) {
+        case "ArrowUp":
+          e.preventDefault();
+          stepLiveChannel(1);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          stepLiveChannel(-1);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          nudgeActive(-1);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          nudgeActive(1);
+          break;
+        case "PageUp":
+          e.preventDefault();
+          stepLiveChannel(1);
+          break;
+        case "PageDown":
+          e.preventDefault();
+          stepLiveChannel(-1);
+          break;
+        case " ":
+          e.preventDefault();
+          cellRefs.current[activeCell]?.togglePlay();
+          showOsd("⏯ تشغيل / إيقاف", 1000);
+          break;
+        case "f":
+        case "F":
+        case "ف":
+          toggleFullscreen();
+          break;
+        case "m":
+        case "M":
+        case "م":
+          setIsMuted((prev) => {
+            showOsd(!prev ? "🔇 تم كتم الصوت" : "🔊 تم تشغيل الصوت", 1000);
+            return !prev;
+          });
+          break;
+        default:
+          break;
+      }
+    };
+  });
+
+  useEffect(() => {
+    if (phase !== "ready") return undefined;
+    const fn = (e: KeyboardEvent) => keyHandlerRef.current(e);
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, [phase]);
+
+  /* ============ أدوات المشغل: جودة، صورة داخل صورة، ملء الشاشة ============ */
+  const activeState = cellStates[activeCell] ?? {};
+  const levels = activeState.levels ?? [];
+  const levelIndex = activeState.levelIndex ?? -1;
+  const tracks = activeState.tracks ?? { audio: [], subs: [], audioIndex: -1, subIndex: -1 };
+  const playing = viewStreams[activeCell]?.stream ?? null;
+  const activeItem = viewStreams[activeCell];
   const canPip = typeof document !== "undefined" && document.pictureInPictureEnabled === true;
 
   function changeLevel(value: number) {
-    setLevelIndex(value);
-    if (hlsRef.current) hlsRef.current.currentLevel = value;
+    cellRefs.current[activeCell]?.setLevel(value);
   }
 
   async function toggleFullscreen() {
@@ -1057,7 +1504,7 @@ function XtreamPlayerInner() {
   }
 
   async function togglePip() {
-    const video = videoRef.current;
+    const video = cellRefs.current[activeCell]?.getVideo();
     if (!video) return;
     try {
       if (document.pictureInPictureElement) {
@@ -1071,6 +1518,99 @@ function XtreamPlayerInner() {
       /* تجاهل */
     }
   }
+
+  /* ============ Chromecast / AirPlay ============ */
+  function handleCast() {
+    const video = cellRefs.current[activeCell]?.getVideo() as
+      | (HTMLVideoElement & { remote?: { prompt?: () => Promise<void> } })
+      | null;
+    const remote = video?.remote;
+    if (video && remote && typeof remote.prompt === "function") {
+      remote
+        .prompt()
+        .then(() => showOsd("📺 جاري البث إلى الشاشة الخارجية"))
+        .catch(() => showOsd("لا توجد أجهزة متاحة على الشبكة"));
+    } else {
+      showOsd("البث إلى شاشة غير مدعوم في هذا المتصفح");
+    }
+  }
+
+  function handleAirPlay() {
+    const video = cellRefs.current[activeCell]?.getVideo() as
+      | (HTMLVideoElement & { webkitShowPlaybackTargetPicker?: () => void })
+      | null;
+    if (video && typeof video.webkitShowPlaybackTargetPicker === "function") {
+      video.webkitShowPlaybackTargetPicker();
+    }
+  }
+
+  /* ============ رفع ترجمة SRT للفيلم ============ */
+  function handleSubtitleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!viewStreams[activeCell]) {
+      showOsd("شغّل فيلماً أو حلقة أولاً لرفع الترجمة");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const raw = String(reader.result || "");
+      const vtt = file.name.toLowerCase().endsWith(".vtt") ? raw : srtToVtt(raw);
+      if (subUrlRef.current) URL.revokeObjectURL(subUrlRef.current);
+      const url = URL.createObjectURL(new Blob([vtt], { type: "text/vtt" }));
+      subUrlRef.current = url;
+      const idx = activeCell;
+      setViewStreams((prev) => prev.map((it, i) => (i === idx && it ? { ...it, uploadedSub: url } : it)));
+      window.requestAnimationFrame(() => cellRefs.current[idx]?.enableUploadedSubtitle());
+      showOsd("✓ تم رفع ملف الترجمة");
+    };
+    reader.onerror = () => showOsd("تعذر قراءة ملف الترجمة");
+    reader.readAsText(file);
+  }
+
+  /* ============ متابعة المشاهدة (حفظ الموضع محلياً) ============ */
+  function handleSaveResume(key: string, seconds: number) {
+    saveResumePosition(storage, profile, key, seconds);
+    setResumeMap((prev) => ({ ...prev, [key]: { t: Math.floor(seconds), ts: Date.now() } }));
+  }
+
+  /* ============ تبديل عدد الشاشات (1 / 2 / 4) ============ */
+  function changeViewCount(count: 1 | 2 | 4) {
+    setViewCount(count);
+    setViewStreams((prev) => Array.from({ length: count }, (_, i) => prev[i] ?? null));
+    setActiveCell((c) => (c < count ? c : 0));
+    setDrawerOpen(false);
+    showOsd(count === 1 ? "شاشة واحدة" : `عدة الشاشات: ${count}`);
+  }
+
+  /* ============ التصفية والعرض ============ */
+
+  const visibleVod = useMemo(
+    () => filterStreams(vodStreams, { query: vodSearch, categoryId: vodCat, tab: "all" }),
+    [vodStreams, vodSearch, vodCat]
+  );
+  const visibleSeries = useMemo(
+    () => filterStreams(seriesStreams, { query: seriesSearch, categoryId: seriesCat, tab: "all" }),
+    [seriesStreams, seriesSearch, seriesCat]
+  );
+
+  const range = windowRange({
+    scrollTop: listScrollTop,
+    itemHeight: LIST_ITEM_HEIGHT,
+    viewportHeight: viewHeight,
+    total: visibleLiveStreams.length,
+    overscan: LIST_OVERSCAN,
+  });
+  const page = visibleLiveStreams.slice(range.start, range.end);
+
+  const handleListScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setListScrollTop(e.currentTarget.scrollTop);
+  }, []);
+
+  const daysLeft = userInfo?.expTs ? daysUntil(userInfo.expTs) : null;
+
+  /* أزرار الترجمة/الصوت/الجودة تعمل على الخلية النشطة فقط */
 
   /* تقرير التشخيص + رمز المشاركة (بلا كلمة سر) */
   const diagReport = useMemo(
@@ -1104,6 +1644,16 @@ function XtreamPlayerInner() {
   );
 
   const isCurrent = (acc: XtreamAccount) => accountKey(acc) === keyOf(account);
+
+  /* أهداف القفل الأبوي: تصنيفات المباشر + الأفلام + المسلسلات */
+  const lockTargets = useMemo(
+    () => [
+      ...categories.map((c) => ({ key: `l:${c.id}`, label: c.name, group: "مباشر" })),
+      ...vodCats.map((c) => ({ key: `v:${c.id}`, label: c.name, group: "أفلام" })),
+      ...seriesCats.map((c) => ({ key: `s:${c.id}`, label: c.name, group: "مسلسلات" })),
+    ],
+    [categories, vodCats, seriesCats]
+  );
 
   /* ========================================================================= */
   return (
@@ -1389,13 +1939,35 @@ function XtreamPlayerInner() {
                   القنوات:{" "}
                   <span className="text-[#d8ff3e]">{streams.length.toLocaleString("en-US")}</span>
                 </span>
+                {source === "xtream" && cacheTs && (
+                  <span className="text-[11.5px] font-bold text-white/45" data-testid="cache-badge">
+                    محفوظة محلياً — {new Date(cacheTs).toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" })}
+                  </span>
+                )}
+                {refreshNote && <span className="text-[11.5px] font-black text-[#3effe0]">{refreshNote}</span>}
               </div>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 border border-white/20 hover:border-[#ff5c4d] hover:text-[#ff8a7d] text-white/70 font-black text-[13px] px-4 py-2 rounded-full transition cursor-pointer"
-              >
-                <IconClose className="w-3.5 h-3.5" /> خروج وحذف البيانات
-              </button>
+              <div className="flex items-center gap-2">
+                {source === "xtream" && (
+                  <button
+                    type="button"
+                    data-testid="refresh-channels"
+                    onClick={refreshLibrary}
+                    disabled={refreshing}
+                    className="inline-flex items-center gap-1.5 border border-white/20 hover:border-[#d8ff3e] hover:text-[#d8ff3e] text-white/70 font-black text-[13px] px-4 py-2 rounded-full transition cursor-pointer disabled:opacity-50"
+                  >
+                    <span className={refreshing ? "w-3.5 h-3.5 border-2 border-white/30 border-t-[#d8ff3e] rounded-full animate-spin" : ""}>
+                      {refreshing ? "" : "⟳"}
+                    </span>
+                    تحديث القنوات
+                  </button>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1.5 border border-white/20 hover:border-[#ff5c4d] hover:text-[#ff8a7d] text-white/70 font-black text-[13px] px-4 py-2 rounded-full transition cursor-pointer"
+                >
+                  <IconClose className="w-3.5 h-3.5" /> خروج وحذف البيانات
+                </button>
+              </div>
             </div>
 
             {/* تنبيه: دخول ناجح لكن صفر قنوات — وجهّه لملف M3U */}
@@ -1433,6 +2005,41 @@ function XtreamPlayerInner() {
               </div>
             )}
 
+            {/* تبويبات المحتوى: البث المباشر + الأفلام + المسلسلات */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-6" role="group" aria-label="أنواع المحتوى">
+              {(
+                [
+                  { id: "live", label: "البث المباشر" },
+                  { id: "vod", label: "الأفلام" },
+                  { id: "series", label: "المسلسلات" },
+                ] as { id: LibTab; label: string }[]
+              ).map((t) => {
+                const disabled = t.id !== "live" && source !== "xtream";
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    data-testid={`libtab-${t.id}`}
+                    disabled={disabled}
+                    title={disabled ? "متاح عند الدخول بحساب Xtream" : undefined}
+                    onClick={() => {
+                      /* إعادة المحاولة بعد فشل تحميل سابق */
+                      if (t.id === "vod" && vodError) setVodLoaded(false);
+                      if (t.id === "series" && seriesError) setSeriesLoaded(false);
+                      setLibTab(t.id);
+                    }}
+                    className={`px-5 py-2.5 rounded-full text-[13.5px] font-black transition cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed ${
+                      libTab === t.id
+                        ? "bg-[#d8ff3e] text-black"
+                        : "bg-white/[0.06] border border-white/15 text-white/70 hover:border-white/40"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* المشغل */}
               <div className="lg:col-span-8 flex flex-col gap-4">
@@ -1440,83 +2047,129 @@ function XtreamPlayerInner() {
                   ref={stageRef}
                   className="relative rounded-[24px] overflow-hidden border border-white/10 bg-black shadow-2xl"
                 >
-                  <div className="relative aspect-video w-full bg-black">
-                    <video
-                      ref={videoRef}
-                      controls
-                      playsInline
-                      preload="auto"
-                      className="w-full h-full object-contain bg-black"
-                      onVolumeChange={() => {
-                        if (videoRef.current) {
-                          setIsMuted(videoRef.current.muted);
-                        }
-                      }}
-                    />
-
-                    {!playing && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b0b0f]/80 text-center px-6">
-                        <span className="w-16 h-16 rounded-full bg-[#d8ff3e] text-black grid place-items-center mb-4">
-                          <IconPlay className="w-7 h-7 mr-1" />
-                        </span>
-                        <p className="font-display font-black text-[19px]">
-                          اختر قناة من القائمة لبدء المشاهدة
-                        </p>
-                        <p className="text-[13px] text-white/45 font-medium mt-1.5">
-                          {streams.length.toLocaleString("en-US")} قناة متاحة في باقتك
-                        </p>
-                      </div>
-                    )}
-
-                    {statusMsg && !playError && (
+                  <div className={viewCount > 1 ? "grid grid-cols-2 gap-[3px] bg-white/15" : ""}>
+                    {Array.from({ length: viewCount }).map((_, i) => (
                       <div
-                        data-testid="stream-status"
-                        className="absolute top-4 inset-x-0 mx-auto w-fit max-w-[90%] glass-dark text-[#d8ff3e] border border-white/15 text-xs font-bold px-4 py-1.5 rounded-full text-center z-20 animate-pulse-soft pointer-events-none"
+                        key={i}
+                        onClick={() => setActiveCell(i)}
+                        className="cursor-pointer"
                       >
-                        {statusMsg}
+                        <StageCell
+                          ref={(el) => {
+                            cellRefs.current[i] = el;
+                          }}
+                          item={viewStreams[i] ?? null}
+                          active={i === activeCell}
+                          muted={i === activeCell ? isMuted : true}
+                          aspect={aspect}
+                          resumeAt={
+                            viewStreams[i]?.resumeKey ? getResumeAt(resumeMap, viewStreams[i]!.resumeKey!) : 0
+                          }
+                          placeholder={
+                            i === 0 ? (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b0b0f]/80 text-center px-6">
+                                <span className="w-16 h-16 rounded-full bg-[#d8ff3e] text-black grid place-items-center mb-4">
+                                  <IconPlay className="w-7 h-7 mr-1" />
+                                </span>
+                                <p className="font-display font-black text-[19px]">
+                                  اختر قناة من القائمة لبدء المشاهدة
+                                </p>
+                                <p className="text-[13px] text-white/45 font-medium mt-1.5">
+                                  {streams.length.toLocaleString("en-US")} قناة متاحة في باقتك
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b0b0f]/70 text-center px-4">
+                                <p className="text-[13px] font-black text-white/60">
+                                  شاشة {i + 1} — اضغط قناة لتشغيلها هنا
+                                </p>
+                              </div>
+                            )
+                          }
+                          onState={(patch) =>
+                            setCellStates((prev) => ({ ...prev, [i]: { ...prev[i], ...patch } }))
+                          }
+                          onMutedChange={(m) => {
+                            if (i === activeCell) setIsMuted(m);
+                          }}
+                          onPreferredMode={(mode) => {
+                            if (mode) {
+                              preferredStreamModeRef.current = mode;
+                              setActiveMode(mode);
+                            }
+                          }}
+                          onUnmute={() => setIsMuted(false)}
+                          onSaveResume={handleSaveResume}
+                        />
                       </div>
-                    )}
+                    ))}
+                  </div>
 
-                    {playError && (
-                      <div className="absolute top-4 inset-x-0 mx-auto w-fit max-w-[90%] bg-[#ff5c4d]/90 text-white text-xs font-black px-4 py-2 rounded-full text-center z-20">
-                        {playError}
-                      </div>
-                    )}
-
-                    {playing && isMuted && !playError && (
+                  {/* أزرار داخل الفيديو: القناة السابقة/التالية + درج القنوات */}
+                  {activeItem?.live && (
+                    <div className="absolute bottom-3 inset-x-0 z-30 flex items-center justify-center gap-2 pointer-events-none">
                       <button
                         type="button"
-                        data-testid="unmute-button"
-                        onClick={() => {
-                          if (videoRef.current) {
-                            videoRef.current.muted = false;
-                            setIsMuted(false);
-                          }
+                        data-testid="prev-channel"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          stepLiveChannel(-1);
                         }}
-                        className="absolute top-4 end-4 z-20 bg-[#d8ff3e] hover:bg-white text-black font-black text-xs px-3.5 py-1.5 rounded-full shadow-xl transition-all animate-pulse-soft cursor-pointer"
+                        className="pointer-events-auto w-10 h-10 rounded-full glass-dark border border-white/20 grid place-items-center hover:bg-white/15 transition cursor-pointer"
+                        aria-label="القناة السابقة"
                       >
-                        🔊 اضغط لتشغيل الصوت
+                        <IconChevronDown className="w-4 h-4 rotate-90" />
                       </button>
-                    )}
+                      <button
+                        type="button"
+                        data-testid="drawer-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDrawerOpen(true);
+                        }}
+                        className="pointer-events-auto h-10 px-4 rounded-full glass-dark border border-white/20 flex items-center gap-2 text-[12.5px] font-black hover:bg-white/15 transition cursor-pointer"
+                      >
+                        <IconTv className="w-4 h-4" /> القنوات
+                      </button>
+                      <button
+                        type="button"
+                        data-testid="next-channel"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          stepLiveChannel(1);
+                        }}
+                        className="pointer-events-auto w-10 h-10 rounded-full glass-dark border border-white/20 grid place-items-center hover:bg-white/15 transition cursor-pointer"
+                        aria-label="القناة التالية"
+                      >
+                        <IconChevronDown className="w-4 h-4 -rotate-90" />
+                      </button>
+                    </div>
+                  )}
 
-                    {playing && (
-                      <div className="absolute top-4 start-4 flex items-center gap-2 pointer-events-none z-10">
-                        <div className="glass-dark border border-white/15 px-3.5 py-1.5 rounded-xl flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-[#ff5c4d] animate-pulse-soft" />
-                          <span className="text-[13px] font-black">{playing.name}</span>
-                        </div>
-                        {bufferSec > 0 && (
-                          <span
-                            data-testid="buffer-badge"
-                            className="bg-[#0b0b0f]/80 text-[#3effe0] text-[10.5px] font-black px-2.5 py-1 rounded-full backdrop-blur-md border border-[#3effe0]/30"
-                          >
-                            ⚡ بافر: {bufferSec}s
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {/* رسالة OSD داخل الشاشة (تظهر في ملء الشاشة أيضاً) */}
+                  {osd && (
+                    <div className="absolute bottom-16 inset-x-0 mx-auto z-30 w-fit max-w-[85%] glass-dark border border-white/15 text-[#d8ff3e] text-[13.5px] font-black px-5 py-2 rounded-full text-center pointer-events-none animate-pulse-soft">
+                      {osd}
+                    </div>
+                  )}
+
+                  {/* درج القنوات داخل الشاشة — يعمل في ملء الشاشة */}
+                  {drawerOpen && (
+                    <ChannelDrawer
+                      streams={visibleLiveStreams}
+                      currentKey={playing ? streamKey(playing) : ""}
+                      epgNowTitle={epg?.now?.title ?? ""}
+                      onPick={(ch) => {
+                        playStream(ch);
+                        setDrawerOpen(false);
+                      }}
+                      onClose={() => setDrawerOpen(false)}
+                    />
+                  )}
                 </div>
+
+                {/* دليل البرامج: يعرض الآن + التالي مع شريط تقدّم */}
+                <EpgBar epg={epg} />
 
                 {/* أدوات المشغل: الجودة + صورة داخل صورة + ملء الشاشة */}
                 <div className="rounded-2xl bg-white/[0.05] border border-white/10 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
@@ -1569,10 +2222,161 @@ function XtreamPlayerInner() {
                   </div>
                 </div>
 
-                {/* ملاحظة سريعة */}
+                {/* شريط إضافات: عرض الشاشة، الصوت، الترجمة، إعادة البث،ecast/AirPlay، القفل */}
+                <div className="rounded-2xl bg-white/[0.05] border border-white/10 px-5 py-3.5 flex flex-wrap items-center gap-2.5">
+                  {/* عدد الشاشات: 1 / 2 / 4 */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11.5px] font-black text-white/45 me-1">الشاشات:</span>
+                    {([1, 2, 4] as const).map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        data-testid={`view-${n}`}
+                        onClick={() => changeViewCount(n)}
+                        className={`w-8 h-8 rounded-full text-[12.5px] font-black transition cursor-pointer ${
+                          viewCount === n ? "bg-[#d8ff3e] text-black" : "bg-white/10 text-white/70 hover:bg-white/20"
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="w-px h-6 bg-white/10" />
+
+                  {/* أوضاع العرض */}
+                  <label className="inline-flex items-center gap-2 text-[12px] font-black text-white/70">
+                    العرض
+                    <select
+                      data-testid="aspect-select"
+                      value={aspect}
+                      onChange={(e) => setAspect(e.target.value)}
+                      className="rounded-full bg-[#0b0b0f] border border-white/20 text-white text-[12px] font-black px-3 py-1.5 cursor-pointer"
+                    >
+                      {ASPECT_MODES.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {/* المسارات الصوتية (من hls.js) */}
+                  {tracks.audio.length > 1 && (
+                    <label className="inline-flex items-center gap-2 text-[12px] font-black text-white/70">
+                      الصوت
+                      <select
+                        data-testid="audio-select"
+                        value={tracks.audioIndex}
+                        onChange={(e) => cellRefs.current[activeCell]?.setAudioTrack(Number(e.target.value))}
+                        className="rounded-full bg-[#0b0b0f] border border-white/20 text-white text-[12px] font-black px-3 py-1.5 cursor-pointer"
+                      >
+                        {tracks.audio.map((t) => (
+                          <option key={t.index} value={t.index}>
+                            {t.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+
+                  {/* الترجمة: مسارات hls + رفع ملف SRT/VTT */}
+                  {(tracks.subs.length > 0 || activeItem?.uploadedSub) && (
+                    <label className="inline-flex items-center gap-2 text-[12px] font-black text-white/70">
+                      الترجمة
+                      <select
+                        data-testid="subtitle-select"
+                        value={tracks.subIndex}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          const api = cellRefs.current[activeCell];
+                          if (v === -2) api?.enableUploadedSubtitle();
+                          else api?.setSubtitleTrack(v);
+                        }}
+                        className="rounded-full bg-[#0b0b0f] border border-white/20 text-white text-[12px] font-black px-3 py-1.5 cursor-pointer"
+                      >
+                        <option value={-1}>إيقاف</option>
+                        {tracks.subs.map((t) => (
+                          <option key={t.index} value={t.index}>
+                            {t.label}
+                          </option>
+                        ))}
+                        {activeItem?.uploadedSub && <option value={-2}>ترجمة مرفوعة</option>}
+                      </select>
+                    </label>
+                  )}
+                  <label className="text-[12px] font-black text-white/70 border border-white/20 rounded-full px-3 py-1.5 cursor-pointer hover:border-[#d8ff3e] hover:text-[#d8ff3e] transition">
+                    + رفع srt
+                    <input
+                      type="file"
+                      accept=".srt,.vtt,text/plain"
+                      className="hidden"
+                      onChange={handleSubtitleFile}
+                    />
+                  </label>
+
+                  {/* إعادة البث Catch-up للقنوات التي تدعم الأرشيف */}
+                  {activeItem?.catchupStreamId && (
+                    <select
+                      data-testid="catchup-select"
+                      value=""
+                      onChange={(e) => {
+                        const h = Number(e.target.value);
+                        if (h) playTimeshift(h);
+                      }}
+                      title="إعادة البث (Catch-up / Timeshift)"
+                      className="rounded-full bg-[#0b0b0f] border border-[#3effe0]/40 text-[#3effe0] text-[12px] font-black px-3 py-1.5 cursor-pointer"
+                    >
+                      <option value="">⏱ إعادة البث</option>
+                      <option value="2">آخر ساعتين</option>
+                      <option value="6">آخر 6 ساعات</option>
+                      <option value="12">آخر 12 ساعة</option>
+                    </select>
+                  )}
+
+                  {/* Chromecast / AirPlay */}
+                  {canCast && (
+                    <button
+                      type="button"
+                      data-testid="cast-button"
+                      onClick={handleCast}
+                      className="inline-flex items-center gap-1.5 text-[12px] font-black text-white/75 border border-white/20 rounded-full px-3 py-1.5 hover:border-[#d8ff3e] hover:text-[#d8ff3e] transition cursor-pointer"
+                    >
+                      <IconMonitor className="w-3.5 h-3.5" /> Chromecast
+                    </button>
+                  )}
+                  {canAirPlay && (
+                    <button
+                      type="button"
+                      data-testid="airplay-button"
+                      onClick={handleAirPlay}
+                      className="inline-flex items-center gap-1.5 text-[12px] font-black text-white/75 border border-white/20 rounded-full px-3 py-1.5 hover:border-[#d8ff3e] hover:text-[#d8ff3e] transition cursor-pointer"
+                    >
+                      <IconApple className="w-3.5 h-3.5" /> AirPlay
+                    </button>
+                  )}
+
+                  <span className="w-px h-6 bg-white/10" />
+
+                  {/* القفل الأبوي */}
+                  <button
+                    type="button"
+                    data-testid="pin-button"
+                    onClick={() => setPinDlg({ mode: "setup" })}
+                    className="inline-flex items-center gap-1.5 text-[12px] font-black text-white/75 border border-white/20 rounded-full px-3 py-1.5 hover:border-[#ffb020] hover:text-[#ffb020] transition cursor-pointer"
+                  >
+                    🔒 القفل الأبوي
+                  </button>
+                </div>
+
+                {/* ملاحظة سريعة — اختصارات الريموت */}
                 <div className="rounded-2xl bg-white/[0.05] border border-white/10 px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
-                  <p className="text-[12.5px] font-bold text-white/50">
-                    الصوت مكتوم تلقائياً حسب سياسة المتصفحات — اضغط زر الصوت في المشغل لتشغيله.
+                  <p className="text-[12.5px] font-bold text-white/50 leading-relaxed">
+                    ريموت/كيبورد: <span className="text-white/80">↑ ↓</span> تبديل القنوات •{" "}
+                    <span className="text-white/80">← →</span> الصوت أو التقديم •{" "}
+                    <span className="text-white/80">F</span> ملء الشاشة •{" "}
+                    <span className="text-white/80">M</span> كتم • <span className="text-white/80">Space</span>{" "}
+                    إيقاف/تشغيل • اكتب أرقام رقم القناة للانتقال.
                   </p>
                   <a
                     href="#pricing"
@@ -1583,209 +2387,279 @@ function XtreamPlayerInner() {
                 </div>
               </div>
 
-              {/* لوحة القنوات */}
+              {/* لوحة القوائم: مباشر / أفلام / مسلسلات */}
               <div className="lg:col-span-4 rounded-[24px] bg-white text-[#0b0b0f] overflow-hidden shadow-2xl flex flex-col h-[620px]">
-                {/* البحث */}
-                <div className="p-4 border-b border-black/10 bg-[#faf9f6] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-[15px] font-black flex items-center gap-2">
-                      <IconTv className="w-4 h-4 text-[#2b4eff]" /> قنوات باقتك
-                    </h3>
-                    <span className="text-[11px] font-black bg-[#d8ff3e] px-2 py-0.5 rounded-full">
-                      {streams.length.toLocaleString("en-US")}
-                    </span>
-                  </div>
+                {libTab === "live" && (
+                  <>
+                    {/* البحث */}
+                    <div className="p-4 border-b border-black/10 bg-[#faf9f6] space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-[15px] font-black flex items-center gap-2">
+                          <IconTv className="w-4 h-4 text-[#2b4eff]" /> قنوات باقتك
+                        </h3>
+                        <span className="text-[11px] font-black bg-[#d8ff3e] px-2 py-0.5 rounded-full">
+                          {streams.length.toLocaleString("en-US")}
+                        </span>
+                      </div>
 
-                  {/* تبويبات: الكل / المفضلة / الأخيرة */}
-                  <div className="flex gap-1.5 text-[11.5px] font-bold" role="tablist">
-                    {(
-                      [
-                        { id: "all", label: "الكل" },
-                        { id: "favorites", label: `المفضلة (${favorites.length})` },
-                        { id: "recent", label: `الأخيرة (${recents.length})` },
-                      ] as { id: TabId; label: string }[]
-                    ).map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        role="tab"
-                        data-testid={`tab-${t.id}`}
-                        aria-selected={tab === t.id}
-                        onClick={() => setTab(t.id)}
-                        className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer transition ${
-                          tab === t.id
-                            ? "bg-[#2b4eff] text-white font-black"
-                            : "bg-white text-black/50 border border-black/10 hover:border-black"
-                        }`}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
+                      {/* تبويبات: الكل / المفضلة / الأخيرة */}
+                      <div className="flex gap-1.5 text-[11.5px] font-bold" role="tablist">
+                        {(
+                          [
+                            { id: "all", label: "الكل" },
+                            { id: "favorites", label: `المفضلة (${favorites.length})` },
+                            { id: "recent", label: `الأخيرة (${recents.length})` },
+                          ] as { id: TabId; label: string }[]
+                        ).map((t) => (
+                          <button
+                            key={t.id}
+                            type="button"
+                            role="tab"
+                            data-testid={`tab-${t.id}`}
+                            aria-selected={tab === t.id}
+                            onClick={() => setTab(t.id)}
+                            className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer transition ${
+                              tab === t.id
+                                ? "bg-[#2b4eff] text-white font-black"
+                                : "bg-white text-black/50 border border-black/10 hover:border-black"
+                            }`}
+                          >
+                            {t.label}
+                          </button>
+                        ))}
+                      </div>
 
-                  <div className="relative">
-                    <IconSearch className="w-4 h-4 absolute start-3.5 top-1/2 -translate-y-1/2 text-black/35" />
-                    <input
-                      type="text"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="ابحث في كل القنوات…"
-                      aria-label="ابحث في كل القنوات"
-                      className="w-full rounded-full bg-white border border-black/10 ps-10 pe-3 py-2.5 text-[13px] font-medium placeholder:text-black/35 focus:border-[#2b4eff] focus:outline-none transition"
-                    />
-                  </div>
-                  {/* تصنيفات */}
-                  <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[11px] font-bold">
-                    <button
-                      data-testid="category-all"
-                      onClick={() => {
-                        setSelectedCat("");
-                        setSearch("");
-                      }}
-                      className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer ${
-                        !selectedCat && !search
-                          ? "bg-[#0b0b0f] text-white font-black"
-                          : "bg-white text-black/50 border border-black/10 hover:border-black"
-                      }`}
-                    >
-                      الكل
-                    </button>
-                    {categories.map((c) => (
-                      <button
-                        key={c.id}
-                        data-testid={`category-${c.id}`}
-                        onClick={() => {
-                          setSelectedCat(c.id);
-                          setSearch("");
-                        }}
-                        className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer ${
-                          selectedCat === c.id && !search
-                            ? "bg-[#0b0b0f] text-white font-black"
-                            : "bg-white text-black/50 border border-black/10 hover:border-black"
-                        }`}
-                      >
-                        {c.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* القنوات — قائمة افتراضية: نرسم الظاهر فقط فيبقى الأداء سريعاً بآلاف القنوات */}
-                <div
-                  ref={listRef}
-                  onScroll={handleListScroll}
-                  data-testid="channel-list"
-                  className="flex-1 overflow-y-auto no-scrollbar"
-                >
-                  {visibleStreams.length === 0 ? (
-                    <div className="p-8 text-center text-black/40 text-[13px] font-bold">
-                      {search
-                        ? `لا نتائج للبحث "${search}" — جرّب كلمة أخرى أو ابحث بلا همزات.`
-                        : streams.length === 0
-                          ? "لا توجد قنوات بعد."
-                          : tab === "favorites"
-                            ? "لا قنوات في المفضلة بعد — اضغط النجمة بجانب أي قناة."
-                            : tab === "recent"
-                              ? "لا سجل مشاهدة بعد — شغّل أي قناة وسيظهر هنا."
-                              : "لا توجد قنوات في هذا التصنيف — اختر «الكل»."}
-                    </div>
-                  ) : (
-                    <div style={{ height: range.totalHeight, position: "relative" }}>
-                      <div style={{ transform: `translateY(${range.offsetY}px)` }}>
-                        {page.map((ch) => {
-                          const isActive = playing?.id === ch.id;
-                          const key = streamKey(ch);
-                          const isFav = favorites.includes(key);
-                          return (
-                            <div
-                              key={`${ch.catId}-${ch.id}-${ch.name}`}
-                              style={{ height: LIST_ITEM_HEIGHT }}
-                              className={`flex items-center gap-1 ps-1.5 pe-2 rounded-xl mx-2 transition-all ${
-                                isActive
-                                  ? "bg-[#2b4eff]/10 border border-[#2b4eff]/40"
-                                  : "border border-transparent hover:bg-black/[0.04]"
-                              }`}
-                            >
-                              <button
-                                type="button"
-                                data-testid="channel-row"
-                                onClick={() => playStream(ch)}
-                                className="flex-1 min-w-0 flex items-center gap-3 p-1.5 text-right cursor-pointer"
-                              >
-                                <span
-                                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg overflow-hidden border text-sm font-black ${
-                                    isActive
-                                      ? "bg-[#0b0b0f] border-[#0b0b0f] text-[#d8ff3e]"
-                                      : "bg-[#f4f3ef] border-black/10"
-                                  }`}
-                                >
-                                  {ch.icon ? (
-                                    <img
-                                      src={ch.icon}
-                                      alt=""
-                                      loading="lazy"
-                                      className="w-full h-full object-contain p-0.5"
-                                      onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = "none";
-                                        const parent = (e.target as HTMLImageElement).parentElement;
-                                        if (parent) parent.textContent = ch.name.charAt(0);
-                                      }}
-                                    />
-                                  ) : (
-                                    ch.name.charAt(0)
-                                  )}
-                                </span>
-                                <span
-                                  className={`text-[13px] font-bold block truncate ${
-                                    isActive ? "text-[#2b4eff] font-black" : "text-black/80"
-                                  }`}
-                                >
-                                  {ch.name}
-                                </span>
-                                {isActive && (
-                                  <span className="ms-auto w-2.5 h-2.5 rounded-full bg-[#ff5c4d] animate-pulse-soft shrink-0" />
-                                )}
-                              </button>
-                              <button
-                                type="button"
-                                data-testid="favorite-toggle"
-                                onClick={() => toggleFavorite(ch)}
-                                aria-label={isFav ? `إزالة ${ch.name} من المفضلة` : `إضافة ${ch.name} إلى المفضلة`}
-                                aria-pressed={isFav}
-                                className={`w-8 h-8 grid place-items-center rounded-full transition cursor-pointer shrink-0 ${
-                                  isFav
-                                    ? "text-[#ffb020] bg-[#ffb020]/10"
-                                    : "text-black/25 hover:text-[#ffb020]"
-                                }`}
-                              >
-                                <IconStar
-                                  className="w-4 h-4"
-                                  fill={isFav ? "currentColor" : "none"}
-                                  stroke="currentColor"
-                                  strokeWidth={1.8}
-                                />
-                              </button>
-                            </div>
-                          );
-                        })}
+                      <div className="relative">
+                        <IconSearch className="w-4 h-4 absolute start-3.5 top-1/2 -translate-y-1/2 text-black/35" />
+                        <input
+                          type="text"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="ابحث في كل القنوات…"
+                          aria-label="ابحث في كل القنوات"
+                          className="w-full rounded-full bg-white border border-black/10 ps-10 pe-3 py-2.5 text-[13px] font-medium placeholder:text-black/35 focus:border-[#2b4eff] focus:outline-none transition"
+                        />
+                      </div>
+                      {/* تصنيفات */}
+                      <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[11px] font-bold">
+                        <button
+                          data-testid="category-all"
+                          onClick={() => {
+                            setSelectedCat("");
+                            setSearch("");
+                          }}
+                          className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer ${
+                            !selectedCat && !search
+                              ? "bg-[#0b0b0f] text-white font-black"
+                              : "bg-white text-black/50 border border-black/10 hover:border-black"
+                          }`}
+                        >
+                          الكل
+                        </button>
+                        {categories.map((c) => (
+                          <button
+                            key={c.id}
+                            data-testid={`category-${c.id}`}
+                            onClick={() =>
+                              guardLocked(`l:${c.id}`, c.name, () => {
+                                setSelectedCat(c.id);
+                                setSearch("");
+                              })
+                            }
+                            className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer ${
+                              selectedCat === c.id && !search
+                                ? "bg-[#0b0b0f] text-white font-black"
+                                : "bg-white text-black/50 border border-black/10 hover:border-black"
+                            }`}
+                          >
+                            {c.name}
+                          </button>
+                        ))}
                       </div>
                     </div>
-                  )}
-                </div>
 
-                <div className="px-4 py-2.5 border-t border-black/10 flex items-center justify-between gap-2 text-[11px] font-bold text-black/40">
-                  <span>
-                    {visibleStreams.length.toLocaleString("en-US")} قناة معروضة
-                    {search || selectedCat || tab !== "all" ? " (مفلترة)" : ""}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={addAccount}
-                    className="text-[11px] font-black text-[#2b4eff] hover:underline cursor-pointer"
-                  >
-                    + إضافة حساب آخر
-                  </button>
-                </div>
+                    {/* القنوات — قائمة افتراضية: نرسم الظاهر فقط فيبقى الأداء سريعاً بآلاف القنوات */}
+                    <div
+                      ref={listRef}
+                      onScroll={handleListScroll}
+                      data-testid="channel-list"
+                      className="flex-1 overflow-y-auto no-scrollbar"
+                    >
+                      {visibleLiveStreams.length === 0 ? (
+                        <div className="p-8 text-center text-black/40 text-[13px] font-bold">
+                          {search
+                            ? `لا نتائج للبحث "${search}" — جرّب كلمة أخرى أو ابحث بلا همزات.`
+                            : streams.length === 0
+                              ? "لا توجد قنوات بعد."
+                              : tab === "favorites"
+                                ? "لا قنوات في المفضلة بعد — اضغط النجمة بجانب أي قناة."
+                                : tab === "recent"
+                                  ? "لا سجل مشاهدة بعد — شغّل أي قناة وسيظهر هنا."
+                                  : "لا توجد قنوات في هذا التصنيف — اختر «الكل»."}
+                        </div>
+                      ) : (
+                        <div style={{ height: range.totalHeight, position: "relative" }}>
+                          <div style={{ transform: `translateY(${range.offsetY}px)` }}>
+                            {page.map((ch) => {
+                              const isActive = playing?.id === ch.id;
+                              const key = streamKey(ch);
+                              const isFav = favorites.includes(key);
+                              return (
+                                <div
+                                  key={`${ch.catId}-${ch.id}-${ch.name}`}
+                                  style={{ height: LIST_ITEM_HEIGHT }}
+                                  className={`flex items-center gap-1 ps-1.5 pe-2 rounded-xl mx-2 transition-all ${
+                                    isActive
+                                      ? "bg-[#2b4eff]/10 border border-[#2b4eff]/40"
+                                      : "border border-transparent hover:bg-black/[0.04]"
+                                  }`}
+                                >
+                                  <button
+                                    type="button"
+                                    data-testid="channel-row"
+                                    onClick={() => playStream(ch)}
+                                    className="flex-1 min-w-0 flex items-center gap-3 p-1.5 text-right cursor-pointer"
+                                  >
+                                    <span
+                                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg overflow-hidden border text-sm font-black ${
+                                        isActive
+                                          ? "bg-[#0b0b0f] border-[#0b0b0f] text-[#d8ff3e]"
+                                          : "bg-[#f4f3ef] border-black/10"
+                                      }`}
+                                    >
+                                      {ch.icon ? (
+                                        <img
+                                          src={ch.icon}
+                                          alt=""
+                                          loading="lazy"
+                                          className="w-full h-full object-contain p-0.5"
+                                          onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = "none";
+                                            const parent = (e.target as HTMLImageElement).parentElement;
+                                            if (parent) parent.textContent = ch.name.charAt(0);
+                                          }}
+                                        />
+                                      ) : (
+                                        ch.name.charAt(0)
+                                      )}
+                                    </span>
+                                    <span
+                                      className={`text-[13px] font-bold block truncate ${
+                                        isActive ? "text-[#2b4eff] font-black" : "text-black/80"
+                                      }`}
+                                    >
+                                      {ch.name}
+                                    </span>
+                                    {isActive && (
+                                      <span className="ms-auto w-2.5 h-2.5 rounded-full bg-[#ff5c4d] animate-pulse-soft shrink-0" />
+                                    )}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    data-testid="favorite-toggle"
+                                    onClick={() => toggleFavorite(ch)}
+                                    aria-label={isFav ? `إزالة ${ch.name} من المفضلة` : `إضافة ${ch.name} إلى المفضلة`}
+                                    aria-pressed={isFav}
+                                    className={`w-8 h-8 grid place-items-center rounded-full transition cursor-pointer shrink-0 ${
+                                      isFav
+                                        ? "text-[#ffb020] bg-[#ffb020]/10"
+                                        : "text-black/25 hover:text-[#ffb020]"
+                                    }`}
+                                  >
+                                    <IconStar
+                                      className="w-4 h-4"
+                                      fill={isFav ? "currentColor" : "none"}
+                                      stroke="currentColor"
+                                      strokeWidth={1.8}
+                                    />
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="px-4 py-2.5 border-t border-black/10 flex items-center justify-between gap-2 text-[11px] font-bold text-black/40">
+                      <span>
+                        {visibleLiveStreams.length.toLocaleString("en-US")} قناة معروضة
+                        {search || selectedCat || tab !== "all" ? " (مفلترة)" : ""}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={addAccount}
+                        className="text-[11px] font-black text-[#2b4eff] hover:underline cursor-pointer"
+                      >
+                        + إضافة حساب آخر
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {libTab === "vod" && (
+                  <MediaPanel
+                    heading="أفلام باقتك"
+                    items={visibleVod}
+                    categories={vodCats}
+                    loading={vodLoading}
+                    loaded={vodLoaded}
+                    error={vodError}
+                    query={vodSearch}
+                    onQuery={(v) => {
+                      setVodSearch(v);
+                      setVodShown(60);
+                    }}
+                    catId={vodCat}
+                    onCat={(id) => {
+                      setVodCat(id);
+                      setVodShown(60);
+                    }}
+                    searchPlaceholder="ابحث في الأفلام…"
+                    loadedCount={vodStreams.length}
+                    shown={vodShown}
+                    onMore={() => setVodShown((n) => n + 60)}
+                    onPick={openVod}
+                    emptyText={
+                      vodStreams.length === 0
+                        ? "لا توجد أفلام في هذه القائمة — بعض المزودين لا يدعمون VOD."
+                        : "لا نتائج مطابقة."
+                    }
+                    gridId="vod-grid"
+                  />
+                )}
+
+                {libTab === "series" && (
+                  <MediaPanel
+                    heading="مسلسلات باقتك"
+                    items={visibleSeries}
+                    categories={seriesCats}
+                    loading={seriesLoading}
+                    loaded={seriesLoaded}
+                    error={seriesError}
+                    query={seriesSearch}
+                    onQuery={(v) => {
+                      setSeriesSearch(v);
+                      setSeriesShown(60);
+                    }}
+                    catId={seriesCat}
+                    onCat={(id) => {
+                      setSeriesCat(id);
+                      setSeriesShown(60);
+                    }}
+                    searchPlaceholder="ابحث في المسلسلات…"
+                    loadedCount={seriesStreams.length}
+                    shown={seriesShown}
+                    onMore={() => setSeriesShown((n) => n + 60)}
+                    onPick={openSeries}
+                    emptyText={
+                      seriesStreams.length === 0
+                        ? "لا توجد مسلسلات في هذه القائمة — بعض المزودين لا يدعمون المسلسلات."
+                        : "لا نتائج مطابقة."
+                    }
+                    gridId="series-grid"
+                  />
+                )}
               </div>
             </div>
 
@@ -1807,6 +2681,69 @@ function XtreamPlayerInner() {
           </div>
         )}
       </div>
+
+      {/* نوافذ الأفلام والمسلسلات والقفل — خارج أنيميشن القسم (portal) */}
+      {vodModal && (
+        <VodDialog
+          name={vodModal.name}
+          detail={vodDetail}
+          loading={vodDetailLoading}
+          error={vodDetailError}
+          resumeAt={getResumeAt(resumeMap, `v:${vodModal.id}`)}
+          onClose={() => setVodModal(null)}
+          onPlay={() =>
+            playVodNow(
+              vodModal.id,
+              vodDetail?.name || vodModal.name,
+              vodDetail?.ext || "mp4",
+              vodDetail?.poster || ""
+            )
+          }
+        />
+      )}
+      {seriesModal && (
+        <SeriesDialog
+          name={seriesModal.name}
+          info={seriesInfo}
+          loading={seriesInfoLoading}
+          error={seriesInfoError}
+          resumeMap={resumeMap}
+          activeKey={activeItem?.resumeKey ?? ""}
+          onClose={() => setSeriesModal(null)}
+          onPlayEpisode={playEpisodeNow}
+        />
+      )}
+      {pinDlg && (
+        <PinDialog
+          mode={pinDlg.mode}
+          state={pinState}
+          targets={lockTargets}
+          unlockLabel={pinDlg.label ?? ""}
+          onClose={() => setPinDlg(null)}
+          onVerify={(pin) => {
+            if (!pinState || !verifyPin(pinState.pin, pin)) return false;
+            if (pinDlg.need) {
+              const need = pinDlg.need;
+              setUnlocked((prev) => {
+                const next = new Set(prev);
+                next.add(need);
+                return next;
+              });
+            }
+            pinDlg.pending?.();
+            return true;
+          }}
+          onSave={(next) => {
+            setPinState(next);
+            savePinState(storage, next);
+          }}
+          onClear={() => {
+            setPinState(null);
+            savePinState(storage, null);
+            setUnlocked(new Set());
+          }}
+        />
+      )}
     </section>
   );
 }

@@ -37,8 +37,33 @@ import {
   matchesQuery,
   normalizeArabic,
   normalizeHost,
+  ASPECT_MODES,
+  aspectStyle,
+  decodeEpgField,
+  findChannelByNumber,
+  formatClock,
+  formatEpgLine,
+  getResumeAt,
+  hashPin,
+  isTsStreamUrl,
+  isValidPin,
+  loadPinState,
+  loadResumeMap,
   parseM3U,
+  parseSeriesInfo,
   parseShareToken,
+  parseShortEpg,
+  parseVodInfo,
+  savePinState,
+  saveResumePosition,
+  seriesStreamUrl,
+  shortEpgUrl,
+  srtToVtt,
+  stepChannel,
+  timeshiftUrl,
+  toggleLockKey,
+  verifyPin,
+  vodStreamUrl,
   loadProfileList,
   playerApiUrl,
   profileKeyFor,
@@ -581,4 +606,215 @@ test("31) isHlsCandidateUrl و isNgrokUrl يكشفان الروابط المبا
 
   assert.equal(isNgrokUrl("https://abc.ngrok-free.dev/live.m3u8"), true);
   assert.equal(isNgrokUrl("https://srv.com/live.m3u8"), false);
+});
+
+
+/* ٣٢ — روابط الأفلام والمسلسلات والإعادة (Timeshift) وEPG عبر نفس الـWorker/البروكسي */
+test("32) vodStreamUrl و seriesStreamUrl و timeshiftUrl و shortEpgUrl تركّب المسارات عبر كل الوسائط", () => {
+  assert.equal(vodStreamUrl("https://srv.com", "u", "p", 55, "mkv"), "https://srv.com/movie/u/p/55.mkv");
+  assert.equal(
+    vodStreamUrl(`${PROXY}/h/srv.com`, "u", "p", 55),
+    `${PROXY}/h/srv.com/movie/u/p/55.mp4`
+  );
+  assert.equal(
+    vodStreamUrl("/proxy.php?url=https://srv.com", "u", "p", 9, "exe"),
+    `/proxy.php?url=${encodeURIComponent("https://srv.com/movie/u/p/9.mp4")}`
+  );
+  assert.equal(seriesStreamUrl("https://srv.com", "u", "p", 71, "mp4"), "https://srv.com/series/u/p/71.mp4");
+
+  /* 2024-01-01T10:30:00Z — الطابع بـUTC كما تتوقع لوحات Xtream */
+  const start = Date.UTC(2024, 0, 1, 10, 30) / 1000;
+  assert.equal(
+    timeshiftUrl("https://srv.com", "u", "p", 12, start, 180),
+    "https://srv.com/timeshift/u/p/12/2024-01-01:10-30/180.m3u8"
+  );
+
+  assert.equal(
+    shortEpgUrl("https://srv.com", "u", "p", 42, 4),
+    "https://srv.com/player_api.php?username=u&password=p&action=get_short_epg&stream_id=42&limit=4"
+  );
+  /* playerApiUrl يقبل معاملات إضافية بلا كسر الروابط القديمة */
+  assert.equal(
+    playerApiUrl("https://srv.com", "u", "p", "get_vod_info", { vod_id: 7 }),
+    "https://srv.com/player_api.php?username=u&password=p&action=get_vod_info&vod_id=7"
+  );
+});
+
+/* ٣٣ — EPG: فك Base64 العربي + «يعرض الآن / التالي» مع نسبة التقدّم */
+test("33) parseShortEpg يفك Base64 ويرسم يعرض الآن/التالي مع progress", () => {
+  const b64 = (text) => Buffer.from(text, "utf8").toString("base64");
+  const now = Date.UTC(2026, 2, 5, 18, 20) / 1000; /* 18:20 UTC */
+  const payload = {
+    epg_listings: [
+      {
+        title: { base64: b64("استوديو التحليل") },
+        description: { base64: b64("ملخص المباريات") },
+        start_timestamp: String(now - 1200), /* بدأ قبل 20 دقيقة */
+        stop_timestamp: String(now + 1800), /* ينتهي بعد 30 دقيقة */
+      },
+      {
+        title: { base64: b64("المسلسل الليلي") },
+        description: { base64: "" },
+        start_timestamp: String(now + 1800),
+        stop_timestamp: String(now + 5400),
+      },
+    ],
+  };
+  const epg = parseShortEpg(payload, now);
+  assert.equal(epg.now?.title, "استوديو التحليل");
+  assert.equal(epg.now?.desc, "ملخص المباريات");
+  assert.equal(epg.next?.title, "المسلسل الليلي");
+  assert.ok(Math.abs((epg.progress ?? 0) - 1200 / 3000) < 1e-9);
+
+  const line = formatEpgLine(epg);
+  assert.match(line, /يعرض الآن: استوديو التحليل/);
+  assert.match(line, /التالي: المسلسل الليلي/);
+  assert.ok(formatClock(epg.now.startTs).length === 5);
+
+  /* decodeEpgField يقبل نصاً خاماً أو {base64} أو القيم الفارغة */
+  assert.equal(decodeEpgField({ base64: b64("قناة العربية") }), "قناة العربية");
+  assert.equal(decodeEpgField("نص مباشر"), "نص مباشر");
+  assert.equal(decodeEpgField(null), "");
+  assert.equal(decodeEpgField({ base64: "!!!" }), "");
+
+  /* بلا قنوات = حالة فارغة آمنة */
+  const empty = parseShortEpg([], now);
+  assert.equal(empty.now, null);
+  assert.equal(empty.next, null);
+  assert.equal(formatEpgLine(empty), "");
+});
+
+/* ٣٤ — بطاقات الأفلام والمسلسلات: storyline وتقييم وطاقم التمثيل + المواسم والحلقات */
+test("34) parseVodInfo و parseSeriesInfo يبنيان البطاقة التفصيلية والمواسم", () => {
+  const vod = parseVodInfo({
+    movie_data: { stream_id: 31, name: "فيلم الاختبار", container_extension: "mkv" },
+    info: {
+      movie_image: "https://img/p.jpg",
+      plot: "قصة قصيرة",
+      rating: "7.8",
+      cast: "ممثل أ، ممثل ب",
+      genre: "دراما",
+      duration: "01:45:00",
+      releasedate: "2024-05-01",
+      youtubeid: "abc123",
+    },
+  });
+  assert.equal(vod.id, 31);
+  assert.equal(vod.ext, "mkv");
+  assert.equal(vod.poster, "https://img/p.jpg");
+  assert.equal(vod.plot, "قصة قصيرة");
+  assert.equal(vod.rating, 7.8);
+  assert.equal(vod.cast, "ممثل أ، ممثل ب");
+  assert.equal(vod.trailer, "https://www.youtube.com/watch?v=abc123");
+
+  const series = parseSeriesInfo({
+    info: { name: "مسلسل تجريبي", cover: "https://img/s.jpg", plot: "بداية مشوقة", rating: "8" },
+    seasons: [{ season_number: 1, name: "الموسم الأول" }, { season_number: 2, name: "الموسم الثاني" }],
+    episodes: {
+      "1": [
+        { id: 101, episode_num: 2, title: "الثانية", container_extension: "mp4", info: { duration: "45:00" } },
+        { id: 100, episode_num: 1, title: "", container_extension: "mkv", info: {} },
+      ],
+      "2": [{ id: 200, episode_num: 1, title: "البداية", container_extension: "mp4", info: {} }],
+    },
+  });
+  assert.equal(series.seasons.length, 2);
+  assert.equal(series.seasons[0].name, "الموسم الأول");
+  /* الحلقات تُرتب برقمها والبلا عنوان يأخذ «الحلقة N» */
+  assert.deepEqual(series.seasons[0].episodes.map((e) => e.id), [100, 101]);
+  assert.equal(series.seasons[0].episodes[0].title, "الحلقة 1");
+  assert.equal(series.seasons[1].episodes.length, 1);
+  assert.equal(series.cover, "https://img/s.jpg");
+});
+
+/* ٣٥ — أرقام القنوات والتنقل بالريموت + تحويل SRT إلى WebVTT للترجمة المرفوعة */
+test("35) findChannelByNumber و stepChannel و srtToVtt تعمل كما في المشغّل", () => {
+  const list = [stream(1, "أ", "c", { num: "101" }), stream(2, "ب", "c", { num: "102" }), stream(3, "ج", "c", { num: "103" })];
+  assert.equal(findChannelByNumber(list, "102")?.id, 2);
+  assert.equal(findChannelByNumber(list, "0103")?.id, 3); /* تجاهل الأصفار */
+  assert.equal(findChannelByNumber(list, "999"), null);
+  assert.equal(findChannelByNumber(list, ""), null);
+
+  /* التجوّز: بعد الأخيرة يعود لأولى والعكس */
+  assert.equal(stepChannel(list, streamKey(list[0]), -1)?.id, 3);
+  assert.equal(stepChannel(list, streamKey(list[2]), 1)?.id, 1);
+  assert.equal(stepChannel(list, streamKey(list[1]), 1)?.id, 3);
+  assert.equal(stepChannel([], "x", 1), null);
+
+  const srt = "1\n00:00:01,500 --> 00:00:04,000\nمرحباً بالعالم\n\n2\n00:00:05,000 --> 00:00:07,000\nالسطر الثاني\n";
+  const vtt = srtToVtt(srt);
+  assert.match(vtt, /^WEBVTT/);
+  assert.match(vtt, /00:00:01\.500 --> 00:00:04\.000/);
+  assert.ok(!vtt.includes(",000 -->"));
+  assert.ok(!/^\s*\d+\s*$/m.test(vtt.replace("WEBVTT", ""))); /* لا أرقام سطوح في VTT */
+});
+
+/* ٣٦ — القفل الأبوي: PIN من 4 أرقام يُخزَّن Hashed ولا يُكشف */
+test("36) hashPin/verifyPin/loadPinState/toggleLockKey تحمي التصنيفات", () => {
+  assert.equal(isValidPin("1234"), true);
+  assert.equal(isValidPin("12a4"), false);
+  assert.equal(isValidPin("123"), false);
+
+  const h = hashPin("4321");
+  assert.ok(h.length > 4);
+  assert.notEqual(h, "4321");
+  assert.equal(verifyPin(h, "4321"), true);
+  assert.equal(verifyPin(h, "1111"), false);
+  assert.equal(verifyPin("", "1111"), false);
+  assert.equal(verifyPin(h, "111"), false);
+
+  const storage = fakeStorage();
+  assert.equal(loadPinState(storage), null);
+  savePinState(storage, { pin: h, locked: [] });
+  assert.equal(loadPinState(storage)?.pin, h);
+
+  let state = toggleLockKey({ pin: h, locked: [] }, "l:5");
+  assert.deepEqual(state.locked, ["l:5"]);
+  state = toggleLockKey(state, "l:5");
+  assert.deepEqual(state.locked, []);
+  state = toggleLockKey(state, "v:9");
+  state = toggleLockKey(state, "l:5");
+  assert.deepEqual([...state.locked].sort(), ["l:5", "v:9"]);
+});
+
+/* ٣٧ — متابعة المشاهدة: حفظ موضع الحلقة/الفيلم لكل حساب على حدة مع تقليم ذكي */
+test("37) saveResumePosition و getResumeAt يحفظان الموضع ويتقليمان للأقدم", () => {
+  const storage = fakeStorage();
+  const profile = "x:host:user";
+  assert.equal(getResumeAt(loadResumeMap(storage, profile), "e:1"), 0);
+
+  assert.equal(saveResumePosition(storage, profile, "e:1", 120, 1000), true);
+  assert.equal(saveResumePosition(storage, profile, "e:2", 10, 2000), false); /* أقصر من 15 ثانية */
+  assert.equal(saveResumePosition(storage, profile, "", 500, 3000), false);
+
+  const map = loadResumeMap(storage, profile);
+  assert.equal(getResumeAt(map, "e:1"), 120);
+  assert.equal(getResumeAt({ "e:1": { t: 5, ts: 1 } }, "e:1"), 0); /* موضع صغير يُهمل */
+
+  /* 300 مدخل كحد أقصى — الأقدم يُقلم */
+  for (let i = 0; i < 320; i += 1) saveResumePosition(storage, profile, `e:${i}`, 60 + i, 10_000 + i);
+  const big = loadResumeMap(storage, profile);
+  assert.equal(Object.keys(big).length, 300);
+  assert.equal(big["e:0"], undefined);
+  assert.ok(big["e:319"]);
+
+  /* حساب آخر لا يرى متابعات هذا الحساب */
+  assert.equal(Object.keys(loadResumeMap(storage, "x:other")).length, 0);
+});
+
+/* ٣٨ — أوضاع العرض 16:9/4:3/Fill/Contain + كشف روابط TS الخام لـmpegts.js */
+test("38) aspectStyle يعطي أنماط العرض و isTsStreamUrl يميّز MPEG-TS الخام", () => {
+  assert.equal(ASPECT_MODES.length, 5);
+  assert.equal(aspectStyle("auto").objectFit, "contain");
+  assert.equal(aspectStyle("cover").objectFit, "cover");
+  assert.equal(aspectStyle("fill").objectFit, "fill");
+  assert.equal(aspectStyle("16:9").aspectRatio, "16 / 9");
+  assert.equal(aspectStyle("4:3").aspectRatio, "4 / 3");
+  assert.equal(aspectStyle(undefined).objectFit, "contain");
+
+  assert.equal(isTsStreamUrl("http://srv.com/live/u/p/5.ts"), true);
+  assert.equal(isTsStreamUrl("/proxy.php?url=" + encodeURIComponent("http://srv.com/live/u/p/5.ts?x=1")), true);
+  assert.equal(isTsStreamUrl("http://srv.com/live/u/p/5.m3u8"), false);
+  assert.equal(isTsStreamUrl("http://srv.com/movie/u/p/5.mp4"), false);
+  assert.equal(isTsStreamUrl(""), false);
 });

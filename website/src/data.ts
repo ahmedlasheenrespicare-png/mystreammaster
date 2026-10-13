@@ -288,7 +288,7 @@ export const FEATURED_CHANNELS: ChannelItem[] = [
   {
     name: "MBC 1 HD (العامة والمسلسلات)",
     logo: "🟣",
-    url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1-na/eec141533c90dd34722c503a296dd0d8/index.m3u8",
+    url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1/15cf99af5de54063fdabfefe66adc075/index.m3u8",
     cat: "قنوات MBC",
   },
   {
@@ -306,7 +306,7 @@ export const FEATURED_CHANNELS: ChannelItem[] = [
   {
     name: "MBC Masr Drama HD (دراما مصر)",
     logo: "🎭",
-    url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-drama/567b703c19ede6598222de81b0e4504b/index.m3u8",
+    url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-drama/567b703c19ede6598222de81b0e4508b/index.m3u8",
     cat: "قنوات MBC",
   },
   {
@@ -330,7 +330,7 @@ export const FEATURED_CHANNELS: ChannelItem[] = [
   {
     name: "MBC Bollywood HD (هندي مدبلج ومترجم)",
     logo: "💃",
-    url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-bollywood/546eb407d7dcf9a209255dd2496903764/index.m3u8",
+    url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-bollywood/546eb40d7dcf9a209255dd2496903764/index.m3u8",
     cat: "قنوات MBC",
   },
   {

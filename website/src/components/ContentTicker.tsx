@@ -60,7 +60,7 @@ export default function ContentTicker() {
   return (
     <section
       className="relative overflow-hidden bg-[#faf9f6] py-16 md:py-24"
-      aria-label="القنوات والمنصات المتوفرة داخل الاشتراك"
+      aria-label="قنوات ومنصات مع إحالات للاشتراكات الرسمية"
     >
       <div className="mx-auto mb-10 max-w-[1370px] px-5">
         <div className="flex items-center justify-center gap-4">
@@ -72,13 +72,11 @@ export default function ContentTicker() {
         </div>
 
         <h2 className="mt-5 text-center font-display font-black tracking-tight leading-[1.2] text-[34px] md:text-[54px]">
-          قنوات ومنصات <span className="font-serif italic font-normal">يعرفها العالم كله</span>
-          <br />
-          في اشتراك واحد
+          قنوات مفتوحة <span className="font-serif italic font-normal">معنا</span> — ومنصات عالمية رسميًا
         </h2>
 
         <p className="mt-4 text-center text-[14px] font-bold text-black/50 md:text-[15px]">
-          الرياضة والسينما والأطفال — كل العلامات الأشهر بين يديك
+          تضمّ الجدارية علامات لقنوات عربية ورياضية ومنصات عالمية؛ المحتوى المدفوع يُشاهَد باشتراكه الرسمي.
           <span className="mr-2 text-[11.5px] font-medium text-black/35">
             (مرّر على أي شريط للإيقاف المؤقت)
           </span>
@@ -112,8 +110,10 @@ export default function ContentTicker() {
       </div>
 
       <p className="relative mx-auto mt-8 max-w-[1370px] px-5 text-center text-[11.5px] leading-relaxed text-black/35">
-        شعارات القنوات والمنصات علامات تجارية مسجلة مملوكة لأصحابها — وتُعرض هنا للدلالة على
-        المحتوى المتوفر في الاشتراكات فقط
+        شعارات القنوات والمنصات مملوكة لأصحابها وتُعرض للتعريف. المحتوى المدفوع (beIN، OSN، Shahid، Netflix …) غير مشمول في اشتراكنا ولا يُبثّ من الموقع، ونوفّر روابط اشتراكه الرسمي فقط:{" "}
+        <a href="/watch-legal.html" className="font-semibold underline underline-offset-2 hover:text-black/70">
+          /watch-legal.html
+        </a>
       </p>
     </section>
   );

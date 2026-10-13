@@ -281,6 +281,10 @@ body {
 
 /* ====== احترام تفضيل تقليل الحركة ====== */
 @media (prefers-reduced-motion: reduce) {
+  /* نفس ما تفعله صفحات المتجر القديمة: التمرير يصبح فورياً بلا انسياب */
+  html {
+    scroll-behavior: auto;
+  }
   .animate-marquee,
   .animate-marquee-reverse,
   .animate-marquee-slow,

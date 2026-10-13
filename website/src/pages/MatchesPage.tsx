@@ -27,10 +27,7 @@ export default function MatchesPage() {
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [online, setOnline] = useState(true);
-  const [auto, setAuto] = useState(true);
   const refreshNow = useRef<() => void>(() => {});
-  const automatic = useRef(auto);
-  automatic.current = auto;
   const [zones, setZones] = useState(TIME_ZONES);
   const selectedDate = useRef<HTMLButtonElement>(null);
   const calendarDay = useRef('');
@@ -106,7 +103,7 @@ export default function MatchesPage() {
     };
     void refresh();
     refreshNow.current = () => { void refresh(); };
-    const timer = window.setInterval(() => { if (automatic.current) void refresh(); }, REFRESH_MS);
+    const timer = window.setInterval(() => { void refresh(); }, REFRESH_MS);
     const resume = () => { if (!document.hidden) void refresh(); };
     document.addEventListener('visibilitychange', resume);
     window.addEventListener('online', resume);
@@ -132,9 +129,8 @@ export default function MatchesPage() {
 
       <div className="matches-toolbar" aria-label="أدوات البحث والتحديث">
         <div className="matches-status">
-          <span className={`update-indicator ${auto && online ? 'active' : ''}`} aria-hidden="true" />
-          <div className="matches-status-text"><strong>{auto ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف'}</strong><small>{updated ? `آخر بيانات: ${kickoff(updated, zone)} — ${selectedZoneName}` : 'في انتظار بيانات المصدر'}{loading && updated ? ' · جارٍ التحديث' : ''}</small></div>
-          <label className="matches-auto-toggle"><input type="checkbox" checked={auto} onChange={e => { setAuto(e.target.checked); if (e.target.checked) refreshNow.current(); }} /> <span>تفعيل التحديث التلقائي</span></label>
+          <span className={`update-indicator ${online ? 'active' : ''}`} aria-hidden="true" />
+          <div className="matches-status-text"><strong>{online ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف مؤقتًا — لا يوجد اتصال'}</strong><small>{updated ? `آخر بيانات: ${kickoff(updated, zone)} — ${selectedZoneName}` : 'في انتظار بيانات المصدر'}{loading && updated ? ' · جارٍ التحديث' : ''}</small></div>
         </div>
         <label className="matches-field"><span className="matches-field-label">المنطقة الزمنية</span><select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select></label>
         <label className="matches-field"><span className="matches-field-label">البطولة</span><select value={league} onChange={e => setLeague(e.target.value)}><option value="all">كل البطولات المتاحة</option>{LEAGUES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>

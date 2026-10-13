@@ -33,7 +33,8 @@ export default function BlogTeaser() {
         </Reveal>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {BLOG_POSTS.map((post, i) => (
+          {/* المقالات المرتبطة بباقة هي أدلّة الشراء، وهي الأنسب لصفحة الرئيسية */}
+          {BLOG_POSTS.filter((post) => post.relatedPlan).slice(0, 3).map((post, i) => (
             <Reveal key={post.slug} variant="up" delay={i * 110}>
               <a
                 href={to(`blog/${post.slug}/`)}

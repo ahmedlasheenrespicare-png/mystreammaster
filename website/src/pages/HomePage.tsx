@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Hero from "../components/Hero";
 import ContentTicker from "../components/ContentTicker";
 import WordBand from "../components/WordBand";
@@ -23,6 +24,33 @@ interface HomePageProps {
   onSelectPlan: (planId: string) => void;
 }
 
+/* ==========================================================================
+   التمرير إلى القسم المطلوب عند فتح رابط فيه #hash
+   --------------------------------------------------------------------------
+   المتصفح ينفّذ تمرير الـhash قبل اكتمال التخطيط (خطوط/صور/أقسام تُرسم عند
+   التحميل) فيبقى الزائر في أعلى الصفحة أحياناً. نعيد المحاولة بعد أول إطار
+   وبعد اكتمال التحميل، فلا تفشل روابط الأقسام المباشرة (#faq، #xtream …).
+========================================================================== */
+function useHashScroll() {
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.location.hash) return;
+    const scroll = () => {
+      const el = document.getElementById(window.location.hash.replace(/^#/, ""));
+      /* "instant" تتجاوز scroll-behavior:smooth — القفز لرابط قسم يجب أن يصل فوراً
+         لا أن ينساب على آلاف البكسلات فيصل الزائر متأخراً أو لا يصل */
+      if (el) el.scrollIntoView({ block: "start", behavior: "instant" });
+    };
+    const raf = window.requestAnimationFrame(scroll);
+    const timers = [250, 900, 1800].map((ms) => window.setTimeout(scroll, ms));
+    window.addEventListener("load", scroll);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      timers.forEach((t) => window.clearTimeout(t));
+      window.removeEventListener("load", scroll);
+    };
+  }, []);
+}
+
 /* الصفحة الرئيسية — كل أقسام الموقع التسويقية في مكانها كما كانت */
 export default function HomePage({
   currency,
@@ -32,6 +60,8 @@ export default function HomePage({
   onOpenTrial,
   onSelectPlan,
 }: HomePageProps) {
+  useHashScroll();
+
   return (
     <>
       <Hero onOpenTrial={onOpenTrial} />

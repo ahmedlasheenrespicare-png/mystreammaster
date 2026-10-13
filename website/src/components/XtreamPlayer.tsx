@@ -1,13 +1,50 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type Hls from "hls.js";
 import { loadHls } from "../hls";
-import { PROXY_BASE } from "../config";
+import { PROXY_BASE, WHATSAPP_NUMBER } from "../config";
+import {
+  ACCOUNTS_KEY,
+  FAVORITES_KEY,
+  LIST_ITEM_HEIGHT,
+  LIST_OVERSCAN,
+  RECENTS_KEY,
+  STORAGE_KEY,
+  accountKey,
+  accountLabel,
+  buildDiagReport,
+  buildModes,
+  composeFailMsg,
+  createShareToken,
+  daysUntil,
+  filterStreams,
+  loadAccounts,
+  loadProfileList,
+  liveStreamUrl,
+  m3uCandidates,
+  m3uDownloadUrl,
+  normalizeHost,
+  parseM3U,
+  playerApiUrl,
+  profileKeyFor,
+  pushRecent,
+  removeAccount,
+  saveJSON,
+  saveProfileList,
+  schemeOf,
+  sortCategories,
+  streamKey,
+  toggleInList,
+  upsertAccount,
+  windowRange,
+} from "../lib/xtream.mjs";
+import type { Category, DiagEntry, Stream, XtreamAccount, XtreamMode } from "../lib/xtream.mjs";
 import {
   IconArrowUp,
   IconArrowUpRight,
   IconCheck,
   IconChevronDown,
   IconClose,
+  IconClock,
   IconPlay,
   IconSearch,
   IconShieldCheck,
@@ -23,6 +60,15 @@ import { Reveal } from "./motion";
    و يشاهد قنوات باقته مباشرة على الموقع — مثل IPTV Smarters لكن بتصميمك
    البيانات تُحفظ في متصفح المشترك فقط (localStorage) ولا تُرسل لأي جهة أخرى
 
+   منطق هذا القسم كامل في src/lib/xtream.mjs (دوال خالصة مُختبَرة في
+   scripts/test-xtream.mjs) وهذا الملف للواجهة فقط:
+   • تعدد الحسابات مع تبديل فوري
+   • مفضلة وسجل مشاهدة لكل حساب على حدة (لا تختلط بين مزودين)
+   • بحث عربي موحّد يعمل على كل القنوات في كل التصنيفات
+   • قائمة قنوات افتراضية (Virtual) بلا سقف 300 قناة
+   • اختيار الجودة وصورة داخل صورة وملء الشاشة
+   • تقرير تشخيص ورمز مشاركة للدعم الفني بلا كلمة سر
+
    لماذا مسارات متعددة؟
    • بعض اللوحات لا ترسل CORS → يحجب المتصفح الاتصال المباشر
    • بعض اللوحات محمية بـ WAF يحجب الوسطاء
@@ -30,86 +76,53 @@ import { Reveal } from "./motion";
      — لا يحتاج CORS إطلاقاً ويعرض كل القنوات
 ========================================================================== */
 
-const STORAGE_KEY = "smp-xtream-account";
-
 /* ========================================================================= */
 /*  الأنواع                                                                   */
 /* ========================================================================= */
 
-type ModeId = "direct-https" | "direct-http" | "proxy-https" | "proxy-http" | "m3u";
-
-interface Mode {
-  id: ModeId;
-  label: string;
-  base: (h: string) => string;
-}
-
-interface XtreamAccount {
-  host: string; /* بدون بروتوكول — مثل nv2live.com أو 1.2.3.4:25461 */
-  username: string;
-  password: string;
-}
-
 interface UserInfo {
   status: string;
   expDate: string | null;
+  expTs: number | null;
   maxConnections: string;
   isTrial: boolean;
   activeConnections: string;
 }
 
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface Stream {
-  id: number;
-  name: string;
-  icon: string;
-  catId: string;
-  url?: string; /* موجود في مصدر ملفات M3U فقط */
-}
-
-interface DiagEntry {
-  mode: string;
-  label: string;
-  status: "ok" | "fail" | "skip";
-  note: string;
-}
+type TabId = "all" | "favorites" | "recent";
 
 type Phase = "form" | "loading" | "ready" | "error";
 
 /* ========================================================================= */
-/*  أدوات مساعدة                                                              */
+/*  أدوات مساعدة (تعتمد على المتصفح فقط — المنطق الخالص في lib/xtream.mjs)     */
 /* ========================================================================= */
 
-/* تنقية المدخلات: المستخدم قد يلصق http://host:port/ أو host فقط أو رابط get.php كامل */
-function normalizeHost(raw: string): string {
-  return raw
-    .trim()
-    .replace(/^https?:\/\//i, "")
-    .replace(/\/+.*$/, "")
-    .replace(/\/+$/, "")
-    .replace(/^:+/, "");
+function copyText(text: string): Promise<void> {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy") ? resolve() : reject(new Error("copy failed"));
+    } catch (err) {
+      reject(err);
+    } finally {
+      document.body.removeChild(ta);
+    }
+  });
 }
 
-/* المسارات المتاحة — نتجنب المسارات المستحيلة تقنياً */
-function availableModes(): Mode[] {
-  const modes: Mode[] = [
-    { id: "direct-https", label: "مباشر HTTPS", base: (h) => `https://${h}` },
-    { id: "proxy-https", label: "وسيط HTTPS", base: (h) => `${PROXY_BASE}/h/${h}` },
-    { id: "proxy-http", label: "وسيط HTTP", base: (h) => `${PROXY_BASE}/x/${h}` },
-  ];
-  /* الاتصال http المباشر من صفحة https مستحيل (Mixed Content) — نضيفه فقط لو الصفحة نفسها http */
-  if (typeof window !== "undefined" && window.location.protocol === "http:") {
-    modes.splice(1, 0, {
-      id: "direct-http",
-      label: "مباشر HTTP",
-      base: (h) => `http://${h}`,
-    });
+/* الوصول الآمن للتخزين المحلي (قد يكون معطلاً في وضع التصفح الخاص) */
+function getStorage(): Storage | null {
+  try {
+    return typeof window !== "undefined" ? window.localStorage : null;
+  } catch {
+    return null;
   }
-  return modes;
 }
 
 /* fetch مع مهلة زمنية و تصنيف واضح للخطأ — أساس التشخيص */
@@ -143,140 +156,40 @@ async function fetchJson(
   }
 }
 
-/* رسالة خطأ ذكية حسب نوع الفشل */
-function composeFailMsg(entries: DiagEntry[]): string {
-  const direct = entries.filter((e) => e.mode.startsWith("direct"));
-  const proxies = entries.filter((e) => e.mode.startsWith("proxy"));
-  const corsBlocked =
-    direct.length > 0 && direct.every((e) => /CORS|مهلة/.test(e.note));
-  const wafBlocked = proxies.some((e) =>
-    /HTTP 403|HTTP 429|HTTP 52\d|مهلة/.test(e.note)
-  );
-
-  if (corsBlocked && wafBlocked) {
-    return "هذا المزود يحجب التشغيل من داخل المواقع: يمنع الاتصال المباشر (CORS) ويحجب الوسطاء. الحل المضمون: اضغط «نزّل ملف قنواتك» بالأسفل ثم ارفعه — أو تأكد أن رابط السيرفر مطابق تماماً لما أعطاه المزود (قد يحتوي رقماً مثل :8080).";
-  }
-  if (corsBlocked) {
-    return "المتصفح حجب الاتصال المباشر بالسيرفر (CORS) — كثير من المزودين يفعلون ذلك. جرّب زر «نزّل ملف قنواتك» بالأسفل ثم ارفعه، فهو يعمل مع أغلب المزودين.";
-  }
-  if (entries.every((e) => /مهلة/.test(e.note))) {
-    return "لا استجابة من السيرفر خلال المهلة — تأكد من صحة الرابط (قد يكون السيرفر متوقفاً مؤقتاً) ثم أعد المحاولة.";
-  }
-  return "تعذر الاتصال بالسيرفر بعد تجربة كل المسارات — انسخ «تقرير التشخيص» بالأسفل وأرسله لنا لنحدد السبب بالضبط.";
-}
-
-/* تحليل ملف M3U → قنوات + تصنيفات (group-title) */
-function parseM3U(text: string): { categories: Category[]; streams: Stream[] } {
-  const lines = text.split(/\r?\n/);
-  const streams: Stream[] = [];
-  const groups = new Map<string, number>();
-  let pending: { name: string; icon: string; group: string } | null = null;
-
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line) continue;
-    if (line.startsWith("#EXTINF:")) {
-      const name = line.slice(line.lastIndexOf(",") + 1).trim() || "قناة";
-      const icon = /tvg-logo="([^"]*)"/.exec(line)?.[1] ?? "";
-      const group = (/group-title="([^"]*)"/.exec(line)?.[1] ?? "").trim() || "قنواتي";
-      pending = { name, icon, group };
-    } else if (pending && !line.startsWith("#")) {
-      streams.push({
-        id: streams.length + 1,
-        name: pending.name,
-        icon: pending.icon,
-        catId: pending.group,
-        url: line,
-      });
-      groups.set(pending.group, (groups.get(pending.group) ?? 0) + 1);
-      pending = null;
-    }
-  }
-
-  const categories: Category[] = [...groups.keys()]
-    .map((name) => ({ id: name, name }))
-    .sort((a, b) => a.name.localeCompare(b.name, "ar"));
-
-  return { categories, streams };
-}
-
-/* روابط التشغيل المرشحة لمصدر M3U:
-   نسخة m3u8 أولاً (تعمل مع hls.js) ثم الأصلية ثم عبر الوسيط —
-   مع ترقية http→https لأن الصفحة https (وإلا حجبها المتصفح فوراً) */
-function m3uCandidates(rawUrl: string): string[] {
-  const list: string[] = [];
-  const push = (u: string) => {
-    if (u && !list.includes(u)) list.push(u);
-  };
-  const isHttpsSite =
-    typeof window !== "undefined" && window.location.protocol === "https:";
-  const url = rawUrl.trim();
-  const isHls = /\.m3u8($|\?)/i.test(url);
-  const isTs = /\.ts($|\?)/i.test(url);
-  const https = (u: string) => u.replace(/^http:\/\//i, "https://");
-
-  /* روابط ts بنمط xtream لها نسخة m3u8 مكافئة على نفس السيرفر */
-  const hlsVariant = isTs && /\/live\//.test(url)
-    ? url.replace(/\.ts($|\?)/i, ".m3u8$1")
-    : isHls
-      ? url
-      : "";
-
-  if (hlsVariant) {
-    push(isHttpsSite ? https(hlsVariant) : hlsVariant);
-    push(hlsVariant);
-    push(`${PROXY_BASE}/?u=${encodeURIComponent(hlsVariant)}`);
-  }
-  push(isHttpsSite ? https(url) : url);
-  push(url);
-  push(`${PROXY_BASE}/?u=${encodeURIComponent(url)}`);
-  return list;
-}
-
-function copyText(text: string): Promise<void> {
-  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
-  return new Promise((resolve, reject) => {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand("copy") ? resolve() : reject(new Error("copy failed"));
-    } catch (err) {
-      reject(err);
-    } finally {
-      document.body.removeChild(ta);
-    }
-  });
-}
-
 /* ========================================================================= */
-/*  صندوق التشخيص الفني — يظهر في كل الحالات لمعرفة ماذا حدث بالضبط           */
+/*  صندوق التشخيص الفني — تقرير + رمز مشاركة للدعم (بلا كلمة سر)              */
 /* ========================================================================= */
 
 function DiagBox({
   entries,
   report,
+  token,
   tone,
 }: {
   entries: DiagEntry[];
   report: string;
+  token: string;
   tone: "light" | "dark";
 }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"" | "report" | "token">("");
   if (entries.length === 0) return null;
 
   const light = tone === "light";
+  const flash = (kind: "report" | "token") => {
+    setCopied(kind);
+    window.setTimeout(() => setCopied(""), 2500);
+  };
+
+  const shareText = `تقرير مشغل الاشتراك (ستريم ماستر برو):\n${token}`;
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(shareText)}`;
 
   return (
     <details
-      className={`rounded-2xl border text-right ${
-        light ? "border-black/10 bg-black/[0.03]" : "border-white/10 bg-white/[0.04]"
-      }`}
+      data-testid="diag-box"
+      className={`rounded-2xl border text-right ${light ? "border-black/10 bg-black/[0.03]" : "border-white/10 bg-white/[0.04]"}`}
     >
       <summary
+        data-testid="diag-summary"
         className={`cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden px-4 py-3 flex items-center gap-2 text-[12.5px] font-black ${
           light ? "text-black/60" : "text-white/60"
         }`}
@@ -309,26 +222,61 @@ function DiagBox({
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          onClick={() => {
-            copyText(report)
-              .then(() => {
-                setCopied(true);
-                window.setTimeout(() => setCopied(false), 2500);
-              })
-              .catch(() => {});
-          }}
-          className={`text-[12px] font-black px-4 py-2 rounded-full transition cursor-pointer ${
-            copied
-              ? "bg-[#3effe0] text-black"
-              : light
-                ? "bg-black text-white hover:bg-[#2b4eff]"
-                : "bg-white/10 text-white hover:bg-[#d8ff3e] hover:text-black"
-          }`}
-        >
-          {copied ? "تم النسخ ✓ الصقه لنا في رسالة" : "نسخ التقرير كاملاً"}
-        </button>
+
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              copyText(report)
+                .then(() => flash("report"))
+                .catch(() => {});
+            }}
+            className={`text-[12px] font-black px-4 py-2 rounded-full transition cursor-pointer ${
+              copied === "report"
+                ? "bg-[#3effe0] text-black"
+                : light
+                  ? "bg-black text-white hover:bg-[#2b4eff]"
+                  : "bg-white/10 text-white hover:bg-[#d8ff3e] hover:text-black"
+            }`}
+          >
+            {copied === "report" ? "تم النسخ ✓" : "نسخ التقرير كاملاً"}
+          </button>
+
+          <button
+            type="button"
+            data-testid="copy-share-token"
+            onClick={() => {
+              copyText(token)
+                .then(() => flash("token"))
+                .catch(() => {});
+            }}
+            className={`text-[12px] font-black px-4 py-2 rounded-full border transition cursor-pointer ${
+              copied === "token"
+                ? "border-[#3effe0] text-[#3effe0]"
+                : light
+                  ? "border-black/15 text-black/60 hover:border-black"
+                  : "border-white/20 text-white/70 hover:border-[#d8ff3e] hover:text-[#d8ff3e]"
+            }`}
+          >
+            {copied === "token" ? "تم نسخ الرمز ✓" : "نسخ رمز التشخيص"}
+          </button>
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="send-diag-whatsapp"
+            className={`text-[12px] font-black px-4 py-2 rounded-full transition ${
+              light ? "bg-[#0b0b0f] text-[#d8ff3e]" : "bg-[#d8ff3e] text-black"
+            }`}
+          >
+            إرسال للدعم عبر واتساب
+          </a>
+        </div>
+
+        <p className={`text-[11px] font-bold leading-relaxed ${light ? "text-black/40" : "text-white/40"}`}>
+          التقرير والرمز لا يحتويان كلمة السر، واسم المستخدم يظهر مقنّعاً (أول حرفين فقط).
+        </p>
       </div>
     </details>
   );
@@ -339,14 +287,22 @@ function DiagBox({
 /* ========================================================================= */
 
 function XtreamPlayerInner() {
+  const storage = useMemo(getStorage, []);
+  const modes = useMemo(
+    () =>
+      buildModes({
+        proxyBase: PROXY_BASE,
+        isHttpsSite:
+          typeof window === "undefined" ? true : window.location.protocol === "https:",
+      }),
+    []
+  );
+
   /* حالة الدخول */
   const [phase, setPhase] = useState<Phase>("form");
+  const [accounts, setAccounts] = useState<XtreamAccount[]>([]);
   const [account, setAccount] = useState<XtreamAccount | null>(null);
-  const [activeMode, setActiveMode] = useState<Mode>({
-    id: "direct-https",
-    label: "مباشر HTTPS",
-    base: (h) => `https://${h}`,
-  });
+  const [activeMode, setActiveMode] = useState<XtreamMode>(modes[0]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [diag, setDiag] = useState<DiagEntry[]>([]);
@@ -354,34 +310,46 @@ function XtreamPlayerInner() {
   /* مصدر البيانات: بيانات xtream أم ملف m3u */
   const [source, setSource] = useState<"xtream" | "m3u">("xtream");
   const [m3uName, setM3uName] = useState("");
+  const [profile, setProfile] = useState(profileKeyFor(null, ""));
 
   /* بيانات القنوات */
   const [categories, setCategories] = useState<Category[]>([]);
   const [streams, setStreams] = useState<Stream[]>([]);
   const [selectedCat, setSelectedCat] = useState<string>("");
   const [search, setSearch] = useState("");
+  const [tab, setTab] = useState<TabId>("all");
+
+  /* المفضلة وسجل المشاهدة — لكل حساب على حدة */
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [recents, setRecents] = useState<string[]>([]);
 
   /* التشغيل */
   const [playing, setPlaying] = useState<Stream | null>(null);
   const [playError, setPlayError] = useState("");
+  const [levels, setLevels] = useState<{ index: number; label: string }[]>([]);
+  const [levelIndex, setLevelIndex] = useState(-1);
+  const [pipOn, setPipOn] = useState(false);
+
+  /* القائمة الافتراضية */
+  const [listScrollTop, setListScrollTop] = useState(0);
+  const [viewHeight, setViewHeight] = useState(620);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
-  /* استرجاع الجلسة المحفوظة عند فتح الصفحة */
+  /* مفتاح الحساب الحالي — فارغ لو لا يوجد حساب (مصدر ملف M3U) */
+  const keyOf = (acc: XtreamAccount | null | undefined) => (acc ? accountKey(acc) : "");
+
+  /* استرجاع الحسابات المحفوظة (مع هجرة الجلسة القديمة) وفتح أول حساب */
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const acc = JSON.parse(saved) as XtreamAccount;
-        if (acc.host && acc.username && acc.password) {
-          setAccount(acc);
-          setPhase("loading");
-        }
-      }
-    } catch {
-      /* تجاهل */
-    }
+    const saved = loadAccounts(storage);
+    if (saved.length === 0) return;
+    setAccounts(saved);
+    setAccount(saved[0]);
+    setPhase("loading");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* تسجيل الدخول التلقائي عند وجود حساب */
@@ -391,6 +359,46 @@ function XtreamPlayerInner() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, account]);
+
+  /* تحميل مفضلة/سجل الحساب الحالي عند تبديل الحساب أو المصدر */
+  useEffect(() => {
+    setFavorites(loadProfileList(storage, FAVORITES_KEY, profile));
+    setRecents(loadProfileList(storage, RECENTS_KEY, profile));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
+
+  /* قياس ارتفاع القائمة لرسم النطاق الظاهر فقط */
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const measure = () => setViewHeight(el.clientHeight || 620);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [phase]);
+
+  /* تصفير التمرير عند تغيير البحث أو التصنيف أو التبويب */
+  useEffect(() => {
+    setListScrollTop(0);
+    if (listRef.current) listRef.current.scrollTop = 0;
+  }, [tab, search, selectedCat, streams]);
+
+  /* ==== حفظ التغيير في المفضلة / السجل محلياً ==== */
+  function setFavoritesAndSave(next: string[]) {
+    setFavorites(next);
+    saveProfileList(storage, FAVORITES_KEY, profile, next);
+  }
+
+  function setRecentsAndSave(next: string[]) {
+    setRecents(next);
+    saveProfileList(storage, RECENTS_KEY, profile, next);
+  }
+
+  function toggleFavorite(stream: Stream) {
+    setFavoritesAndSave(toggleInList(favorites, streamKey(stream)));
+  }
 
   /* ============ الدخول: نجرّب المسارات بالترتيب مع تسجيل كل نتيجة ============ */
   async function login(acc: XtreamAccount) {
@@ -404,13 +412,10 @@ function XtreamPlayerInner() {
       return;
     }
     const normAcc = { ...acc, host };
-    const modes = availableModes();
     const log: DiagEntry[] = [];
 
     for (const mode of modes) {
-      const authUrl = `${mode.base(host)}/player_api.php?username=${encodeURIComponent(
-        normAcc.username
-      )}&password=${encodeURIComponent(normAcc.password)}`;
+      const authUrl = playerApiUrl(mode.base(host), normAcc.username, normAcc.password);
 
       const auth = await fetchJson(authUrl, 12000);
       if (!auth.ok) {
@@ -418,9 +423,7 @@ function XtreamPlayerInner() {
         continue;
       }
 
-      const data = auth.data as
-        | { user_info?: Record<string, unknown> }
-        | null;
+      const data = auth.data as { user_info?: Record<string, unknown> } | null;
       if (!data || !data.user_info) {
         log.push({
           mode: mode.id,
@@ -463,11 +466,11 @@ function XtreamPlayerInner() {
         continue;
       }
 
-      const catList: Category[] = (
-        Array.isArray(catR.data) ? (catR.data as { category_id: string; category_name: string }[]) : []
-      )
-        .map((c) => ({ id: String(c.category_id), name: String(c.category_name) }))
-        .sort((a, b) => a.name.localeCompare(b.name, "ar"));
+      const catList = sortCategories(
+        (Array.isArray(catR.data) ? (catR.data as { category_id: string; category_name: string }[]) : []).map(
+          (c) => ({ id: String(c.category_id), name: String(c.category_name) })
+        )
+      );
 
       const streamList: Stream[] = (
         Array.isArray(strR.data)
@@ -487,17 +490,20 @@ function XtreamPlayerInner() {
         note: `نجح الاتصال — ${catList.length} تصنيف و ${streamList.length} قناة`,
       });
 
+      const expTs = data.user_info.exp_date ? Number(data.user_info.exp_date) : null;
+
       setActiveMode(mode);
       setAccount(normAcc);
       setUserInfo({
         status: String(data.user_info.status || ""),
-        expDate: data.user_info.exp_date
-          ? new Date(Number(data.user_info.exp_date) * 1000).toLocaleDateString("ar-EG", {
+        expDate: expTs
+          ? new Date(expTs * 1000).toLocaleDateString("ar-EG", {
               year: "numeric",
               month: "long",
               day: "numeric",
             })
           : null,
+        expTs: expTs && Number.isFinite(expTs) ? expTs : null,
         maxConnections: String(data.user_info.max_connections || "-"),
         isTrial: String(data.user_info.is_trial) === "1",
         activeConnections: String(
@@ -509,16 +515,17 @@ function XtreamPlayerInner() {
       setStreams(streamList);
       setSelectedCat(""); /* نعرض «الكل» افتراضياً */
       setSearch("");
+      setTab("all");
       setPlaying(null);
       setDiag(log);
       setPhase("ready");
 
-      /* حفظ الجلسة للمرة القادمة */
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(normAcc));
-      } catch {
-        /* تجاهل */
-      }
+      /* حفظ الحساب في القائمة (وقائمة الحسابات القديمة للتوافق) */
+      const nextAccounts = upsertAccount(accounts, normAcc);
+      setAccounts(nextAccounts);
+      saveJSON(storage, ACCOUNTS_KEY, nextAccounts);
+      saveJSON(storage, STORAGE_KEY, normAcc);
+      setProfile(profileKeyFor(normAcc));
       return;
     }
 
@@ -534,9 +541,64 @@ function XtreamPlayerInner() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSubmit() {
+    if (phase === "loading") return;
     setPhase("loading");
+  }
+
+  /* Enter داخل حقول الدخول = إرسال (بدل إرسال النموذج الأصلي) */
+  function handleFormKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== "Enter") return;
+    const target = e.target as HTMLElement;
+    if (target.tagName !== "INPUT") return;
+    const type = (target as HTMLInputElement).type;
+    if (type !== "text" && type !== "password") return;
+    e.preventDefault();
+    handleSubmit();
+  }
+
+  /* ============ إدارة الحسابات المحفوظة ============ */
+
+  /* تبديل الحساب الحالي (كل حساب له مفضلته وسجله) */
+  function switchAccount(acc: XtreamAccount) {
+    if (accountKey(acc) === keyOf(account)) {
+      setPhase("ready");
+      return;
+    }
+    teardownPlayer();
+    setAccount(acc);
+    setErrorMsg("");
+    setPhase("loading");
+  }
+
+  function forgetAccount(acc: XtreamAccount) {
+    const next = removeAccount(accounts, acc);
+    setAccounts(next);
+    saveJSON(storage, ACCOUNTS_KEY, next);
+    if (accountKey(acc) !== keyOf(account)) return;
+    if (next.length > 0) {
+      switchAccount(next[0]);
+    } else {
+      handleLogout();
+    }
+  }
+
+  function addAccount() {
+    teardownPlayer();
+    setAccount(null);
+    setErrorMsg("");
+    setPhase("form");
+  }
+
+  function teardownPlayer() {
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+    setPlaying(null);
+    setLevels([]);
+    setLevelIndex(-1);
+    setPlayError("");
   }
 
   /* ============ مسار ملف M3U: تنزيل من السيرفر ثم رفع ============ */
@@ -546,11 +608,41 @@ function XtreamPlayerInner() {
     if (!account) return;
     const host = normalizeHost(account.host);
     if (!host || !account.username || !account.password) return;
-    const scheme = /^http:\/\//i.test(account.host.trim()) ? "http" : "https";
-    const url = `${scheme}://${host}/get.php?username=${encodeURIComponent(
-      account.username
-    )}&password=${encodeURIComponent(account.password)}&type=m3u_plus&output=hls`;
+    const url = m3uDownloadUrl({
+      host,
+      username: account.username,
+      password: account.password,
+      scheme: schemeOf(account.host),
+    });
     window.open(url, "_blank", "noopener");
+  }
+
+  function applyPlaylist(fileName: string, text: string) {
+    const parsed = parseM3U(text);
+    if (parsed.streams.length === 0) {
+      setErrorMsg("لم نجد قنوات صالحة داخل هذا الملف — تأكد أنه ملف قنوات M3U (أول سطر فيه #EXTM3U).");
+      return;
+    }
+    setErrorMsg("");
+    setSource("m3u");
+    setM3uName(fileName);
+    setUserInfo(null);
+    setCategories(parsed.categories);
+    setStreams(parsed.streams);
+    setSelectedCat("");
+    setSearch("");
+    setTab("all");
+    setPlaying(null);
+    setProfile(profileKeyFor(null, fileName));
+    setDiag([
+      {
+        mode: "m3u",
+        label: "ملف قنوات",
+        status: "ok",
+        note: `تم تحميل الملف «${fileName}» — ${parsed.categories.length} تصنيف و ${parsed.streams.length} قناة`,
+      },
+    ]);
+    setPhase("ready");
   }
 
   function handleM3UFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -559,56 +651,49 @@ function XtreamPlayerInner() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
-      const parsed = parseM3U(String(reader.result || ""));
-      if (parsed.streams.length === 0) {
-        setErrorMsg(
-          "لم نجد قنوات صالحة داخل هذا الملف — تأكد أنه ملف قنوات M3U (أول سطر فيه #EXTM3U)."
-        );
-        return;
-      }
-      setErrorMsg("");
-      setSource("m3u");
-      setM3uName(file.name);
-      setUserInfo(null);
-      setCategories(parsed.categories);
-      setStreams(parsed.streams);
-      setSelectedCat("");
-      setSearch("");
-      setPlaying(null);
-      setDiag([
-        {
-          mode: "m3u",
-          label: "ملف قنوات",
-          status: "ok",
-          note: `تم تحميل الملف «${file.name}» — ${parsed.categories.length} تصنيف و ${parsed.streams.length} قناة`,
-        },
-      ]);
-      setPhase("ready");
-    };
+    reader.onload = () => applyPlaylist(file.name, String(reader.result || ""));
     reader.onerror = () => {
       setErrorMsg("تعذر قراءة الملف — جرّب مرة أخرى.");
     };
     reader.readAsText(file);
   }
 
+  /* إفلات الملف على الصفحة بدل التنقل بين النوافذ */
+  function handleDrop(e: React.DragEvent<HTMLLabelElement>) {
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => applyPlaylist(file.name, String(reader.result || ""));
+    reader.readAsText(file);
+  }
+
   function handleLogout() {
-    localStorage.removeItem(STORAGE_KEY);
+    if (account) {
+      const next = removeAccount(accounts, account);
+      setAccounts(next);
+      saveJSON(storage, ACCOUNTS_KEY, next);
+    }
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* تجاهل */
+    }
+    teardownPlayer();
     setAccount(null);
     setUserInfo(null);
     setCategories([]);
     setStreams([]);
-    setPlaying(null);
+    setFavorites([]);
+    setRecents([]);
     setSelectedCat("");
     setSearch("");
+    setTab("all");
     setDiag([]);
     setM3uName("");
     setSource("xtream");
+    setProfile(profileKeyFor(null, ""));
     setPhase("form");
-    if (hlsRef.current) {
-      hlsRef.current.destroy();
-      hlsRef.current = null;
-    }
   }
 
   /* ============ التشغيل: قائمة روابط مرشحة مع سقوط تلقائي ============ */
@@ -617,6 +702,8 @@ function XtreamPlayerInner() {
     if (!playing || !video) return;
 
     setPlayError("");
+    setLevels([]);
+    setLevelIndex(-1);
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
@@ -632,22 +719,27 @@ function XtreamPlayerInner() {
 
     if (playing.url) {
       /* مصدر ملف M3U */
-      const urls = m3uCandidates(playing.url);
+      const urls = m3uCandidates(playing.url, {
+        proxyBase: PROXY_BASE,
+        isHttpsSite: typeof window === "undefined" ? true : window.location.protocol === "https:",
+      });
       candidates = [
         ...urls.map((u) => ({ url: u, native: false })),
         { url: urls[0] ?? playing.url, native: true },
       ];
     } else if (account) {
       /* مصدر xtream: المسار الناجح أولاً ثم البقية، وأخيراً native مباشر */
-      const modes = [activeMode, ...availableModes().filter((m) => m.id !== activeMode.id)];
-      const liveUrl = (m: Mode) =>
-        `${m.base(account.host)}/live/${encodeURIComponent(account.username)}/${encodeURIComponent(
-          account.password
-        )}/${playing.id}.m3u8`;
-      const direct = modes.find((m) => m.id === "direct-https") ?? modes[0];
+      const ordered = [activeMode, ...modes.filter((m) => m.id !== activeMode.id)];
+      const direct = ordered.find((m) => m.id === "direct-https") ?? ordered[0];
       candidates = [
-        ...modes.map((m) => ({ url: liveUrl(m), native: false })),
-        { url: liveUrl(direct), native: true },
+        ...ordered.map((m) => ({
+          url: liveStreamUrl(m.base(account.host), account.username, account.password, playing.id),
+          native: false,
+        })),
+        {
+          url: liveStreamUrl(direct.base(account.host), account.username, account.password, playing.id),
+          native: true,
+        },
       ];
     }
     if (candidates.length === 0) return;
@@ -721,10 +813,24 @@ function XtreamPlayerInner() {
         hls.attachMedia(video);
         hls.on(HlsLib.Events.MANIFEST_PARSED, () => {
           clearWatchdog();
+          /* مستويات الجودة المتاحة من السيرفر — تُعرض في قائمة اختيار الجودة */
+          setLevels(
+            hls.levels.map((level, index) => ({
+              index,
+              label: level.height ? `${level.height}p` : level.name || `جودة ${index + 1}`,
+            }))
+          );
+          setLevelIndex(-1);
           video.muted = true;
           video.play().catch(() => {
             /* سيضغط المستخدم زر التشغيل */
           });
+        });
+        hls.on(HlsLib.Events.LEVEL_SWITCHED, (_e, data) => {
+          /* -1 = تلقائي (يختار hls.js الأفضل حسب سرعة الشبكة) */
+          if (typeof data?.level === "number" && data.level >= 0) {
+            setLevelIndex((prev) => (prev === -1 ? prev : data.level));
+          }
         });
         hls.on(HlsLib.Events.ERROR, (_e, data) => {
           if (data.fatal) {
@@ -747,6 +853,7 @@ function XtreamPlayerInner() {
         video.play().catch(() => {
           /* تجاهل */
         });
+        setLevels([]);
         nativeHandler = () => tryNext();
         video.addEventListener("error", nativeHandler);
         video.onplaying = () => clearWatchdog();
@@ -768,38 +875,110 @@ function XtreamPlayerInner() {
         hlsRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, account, activeMode]);
 
-  /* ============ تصفية القنوات ============ */
-  const visibleStreams = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    let list = streams;
-    if (q) list = streams.filter((s) => s.name.toLowerCase().includes(q));
-    else if (selectedCat) list = streams.filter((s) => s.catId === selectedCat);
-    return list.slice(0, 300); /* سقف أمان للعرض */
-  }, [streams, selectedCat, search]);
+  /* ============ التصفية والعرض ============ */
 
-  /* تقرير التشخيص النصي (بدون كلمة السر أبداً) */
-  const diagReport = useMemo(() => {
-    const lines = [
-      "— تقرير تشخيص مشغل الاشتراك —",
-      `الوقت: ${new Date().toLocaleString("ar-EG")}`,
-      `الصفحة: ${typeof window !== "undefined" ? window.location.href : "?"}`,
-      `السيرفر: ${account?.host ?? "-"} | المستخدم: ${account?.username ?? "-"}` +
-        (m3uName ? ` | ملف: ${m3uName}` : ""),
-      `المتصفح: ${typeof navigator !== "undefined" ? navigator.userAgent : "?"}`,
-      "",
-      "المحاولات:",
-      ...diag.map(
-        (e) => `- [${e.mode}] ${e.label} → ${e.status === "ok" ? "نجح" : "فشل"}: ${e.note}`
-      ),
-      "",
-      phase === "ready"
-        ? `النتيجة: نجح — ${streams.length} قناة عبر «${source === "m3u" ? "ملف M3U" : activeMode.label}»`
-        : `النتيجة: فشل — ${errorMsg}`,
-    ];
-    return lines.join("\n");
-  }, [diag, account, m3uName, phase, streams.length, source, activeMode, errorMsg]);
+  const visibleStreams = useMemo(
+    () =>
+      filterStreams(streams, {
+        query: search,
+        categoryId: selectedCat,
+        tab,
+        favorites,
+        recents,
+      }),
+    [streams, search, selectedCat, tab, favorites, recents]
+  );
+
+  const range = windowRange({
+    scrollTop: listScrollTop,
+    itemHeight: LIST_ITEM_HEIGHT,
+    viewportHeight: viewHeight,
+    total: visibleStreams.length,
+    overscan: LIST_OVERSCAN,
+  });
+  const page = visibleStreams.slice(range.start, range.end);
+
+  const handleListScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setListScrollTop(e.currentTarget.scrollTop);
+  }, []);
+
+  const daysLeft = userInfo?.expTs ? daysUntil(userInfo.expTs) : null;
+
+  function playStream(stream: Stream) {
+    setPlaying(stream);
+    setRecentsAndSave(pushRecent(recents, streamKey(stream)));
+  }
+
+  /* أزرار المشغل: جودة، صورة داخل صورة، ملء الشاشة */
+  const canPip = typeof document !== "undefined" && document.pictureInPictureEnabled === true;
+
+  function changeLevel(value: number) {
+    setLevelIndex(value);
+    if (hlsRef.current) hlsRef.current.currentLevel = value;
+  }
+
+  async function toggleFullscreen() {
+    const el = stageRef.current;
+    if (!el) return;
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await el.requestFullscreen();
+    } catch {
+      /* تجاهل */
+    }
+  }
+
+  async function togglePip() {
+    const video = videoRef.current;
+    if (!video) return;
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        setPipOn(false);
+      } else {
+        await video.requestPictureInPicture();
+        setPipOn(true);
+      }
+    } catch {
+      /* تجاهل */
+    }
+  }
+
+  /* تقرير التشخيص + رمز المشاركة (بلا كلمة سر) */
+  const diagReport = useMemo(
+    () =>
+      buildDiagReport({
+        diag,
+        account,
+        m3uName,
+        phase,
+        streamsCount: streams.length,
+        source,
+        activeLabel: activeMode.label,
+        errorMsg,
+      }),
+    [diag, account, m3uName, phase, streams.length, source, activeMode, errorMsg]
+  );
+
+  const shareToken = useMemo(
+    () =>
+      createShareToken({
+        diag,
+        host: account?.host ?? m3uName,
+        username: account?.username ?? "",
+        streamsCount: streams.length,
+        source,
+        activeLabel: activeMode.label,
+        errorMsg,
+        userAgent: typeof navigator === "undefined" ? "" : navigator.userAgent,
+      }),
+    [diag, account, m3uName, streams.length, source, activeMode, errorMsg]
+  );
+
+  const isCurrent = (acc: XtreamAccount) => accountKey(acc) === keyOf(account);
 
   /* ========================================================================= */
   return (
@@ -814,7 +993,7 @@ function XtreamPlayerInner() {
 
       <div className="max-w-[1400px] mx-auto px-5 relative">
         {/* الترويسة */}
-        <Reveal variant="up" className="text-center max-w-[760px] mx-auto mb-12">
+        <Reveal variant="up" className="text-center max-w-[760px] mx-auto mb-10">
           <p className="text-[12px] font-black tracking-[0.25em] uppercase text-[#d8ff3e] mb-4 flex items-center justify-center gap-2">
             <span className="w-8 h-[2px] bg-[#d8ff3e] inline-block" />
             <IconTv className="w-4 h-4" /> مشغّل اشتراكك الشخصي
@@ -829,11 +1008,59 @@ function XtreamPlayerInner() {
           </p>
         </Reveal>
 
+        {/* شرائح الحسابات المحفوظة — تبديل فوري بين الاشتراكات */}
+        {accounts.length > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-6" data-testid="account-chips">
+            {accounts.map((acc) => (
+              <span
+                key={accountKey(acc)}
+                className={`inline-flex items-center gap-1 rounded-full border ps-4 pe-1.5 py-1.5 text-[12.5px] font-black transition ${
+                  isCurrent(acc)
+                    ? "border-[#d8ff3e] text-[#d8ff3e] bg-[#d8ff3e]/10"
+                    : "border-white/15 text-white/60 hover:border-white/40"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => switchAccount(acc)}
+                  className="cursor-pointer"
+                  aria-label={`تبديل إلى ${accountLabel(acc)}`}
+                >
+                  {accountLabel(acc)}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => forgetAccount(acc)}
+                  aria-label={`حذف حساب ${accountLabel(acc)}`}
+                  className="w-5 h-5 grid place-items-center rounded-full hover:bg-white/10 cursor-pointer"
+                >
+                  <IconClose className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+            {accounts.length < 8 && (
+              <button
+                type="button"
+                data-testid="add-account"
+                onClick={addAccount}
+                className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-white/25 px-4 py-1.5 text-[12.5px] font-black text-white/60 hover:border-[#d8ff3e] hover:text-[#d8ff3e] transition cursor-pointer"
+              >
+                + إضافة حساب
+              </button>
+            )}
+          </div>
+        )}
+
         {/* ============ نموذج الدخول ============ */}
         {phase === "form" || phase === "loading" ? (
           <Reveal variant="up" delay={100} className="max-w-[520px] mx-auto">
-            <form
-              onSubmit={handleSubmit}
+            {/* div وليس <form>: الصفحة مرسومة مسبقاً (SSR) وقبل تحميل React لا يوجد
+                معالج — أي إرسال أصلي كان سيعيد تحميل الصفحة ويضع اسم المستخدم
+                وكلمة السر في الرابط وسجلّات الخادم. الآن النقر قبل التحميل بلا أثر. */}
+            <div
+              role="form"
+              aria-label="تسجيل دخول المشتركين"
+              onKeyDown={handleFormKeyDown}
               className="bg-white text-[#0b0b0f] rounded-[28px] border border-black/10 p-7 sm:p-9 shadow-2xl space-y-4"
             >
               <div className="text-center mb-2">
@@ -847,7 +1074,11 @@ function XtreamPlayerInner() {
               </div>
 
               {errorMsg && (
-                <div className="bg-[#ff5c4d]/10 border border-[#ff5c4d]/30 text-[#c0392b] rounded-2xl px-4 py-3 text-[13px] font-bold leading-relaxed">
+                <div
+                  data-testid="login-error"
+                  role="alert"
+                  className="bg-[#ff5c4d]/10 border border-[#ff5c4d]/30 text-[#c0392b] rounded-2xl px-4 py-3 text-[13px] font-bold leading-relaxed"
+                >
                   {errorMsg}
                 </div>
               )}
@@ -911,7 +1142,9 @@ function XtreamPlayerInner() {
               </div>
 
               <button
-                type="submit"
+                type="button"
+                data-testid="login-submit"
+                onClick={handleSubmit}
                 disabled={phase === "loading"}
                 className="btn-slide slide-royal w-full py-3.5 rounded-full bg-[#0b0b0f] text-white font-black text-[15px] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
@@ -939,15 +1172,17 @@ function XtreamPlayerInner() {
                   <button
                     type="button"
                     onClick={downloadPlaylist}
-                    disabled={
-                      !account?.host || !account?.username || !account?.password
-                    }
+                    disabled={!account?.host || !account?.username || !account?.password}
                     className="flex items-center justify-center gap-2 py-3 rounded-full border-2 border-black/10 hover:border-[#0b0b0f] text-[13px] font-black text-black/70 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <IconArrowUpRight className="w-4 h-4" />
                     نزّل ملف قنواتك
                   </button>
-                  <label className="flex items-center justify-center gap-2 py-3 rounded-full border-2 border-dashed border-black/15 hover:border-[#2b4eff] hover:text-[#2b4eff] text-[13px] font-black text-black/70 transition cursor-pointer">
+                  <label
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={handleDrop}
+                    className="flex items-center justify-center gap-2 py-3 rounded-full border-2 border-dashed border-black/15 hover:border-[#2b4eff] hover:text-[#2b4eff] text-[13px] font-black text-black/70 transition cursor-pointer"
+                  >
                     <IconArrowUp className="w-4 h-4" />
                     ارفع ملف القنوات
                     <input
@@ -962,17 +1197,19 @@ function XtreamPlayerInner() {
                 <p className="text-[11.5px] text-black/40 text-center font-medium leading-relaxed mt-2.5">
                   إن فشل الدخول المباشر (بعض المزودين يحجبون المواقع): اضغط «نزّل ملف قنواتك» —
                   سيُحمَّل ملف فيه كل قنوات باقتك — ثم ارجع واضغط «ارفع ملف القنوات» واختر
-                  الملف، وستظهر قنواتك فوراً.
+                  الملف، وستظهر قنواتك فوراً. يمكنك أيضاً سحب الملف وإفلاته على الزر.
                 </p>
               </div>
 
-              {diag.length > 0 && <DiagBox entries={diag} report={diagReport} tone="light" />}
+              {diag.length > 0 && (
+                <DiagBox entries={diag} report={diagReport} token={shareToken} tone="light" />
+              )}
 
               <p className="text-[11.5px] text-black/40 text-center font-medium leading-relaxed">
                 بتسجيل الدخول تُحفظ بياناتك في متصفحك فقط (localStorage) — احذفها بزر «خروج» في أي
                 وقت.
               </p>
-            </form>
+            </div>
           </Reveal>
         ) : (
           /* ============ واجهة المشترك ============ */
@@ -980,7 +1217,10 @@ function XtreamPlayerInner() {
             {/* شريط معلومات الحساب */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-white/[0.05] border border-white/10 rounded-2xl px-5 py-4 mb-6">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 bg-[#d8ff3e] text-black text-[12px] font-black px-3 py-1.5 rounded-full">
+                <span
+                  data-testid="connection-badge"
+                  className="inline-flex items-center gap-1.5 bg-[#d8ff3e] text-black text-[12px] font-black px-3 py-1.5 rounded-full"
+                >
                   <IconCheck className="w-3.5 h-3.5" />
                   {source === "m3u" ? `ملف قنوات: ${m3uName}` : `متصل — ${activeMode.label}`}
                 </span>
@@ -989,6 +1229,24 @@ function XtreamPlayerInner() {
                     <span className="text-[12.5px] font-bold text-white/60">
                       ينتهي: <span className="text-white">{userInfo.expDate || "غير محدد"}</span>
                     </span>
+                    {daysLeft !== null && (
+                      <span
+                        className={`inline-flex items-center gap-1 text-[11.5px] font-black px-2.5 py-1 rounded-full ${
+                          daysLeft <= 0
+                            ? "bg-[#ff5c4d]/20 text-[#ff8a7d]"
+                            : daysLeft <= 7
+                              ? "bg-[#ffb020]/20 text-[#ffd479]"
+                              : "bg-white/10 text-white/70"
+                        }`}
+                      >
+                        <IconClock className="w-3.5 h-3.5" />
+                        {daysLeft <= 0
+                          ? "انتهى الاشتراك"
+                          : daysLeft === 1
+                            ? "تبقّى يوم واحد"
+                            : `تبقّى ${daysLeft} يوماً`}
+                      </span>
+                    )}
                     <span className="text-[12.5px] font-bold text-white/60">
                       اتصالات:{" "}
                       <span className="text-white">
@@ -1053,7 +1311,10 @@ function XtreamPlayerInner() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* المشغل */}
               <div className="lg:col-span-8 flex flex-col gap-4">
-                <div className="relative rounded-[24px] overflow-hidden border border-white/10 bg-black shadow-2xl">
+                <div
+                  ref={stageRef}
+                  className="relative rounded-[24px] overflow-hidden border border-white/10 bg-black shadow-2xl"
+                >
                   <div className="relative aspect-video w-full bg-black">
                     <video
                       ref={videoRef}
@@ -1091,6 +1352,57 @@ function XtreamPlayerInner() {
                   </div>
                 </div>
 
+                {/* أدوات المشغل: الجودة + صورة داخل صورة + ملء الشاشة */}
+                <div className="rounded-2xl bg-white/[0.05] border border-white/10 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-[12.5px] font-bold text-white/50">
+                      {playing ? `تشغيل: ${playing.name}` : "لم تُختَر قناة بعد"}
+                    </span>
+                    {levels.length > 1 && (
+                      <label className="inline-flex items-center gap-2 text-[12px] font-black text-white/70">
+                        الجودة
+                        <select
+                          data-testid="quality-select"
+                          value={levelIndex}
+                          onChange={(e) => changeLevel(Number(e.target.value))}
+                          className="rounded-full bg-[#0b0b0f] border border-white/20 text-white text-[12px] font-black px-3 py-1.5 cursor-pointer"
+                        >
+                          <option value={-1}>تلقائي</option>
+                          {levels.map((l) => (
+                            <option key={l.index} value={l.index}>
+                              {l.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {canPip && (
+                      <button
+                        type="button"
+                        data-testid="pip-button"
+                        onClick={togglePip}
+                        className={`text-[12.5px] font-black px-4 py-2 rounded-full border transition cursor-pointer ${
+                          pipOn
+                            ? "border-[#d8ff3e] text-[#d8ff3e]"
+                            : "border-white/20 text-white/70 hover:border-white/50"
+                        }`}
+                      >
+                        {pipOn ? "إغلاق الصورة المصغّرة" : "صورة داخل صورة"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      data-testid="fullscreen-button"
+                      onClick={toggleFullscreen}
+                      className="text-[12.5px] font-black px-4 py-2 rounded-full border border-white/20 text-white/70 hover:border-white/50 transition cursor-pointer"
+                    >
+                      ملء الشاشة
+                    </button>
+                  </div>
+                </div>
+
                 {/* ملاحظة سريعة */}
                 <div className="rounded-2xl bg-white/[0.05] border border-white/10 px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
                   <p className="text-[12.5px] font-bold text-white/50">
@@ -1117,6 +1429,34 @@ function XtreamPlayerInner() {
                       {streams.length.toLocaleString("en-US")}
                     </span>
                   </div>
+
+                  {/* تبويبات: الكل / المفضلة / الأخيرة */}
+                  <div className="flex gap-1.5 text-[11.5px] font-bold" role="tablist">
+                    {(
+                      [
+                        { id: "all", label: "الكل" },
+                        { id: "favorites", label: `المفضلة (${favorites.length})` },
+                        { id: "recent", label: `الأخيرة (${recents.length})` },
+                      ] as { id: TabId; label: string }[]
+                    ).map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        role="tab"
+                        data-testid={`tab-${t.id}`}
+                        aria-selected={tab === t.id}
+                        onClick={() => setTab(t.id)}
+                        className={`px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer transition ${
+                          tab === t.id
+                            ? "bg-[#2b4eff] text-white font-black"
+                            : "bg-white text-black/50 border border-black/10 hover:border-black"
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="relative">
                     <IconSearch className="w-4 h-4 absolute start-3.5 top-1/2 -translate-y-1/2 text-black/35" />
                     <input
@@ -1124,12 +1464,14 @@ function XtreamPlayerInner() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="ابحث في كل القنوات…"
+                      aria-label="ابحث في كل القنوات"
                       className="w-full rounded-full bg-white border border-black/10 ps-10 pe-3 py-2.5 text-[13px] font-medium placeholder:text-black/35 focus:border-[#2b4eff] focus:outline-none transition"
                     />
                   </div>
                   {/* تصنيفات */}
                   <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[11px] font-bold">
                     <button
+                      data-testid="category-all"
                       onClick={() => {
                         setSelectedCat("");
                         setSearch("");
@@ -1145,6 +1487,7 @@ function XtreamPlayerInner() {
                     {categories.map((c) => (
                       <button
                         key={c.id}
+                        data-testid={`category-${c.id}`}
                         onClick={() => {
                           setSelectedCat(c.id);
                           setSearch("");
@@ -1161,73 +1504,122 @@ function XtreamPlayerInner() {
                   </div>
                 </div>
 
-                {/* القنوات */}
-                <div className="flex-1 overflow-y-auto p-2 no-scrollbar">
+                {/* القنوات — قائمة افتراضية: نرسم الظاهر فقط فيبقى الأداء سريعاً بآلاف القنوات */}
+                <div
+                  ref={listRef}
+                  onScroll={handleListScroll}
+                  data-testid="channel-list"
+                  className="flex-1 overflow-y-auto no-scrollbar"
+                >
                   {visibleStreams.length === 0 ? (
                     <div className="p-8 text-center text-black/40 text-[13px] font-bold">
                       {search
-                        ? `لا نتائج للبحث "${search}" — جرّب كلمة أخرى.`
+                        ? `لا نتائج للبحث "${search}" — جرّب كلمة أخرى أو ابحث بلا همزات.`
                         : streams.length === 0
                           ? "لا توجد قنوات بعد."
-                          : "لا توجد قنوات في هذا التصنيف — اختر «الكل»."}
+                          : tab === "favorites"
+                            ? "لا قنوات في المفضلة بعد — اضغط النجمة بجانب أي قناة."
+                            : tab === "recent"
+                              ? "لا سجل مشاهدة بعد — شغّل أي قناة وسيظهر هنا."
+                              : "لا توجد قنوات في هذا التصنيف — اختر «الكل»."}
                     </div>
                   ) : (
-                    visibleStreams.map((ch) => {
-                      const isActive = playing?.id === ch.id;
-                      return (
-                        <button
-                          key={`${ch.catId}-${ch.id}`}
-                          onClick={() => setPlaying(ch)}
-                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-right transition-all cursor-pointer ${
-                            isActive
-                              ? "bg-[#2b4eff]/10 border border-[#2b4eff]/40"
-                              : "border border-transparent hover:bg-black/[0.04]"
-                          }`}
-                        >
-                          <span
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg overflow-hidden border text-sm font-black ${
-                              isActive
-                                ? "bg-[#0b0b0f] border-[#0b0b0f] text-[#d8ff3e]"
-                                : "bg-[#f4f3ef] border-black/10"
-                            }`}
-                          >
-                            {ch.icon ? (
-                              <img
-                                src={ch.icon}
-                                alt=""
-                                loading="lazy"
-                                className="w-full h-full object-contain p-0.5"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).style.display = "none";
-                                  const parent = (e.target as HTMLImageElement).parentElement;
-                                  if (parent) parent.textContent = ch.name.charAt(0);
-                                }}
-                              />
-                            ) : (
-                              ch.name.charAt(0)
-                            )}
-                          </span>
-                          <span
-                            className={`text-[13px] font-bold block truncate ${
-                              isActive ? "text-[#2b4eff] font-black" : "text-black/80"
-                            }`}
-                          >
-                            {ch.name}
-                          </span>
-                          {isActive && (
-                            <span className="ms-auto w-2.5 h-2.5 rounded-full bg-[#ff5c4d] animate-pulse-soft shrink-0" />
-                          )}
-                        </button>
-                      );
-                    })
+                    <div style={{ height: range.totalHeight, position: "relative" }}>
+                      <div style={{ transform: `translateY(${range.offsetY}px)` }}>
+                        {page.map((ch) => {
+                          const isActive = playing?.id === ch.id;
+                          const key = streamKey(ch);
+                          const isFav = favorites.includes(key);
+                          return (
+                            <div
+                              key={`${ch.catId}-${ch.id}-${ch.name}`}
+                              style={{ height: LIST_ITEM_HEIGHT }}
+                              className={`flex items-center gap-1 ps-1.5 pe-2 rounded-xl mx-2 transition-all ${
+                                isActive
+                                  ? "bg-[#2b4eff]/10 border border-[#2b4eff]/40"
+                                  : "border border-transparent hover:bg-black/[0.04]"
+                              }`}
+                            >
+                              <button
+                                type="button"
+                                data-testid="channel-row"
+                                onClick={() => playStream(ch)}
+                                className="flex-1 min-w-0 flex items-center gap-3 p-1.5 text-right cursor-pointer"
+                              >
+                                <span
+                                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg overflow-hidden border text-sm font-black ${
+                                    isActive
+                                      ? "bg-[#0b0b0f] border-[#0b0b0f] text-[#d8ff3e]"
+                                      : "bg-[#f4f3ef] border-black/10"
+                                  }`}
+                                >
+                                  {ch.icon ? (
+                                    <img
+                                      src={ch.icon}
+                                      alt=""
+                                      loading="lazy"
+                                      className="w-full h-full object-contain p-0.5"
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).style.display = "none";
+                                        const parent = (e.target as HTMLImageElement).parentElement;
+                                        if (parent) parent.textContent = ch.name.charAt(0);
+                                      }}
+                                    />
+                                  ) : (
+                                    ch.name.charAt(0)
+                                  )}
+                                </span>
+                                <span
+                                  className={`text-[13px] font-bold block truncate ${
+                                    isActive ? "text-[#2b4eff] font-black" : "text-black/80"
+                                  }`}
+                                >
+                                  {ch.name}
+                                </span>
+                                {isActive && (
+                                  <span className="ms-auto w-2.5 h-2.5 rounded-full bg-[#ff5c4d] animate-pulse-soft shrink-0" />
+                                )}
+                              </button>
+                              <button
+                                type="button"
+                                data-testid="favorite-toggle"
+                                onClick={() => toggleFavorite(ch)}
+                                aria-label={isFav ? `إزالة ${ch.name} من المفضلة` : `إضافة ${ch.name} إلى المفضلة`}
+                                aria-pressed={isFav}
+                                className={`w-8 h-8 grid place-items-center rounded-full transition cursor-pointer shrink-0 ${
+                                  isFav
+                                    ? "text-[#ffb020] bg-[#ffb020]/10"
+                                    : "text-black/25 hover:text-[#ffb020]"
+                                }`}
+                              >
+                                <IconStar
+                                  className="w-4 h-4"
+                                  fill={isFav ? "currentColor" : "none"}
+                                  stroke="currentColor"
+                                  strokeWidth={1.8}
+                                />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                {streams.length > 300 && (
-                  <p className="px-4 py-2.5 text-[11px] font-bold text-black/40 border-t border-black/10">
-                    يُعرض أول 300 قناة — استخدم البحث للوصول لأي قناة بالاسم.
-                  </p>
-                )}
+                <div className="px-4 py-2.5 border-t border-black/10 flex items-center justify-between gap-2 text-[11px] font-bold text-black/40">
+                  <span>
+                    {visibleStreams.length.toLocaleString("en-US")} قناة معروضة
+                    {search || selectedCat || tab !== "all" ? " (مفلترة)" : ""}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={addAccount}
+                    className="text-[11px] font-black text-[#2b4eff] hover:underline cursor-pointer"
+                  >
+                    + إضافة حساب آخر
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1238,13 +1630,13 @@ function XtreamPlayerInner() {
                   <IconShieldCheck className="w-4 h-4 text-[#3effe0]" /> بياناتك محفوظة على جهازك
                 </span>
                 <span className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/10 rounded-full px-4 py-2">
-                  <IconStar className="w-4 h-4 text-[#d8ff3e]" /> نفس بيانات تطبيق المشغل
+                  <IconStar className="w-4 h-4 text-[#d8ff3e]" /> مفضلة وسجل لكل حساب
                 </span>
                 <span className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/10 rounded-full px-4 py-2">
                   <IconZap className="w-4 h-4 text-[#ff5c4d]" /> تبديل تلقائي بين مسارات الاتصال
                 </span>
               </div>
-              <DiagBox entries={diag} report={diagReport} tone="dark" />
+              <DiagBox entries={diag} report={diagReport} token={shareToken} tone="dark" />
             </div>
           </div>
         )}

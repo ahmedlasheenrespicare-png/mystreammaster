@@ -159,7 +159,18 @@ function TvMockup({ index }: { index: number }) {
         </div>
 
         {/* لوحة العرض — موقع مصغّر بداخله شاشة بث حية تتناوب */}
-        <div className="bg-[#efeee9] p-4 md:p-6 relative overflow-hidden">
+        <div className="bg-[#efeee9] p-4 md:p-6 relative min-w-0">
+          {/* شارة عائمة: تفعيل فوري */}
+          <div data-hero-badge="activation" className="relative z-10 mb-4 ms-auto w-fit max-w-full bg-white rounded-2xl shadow-lg border border-black/10 px-3 py-2 flex items-center gap-2 motion-safe:animate-float">
+            <span className="w-7 h-7 shrink-0 rounded-lg bg-[#d8ff3e] grid place-items-center">
+              <IconCheck className="w-3.5 h-3.5" />
+            </span>
+            <div className="leading-none text-right">
+              <p className="text-[11px] font-black">تفعيل فوري</p>
+              <p className="text-[10px] text-black/50">خلال 5 دقائق</p>
+            </div>
+          </div>
+          <div className="relative">
           <div className="rounded-2xl bg-white border border-black/10 overflow-hidden">
             {/* رأس الموقع المصغر */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-black/[0.07]">
@@ -223,24 +234,14 @@ function TvMockup({ index }: { index: number }) {
           </div>
 
           {/* إطار التحديد المتقطع — توقيع Salient البصري */}
-          <div className="absolute top-[86px] start-3 end-3 md:start-5 md:end-5 h-[190px] md:h-[230px] border-[2px] border-dashed border-[#2b4eff]/70 rounded-2xl pointer-events-none">
-            <span className="absolute -top-3 start-4 bg-[#2b4eff] text-white text-[10px] font-black px-2 py-0.5 rounded-md">
+          <div className="absolute top-[70px] -start-1 -end-1 h-[190px] md:h-[230px] border-[2px] border-dashed border-[#2b4eff]/70 rounded-2xl pointer-events-none">
+            <span className="absolute -top-3 start-4 max-w-[calc(100%-2rem)] bg-[#2b4eff] text-white text-[10px] font-black px-2 py-0.5 rounded-md">
               شاشة البث — {current.channel.quality}
             </span>
             <span className="absolute top-1/2 -start-2 translate-y-1/2 w-8 h-8 bg-[#2b4eff] rounded-full grid place-items-center text-white shadow-lg">
               <IconTv className="w-4 h-4" />
             </span>
           </div>
-
-          {/* شارة عائمة: تفعيل فوري */}
-          <div className="absolute top-6 end-6 bg-white rounded-2xl shadow-xl border border-black/10 px-3 py-2 flex items-center gap-2 animate-float">
-            <span className="w-7 h-7 rounded-lg bg-[#d8ff3e] grid place-items-center">
-              <IconCheck className="w-3.5 h-3.5" />
-            </span>
-            <div className="leading-none text-right">
-              <p className="text-[11px] font-black">تفعيل فوري</p>
-              <p className="text-[10px] text-black/50">خلال 5 دقائق</p>
-            </div>
           </div>
         </div>
 
@@ -324,12 +325,12 @@ export default function Hero({ onOpenTrial }: HeroProps) {
       <div className="max-w-[1200px] mx-auto px-5 text-center">
         {/* الشارة العلوية */}
         <Reveal variant="fade" duration={700}>
-          <div className="inline-flex items-center gap-2 bg-white border border-black/10 rounded-full pl-1.5 pr-4 py-1.5 text-[13px] font-bold shadow-sm">
+          <div className="inline-flex max-w-full flex-wrap justify-center items-center gap-x-2 gap-y-2 bg-white border border-black/10 rounded-3xl sm:rounded-full px-3 py-2 text-[12px] sm:text-[13px] font-bold shadow-sm">
             <span className="bg-[#0b0b0f] text-[#d8ff3e] text-[11px] font-black px-2.5 py-1 rounded-full">
-              جديد
+              متعة المشاهدة تبدأ هنا
             </span>
-            سيرفر نوفا 2026 — ثبات مطلق وقت المباريات
-            <IconArrow className="w-3.5 h-3.5" />
+            — رياضة وسينما على جميع شاشاتك
+            <IconArrow className="w-3.5 h-3.5 shrink-0" />
           </div>
         </Reveal>
 
@@ -364,8 +365,8 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               ))}
             </div>
             <p className="text-[14px] font-bold">
-              <span className="font-black">4,820+ تقييم</span>{" "}
-              <span className="text-black/50 font-medium">(4.95 من 5)</span>
+              <span className="font-black">على شاشتك وجوالك</span>{" "}
+              <span className="text-black/50 font-medium">— ترفيه أينما كنت</span>
             </p>
           </div>
         </Reveal>
@@ -393,24 +394,26 @@ export default function Hero({ onOpenTrial }: HeroProps) {
 
         {/* الماكيت + الشارات العائمة ببارالاكس الماوس */}
         <Reveal variant="up" delay={560} duration={950} className="mt-12 md:mt-16 relative">
-          <MouseParallax factor={0.03} className="absolute -top-8 -start-2 md:start-6 z-10 hidden sm:block">
-            <div className="flex items-center gap-2 bg-white rounded-2xl border border-black/10 shadow-xl px-4 py-3 rotate-[-6deg] animate-float">
-              <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2b4eff] to-[#7c5cff] grid place-items-center text-white">
-                <IconTrophy className="w-4 h-4" />
-              </span>
-              <div className="text-right leading-none">
-                <p className="text-[13px] font-black">ثبات 99.9%</p>
-                <p className="text-[11px] text-black/50 font-medium">في قمة المباريات</p>
+          <div className="relative z-10 flex flex-wrap items-center justify-center sm:justify-between gap-4 px-2 sm:px-8 py-5 mb-4 md:mb-6" data-hero-badges>
+            <MouseParallax factor={0.008} className="max-w-full">
+              <div data-hero-badge="stability" className="flex items-center gap-3 bg-white rounded-2xl border border-black/10 shadow-lg px-4 py-3 sm:rotate-[-3deg] motion-safe:animate-float">
+                <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2b4eff] to-[#7c5cff] grid place-items-center text-white">
+                  <IconTrophy className="w-4 h-4" />
+                </span>
+                <div className="text-right leading-none">
+                  <p className="text-[13px] font-black">ثبات 99.9%</p>
+                  <p className="text-[11px] text-black/50 font-medium">في قمة المباريات</p>
+                </div>
               </div>
-            </div>
-          </MouseParallax>
+            </MouseParallax>
 
-          <MouseParallax factor={-0.04} className="absolute -top-6 -end-2 md:end-10 z-10 hidden sm:block">
-            <div className="flex items-center gap-2 bg-[#0b0b0f] text-white rounded-2xl shadow-xl px-4 py-3 rotate-[5deg] animate-float-delayed">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#3effe0] animate-pulse-soft" />
-              <p className="text-[13px] font-black">+15,000 قناة حية</p>
-            </div>
-          </MouseParallax>
+            <MouseParallax factor={-0.008} className="max-w-full">
+              <div data-hero-badge="channels" className="flex items-center gap-2 bg-[#0b0b0f] text-white rounded-2xl shadow-lg px-4 py-3 sm:rotate-[3deg] motion-safe:animate-float-delayed">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#3effe0] animate-pulse-soft" />
+                <p className="text-[13px] font-black">+15,000 قناة حية</p>
+              </div>
+            </MouseParallax>
+          </div>
 
           <Parallax speed={0.05}>
             <TvMockup index={index} />
@@ -521,9 +524,9 @@ export default function Hero({ onOpenTrial }: HeroProps) {
       <Reveal variant="fade" duration={900} className="mt-16 md:mt-20 border-y border-black/10 bg-white/60 backdrop-blur py-5 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-5 flex items-center gap-6">
           <p className="hidden md:block text-[12px] font-black tracking-[0.2em] uppercase text-black/40 whitespace-nowrap shrink-0 leading-relaxed">
-            يثق بنا
+            خيارات أكثر
             <br />
-            +45,000 مشترك
+            — متعة كل يوم
           </p>
           <div className="flex-1 overflow-hidden mask-fade-x" dir="ltr">
             <div className="flex gap-4 w-max animate-marquee hover:[animation-play-state:paused] items-center">

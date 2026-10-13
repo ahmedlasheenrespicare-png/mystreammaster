@@ -7,6 +7,7 @@ import {
   FAVORITES_KEY,
   LIST_ITEM_HEIGHT,
   LIST_OVERSCAN,
+  PHP_PROXY,
   RECENTS_KEY,
   STORAGE_KEY,
   accountKey,
@@ -17,6 +18,7 @@ import {
   createShareToken,
   daysUntil,
   filterStreams,
+  isHlsCandidateUrl,
   loadAccounts,
   loadProfileList,
   liveStreamUrl,
@@ -28,6 +30,7 @@ import {
   profileKeyFor,
   pushRecent,
   removeAccount,
+  resolveWorkerBase,
   saveJSON,
   saveProfileList,
   schemeOf,
@@ -120,6 +123,14 @@ function copyText(text: string): Promise<void> {
 function getStorage(): Storage | null {
   try {
     return typeof window !== "undefined" ? window.localStorage : null;
+  } catch {
+    return null;
+  }
+}
+
+function getSessionStorage(): Storage | null {
+  try {
+    return typeof window !== "undefined" ? window.sessionStorage : null;
   } catch {
     return null;
   }
@@ -288,14 +299,24 @@ function DiagBox({
 
 function XtreamPlayerInner() {
   const storage = useMemo(getStorage, []);
+  const workerBase = useMemo(
+    () =>
+      resolveWorkerBase({
+        proxyBase: PROXY_BASE,
+        search: typeof window === "undefined" ? "" : window.location.search,
+        session: getSessionStorage(),
+      }),
+    []
+  );
   const modes = useMemo(
     () =>
       buildModes({
-        proxyBase: PROXY_BASE,
+        proxyBase: workerBase,
+        phpProxy: PHP_PROXY,
         isHttpsSite:
           typeof window === "undefined" ? true : window.location.protocol === "https:",
       }),
-    []
+    [workerBase]
   );
 
   /* حالة الدخول */
@@ -326,6 +347,9 @@ function XtreamPlayerInner() {
   /* التشغيل */
   const [playing, setPlaying] = useState<Stream | null>(null);
   const [playError, setPlayError] = useState("");
+  const [statusMsg, setStatusMsg] = useState("");
+  const [bufferSec, setBufferSec] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
   const [levels, setLevels] = useState<{ index: number; label: string }[]>([]);
   const [levelIndex, setLevelIndex] = useState(-1);
   const [pipOn, setPipOn] = useState(false);
@@ -338,6 +362,8 @@ function XtreamPlayerInner() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
+  /* ذاكرة الجلسة لمسار البث الناجح (مثل needsProxySession في صفحة البث المباشر) */
+  const preferredStreamModeRef = useRef<XtreamMode | null>(null);
 
   /* مفتاح الحساب الحالي — فارغ لو لا يوجد حساب (مصدر ملف M3U) */
   const keyOf = (acc: XtreamAccount | null | undefined) => (acc ? accountKey(acc) : "");
@@ -415,7 +441,8 @@ function XtreamPlayerInner() {
     const log: DiagEntry[] = [];
 
     for (const mode of modes) {
-      const authUrl = playerApiUrl(mode.base(host), normAcc.username, normAcc.password);
+      const base = mode.base(host);
+      const authUrl = playerApiUrl(base, normAcc.username, normAcc.password);
 
       const auth = await fetchJson(authUrl, 12000);
       if (!auth.ok) {
@@ -452,8 +479,14 @@ function XtreamPlayerInner() {
 
       /* ✅ نجح الدخول بهذا المسار — نجلب التصنيفات والقنوات */
       const [catR, strR] = await Promise.all([
-        fetchJson(`${authUrl}&action=get_live_categories`, 20000),
-        fetchJson(`${authUrl}&action=get_live_streams`, 45000),
+        fetchJson(
+          playerApiUrl(base, normAcc.username, normAcc.password, "get_live_categories"),
+          20000
+        ),
+        fetchJson(
+          playerApiUrl(base, normAcc.username, normAcc.password, "get_live_streams"),
+          45000
+        ),
       ]);
       if (!catR.ok || !strR.ok) {
         const dataErr = !catR.ok ? catR.err : strR.ok ? "" : strR.err;
@@ -599,6 +632,9 @@ function XtreamPlayerInner() {
     setLevels([]);
     setLevelIndex(-1);
     setPlayError("");
+    setStatusMsg("");
+    setBufferSec(0);
+    preferredStreamModeRef.current = null;
   }
 
   /* ============ مسار ملف M3U: تنزيل من السيرفر ثم رفع ============ */
@@ -696,12 +732,34 @@ function XtreamPlayerInner() {
     setPhase("form");
   }
 
-  /* ============ التشغيل: قائمة روابط مرشحة مع سقوط تلقائي ============ */
+  /* مراقبة صحة التخزين المؤقت (Buffer) في الوقت الفعلي — مطابق لصفحة البث المباشر */
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      const v = videoRef.current;
+      if (v && v.buffered.length > 0) {
+        try {
+          const current = v.currentTime;
+          const end = v.buffered.end(v.buffered.length - 1);
+          const diff = Math.max(0, end - current);
+          setBufferSec(Math.round(diff * 10) / 10);
+        } catch {
+          /* تجاهل */
+        }
+      } else {
+        setBufferSec(0);
+      }
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  /* ============ التشغيل: قائمة روابط مرشحة (مباشر + Worker + Proxy) مع سقوط تلقائي ============ */
   useEffect(() => {
     const video = videoRef.current;
     if (!playing || !video) return;
 
     setPlayError("");
+    setStatusMsg("");
+    setBufferSec(0);
     setLevels([]);
     setLevelIndex(-1);
     if (hlsRef.current) {
@@ -709,36 +767,52 @@ function XtreamPlayerInner() {
       hlsRef.current = null;
     }
 
-    /* بناء الروابط المرشحة حسب المصدر — ومرشح أخير native (وسم الفيديو
-       مباشرة دون CORS — يعمل على سفاري وكروم الحديث وملفات ts) */
+    /* بناء الروابط المرشحة حسب المصدر — المباشر ثم Cloudflare Worker ثم بروكسي /proxy.php
+       وأخيراً مرشح native (وسم الفيديو مباشرة دون CORS — يعمل على سفاري وملفات ts) */
     interface PlayCandidate {
       url: string;
       native: boolean;
+      mode?: XtreamMode;
+      label: string;
     }
     let candidates: PlayCandidate[] = [];
 
     if (playing.url) {
-      /* مصدر ملف M3U */
+      /* مصدر ملف M3U: يستخدم المباشر + Worker + /proxy.php */
       const urls = m3uCandidates(playing.url, {
-        proxyBase: PROXY_BASE,
+        proxyBase: workerBase,
+        phpProxy: PHP_PROXY,
         isHttpsSite: typeof window === "undefined" ? true : window.location.protocol === "https:",
       });
       candidates = [
-        ...urls.map((u) => ({ url: u, native: false })),
-        { url: urls[0] ?? playing.url, native: true },
+        ...urls.map((u) => ({
+          url: u,
+          native: false,
+          label: u.includes(PHP_PROXY)
+            ? "بروكسي البث المباشر"
+            : u.startsWith(workerBase)
+              ? "وسيط Worker"
+              : "اتصال مباشر",
+        })),
+        { url: urls[0] ?? playing.url, native: true, label: "تشغيل أصلي مباشر" },
       ];
     } else if (account) {
-      /* مصدر xtream: المسار الناجح أولاً ثم البقية، وأخيراً native مباشر */
-      const ordered = [activeMode, ...modes.filter((m) => m.id !== activeMode.id)];
+      /* مصدر xtream: المسار الناجح للبث أولاً، ثم بقية المسارات (Worker + /proxy.php)، وأخيراً native */
+      const firstMode = preferredStreamModeRef.current ?? activeMode;
+      const ordered = [firstMode, ...modes.filter((m) => m.id !== firstMode.id)];
       const direct = ordered.find((m) => m.id === "direct-https") ?? ordered[0];
       candidates = [
         ...ordered.map((m) => ({
           url: liveStreamUrl(m.base(account.host), account.username, account.password, playing.id),
           native: false,
+          mode: m,
+          label: m.label,
         })),
         {
           url: liveStreamUrl(direct.base(account.host), account.username, account.password, playing.id),
           native: true,
+          mode: direct,
+          label: `${direct.label} (أصلي)`,
         },
       ];
     }
@@ -771,12 +845,19 @@ function XtreamPlayerInner() {
       clearWatchdog();
 
       if (attempt >= candidates.length) {
+        setStatusMsg("");
         setPlayError("تعذر تشغيل القناة عبر كل المسارات — جرّب قناة أخرى أو أعد المحاولة بعد لحظات.");
         return;
       }
       const cand = candidates[attempt];
-      const isHlsUrl = /\.m3u8($|\?)/i.test(cand.url);
+      const isHlsUrl = isHlsCandidateUrl(cand.url);
       const wantsHls = !cand.native && isHlsUrl && !hlsLoadFailed;
+
+      setStatusMsg(
+        attempt === 0
+          ? `⚡ جاري الاتصال بسيرفر القناة (${cand.label})…`
+          : `🔄 جاري التبديل تلقائياً إلى ${cand.label} (${attempt + 1}/${candidates.length})…`
+      );
 
       /* أول تشغيل: نحمّل المكتبة ثم نعيد المحاولة بنفس المرشّح بدون استهلاكه */
       if (wantsHls && !HlsLib) {
@@ -803,16 +884,34 @@ function XtreamPlayerInner() {
       attempt++; /* استهلكنا هذا المرشّح */
 
       if (wantsHls && HlsLib?.isSupported()) {
+        let mediaRecovered = false;
+        /* إعدادات مشغل البث المباشر الفائقة السرعة (Web Worker + Low Latency + Buffer) */
         const hls = new HlsLib({
           enableWorker: true,
-          manifestLoadingTimeOut: 12000,
-          fragLoadingTimeOut: 20000,
+          startFragPrefetch: true,
+          lowLatencyMode: true,
+          maxBufferLength: 30,
+          maxMaxBufferLength: 60,
+          backBufferLength: 30,
+          liveSyncDurationCount: 3,
+          liveMaxLatencyDurationCount: 6,
+          fragLoadingTimeOut: 15000,
+          manifestLoadingTimeOut: 10000,
+          levelLoadingTimeOut: 10000,
+          autoStartLoad: true,
+          capLevelToPlayerSize: false,
         });
         hlsRef.current = hls;
         hls.loadSource(cand.url);
         hls.attachMedia(video);
         hls.on(HlsLib.Events.MANIFEST_PARSED, () => {
           clearWatchdog();
+          setStatusMsg("");
+          /* حفظ المسار الناجح للجلسة حتى تعمل القنوات التالية فوراً عبر نفس الـWorker أو الـProxy */
+          if (cand.mode) {
+            preferredStreamModeRef.current = cand.mode;
+            setActiveMode(cand.mode);
+          }
           /* مستويات الجودة المتاحة من السيرفر — تُعرض في قائمة اختيار الجودة */
           setLevels(
             hls.levels.map((level, index) => ({
@@ -821,10 +920,19 @@ function XtreamPlayerInner() {
             }))
           );
           setLevelIndex(-1);
-          video.muted = true;
+          video.muted = isMuted;
           video.play().catch(() => {
-            /* سيضغط المستخدم زر التشغيل */
+            video.muted = true;
+            setIsMuted(true);
+            video.play().catch(() => {
+              /* سيضغط المستخدم زر التشغيل */
+            });
           });
+        });
+        hls.on(HlsLib.Events.AUDIO_TRACKS_UPDATED, (_event, data) => {
+          if (data.audioTracks && data.audioTracks.length > 0 && hls.audioTrack === -1) {
+            hls.audioTrack = 0;
+          }
         });
         hls.on(HlsLib.Events.LEVEL_SWITCHED, (_e, data) => {
           /* -1 = تلقائي (يختار hls.js الأفضل حسب سرعة الشبكة) */
@@ -834,6 +942,12 @@ function XtreamPlayerInner() {
         });
         hls.on(HlsLib.Events.ERROR, (_e, data) => {
           if (data.fatal) {
+            if (data.type === HlsLib?.ErrorTypes.MEDIA_ERROR && !mediaRecovered) {
+              mediaRecovered = true;
+              setStatusMsg("جاري تصحيح البث…");
+              hls.recoverMediaError();
+              return;
+            }
             hls.destroy();
             if (hlsRef.current === hls) hlsRef.current = null;
             tryNext();
@@ -844,22 +958,33 @@ function XtreamPlayerInner() {
           hls.destroy();
           if (hlsRef.current === hls) hlsRef.current = null;
           tryNext();
-        }, 15000);
+        }, 12000);
       } else {
         /* تشغيل أصلي في وسم الفيديو (سفاري / الجوال / ملفات ts) — لا يحتاج CORS */
         video.src = cand.url;
         video.load();
-        video.muted = true;
+        video.muted = isMuted;
         video.play().catch(() => {
-          /* تجاهل */
+          video.muted = true;
+          setIsMuted(true);
+          video.play().catch(() => {
+            /* تجاهل */
+          });
         });
         setLevels([]);
         nativeHandler = () => tryNext();
         video.addEventListener("error", nativeHandler);
-        video.onplaying = () => clearWatchdog();
+        video.onplaying = () => {
+          clearWatchdog();
+          setStatusMsg("");
+          if (cand.mode) {
+            preferredStreamModeRef.current = cand.mode;
+            setActiveMode(cand.mode);
+          }
+        };
         watchdog = window.setTimeout(() => {
           if (!cancelled && video.readyState < 2) tryNext();
-        }, 15000);
+        }, 12000);
       }
     };
 
@@ -876,7 +1001,7 @@ function XtreamPlayerInner() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, account, activeMode]);
+  }, [playing, account]);
 
   /* ============ التصفية والعرض ============ */
 
@@ -1320,7 +1445,13 @@ function XtreamPlayerInner() {
                       ref={videoRef}
                       controls
                       playsInline
+                      preload="auto"
                       className="w-full h-full object-contain bg-black"
+                      onVolumeChange={() => {
+                        if (videoRef.current) {
+                          setIsMuted(videoRef.current.muted);
+                        }
+                      }}
                     />
 
                     {!playing && (
@@ -1337,16 +1468,51 @@ function XtreamPlayerInner() {
                       </div>
                     )}
 
+                    {statusMsg && !playError && (
+                      <div
+                        data-testid="stream-status"
+                        className="absolute top-4 inset-x-0 mx-auto w-fit max-w-[90%] glass-dark text-[#d8ff3e] border border-white/15 text-xs font-bold px-4 py-1.5 rounded-full text-center z-20 animate-pulse-soft pointer-events-none"
+                      >
+                        {statusMsg}
+                      </div>
+                    )}
+
                     {playError && (
-                      <div className="absolute top-4 inset-x-0 mx-auto w-fit max-w-[90%] bg-[#ff5c4d]/90 text-white text-xs font-black px-4 py-2 rounded-full text-center">
+                      <div className="absolute top-4 inset-x-0 mx-auto w-fit max-w-[90%] bg-[#ff5c4d]/90 text-white text-xs font-black px-4 py-2 rounded-full text-center z-20">
                         {playError}
                       </div>
                     )}
 
+                    {playing && isMuted && !playError && (
+                      <button
+                        type="button"
+                        data-testid="unmute-button"
+                        onClick={() => {
+                          if (videoRef.current) {
+                            videoRef.current.muted = false;
+                            setIsMuted(false);
+                          }
+                        }}
+                        className="absolute top-4 end-4 z-20 bg-[#d8ff3e] hover:bg-white text-black font-black text-xs px-3.5 py-1.5 rounded-full shadow-xl transition-all animate-pulse-soft cursor-pointer"
+                      >
+                        🔊 اضغط لتشغيل الصوت
+                      </button>
+                    )}
+
                     {playing && (
-                      <div className="absolute top-4 start-4 glass-dark border border-white/15 px-3.5 py-1.5 rounded-xl flex items-center gap-2 pointer-events-none">
-                        <span className="w-2 h-2 rounded-full bg-[#ff5c4d] animate-pulse-soft" />
-                        <span className="text-[13px] font-black">{playing.name}</span>
+                      <div className="absolute top-4 start-4 flex items-center gap-2 pointer-events-none z-10">
+                        <div className="glass-dark border border-white/15 px-3.5 py-1.5 rounded-xl flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#ff5c4d] animate-pulse-soft" />
+                          <span className="text-[13px] font-black">{playing.name}</span>
+                        </div>
+                        {bufferSec > 0 && (
+                          <span
+                            data-testid="buffer-badge"
+                            className="bg-[#0b0b0f]/80 text-[#3effe0] text-[10.5px] font-black px-2.5 py-1 rounded-full backdrop-blur-md border border-[#3effe0]/30"
+                          >
+                            ⚡ بافر: {bufferSec}s
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>

@@ -5,8 +5,9 @@
    ولتُختبَر بلا شبكة:  node --test scripts/test-xtream.mjs
 
    حدود أمنية وخصوصية ثابتة في هذا الملف:
-   • بيانات الدخول (المستخدم/كلمة السر) لا تُرسل لأي جهة تخصّنا — تُستعمل فقط
-     لبناء روابط تُنادى من متصفح المشترك إلى سيرفر مشغّله نفسه.
+   • بيانات الدخول (المستخدم/كلمة السر) لا تُرسل لأي جهة تخصّنا عند الاتصال
+     المباشر — وعند الحاجة لتجاوز حجب الشبكة/CORS يُستخدم نفس نظام الوسيط
+     (Cloudflare Worker + بروكسي /proxy.php) الموجود في صفحة البث المباشر.
    • أي تقرير تشخيصي أو رمز مشاركة لا يحتوي كلمة السر أبداً، واسم المستخدم
      يُقنَّع قبل أي إخراج.
 ========================================================================== */
@@ -25,6 +26,106 @@ export const LIST_ITEM_HEIGHT = 58;
 export const LIST_OVERSCAN = 6;
 
 export const SHARE_TOKEN_PREFIX = "SMP1";
+
+/* ثوابت الوسيط والبروكسي — مطابقة لصفحة البث المباشر (LivePlayer) */
+export const PHP_PROXY = "/proxy.php";
+export const PROXY_SESSION_KEY = "smp-proxy";
+export const OWNED_PROXY_PATTERN =
+  /^https:\/\/[a-z0-9-]+\.(ahmedlasheenrespicare\.workers\.dev|ahmedlasheenrespicare-png\.deno\.net)$/i;
+export const NGROK_HOST_RE = /(^|\.)ngrok(-free)?\.(dev|app|io|com)$/i;
+
+/* ========================================================================= */
+/*  أدوات الوسيط (Worker + Proxy) المشتركة مع صفحة البث المباشر                */
+/* ========================================================================= */
+
+/* التحقق من أن رابط الوسيط الممرّر في ?proxy= يخصّ نطاقاتنا الموثوقة فقط */
+export function isTrustedProxy(value) {
+  return OWNED_PROXY_PATTERN.test(String(value ?? "").trim().replace(/\/+$/, ""));
+}
+
+/* كشف روابط نفق ngrok (تحتاج التمرير عبر الوسيط لتجاوز صفحة التحذير) */
+export function isNgrokUrl(url) {
+  try {
+    return NGROK_HOST_RE.test(new URL(String(url ?? "").trim()).hostname);
+  } catch {
+    return false;
+  }
+}
+
+/* استخراج رابط الـWorker الفعّال (يدعم ?proxy=https://xxx.workers.dev وحفظه في الجلسة) */
+export function resolveWorkerBase({ proxyBase = "", search = "", session = null } = {}) {
+  const fallback = String(proxyBase ?? "").trim().replace(/\/+$/, "");
+  try {
+    const p = new URLSearchParams(String(search ?? "")).get("proxy");
+    if (p && isTrustedProxy(p)) {
+      const clean = p.trim().replace(/\/+$/, "");
+      try {
+        session?.setItem?.(PROXY_SESSION_KEY, clean);
+      } catch {
+        /* بيئة بدون sessionStorage — تجاهل */
+      }
+      return clean;
+    }
+    const saved = session?.getItem?.(PROXY_SESSION_KEY);
+    if (saved && isTrustedProxy(saved)) return saved.trim().replace(/\/+$/, "");
+  } catch {
+    /* تجاهل */
+  }
+  return fallback;
+}
+
+/* قائمة الوسطاء بترتيب صفحة البث المباشر: [وسيط الجلسة المخصص، /proxy.php، Worker الرسمي] */
+export function resolveProxyBases({
+  proxyBase = "",
+  phpProxy = PHP_PROXY,
+  search = "",
+  session = null,
+} = {}) {
+  const worker = resolveWorkerBase({ proxyBase, search, session });
+  const fallback = String(proxyBase ?? "").trim().replace(/\/+$/, "");
+  const php = String(phpProxy ?? "").trim();
+  const list = [];
+  const push = (v) => {
+    if (v && !list.includes(v)) list.push(v);
+  };
+  if (worker && worker !== fallback) push(worker);
+  push(php);
+  push(worker || fallback);
+  push(fallback);
+  return list;
+}
+
+/* تحويل أي رابط قناة أو سيرفر إلى رابط الوسيط (Worker أو /proxy.php) */
+export function getProxyUrl(base, url) {
+  const b = String(base ?? "").trim().replace(/\/+$/, "");
+  const u = String(url ?? "").trim();
+  if (!b || !u) return u;
+  if (b.endsWith(".php")) return `${b}?url=${encodeURIComponent(u)}`;
+  if (u.startsWith("https://shd-gcp-live.edgenextcdn.net/")) {
+    return b + u.slice("https://shd-gcp-live.edgenextcdn.net".length);
+  }
+  const mh = u.match(/^https:\/\/([^/]+)(\/.*)?$/i);
+  if (mh) {
+    return `${b}/h/${mh[1]}${mh[2] || "/"}`;
+  }
+  const mx = u.match(/^http:\/\/([^/]+)(\/.*)?$/i);
+  if (mx) {
+    return `${b}/x/${mx[1]}${mx[2] || "/"}`;
+  }
+  return `${b}/?u=${encodeURIComponent(u)}`;
+}
+
+/* هل الرابط يمثّل قائمة تشغيل HLS (.m3u8) حتى لو كان مُرمَّزاً داخل ?url= أو ?u= */
+export function isHlsCandidateUrl(url) {
+  const raw = String(url ?? "").trim();
+  if (!raw) return false;
+  if (/\.m3u8($|\?|%3f|&)/i.test(raw)) return true;
+  try {
+    return /\.m3u8($|\?)/i.test(decodeURIComponent(raw));
+  } catch {
+    return false;
+  }
+}
 
 /* ========================================================================= */
 /*  تنقية المدخلات                                                            */
@@ -198,15 +299,21 @@ export function windowRange({ scrollTop = 0, itemHeight, viewportHeight, total, 
 }
 
 /* ========================================================================= */
-/*  مسارات الاتصال (Direct / Proxy) — نفس سلوك الموقع الحالي                  */
+/*  مسارات الاتصال (Direct + Cloudflare Worker + PHP Proxy)                  */
 /* ========================================================================= */
 
-export function buildModes({ proxyBase, isHttpsSite = true } = {}) {
+export function buildModes({ proxyBase, phpProxy = PHP_PROXY, isHttpsSite = true } = {}) {
   const modes = [
     { id: "direct-https", label: "مباشر HTTPS", base: (h) => `https://${h}` },
     { id: "proxy-https", label: "وسيط HTTPS", base: (h) => `${proxyBase}/h/${h}` },
     { id: "proxy-http", label: "وسيط HTTP", base: (h) => `${proxyBase}/x/${h}` },
   ];
+  if (phpProxy) {
+    modes.push(
+      { id: "php-https", label: "بروكسي HTTPS", base: (h) => `${phpProxy}?url=https://${h}` },
+      { id: "php-http", label: "بروكسي HTTP", base: (h) => `${phpProxy}?url=http://${h}` }
+    );
+  }
   /* الاتصال http المباشر من صفحة https مستحيل (Mixed Content) */
   if (!isHttpsSite) {
     modes.splice(1, 0, { id: "direct-http", label: "مباشر HTTP", base: (h) => `http://${h}` });
@@ -214,18 +321,38 @@ export function buildModes({ proxyBase, isHttpsSite = true } = {}) {
   return modes;
 }
 
-/* رابط واجهة الحساب (player_api.php) — يُنادى من متصفح المشترك إلى سيرفر مشغّله */
-export function playerApiUrl(base, username, password) {
-  return `${base}/player_api.php?username=${encodeURIComponent(
-    username
-  )}&password=${encodeURIComponent(password)}`;
+/* تركيب المسار والاستعلام على base — إن كان base يمر عبر ?url= أو ?u= يُرمَّز الرابط الكامل داخله */
+function buildEndpointUrl(base, pathAndQuery) {
+  const raw = String(base ?? "");
+  const qIdx = raw.search(/\?(url|u)=/i);
+  if (qIdx !== -1) {
+    const eqIdx = raw.indexOf("=", qIdx);
+    const prefix = raw.slice(0, eqIdx + 1);
+    const targetBase = raw.slice(eqIdx + 1);
+    return `${prefix}${encodeURIComponent(`${targetBase}${pathAndQuery}`)}`;
+  }
+  return `${raw}${pathAndQuery}`;
 }
 
-/* رابط بث قناة مباشرة بنمط Xtream */
+/* رابط واجهة الحساب (player_api.php) — يدعم المباشر والـWorker و/proxy.php */
+export function playerApiUrl(base, username, password, action = "") {
+  const act = action ? `&action=${encodeURIComponent(action)}` : "";
+  return buildEndpointUrl(
+    base,
+    `/player_api.php?username=${encodeURIComponent(
+      username
+    )}&password=${encodeURIComponent(password)}${act}`
+  );
+}
+
+/* رابط بث قناة مباشرة بنمط Xtream — يدعم المباشر والـWorker و/proxy.php */
 export function liveStreamUrl(base, username, password, streamId) {
-  return `${base}/live/${encodeURIComponent(username)}/${encodeURIComponent(
-    password
-  )}/${streamId}.m3u8`;
+  return buildEndpointUrl(
+    base,
+    `/live/${encodeURIComponent(username)}/${encodeURIComponent(
+      password
+    )}/${streamId}.m3u8`
+  );
 }
 
 /* رابط تنزيل قائمة القنوات (get.php) — يُفتح في تبويب جديد فلا يحتاج CORS */
@@ -236,9 +363,12 @@ export function m3uDownloadUrl({ host, username, password, scheme = "https" }) {
 }
 
 /* روابط التشغيل المرشحة لمصدر M3U:
-   نسخة m3u8 أولاً (تعمل مع hls.js) ثم الأصلية ثم عبر الوسيط —
-   مع ترقية http→https لأن الصفحة https (وإلا حجبها المتصفح فوراً) */
-export function m3uCandidates(rawUrl, { proxyBase, isHttpsSite = true } = {}) {
+   تجمع بين المباشر، و Cloudflare Worker (/h/ و /x/ و /?u=)، وبروكسي /proxy.php
+   تماماً مثل صفحة البث المباشر، مع تقديم الوسيط فوراً لروابط ngrok */
+export function m3uCandidates(
+  rawUrl,
+  { proxyBase, phpProxy = PHP_PROXY, isHttpsSite = true } = {}
+) {
   const list = [];
   const push = (u) => {
     if (u && !list.includes(u)) list.push(u);
@@ -249,6 +379,7 @@ export function m3uCandidates(rawUrl, { proxyBase, isHttpsSite = true } = {}) {
   const isHls = /\.m3u8($|\?)/i.test(url);
   const isTs = /\.ts($|\?)/i.test(url);
   const https = (u) => u.replace(/^http:\/\//i, "https://");
+  const mustProxy = isNgrokUrl(url);
 
   /* روابط ts بنمط xtream لها نسخة m3u8 مكافئة على نفس السيرفر */
   const hlsVariant = isTs && /\/live\//.test(url)
@@ -257,14 +388,39 @@ export function m3uCandidates(rawUrl, { proxyBase, isHttpsSite = true } = {}) {
       ? url
       : "";
 
+  const addDirect = (target) => {
+    push(isHttpsSite ? https(target) : target);
+    push(target);
+  };
+
+  const addProxied = (target) => {
+    if (proxyBase) {
+      push(getProxyUrl(proxyBase, target));
+      push(`${proxyBase}/?u=${encodeURIComponent(target)}`);
+    }
+    if (phpProxy) {
+      push(getProxyUrl(phpProxy, target));
+    }
+  };
+
   if (hlsVariant) {
-    push(isHttpsSite ? https(hlsVariant) : hlsVariant);
-    push(hlsVariant);
-    push(`${proxyBase}/?u=${encodeURIComponent(hlsVariant)}`);
+    if (mustProxy) {
+      addProxied(hlsVariant);
+      addDirect(hlsVariant);
+    } else {
+      addDirect(hlsVariant);
+      addProxied(hlsVariant);
+    }
   }
-  push(isHttpsSite ? https(url) : url);
-  push(url);
-  push(`${proxyBase}/?u=${encodeURIComponent(url)}`);
+
+  if (mustProxy) {
+    addProxied(url);
+    addDirect(url);
+  } else {
+    addDirect(url);
+    addProxied(url);
+  }
+
   return list;
 }
 
@@ -275,9 +431,11 @@ export function m3uCandidates(rawUrl, { proxyBase, isHttpsSite = true } = {}) {
 export function composeFailMsg(entries) {
   const list = Array.isArray(entries) ? entries : [];
   const direct = list.filter((e) => e.mode.startsWith("direct"));
-  const proxies = list.filter((e) => e.mode.startsWith("proxy"));
+  const proxies = list.filter(
+    (e) => e.mode.startsWith("proxy") || e.mode.startsWith("php")
+  );
   const corsBlocked = direct.length > 0 && direct.every((e) => /CORS|مهلة/.test(e.note));
-  const wafBlocked = proxies.some((e) => /HTTP 403|HTTP 429|HTTP 52\d|مهلة/.test(e.note));
+  const wafBlocked = proxies.some((e) => /HTTP 403|HTTP 429|HTTP 50\d|HTTP 52\d|مهلة/.test(e.note));
   /* كل المحاولات انتهت بمهلة زمنية (لا رد إطلاقاً) — أوضح من نسبة الحجب للمتصفح */
   const allTimeouts = list.length > 0 && list.every((e) => /مهلة/.test(e.note));
 

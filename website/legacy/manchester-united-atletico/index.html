@@ -826,13 +826,13 @@
             </div>
 
             <div class="action-row">
-              <a class="watch-button" href="/manchester-united-atletico/watch/" aria-label="الانتقال إلى صفحة متابعة المباراة والمباريات القادمة">
+              <a class="watch-button" id="primary-watch" href="/manchester-united-atletico/watch/" data-watch-url="https://passive-rotunda-deduct.ngrok-free.dev/five_channels_full.html" data-watch-enabled="true" data-full-time-minutes="150" aria-label="الانتقال إلى صفحة متابعة المباراة والمباريات القادمة">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
-                مشاهدة المباراة الآن
+                <span id="primary-watch-label">صفحة المتابعة</span>
               </a>
               <a class="details-button" href="#preview">تعرّف على المواجهة <span aria-hidden="true">↓</span></a>
             </div>
-            <p class="watch-note">زر المشاهدة ينقلك إلى صفحة متابعة داخل الموقع: تنويه انتهاء المباراة، وأقرب المباريات القادمة، وطرق الاشتراك. لا يُعرض أي بث داخل الموقع.</p>
+            <p class="watch-note" id="primary-watch-note">زر المشاهدة ينقلك إلى صفحة متابعة داخل الموقع: تنويه انتهاء المباراة، وأقرب المباريات القادمة، وطرق الاشتراك. لا يُعرض أي بث داخل الموقع.</p>
           </article>
 
           <p class="time-zone-note">الموعد المعروض 10:00 مساءً بتوقيت القاهرة (19:00 UTC). قد يختلف التوقيت حسب بلدك؛ تحقّق من الموعد المحلي قبل الانطلاق.</p>
@@ -954,6 +954,80 @@
 
         update();
         interval = window.setInterval(update, 1000);
+      })();
+
+      (() => {
+        // زر مشاهدة ذكي: قبل الانطلاق وخلال اللقاء يفتح رابط البث المُفعَّل، وبعد صافرة النهاية
+        // يتحول تلقائياً إلى صفحة المتابعة الداخلية. الرابط يُضبط من data-watch-url،
+        // ويمكن تعطيله نهائياً بـ data-watch-enabled="false" ليعود الزر داخلياً دائماً.
+        const button = document.getElementById('primary-watch');
+        if (!button) return;
+
+        const labelNode = document.getElementById('primary-watch-label');
+        const noteNode = document.getElementById('primary-watch-note');
+        const box = document.getElementById('match-countdown');
+        const kickoff = box ? Date.parse(box.dataset.kickoff || '') : NaN;
+        // المدة التقديرية الكاملة (نفس المدة المستخدمة في رسالة ما بعد المباراة) ويمكن ضبطها
+        // بـ data-full-time-minutes لتناسب مباريات الوقت الإضافي والترجيح.
+        const configuredMinutes = Number.parseInt(button.dataset.fullTimeMinutes || '', 10);
+        const FULL_TIME_MS = (Number.isFinite(configuredMinutes) && configuredMinutes > 90 ? configuredMinutes : 150) * 60 * 1000;
+
+        const FOLLOW_HREF = button.getAttribute('href') || '/manchester-united-atletico/watch/';
+        const FOLLOW_LABEL = 'صفحة المتابعة';
+        const FOLLOW_ARIA = 'الانتقال إلى صفحة متابعة المباراة والمباريات القادمة';
+        const FOLLOW_NOTE = 'زر المشاهدة ينقلك إلى صفحة متابعة داخل الموقع: تنويه انتهاء المباراة، وأقرب المباريات القادمة، وطرق الاشتراك. لا يُعرض أي بث داخل الموقع.';
+        const STREAM_LABEL = 'مشاهدة المباراة الآن';
+        const STREAM_ARIA = 'فتح رابط البث الخارجي في تبويب جديد';
+        const STREAM_NOTE = 'زر المشاهدة يفتح رابط البث الخارجي في تبويب جديد. لا نتحقق من توفّر البث أو حقوقه؛ للاستمرار استخدم مصدراً مرخصاً ومتاحاً في منطقتك.';
+
+        let sourceState = '';
+        let mode = '';
+
+        const streamEnabled = () => {
+          if ((button.dataset.watchEnabled || '').toLowerCase() !== 'true') return false;
+          const url = (button.dataset.watchUrl || '').trim();
+          return /^https:\/\//.test(url);
+        };
+        const resolveMode = () => {
+          if (!streamEnabled()) return 'follow';
+          // 1) انتهاء مؤكد من المصدر (أو تغيّر موعد اللقاء) => صفحة المتابعة.
+          if (sourceState === 'finished' || sourceState === 'other') return 'follow';
+          // 2) تجاوز النافذة التقديرية للمباراة => صفحة المتابعة حتى لو تأخر تحديث المصدر.
+          if (Number.isFinite(kickoff) && Date.now() >= kickoff + FULL_TIME_MS) return 'follow';
+          // 3) لقاء قائم أو لم يبدأ بعد => رابط البث المُفعَّل.
+          return 'stream';
+        };
+
+        const apply = () => {
+          const next = resolveMode();
+          if (next === 'stream') {
+            button.setAttribute('href', (button.dataset.watchUrl || '').trim());
+            button.setAttribute('target', '_blank');
+            button.setAttribute('rel', 'noopener noreferrer');
+            button.setAttribute('aria-label', STREAM_ARIA);
+            if (labelNode) labelNode.textContent = STREAM_LABEL;
+            if (noteNode) noteNode.textContent = STREAM_NOTE;
+          } else {
+            button.setAttribute('href', FOLLOW_HREF);
+            button.removeAttribute('target');
+            button.removeAttribute('rel');
+            button.setAttribute('aria-label', FOLLOW_ARIA);
+            if (labelNode) labelNode.textContent = FOLLOW_LABEL;
+            if (noteNode) noteNode.textContent = FOLLOW_NOTE;
+          }
+          if (next !== mode) {
+            mode = next;
+            button.dataset.watchMode = next;
+          }
+        };
+
+        // لوحة النتيجة تنادي هذه الدالة عند كل تحديث لتُصحّح الحالة من المصدر.
+        window.__smFixtureWatch = state => {
+          if (typeof state === 'string' && state) sourceState = state;
+          apply();
+        };
+        apply();
+        window.setInterval(apply, 30_000);
       })();
 
       (() => {
@@ -1192,6 +1266,8 @@
             const matchState = stateFor(event, competition);
             const staleSuffix = stale ? ' · بيانات مخزنة قد تتأخر' : '';
             setStatus(matchState.state, `${matchState.label}${staleSuffix}`, stale);
+            // تُبلَّغ حالة المصدر لزر المشاهدة الذكي (مباشر / انتهت / متغيّرة).
+            window.__smFixtureWatch?.(matchState.state);
             renderStats(
               homeIsAtletico ? home : away,
               homeIsAtletico ? away : home,

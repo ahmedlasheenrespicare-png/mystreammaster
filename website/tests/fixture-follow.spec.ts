@@ -22,12 +22,13 @@ test('watch button on the fixture page is an internal follow-page link, with no 
   await expect(primary).not.toHaveAttribute('target', '_blank');
   await expect(closing).not.toHaveAttribute('target', '_blank');
 
-  // لا يبقى أي رابط بث خارجي في الصفحة الرئيسية للمواجهة.
-  const html = await page.content();
-  expect(html).not.toContain('ngrok');
+  // بعد انتهاء اللقاء لا يوجد أي رابط بث قابل للنقر: الرابط الخارجي يبقى في data-watch-url فقط
+  // ويتحول الزر إليه في نافذة ما قبل/خلال المباراة حسب الحالة الذكية (fixture-watch-state.spec.ts).
   const streamLinks = await page.locator('main a[href^="http"]').evaluateAll(anchors =>
     anchors.map(a => a.getAttribute('href')).filter(href => /m3u8|\.html\?|five_channels|restream|espn|site\.api/i.test(href || '')));
   expect(streamLinks).toEqual([]);
+  await expect(primary).toHaveAttribute('data-watch-mode', 'follow');
+  await expect(page.locator('#primary-watch')).not.toHaveAttribute('target', '_blank');
 
   await expect(page.locator('p.watch-note')).toContainText('صفحة متابعة داخل الموقع');
 });

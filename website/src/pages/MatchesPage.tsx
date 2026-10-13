@@ -127,14 +127,18 @@ export default function MatchesPage() {
   return <section className="matches-page" aria-labelledby="matches-title">
     <div className="matches-container">
       <header className="matches-hero">
-        <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">تابع المواعيد والنتائج وحالة المباريات في البطولات المتاحة.<br />الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
-        <div className="matches-live-panel"><span className={`update-indicator ${auto && online ? 'active' : ''}`} /> <strong>{auto ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف'}</strong><small>{updated ? `آخر بيانات مستلمة: ${kickoff(updated, zone)} — ${selectedZoneName}` : 'في انتظار بيانات المصدر'}{loading && updated ? ' · جارٍ التحديث' : ''}</small><label><input type="checkbox" checked={auto} onChange={e => { setAuto(e.target.checked); if (e.target.checked) refreshNow.current(); }} /> تفعيل التحديث التلقائي</label></div>
+        <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>
 
-      <div className="matches-controls">
-        <label>المنطقة الزمنية<select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select></label>
-        <label>البطولة<select value={league} onChange={e => setLeague(e.target.value)}><option value="all">كل البطولات المتاحة</option>{LEAGUES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>
-        <label className="matches-search">ابحث عن فريق<input type="search" placeholder="اسم الفريق حسب المصدر…" value={query} onChange={e => setQuery(e.target.value)} /></label>
+      <div className="matches-toolbar" aria-label="أدوات البحث والتحديث">
+        <div className="matches-status">
+          <span className={`update-indicator ${auto && online ? 'active' : ''}`} aria-hidden="true" />
+          <div className="matches-status-text"><strong>{auto ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف'}</strong><small>{updated ? `آخر بيانات: ${kickoff(updated, zone)} — ${selectedZoneName}` : 'في انتظار بيانات المصدر'}{loading && updated ? ' · جارٍ التحديث' : ''}</small></div>
+          <label className="matches-auto-toggle"><input type="checkbox" checked={auto} onChange={e => { setAuto(e.target.checked); if (e.target.checked) refreshNow.current(); }} /> <span>تفعيل التحديث التلقائي</span></label>
+        </div>
+        <label className="matches-field"><span className="matches-field-label">المنطقة الزمنية</span><select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select></label>
+        <label className="matches-field"><span className="matches-field-label">البطولة</span><select value={league} onChange={e => setLeague(e.target.value)}><option value="all">كل البطولات المتاحة</option>{LEAGUES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>
+        <label className="matches-field matches-search"><span className="matches-field-label">ابحث عن فريق</span><input type="search" placeholder="اسم الفريق…" value={query} onChange={e => setQuery(e.target.value)} /></label>
         <button className="matches-refresh" disabled={loading || !online} onClick={() => refreshNow.current()}>{loading ? 'جارٍ التحديث…' : '↻ تحديث الآن'}</button>
       </div>
 

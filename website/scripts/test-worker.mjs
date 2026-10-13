@@ -165,14 +165,36 @@ test("15) يمرّر سلسلة الاستعلام (token) إلى السيرفر
 });
 
 /* ١٦ — CORS: نطاق الموقع مسموح، وأي نطاق آخر يُرفض */
-test("16) يسمح لنطاق الموقع ويرفض نطاقاً غريباً (403)", async () => {
-  const stub = stubFetch(m3u8Response());
+test("16) يسمح لنطاق الموقع (بما فيه streammasterstore.com) ويرفض نطاقاً غريباً (403)", async () => {
+  const stub = stubFetch(() => m3u8Response());
   try {
     const allowed = await worker.fetch(
       new Request(`${PROXY}/h/${MBC_HOST}/live/x/index.m3u8`, { headers: { Origin: SITE } })
     );
     assert.equal(allowed.status, 200);
     assert.equal(allowed.headers.get("Access-Control-Allow-Origin"), SITE);
+
+    const allowedStore = await worker.fetch(
+      new Request(`${PROXY}/h/${MBC_HOST}/live/x/index.m3u8`, {
+        headers: { Origin: "https://streammasterstore.com" },
+      })
+    );
+    assert.equal(allowedStore.status, 200);
+    assert.equal(
+      allowedStore.headers.get("Access-Control-Allow-Origin"),
+      "https://streammasterstore.com"
+    );
+
+    const allowedWww = await worker.fetch(
+      new Request(`${PROXY}/h/${MBC_HOST}/live/x/index.m3u8`, {
+        headers: { Origin: "https://www.streammasterstore.com" },
+      })
+    );
+    assert.equal(allowedWww.status, 200);
+    assert.equal(
+      allowedWww.headers.get("Access-Control-Allow-Origin"),
+      "https://www.streammasterstore.com"
+    );
 
     const denied = await worker.fetch(
       new Request(`${PROXY}/h/${MBC_HOST}/live/x/index.m3u8`, {

@@ -13,6 +13,7 @@ import {
   LIST_ITEM_HEIGHT,
   MAX_ACCOUNTS,
   MAX_RECENTS,
+  PHP_PROXY,
   STORAGE_KEY,
   accountKey,
   accountLabel,
@@ -22,6 +23,10 @@ import {
   createShareToken,
   daysUntil,
   filterStreams,
+  getProxyUrl,
+  isHlsCandidateUrl,
+  isNgrokUrl,
+  isTrustedProxy,
   isValidAccount,
   liveStreamUrl,
   loadAccounts,
@@ -39,6 +44,8 @@ import {
   profileKeyFor,
   pushRecent,
   removeAccount,
+  resolveProxyBases,
+  resolveWorkerBase,
   saveJSON,
   saveProfileList,
   schemeOf,
@@ -222,13 +229,21 @@ test("13) windowRange يراعي نهاية القائمة والتجاوز وا
   assert.equal(small.totalHeight, 150);
 });
 
-/* ١٤ — مسارات الاتصال: https ثلاثة مسارات، وhttp يضيف المباشر */
-test("14) buildModes يبني المسارات حسب بروتوكول الصفحة", () => {
+/* ١٤ — مسارات الاتصال: المباشر + الـWorker + بروكسي PHP */
+test("14) buildModes يبني المسارات حسب بروتوكول الصفحة مع Worker و PHP Proxy", () => {
   const https = buildModes({ proxyBase: PROXY, isHttpsSite: true });
-  assert.deepEqual(https.map((m) => m.id), ["direct-https", "proxy-https", "proxy-http"]);
+  assert.deepEqual(https.map((m) => m.id), [
+    "direct-https",
+    "proxy-https",
+    "proxy-http",
+    "php-https",
+    "php-http",
+  ]);
   assert.equal(https[0].base("srv.com"), "https://srv.com");
   assert.equal(https[1].base("srv.com"), `${PROXY}/h/srv.com`);
   assert.equal(https[2].base("srv.com"), `${PROXY}/x/srv.com`);
+  assert.equal(https[3].base("srv.com"), "/proxy.php?url=https://srv.com");
+  assert.equal(https[4].base("srv.com"), "/proxy.php?url=http://srv.com");
 
   const http = buildModes({ proxyBase: PROXY, isHttpsSite: false });
   assert.deepEqual(http.map((m) => m.id), [
@@ -236,20 +251,38 @@ test("14) buildModes يبني المسارات حسب بروتوكول الصف�
     "direct-http",
     "proxy-https",
     "proxy-http",
+    "php-https",
+    "php-http",
   ]);
   assert.equal(http[1].base("srv.com"), "http://srv.com");
 });
 
-/* ١٥ — بناء الروابط: ترميز صحيح لاسم المستخدم وكلمة السر */
-test("15) بناء روابط الحساب والبث وترميزهما", () => {
+/* ١٥ — بناء الروابط: ترميز صحيح لاسم المستخدم وكلمة السر للمباشر والـWorker و/proxy.php */
+test("15) بناء روابط الحساب والبث وترميزهما عبر المباشر والـWorker و/proxy.php", () => {
   const api = playerApiUrl("https://srv.com", "user name", "p@ss/1");
   assert.equal(
     api,
     "https://srv.com/player_api.php?username=user%20name&password=p%40ss%2F1"
   );
   assert.equal(
+    playerApiUrl("https://srv.com", "u", "p", "get_live_streams"),
+    "https://srv.com/player_api.php?username=u&password=p&action=get_live_streams"
+  );
+  /* عبر /proxy.php يُرمَّز الرابط كاملاً بما فيه معامل action */
+  assert.equal(
+    playerApiUrl("/proxy.php?url=http://srv.com:8080", "u", "p", "get_live_streams"),
+    "/proxy.php?url=" +
+      encodeURIComponent(
+        "http://srv.com:8080/player_api.php?username=u&password=p&action=get_live_streams"
+      )
+  );
+  assert.equal(
     liveStreamUrl("https://srv.com", "u", "p", 101),
     "https://srv.com/live/u/p/101.m3u8"
+  );
+  assert.equal(
+    liveStreamUrl("/proxy.php?url=http://srv.com:8080", "u", "p", 101),
+    "/proxy.php?url=" + encodeURIComponent("http://srv.com:8080/live/u/p/101.m3u8")
   );
   assert.equal(
     m3uDownloadUrl({ host: "srv.com", username: "u", password: "p", scheme: "http" }),
@@ -257,16 +290,25 @@ test("15) بناء روابط الحساب والبث وترميزهما", () =>
   );
 });
 
-/* ١٦ — مرشحات التشغيل من ملف M3U: نسخة m3u8 ثم الأصلية ثم الوسيط */
-test("16) m3uCandidates يبني قائمة مرشحة بلا تكرار", () => {
+/* ١٦ — مرشحات التشغيل من ملف M3U: نسخة m3u8 ثم الأصلية عبر المباشر والـWorker و/proxy.php */
+test("16) m3uCandidates يبني قائمة مرشحة بلا تكرار تشمل Worker و /proxy.php", () => {
   const list = m3uCandidates("http://srv.com/live/u/p/5.ts", {
     proxyBase: PROXY,
     isHttpsSite: true,
   });
   assert.equal(list[0], "https://srv.com/live/u/p/5.m3u8");
   assert.ok(list.includes("http://srv.com/live/u/p/5.ts"));
+  assert.ok(list.includes(`${PROXY}/x/srv.com/live/u/p/5.m3u8`));
   assert.ok(list.some((u) => u.startsWith(`${PROXY}/?u=`)));
+  assert.ok(list.some((u) => u.startsWith(`${PHP_PROXY}?url=`)));
   assert.equal(new Set(list).size, list.length);
+
+  /* روابط ngrok تبدأ بالوسيط فوراً لتجاوز صفحة التحذير */
+  const ngrok = m3uCandidates("https://sub.ngrok-free.dev/my_restream.m3u8", {
+    proxyBase: PROXY,
+    isHttpsSite: true,
+  });
+  assert.equal(ngrok[0], `${PROXY}/h/sub.ngrok-free.dev/my_restream.m3u8`);
 
   /* على صفحة http لا نرفع البروتوكول */
   const plain = m3uCandidates("http://srv.com/live/u/p/5.ts", {
@@ -483,4 +525,60 @@ test("29) daysUntil يحسب المتبقي ويتعامل مع المنتهي �
   assert.equal(daysUntil(0, now), null);
   assert.equal(daysUntil(Number.NaN, now), null);
   assert.equal(daysUntil(undefined, now), null);
+});
+
+/* ٣٠ — أدوات البروكسي المشتركة مع صفحة البث المباشر */
+test("30) isTrustedProxy و resolveWorkerBase و resolveProxyBases و getProxyUrl", () => {
+  assert.equal(isTrustedProxy("https://serverproject.ahmedlasheenrespicare.workers.dev"), true);
+  assert.equal(isTrustedProxy("https://my-app.ahmedlasheenrespicare-png.deno.net"), true);
+  assert.equal(isTrustedProxy("https://evil.example.com"), false);
+  assert.equal(isTrustedProxy("javascript:alert(1)"), false);
+
+  const session = fakeStorage();
+  const customWorker = "https://custom.ahmedlasheenrespicare.workers.dev";
+  const resolved = resolveWorkerBase({
+    proxyBase: PROXY,
+    search: `?proxy=${customWorker}/`,
+    session,
+  });
+  assert.equal(resolved, customWorker);
+  assert.equal(session.getItem("smp-proxy"), customWorker);
+
+  const bases = resolveProxyBases({ proxyBase: PROXY, session });
+  assert.deepEqual(bases, [customWorker, PHP_PROXY, PROXY]);
+
+  assert.equal(
+    getProxyUrl(PHP_PROXY, "http://srv.com:8080/live/u/p/10.m3u8"),
+    `/proxy.php?url=${encodeURIComponent("http://srv.com:8080/live/u/p/10.m3u8")}`
+  );
+  assert.equal(
+    getProxyUrl(PROXY, "http://srv.com:8080/live/u/p/10.m3u8"),
+    `${PROXY}/x/srv.com:8080/live/u/p/10.m3u8`
+  );
+  assert.equal(
+    getProxyUrl(PROXY, "https://srv.com/live/u/p/10.m3u8"),
+    `${PROXY}/h/srv.com/live/u/p/10.m3u8`
+  );
+});
+
+/* ٣١ — كشف روابط HLS المباشرة والمرمّزة عبر البروكسي وروابط ngrok */
+test("31) isHlsCandidateUrl و isNgrokUrl يكشفان الروابط المباشرة والمرمّزة", () => {
+  assert.equal(isHlsCandidateUrl("https://srv.com/live/u/p/1.m3u8"), true);
+  assert.equal(isHlsCandidateUrl("https://srv.com/live/u/p/1.m3u8?token=abc"), true);
+  assert.equal(
+    isHlsCandidateUrl(
+      "/proxy.php?url=" + encodeURIComponent("http://srv.com/live/u/p/1.m3u8?token=abc")
+    ),
+    true
+  );
+  assert.equal(
+    isHlsCandidateUrl(
+      `${PROXY}/?u=` + encodeURIComponent("http://srv.com/live/u/p/1.m3u8?token=abc")
+    ),
+    true
+  );
+  assert.equal(isHlsCandidateUrl("http://srv.com/live/u/p/1.ts"), false);
+
+  assert.equal(isNgrokUrl("https://abc.ngrok-free.dev/live.m3u8"), true);
+  assert.equal(isNgrokUrl("https://srv.com/live.m3u8"), false);
 });

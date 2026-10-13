@@ -59,6 +59,8 @@ function isNgrokWarningPage(body) {
    أضف نطاقك المخصص هنا عند ربطه (مثال: "https://example.com")
 ========================================================================== */
 const ALLOWED_ORIGINS = [
+  "https://streammasterstore.com",
+  "https://www.streammasterstore.com",
   "https://ahmedlasheenrespicare-png.github.io",
 ];
 
@@ -327,14 +329,19 @@ async function proxyTo(targetStr, request, cors) {
 
   /* إعادة كتابة قوائم m3u8 بحيث تمر كل الروابط الداخلية عبر الوسيط */
   const ct = (resp.headers.get("content-type") || "").toLowerCase();
+  const finalUrl = resp.url || target.href;
   const isManifest =
-    target.pathname.endsWith(".m3u8") || ct.includes("mpegurl") || ct.includes("vnd.apple");
+    target.pathname.endsWith(".m3u8") ||
+    /\.m3u8(\?|$)/i.test(finalUrl) ||
+    ct.includes("mpegurl") ||
+    ct.includes("vnd.apple");
 
   if (isManifest && request.method === "GET" && resp.status === 200 && resp.body) {
     try {
       const text = await resp.text();
-      const finalUrl = resp.url || target.href;
-      const rewritten = rewriteManifest(text, finalUrl);
+      const rewritten = text.trimStart().startsWith("#EXTM3U")
+        ? rewriteManifest(text, finalUrl)
+        : text;
       return new Response(rewritten, {
         status: resp.status,
         headers: {

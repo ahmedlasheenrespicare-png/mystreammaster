@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   IconArrow,
   IconArrowUpRight,
@@ -10,8 +10,17 @@ import {
   IconStar,
   IconZap,
 } from "./Icons";
-import { CURRENCIES, PRICING_PLANS, getWhatsAppUrl } from "../data";
+import { CURRENCIES, getWhatsAppUrl } from "../data";
 import { to } from "../config";
+import { useRouter } from "../router";
+import {
+  HOME_SECTIONS,
+  NAV_GROUPS,
+  SERVER_PAGES,
+  activeGroupKey,
+  type NavGroup,
+  type NavLink,
+} from "../navigation.mjs";
 
 interface HeaderProps {
   currentCurrency: string;
@@ -22,28 +31,23 @@ interface HeaderProps {
 }
 
 /* =========================================================================
-   شريط التنقل على طراز Salient: شريط إعلان علوي + كبسولة عائمة + قائمة ضخمة
+   الهيدر: شريط إعلان علوي + كبسولة عائمة بخمس قوائم منسدلة
+   --------------------------------------------------------------------------
+   الروابط كلها من src/navigation.mjs — نفس المصدر الذي يبني هيدر الصفحات
+   القديمة، فتظهر كل صفحات الموقع في الهيدر أينما كان الزائر.
+   • الرئيسية ▾          — كل أقسام الصفحة الرئيسية
+   • السيرفرات والباقات ▾ — بطاقات السيرفرات + المتجر والسلة
+   • القنوات والبث ▾      — القنوات، البث المجاني، كأس العالم، التوقعات…
+   • المقالات ▾           — المدونة وأهم الدلائل
+   • المساعدة ▾           — الأسئلة، حالة الخدمة، البحث، من نحن، السياسات
 ========================================================================= */
-/* الروابط:
 
-   • أقسام الصفحة الرئيسية تُكتب كمرساة "#pricing" — والموجّه يعرف كيف يوصل
-     الزائر إليها من أي صفحة أخرى (ينتقل للرئيسية ثم يمرّر للقسم)
-   • الصفحات المستقلة (/channels و /blog) روابط حقيقية تُفهرس وتُشارَك */
-const NAV_LINKS = [
-  { name: "الباقات", href: "#pricing" },
-  { name: "القنوات", href: to("channels/") },
-  { name: "البث المباشر", href: "#live-player" },
-  { name: "مقارنة السيرفرات", href: "#servers-compare" },
-  { name: "مقالات ودلائل", href: to("blog/") },
-];
+type GroupKey = NavGroup["key"];
 
-/* ألوان مصغّرات السيرفرات داخل القائمة الضخمة */
-const SERVER_STYLES: Record<string, { grad: string; emoji: string }> = {
-  nova: { grad: "from-[#2b4eff] to-[#7c5cff]", emoji: "⚽" },
-  ultra: { grad: "from-[#ffe3c7] to-[#ff9a3d]", emoji: "👑" },
-  istar: { grad: "from-[#7c5cff] to-[#3effe0]", emoji: "🎬" },
-  moka: { grad: "from-[#d8ff3e] to-[#3effe0]", emoji: "⚡" },
-};
+/* أقسام الرئيسية روابط "/#pricing" — تعمل من أي صفحة (الموجّه ينقل ثم يمرّر)
+   وتعمل أيضاً بلا JavaScript لأنها روابط حقيقية */
+const sectionHref = (id: string) => to(`#${id}`);
+const pageHref = (link: NavLink) => to(link.href);
 
 export default function Header({
   currentCurrency,
@@ -52,9 +56,15 @@ export default function Header({
   onOpenCart,
   onOpenTrial,
 }: HeaderProps) {
+  const { path } = useRouter();
+  const activeKey = activeGroupKey(path) as GroupKey | "";
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [mega, setMega] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openKey, setOpenKey] = useState<GroupKey | null>(null);
+  const [mobileGroup, setMobileGroup] = useState<GroupKey | null>(activeKey || "home");
+  const navRef = useRef<HTMLDivElement | null>(null);
+  const closeTimer = useRef<number | undefined>(undefined);
+  const lastPointer = useRef("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -63,11 +73,59 @@ export default function Header({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /* Escape يغلق أي قائمة ويعيد التركيز لزر القائمة المفتوحة */
   useEffect(() => {
-    const close = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); setMega(false); } };
-    document.addEventListener("keydown", close);
-    return () => document.removeEventListener("keydown", close);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMobileOpen(false);
+      setOpenKey((current) => {
+        if (current) document.getElementById(`nav-trigger-${current}`)?.focus();
+        return null;
+      });
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, []);
+
+  /* الضغط خارج الهيدر يغلق القائمة المنسدلة */
+  useEffect(() => {
+    if (!openKey) return;
+    const onDown = (event: MouseEvent) => {
+      if (!navRef.current?.contains(event.target as Node)) setOpenKey(null);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [openKey]);
+
+  /* أي تنقّل يغلق القوائم ويفتح مجموعة الصفحة الحالية في قائمة الجوال */
+  useEffect(() => {
+    setOpenKey(null);
+    setMobileOpen(false);
+    setMobileGroup((activeGroupKey(path) as GroupKey) || "home");
+  }, [path]);
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+
+  /* الفتح بالتمرير للفأرة فقط — اللمس يعتمد على الضغط (onClick) */
+  const hoverOpen = (key: GroupKey) => (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    window.clearTimeout(closeTimer.current);
+    setOpenKey(key);
+  };
+  const hoverClose = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setOpenKey(null), 140);
+  };
+  const close = () => setOpenKey(null);
+
+  /* إغلاق القائمة عند خروج التركيز منها بلوحة المفاتيح (Tab) */
+  const onBlurGroup = (e: React.FocusEvent<HTMLDivElement>) => {
+    const group = e.currentTarget.dataset.group;
+    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+      setOpenKey((k) => (k && group === k ? null : k));
+    }
+  };
 
   return (
     <>
@@ -98,6 +156,7 @@ export default function Header({
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
           <nav
+            aria-label="القائمة الرئيسية"
             className={`flex items-center justify-between gap-3 rounded-2xl px-4 sm:px-6 transition-all duration-500 border ${
               scrolled
                 ? "bg-white/85 backdrop-blur-xl border-black/10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.25)] h-[62px]"
@@ -105,7 +164,7 @@ export default function Header({
             }`}
           >
             {/* الشعار */}
-            <a href="#hero" className="flex items-center gap-2.5 shrink-0 group">
+            <a href={to("")} className="flex items-center gap-2.5 shrink-0 group" aria-label="ستريم ماستر — الصفحة الرئيسية">
               <span className="w-9 h-9 rounded-xl bg-[#0b0b0f] text-[#d8ff3e] grid place-items-center group-hover:rotate-[10deg] transition-transform">
                 <IconPlay className="w-4 h-4 mr-0.5" />
               </span>
@@ -117,83 +176,69 @@ export default function Header({
               </span>
             </a>
 
-            {/* روابط سطح المكتب */}
-            <div className="desktop-nav hidden xl:flex items-center gap-1 text-[14px] font-bold tracking-tight">
-              {/* القائمة الضخمة — السيرفرات */}
-              <div
-                className="relative"
-                onMouseEnter={() => setMega(true)}
-                onMouseLeave={() => setMega(false)}
-              >
-                <button
-                  onClick={() => setMega((m) => !m)}
-                  aria-haspopup="menu"
-                  aria-expanded={mega}
-                  className="flex items-center gap-1 px-4 py-2.5 rounded-full hover:bg-black/[0.06] transition cursor-pointer"
-                >
-                  السيرفرات{" "}
-                  <IconChevronDown
-                    className={`w-4 h-4 transition-transform ${mega ? "rotate-180" : ""}`}
-                  />
-                  <span className="ml-1 text-[10px] bg-[#ff5c4d] text-white px-1.5 py-0.5 rounded-md font-black">
-                    {PRICING_PLANS.length}
-                  </span>
-                </button>
+            {/* القوائم المنسدلة — سطح المكتب */}
+            <div
+              ref={navRef}
+              className="desktop-nav hidden xl:flex items-center gap-0.5 text-[14px] font-bold tracking-tight"
+            >
+              {NAV_GROUPS.map((group) => {
+                const isOpen = openKey === group.key;
+                const isActive = activeKey === group.key;
+                return (
+                  <div
+                    key={group.key}
+                    data-group={group.key}
+                    className="relative"
+                    onPointerEnter={hoverOpen(group.key)}
+                    onPointerLeave={hoverClose}
+                    onBlur={onBlurGroup}
+                  >
+                    <button
+                      id={`nav-trigger-${group.key}`}
+                      type="button"
+                      onPointerDown={(e) => {
+                        lastPointer.current = e.pointerType;
+                      }}
+                      onClick={(e) => {
+                        /* الفأرة فتحت القائمة بالتمرير أصلاً → الضغط يُبقيها مفتوحة؛
+                           اللمس ولوحة المفاتيح يبدّلان الحالة */
+                        const viaMouse = e.detail > 0 && lastPointer.current === "mouse";
+                        lastPointer.current = "";
+                        setOpenKey((k) => (viaMouse || k !== group.key ? group.key : null));
+                      }}
+                      aria-expanded={isOpen}
+                      aria-controls={`nav-panel-${group.key}`}
+                      className={`relative flex items-center gap-1 px-3.5 py-2.5 rounded-full transition cursor-pointer ${
+                        isOpen ? "bg-black/[0.07]" : "hover:bg-black/[0.06]"
+                      }`}
+                    >
+                      {group.label}
+                      <IconChevronDown
+                        className={`w-3.5 h-3.5 opacity-60 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      />
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#2b4eff]"
+                        />
+                      )}
+                    </button>
 
-                {mega && (
-                  <div className="absolute top-full start-0 pt-4 w-[560px] animate-fade-in">
-                    <div className="bg-white rounded-3xl border border-black/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.3)] p-4 grid grid-cols-4 gap-3">
-                      {PRICING_PLANS.map((p) => {
-                        const st = SERVER_STYLES[p.serverCode] || SERVER_STYLES.nova;
-                        return (
-                          <a
-                            key={p.id}
-                            href={to(`${p.serverCode}/`)}
-                            onClick={() => setMega(false)}
-                            className="group/m rounded-2xl overflow-hidden border border-black/10 hover:border-black transition"
-                          >
-                            <div
-                              className={`aspect-[3/4] bg-gradient-to-br ${st.grad} grid place-items-center text-3xl group-hover/m:scale-110 transition duration-700`}
-                            >
-                              {st.emoji}
-                            </div>
-                            <div className="p-2.5 bg-white">
-                              <p className="text-[12.5px] font-black leading-tight">
-                                {p.serverName.split("(")[0].trim()}
-                              </p>
-                              <p className="text-[10.5px] text-black/50 font-bold mt-0.5 truncate">
-                                {p.channelsCount}
-                              </p>
-                            </div>
-                          </a>
-                        );
-                      })}
-                      <div className="col-span-4 flex items-center justify-between bg-[#0b0b0f] text-white rounded-2xl px-5 py-3.5 mt-1">
-                        <p className="text-[13px] font-bold">
-                          سيرفرات أصلية — تفعيل فوري خلال 5 دقائق
-                        </p>
-                        <a
-                          href="#pricing"
-                          onClick={() => setMega(false)}
-                          className="text-[12.5px] font-black bg-[#d8ff3e] text-black px-4 py-2 rounded-full hover:bg-white transition flex items-center gap-1"
-                        >
-                          عرض الباقات <IconArrowUpRight className="w-3.5 h-3.5" />
-                        </a>
+                    {isOpen && (
+                      <div
+                        id={`nav-panel-${group.key}`}
+                        className={`absolute top-full pt-3 animate-fade-in ${
+                          group.key === "home" || group.key === "servers" ? "start-0" : "start-1/2 translate-x-1/2"
+                        }`}
+                      >
+                        <div className="bg-white rounded-3xl border border-black/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.3)] p-3">
+                          <DesktopPanel group={group} onNavigate={close} onOpenTrial={onOpenTrial} />
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </div>
-
-              {NAV_LINKS.map((l) => (
-                <a
-                  key={l.name}
-                  href={l.href}
-                  className="px-4 py-2.5 rounded-full hover:bg-black/[0.06] transition"
-                >
-                  {l.name}
-                </a>
-              ))}
+                );
+              })}
             </div>
 
             {/* الإجراءات */}
@@ -236,61 +281,80 @@ export default function Header({
                 اشترك — من $25 <IconArrow className="w-4 h-4" />
               </a>
 
-              {/* زر قائمة الموبايل */}
+              {/* زر قائمة الجوال */}
               <button
-                onClick={() => setOpen(!open)}
+                onClick={() => setMobileOpen(!mobileOpen)}
                 className="xl:hidden w-10 h-10 rounded-full bg-[#0b0b0f] text-white grid place-items-center cursor-pointer"
                 aria-label="القائمة"
-                aria-expanded={open}
+                aria-expanded={mobileOpen}
                 aria-controls="storefront-mobile-nav"
               >
-                {open ? <IconClose className="w-[18px] h-[18px]" /> : <IconMenu className="w-[18px] h-[18px]" />}
+                {mobileOpen ? <IconClose className="w-[18px] h-[18px]" /> : <IconMenu className="w-[18px] h-[18px]" />}
               </button>
             </div>
           </nav>
         </div>
       </header>
 
-      {/* قائمة الموبايل المنسدلة */}
-      {open && (
+      {/* قائمة الجوال — مجموعات قابلة للطي (مجموعة الصفحة الحالية مفتوحة) */}
+      {mobileOpen && (
         <div
           className="fixed inset-0 z-[54] bg-[#0b0b0f]/60 backdrop-blur-sm xl:hidden animate-fade-in"
-          onClick={() => setOpen(false)}
+          onClick={() => setMobileOpen(false)}
         >
           <div
             id="storefront-mobile-nav"
-            className="absolute right-3 top-[125px] bottom-3 w-[86%] max-w-sm bg-[#faf9f6] rounded-3xl p-6 flex flex-col overflow-y-auto animate-scale-in"
+            className="absolute right-3 top-[125px] bottom-3 w-[88%] max-w-sm bg-[#faf9f6] rounded-3xl p-5 flex flex-col overflow-y-auto overscroll-contain animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-[11px] font-black tracking-[0.2em] uppercase text-black/40 mb-4">
+            <p className="text-[11px] font-black tracking-[0.2em] uppercase text-black/40 mb-2 px-1">
               القائمة
             </p>
-            {[
-              { name: "الباقات", href: "#pricing" },
-              { name: "البث المباشر", href: "#live-player" },
-              { name: "القنوات", href: "#channels" },
-              { name: "مقارنة السيرفرات", href: "#servers-compare" },
-              { name: "مساعد الاختيار", href: "#server-finder" },
-              { name: "الأسئلة الشائعة", href: "#faq" },
-            ].map((l, i) => (
-              <a
-                key={l.name}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-between py-4 border-b border-black/10 font-display font-black text-2xl tracking-tight hover:pr-2 transition-all"
-              >
-                {l.name}
-                <span className="text-xs font-sans text-black/30 font-latin">
-                  0{i + 1}
-                </span>
-              </a>
-            ))}
+            {NAV_GROUPS.map((group) => {
+              const expanded = mobileGroup === group.key;
+              return (
+                <div key={group.key} className="border-b border-black/10">
+                  <button
+                    type="button"
+                    onClick={() => setMobileGroup(expanded ? null : group.key)}
+                    aria-expanded={expanded}
+                    aria-controls={`mobile-group-${group.key}`}
+                    className="w-full flex items-center justify-between py-3.5 px-1 font-display font-black text-[19px] tracking-tight cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      {group.label}
+                      {activeKey === group.key && (
+                        <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-[#2b4eff]" />
+                      )}
+                    </span>
+                    <IconChevronDown
+                      className={`w-4 h-4 opacity-50 transition-transform ${expanded ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {expanded && (
+                    <div id={`mobile-group-${group.key}`} className="pb-3 grid gap-0.5">
+                      {mobileLinks(group).map((l) => (
+                        <a
+                          key={l.href}
+                          href={l.href}
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-bold hover:bg-black/[0.05] transition"
+                        >
+                          {l.icon && <span aria-hidden="true" className="w-6 text-center">{l.icon}</span>}
+                          <span>{l.label}</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             <button
               onClick={() => {
-                setOpen(false);
+                setMobileOpen(false);
                 onOpenTrial();
               }}
-              className="mt-6 bg-[#0b0b0f] text-white text-center font-black py-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer"
+              className="mt-5 bg-[#0b0b0f] text-white text-center font-black py-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer shrink-0"
             >
               <IconZap className="w-4 h-4 text-[#d8ff3e]" /> اطلب تجربة مجانية
             </button>
@@ -302,5 +366,165 @@ export default function Header({
         </div>
       )}
     </>
+  );
+}
+
+/* روابط مجموعة واحدة بصيغة مسطّحة — لقائمة الجوال */
+function mobileLinks(group: NavGroup): { href: string; label: string; icon?: string }[] {
+  if (group.key === "home") {
+    return [
+      { href: to(""), label: "الصفحة الرئيسية", icon: "🏠" },
+      ...HOME_SECTIONS.map((s) => ({ href: sectionHref(s.id), label: s.label, icon: s.icon })),
+    ];
+  }
+  if (group.key === "servers") {
+    return [
+      ...group.links.slice(0, 1).map((l) => ({ href: pageHref(l), label: l.label, icon: "🗂️" })),
+      ...SERVER_PAGES.map((s) => ({ href: to(`${s.code}/`), label: s.label, icon: s.emoji })),
+      ...group.links.slice(1).map((l) => ({ href: pageHref(l), label: l.label, icon: l.href === "cart/" ? "🛒" : "🏬" })),
+    ];
+  }
+  return [...group.links, ...(group.legal ?? [])].map((l) => ({ href: pageHref(l), label: l.label }));
+}
+
+/* محتوى القائمة المنسدلة لكل مجموعة على سطح المكتب */
+function DesktopPanel({
+  group,
+  onNavigate,
+  onOpenTrial,
+}: {
+  group: NavGroup;
+  onNavigate: () => void;
+  onOpenTrial: () => void;
+}) {
+  if (group.key === "home") {
+    return (
+      <div className="w-[640px]">
+        <div className="grid grid-cols-3 gap-1">
+          {HOME_SECTIONS.map((s) => (
+            <PanelLink key={s.id} href={sectionHref(s.id)} label={s.label} desc={s.desc} icon={s.icon} onNavigate={onNavigate} />
+          ))}
+        </div>
+        <PanelFooter>
+          <a href={to("")} onClick={onNavigate} className="text-[13px] font-bold hover:text-[#d8ff3e] transition">
+            الصفحة الرئيسية — العودة للأعلى
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              onNavigate();
+              onOpenTrial();
+            }}
+            className="text-[12.5px] font-black bg-[#d8ff3e] text-black px-4 py-2 rounded-full hover:bg-white transition flex items-center gap-1 cursor-pointer"
+          >
+            <IconZap className="w-3.5 h-3.5" /> تجربة مجانية
+          </button>
+        </PanelFooter>
+      </div>
+    );
+  }
+
+  if (group.key === "servers") {
+    return (
+      <div className="w-[560px]">
+        <div className="grid grid-cols-3 gap-2.5">
+          {SERVER_PAGES.map((s) => (
+            <a
+              key={s.code}
+              href={to(`${s.code}/`)}
+              onClick={onNavigate}
+              className="group/m rounded-2xl overflow-hidden border border-black/10 hover:border-black transition"
+            >
+              <div
+                className={`h-[88px] bg-gradient-to-br ${s.grad} grid place-items-center text-3xl overflow-hidden`}
+              >
+                <span className="group-hover/m:scale-125 transition duration-500">{s.emoji}</span>
+              </div>
+              <div className="p-2.5 bg-white">
+                <p className="text-[13px] font-black leading-tight">{s.label}</p>
+                <p className="text-[11px] text-black/50 font-bold mt-0.5 truncate">{s.desc}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div className="grid grid-cols-3 gap-1 mt-2">
+          {group.links.map((l) => (
+            <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} onNavigate={onNavigate} />
+          ))}
+        </div>
+        <PanelFooter>
+          <p className="text-[13px] font-bold">سيرفرات أصلية — تفعيل فوري خلال 5 دقائق</p>
+          <a
+            href={sectionHref("pricing")}
+            onClick={onNavigate}
+            className="text-[12.5px] font-black bg-[#d8ff3e] text-black px-4 py-2 rounded-full hover:bg-white transition flex items-center gap-1"
+          >
+            عرض الأسعار <IconArrowUpRight className="w-3.5 h-3.5" />
+          </a>
+        </PanelFooter>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-[300px]">
+      <div className="grid gap-0.5">
+        {group.links.map((l) => (
+          <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} onNavigate={onNavigate} />
+        ))}
+      </div>
+      {group.legal && (
+        <div className="mt-2 pt-2.5 px-3 border-t border-black/10 flex items-center gap-3 text-[12px] font-bold text-black/50">
+          {group.legal.map((l) => (
+            <a key={l.href} href={pageHref(l)} onClick={onNavigate} className="hover:text-black transition">
+              {l.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PanelLink({
+  href,
+  label,
+  desc,
+  icon,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  desc?: string;
+  icon?: string;
+  onNavigate: () => void;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={onNavigate}
+      className="group/l flex items-start gap-2.5 rounded-2xl px-3 py-2.5 hover:bg-[#f4f3ef] transition"
+    >
+      {icon && (
+        <span
+          aria-hidden="true"
+          className="w-8 h-8 shrink-0 rounded-xl bg-[#f4f3ef] group-hover/l:bg-white grid place-items-center text-[15px] transition"
+        >
+          {icon}
+        </span>
+      )}
+      <span className="min-w-0">
+        <span className="block text-[13.5px] font-black leading-snug">{label}</span>
+        {desc && <span className="block text-[11.5px] font-medium text-black/50 leading-snug mt-0.5">{desc}</span>}
+      </span>
+    </a>
+  );
+}
+
+function PanelFooter({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 bg-[#0b0b0f] text-white rounded-2xl px-5 py-3 mt-2">
+      {children}
+    </div>
   );
 }

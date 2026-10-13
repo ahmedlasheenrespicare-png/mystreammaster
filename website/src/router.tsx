@@ -103,6 +103,13 @@ export function RouterProvider({
       if (!scrollToElement(url.hash.slice(1))) window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+    if (next.path === normalizePath(window.location.pathname) && !url.hash) {
+      /* نفس الصفحة بلا مرساة (مثل الشعار أو "الصفحة الرئيسية" من /#pricing): للأعلى */
+      history.replaceState(null, "", `${url.pathname}${url.search}`);
+      setState(next);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
     const href = `${url.pathname}${url.search}${url.hash}`;
     if (opts?.replace) history.replaceState(null, "", href);
@@ -168,7 +175,9 @@ export function RouterProvider({
 
       if (!isInternal || !APP_PATHS.has(normalizePath(decodeURI(url.pathname)))) return;
       if (url.href === window.location.href) {
+        /* نفس الرابط الحالي: نعيد التمرير للمرساة (أو لأعلى الصفحة) بدل تجاهل الضغط */
         e.preventDefault();
+        if (!url.hash || !scrollToElement(url.hash.slice(1))) window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       e.preventDefault();

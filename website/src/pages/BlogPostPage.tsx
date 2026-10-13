@@ -1,13 +1,186 @@
-import type { BlogPost } from "../content/posts";
+import { sectionBlocks, type BlogPost, type PostBlock, type PostImage } from "../content/posts";
 import { getWhatsAppUrl, PRICING_PLANS } from "../data";
 import { to } from "../config";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
+
+/* رابط الصورة ببادئة النشر — الصور تُبنى بمقاسات متعددة (600/900/1408) */
+function imageVariant(img: PostImage, ext: "avif" | "webp", width: number) {
+  return `${to(`${img.base.replace(/^\//, "")}-${width}w`)}.${ext}`;
+}
+
+/* كتلة كود أو مخطط نصّي:
+   الاتجاه LTR دائماً حتى تظهر أسهم المخططات وأسطر الطلبات بترتيبها الصحيح
+   داخل صفحة عربية RTL. */
+function CodeBlock({ lines, label }: { lines: string[]; label?: string }) {
+  return (
+    <div className="mt-5 overflow-hidden rounded-2xl border border-black/10 bg-[#0b0b0f]">
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
+        <span className="text-[11.5px] font-black text-white/55">{label ?? "مثال توضيحي"}</span>
+        <span dir="ltr" className="font-mono text-[10.5px] font-black uppercase tracking-[0.18em] text-[#d8ff3e]">
+          code
+        </span>
+      </div>
+      <pre dir="ltr" className="overflow-x-auto p-4 text-left">
+        <code className="font-mono text-[12.5px] leading-[1.95] text-[#e8e8ec]">
+          {lines.join("\n")}
+        </code>
+      </pre>
+    </div>
+  );
+}
+
+/* صورة داخل المقال: avif أولاً ثم webp، مع أبعاد صريحة تمنع اهتزاز التصميم (CLS) */
+function ArticleImage({ img }: { img: PostImage }) {
+  const sizes = "(max-width: 640px) 92vw, (max-width: 900px) 84vw, 780px";
+  return (
+    <figure className="mt-6">
+      <picture>
+        <source
+          type="image/avif"
+          srcSet={`${imageVariant(img, "avif", 600)} 600w, ${imageVariant(img, "avif", 900)} 900w, ${imageVariant(img, "avif", 1408)} 1408w`}
+          sizes={sizes}
+        />
+        <source
+          type="image/webp"
+          srcSet={`${imageVariant(img, "webp", 600)} 600w, ${imageVariant(img, "webp", 900)} 900w, ${imageVariant(img, "webp", 1408)} 1408w`}
+          sizes={sizes}
+        />
+        <img
+          src={imageVariant(img, "webp", 1408)}
+          alt={img.alt}
+          width={img.width}
+          height={img.height}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-auto rounded-2xl border border-black/10 bg-white"
+        />
+      </picture>
+      {img.caption && (
+        <figcaption className="mt-2.5 text-center text-[12.5px] font-medium leading-relaxed text-black/45">
+          {img.caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+/* كتلة واحدة من محتوى المقال — النوع يحدّد الشكل */
+function Block({ block }: { block: PostBlock }) {
+  if ("p" in block) {
+    return <p className="mt-3.5 text-[15px] leading-[2] text-black/70">{block.p}</p>;
+  }
+
+  if ("quote" in block) {
+    return (
+      <blockquote className="mt-5 rounded-2xl border-s-4 border-[#d8ff3e] bg-white px-5 py-4 text-[16px] font-black leading-[1.9] text-black/75">
+        {block.quote}
+      </blockquote>
+    );
+  }
+
+  if ("code" in block) {
+    return <CodeBlock lines={block.code.lines} label={block.code.label} />;
+  }
+
+  if ("img" in block) {
+    return <ArticleImage img={block.img} />;
+  }
+
+  if ("note" in block) {
+    return (
+      <p className="mt-4 rounded-2xl border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-5 py-4 text-[14px] font-bold leading-[1.9] text-[#1e3bbf]">
+        {block.label ?? "ملاحظة عملية"}: {block.note}
+      </p>
+    );
+  }
+
+  if ("list" in block) {
+    return (
+      <ul className="mt-4 space-y-2.5">
+        {block.list.map((b, j) => (
+          <li key={j} className="flex items-start gap-2.5 text-[14.5px] leading-[1.9] text-black/70">
+            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#0b0b0f] shrink-0" />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if ("steps" in block) {
+    return (
+      <ol className="mt-4 space-y-2.5">
+        {block.steps.map((st, j) => (
+          <li key={j} className="flex items-start gap-3 text-[14.5px] leading-[1.9] text-black/70">
+            <span className="mt-0.5 w-6 h-6 shrink-0 rounded-full bg-[#0b0b0f] text-[#d8ff3e] grid place-items-center text-[12px] font-black font-latin">
+              {j + 1}
+            </span>
+            <span>{st}</span>
+          </li>
+        ))}
+      </ol>
+    );
+  }
+
+  if ("table" in block) {
+    return (
+      <div className="mt-5 overflow-x-auto rounded-2xl border border-black/10 bg-white">
+        <table className="w-full text-right border-collapse min-w-[560px]">
+          <thead>
+            <tr className="bg-[#0b0b0f] text-white">
+              {block.table.head.map((h) => (
+                <th key={h} className="p-4 text-[13px] font-black">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-black/[0.07]">
+            {block.table.rows.map((row, r) => (
+              <tr key={r} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
+                {row.map((cell, c) => (
+                  <td
+                    key={c}
+                    className={`p-4 text-[13px] ${c === 0 ? "font-black bg-[#f4f3ef]" : "font-medium text-black/70"}`}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 grid sm:grid-cols-3 gap-3">
+      {block.related.map((r) => (
+        <a
+          key={r.href}
+          href={to(r.href)}
+          className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
+        >
+          <span className="block text-[14.5px] font-black leading-snug group-hover:text-[#2b4eff] transition">
+            {r.label}
+          </span>
+          {r.desc && <span className="mt-2 block text-[12.5px] font-medium leading-relaxed text-black/50">{r.desc}</span>}
+          <span className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-black text-[#2b4eff]">
+            اقرأ الآن <IconArrowUpRight className="w-3.5 h-3.5" />
+          </span>
+        </a>
+      ))}
+    </div>
+  );
+}
 
 /* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر */
 export default function BlogPostPage({ post }: { post: BlogPost }) {
   const plan = post.relatedPlan
     ? PRICING_PLANS.find((p) => p.serverCode === post.relatedPlan)
     : undefined;
+  const toc = post.sections
+    .map((s, i) => ({ id: `section-${i + 1}`, heading: s.heading }))
+    .filter((s): s is { id: string; heading: string } => Boolean(s.heading));
 
   return (
     <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
@@ -22,12 +195,17 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
 
         <article>
           <header>
-            <div className="flex items-center gap-3 text-[11.5px] font-black text-black/45">
+            <div className="flex flex-wrap items-center gap-3 text-[11.5px] font-black text-black/45">
               <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{post.category}</span>
               <span className="inline-flex items-center gap-1">
                 <IconClock className="w-3.5 h-3.5" /> {post.readingMinutes} دقائق قراءة
               </span>
               <time dateTime={post.date} className="font-latin">{post.date}</time>
+              {post.updated && post.updated !== post.date && (
+                <span className="inline-flex items-center gap-1">
+                  آخر تحديث <time dateTime={post.updated} className="font-latin">{post.updated}</time>
+                </span>
+              )}
             </div>
             <h1 className="mt-4 font-display font-black tracking-tight leading-[1.2] text-[32px] md:text-[44px]">
               {post.title}
@@ -37,78 +215,33 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             </p>
           </header>
 
+          {/* فهرس المحتويات — يظهر في المقالات الطويلة فقط */}
+          {toc.length >= 5 && (
+            <nav className="mt-8 rounded-[24px] border border-black/10 bg-white p-5 sm:p-6" aria-label="محتويات المقال">
+              <p className="text-[11.5px] font-black uppercase tracking-[0.2em] text-black/40">محتويات المقال</p>
+              <ol className="mt-3.5 grid grid-cols-2 gap-x-5 sm:gap-x-8 gap-y-1.5 sm:gap-y-2 list-decimal list-inside text-[12.5px] sm:text-[13.5px] font-bold leading-snug sm:leading-relaxed text-black/70">
+                {toc.map((s) => (
+                  <li key={s.id}>
+                    <a href={`#${s.id}`} className="hover:text-[#2b4eff] hover:underline underline-offset-4 transition">
+                      {s.heading}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
+
           <div className="mt-10 space-y-9">
             {post.sections.map((s, i) => (
-              <section key={i}>
+              <section key={i} id={`section-${i + 1}`} className="scroll-mt-[150px]">
                 {s.heading && (
                   <h2 className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug">
                     {s.heading}
                   </h2>
                 )}
-
-                {s.paragraphs?.map((p, j) => (
-                  <p key={j} className="mt-3.5 text-[15px] leading-[2] text-black/70">
-                    {p}
-                  </p>
+                {sectionBlocks(s).map((block, j) => (
+                  <Block key={j} block={block} />
                 ))}
-
-                {s.note && (
-                  <p className="mt-4 rounded-2xl border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-5 py-4 text-[14px] font-bold leading-[1.9] text-[#1e3bbf]">
-                    ملاحظة عملية: {s.note}
-                  </p>
-                )}
-
-                {s.bullets && (
-                  <ul className="mt-4 space-y-2.5">
-                    {s.bullets.map((b, j) => (
-                      <li key={j} className="flex items-start gap-2.5 text-[14.5px] leading-[1.9] text-black/70">
-                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#0b0b0f] shrink-0" />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {s.steps && (
-                  <ol className="mt-4 space-y-2.5">
-                    {s.steps.map((st, j) => (
-                      <li key={j} className="flex items-start gap-3 text-[14.5px] leading-[1.9] text-black/70">
-                        <span className="mt-0.5 w-6 h-6 shrink-0 rounded-full bg-[#0b0b0f] text-[#d8ff3e] grid place-items-center text-[12px] font-black font-latin">
-                          {j + 1}
-                        </span>
-                        <span>{st}</span>
-                      </li>
-                    ))}
-                  </ol>
-                )}
-
-                {s.table && (
-                  <div className="mt-5 overflow-x-auto rounded-2xl border border-black/10 bg-white">
-                    <table className="w-full text-right border-collapse min-w-[560px]">
-                      <thead>
-                        <tr className="bg-[#0b0b0f] text-white">
-                          {s.table.head.map((h) => (
-                            <th key={h} className="p-4 text-[13px] font-black">{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-black/[0.07]">
-                        {s.table.rows.map((row, r) => (
-                          <tr key={r} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
-                            {row.map((cell, c) => (
-                              <td
-                                key={c}
-                                className={`p-4 text-[13px] ${c === 0 ? "font-black bg-[#f4f3ef]" : "font-medium text-black/70"}`}
-                              >
-                                {cell}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
               </section>
             ))}
           </div>

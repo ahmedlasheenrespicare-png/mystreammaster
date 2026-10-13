@@ -6,7 +6,7 @@
 
 import { absolute, BRAND_EN, BRAND_NAME, SITE_URL, WHATSAPP_DISPLAY } from "./config";
 import { AVAILABLE_DURATIONS, FAQS, PRICING_PLANS } from "./data";
-import { BLOG_POSTS } from "./content/posts";
+import { BLOG_POSTS, type PostSection } from "./content/posts";
 
 export interface SeoMeta {
   title: string;
@@ -45,6 +45,15 @@ function breadcrumbs(items: { name: string; path: string }[]) {
       item: absolute(it.path),
     })),
   };
+}
+
+/* عدد كلمات النصّ السردي في قسم — يُستخدم في wordCount داخل البيانات المنظّمة */
+function wordsIn(section: PostSection): number {
+  const paragraphs = section.blocks
+    ? section.blocks.flatMap((b) => ("p" in b ? [b.p] : []))
+    : section.paragraphs ?? [];
+  const text = paragraphs.join(" ").replace(/\s+/g, " ").trim();
+  return text ? text.split(" ").length : 0;
 }
 
 export function getSeo(path: string): SeoMeta {
@@ -211,17 +220,27 @@ export function getSeo(path: string): SeoMeta {
           headline: post.title,
           description: post.description,
           datePublished: post.date,
-          dateModified: post.date,
+          dateModified: post.updated || post.date,
           inLanguage: "ar",
           mainEntityOfPage: absolute(`blog/${post.slug}/`),
           author: { "@type": "Organization", name: BRAND_NAME },
           publisher: { "@id": `${SITE_URL}/#organization` },
           image: OG_IMAGE,
-          wordCount: post.sections.reduce(
-            (n, s) => n + (s.paragraphs?.join(" ").split(/\s+/).length ?? 0),
-            0
-          ),
+          wordCount: post.sections.reduce((n, s) => n + wordsIn(s), 0),
         },
+        /* أسئلة المقال — تُعلن لمحرك البحث كبيانات منظّمة ليعرضها ضمن النتائج */
+        ...(post.faq && post.faq.length > 0
+          ? [
+              {
+                "@type": "FAQPage",
+                mainEntity: post.faq.map((f) => ({
+                  "@type": "Question",
+                  name: f.q,
+                  acceptedAnswer: { "@type": "Answer", text: f.a },
+                })),
+              },
+            ]
+          : []),
       ],
     };
   }

@@ -8,6 +8,8 @@ export default defineConfig({
   testDir: './tests',
   timeout: 30000,
   workers: 1,
+  // A single CI retry distinguishes transient runner/layout timing from persistent failures.
+  retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     baseURL: process.env.PREVIEW_URL || 'http://127.0.0.1:3000',

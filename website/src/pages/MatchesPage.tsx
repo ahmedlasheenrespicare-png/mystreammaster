@@ -127,6 +127,15 @@ export default function MatchesPage() {
         <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>
 
+      <section className="matches-featured" aria-labelledby="featured-match-title">
+        <div className="matches-featured-copy">
+          <span className="matches-featured-kicker">تغطية خاصة · دوري أبطال أوروبا</span>
+          <h2 id="featured-match-title">مانشستر يونايتد × أتلتيكو مدريد</h2>
+          <p>الثلاثاء 13 أكتوبر 2026 · 10:00 مساءً بتوقيت القاهرة · مرحلة الدوري</p>
+        </div>
+        <a className="matches-featured-link" href="/manchester-united-atletico/">تفاصيل المباراة ورابط المشاهدة <span aria-hidden="true">↗</span></a>
+      </section>
+
       <div className="matches-toolbar" aria-label="أدوات البحث والتحديث">
         <div className="matches-status">
           <span className={`update-indicator ${online ? 'active' : ''}`} aria-hidden="true" />

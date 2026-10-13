@@ -471,11 +471,11 @@ function LivePlayerInner({ onOpenTrial }: LivePlayerProps) {
             <span className="w-8 h-[2px] bg-[#ff5c4d] inline-block" /> بث مباشر مجاني
           </p>
           <h2 className="font-display font-black tracking-tight leading-[1.15] text-[36px] md:text-[56px]">
-            شاهد قنوات MBC <span className="font-serif italic font-normal">مباشرة</span> الآن
+            شاهد القنوات المفتوحة الآن — <span className="font-serif italic font-normal">مجانًا</span>
           </h2>
           <p className="mt-4 text-[15px] md:text-[16.5px] text-black/60 font-medium leading-relaxed">
-            مشغل تفاعلي لبث قنوات MBC 1 وMBC Masr وMBC Drama وMBC 4 والقنوات الرياضية
-            والإخبارية بدون تقطيع — جرّب الجودة قبل الاشتراك.
+            قنوات مفتوحة تُشاهد مباشرة من المتصفح بجودة 1080p بدون تقطيع —
+            جرّب التغطية قبل اختيار باقتك.
           </p>
         </Reveal>
 
@@ -600,19 +600,19 @@ function LivePlayerInner({ onOpenTrial }: LivePlayerProps) {
             </div>
             </Reveal>
 
-            {/* شريط VIP الليموني — على طريقة شريط Salient */}
+            {/* شريط الاشتراكات الرسمية الليموني — على طريقة شريط Salient */}
             <Reveal variant="up" delay={150}>
             <div className="rounded-[24px] bg-[#d8ff3e] border border-black/10 px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="font-display font-black text-[16px] sm:text-[18px] tracking-tight flex items-center gap-2.5 text-center sm:text-right">
                 <IconTv className="w-5 h-5 shrink-0" />
-                شاهد جميع قنوات beIN Sports وSSC وShahid VIP 4K المشفرة
+                القنوات المشفّرة (beIN / SSC / Shahid VIP) تُشاهد عبر اشتراكاتها الرسمية فقط
               </p>
               <div className="flex items-center gap-2 shrink-0">
                 <a
-                  href="#pricing"
+                  href="/watch-legal.html"
                   className="btn-slide slide-royal bg-black text-white font-black px-5 py-2.5 rounded-full text-[13px]"
                 >
-                  عرض باقات VIP
+                  قارن الخيارات الرسمية
                 </a>
                 <button
                   onClick={onOpenTrial}
@@ -732,8 +732,8 @@ function LivePlayerInner({ onOpenTrial }: LivePlayerProps) {
         {/* ملاحظة أسفل المشغل */}
         <p className="mt-6 text-center text-[12px] text-black/40 font-medium">
           <IconCheck className="w-3.5 h-3.5 inline-block text-[#16a34a] mr-1" />
-          القنوات أعلاه مجانية للتجربة — قنوات beIN وSSC المشفرة متاحة داخل الباقات المدفوعة
-          بسيرفرات نوفا والترا.
+          القنوات المعروضة هنا قنوات مفتوحة من مصادرها الرسمية.
+          الاشتراكات الرسمية للمحتوى المشفّر في صفحة «المشاهدة القانونية».
         </p>
       </div>
     </section>

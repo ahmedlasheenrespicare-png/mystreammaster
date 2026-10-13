@@ -67,6 +67,69 @@ async function mockNetwork(page: Page) {
         ]);
       }
       if (action === 'get_live_streams') return json(streams);
+
+      /* دليل البرامج EPG — يُطلب عند تشغيل قناة مباشرة */
+      if (action === 'get_short_epg') {
+        const now = Math.floor(Date.now() / 1000);
+        const b64 = (t: string) => Buffer.from(t, 'utf8').toString('base64');
+        return json({
+          epg_listings: [
+            {
+              title: { base64: b64('استوديو التحليل') },
+              description: { base64: b64('ملخص المباريات') },
+              start_timestamp: String(now - 600),
+              stop_timestamp: String(now + 3000),
+            },
+            {
+              title: { base64: b64('الفيلم التالي') },
+              description: { base64: '' },
+              start_timestamp: String(now + 3000),
+              stop_timestamp: String(now + 6600),
+            },
+          ],
+        });
+      }
+
+      /* مكتبة الأفلام (VOD) */
+      if (action === 'get_vod_categories') return json([{ category_id: 'v1', category_name: 'أكشن' }]);
+      if (action === 'get_vod_streams') {
+        return json([
+          { stream_id: 901, name: 'فيلم الاختبار', stream_icon: '', category_id: 'v1', rating: '8.2', container_extension: 'mp4' },
+          { stream_id: 902, name: 'فيلم آخر', stream_icon: '', category_id: 'v1', container_extension: 'mkv' },
+        ]);
+      }
+      if (action === 'get_vod_info') {
+        return json({
+          movie_data: { stream_id: 901, name: 'فيلم الاختبار', container_extension: 'mp4' },
+          info: {
+            movie_image: '',
+            plot: 'قصة الفيلم للمراجعة',
+            rating: '8.2',
+            cast: 'ممثل تجريبي',
+            genre: 'أكشن',
+            duration: '01:30:00',
+            releasedate: '2024-01-01',
+          },
+        });
+      }
+
+      /* مكتبة المسلسلات */
+      if (action === 'get_series_categories') return json([{ category_id: 's1', category_name: 'دراما' }]);
+      if (action === 'get_series') {
+        return json([{ series_id: 501, name: 'مسلسل الاختبار', cover: '', category_id: 's1' }]);
+      }
+      if (action === 'get_series_info') {
+        return json({
+          info: { name: 'مسلسل الاختبار', cover: '', plot: 'قصة المسلسل', rating: '7.5' },
+          seasons: [{ season_number: 1, name: 'الموسم 1' }],
+          episodes: {
+            '1': [
+              { id: 7001, episode_num: 1, title: 'الحلقة الأولى', container_extension: 'mp4', info: { duration: '40:00' } },
+            ],
+          },
+        });
+      }
+
       return json([]);
     }
 
@@ -287,4 +350,70 @@ test('السقوط التلقائي إلى Worker وبروكسي البث الم
     timeout: 20000,
   });
   await expect(section.getByText('400 قناة معروضة')).toBeVisible();
+});
+
+
+test('دليل البرامج EPG وتبويبا الأفلام والمسلسلات مع بطاقات التفاصيل', async ({ page }) => {
+  const section = page.locator('#xtream');
+  await login(page);
+
+  /* تشغيل قناة مباشرة يجلب get_short_epg — شريط «يعرض الآن / التالي» مع تقدّم */
+  await section.getByTestId('channel-row').first().click();
+  const epgBar = section.getByTestId('epg-bar');
+  await expect(epgBar).toBeVisible({ timeout: 15000 });
+  await expect(epgBar).toContainText('يعرض الآن: استوديو التحليل');
+  await expect(epgBar).toContainText('التالي: الفيلم التالي');
+
+  /* تبويب الأفلام: القائمة → بطاقة التفاصيل (القصة + التقييم) → زر التشغيل */
+  await section.getByTestId('libtab-vod').click();
+  await expect(section.getByTestId('media-card')).toHaveCount(2, { timeout: 20000 });
+  await section.getByTestId('media-card').first().click();
+  const dialog = page.getByTestId('vod-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('قصة الفيلم للمراجعة');
+  await expect(dialog).toContainText('8.2');
+  await expect(dialog).toContainText('ممثل تجريبي');
+  await expect(dialog.getByTestId('vod-play')).toBeVisible();
+  await dialog.getByTestId('dialog-close').click();
+  await expect(dialog).toHaveCount(0);
+
+  /* تبويب المسلسلات: المواسم والحلقات */
+  await section.getByTestId('libtab-series').click();
+  await expect(section.getByTestId('media-card')).toHaveCount(1, { timeout: 20000 });
+  await section.getByTestId('media-card').first().click();
+  const sDialog = page.getByTestId('series-dialog');
+  await expect(sDialog).toBeVisible();
+  await expect(sDialog.getByTestId('season-1')).toBeVisible();
+  await expect(sDialog.getByTestId('episode-row')).toHaveCount(1);
+  await expect(sDialog).toContainText('الحلقة الأولى');
+});
+
+test('عدة الشاشات (2 أو 4) ودرج القنوات داخل الفيديو', async ({ page }) => {
+  const section = page.locator('#xtream');
+  await login(page);
+
+  /* شاشتان في وقت واحد */
+  await section.getByTestId('view-2').click();
+  await expect(section.getByTestId('stage-cell')).toHaveCount(2);
+
+  /* زر داخل الفيديو يفتح درج القنوات (يعمل داخل ملء الشاشة) */
+  await section.getByTestId('channel-row').first().click();
+  await section.getByTestId('drawer-button').click();
+  const drawer = section.getByTestId('channel-drawer');
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByTestId('drawer-row').first()).toBeVisible();
+  await expect(drawer.getByTestId('drawer-row')).toHaveCount(400);
+  await drawer.getByTestId('drawer-row').nth(1).click();
+  await expect(drawer).toHaveCount(0);
+
+  /* أربع شاشات ثم العودة لشاشة واحدة */
+  await section.getByTestId('view-4').click();
+  await expect(section.getByTestId('stage-cell')).toHaveCount(4);
+  await section.getByTestId('view-1').click();
+  await expect(section.getByTestId('stage-cell')).toHaveCount(1);
+
+  /* مفتاح F يفتح/يغلق ملء الشاشة بلا كسر بقية الصفحة */
+  await section.getByTestId('fullscreen-button').click();
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Escape');
 });

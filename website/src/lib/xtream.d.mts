@@ -32,6 +32,13 @@ export interface Stream {
   icon: string;
   catId: string;
   url?: string;
+  /** رقم القناة (R zap / Remote digits) — يُملأ من Xtream أو تسلسل ملف M3U */
+  num?: string;
+  /** أيام الأرشيف المتاحة (tv_archive) — صفر/غياب = بلا Catch-up */
+  archive?: number;
+  /** امتداد الملف للأفلام/الحلقات (mp4/mkv…) */
+  ext?: string;
+  rating?: number;
 }
 
 export interface DiagEntry {
@@ -131,7 +138,8 @@ export declare function playerApiUrl(
   base: string,
   username: string,
   password: string,
-  action?: string
+  action?: string,
+  extra?: Record<string, string | number | null | undefined> | null
 ): string;
 export declare function liveStreamUrl(
   base: string,
@@ -205,3 +213,140 @@ export declare function saveProfileList(
   profile: string,
   list: string[]
 ): boolean;
+
+/* ---- الأفلام والمسلسلات وEPG والإعادة والقفل الأبوي وأوضاع العرض ---------- */
+
+export declare function vodStreamUrl(
+  base: string,
+  username: string,
+  password: string,
+  streamId: number | string,
+  ext?: string
+): string;
+export declare function seriesStreamUrl(
+  base: string,
+  username: string,
+  password: string,
+  episodeId: number | string,
+  ext?: string
+): string;
+export declare function timeshiftUrl(
+  base: string,
+  username: string,
+  password: string,
+  streamId: number | string,
+  startSec: number,
+  durationMin?: number
+): string;
+export declare function shortEpgUrl(
+  base: string,
+  username: string,
+  password: string,
+  streamId: number | string,
+  limit?: number
+): string;
+
+export interface EpgItem {
+  title: string;
+  desc: string;
+  startTs: number;
+  endTs: number;
+}
+export interface EpgInfo {
+  items: EpgItem[];
+  now: EpgItem | null;
+  next: EpgItem | null;
+  progress: number | null;
+}
+export declare function decodeEpgField(value: unknown): string;
+export declare function formatClock(secondsTs: number | string): string;
+export declare function parseShortEpg(payload: unknown, nowSec?: number): EpgInfo;
+export declare function formatEpgLine(epg: EpgInfo | null | undefined): string;
+
+export interface VodInfo {
+  id: number;
+  name: string;
+  ext: string;
+  poster: string;
+  plot: string;
+  rating: number;
+  cast: string;
+  genre: string;
+  duration: string;
+  release: string;
+  trailer: string;
+}
+export declare function parseVodInfo(payload: unknown): VodInfo;
+
+export interface SeriesEpisode {
+  id: number;
+  num: number;
+  title: string;
+  ext: string;
+  duration: string;
+  plot: string;
+  image: string;
+}
+export interface SeriesSeason {
+  num: number;
+  name: string;
+  episodes: SeriesEpisode[];
+}
+export interface SeriesInfo {
+  name: string;
+  cover: string;
+  plot: string;
+  rating: number;
+  cast: string;
+  seasons: SeriesSeason[];
+}
+export declare function parseSeriesInfo(payload: unknown): SeriesInfo;
+
+export declare function findChannelByNumber(
+  channels: Stream[] | null | undefined,
+  digits: string | number
+): Stream | null;
+export declare function stepChannel(
+  list: Stream[] | null | undefined,
+  currentKey: string,
+  dir?: number
+): Stream | null;
+export declare function srtToVtt(text: unknown): string;
+
+export declare const PIN_KEY: string;
+export interface PinState {
+  pin: string;
+  locked: string[];
+}
+export declare function isValidPin(pin: unknown): boolean;
+export declare function hashPin(pin: string | number, salt?: string): string;
+export declare function verifyPin(storedHash: string | null | undefined, pin: unknown): boolean;
+export declare function loadPinState(storage: StorageLike | null): PinState | null;
+export declare function savePinState(storage: StorageLike | null, state: PinState | null): boolean;
+export declare function toggleLockKey(state: PinState | null | undefined, key: string): PinState;
+
+export declare const RESUME_KEY: string;
+export interface ResumeEntry {
+  t: number;
+  ts: number;
+}
+export type ResumeMap = Record<string, ResumeEntry>;
+export declare function loadResumeMap(storage: StorageLike | null, profile: string): ResumeMap;
+export declare function getResumeAt(map: ResumeMap | null | undefined, key: string): number;
+export declare function saveResumePosition(
+  storage: StorageLike | null,
+  profile: string,
+  key: string,
+  seconds: number,
+  nowMs?: number
+): boolean;
+
+export interface AspectMode {
+  id: string;
+  label: string;
+}
+export declare const ASPECT_MODES: AspectMode[];
+export declare function aspectStyle(modeId: string | null | undefined): Record<string, string>;
+export declare function isTsStreamUrl(url: unknown): boolean;
+export declare const MEDIA_EXTENSIONS: string[];
+export declare function safeMediaExt(ext: unknown, fallback?: string): string;

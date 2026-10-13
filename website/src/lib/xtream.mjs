@@ -212,6 +212,7 @@ export function parseM3U(text) {
     } else if (pending && !line.startsWith("#")) {
       streams.push({
         id: streams.length + 1,
+        num: String(streams.length + 1),
         name: pending.name,
         icon: pending.icon,
         catId: pending.group,
@@ -335,13 +336,20 @@ function buildEndpointUrl(base, pathAndQuery) {
 }
 
 /* رابط واجهة الحساب (player_api.php) — يدعم المباشر والـWorker و/proxy.php */
-export function playerApiUrl(base, username, password, action = "") {
+export function playerApiUrl(base, username, password, action = "", extra = null) {
   const act = action ? `&action=${encodeURIComponent(action)}` : "";
+  const extras =
+    extra && typeof extra === "object"
+      ? Object.entries(extra)
+          .filter(([, value]) => value !== undefined && value !== null && value !== "")
+          .map(([key, value]) => `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          .join("")
+      : "";
   return buildEndpointUrl(
     base,
     `/player_api.php?username=${encodeURIComponent(
       username
-    )}&password=${encodeURIComponent(password)}${act}`
+    )}&password=${encodeURIComponent(password)}${act}${extras}`
   );
 }
 
@@ -679,4 +687,334 @@ export function saveProfileList(storage, key, profile, list) {
     .filter((item) => typeof item === "string")
     .slice(0, 500);
   return saveJSON(storage, key, { ...base, [profile]: clean });
+}
+
+/* ========================================================================= */
+/*  مشغّل الاشتراك — الأفلام والمسلسلات ودليل البرامج (EPG) والإعادة والقفل   */
+/* ========================================================================= */
+
+export const MEDIA_EXTENSIONS = ["mp4", "mkv", "avi", "mov", "wmv", "flv", "webm", "mpg", "mpeg", "ts", "m3u8"];
+
+export function safeMediaExt(ext, fallback = "mp4") {
+  const clean = String(ext || "").replace(/[^a-z0-9]/gi, "").toLowerCase();
+  return MEDIA_EXTENSIONS.includes(clean) ? clean : fallback;
+}
+
+export function vodStreamUrl(base, username, password, streamId, ext = "mp4") {
+  const safeExt = safeMediaExt(ext);
+  return buildEndpointUrl(
+    base,
+    `/movie/${encodeURIComponent(username)}/${encodeURIComponent(password)}/${encodeURIComponent(streamId)}.${safeExt}`,
+  );
+}
+
+export function seriesStreamUrl(base, username, password, episodeId, ext = "mp4") {
+  const safeExt = safeMediaExt(ext);
+  return buildEndpointUrl(
+    base,
+    `/series/${encodeURIComponent(username)}/${encodeURIComponent(password)}/${encodeURIComponent(episodeId)}.${safeExt}`,
+  );
+}
+
+/** روابط إعادة البث (Timeshift/Catch-up) — تنسيق Xtream:
+ *  /timeshift/{user}/{pass}/{id}/{YYYY-MM-DD:HH-mm}/{duration-min}.m3u8 (بتوقيت UTC) */
+export function timeshiftUrl(base, username, password, streamId, startSec, durationMin = 120) {
+  const d = new Date(Math.max(0, Number(startSec) || 0) * 1000);
+  const p2 = (n) => String(n).padStart(2, "0");
+  const stamp =
+    `${d.getUTCFullYear()}-${p2(d.getUTCMonth() + 1)}-${p2(d.getUTCDate())}` +
+    `:${p2(d.getUTCHours())}-${p2(d.getUTCMinutes())}`;
+  const dur = Math.max(1, Math.round(Number(durationMin) || 120));
+  return buildEndpointUrl(
+    base,
+    `/timeshift/${encodeURIComponent(username)}/${encodeURIComponent(password)}/${encodeURIComponent(streamId)}/${stamp}/${dur}.m3u8`,
+  );
+}
+
+/** عنوان EPG المختصر — action=get_short_epg&stream_id=X&limit=N */
+export function shortEpgUrl(base, username, password, streamId, limit = 4) {
+  return playerApiUrl(base, username, password, "get_short_epg", {
+    stream_id: streamId,
+    limit,
+  });
+}
+
+/** فك Base64 (بترميز UTF-8 آمن) — يقبل سلسلة أو {base64: "..."} كما تعيد بعض اللوحات */
+export function decodeEpgField(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && typeof value.base64 === "string") {
+    try {
+      const bin = atob(String(value.base64).trim());
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder("utf-8").decode(bytes);
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function parseEpgClock(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/.exec(String(value ?? ""));
+  if (!m) return 0;
+  return Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6] || 0)) / 1000;
+}
+
+/** "21:05" من طابع زمني بالثواني (بتوقيت الجهاز) */
+export function formatClock(secondsTs) {
+  const ts = Number(secondsTs);
+  if (!Number.isFinite(ts) || ts <= 0) return "";
+  const d = new Date(ts * 1000);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+/** تحليل رد get_short_epg → { items, now, next, progress } */
+export function parseShortEpg(payload, nowSec = Math.floor(Date.now() / 1000)) {
+  const now = Number(nowSec) || Math.floor(Date.now() / 1000);
+  const raw = payload && Array.isArray(payload.epg_listings)
+    ? payload.epg_listings
+    : Array.isArray(payload)
+      ? payload
+      : [];
+  const items = raw
+    .map((entry) => ({
+      title: decodeEpgField(entry?.title),
+      desc: decodeEpgField(entry?.description),
+      startTs: Number(entry?.start_timestamp) || parseEpgClock(entry?.start),
+      endTs: Number(entry?.stop_timestamp ?? entry?.end_timestamp) || parseEpgClock(entry?.end ?? entry?.stop),
+    }))
+    .filter((item) => item.title || item.startTs)
+    .sort((a, b) => a.startTs - b.startTs);
+  const nowItem = items.find((i) => i.startTs <= now && (i.endTs === 0 || now < i.endTs)) || null;
+  const nextItem = items.find((i) => i.startTs > now)
+    || (nowItem ? items[items.indexOf(nowItem) + 1] ?? null : null);
+  let progress = null;
+  if (nowItem && nowItem.endTs > nowItem.startTs) {
+    progress = Math.min(1, Math.max(0, (now - nowItem.startTs) / (nowItem.endTs - nowItem.startTs)));
+  }
+  return { items, now: nowItem, next: nextItem, progress };
+}
+
+/** "يعرض الآن: X (21:00 - 22:00) • التالي: Y" */
+export function formatEpgLine(epg) {
+  if (!epg || (!epg.now && !epg.next)) return "";
+  const range = (item) =>
+    item?.startTs && item?.endTs
+      ? ` (${formatClock(item.startTs)} - ${formatClock(item.endTs)})`
+      : "";
+  const parts = [];
+  if (epg.now?.title) parts.push(`يعرض الآن: ${epg.now.title}${range(epg.now)}`);
+  if (epg.next?.title) parts.push(`التالي: ${epg.next.title}${range(epg.next)}`);
+  return parts.join(" • ");
+}
+
+/** تحليل get_vod_info → بيانات الفيلم للبطاقة التفصيلية */
+export function parseVodInfo(payload) {
+  const info = payload && typeof payload === "object" && payload.info ? payload.info : {};
+  const data = payload?.movie_data && typeof payload.movie_data === "object" ? payload.movie_data : {};
+  const trailerRaw = String(info.trailer || info.youtubeid || "").trim();
+  let trailer = "";
+  if (/^https?:\/\//i.test(trailerRaw)) trailer = trailerRaw;
+  else if (trailerRaw) trailer = `https://www.youtube.com/watch?v=${encodeURIComponent(trailerRaw)}`;
+  return {
+    id: Number(data.stream_id) || 0,
+    name: String(data.name || info.name || ""),
+    ext: String(data.container_extension || info.container_extension || "mp4"),
+    poster: String(info.movie_image || info.cover || data.cover || ""),
+    plot: String(info.plot || info.description || ""),
+    rating: Number(info.rating) || 0,
+    cast: String(info.cast || ""),
+    genre: String(info.genre || ""),
+    duration: String(info.duration || info.episode_run_time || ""),
+    release: String(info.releasedate || info.release_date || ""),
+    trailer,
+  };
+}
+
+/** تحليل get_series_info → المواسم والحلقات مع بيانات العرض */
+export function parseSeriesInfo(payload) {
+  const info = payload && typeof payload === "object" && payload.info ? payload.info : {};
+  const seasonsRaw = Array.isArray(payload?.seasons) ? payload.seasons : [];
+  const episodesMap = payload?.episodes && typeof payload.episodes === "object" ? payload.episodes : {};
+  const seasonNums = [
+    ...new Set([
+      ...seasonsRaw.map((s) => Number(s?.season_number)),
+      ...Object.keys(episodesMap).map(Number),
+    ]),
+  ]
+    .filter((n) => Number.isFinite(n))
+    .sort((a, b) => a - b);
+  const seasons = seasonNums.map((num) => {
+    const meta = seasonsRaw.find((s) => Number(s?.season_number) === num) || {};
+    const list = Array.isArray(episodesMap[String(num)])
+      ? episodesMap[String(num)]
+      : Array.isArray(episodesMap[num])
+        ? episodesMap[num]
+        : [];
+    const episodes = list
+      .map((e) => ({
+        id: Number(e?.id) || 0,
+        num: Number(e?.episode_num) || 0,
+        title: String(e?.title || "").trim() || `الحلقة ${e?.episode_num ?? ""}`,
+        ext: String(e?.container_extension || "mp4"),
+        duration: String(e?.info?.duration || ""),
+        plot: String(e?.info?.plot || ""),
+        image: String(e?.info?.movie_image || ""),
+      }))
+      .sort((a, b) => a.num - b.num);
+    return { num, name: String(meta.name || `الموسم ${num}`), episodes };
+  });
+  return {
+    name: String(info.name || ""),
+    cover: String(info.cover || info.movie_image || ""),
+    plot: String(info.plot || ""),
+    rating: Number(info.rating) || 0,
+    cast: String(info.cast || ""),
+    seasons,
+  };
+}
+
+/** بحث قناة برقمها (حقل num أو المعرّف) — لانتقال الأرقام من الرموت */
+export function findChannelByNumber(channels, digits) {
+  const raw = String(digits ?? "").replace(/^0+(?=\d)/, "");
+  if (!raw) return null;
+  const list = Array.isArray(channels) ? channels : [];
+  return list.find((c) => String(c?.num ?? "") === raw) || list.find((c) => String(c?.id) === raw) || null;
+}
+
+/** القناة السابقة/التالية مع التجوّز (Wrap) */
+export function stepChannel(list, currentKey, dir = 1) {
+  const items = Array.isArray(list) ? list : [];
+  if (!items.length) return null;
+  const idx = items.findIndex((item) => streamKey(item) === currentKey);
+  if (idx === -1) return dir > 0 ? items[0] : items[items.length - 1];
+  const step = dir >= 0 ? 1 : -1;
+  return items[(idx + step + items.length) % items.length];
+}
+
+/** تحويل ملف SRT إلى WebVTT (لرفع ترجمة الأفلام) */
+export function srtToVtt(text) {
+  const body = String(text ?? "")
+    .replace(/^\uFEFF/, "")
+    .replace(/\r+/g, "")
+    .trim()
+    .replace(/^\d+$/gm, "")
+    .replace(/(\d{1,2}:\d{2}:\d{2}),(\d{3})/g, "$1.$2")
+    .replace(/\{\\[^}]*\}/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return `WEBVTT\n\n${body}\n`;
+}
+
+/* ------------------------- القفل الأبوي (PIN) ---------------------------- */
+
+export const PIN_KEY = "smp-xtream-pin";
+
+export function isValidPin(pin) {
+  return /^\d{4}$/.test(String(pin ?? ""));
+}
+
+export function hashPin(pin, salt = "smp-pin-v1") {
+  const seed = `${salt}|${pin}`;
+  let h1 = 5381;
+  for (let i = 0; i < seed.length; i += 1) h1 = ((h1 * 33) ^ seed.charCodeAt(i)) >>> 0;
+  const seed2 = `${h1.toString(36)}|${salt}|${pin}`;
+  let h2 = 5381;
+  for (let i = 0; i < seed2.length; i += 1) h2 = ((h2 * 33) ^ seed2.charCodeAt(i)) >>> 0;
+  return `${h1.toString(36)}.${h2.toString(36)}`;
+}
+
+export function verifyPin(storedHash, pin) {
+  if (typeof storedHash !== "string" || !storedHash || !isValidPin(pin)) return false;
+  return storedHash === hashPin(pin);
+}
+
+export function loadPinState(storage) {
+  const value = loadJSON(storage, PIN_KEY, null);
+  if (!value || typeof value !== "object" || typeof value.pin !== "string") return null;
+  return {
+    pin: value.pin,
+    locked: Array.isArray(value.locked) ? value.locked.filter((k) => typeof k === "string") : [],
+  };
+}
+
+export function savePinState(storage, state) {
+  if (!state || typeof state.pin !== "string" || !state.pin) return saveJSON(storage, PIN_KEY, null);
+  return saveJSON(storage, PIN_KEY, {
+    pin: state.pin,
+    locked: (Array.isArray(state.locked) ? state.locked : []).filter((k) => typeof k === "string"),
+  });
+}
+
+export function toggleLockKey(state, key) {
+  const locked = state && Array.isArray(state.locked) ? state.locked : [];
+  const next = locked.includes(key) ? locked.filter((k) => k !== key) : [...locked, key];
+  return { pin: state?.pin ?? "", locked: next };
+}
+
+/* ------------------ متابعة المشاهدة (Resume Playback) -------------------- */
+
+export const RESUME_KEY = "smp-xtream-resume";
+
+export function loadResumeMap(storage, profile) {
+  const all = loadJSON(storage, RESUME_KEY, {});
+  const map = all && typeof all === "object" ? all[profile] : null;
+  return map && typeof map === "object" ? map : {};
+}
+
+export function getResumeAt(map, key) {
+  const entry = map && typeof map === "object" ? map[key] : null;
+  const t = entry && typeof entry === "object" ? Number(entry.t) : 0;
+  return Number.isFinite(t) && t > 15 ? t : 0;
+}
+
+export function saveResumePosition(storage, profile, key, seconds, nowMs = Date.now()) {
+  if (!profile || !key || !Number.isFinite(Number(seconds)) || Number(seconds) < 15) return false;
+  const map = loadResumeMap(storage, profile);
+  map[key] = { t: Math.floor(Number(seconds)), ts: Number(nowMs) };
+  const entries = Object.entries(map)
+    .sort((a, b) => (Number(b[1]?.ts) || 0) - (Number(a[1]?.ts) || 0))
+    .slice(0, 300);
+  const all = loadJSON(storage, RESUME_KEY, {});
+  const base = all && typeof all === "object" ? all : {};
+  return saveJSON(storage, RESUME_KEY, { ...base, [profile]: Object.fromEntries(entries) });
+}
+
+/* ------------------------ أوضاع العرض (Aspect) --------------------------- */
+
+export const ASPECT_MODES = [
+  { id: "auto", label: "الأصلي (Contain)" },
+  { id: "cover", label: "تعبئة الشاشة (Cover)" },
+  { id: "fill", label: "تمديد (Fill/Stretch)" },
+  { id: "16:9", label: "نسبة 16:9" },
+  { id: "4:3", label: "نسبة 4:3" },
+];
+
+export function aspectStyle(modeId) {
+  switch (String(modeId ?? "auto")) {
+    case "cover":
+      return { objectFit: "cover", aspectRatio: "auto", width: "100%", height: "100%" };
+    case "fill":
+      return { objectFit: "fill", aspectRatio: "auto", width: "100%", height: "100%" };
+    case "16:9":
+      return { objectFit: "contain", aspectRatio: "16 / 9", width: "auto", height: "100%", maxWidth: "100%", maxHeight: "100%" };
+    case "4:3":
+      return { objectFit: "contain", aspectRatio: "4 / 3", width: "auto", height: "100%", maxWidth: "100%", maxHeight: "100%" };
+    default:
+      return { objectFit: "contain", aspectRatio: "auto", width: "100%", height: "100%" };
+  }
+}
+
+/* رابط MPEG-TS خام (.ts) — يُشغَّل عبر mpegts.js وليس hls.js */
+export function isTsStreamUrl(url) {
+  const raw = String(url ?? "").trim();
+  if (!raw || isHlsCandidateUrl(raw)) return false;
+  if (/\.ts($|\?|#)/i.test(raw)) return true;
+  try {
+    return /\.ts($|\?|#)/i.test(decodeURIComponent(raw));
+  } catch {
+    return false;
+  }
 }

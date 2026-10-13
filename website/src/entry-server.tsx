@@ -9,7 +9,7 @@ import { PRICING_PLANS } from "./data";
 export function getAllRoutes(): string[] {
   return [
     "/",
-    "/channels", "/store", "/servers", "/cart", "/faq",
+    "/channels", "/matches", "/store", "/servers", "/cart", "/faq",
     ...PRICING_PLANS.map((p) => `/servers/${p.serverCode}`),
     "/blog",
     ...BLOG_POSTS.map((p) => `/blog/${p.slug}`),

@@ -33,7 +33,16 @@ $sum = array_sum($total);
 $last7 = array_slice($daily, -7, null, true);
 function e(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
 ?><!DOCTYPE html>
-<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<html lang="ar" dir="rtl"><head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N7VT67MW57"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-N7VT67MW57');
+    </script><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>إحصائيات الشركاء</title>
 <style>

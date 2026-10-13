@@ -52,8 +52,9 @@ test('cart persists on refresh, recalculates currency, and removes items', async
 });
 
 test('old annual cart items migrate without changing the published dollar price', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() => localStorage.setItem('stream-master-cart', JSON.stringify([{ id: 'nova-12m', quantity: 2, price: 25 }])));
+  // Seed before React initializes: writing into a loaded homepage can race
+  // its initial empty-cart persistence effect on slower CI workers.
+  await page.addInitScript(() => localStorage.setItem('stream-master-cart', JSON.stringify([{ id: 'nova-12m', quantity: 2, price: 25 }])));
   await page.goto('/cart/');
   await page.getByRole('button', { name: /عرض السلة/ }).click();
   await expect(page.getByRole('dialog')).toContainText('50');

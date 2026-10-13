@@ -48,8 +48,7 @@ function breadcrumbs(items: { name: string; path: string }[]) {
 }
 
 export function getSeo(path: string): SeoMeta {
-  let clean = `/${path.replace(/^\/+|\/+$/g, "")}`;
-  if (clean.startsWith("/servers/")) clean = clean.replace("/servers", "");
+  const clean = `/${path.replace(/^\/+|\/+$/g, "")}`;
   const base: SeoMeta = {
     title: `${BRAND_NAME} | افضل اشتراك IPTV 2026 بدون تقطيع`,
     description:

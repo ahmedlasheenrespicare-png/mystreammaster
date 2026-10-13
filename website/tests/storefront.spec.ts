@@ -80,7 +80,7 @@ for (const width of [320, 390, 768, 1440]) {
   });
 }
 
-for (const url of ['/channels/', '/blog/', '/servers/nova/', '/faq/', '/about/', '/privacy/', '/refund/', '/search/', '/live-free.html', '/world-cup-2026/', '/predictions/', '/blog/هل-iptv-آمن/']) {
+for (const url of ['/channels/', '/blog/', '/nova/', '/faq/', '/about/', '/privacy/', '/refund/', '/search/', '/live-free.html', '/world-cup-2026/', '/predictions/', '/blog/هل-iptv-آمن/']) {
   test(`preserved route works: ${url}`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', e => errors.push(e.message));

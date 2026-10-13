@@ -115,12 +115,14 @@ async function main() {
 
   const { getAllRoutes, renderPage } = await import(path.resolve(SSR_ENTRY));
   const routes = getAllRoutes();
+  const indexableRoutes = [];
 
   let count = 0;
   for (const route of routes) {
     const { html, seo } = renderPage(route);
     const page = applyHead(template, seo);
     await writeRouteHtml(page, route, html);
+    if (!String(seo.robots || "").startsWith("noindex")) indexableRoutes.push(route);
     count++;
     console.log(`  ✓ ${route.padEnd(38)} ${seo.title.slice(0, 46)}`);
   }
@@ -134,7 +136,7 @@ async function main() {
   );
 
   /* خريطة الموقع */
-  await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(routes));
+  await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(indexableRoutes));
 
   console.log(`\n✅ تم الرسم المسبق ${count} مساراً + 404.html + sitemap.xml`);
 }

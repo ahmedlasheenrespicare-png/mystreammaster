@@ -47,7 +47,7 @@ export function normalizePath(pathname: string): string {
 }
 
 const APP_PATHS = new Set(["/", "/channels", "/matches", "/blog", "/store", "/servers", "/cart", "/faq",
-  ...PRICING_PLANS.flatMap(p => [`/${p.serverCode}`, `/servers/${p.serverCode}`]),
+  ...PRICING_PLANS.map(p => `/${p.serverCode}`),
   ...BLOG_POSTS.map(p => `/blog/${p.slug}`)]);
 
 function currentLocation() {

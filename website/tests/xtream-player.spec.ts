@@ -225,3 +225,66 @@ test('إدارة الحسابات: الشرائح وتبديل الحساب وإ
   await chips.getByRole('button', { name: `تبديل إلى ${MOCK_HOST}` }).click();
   await expect(section.getByTestId('connection-badge')).toBeVisible({ timeout: 20000 });
 });
+
+test('السقوط التلقائي إلى Worker وبروكسي البث المباشر (/proxy.php) عند فشل الاتصال المباشر', async ({ page }) => {
+  const streams = buildStreams();
+  await page.unroute('**/*');
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    /* نسمح بملفات الصفحة المحلية لكن نعترض /proxy.php لمحاكاة استجابة بروكسي البث المباشر */
+    if ((url.hostname === '127.0.0.1' || url.hostname === 'localhost') && url.pathname !== '/proxy.php') {
+      return route.continue();
+    }
+    /* نحجب الاتصال المباشر والـWorker لإجبار المشغل على استخدام /proxy.php?url= */
+    if (url.pathname !== '/proxy.php') {
+      return route.abort();
+    }
+
+    const targetRaw = url.searchParams.get('url') || '';
+    let target: URL;
+    try {
+      target = new URL(targetRaw);
+    } catch {
+      return route.abort();
+    }
+    if (target.hostname !== MOCK_HOST) return route.abort();
+
+    const action = target.searchParams.get('action');
+    const json = (body: unknown) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+
+    if (target.pathname.endsWith('/player_api.php')) {
+      if (!action) {
+        return json({
+          user_info: {
+            auth: 1,
+            status: 'Active',
+            exp_date: String(Math.floor(Date.now() / 1000) + 5 * 86400),
+            max_connections: '2',
+            active_cons: '1',
+            is_trial: '0',
+          },
+        });
+      }
+      if (action === 'get_live_categories') {
+        return json([
+          { category_id: '1', category_name: 'أخبارية' },
+          { category_id: '2', category_name: 'رياضية' },
+        ]);
+      }
+      if (action === 'get_live_streams') return json(streams);
+    }
+    return route.abort();
+  });
+
+  const section = page.locator('#xtream');
+  await section.getByRole('textbox').first().fill(MOCK_HOST);
+  await section.locator('input[type="text"]').nth(1).fill('ahmed1234');
+  await section.locator('input[type="password"]').fill(PASSWORD);
+  await section.getByTestId('login-submit').click();
+
+  await expect(section.getByTestId('connection-badge')).toContainText('متصل — بروكسي HTTPS', {
+    timeout: 20000,
+  });
+  await expect(section.getByText('400 قناة معروضة')).toBeVisible();
+});

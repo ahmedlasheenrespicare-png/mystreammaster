@@ -1,7 +1,13 @@
 /* أنواع وحدة منطق مشغّل الاشتراك — تُطابق src/lib/xtream.mjs
    (الملف التنفيذي JS خالص ليعمل في Node و Vite بلا خطوة بناء) */
 
-export type ModeId = "direct-https" | "direct-http" | "proxy-https" | "proxy-http";
+export type ModeId =
+  | "direct-https"
+  | "direct-http"
+  | "proxy-https"
+  | "proxy-http"
+  | "php-https"
+  | "php-http";
 
 export interface XtreamMode {
   id: ModeId;
@@ -79,6 +85,26 @@ export declare const MAX_RECENTS: number;
 export declare const LIST_ITEM_HEIGHT: number;
 export declare const LIST_OVERSCAN: number;
 export declare const SHARE_TOKEN_PREFIX: string;
+export declare const PHP_PROXY: string;
+export declare const PROXY_SESSION_KEY: string;
+export declare const OWNED_PROXY_PATTERN: RegExp;
+export declare const NGROK_HOST_RE: RegExp;
+
+export declare function isTrustedProxy(value: unknown): boolean;
+export declare function isNgrokUrl(url: unknown): boolean;
+export declare function resolveWorkerBase(options?: {
+  proxyBase?: string;
+  search?: string;
+  session?: StorageLike | null;
+}): string;
+export declare function resolveProxyBases(options?: {
+  proxyBase?: string;
+  phpProxy?: string;
+  search?: string;
+  session?: StorageLike | null;
+}): string[];
+export declare function getProxyUrl(base: string, url: string): string;
+export declare function isHlsCandidateUrl(url: unknown): boolean;
 
 export declare function normalizeHost(raw: unknown): string;
 export declare function schemeOf(raw: unknown): string;
@@ -98,9 +124,15 @@ export declare function windowRange(options?: {
 }): RangeResult;
 export declare function buildModes(options?: {
   proxyBase?: string;
+  phpProxy?: string;
   isHttpsSite?: boolean;
 }): XtreamMode[];
-export declare function playerApiUrl(base: string, username: string, password: string): string;
+export declare function playerApiUrl(
+  base: string,
+  username: string,
+  password: string,
+  action?: string
+): string;
 export declare function liveStreamUrl(
   base: string,
   username: string,
@@ -115,7 +147,7 @@ export declare function m3uDownloadUrl(options: {
 }): string;
 export declare function m3uCandidates(
   rawUrl: string,
-  options?: { proxyBase?: string; isHttpsSite?: boolean }
+  options?: { proxyBase?: string; phpProxy?: string; isHttpsSite?: boolean }
 ): string[];
 export declare function composeFailMsg(entries: DiagEntry[]): string;
 export declare function maskUsername(username: unknown): string;

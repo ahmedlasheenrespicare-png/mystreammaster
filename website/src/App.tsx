@@ -78,7 +78,7 @@ export default function App() {
   }, []);
 
   /* ===== توجيه الصفحات ===== */
-  const plan = PRICING_PLANS.find((p) => path === `/${p.serverCode}` || path === `/servers/${p.serverCode}`);
+  const plan = PRICING_PLANS.find((p) => path === `/${p.serverCode}`);
   const post = BLOG_POSTS.find((p) => path === `/blog/${p.slug}`);
 
   let page;

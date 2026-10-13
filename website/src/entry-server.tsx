@@ -10,7 +10,6 @@ export function getAllRoutes(): string[] {
   return [
     "/",
     "/channels", "/matches", "/store", "/servers", "/cart", "/faq",
-    ...PRICING_PLANS.map((p) => `/servers/${p.serverCode}`),
     "/blog",
     ...BLOG_POSTS.map((p) => `/blog/${p.slug}`),
     ...PRICING_PLANS.map((p) => `/${p.serverCode}`),

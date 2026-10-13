@@ -101,3 +101,37 @@ test('legacy footer links perform real navigation instead of being swallowed by 
   await page.locator('.sm-header').getByRole('link', { name: /ستريم ماستر/ }).click();
   await expect(page.locator('h1')).toContainText('شاهد كل ما تحب');
 });
+
+for (const width of [320, 390, 640, 768, 1440]) {
+  test(`hero floating badges are fully visible without overlap at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const badges = page.locator('[data-hero-badge]');
+    await expect(badges).toHaveCount(3);
+    for (const badge of await badges.all()) {
+      await badge.scrollIntoViewIfNeeded();
+      await expect(badge).toBeVisible();
+      const geometry = await badge.evaluate(el => {
+        const rect = el.getBoundingClientRect();
+        const clippedBy: string[] = [];
+        for (let parent = el.parentElement; parent; parent = parent.parentElement) {
+          const style = getComputedStyle(parent);
+          const box = parent.getBoundingClientRect();
+          if (['hidden', 'clip', 'auto', 'scroll'].includes(style.overflowX) && (rect.left < box.left - 1 || rect.right > box.right + 1)) clippedBy.push('horizontal');
+          if (['hidden', 'clip', 'auto', 'scroll'].includes(style.overflowY) && (rect.top < box.top - 1 || rect.bottom > box.bottom + 1)) clippedBy.push('vertical');
+        }
+        return { left: rect.left, right: rect.right, clippedBy };
+      });
+      expect(geometry.left).toBeGreaterThanOrEqual(0);
+      expect(geometry.right).toBeLessThanOrEqual(width);
+      expect(geometry.clippedBy).toEqual([]);
+    }
+    const stability = await page.locator('[data-hero-badge="stability"]').boundingBox();
+    const channels = await page.locator('[data-hero-badge="channels"]').boundingBox();
+    expect(stability && channels).toBeTruthy();
+    const overlap = stability!.x < channels!.x + channels!.width && stability!.x + stability!.width > channels!.x && stability!.y < channels!.y + channels!.height && stability!.y + stability!.height > channels!.y;
+    expect(overlap).toBeFalsy();
+    const dimensions = await page.evaluate(() => [innerWidth, document.documentElement.scrollWidth]);
+    expect(dimensions[1]).toBeLessThanOrEqual(dimensions[0] + 1);
+  });
+}

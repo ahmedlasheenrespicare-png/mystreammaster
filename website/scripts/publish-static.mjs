@@ -49,7 +49,7 @@ for (const file of await files(path.join(website, 'legacy'))) {
     if (/3d-effects|googlesyndication|ampproject/.test((script.attr('src') || '') + script.text())) script.remove();
   });
   $('link[href*="3d-effects"], link[href*="pricing-minimal"], link[href*="fonts.googleapis"], link[href*="fonts.gstatic"]').remove();
-  $('meta[name="theme-color"]').attr('content', '#faf9f6');
+  if (relative !== 'manchester-united-atletico/index.html') $('meta[name="theme-color"]').attr('content', '#faf9f6');
   $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261013b"><script src="/_assets/storefront.js?v=20261013b" defer></script>');
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });

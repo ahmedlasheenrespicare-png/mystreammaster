@@ -1,7 +1,7 @@
 import Hero from "../components/Hero";
 import ContentTicker from "../components/ContentTicker";
 import WordBand from "../components/WordBand";
-import LivePlayer from "../components/LivePlayer";
+import WatchGuide from "../components/WatchGuide";
 import XtreamPlayer from "../components/XtreamPlayer";
 import Pricing from "../components/Pricing";
 import ServerFinder from "../components/ServerFinder";
@@ -37,7 +37,7 @@ export default function HomePage({
       <Hero onOpenTrial={onOpenTrial} />
       <ContentTicker />
       <WordBand />
-      <LivePlayer onOpenTrial={onOpenTrial} />
+      <WatchGuide />
       <XtreamPlayer />
       <Pricing
         currentCurrency={currency}

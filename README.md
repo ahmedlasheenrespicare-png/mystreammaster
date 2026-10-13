@@ -72,3 +72,21 @@ npm run test:ui     # اختبارات Chromium: الجوال، السلة، ا�
 - **متطلبات الإنتاج:** يتطلب `/scoreboard.php` استضافة تشغّل PHP مع تفعيل `cURL` (أو `allow_url_fopen`) وإمكانية وصول الخادم خارجيًا إلى `site.api.espn.com` و`www.thesportsdb.com`. في المعاينة الثابتة (`npm run preview`) لا يعمل PHP ويعود الرمز التشخيصي `PHP_PREVIEW_UNAVAILABLE`. لا توجد بيانات مباريات وهمية منشورة ولا مفتاح API داخل الملفات.
 - **حدود التحقق:** الاتصالات في اختبارات المتصفح محاكاة ببيانات اختبار فقط؛ بيئة العمل لا تشغّل PHP ولا تسمح باتصال ESPN، لذا لا تثبت الاختبارات صلاحية المصدر الفعلي أو عمل PHP على الاستضافة. يلزم فحص `/matches/` و`/scoreboard.php` على الاستضافة الفعلية بعد النشر.
 - `npm test` يتحقق من قارئ النتائج، حدود الأيام، التوقيت الصيفي، رموز التشخيص وعقد `scoreboard.php`. `website/tests/matches.spec.ts` يتحقق من التحديث التلقائي الدائم (وبقاء الواجهة بلا مفتاح إيقاف)، التصفية والتواريخ والمناطق الزمنية، رموز التشخيص عند الأعطال، الكاش الاحتياطي والجوال والتنقل.
+
+### Official viewing directory (homepage)
+
+The homepage section at `#live-player` is now `WatchGuide`, a directory of official
+channel/platform destinations rather than the public HLS player. The old anchor
+is retained for existing links. The personal-account player and retained legacy
+player pages are separate and were not removed by this change.
+
+- Entries are maintained in `website/src/official-destinations.json` (117 initial
+  entries, including paid services and network-level destinations).
+- Only first-party HTTPS destination pages belong in this data file. Do not add
+  HLS/DASH streams, proxy URLs, embedded video or third-party reseller links.
+- A network homepage is labelled as a network destination; inclusion is not a
+  claim of free access, local availability, affiliation or redistribution rights.
+- Current links carry no affiliate parameters and no click tracking. Add affiliate
+  links only after an approved agreement, together with accurate, visible disclosure
+  and any privacy changes required by the actual tracking implementation.
+- Targeted UI tests: `npm run test:ui --prefix website -- tests/watch-guide.spec.ts`.

@@ -12,7 +12,7 @@
 
 /** أقسام الصفحة الرئيسية بنفس ترتيب ظهورها في الصفحة */
 export const HOME_SECTIONS = [
-  { id: "live-player", label: "البث المباشر", desc: "قنوات MBC والرياضة الآن", icon: "📡" },
+  { id: "live-player", label: "دليل المشاهدة الرسمية", desc: "روابط القنوات والمنصات الرسمية", icon: "📡" },
   { id: "xtream", label: "مشغّل الاشتراك", desc: "شغّل باقتك من المتصفح", icon: "▶️" },
   { id: "pricing", label: "الباقات والأسعار", desc: "نوفا وإيستار وموكا", icon: "💳" },
   { id: "server-finder", label: "مساعد الاختيار", desc: "أي سيرفر يناسبك؟", icon: "🧭" },

@@ -1,0 +1,141 @@
+/* Scoped styles for the approved official-destination guide; no global player styles. */
+.wg-section{--ink:#0b0b0f;--blue:#2b4eff;--lime:#d8ff3e;--paper:#faf9f6;--line:rgba(11,11,15,.1);scroll-margin-top:130px}
+.wg-section button{cursor:pointer}
+.wg-section button:focus-visible,.wg-section a:focus-visible,.wg-section input:focus-visible,.wg-dialog button:focus-visible{outline:3px solid #748bff;outline-offset:3px}
+
+.wg-section{background:white;border-block:1px solid var(--line);padding:80px 0 72px}
+.wg-container{max-width:1400px;padding:0 20px;margin:auto}
+.wg-heading{text-align:center;max-width:760px;margin:0 auto 52px}
+.wg-eyebrow{font-size:12px;font-weight:900;color:#ff5c4d;display:flex;align-items:center;justify-content:center;gap:9px;margin:0 0 13px}
+.wg-eyebrow:before{content:"";width:32px;height:2px;background:#ff5c4d}
+.wg-heading h2{font-size:clamp(34px,4.2vw,56px);font-weight:900;letter-spacing:-2px;line-height:1.25;margin:0}
+.wg-heading h2 span{color:var(--blue)}
+.wg-intro{font-size:16px;color:#777;line-height:1.95;margin:18px 0 0}
+.wg-layout{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:24px;align-items:start}
+.wg-main{min-width:0}
+.wg-card{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:white;box-shadow:0 50px 100px -40px #0005}
+.wg-browser{height:48px;background:#f7f6f2;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;padding:0 20px}
+.wg-dots{display:flex;gap:6px}
+.wg-dots i{height:12px;width:12px;border-radius:50%;background:#ff5f57}
+.wg-dots i:nth-child(2){background:#febc2e}
+.wg-dots i:nth-child(3){background:#28c840}
+.wg-address{flex:1;display:flex;justify-content:center}
+.wg-address span{border:1px solid var(--line);border-radius:30px;background:white;font-size:11px;color:#777;padding:3px 15px;text-align:center;max-width:380px;width:100%;direction:ltr}
+.wg-badge{border-radius:20px;background:var(--ink);color:white;font-size:10px;padding:2px 10px;white-space:nowrap}
+.wg-screen{aspect-ratio:16/9;background:#10111b;position:relative;color:white;overflow:hidden;display:flex;align-items:center;justify-content:space-between;padding:55px 42px;isolation:isolate}
+.wg-screen:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 15% 40%,#344bc246,transparent 60%),radial-gradient(ellipse at 90% 100%,#48347536,transparent 60%),linear-gradient(120deg,#11121c,#090a10)}
+.wg-screen:after{content:"";position:absolute;inset:0;z-index:-1;background-image:radial-gradient(#ffffff13 1px,transparent 1px);background-size:24px 24px;mask-image:linear-gradient(to left,transparent,#000)}
+.wg-screen-label{position:absolute;top:20px;right:23px;display:flex;gap:8px;font-size:10px}
+.wg-screen-label span{background:#ffffff0c;border:1px solid #ffffff1f;border-radius:30px;padding:3px 11px;color:#ffffffa3}
+.wg-screen-label span:first-child{color:var(--lime)}
+.wg-details{width:64%;z-index:2}
+.wg-mini-label{font-size:11px;color:#a1aac4;display:block;margin-bottom:11px}
+.wg-details h2{overflow-wrap:anywhere;font-size:clamp(24px,3vw,40px);line-height:1.4;letter-spacing:-.8px;margin:0 0 10px}
+.wg-description{font-size:13px;font-weight:500;color:#b7b9c8;line-height:2;min-height:52px;margin:0 0 20px}
+.wg-official{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--lime);color:var(--ink);border-radius:40px;padding:11px 23px;font-size:13px;font-weight:900;transition:background .2s,transform .2s}
+.wg-official:hover{background:white;transform:translateY(-2px)}
+.wg-domain{display:flex;align-items:center;gap:6px;font-size:10px;color:#828798;margin-top:13px}
+.wg-domain span{direction:ltr}
+.wg-graphic{width:31%;aspect-ratio:1;position:relative;display:grid;place-items:center;flex-shrink:0;opacity:.95}
+.wg-ring{position:absolute;width:110%;height:110%;border:1px solid #8ca0ff25;border-radius:50%}
+.wg-ring.wg-r2{width:145%;height:145%;border-style:dashed;opacity:.5}
+.wg-ring.wg-r3{width:75%;height:75%;border-color:#d8ff3e35}
+.wg-orb{position:absolute;top:4%;left:26%;height:9px;width:9px;background:var(--lime);border-radius:100%;box-shadow:0 0 23px #d8ff3e88}
+.wg-monogram{width:72%;aspect-ratio:1;border:1px solid #ffffff20;border-radius:28%;background:linear-gradient(145deg,#31375288,#151a2c);box-shadow:0 25px 70px #0009,inset 0 1px 0 #ffffff15;display:grid;place-items:center;transform:rotate(-8deg)}
+.wg-monogram svg{width:55%;height:55%;transform:rotate(8deg);color:#d8ff3e}
+.wg-art-note{position:absolute;bottom:-22%;font-size:9px;color:#707891;white-space:nowrap;letter-spacing:2px;direction:ltr}
+.wg-screen-bottom{position:absolute;bottom:18px;right:24px;left:24px;display:flex;align-items:center;justify-content:space-between;color:#858ba0;font-size:10px}
+.wg-screen-bottom span:last-child{direction:ltr;letter-spacing:2px}
+.wg-trust{display:flex;gap:25px;justify-content:center;align-items:center;padding:14px 8px;font-size:11px;color:#777;border-top:1px solid var(--line)}
+.wg-trust span{display:flex;align-items:center;gap:6px}
+.wg-trust svg{width:15px;height:15px;color:var(--blue)}
+.wg-banner{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-radius:24px;padding:20px 24px;background:var(--lime);border:1px solid var(--line)}
+.wg-banner strong{display:block;font-size:17px}
+.wg-banner p{font-size:11px;margin:2px 0 0;color:#464a32}
+.wg-banner-button{border:0;background:var(--ink);color:white;font-size:12px;border-radius:30px;padding:11px 19px;white-space:nowrap}
+.wg-banner-button:hover{background:var(--blue)}
+.wg-sidebar{height:560px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -30px #0004;background:white}
+.wg-side-head{padding:16px;background:var(--paper);border-bottom:1px solid var(--line)}
+.wg-side-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.wg-side-title h3{font-size:15px;margin:0;display:flex;align-items:center;gap:7px}
+.wg-side-title h3 svg{color:var(--blue);width:17px}
+.wg-side-title span{font-size:10px;background:var(--lime);padding:2px 9px;border-radius:20px}
+.wg-search{position:relative}
+.wg-search svg{position:absolute;right:13px;top:12px;height:15px;width:15px;color:#888}
+.wg-search input{width:100%;border:1px solid var(--line);border-radius:30px;padding:9px 35px 9px 10px;background:white;font-size:12px;outline:none}
+.wg-search input:focus{border-color:var(--blue)}
+.wg-filters{display:flex;gap:6px;overflow:auto;margin-top:12px;scrollbar-width:none}
+.wg-filter{border:1px solid var(--line);border-radius:30px;padding:4px 12px;font-size:10px;background:white;color:#777;white-space:nowrap}
+.wg-filter.wg-active{background:var(--ink);color:white;border-color:var(--ink)}
+.wg-list{overflow:auto;flex:1;padding:8px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
+.wg-item{width:100%;display:flex;align-items:center;gap:12px;text-align:right;border:1px solid transparent;border-radius:13px;padding:11px;background:white;color:var(--ink);margin-bottom:3px;transition:background .2s}
+.wg-item:hover{background:#f6f6f9}
+.wg-item.wg-selected{background:#2b4eff0c;border-color:#2b4eff50}
+.wg-item-icon{height:39px;width:39px;flex-shrink:0;display:grid;place-items:center;border-radius:10px;background:#f2f1ed;color:#60636e;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;border:1px solid var(--line)}
+.wg-selected .wg-item-icon{background:var(--ink);color:var(--lime)}
+.wg-item-text{min-width:0;flex:1}
+.wg-item-text strong{display:block;font-size:12px}
+.wg-selected .wg-item-text strong{color:var(--blue)}
+.wg-item-text small{display:block;font-size:10px;color:#888;margin-top:2px}
+.wg-item svg{width:15px;height:15px;color:#999}
+.wg-selected svg{color:var(--blue)}
+.wg-side-footer{border-top:1px solid var(--line);padding:10px 12px;font-size:10px;color:#888;text-align:center;background:var(--paper)}
+.wg-disclaimer{font-size:11px;color:#888;line-height:1.95;max-width:980px;text-align:center;margin:28px auto 0}
+.wg-empty{text-align:center;color:#888;font-size:12px;padding:40px 10px}
+.wg-bottom{font-size:11px;color:#888;padding:23px 20px;text-align:center}
+.wg-dialog{border:1px solid var(--line);border-radius:24px;max-width:540px;width:calc(100% - 40px);padding:26px;color:var(--ink);font-family:inherit}
+.wg-dialog::backdrop{background:#0007;backdrop-filter:blur(3px)}
+.wg-dialog h2{font-size:23px;margin-top:0}
+.wg-dialog p{line-height:2;color:#777;font-size:13px}
+.wg-dialog button{background:var(--ink);color:white;border:0;border-radius:30px;padding:9px 25px}
+
+@media(min-width:1500px){.wg-section{padding-top:100px}
+}
+@media(max-width:1023px){.wg-layout{grid-template-columns:1fr}
+.wg-sidebar{height:440px}
+.wg-heading{margin-bottom:35px}
+.wg-section{padding-top:65px}
+.wg-screen{padding:55px 35px}
+.wg-details h2{overflow-wrap:anywhere;font-size:36px}
+.wg-container{max-width:860px}
+}
+@media(max-width:600px){.wg-top-note{display:none}
+.wg-top{padding:18px 20px}
+.wg-section{padding:45px 0}
+.wg-heading{margin-bottom:28px}
+.wg-heading h2{letter-spacing:-1px;font-size:34px}
+.wg-intro{font-size:13px}
+.wg-browser{padding:0 12px;gap:9px}
+.wg-browser .wg-badge{display:none}
+.wg-address span{font-size:9px}
+.wg-screen{aspect-ratio:auto;min-height:340px;padding:70px 23px 57px}
+.wg-details{width:100%}
+.wg-details h2{overflow-wrap:anywhere;font-size:30px}
+.wg-graphic{position:absolute;width:160px;left:-55px;bottom:45px;opacity:.16;z-index:-1}
+.wg-description{max-width:88%;font-size:12px}
+.wg-screen-label{right:18px;top:17px}
+.wg-screen-bottom span:last-child{display:none}
+.wg-screen-bottom{right:20px}
+.wg-trust{gap:12px;font-size:9px}
+.wg-trust svg{width:12px}
+.wg-banner{padding:18px;align-items:flex-start;flex-direction:column;gap:10px}
+.wg-banner strong{font-size:15px}
+.wg-banner-button{font-size:11px}
+.wg-preview{font-size:9px}
+.wg-sidebar{height:430px}
+.wg-disclaimer{font-size:10px}
+}
+
+
+.wg-heading h2{font-weight:900}
+.wg-official:hover{color:var(--ink)}
+.wg-screen p{margin-top:0}
+.wg-filters{max-width:100%}
+.wg-dialog{--line:rgba(11,11,15,.1);--ink:#0b0b0f}
+.wg-dialog button{cursor:pointer}
+.wg-sidebar{min-width:0}
+
+.wg-details h2 { font-weight: 900; }
+.wg-side-title h3, .wg-banner strong { font-weight: 900; }
+.wg-intro, .wg-disclaimer, .wg-side-footer { font-weight: 500; }
+.wg-section [dir="ltr"], .wg-item-icon { direction: ltr; }

@@ -63,6 +63,14 @@ export function getSeo(path: string): SeoMeta {
   const pageTitles: Record<string, string> = { "/store": "متجر الاشتراكات", "/servers": "السيرفرات والباقات", "/cart": "سلة المشتريات", "/faq": "الأسئلة الشائعة" };
   if (pageTitles[clean]) return { ...base, title: `${pageTitles[clean]} | ${BRAND_NAME}`, canonical: absolute(clean), robots: clean === "/cart" ? "noindex, follow" : base.robots };
 
+  if (clean === "/matches") return {
+    ...base,
+    title: `مواعيد المباريات والنتائج | ${BRAND_NAME}`,
+    description: "جدول مباريات كرة القدم للأسبوع الماضي والقادم، ونتائج محدثة تلقائيًا كل دقيقة بتوقيت مكة ومصر والتوقيت العالمي UTC، ضمن البطولات المتاحة.",
+    canonical: absolute("matches"),
+    jsonLd: [...base.jsonLd, breadcrumbs([{ name: "الرئيسية", path: "" }, { name: "مواعيد المباريات", path: "matches" }])],
+  };
+
   /* ===== الصفحة الرئيسية ===== */
   if (clean === "/") {
     return {

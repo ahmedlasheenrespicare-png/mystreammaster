@@ -46,7 +46,7 @@ export function normalizePath(pathname: string): string {
   return out || "/";
 }
 
-const APP_PATHS = new Set(["/", "/channels", "/blog", "/store", "/servers", "/cart", "/faq",
+const APP_PATHS = new Set(["/", "/channels", "/matches", "/blog", "/store", "/servers", "/cart", "/faq",
   ...PRICING_PLANS.flatMap(p => [`/${p.serverCode}`, `/servers/${p.serverCode}`]),
   ...BLOG_POSTS.map(p => `/blog/${p.slug}`)]);
 

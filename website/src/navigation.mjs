@@ -56,8 +56,9 @@ export const NAV_GROUPS = [
   {
     key: "watch",
     label: "القنوات والبث",
-    match: ["channels", "live-free.html", "world-cup-2026", "predictions", "watch-legal.html"],
+    match: ["matches", "channels", "live-free.html", "world-cup-2026", "predictions", "watch-legal.html"],
     links: [
+      { href: "matches/", label: "مواعيد المباريات", desc: "النتائج والمواعيد بتوقيتك" },
       { href: "channels/", label: "مكتبة القنوات", desc: "ابحث في كل القنوات" },
       { href: "live-free.html", label: "البث المجاني", desc: "قنوات مفتوحة مباشرة" },
       { href: "world-cup-2026/", label: "كأس العالم 2026", desc: "المواعيد والقنوات الناقلة" },

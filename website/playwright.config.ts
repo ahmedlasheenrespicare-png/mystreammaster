@@ -8,6 +8,7 @@ export default defineConfig({
   testDir: './tests',
   timeout: 30000,
   workers: 1,
+  reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     baseURL: process.env.PREVIEW_URL || 'http://127.0.0.1:3000',
     viewport: { width: 1440, height: 1000 },

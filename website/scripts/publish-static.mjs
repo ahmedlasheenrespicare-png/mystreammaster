@@ -24,6 +24,12 @@ for (const file of await files(path.join(website, 'dist'))) {
   else await fs.copyFile(file, destination);
 }
 
+// مسارات الصفحات التي تستخدم خلفية داكنة (#080b12) فيبقى لون شريط المتصفح داكنًا.
+const DARK_PAGES = new Set([
+  'manchester-united-atletico/index.html',
+  'manchester-united-atletico/watch/index.html',
+]);
+
 let count = 0;
 for (const file of await files(path.join(website, 'legacy'))) {
   const relative = path.relative(path.join(website, 'legacy'), file);
@@ -49,7 +55,8 @@ for (const file of await files(path.join(website, 'legacy'))) {
     if (/3d-effects|googlesyndication|ampproject/.test((script.attr('src') || '') + script.text())) script.remove();
   });
   $('link[href*="3d-effects"], link[href*="pricing-minimal"], link[href*="fonts.googleapis"], link[href*="fonts.gstatic"]').remove();
-  if (relative !== 'manchester-united-atletico/index.html') $('meta[name="theme-color"]').attr('content', '#faf9f6');
+  // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.
+  if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#faf9f6');
   $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261013b"><script src="/_assets/storefront.js?v=20261013b" defer></script>');
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });

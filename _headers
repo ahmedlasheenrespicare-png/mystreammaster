@@ -39,5 +39,7 @@
 /proxy.php
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
+/scoreboard.php
+  X-Robots-Tag: noindex, nofollow
 /admin/*
   X-Robots-Tag: noindex, nofollow, noarchive

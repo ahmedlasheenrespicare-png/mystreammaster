@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { LEAGUES, TIME_ZONES, dayInZone, dayLabel, kickoff, matchesForDay, parseScoreboard, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
+import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
 import './matches.css';
 
 const REFRESH_MS = 60_000;
@@ -23,6 +23,7 @@ export default function MatchesPage() {
   const [query, setQuery] = useState('');
   const [boards, setBoards] = useState<Record<string, Board>>({});
   const [failed, setFailed] = useState<string[]>([]);
+  const [diagnostics, setDiagnostics] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [online, setOnline] = useState(true);
@@ -72,8 +73,8 @@ export default function MatchesPage() {
     let disposed = false;
     let busy = false;
     let controller: AbortController | undefined;
-    let current: Record<string, Board> = {};
-    setBoards({}); setFailed([]); setHasLoaded(false);
+    const current: Record<string, Board> = {};
+    setBoards({}); setFailed([]); setDiagnostics({}); setHasLoaded(false);
     const refresh = async () => {
       if (disposed || busy || document.hidden || !navigator.onLine) { if (!navigator.onLine) setLoading(false); return; }
       busy = true; setLoading(true);
@@ -82,17 +83,26 @@ export default function MatchesPage() {
       const timeout = window.setTimeout(() => controller?.abort(), 15_000);
       const results = await Promise.allSettled(LEAGUES.map(async entry => {
         const response = await fetch(scoreboardUrl(entry.id, day), { signal, cache: 'no-store' });
-        if (!response.ok) throw new Error(`Scoreboard HTTP ${response.status}`);
-        return { id: entry.id, matches: parseScoreboard(await response.json(), entry), updated: new Date().toISOString() };
+        return readScoreboardResponse(response, entry);
       }));
       window.clearTimeout(timeout);
       if (disposed) return;
       const failures: string[] = [];
+      const nextDiagnostics: Record<string, string> = {};
       results.forEach((result, i) => {
-        if (result.status === 'fulfilled') current[result.value.id] = result.value;
-        else failures.push(LEAGUES[i].id);
+        const id = LEAGUES[i].id;
+        if (result.status === 'fulfilled') {
+          current[id] = { matches: result.value.matches, updated: result.value.updated };
+          if (result.value.stale) {
+            failures.push(id);
+            nextDiagnostics[id] = result.value.diagnostic || 'STALE_CACHE';
+          }
+        } else {
+          failures.push(id);
+          nextDiagnostics[id] = classifyFetchError(result.reason);
+        }
       });
-      setBoards({ ...current }); setFailed(failures); setLoading(false); setHasLoaded(true); busy = false;
+      setBoards({ ...current }); setFailed(failures); setDiagnostics(nextDiagnostics); setLoading(false); setHasLoaded(true); busy = false;
     };
     void refresh();
     refreshNow.current = () => { void refresh(); };
@@ -110,6 +120,8 @@ export default function MatchesPage() {
   const updated = Object.values(boards).map(b => b.updated).sort().slice(-1)[0];
   const unavailable = failed.length === LEAGUES.length && !Object.keys(boards).length;
   const coverageMissing = league === 'all' ? failed.length > 0 : failed.includes(league);
+  const relevantFailures = league === 'all' ? failed : failed.filter(id => id === league);
+  const activeCodes = Array.from(new Set((relevantFailures.length ? relevantFailures : failed).map(id => diagnostics[id]).filter(Boolean)));
   const selectedZoneName = zones.find(z => z.id === zone)?.name || zone;
 
   return <section className="matches-page" aria-labelledby="matches-title">
@@ -132,9 +144,9 @@ export default function MatchesPage() {
 
       <div className="matches-messages" role="status" aria-live="polite">
         {!online && <p className="matches-warning">أنت غير متصل بالإنترنت. البيانات المعروضة، إن وُجدت، ليست محدثة.</p>}
-        {unavailable ? <p className="matches-warning">تعذر الاتصال بمصدر المباريات. تحقق من اتصالك أو أعد المحاولة؛ لا تتوفر نتائج موثوقة الآن.</p> : failed.length > 0 && <p className="matches-warning">تعذر تحديث: {LEAGUES.filter(l => failed.includes(l.id)).map(l => l.name).join('، ')}. قد تكون بياناتها السابقة قديمة، والتغطية غير مكتملة.</p>}
+        {unavailable ? <p className="matches-warning">تعذر الاتصال بمصدر المباريات. تحقق من اتصالك أو أعد المحاولة؛ لا تتوفر نتائج موثوقة الآن.{activeCodes.length > 0 && <span className="matches-diagnostic">رمز التشخيص: <code dir="ltr">{activeCodes.join(', ')}</code> ({activeCodes.map(describeDiagnostic).join('، ')}).</span>}</p> : failed.length > 0 && <p className="matches-warning">تعذر تحديث: {LEAGUES.filter(l => failed.includes(l.id)).map(l => l.name).join('، ')}. قد تكون بياناتها السابقة قديمة، والتغطية غير مكتملة.{activeCodes.length > 0 && <span className="matches-diagnostic">رمز التشخيص: <code dir="ltr">{activeCodes.join(', ')}</code> ({activeCodes.map(describeDiagnostic).join('، ')}).</span>}</p>}
         {!hasLoaded && loading && <p className="matches-loading">جارٍ تحميل المواعيد والنتائج من المصدر…</p>}
-        {hasLoaded && !unavailable && !visible.length && <div className="matches-empty"><span aria-hidden="true"><FootballIcon /></span><h3>{coverageMissing ? 'لا توجد مباريات مؤكدة للعرض' : scopedMatches.length ? 'لا توجد مباريات تطابق البحث أو التصفية' : 'لا توجد مباريات في هذا اليوم ضمن التغطية المتاحة'}</h3><p>{coverageMissing ? 'بعض البطولات غير متاحة حاليًا. أعد المحاولة لاحقًا.' : 'جرّب تاريخًا آخر أو بطولة أخرى.'}</p></div>}
+        {hasLoaded && !unavailable && !visible.length && <div className="matches-empty"><span aria-hidden="true"><FootballIcon /></span><h3>{coverageMissing ? 'لا توجد مباريات مؤكدة للعرض' : scopedMatches.length ? 'لا توجد مباريات تطابق البحث أو التصفية' : 'لا توجد مباريات في هذا اليوم ضمن التغطية المتاحة'}</h3><p>{coverageMissing ? `بعض البطولات غير متاحة حاليًا${activeCodes.length ? ` (رمز التشخيص: ${activeCodes.join(', ')})` : ''}. أعد المحاولة لاحقًا.` : 'جرّب تاريخًا آخر أو بطولة أخرى.'}</p></div>}
       </div>
 
       <div className="matches-results" aria-busy={loading}>{groups.map(group => <section key={group.id} className="match-league" aria-labelledby={`league-${group.id}`}><header><h3 id={`league-${group.id}`}>{group.name}</h3><span>{group.matches.length} مباراة{failed.includes(group.id) ? ' · بيانات قديمة' : ''}</span></header><div>{group.matches.map(match => <article key={match.id} className={`match-card ${match.state === 'live' ? 'is-live' : ''}`}>
@@ -142,7 +154,7 @@ export default function MatchesPage() {
         <div className="match-contest"><Team team={match.home} /><div className="match-score">{match.state === 'live' || match.state === 'finished' ? <strong aria-label={`النتيجة: ${match.home.score ?? 'غير متاحة'} إلى ${match.away.score ?? 'غير متاحة'}`}>{match.home.score ?? '—'} <span>:</span> {match.away.score ?? '—'}</strong> : <><strong>{kickoff(match.date, zone)}</strong><small>موعد البداية</small></>}</div><Team team={match.away} /></div>
         <div className="match-times">{TIME_ZONES.slice(0, 3).concat(TIME_ZONES.slice(0, 3).some(z => z.id === zone) ? [] : [{ id: zone, name: selectedZoneName }]).map(z => <div key={z.id}><span>{z.id === 'Asia/Riyadh' ? 'مكة' : z.id === 'Africa/Cairo' ? 'مصر' : z.name}</span><time dateTime={match.date}>{kickoff(match.date, z.id)}</time><small>{dayLabel(dayInZone(new Date(match.date), z.id))}</small></div>)}</div>
       </article>)}</div></section>)}</div>
-      <aside className="matches-note"><strong>عن البيانات والتوقيت</strong><p>المصدر: <a href="https://www.espn.com/soccer/scoreboard" target="_blank" rel="noopener noreferrer">ESPN</a>. تشمل الصفحة البطولات الموجودة في قائمة التصفية فقط، وتُعرض أسماء الفرق كما يرسلها المصدر. التحديث كل دقيقة أثناء ظهور الصفحة؛ قد تتأخر النتائج أو تتغير المواعيد حسب المصدر، وهذه ليست خدمة نتائج رسمية مضمونة. يُحسب التوقيت الصيفي تلقائيًا لمصر وبقية المناطق. قد يختلف تاريخ المباراة بين البلدان.</p></aside>
+      <aside className="matches-note"><strong>عن البيانات والتوقيت</strong><p>المصدر: <a href="https://www.espn.com/soccer/scoreboard" target="_blank" rel="noopener noreferrer">ESPN</a> عبر وسيط الخادم (<code>/scoreboard.php</code>) مع تخزين مؤقت قصير. تشمل الصفحة البطولات الموجودة في قائمة التصفية فقط، وتُعرض أسماء الفرق كما يرسلها المصدر. التحديث كل دقيقة أثناء ظهور الصفحة؛ قد تتأخر النتائج أو تتغير المواعيد حسب المصدر، وهذه ليست خدمة نتائج رسمية مضمونة. يُحسب التوقيت الصيفي تلقائيًا لمصر وبقية المناطق. قد يختلف تاريخ المباراة بين البلدان.</p></aside>
       <noscript><p>يرجى تفعيل JavaScript لتحميل مواعيد المباريات وتحديث النتائج تلقائيًا.</p></noscript>
     </div>
   </section>;

@@ -11,7 +11,7 @@ const server = http.createServer(async (req, res) => {
     if (/^\/(\.git|website|node_modules|admin-dashboard|admin)(\/|$)/.test(pathname) || pathname.split('/').some(p => p.startsWith('.'))) {
       res.writeHead(403); res.end('Not available in the static preview'); return;
     }
-    if (pathname.endsWith('.php')) { res.writeHead(501); res.end('PHP runs on the production host, not the static preview.'); return; }
+    if (pathname.endsWith('.php')) { res.writeHead(501, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Diagnostic-Code': 'PHP_PREVIEW_UNAVAILABLE' }); res.end(JSON.stringify({ ok: false, code: 'PHP_PREVIEW_UNAVAILABLE', message: 'PHP runs on the production host, not the static preview.' })); return; }
     let file = path.resolve(root, '.' + pathname);
     if (!file.startsWith(root + path.sep) && file !== root) { res.writeHead(403); res.end(); return; }
     let status = 200;

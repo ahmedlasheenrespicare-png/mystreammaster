@@ -35,6 +35,9 @@
 .matches-filters button { border: 1px solid #ddd9d0; border-radius: 30px; padding: 10px 16px; font-size: .8rem; font-weight: 700; background: white; }
 .matches-filters button[aria-pressed="true"] { background: #eae4ff; border-color: #8260e8; color: #5330bf; }
 .matches-warning { border: 1px solid #efc88e; background: #fff4e3; color: #74410b; padding: 16px 20px; border-radius: 14px; font-size: .85rem; line-height: 1.9; margin-bottom: 18px; }
+.matches-diagnostic { display: block; margin-top: 6px; font-size: .8rem; }
+.matches-diagnostic code, .matches-note code { font-family: var(--font-latin), monospace; font-weight: 700; font-size: .75rem; background: #f6e1be; color: #592e04; padding: 2px 7px; border-radius: 6px; }
+.matches-note code { background: #e3ddd0; color: #2b2b33; }
 .matches-loading { padding: 38px; text-align: center; color: #62626b; }
 .matches-empty { padding: 56px 20px; background: white; border: 1px dashed #d4d0c6; border-radius: 20px; text-align: center; }
 .matches-empty > span { font-size: 2.5rem; }

@@ -1,1 +1,7 @@
 clicks.json
+node_modules/
+website/dist/
+website/dist-ssr/
+website/test-results/
+website/playwright-report/
+*.log

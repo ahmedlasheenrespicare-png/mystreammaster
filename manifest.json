@@ -4,8 +4,8 @@
   "description": "أفضل اشتراك IPTV في السعودية والخليج - كأس العالم 2026",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1233",
-  "theme_color": "#dc2626",
+  "background_color": "#faf9f6",
+  "theme_color": "#faf9f6",
   "orientation": "portrait",
   "icons": [
     {
@@ -22,7 +22,11 @@
     }
   ],
   "screenshots": [],
-  "categories": ["sports", "entertainment", "news"],
+  "categories": [
+    "sports",
+    "entertainment",
+    "news"
+  ],
   "lang": "ar",
   "dir": "rtl"
 }

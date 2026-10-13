@@ -1,0 +1,26 @@
+{
+  "name": "ستريم ماستر برو — اشتراك IPTV 2026",
+  "short_name": "ستريم ماستر",
+  "description": "سيرفرات واشتراكات IPTV بثبات 99.9% بدون تقطيع — قنوات رياضية وأفلام ومسلسلات.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf9f6",
+  "theme_color": "#0b0b0f",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

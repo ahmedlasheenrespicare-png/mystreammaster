@@ -7,7 +7,7 @@
  *  - network-first للصفحات (مع fallback للكاش ثم offline.html).
  *  - دعم رسالة SKIP_WAITING للتحديث الفوري.
  */
-const VERSION = 'v3';
+const VERSION = 'v4-redesign';
 const STATIC_CACHE  = `stream-master-static-${VERSION}`;
 const RUNTIME_CACHE = `stream-master-runtime-${VERSION}`;
 const MAX_RUNTIME_ITEMS = 60;

@@ -1,0 +1,327 @@
+@import "@fontsource/cairo/400.css";
+@import "@fontsource/cairo/500.css";
+@import "@fontsource/cairo/600.css";
+@import "@fontsource/cairo/700.css";
+@import "@fontsource/cairo/800.css";
+@import "@fontsource/cairo/900.css";
+@import "@fontsource/tajawal/400.css";
+@import "@fontsource/tajawal/500.css";
+@import "@fontsource/tajawal/700.css";
+@import "@fontsource/tajawal/800.css";
+@import "@fontsource/tajawal/900.css";
+@import "@fontsource/amiri/400.css";
+@import "@fontsource/amiri/700.css";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/amiri/400-italic.css";
+@import "tailwindcss" source(".");
+
+/* ==========================================================================
+   نظام تصميم على طراز Salient — ستريم ماستر برو
+   كريم فاتح + حبر داكن + لمسات ليموني / بنفسجي / مرجاني
+   الخطوط: Cairo (نص) — Tajawal (عناوين) — Amiri (لمسة سيريف) — Space Grotesk (لاتيني)
+========================================================================== */
+
+@theme {
+  /* الخطوط */
+  --font-sans: "Cairo", "Tajawal", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Tajawal", "Cairo", ui-sans-serif, sans-serif;
+  --font-serif: "Amiri", Georgia, serif;
+  --font-latin: "Space Grotesk", "Cairo", ui-sans-serif, sans-serif;
+
+  /* الألوان الأساسية */
+  --color-ink: #0b0b0f;
+  --color-ink-2: #131318;
+  --color-cream: #faf9f6;
+  --color-paper: #f4f3ef;
+  --color-royal: #2b4eff;
+  --color-violet-neon: #7c5cff;
+  --color-coral: #ff5c4d;
+  --color-lime-pop: #d8ff3e;
+  --color-mint: #3effe0;
+  --color-peach: #ffe3c7;
+  --color-wa: #16a34a;
+
+  /* الحركات */
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee-slow: marquee 55s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 46s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-delayed: float 8s ease-in-out 1.5s infinite;
+  --animate-pulse-soft: pulseSoft 3.5s ease-in-out infinite;
+  --animate-blob: blob 12s ease-in-out infinite;
+  --animate-fade-up: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fadeIn 0.25s ease-out both;
+  --animate-scale-in: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-word-in: wordIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-card-in: cardIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fab-in: fabIn 0.25s ease-out both;
+  --animate-ping-slow: pingSlow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ====== الحركات ====== */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
+}
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(0.98); }
+}
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(30px, -20px) scale(1.08) rotate(4deg); }
+  66% { transform: translate(-20px, 20px) scale(0.94) rotate(-4deg); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes wordIn {
+  from { opacity: 0; transform: translateY(110%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(44px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fabIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pingSlow {
+  0% { transform: scale(1); opacity: 0.45; }
+  80%, 100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* ====== الأساسيات ====== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #faf9f6;
+  color: #0b0b0f;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #0b0b0f;
+  color: #d8ff3e;
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #faf9f6; }
+::-webkit-scrollbar-thumb { background: #0b0b0f; border-radius: 99px; border: 2px solid #faf9f6; }
+
+/* ====== أدوات مساعدة على طراز Salient ====== */
+
+/* نص مفرّغ بحدود فقط */
+.text-stroke {
+  -webkit-text-stroke: 1.5px #0b0b0f;
+  color: transparent;
+}
+.text-stroke-white {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.9);
+  color: transparent;
+}
+.text-stroke-thin {
+  -webkit-text-stroke: 1px rgba(11, 11, 15, 0.35);
+  color: transparent;
+}
+
+/* حبيبات فيلم فوق الأقسام الداكنة */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* زجاج فاتح وداكن */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.glass-dark {
+  background: rgba(11, 11, 15, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* إخفاء سكرول بار مع الحفاظ على التمرير */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* تلاشي ناعم عند طرفي الشرائط المتحركة */
+.mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+/* ====== نظام حركة السكرول على طراز Salient ====== */
+
+/* حالات البداية — تُزال بإضافة .rv-in */
+.rv {
+  opacity: 0;
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.rv-up { transform: translateY(48px); }
+.rv-start { transform: translateX(56px); }  /* RTL: يدخل من جهة البداية (يمين) */
+.rv-end { transform: translateX(-56px); }   /* يدخل من جهة النهاية (يسار) */
+.rv-zoom { transform: scale(0.92); }
+.rv-blur { filter: blur(12px); transform: translateY(24px); }
+.rv-clip { clip-path: inset(100% 0 0 0); }  /* ستارة تنكشف من الأسفل للأعلى */
+.rv-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  clip-path: inset(0 0 0 0);
+}
+
+/* كشف الصور: زوم داخلي متزامن مع الستارة */
+.rv-img img {
+  transform: scale(1.18);
+  transition: transform 1.25s cubic-bezier(0.22, 1, 0.36, 1);
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rv-img.rv-in img { transform: scale(1); }
+
+/* ظهور سطر بسطر من خلف قناع — مع مساحة لذيول الحروف العربية */
+.lr {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.lr > span {
+  display: block;
+  transform: translateY(115%);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lr-in > span { transform: translateY(0); }
+
+/* صفوف الجداول — تتابع ناعم */
+.tr-rv {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tr-rv-in { opacity: 1; transform: none; }
+
+/* زوم بطيء مستمر — Ken Burns على طراز Salient */
+@keyframes kenburns {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.12) translate(-1.5%, -1%); }
+}
+.animate-kenburns { animation: kenburns 16s ease-in-out infinite alternate; }
+
+/* ====== زر Salient — تعبئة تنزلق من الأسفل عند المرور ====== */
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--slide-bg, #2b4eff);
+  transform: translateY(101%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-slide:hover::before { transform: translateY(0); }
+.btn-slide:hover { color: var(--slide-color, #fff); }
+
+/* متغيرات اتجاه التعبئة */
+.slide-royal { --slide-bg: #2b4eff; --slide-color: #ffffff; }
+.slide-lime  { --slide-bg: #d8ff3e; --slide-color: #0b0b0f; }
+.slide-ink   { --slide-bg: #0b0b0f; --slide-color: #ffffff; }
+.slide-white { --slide-bg: #ffffff; --slide-color: #0b0b0f; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-slide::before { transition: none; }
+}
+
+/* ====== احترام تفضيل تقليل الحركة ====== */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-marquee-slow,
+  .animate-float,
+  .animate-float-delayed,
+  .animate-blob,
+  .animate-pulse-soft,
+  .animate-ping-slow,
+  .animate-card-in,
+  .animate-fade-up,
+  .animate-word-in,
+  .animate-scale-in,
+  .animate-fab-in,
+  .animate-kenburns {
+    animation: none !important;
+  }
+  .rv,
+  .lr > span,
+  .tr-rv {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+}
+
+.skip-link{position:fixed;top:-100px;right:16px;z-index:200;background:#d8ff3e;color:#0b0b0f;padding:12px 24px;border-radius:24px}.skip-link:focus{top:8px}:focus-visible{outline:3px solid #2b4eff;outline-offset:4px}
+
+/* Keep the reference navigation usable at narrow widths. */
+html,body,#root{max-width:100%;overflow-x:clip}
+.storefront-header .desktop-nav{white-space:nowrap;font-size:13px}
+.storefront-header .desktop-nav>a{padding-inline:10px}
+.storefront-header select{max-width:108px}
+@media(max-width:639px){
+  .storefront-header nav{gap:8px;padding-inline:12px}
+  .storefront-header nav>a>span:last-child{font-size:17px}
+  .storefront-header nav>a>span:last-child>span{font-size:7px;letter-spacing:1px}
+  .storefront-header nav>a{gap:7px}
+  .storefront-header select{width:76px;padding-inline:4px;font-size:11px;min-width:0}
+  .storefront-header nav>div:last-child{gap:5px;flex-shrink:0}
+  .storefront-header nav>div:last-child>button{width:34px;height:34px}
+}
+@media(max-width:359px){.storefront-header nav>a>span:last-child{display:none}}

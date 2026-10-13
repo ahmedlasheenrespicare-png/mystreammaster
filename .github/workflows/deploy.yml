@@ -8,6 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci --prefix website
+      - run: npm run typecheck && npm test && npm run build
       - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -19,6 +26,9 @@ jobs:
             **/.git*
             **/.git*/**
             .github/**
+            website/**
+            node_modules/**
+            package*.json
             README.md
             .nojekyll
             clicks.json

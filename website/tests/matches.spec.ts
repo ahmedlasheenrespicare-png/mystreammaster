@@ -80,26 +80,29 @@ test('calendar has 15 actual dates, localized times, midnight boundaries, filter
   expect(errors).toEqual([]);
 });
 
-test('polling updates scores, pausing stops requests, and manual refresh retains stale data on failure', async ({ page }) => {
+test('polling stays automatic with no off switch, and manual refresh retains stale data on failure', async ({ page }) => {
   const source = await mockSource(page);
   await page.goto('/matches/');
   await expect(page.locator('.is-live .match-score')).toHaveText('1 : 0');
+  // التحديث التلقائي مفعّل دائمًا: لا يوجد مفتاح إيقاف في الواجهة.
+  await expect(page.getByLabel('تفعيل التحديث التلقائي')).toHaveCount(0);
+  await expect(page.locator('.matches-auto-toggle')).toHaveCount(0);
+  await expect(page.locator('.matches-status-text strong')).toHaveText('تحديث تلقائي كل دقيقة');
   source.setScore(2);
   await page.clock.fastForward(60_000);
   await expect(page.locator('.is-live .match-score')).toHaveText('2 : 0');
-  await page.getByLabel('تفعيل التحديث التلقائي').uncheck();
-  const calls = source.calls;
-  await page.clock.fastForward(120_000);
-  expect(source.calls).toBe(calls);
+  source.setScore(3);
+  await page.clock.fastForward(60_000);
+  await expect(page.locator('.is-live .match-score')).toHaveText('3 : 0');
   source.setFailure(true, 'UPSTREAM_TIMEOUT');
   await page.getByRole('button', { name: 'تحديث الآن' }).click();
   await expect(page.getByText('قد تكون بياناتها السابقة قديمة', { exact: false })).toBeVisible();
   await expect(page.locator('.matches-diagnostic code')).toHaveText('UPSTREAM_TIMEOUT');
-  await expect(page.locator('.is-live .match-score')).toHaveText('2 : 0');
-  source.setFailure(false);
-  source.setScore(3);
-  await page.getByRole('button', { name: 'تحديث الآن' }).click();
   await expect(page.locator('.is-live .match-score')).toHaveText('3 : 0');
+  source.setFailure(false);
+  source.setScore(4);
+  await page.getByRole('button', { name: 'تحديث الآن' }).click();
+  await expect(page.locator('.is-live .match-score')).toHaveText('4 : 0');
 });
 
 test('upstream failure is not reported as no matches, surfaces diagnostic code, and retry recovers', async ({ page }) => {

@@ -11,6 +11,10 @@ import { fileURLToPath } from 'node:url';
    كل المحاكاة مرئية للاختبار (وإلا مرّت طلبات السيرفر المحاكى بلا اعتراض) */
 test.use({ serviceWorkers: 'block' });
 
+/* الاختبارات هنا تشمل انتظار hydration وجولات دخول كاملة (وبعضها إعادة تحميل
+   كاملة لجلب 400 قناة) — مهلة أوسع من 30 ثانية الافتراضية لأن عدّاءات CI أبطأ */
+test.describe.configure({ timeout: 90000 });
+
 const MOCK_HOST = 'mock-xtream.test';
 const PASSWORD = 'pass1';
 

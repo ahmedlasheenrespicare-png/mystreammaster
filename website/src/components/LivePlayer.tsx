@@ -113,8 +113,9 @@ function mergeChannels(first: ChannelItem[], second: ChannelItem[]): ChannelItem
   const seen = new Set<string>();
   const out: ChannelItem[] = [];
   for (const c of [...first, ...second]) {
-    if (seen.has(c.url)) continue;
-    seen.add(c.url);
+    const key = c.url || c.name;
+    if (seen.has(key)) continue;
+    seen.add(key);
     out.push(c);
   }
   return out;

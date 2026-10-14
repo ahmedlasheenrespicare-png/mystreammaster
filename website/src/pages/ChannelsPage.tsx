@@ -42,7 +42,7 @@ export default function ChannelsPage() {
       .then((data: { channels?: ChannelItem[] }) => {
         if (cancelled) return;
         const list = Array.isArray(data.channels) ? data.channels : [];
-        const clean = list.filter((c) => c?.name && c?.url);
+        const clean = list.filter((c) => c?.name);
         if (clean.length > 0) {
           setChannels(clean);
           setFullLoaded(true);
@@ -89,11 +89,11 @@ export default function ChannelsPage() {
         <div className="max-w-[820px]">
           <p className="text-[12px] font-black tracking-[0.25em] uppercase text-[#2b4eff] mb-4 flex items-center gap-2">
             <span className="w-8 h-[2px] bg-[#2b4eff] inline-block" />
-            <IconTv className="w-4 h-4" /> مكتبة القنوات
+            <IconTv className="w-4 h-4" /> دليل القنوات والتصنيفات
           </p>
           <h1 className="font-display font-black tracking-tight leading-[1.15] text-[34px] md:text-[52px]">
-            كل القنوات المتوفرة{" "}
-            <span className="font-serif italic font-normal">داخل الاشتراك</span>
+            فهرس القنوات والتصنيفات{" "}
+            <span className="font-serif italic font-normal">لدى المزودين</span>
           </h1>
           <p className="mt-4 text-[15px] md:text-[16.5px] text-black/60 font-medium leading-relaxed">
             ابحث بين آلاف القنوات الرياضية والإخبارية والعربية وقنوات الأطفال والوثائقيات،
@@ -185,7 +185,7 @@ export default function ChannelsPage() {
           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-[620px]">
               <h2 className="font-display font-black text-[24px] md:text-[32px] tracking-tight">
-                هذه مجرد قائمة… القنوات المدفوعة داخل الباقة
+                هل ترغب في اختبار توافق جهازك قبل التفعيل؟
               </h2>
               <p className="mt-3 text-white/60 text-[14.5px] leading-relaxed font-medium">
                 القنوات الرياضية والترفيهية تُدار وتُقدَّم عبر سيرفرات المزودين الخارجيين بثبات عالٍ
@@ -200,7 +200,7 @@ export default function ChannelsPage() {
                 <IconZap className="w-4 h-4" /> اختر باقتك
               </a>
               <a
-                href={getWhatsAppUrl("مرحبًا، أود طلب كود تجربة مجانية من المزود لفحص التوافق على جهازي")}
+                href={getWhatsAppUrl("مرحبًا، أود طلب كود فحص تجريبي من المزود لاختبار التوافق على جهازي")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 border border-white/25 font-black text-[14.5px] px-7 py-3.5 rounded-full hover:bg-white hover:text-black transition"
@@ -221,7 +221,7 @@ export default function ChannelsPage() {
               كيف تختار السيرفر المناسب لسرعتك؟
             </span>
             <span className="mt-1 block text-[12.5px] text-black/50 font-medium">
-              مقارنة عملية بين السيرفرات الأربعة
+              مقارنة عملية بين سيرفرات المزودين الثلاثة (نوفا وإيستار وموكا)
             </span>
             <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-black text-[#2b4eff]">
               اقرأ الدليل <IconArrowUpRight className="w-3.5 h-3.5" />

@@ -55,6 +55,9 @@
 .match-league > header { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #edeae3; padding: 16px 20px; border-radius: 14px 14px 0 0; }
 .match-league > header h3 { font-size: 1rem; font-weight: 800; }
 .match-league > header > span { font-size: .75rem; color: #62626b; }
+.match-league-meta { display: flex; align-items: center; gap: 10px; }
+.match-official-link { display: inline-flex; align-items: center; gap: 4px; background: #0b0b0f; color: #d8ff3e; font-size: .72rem; font-weight: 800; padding: 4px 10px; border-radius: 9999px; text-decoration: none; transition: background .15s, color .15s, transform .15s; }
+.match-official-link:hover { background: #2b4eff; color: white; transform: translateY(-1px); }
 .match-league > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; background: #f2f0eb; border-radius: 0 0 16px 16px; }
 .match-card { background: white; border: 1px solid #e5e1d9; border-radius: 14px; padding: 16px; min-width: 0; }
 .match-card.is-live { border-color: #a2c243; }

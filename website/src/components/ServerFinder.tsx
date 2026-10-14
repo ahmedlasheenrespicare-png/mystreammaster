@@ -69,16 +69,17 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
   };
 
   const getRecommendation = () => {
+    /* الاحتياطي بالفهرس الصحيح للباقات الثلاث: 0 = نوفا، 1 = إيستار برو، 2 = موكا */
     if (answers.screens === "2") {
-      return PRICING_PLANS.find((p) => p.serverCode === "nova") || PRICING_PLANS[1];
+      return PRICING_PLANS.find((p) => p.serverCode === "nova") || PRICING_PLANS[0];
     }
     if (answers.speed === "slow") {
-      return PRICING_PLANS.find((p) => p.serverCode === "moka") || PRICING_PLANS[3];
+      return PRICING_PLANS.find((p) => p.serverCode === "moka") || PRICING_PLANS[2];
     }
     if (answers.content === "sports" || answers.speed === "fast") {
       return PRICING_PLANS.find((p) => p.serverCode === "nova") || PRICING_PLANS[0];
     }
-    return PRICING_PLANS.find((p) => p.serverCode === "istar") || PRICING_PLANS[2];
+    return PRICING_PLANS.find((p) => p.serverCode === "istar") || PRICING_PLANS[1];
   };
 
   const recommendedPlan = getRecommendation();

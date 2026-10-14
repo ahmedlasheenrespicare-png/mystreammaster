@@ -29,7 +29,9 @@ test('search selects paid and network destinations without loading a stream', as
   await expect(section.locator('.wg-item')).toHaveCount(1);
   await section.locator('.wg-item').click();
   await expect(section.locator('#watch-guide-selected-name')).toHaveText('Netflix');
-  await expect(section.locator('.wg-official')).toHaveAttribute('href', 'https://www.netflix.com/');
+  // بوابة الإحالة /go.php تحوّل الزائر إلى الوجهة الرسمية، ويبقى النطاق الرسمي ظاهراً في البطاقة.
+  await expect(section.locator('.wg-official')).toHaveAttribute('href', '/go.php?p=netflix&src=watch-guide');
+  await expect(section.locator('.wg-domain')).toContainText('netflix.com');
   await expect(section.locator('.wg-screen-label')).toContainText('خدمة مدفوعة');
   await search.fill('إم بي سي');
   await expect(section.locator('.wg-item')).toHaveCount(14);

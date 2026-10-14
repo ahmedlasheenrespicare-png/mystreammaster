@@ -122,5 +122,5 @@ test('cart checkout requests technical activation packages and preserves item de
 test('channels trial link requests a provider compatibility check', async ({ page }) => {
   await page.goto('/channels/');
   const link = page.locator('main').getByRole('link', { name: 'طلب كود تجريبي', exact: true });
-  expect(messageFrom((await link.getAttribute('href'))!)).toBe('مرحبًا، أود طلب كود تجربة مجانية من المزود لفحص التوافق على جهازي');
+  expect(messageFrom((await link.getAttribute('href'))!)).toBe('مرحبًا، أود طلب كود فحص تجريبي من المزود لاختبار التوافق على جهازي');
 });

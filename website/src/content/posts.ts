@@ -25,9 +25,13 @@ export interface BlogPost {
   sections: PostSection[];
   faq?: { q: string; a: string }[];
   relatedPlan?: "nova" | "istar" | "moka" | "ultra";
+  /** "guide" = دليل تعريفي محايد بدون صندوق بيع */
+  kind?: "guide";
 }
 
-export const BLOG_POSTS: BlogPost[] = [
+import { GUIDE_POSTS } from "./guide-posts";
+
+const RETAINED_POSTS: BlogPost[] = [
   {
     slug: "test-iptv-server-stability",
     title: "كيف تختبر ثبات سيرفر IPTV قبل أن تدفع؟ 7 اختبارات عملية",
@@ -259,6 +263,9 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
 ];
+
+/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم المقالات المحفوظة */
+export const BLOG_POSTS: BlogPost[] = [...GUIDE_POSTS, ...RETAINED_POSTS];
 
 export function getPost(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

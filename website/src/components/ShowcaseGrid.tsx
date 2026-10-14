@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { IconArrowUpRight, IconPlay } from "./Icons";
 import { Reveal } from "./motion";
+import { to } from "../config";
 
 /* =========================================================================
    معرض المحتوى — على نمط قسم DEMOS في الأصل:
@@ -14,7 +15,7 @@ function toAvif(path: string): string {
 
 interface ShowcaseItem {
   title: string;
-  category: "رياضة" | "سينما" | "أجهزة" | "شروحات";
+  category: "الجودة" | "الأجهزة" | "الأمان" | "القانون";
   desc: string;
   img: string;
   img480?: string;
@@ -25,43 +26,33 @@ interface ShowcaseItem {
 
 const ITEMS: ShowcaseItem[] = [
   {
-    title: "كأس العالم 2026",
-    category: "رياضة",
-    desc: "تعرّف على الجهات المرخّصة لنقل البطولة وشروط المشاهدة في منطقتك",
-    img: "images/articles/world-cup.webp",
-    img480: "images/articles/world-cup-480w.webp",
-    img768: "images/articles/world-cup-768w.webp",
-    img1280: "images/articles/world-cup-1280w.webp",
-    href: "#live-player",
-  },
-  {
-    title: "beIN SPORTS",
-    category: "رياضة",
-    desc: "معلومات عن الخدمة الرسمية وطرق الاشتراك فيها مباشرة من الجهة",
-    img: "images/hero/slide-sports.jpg",
-    href: "/watch-legal.html",
-  },
-  {
-    title: "منصات البث الرسمية",
-    category: "سينما",
-    desc: "مقارنة عامة بين منصات البث المرخّصة من حيث الأسعار وطرق الاشتراك",
-    img: "images/articles/netflix-vs.webp",
-    img480: "images/articles/netflix-vs-480w.webp",
-    img768: "images/articles/netflix-vs-768w.webp",
-    img1280: "images/articles/netflix-vs-1280w.webp",
-    href: "/watch-legal.html",
-  },
-  {
-    title: "السينما على المنصات الرسمية",
-    category: "سينما",
-    desc: "كيف تختار منصة بث مرخّصة تناسب ذوقك وميزانيتك",
+    title: "دقة الصورة: HD وFHD و4K",
+    category: "الجودة",
+    desc: "متى يظهر فرق الدقة فعلياً، وأيها يناسب حجم شاشتك",
     img: "images/hero/slide-cinema.jpg",
-    href: "#live-player",
+    href: to("blog/video-resolution-hd-fhd-4k/"),
   },
   {
-    title: "تطبيقات Smart TV",
-    category: "أجهزة",
-    desc: "خطوات عامة لتحديث التلفاز والتحقق من التطبيقات في متجره الرسمي",
+    title: "سرعة الإنترنت للفيديو",
+    category: "الجودة",
+    desc: "أرقام تقريبية لكل مستوى جودة، وكيف تقيس سرعتك في وقت الذروة",
+    img: "images/articles/comparison.webp",
+    img480: "images/articles/comparison-480w.webp",
+    img768: "images/articles/comparison-768w.webp",
+    img1280: "images/articles/comparison-1280w.webp",
+    href: to("blog/internet-speed-for-video-streaming/"),
+  },
+  {
+    title: "HDR وعدد الإطارات",
+    category: "الجودة",
+    desc: "ماذا يغيّران في الصورة، ومتى يكونان مفيدين فعلاً",
+    img: "images/hero/slide-sports.jpg",
+    href: to("blog/hdr-and-frame-rate-explained/"),
+  },
+  {
+    title: "كيف تعرف دعم التلفاز للتطبيقات",
+    category: "الأجهزة",
+    desc: "خطوات التحقق من متجر التطبيقات الرسمي لشاشتك",
     img: "images/articles/samsung-tv.webp",
     img480: "images/articles/samsung-tv-480w.webp",
     img768: "images/articles/samsung-tv-768w.webp",
@@ -69,9 +60,26 @@ const ITEMS: ShowcaseItem[] = [
     href: "#live-player",
   },
   {
-    title: "أجهزة Apple TV",
-    category: "أجهزة",
-    desc: "تعرّف على متجر التطبيقات الرسمي للجهاز ومواصفاته",
+    title: "Android TV وصناديق البث",
+    category: "الأجهزة",
+    desc: "معايير اختيار جهاز موثوق، وعلامات تحذيرية يجب الانتباه لها",
+    img: "images/hero/slide-devices.jpg",
+    href: to("blog/android-tv-boxes-buying-guide/"),
+  },
+  {
+    title: "الهاتف والكمبيوتر",
+    category: "الأجهزة",
+    desc: "إعدادات أساسية لمشاهدة أفضل وبطارية أطول",
+    img: "images/articles/support.webp",
+    img480: "images/articles/support-480w.webp",
+    img768: "images/articles/support-768w.webp",
+    img1280: "images/articles/support-1280w.webp",
+    href: to("blog/phone-and-computer-viewing-setup/"),
+  },
+  {
+    title: "Apple TV وآبل",
+    category: "الأجهزة",
+    desc: "متجر التطبيقات الرسمي للجهاز ومواصفاته",
     img: "images/articles/apple-tv.webp",
     img480: "images/articles/apple-tv-480w.webp",
     img768: "images/articles/apple-tv-768w.webp",
@@ -79,36 +87,9 @@ const ITEMS: ShowcaseItem[] = [
     href: "#live-player",
   },
   {
-    title: "الأجهزة وأنظمة التشغيل",
-    category: "أجهزة",
-    desc: "معلومات عامة عن أنواع الشاشات وأنظمة التشغيل المتوفرة",
-    img: "images/hero/slide-devices.jpg",
-    href: "#live-player",
-  },
-  {
-    title: "ما هو IPTV؟",
-    category: "شروحات",
-    desc: "أسئلة شائعة حول تقنية البث عبر الإنترنت والفرق بينها وبين المحتوى المرخّص",
-    img: "images/articles/best-iptv-2026.webp",
-    img480: "images/articles/best-iptv-2026-480w.webp",
-    img768: "images/articles/best-iptv-2026-768w.webp",
-    img1280: "images/articles/best-iptv-2026-1280w.webp",
-    href: "#faq",
-  },
-  {
-    title: "مقارنة خدمات البث",
-    category: "شروحات",
-    desc: "الفروق العامة بين خدمات البث المرخّصة وطرق الوصول إليها",
-    img: "images/articles/comparison.webp",
-    img480: "images/articles/comparison-480w.webp",
-    img768: "images/articles/comparison-768w.webp",
-    img1280: "images/articles/comparison-1280w.webp",
-    href: "/watch-legal.html",
-  },
-  {
-    title: "الأمان عند استخدام الإنترنت",
-    category: "شروحات",
-    desc: "نصائح لحماية حسابك وبياناتك عند استخدام أي خدمة إلكترونية",
+    title: "علامات الاحتيال في العروض",
+    category: "الأمان",
+    desc: "كيف تكتشف العروض المجهولة أو المبالغ فيها قبل أي دفع",
     img: "images/articles/security.webp",
     img480: "images/articles/security-480w.webp",
     img768: "images/articles/security-768w.webp",
@@ -116,18 +97,45 @@ const ITEMS: ShowcaseItem[] = [
     href: "#faq",
   },
   {
-    title: "استفسارات عامة",
-    category: "شروحات",
-    desc: "للأسئلة المعلوماتية حول الموقع وسياسة الخصوصية",
+    title: "حماية الحساب وكلمات المرور",
+    category: "الأمان",
+    desc: "نصائح عامة لحماية بياناتك على أي خدمة إلكترونية",
+    img: "images/articles/security.webp",
+    img480: "images/articles/security-480w.webp",
+    img768: "images/articles/security-768w.webp",
+    img1280: "images/articles/security-1280w.webp",
+    href: to("privacy/"),
+  },
+  {
+    title: "التطبيقات غير الموثوقة",
+    category: "الأمان",
+    desc: "لماذا تشكّل بعض التطبيقات المجهولة خطراً على جهازك وبياناتك",
     img: "images/articles/support.webp",
-    img480: "images/articles/support-480w.webp",
-    img768: "images/articles/support-768w.webp",
-    img1280: "images/articles/support-1280w.webp",
-    href: "/privacy/",
+    href: to("blog/risks-of-unverified-apps/"),
+  },
+  {
+    title: "ما معنى بث محتوى بدون ترخيص؟",
+    category: "القانون",
+    desc: "شرح مبسّط لحقوق الملكية الفكرية للمحتوى التلفزيوني والرياضي",
+    img: "images/articles/best-iptv-2026.webp",
+    img480: "images/articles/best-iptv-2026-480w.webp",
+    img768: "images/articles/best-iptv-2026-768w.webp",
+    img1280: "images/articles/best-iptv-2026-1280w.webp",
+    href: to("blog/what-is-unlicensed-streaming/"),
+  },
+  {
+    title: "اقرأ الشروط قبل أي قرار",
+    category: "القانون",
+    desc: "كيف تفهم شروط الخدمة وسياسة الاسترجاع",
+    img: "images/articles/netflix-vs.webp",
+    img480: "images/articles/netflix-vs-480w.webp",
+    img768: "images/articles/netflix-vs-768w.webp",
+    img1280: "images/articles/netflix-vs-1280w.webp",
+    href: to("terms/"),
   },
 ];
 
-const CATEGORIES = ["الكل", "رياضة", "سينما", "أجهزة", "شروحات"] as const;
+const CATEGORIES = ["الكل", "الجودة", "الأجهزة", "الأمان", "القانون"] as const;
 
 export default function ShowcaseGrid() {
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("الكل");
@@ -140,13 +148,13 @@ export default function ShowcaseGrid() {
         <Reveal variant="up" className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-10">
           <div className="max-w-2xl">
             <p className="text-[12px] font-black tracking-[0.25em] uppercase text-[#2b4eff] mb-4 flex items-center gap-2">
-              <span className="w-8 h-[2px] bg-[#2b4eff] inline-block" /> محتوى معلوماتي
+              <span className="w-8 h-[2px] bg-[#2b4eff] inline-block" /> دليل معلوماتي
             </p>
             <h2 className="font-display font-black tracking-tight leading-[1.15] text-[38px] md:text-[58px]">
-              تعرّف على <span className="font-serif italic font-normal">الخيارات</span> الرسمية
+              قبل أن تقرر: <span className="font-serif italic font-normal">معلومات</span> تنفعك
             </h2>
             <p className="mt-5 text-black/60 text-[15.5px] md:text-[17px] leading-relaxed font-medium">
-              شروحات تعريفية عامة عن خيارات المشاهدة الرسمية والأجهزة والتقنيات، لتساعدك على الفهم قبل اتخاذ أي قرار.
+              أدلة مبسّطة عن الجودة والأجهزة والأمان والحقوق، لتختار بوعي.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -243,10 +251,10 @@ export default function ShowcaseGrid() {
         {/* زر عرض الكل */}
         <Reveal variant="up" delay={150} className="mt-10 text-center">
           <a
-            href="#live-player"
+            href={to("blog/")}
             className="btn-slide slide-royal inline-flex items-center gap-2 bg-white border-2 border-black font-black text-[15px] px-8 py-4 rounded-full"
           >
-            تعرّف على دليل المشاهدة الرسمية <IconArrowUpRight className="w-4 h-4" />
+            تصفّح كل الأدلة <IconArrowUpRight className="w-4 h-4" />
           </a>
         </Reveal>
       </div>

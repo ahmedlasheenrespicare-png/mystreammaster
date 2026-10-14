@@ -132,7 +132,25 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           )}
         </article>
 
-        {/* صندوق تحويل */}
+        {/* صندوق تحويل — للأدلة التعريفية صندوق محايد بدل صندوق البيع */}
+        {post.kind === "guide" ? (
+          <aside className="mt-12 rounded-[28px] bg-white border border-black/10 p-7 sm:p-9">
+            <h2 className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug">
+              تريد معرفة خيارات المشاهدة الرسمية؟
+            </h2>
+            <p className="mt-3 text-black/60 text-[14.5px] font-medium leading-relaxed max-w-[560px]">
+              تعرّف على الجهات الرسمية التي تنقل المحتوى في منطقتك، وشروط المشاهدة لدى كل منها.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={to("watch-legal.html")}
+                className="inline-flex items-center gap-2 bg-[#0b0b0f] text-white font-black text-[14.5px] px-7 py-3.5 rounded-full"
+              >
+                دليل المشاهدة الرسمية <IconArrowUpRight className="w-4 h-4" />
+              </a>
+            </div>
+          </aside>
+        ) : (
         <aside className="mt-12 rounded-[28px] bg-[#0b0b0f] text-white p-7 sm:p-9 grain relative overflow-hidden">
           <div className="absolute -top-24 -end-24 w-[300px] h-[300px] bg-[#2b4eff]/40 blur-[110px] rounded-full" />
           <div className="relative">
@@ -162,15 +180,22 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             </div>
           </div>
         </aside>
+        )}
 
         {/* التنقّل بين المقالات */}
         <nav className="mt-10 flex items-center justify-between gap-4 text-[13.5px] font-black">
           <a href={to("blog/")} className="text-[#2b4eff] hover:underline underline-offset-4">
             ← كل المقالات
           </a>
-          <a href={to("channels/")} className="text-[#2b4eff] hover:underline underline-offset-4">
-            تصفّح قائمة القنوات →
-          </a>
+          {post.kind === "guide" ? (
+            <a href={to("watch-legal.html")} className="text-[#2b4eff] hover:underline underline-offset-4">
+              دليل المشاهدة الرسمية →
+            </a>
+          ) : (
+            <a href={to("channels/")} className="text-[#2b4eff] hover:underline underline-offset-4">
+              تصفّح قائمة القنوات →
+            </a>
+          )}
         </nav>
       </div>
     </div>

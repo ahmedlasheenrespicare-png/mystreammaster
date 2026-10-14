@@ -2,12 +2,34 @@ name: Deploy to Hostinger
 on:
   push:
     branches: [main]
+  # "Run workflow" button in the Actions tab: redeploys the current tip of main.
+  workflow_dispatch:
+
+# Production must never move backwards. GitHub can deliver a push event late or
+# twice: on 2026-10-14 a duplicate event for an older merge (481990a) started
+# after the deploy of the newer main (0f79375) and uploaded the older build over
+# it, silently reverting the Event JSON-LD fix. So deploys are serialized here
+# (a running FTP sync is never cancelled midway), and every run deploys the
+# *current* tip of main rather than the commit that triggered it. A pending run
+# that GitHub replaces with a newer one is therefore harmless.
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Report deployed commit
+        run: |
+          deployed="$(git rev-parse HEAD)"
+          echo "Deploying main@${deployed} (run triggered by ${GITHUB_SHA})" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$deployed" != "$GITHUB_SHA" ]; then
+            echo "::notice title=Deploying latest main::Triggered by ${GITHUB_SHA:0:7}, but main is now at ${deployed:0:7}; deploying the latest main so production never rolls back."
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 22

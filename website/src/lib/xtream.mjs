@@ -115,6 +115,122 @@ export function getProxyUrl(base, url) {
   return `${b}/?u=${encodeURIComponent(u)}`;
 }
 
+/* ========================================================================= */
+/*  بصمة المشغل — User-Agent الخاص بـ IPTV Smarters / VLC                      */
+/* ========================================================================= */
+/*
+  كثير من لوحات Xtream وشبكات IPTV تحجب المتصفحات صراحةً (403/406/451) وتسمح
+  فقط لمشغلات IPTV المعروفة. والمتصفح لا يسمح لأي صفحة بتغيير User-Agent
+  (رأس «محظور» في fetch/XHR ولا يمر حتى عبر hls.js xhrSetup)، لذلك:
+
+    المشغل ← يضيف معامل البصمة (?smpua=smarters) لرابط الوسيط
+    الوسيط (proxy.php أو Cloudflare Worker) ← يرسل User-Agent الحقيقي للسيرفر
+
+  الوسيط يقبل قيماً من قائمة ثابتة فقط (لا User-Agent عشوائي من الزائر)،
+  ويحافظ على نفس البصمة في القائمة الرئيسية وكل القوائم الفرعية والمقاطع
+  ومفاتيح فك التشفير — وإلا فتح السيرفر «جلسة» مختلفة لكل طلب وتوقف البث.
+*/
+
+/** القيمة الحرفية التي يطلبها السيرفر (IPTV Smarters Pro Lite على LibVLC) */
+export const SMARTERS_USER_AGENT = "iptv_smarters_player_lite/1.4.2 VLC/3.1.2 LibVLC/3.1.2";
+
+/** اسم المعامل الذي يحمل البصمة إلى الوسيط (لا يصل للسيرفر الأصلي أبداً) */
+export const UA_PARAM = "smpua";
+
+/** البصمات المسموحة — الوسيط لا يقبل غيرها */
+export const UA_PRESET_SMARTERS = "smarters";
+export const UA_PRESETS = { [UA_PRESET_SMARTERS]: SMARTERS_USER_AGENT };
+
+/** وصف مختصر يظهر في حالة التشغيل وتقارير التشخيص */
+export const UA_LABEL = "بصمة Smarters/VLC";
+
+/** هل هذا الرابط يمر عبر وسيط نستطيع أن نطلب منه تغيير User-Agent؟ */
+export function isProxiedUrl(url, { proxyBase = "", phpProxy = PHP_PROXY } = {}) {
+  const raw = String(url ?? "").trim();
+  if (!raw) return false;
+
+  const php = String(phpProxy ?? "").trim().replace(/^\/+/, "");
+  if (php && (raw.includes(`/${php}?`) || raw.startsWith(`${php}?`) || raw.includes(`/${php}/`))) {
+    return true;
+  }
+
+  const worker = String(proxyBase ?? "").trim().replace(/\/+$/, "");
+  if (worker && raw.startsWith(`${worker}/`)) return true;
+
+  /* الوسيط الرسمي يُعرف من نطاقه حتى بدون تمرير proxyBase (النمط يطابق الأصل فقط) */
+  try {
+    if (OWNED_PROXY_PATTERN.test(new URL(raw).origin)) return true;
+  } catch {
+    /* رابط نسبي — فُحص أعلاه */
+  }
+  return false;
+}
+
+/**
+ * إضافة بصمة المشغل إلى رابط وسيط: /proxy.php?url=X → /proxy.php?url=X&smpua=smarters
+ * المعامل يُضاف لاستعلام الوسيط نفسه (خارج الرابط المُرمَّز) ولا يلمس التوكنات.
+ * الروابط المباشرة تُعاد كما هي — لا يمكن إجبار المتصفح على تغيير User-Agent.
+ */
+export function withUserAgentPreset(url, preset = UA_PRESET_SMARTERS, options = {}) {
+  const raw = String(url ?? "").trim();
+  const value = String(preset ?? "").trim();
+  if (!raw || !UA_PRESETS[value]) return raw;
+  /* بلا وسيط لا نضيف شيئاً: المعامل سيصل للسيرفر الأصلي بلا فائدة (وربما أفسد
+     رابطاً موقّعاً) لأن المتصفح نفسه لا يستطيع إرسال بصمة مختلفة */
+  if (!isProxiedUrl(raw, options)) return raw;
+
+  const hashIdx = raw.indexOf("#");
+  const base = hashIdx === -1 ? raw : raw.slice(0, hashIdx);
+  const hash = hashIdx === -1 ? "" : raw.slice(hashIdx);
+  if (new RegExp(`[?&]${UA_PARAM}=`, "i").test(base)) return raw; /* مضافة مسبقاً */
+  return `${base}${base.includes("?") ? "&" : "?"}${UA_PARAM}=${encodeURIComponent(value)}${hash}`;
+}
+
+/**
+ * بناء سلّم المرشّحات: بعد كل مرشّح يمر عبر وسيط نضيف نسخة تحمل بصمة
+ * Smarters/VLC، فتُجرَّب البصمة تلقائياً حين يرفض السيرفر المتصفح.
+ * ولو نجحت البصمة سابقاً (preferred) تُقدَّم على النسخة العادية.
+ * الروابط المباشرة والتشغيل الأصلي لا يتغيران (بلا وسيط = بلا سيطرة على الرأس).
+ */
+export function addUaVariants(
+  candidates,
+  { preset = UA_PRESET_SMARTERS, preferred = "", proxyBase = "", phpProxy = PHP_PROXY } = {}
+) {
+  const list = Array.isArray(candidates) ? candidates : [];
+  const out = [];
+  const seen = new Set();
+  /* المفتاح يشمل native لأن المرشّح الأصلي (video.src) يكرر رابطاً موجوداً عمداً */
+  const push = (cand) => {
+    if (!cand || !cand.url) return;
+    const key = `${cand.native ? "n:" : "h:"}${cand.url}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(cand);
+  };
+
+  for (const cand of list) {
+    if (!cand || !cand.url) continue;
+    if (cand.ua || !isProxiedUrl(cand.url, { proxyBase, phpProxy })) {
+      push(cand);
+      continue;
+    }
+    const variantUrl = withUserAgentPreset(cand.url, preset, { proxyBase, phpProxy });
+    if (variantUrl === cand.url) {
+      push(cand);
+      continue;
+    }
+    const variant = { ...cand, url: variantUrl, ua: preset, label: `${cand.label} • ${UA_LABEL}` };
+    if (String(preferred ?? "") === preset) {
+      push(variant);
+      push(cand);
+    } else {
+      push(cand);
+      push(variant);
+    }
+  }
+  return out;
+}
+
 /* هل الرابط يمثّل قائمة تشغيل HLS (.m3u8) حتى لو كان مُرمَّزاً داخل ?url= أو ?u= */
 export function isHlsCandidateUrl(url) {
   const raw = String(url ?? "").trim();

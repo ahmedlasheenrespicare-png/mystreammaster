@@ -31,6 +31,56 @@
 const MBC_CDN = "https://shd-gcp-live.edgenextcdn.net";
 
 /* ==========================================================================
+   بصمة المشغّل — User-Agent الخاص بـ IPTV Smarters / VLC
+   --------------------------------------------------------------------------
+   المتصفح يمنع أي صفحة من تغيير User-Agent (رأس محظور في fetch/XHR)، وكثير من
+   لوحات Xtream تحجب المتصفحات وتسمح فقط لمشغلات IPTV. لذلك يرسل المشغّل اسم
+   البصمة للوسيط بمعامل  ?smpua=smarters  والوسيط هو الذي يرسل القيمة الحقيقية
+   للسيرفر الأصلي — ويحافظ عليها في القائمة الرئيسية وكل القوائم الفرعية
+   والمقاطع ومفاتيح فك التشفير حتى لا تنكسر الجلسة.
+   المعامل خاص بالوسيط: يُحذف قبل إعادة توجيه الطلب ولا يصل للسيرفر الأصلي أبداً.
+   القائمة مغلقة — أي قيمة أخرى تُتجاهل ويُرسل User-Agent المتصفح كما كان.
+========================================================================== */
+const UA_PARAM = "smpua";
+const UA_PRESETS = {
+  smarters: "iptv_smarters_player_lite/1.4.2 VLC/3.1.2 LibVLC/3.1.2",
+};
+
+/** اسم البصمة المطلوبة في هذا الطلب (فارغ لو لم تُطلب بصمة صحيحة) */
+function uaPresetOf(requestUrl) {
+  try {
+    const value = String(new URL(String(requestUrl)).searchParams.get(UA_PARAM) || "")
+      .trim()
+      .toLowerCase();
+    return Object.prototype.hasOwnProperty.call(UA_PRESETS, value) ? value : "";
+  } catch {
+    return "";
+  }
+}
+
+/** سلسلة الاستعلام التي تصل للسيرفر الأصلي — بلا معاملات الوسيط (?smpua=).
+ *  الحذف نصّي (لا عبر URLSearchParams) حتى لا يتغير ترميز التوكنات الموقّعة. */
+function upstreamSearch(url) {
+  const raw = String(url.search || "").replace(/^\?/, "");
+  if (!raw) return "";
+  const kept = raw
+    .split("&")
+    .filter((pair) => pair !== "" && pair.split("=")[0].toLowerCase() !== UA_PARAM);
+  return kept.length ? `?${kept.join("&")}` : "";
+}
+
+/** إضافة معامل البصمة لاستعلام رابط (يُستخدم لروابط القائمة المعاد كتابتها) */
+function withUaParam(search, uaPreset) {
+  const raw = String(search || "").replace(/^\?/, "");
+  if (!uaPreset) return raw ? `?${raw}` : "";
+  const pairs = raw ? raw.split("&").filter(Boolean) : [];
+  if (!pairs.some((pair) => pair.split("=")[0].toLowerCase() === UA_PARAM)) {
+    pairs.push(`${UA_PARAM}=${uaPreset}`);
+  }
+  return `?${pairs.join("&")}`;
+}
+
+/* ==========================================================================
    نفق ngrok (البث المعاد — restream من جهاز صاحب الموقع)
    --------------------------------------------------------------------------
    نفق ngrok المجاني يعرض صفحة تحذير HTML ("You are about to visit ...")
@@ -166,19 +216,19 @@ export default {
        ⚠️ مهم: نمرّر url.search لأن كثيراً من السيرفرات تعتمد على ?token=... */
     const m = url.pathname.match(/^\/h\/([^/]+)(\/.*)?$/);
     if (m) {
-      return proxyTo(`https://${m[1]}${m[2] || "/"}${url.search}`, request, cors);
+      return proxyTo(`https://${m[1]}${m[2] || "/"}${upstreamSearch(url)}`, request, cors);
     }
 
     /* المسار العام البديل: /x/<host>/<path> — عبر http
        (لبعض سيرفرات IPTV التي لا تدعم https مثل البوابة ببورت مباشر) */
     const mx = url.pathname.match(/^\/x\/([^/]+)(\/.*)?$/);
     if (mx) {
-      return proxyTo(`http://${mx[1]}${mx[2] || "/"}${url.search}`, request, cors);
+      return proxyTo(`http://${mx[1]}${mx[2] || "/"}${upstreamSearch(url)}`, request, cors);
     }
 
     /* مسار MBC المباشر (مطابق للوسيط القديم) */
     if (url.pathname.startsWith("/live/")) {
-      return proxyTo(MBC_CDN + url.pathname + url.search, request, cors);
+      return proxyTo(MBC_CDN + url.pathname + upstreamSearch(url), request, cors);
     }
 
     return new Response(
@@ -254,12 +304,18 @@ async function proxyTo(targetStr, request, cors) {
     return jsonError("BLOCKED_HOST", 403, cors);
   }
 
-  /* تمرير الرؤوس المهمة فقط */
+  /* تمرير الرؤوس المهمة فقط — Range يبقى محفوظاً لأن fetch يتابع تحويل 302
+     بنفس الرؤوس، فلا يتحول طلب جزء من ملف (206) إلى تنزيل كامل بعد التحويل */
   const fwd = new Headers();
   for (const k of ["range", "accept", "user-agent", "accept-language"]) {
     const v = request.headers.get(k);
     if (v) fwd.set(k, v);
   }
+
+  /* بصمة المشغّل: نستبدل User-Agent المتصفح ببصمة IPTV Smarters/VLC حين يطلبها
+     المشغّل (?smpua=smarters) — وهي بصمة واحدة ثابتة لكل قفزات التحويل */
+  const uaPreset = uaPresetOf(request.url);
+  if (uaPreset) fwd.set("user-agent", UA_PRESETS[uaPreset]);
 
   /* نفق ngrok: بدون هذه الترويسة يرد النفق صفحة تحذير HTML بدل البث
      (نضيفها لمضيفات ngrok فقط — بقية السيرفرات لا تحتاجها ولا يجب أن تستلمها) */
@@ -340,7 +396,7 @@ async function proxyTo(targetStr, request, cors) {
     try {
       const text = await resp.text();
       const rewritten = text.trimStart().startsWith("#EXTM3U")
-        ? rewriteManifest(text, finalUrl)
+        ? rewriteManifest(text, finalUrl, uaPreset)
         : text;
       return new Response(rewritten, {
         status: resp.status,
@@ -374,12 +430,27 @@ async function proxyTo(targetStr, request, cors) {
    - يُحفظ بروتوكول الرابط الأصلي: لو حوّلنا روابط سيرفر http إلى /h/ (https)
      فإن أول مقطع بعد قائمة التشغيل يفشل عند سيرفرات بلا TLS ويتوقف البث
 ========================================================================== */
-function toProxyPath(u) {
-  const rest = `${u.host}${u.pathname}${u.search}`;
+function toProxyPath(u, uaPreset = "") {
+  const rest = `${u.host}${u.pathname}${withUaParam(u.search, uaPreset)}`;
   return u.protocol === "http:" ? `/x/${rest}` : `/h/${rest}`;
 }
 
-function rewriteManifest(text, baseUrl) {
+/* معاملات جلسة القائمة (token/session/…) التي تحتاجها الروابط الفرعية:
+   بعض اللوحات تُصدر القائمة بـ ?token=… وتتوقعه في كل مقطع وقائمة فرعية،
+   بينما روابط CDN الموقّعة تحمل توقيعها الخاص ولا يجوز إضافة شيء إليها —
+   لذلك تُنسخ فقط للرابط الذي على نفس المضيف ولا يملك استعلاماً خاصاً. */
+function withSession(u, baseUrl) {
+  try {
+    const base = new URL(baseUrl);
+    if (!base.search || u.search || u.host !== base.host) return u;
+    u.search = base.search;
+    return u;
+  } catch {
+    return u;
+  }
+}
+
+function rewriteManifest(text, baseUrl, uaPreset = "") {
   return text
     .split("\n")
     .map((line) => {
@@ -389,7 +460,7 @@ function rewriteManifest(text, baseUrl) {
       if (t.startsWith("#")) {
         return line.replace(/URI="([^"]+)"/g, (orig, u) => {
           try {
-            return `URI="${toProxyPath(new URL(u, baseUrl))}"`;
+            return `URI="${toProxyPath(withSession(new URL(u, baseUrl), baseUrl), uaPreset)}"`;
           } catch {
             return orig;
           }
@@ -397,7 +468,7 @@ function rewriteManifest(text, baseUrl) {
       }
 
       try {
-        return toProxyPath(new URL(t, baseUrl));
+        return toProxyPath(withSession(new URL(t, baseUrl), baseUrl), uaPreset);
       } catch {
         return line;
       }

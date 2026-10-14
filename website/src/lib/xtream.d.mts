@@ -97,6 +97,14 @@ export declare const PROXY_SESSION_KEY: string;
 export declare const OWNED_PROXY_PATTERN: RegExp;
 export declare const NGROK_HOST_RE: RegExp;
 
+/* بصمة المشغل (User-Agent) التي يرسلها الوسيط نيابة عن المتصفح */
+export type UaPreset = "smarters";
+export declare const SMARTERS_USER_AGENT: string;
+export declare const UA_PARAM: string;
+export declare const UA_PRESET_SMARTERS: UaPreset;
+export declare const UA_PRESETS: Record<string, string>;
+export declare const UA_LABEL: string;
+
 export declare function isTrustedProxy(value: unknown): boolean;
 export declare function isNgrokUrl(url: unknown): boolean;
 export declare function resolveWorkerBase(options?: {
@@ -111,6 +119,24 @@ export declare function resolveProxyBases(options?: {
   session?: StorageLike | null;
 }): string[];
 export declare function getProxyUrl(base: string, url: string): string;
+export declare function isProxiedUrl(
+  url: unknown,
+  options?: { proxyBase?: string; phpProxy?: string }
+): boolean;
+export declare function withUserAgentPreset(
+  url: string,
+  preset?: UaPreset | string,
+  options?: { proxyBase?: string; phpProxy?: string }
+): string;
+export declare function addUaVariants<T extends { url: string; label: string; ua?: string; native?: boolean }>(
+  candidates: T[],
+  options?: {
+    preset?: UaPreset | string;
+    preferred?: string;
+    proxyBase?: string;
+    phpProxy?: string;
+  }
+): T[];
 export declare function isHlsCandidateUrl(url: unknown): boolean;
 
 export declare function normalizeHost(raw: unknown): string;

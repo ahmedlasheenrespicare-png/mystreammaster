@@ -26,6 +26,20 @@ const RATE_LIMIT    = 360;   // أقصى عدد طلبات
 const RATE_WINDOW   = 60;    // خلال كم ثانية
 const MAX_BYTES     = 20 * 1024 * 1024; // 20MB لكل جزء
 
+/* ───────────────────────── بصمة المشغّل (User-Agent) ─────────────────────────
+   المتصفح يمنع أي صفحة من تغيير User-Agent (رأس محظور في fetch/XHR)، وكثير من
+   لوحات Xtream/CDN تحجب متصفحات الويب وتسمح فقط لمشغلات IPTV. لذلك يرسل المشغّل
+   اسم البصمة للوسيط بمعامل  ?smpua=smarters  والوسيط هو الذي يرسل القيمة الحقيقية
+   للسيرفر الأصلي — بنفس القيمة في القائمة الرئيسية وكل القوائم الفرعية والمقاطع
+   ومفاتيح فك التشفير، حتى لا يفتح السيرفر جلسة جديدة لكل طلب فينقطع البث.
+   القائمة مغلقة (whitelist): أي قيمة أخرى تُتجاهل ويُرسل User-Agent المتصفح. */
+const UA_PARAM = 'smpua';
+const UA_PRESETS = [
+    'smarters' => 'iptv_smarters_player_lite/1.4.2 VLC/3.1.2 LibVLC/3.1.2',
+];
+const DEFAULT_USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122 Safari/537.36';
+
 const ALLOWED_ORIGINS = [
     'https://streammasterstore.com',
     'https://www.streammasterstore.com',
@@ -246,6 +260,60 @@ function resolve_relative_url(string $baseUrl, string $rel): string {
     return resolve_path($origin . $dir . $rel);
 }
 
+/** اسم البصمة المطلوبة في هذا الطلب (فارغ لو لم تُطلب بصمة صحيحة) */
+function requested_ua_preset(): string {
+    $preset = strtolower(trim((string) ($_GET[UA_PARAM] ?? '')));
+    return array_key_exists($preset, UA_PRESETS) ? $preset : '';
+}
+
+/** User-Agent المُرسَل للسيرفر الأصلي: بصمة المشغّل إن طُلبت، وإلا بصمة المتصفح */
+function upstream_user_agent(): string {
+    $preset = requested_ua_preset();
+    if ($preset !== '') return UA_PRESETS[$preset];
+    $browser = trim((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+    return $browser !== '' ? $browser : DEFAULT_USER_AGENT;
+}
+
+/** لاحقة تُضاف لروابط القائمة المعاد كتابتها — نفس البصمة في كل طلبات البث */
+function ua_query_suffix(): string {
+    $preset = requested_ua_preset();
+    return $preset !== '' ? '&' . UA_PARAM . '=' . rawurlencode($preset) : '';
+}
+
+/** سلسلة استعلام السيرفر الأصلي — بلا معاملات الوسيط الخاصة (?smpua=) */
+function upstream_query_string(): string {
+    $qs = (string) ($_SERVER['QUERY_STRING'] ?? '');
+    if ($qs === '') return '';
+    $kept = [];
+    foreach (explode('&', $qs) as $pair) {
+        if ($pair === '') continue;
+        $key = strtolower(rawurldecode(explode('=', $pair, 2)[0]));
+        if ($key === UA_PARAM) continue; // معامل الوسيط — لا يجب أن يصل للسيرفر الأصلي
+        $kept[] = $pair;
+    }
+    return implode('&', $kept);
+}
+
+/** التقاط Set-Cookie من رد السيرفر (جلسة البث) — يُعاد إرسالها في القفزة التالية */
+function collect_set_cookie(array &$jar, string $headerLine): void {
+    $line = ltrim($headerLine);
+    if (stripos($line, 'Set-Cookie:') !== 0) return;
+    $value = trim(substr($line, strlen('Set-Cookie:')));
+    $pair  = explode(';', $value, 2)[0];
+    $eq    = strpos($pair, '=');
+    if ($eq === false) return;
+    $name = trim(substr($pair, 0, $eq));
+    if ($name === '') return;
+    $jar[$name] = trim(substr($pair, $eq + 1));
+}
+
+/** تحويل جرة الكوكيز إلى ترويسة Cookie واحدة */
+function cookie_header(array $jar): string {
+    $parts = [];
+    foreach ($jar as $name => $value) $parts[] = $name . '=' . $value;
+    return implode('; ', $parts);
+}
+
 /** رؤوس Referer الخاصة ببعض شبكات CDN العامة فقط (سيرفرات Xtream لا يُرسل لها Origin خارجي) */
 function upstream_headers_for(string $host, array $extraHeaders = []): array {
     $headers = $extraHeaders;
@@ -263,12 +331,28 @@ function upstream_headers_for(string $host, array $extraHeaders = []): array {
     return $headers;
 }
 
-/** تنفيذ طلب مع اتباع يدوي لإعادة التوجيه والتحقق من كل وجهة. */
+/** تنفيذ طلب مع اتباع يدوي لإعادة التوجيه والتحقق الأمني من كل وجهة.
+ *
+ *  ما يحافظ عليه هذا الدال عبر كل القفزات (301/302/303/307/308):
+ *   • User-Agent واحد ثابت: بصمة المشغّل (IPTV Smarters/VLC) أو بصمة المتصفح —
+ *     بعض السيرفرات تربط الجلسة بالبصمة، فتغييرها بعد التحويل يُبطل الجلسة.
+ *   • Range: الترويسة المُمرَّرة في $customHeaders تُعاد في كل قفزة، وإلا تحوّل
+ *     طلب جزء من ملف (206) إلى تنزيل كامل بعد أول إعادة توجيه.
+ *   • كوكيز الجلسة: أي Set-Cookie من قفزة يُعاد في القفزة التالية (جرة داخلية
+ *     في الذاكرة فقط — لا تُكتب على القرص ولا تُخزَّن بين الطلبات).
+ */
 function safe_request(string $url, array $extraOpts, bool $returnBody, array $customHeaders = []): array {
     $hops = 0;
+    $jar = [];                              /* كوكيز الجلسة المستلمة من السيرفر */
+    $userAgent = upstream_user_agent();     /* بصمة واحدة ثابتة لكل القفزات */
+    $callerHeaderFn = $extraOpts[CURLOPT_HEADERFUNCTION] ?? null;
+
     while (true) {
         $url  = validate_url($url);
         $host = strtolower(parse_url($url, PHP_URL_HOST) ?: '');
+        $headers = upstream_headers_for($host, $customHeaders);
+        if ($jar) $headers[] = 'Cookie: ' . cookie_header($jar);
+
         $contentType = '';
         $ch   = curl_init($url);
         $opts = [
@@ -278,10 +362,16 @@ function safe_request(string $url, array $extraOpts, bool $returnBody, array $cu
             CURLOPT_CONNECTTIMEOUT  => 8,
             CURLOPT_SSL_VERIFYPEER  => false,
             CURLOPT_SSL_VERIFYHOST  => 0,
-            CURLOPT_USERAGENT       => $_SERVER['HTTP_USER_AGENT'] ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122 Safari/537.36',
-            CURLOPT_HTTPHEADER      => upstream_headers_for($host, $customHeaders),
+            CURLOPT_USERAGENT       => $userAgent,
+            CURLOPT_HTTPHEADER      => $headers,
+            /* نلتقط Set-Cookie ثم نمرّر الرأس لدالة المستدعي (بث المقاطع) */
+            CURLOPT_HEADERFUNCTION  => function ($ch, $header) use (&$jar, $callerHeaderFn) {
+                collect_set_cookie($jar, $header);
+                return $callerHeaderFn ? $callerHeaderFn($ch, $header) : strlen($header);
+            },
         ];
         foreach ($extraOpts as $k => $v) {
+            if ($k === CURLOPT_HEADERFUNCTION) continue; /* دُمجت أعلاه */
             $opts[$k] = $v;
         }
         curl_setopt_array($ch, $opts);
@@ -291,6 +381,8 @@ function safe_request(string $url, array $extraOpts, bool $returnBody, array $cu
         $contentType = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
 
+        /* تحويل 302 وأخواته: نتابعه يدوياً بعد التحقق الأمني من الوجهة، مع حلّ
+           الروابط النسبية والحفاظ على Range والبصمة وكوكيز الجلسة */
         if (in_array($code, [301, 302, 303, 307, 308], true) && $loc !== '' && $hops < MAX_REDIRECTS) {
             $url = resolve_relative_url($url, $loc);
             $hops++;
@@ -313,13 +405,42 @@ function extract_target_url(): string {
     if ($pathInfo !== '' && preg_match('#^/(h|x)/([^/]+)(/.*)?$#', $pathInfo, $m)) {
         $scheme = $m[1] === 'x' ? 'http' : 'https';
         $restPath = $m[3] ?? '/';
-        $qs = (string) ($_SERVER['QUERY_STRING'] ?? '');
+        /* استعلام السيرفر الأصلي فقط — معاملات الوسيط (?smpua=) لا تُمرَّر له */
+        $qs = upstream_query_string();
         return $scheme . '://' . $m[2] . $restPath . ($qs !== '' ? '?' . $qs : '');
     }
     return '';
 }
 
-/** إعادة كتابة قائمة M3U8 بحيث تمر جميع المقاطع والقوائم الفرعية عبر /proxy.php?url= */
+/** إضافة معامل بصمة المشغّل لرابط وسيط (مرة واحدة فقط) */
+function with_ua_suffix(string $proxyUrl): string {
+    $suffix = ua_query_suffix();
+    if ($suffix === '' || preg_match('/[?&]' . UA_PARAM . '=/i', $proxyUrl)) return $proxyUrl;
+    return $proxyUrl . $suffix;
+}
+
+/** معاملات جلسة القائمة (token/session/…) التي تحتاجها الروابط الفرعية.
+ *  تُنسخ فقط إذا كان الرابط الفرعي على نفس المضيف ولا يحمل استعلاماً خاصاً —
+ *  فبعض اللوحات تُصدر القائمة بـ ?token=… وتتوقعه في كل مقطع وقائمة فرعية،
+ *  بينما روابط CDN الموقّعة تحمل توقيعها الخاص ولا يجوز إضافة شيء إليها. */
+function session_query_for(string $finalUrl, string $childUrl): string {
+    $host = strtolower((string) parse_url($finalUrl, PHP_URL_HOST));
+    if ($host === '' || strtolower((string) parse_url($childUrl, PHP_URL_HOST)) !== $host) return '';
+    if (parse_url($childUrl, PHP_URL_QUERY) !== null) return '';
+    $q = parse_url($finalUrl, PHP_URL_QUERY);
+    return is_string($q) ? $q : '';
+}
+
+/** رابط وسيط لسطر داخل قائمة: يحلّ النسبي ويحفظ الجلسة والبصمة */
+function proxied_child_url(string $finalUrl, string $rel): string {
+    $abs = resolve_relative_url($finalUrl, $rel);
+    $session = session_query_for($finalUrl, $abs);
+    if ($session !== '') $abs .= (str_contains($abs, '?') ? '&' : '?') . $session;
+    return with_ua_suffix('/proxy.php?url=' . urlencode($abs));
+}
+
+/** إعادة كتابة قائمة M3U8 بحيث تمر جميع المقاطع والقوائم الفرعية عبر /proxy.php?url=
+ *  مع الحفاظ على بصمة المشغّل (User-Agent) ومعاملات الجلسة في كل رابط مولّد. */
 function rewrite_m3u8(string $content, string $finalUrl): string {
     $out = '';
     foreach (preg_split('/\R/', $content) as $line) {
@@ -327,18 +448,17 @@ function rewrite_m3u8(string $content, string $finalUrl): string {
         if ($t === '') { $out .= "\n"; continue; }
 
         if (preg_match('/URI="([^"]+)"/', $line, $m)) {
-            $abs = resolve_relative_url($finalUrl, $m[1]);
-            $out .= str_replace('URI="' . $m[1] . '"', 'URI="/proxy.php?url=' . urlencode($abs) . '"', $line) . "\n";
+            $out .= str_replace('URI="' . $m[1] . '"', 'URI="' . proxied_child_url($finalUrl, $m[1]) . '"', $line) . "\n";
             continue;
         }
         if (str_starts_with($t, 'proxy.php?url=') || str_starts_with($t, '/proxy.php?url=')) {
-            $out .= (str_starts_with($t, '/') ? $t : '/' . $t) . "\n";
+            /* قائمة أعاد كتابتها وسيط آخر — نُبقي البصمة فيها أيضاً */
+            $out .= with_ua_suffix(str_starts_with($t, '/') ? $t : '/' . $t) . "\n";
             continue;
         }
         if ($t[0] === '#') { $out .= $line . "\n"; continue; }
 
-        $abs = resolve_relative_url($finalUrl, $t);
-        $out .= '/proxy.php?url=' . urlencode($abs) . "\n";
+        $out .= proxied_child_url($finalUrl, $t) . "\n";
     }
     return $out;
 }
@@ -397,17 +517,39 @@ if ($isM3U8) {
     exit;
 }
 
-// ── ٣) مقاطع ts/mp4: بث مباشر متدفّق ──
+// ── ٣) مقاطع ts/m4s/mp4: بث مباشر متدفّق مع الحفاظ على Range وحالة الرد ──
+/* Range يُرسل للسيرفر الأصلي كما طلبه المشغّل (bytes=0-1023 …) ويبقى محفوظاً عبر
+   كل تحويل 302 داخل safe_request. وبدون إعادة حالة الرد (206 Partial Content)
+   وContent-Range يظن المتصفح أنه استلم الملف كاملاً فيفشل التقديم/التراجع في
+   الأفلام وترفض بعض المشغلات المقاطع الجزئية. */
 header('Cache-Control: public, max-age=2');
-$sent = 0;
+$sent         = 0;
+$finalCode    = 0;
+$finalHeaders = [];
+$headFlushed  = false;
 $rangeHeaders = [];
 if (!empty($_SERVER['HTTP_RANGE'])) {
     $rangeHeaders[] = 'Range: ' . (string) $_SERVER['HTTP_RANGE'];
 }
+
+/** إرسال حالة الرد النهائي ورؤوسه قبل أول بايت (وليس رؤوس قفزات التحويل) */
+$flushHead = function () use (&$finalCode, &$finalHeaders, &$headFlushed) {
+    if ($headFlushed || headers_sent()) return;
+    $headFlushed = true;
+    if ($finalCode >= 100) http_response_code($finalCode);
+    foreach ($finalHeaders as $name => $value) {
+        header($name . ': ' . $value, true);
+    }
+};
+
 $headerOpts = [
     CURLOPT_TIMEOUT        => 60,
     CURLOPT_BUFFERSIZE     => 16384,
-    CURLOPT_WRITEFUNCTION  => function ($ch, $data) use (&$sent) {
+    CURLOPT_WRITEFUNCTION  => function ($ch, $data) use (&$sent, &$finalCode, $flushHead) {
+        /* جسم رد تحويل (302/301/…) لا يُبث للزائر — نتبع التحويل وننتظر الرد
+           النهائي، وإلا وصل للمشغّل صفحة HTML ملتصقة بأول بايت من المقطع */
+        if ($finalCode >= 300 && $finalCode < 400) return strlen($data);
+        $flushHead();
         $sent += strlen($data);
         if ($sent > MAX_BYTES) return 0; // قطع الاتصال عند تجاوز الحد
         echo $data;
@@ -415,11 +557,32 @@ $headerOpts = [
         flush();
         return strlen($data);
     },
-    CURLOPT_HEADERFUNCTION => function ($ch, $header) {
+    CURLOPT_HEADERFUNCTION => function ($ch, $header) use (&$finalCode, &$finalHeaders) {
         $h = trim($header);
-        if (stripos($h, 'Content-Type:') === 0 && !headers_sent()) header($h);
-        if (stripos($h, 'Content-Range:') === 0 && !headers_sent()) header($h);
+        if ($h === '') return strlen($header);
+
+        /* سطر حالة جديد = بداية رد (أول رد أو رد بعد تحويل 302) — نتجاهل رؤوس
+           القفزات السابقة حتى لا نمرّر Content-Length الخاص بصفحة التحويل.
+           (location يُمرَّر فقط لو وقفنا عند حد MAX_REDIRECTS بلا متابعة) */
+        if (preg_match('#^HTTP/\S+\s+(\d{3})#i', $h, $m)) {
+            $finalCode    = (int) $m[1];
+            $finalHeaders = [];
+            return strlen($header);
+        }
+
+        $pos = strpos($h, ':');
+        if ($pos === false) return strlen($header);
+        $name  = strtolower(trim(substr($h, 0, $pos)));
+        $value = trim(substr($h, $pos + 1));
+
+        if (in_array($name, ['content-type', 'content-range', 'accept-ranges', 'last-modified', 'etag', 'location'], true)) {
+            $finalHeaders[$name] = $value;
+        } elseif ($name === 'content-length' && (int) $value <= MAX_BYTES) {
+            /* لا نعد بطول أكبر مما نمرّره فعلياً (حد MAX_BYTES يقطع ما زاد) */
+            $finalHeaders[$name] = $value;
+        }
         return strlen($header);
     },
 ];
 safe_request($url, $headerOpts, false, $rangeHeaders);
+$flushHead(); /* رد بلا جسم (HEAD/204/304) — تمرّ حالته ورؤوسه مع ذلك */

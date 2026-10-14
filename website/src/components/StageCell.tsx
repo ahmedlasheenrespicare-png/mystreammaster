@@ -20,6 +20,8 @@ export interface PlayCandidate {
   label: string;
   mode?: XtreamMode;
   isLive?: boolean;
+  /** بصمة User-Agent المطلوبة من الوسيط ("smarters") — تُذكر عند نجاح المرشّح */
+  ua?: string;
 }
 
 export interface CellTracks {
@@ -75,6 +77,8 @@ interface StageCellProps {
   onState: (patch: Partial<CellState>) => void;
   onMutedChange: (muted: boolean) => void;
   onPreferredMode: (mode: XtreamMode | undefined) => void;
+  /** أي بصمة User-Agent نجحت ("smarters" أو undefined) — تُقدَّم في المرة القادمة */
+  onPreferredUa: (ua: string | undefined) => void;
   onUnmute: () => void;
   onSaveResume: (key: string, seconds: number) => void;
 }
@@ -175,6 +179,8 @@ const StageCell = forwardRef<StageCellHandle, StageCellProps>(function StageCell
       clearWatchdog();
       setStatusBoth("");
       propsRef.current.onPreferredMode(cand.mode);
+      /* نذكر البصمة التي نجحت (Smarters/VLC أو العادية) لتقديمها في التشغيل القادم */
+      propsRef.current.onPreferredUa(cand.ua);
     };
     const failAll = () => {
       setStatusBoth("");

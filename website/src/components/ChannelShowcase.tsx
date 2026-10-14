@@ -88,15 +88,15 @@ export default function ChannelShowcase() {
           <div className="max-w-xl">
             <p className="text-[12px] font-black tracking-[0.25em] uppercase text-[#d8ff3e] mb-4 flex items-center gap-2">
               <span className="w-8 h-[2px] bg-[#d8ff3e] inline-block" />
-              <IconTv className="w-4 h-4" /> مكتبة القنوات والبث
+              <IconTv className="w-4 h-4" /> تصنيفات قوائم المزودين
             </p>
             <h2 className="font-display font-black tracking-tight leading-[1.15] text-[36px] md:text-[56px]">
-              15,000+ قناة.{" "}
-              <span className="font-serif italic font-normal text-white/75">صفر تقطيع.</span>
+              تغطية شاملة.{" "}
+              <span className="font-serif italic font-normal text-white/75">أداء فائق الثبات.</span>
             </h2>
             <p className="mt-5 text-white/55 text-[15.5px] leading-relaxed">
-              تصفح أبرز الباقات الرياضية والسينمائية والعربية المتوفرة داخل اشتراكك — تتجدد
-              يومياً.
+              استعرض أبرز التصنيفات الرياضية والترفيهية والعربية التي تدعمها سيرفرات المزودين
+              الخارجيين — مع تحديثات دورية لقوائم التشغيل.
             </p>
           </div>
 
@@ -163,6 +163,12 @@ export default function ChannelShowcase() {
             </div>
           ))}
         </div>
+
+        {/* إخلاء مسؤولية */}
+        <p className="mt-6 text-center text-[12.5px] text-white/40 font-medium leading-relaxed">
+          تختلف القنوات والمكتبات المتاحة بحسب السيرفر المختار وتخضع لإدارة المزود الخارجي
+          المستقل.
+        </p>
       </div>
     </section>
   );

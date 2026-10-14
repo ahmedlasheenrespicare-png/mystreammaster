@@ -311,8 +311,8 @@ export default function Pricing({
           {[
             {
               icon: <IconShieldCheck className="w-[22px] h-[22px]" />,
-              t: "ضمان كامل واسترجاع",
-              d: "نضمن ثبات السيرفر طوال مدة الاشتراك",
+              t: "ضمان التشغيل والاستبدال",
+              d: "متابعة تقنية واستبدال الكود أو استرجاعه وفق سياسة الضمان",
             },
             {
               icon: <IconZap className="w-[22px] h-[22px] text-[#ff5c4d]" />,

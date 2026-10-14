@@ -57,6 +57,8 @@
           {
             "@type": "SportsEvent",
             "name": "أتلتيكو مدريد ضد مانشستر يونايتد — دوري أبطال أوروبا",
+            "description": "مباراة أتلتيكو مدريد ومانشستر يونايتد في مرحلة الدوري لدوري أبطال أوروبا 2026/27، يوم الثلاثاء 13 أكتوبر 2026 على ملعب رياض إير ميتروبوليتانو في مدريد.",
+            "image": ["https://streammasterstore.com/images/matches/manchester-united-atletico-og.png"],
             "sport": "Soccer",
             "startDate": "2026-10-13T19:00:00Z",
             "endDate": "2026-10-13T20:50:00Z",
@@ -68,9 +70,29 @@
               "name": "رياض إير ميتروبوليتانو",
               "address": { "@type": "PostalAddress", "addressLocality": "مدريد", "addressCountry": "ES" }
             },
+            "performer": [
+              { "@type": "SportsTeam", "name": "أتلتيكو مدريد" },
+              { "@type": "SportsTeam", "name": "مانشستر يونايتد" }
+            ],
             "homeTeam": { "@type": "SportsTeam", "name": "أتلتيكو مدريد" },
             "awayTeam": { "@type": "SportsTeam", "name": "مانشستر يونايتد" },
-            "organizer": { "@type": "Organization", "name": "UEFA", "url": "https://www.uefa.com/uefachampionsleague/" }
+            "organizer": { "@type": "Organization", "name": "UEFA", "url": "https://www.uefa.com/uefachampionsleague/" },
+            "offers": {
+              "@type": "AggregateOffer",
+              "name": "باقات ستريم ماستر برو لمتابعة المباريات",
+              "description": "باقات التفعيل والربط التقني لقوائم التشغيل الصادرة من المزود لمتابعة المباريات القادمة، والمعروضة في متجر الموقع بأسعارها.",
+              "url": "https://streammasterstore.com/store/",
+              "priceCurrency": "USD",
+              "lowPrice": 25,
+              "highPrice": 45,
+              "offerCount": 3,
+              "availability": "https://schema.org/InStock",
+              "offers": [
+                { "@type": "Offer", "name": "باقة سيرفر نوفا (Nova Server)", "price": 25, "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "https://streammasterstore.com/nova/" },
+                { "@type": "Offer", "name": "باقة سيرفر إيستار برو (iStar Pro Server)", "price": 35, "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "https://streammasterstore.com/istar/" },
+                { "@type": "Offer", "name": "باقة سيرفر موكا (Moka Server)", "price": 45, "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "https://streammasterstore.com/moka/" }
+              ]
+            }
           },
           {
             "@type": "FAQPage",

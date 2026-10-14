@@ -35,10 +35,10 @@ export default function Testimonials() {
             تقييم موثق
           </div>
           <h2 className="font-display font-black tracking-tight leading-[1.15] text-[38px] md:text-[56px]">
-            يحبنا <span className="font-serif italic font-normal">الآلاف</span> من المشتركين
+            يثق بنا <span className="font-serif italic font-normal">الآلاف</span> من المستخدمين
           </h2>
           <p className="mt-4 text-black/55 text-[15px] md:text-[16px] font-medium">
-            أكثر من 45,000 عميل يثقون في سيرفرات المزودين المتاحة عبر منصتنا.
+            أكثر من 45,000 مستخدم يعتمدون على منصتنا للربط التقني والدعم الفني الفوري.
           </p>
         </Reveal>
 
@@ -109,8 +109,8 @@ export default function Testimonials() {
         {/* شريط الثقة — عدّادات متحركة */}
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { v: 45000, s: "+", l: "مشترك نشط" },
-            { v: 99.9, s: "%", d: 1, l: "نسبة الثبات" },
+            { v: 45000, s: "+", l: "عملية تفعيل ناجحة" },
+            { v: 99.9, s: "%", d: 1, l: "نسبة ثبات المزودين" },
             { v: 3, p: "< ", s: " دقائق", l: "زمن التفعيل" },
             { v: 24, s: "/7", l: "دعم فني متواصل" },
           ].map((st, i) => (
@@ -124,6 +124,10 @@ export default function Testimonials() {
             </Reveal>
           ))}
         </div>
+
+        <p className="mt-5 text-center text-[12px] leading-relaxed text-black/45">
+          تعكس التقييمات أعلاه تجارب المستخدمين مع سرعة التفعيل والدعم الفني وأداء سيرفرات المزودين الخارجيين على أجهزتهم.
+        </p>
       </div>
     </section>
   );

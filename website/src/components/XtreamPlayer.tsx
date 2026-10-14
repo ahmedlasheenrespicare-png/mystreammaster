@@ -94,9 +94,11 @@ import { Reveal } from "./motion";
 
 /* =========================================================================
    مشغّل اشتراكك الشخصي — Xtream Codes + ملفات M3U
-   يدخل كل مشترك ببيانات اشتراكه (السيرفر + المستخدم + كلمة السر)
-   و يشاهد قنوات باقته مباشرة على الموقع — مثل IPTV Smarters لكن بتصميمك
-   البيانات تُحفظ في متصفح المشترك فقط (localStorage) ولا تُرسل لأي جهة أخرى
+   أداة عرض برمجية على المتصفح (Client-side Web Player): يدخل المشترك ببيانات
+   اشتراكه (السيرفر + المستخدم + كلمة السر) فيُحمّل قائمة التشغيل من سيرفر
+   مزوّده ويعرضها محلياً في متصفحه — مثل IPTV Smarters لكن بتصميمك.
+   الموقع لا يستضيف المحتوى ولا يعيد بثّه، والبيانات تُحفظ في متصفح المشترك
+   فقط (localStorage) ولا تُرسل لأي جهة أخرى
 
    منطق هذا القسم (URLs، EPG، الأفلام، القفل، المتابعة) في src/lib/xtream.mjs
    (دوال خالصة مُختبَرة في scripts/test-xtream.mjs) وهذا الملف للواجهة فقط:
@@ -1705,8 +1707,13 @@ function XtreamPlayerInner() {
             <span className="font-serif italic font-normal text-white/80">على موقعنا</span>
           </h2>
           <p className="mt-4 text-white/55 text-[15px] md:text-[16.5px] font-medium leading-relaxed">
-            مشترك بالفعل؟ أدخل بيانات اشتراكك (السيرفر + اسم المستخدم + كلمة السر) وشاهد قنواتك
-            كاملة من هنا مباشرة — بياناتك تُحفظ على جهازك فقط ولا تصل لأي طرف آخر.
+            مشترك بالفعل؟ أدخل بيانات اشتراكك (السيرفر + اسم المستخدم + كلمة السر) لتحميل قائمة
+            تشغيلك من مزوّدك وعرضها في مشغّل يعمل داخل متصفحك — بياناتك تُحفظ على جهازك فقط ولا
+            تصل لأي طرف آخر.
+          </p>
+          <p className="mt-3 text-white/35 text-[12.5px] md:text-[13px] font-medium leading-relaxed">
+            المشغّل أداة عرض برمجية على المتصفح (Client-side Web Player) تعمل محلياً على جهازك،
+            والموقع لا يستضيف القنوات ولا يعيد بثّها.
           </p>
         </Reveal>
 
@@ -1906,6 +1913,29 @@ function XtreamPlayerInner() {
               {diag.length > 0 && (
                 <DiagBox entries={diag} report={diagReport} token={shareToken} tone="light" />
               )}
+
+              {/* ==== إيضاح تقني وقانوني لصفة المشغّل ==== */}
+              <div
+                data-testid="player-legal-note"
+                className="rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3.5 text-[11.5px] leading-[1.9] text-black/55 font-medium"
+              >
+                <strong className="block text-black/75 font-black mb-1">
+                  الصفة التقنية لهذا المشغّل:
+                </strong>
+                مشغّل عرض برمجية على المتصفح (Client-side Web Player) يعمل محلياً على جهازك أنت:
+                يقرأ قائمة التشغيل الخاصة باشتراكك (M3U / Xtream Codes) من سيرفر مزوّدك ويعرضها في
+                المتصفح، تماماً كما تفعل تطبيقات المشغّلات الأخرى. الموقع لا يخزّن بيانات الدخول على
+                أي خادم ولا يطّلع عليها أحد، ولا يستضيف المحتوى المُشغَّل ولا يعيد بثّه — القنوات
+                والمكتبات ملك لمزوّدك ولمالكي الحقوق، ومسؤولية حقوق ما تشاهده تقع على المزود
+                والمستخدم. للقنوات والمنصات المشفّرة استخدم اشتراكها الرسمي عبر{" "}
+                <a
+                  href="/watch-legal.html"
+                  className="font-black text-[#2b4eff] underline underline-offset-2"
+                >
+                  دليل المشاهدة الرسمية
+                </a>
+                .
+              </div>
 
               <p className="text-[11.5px] text-black/40 text-center font-medium leading-relaxed">
                 بتسجيل الدخول تُحفظ بياناتك في متصفحك فقط (localStorage) — احذفها بزر «خروج» في أي
@@ -2710,6 +2740,10 @@ function XtreamPlayerInner() {
               <div className="flex flex-wrap items-center justify-center gap-3 text-[12.5px] font-bold text-white/50">
                 <span className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/10 rounded-full px-4 py-2">
                   <IconShieldCheck className="w-4 h-4 text-[#3effe0]" /> بياناتك محفوظة على جهازك
+                </span>
+                <span className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/10 rounded-full px-4 py-2">
+                  <IconMonitor className="w-4 h-4 text-[#2b4eff]" /> مشغّل داخل متصفحك — الموقع لا
+                  يستضيف المحتوى
                 </span>
                 <span className="inline-flex items-center gap-2 bg-white/[0.06] border border-white/10 rounded-full px-4 py-2">
                   <IconStar className="w-4 h-4 text-[#d8ff3e]" /> مفضلة وسجل لكل حساب

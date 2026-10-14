@@ -224,8 +224,15 @@ export default function Pricing({
                     </div>
                   </div>
 
-                  {/* المواصفات */}
-                  <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-bold">
+                  {/* المواصفات — يعلنها المزود الخارجي لسيرفره */}
+                  <p
+                    className={`mt-4 text-[10.5px] font-black tracking-wide ${
+                      dark ? "text-white/35" : "text-black/35"
+                    }`}
+                  >
+                    مواصفات سيرفر المزود الخارجي
+                  </p>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] font-bold">
                     {[
                       `📺 ${plan.channelsCount}`,
                       `🎬 ${plan.vodCount}`,
@@ -243,8 +250,15 @@ export default function Pricing({
                     ))}
                   </div>
 
-                  {/* الميزات */}
-                  <ul className="mt-5 space-y-2.5 text-[12.5px]">
+                  {/* الميزات — خدمة الموقع: التفعيل والربط التقني والدعم */}
+                  <p
+                    className={`mt-5 text-[10.5px] font-black tracking-wide ${
+                      dark ? "text-white/35" : "text-black/35"
+                    }`}
+                  >
+                    ما تشمله خدمتنا: التفعيل والربط التقني والدعم
+                  </p>
+                  <ul className="mt-2 space-y-2.5 text-[12.5px]">
                     {plan.features.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <span

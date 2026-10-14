@@ -200,7 +200,7 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
                   onClick={onOpenTrial}
                   className="border border-black/15 bg-white hover:border-black font-black text-black px-6 py-3.5 rounded-full text-[14.5px] transition-all cursor-pointer"
                 >
-                  <IconZap className="w-4 h-4 text-[#ff5c4d] inline ml-1.5" /> تجربة مجانية
+                  <IconZap className="w-4 h-4 text-[#ff5c4d] inline ml-1.5" /> طلب كود تجريبي
                   للسيرفر
                 </button>
                 <button
@@ -218,7 +218,7 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
         {/* تلميح أسفل المعالج */}
         <p className="mt-6 text-center text-[12.5px] text-black/40 font-medium flex items-center justify-center gap-1.5">
           <IconArrow className="w-3.5 h-3.5 rotate-180" />
-          مجرد ترشيح مبدئي — يمكنك دائماً طلب تجربة مجانية قبل اتخاذ القرار
+          مجرد ترشيح مبدئي — يمكنك دائماً طلب كود تجريبي قبل اتخاذ القرار
         </p>
 
         {/* اقتباس مدمج — كما يوزّعها الأصل داخل أقسامه */}

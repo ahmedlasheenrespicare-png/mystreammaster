@@ -137,13 +137,13 @@ export default function Header({
           </span>
           <p className="tracking-tight opacity-90 truncate">
             تغطية كأس العالم 2026 والدوريات الكبرى —{" "}
-            <span className="text-[#d8ff3e] font-bold">خصومات على جميع الباقات</span> + تجربة مجانية
+            <span className="text-[#d8ff3e] font-bold">خصومات على باقات التفعيل التقني</span> + فحص تجريبي مجاني
           </p>
           <button
             onClick={onOpenTrial}
             className="hidden md:inline-flex items-center gap-1 underline underline-offset-4 decoration-[#d8ff3e] hover:text-[#d8ff3e] transition cursor-pointer"
           >
-            اطلب التجربة الآن <IconArrowUpRight className="w-3.5 h-3.5" />
+            طلب كود تجريبي <IconArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -273,12 +273,12 @@ export default function Header({
 
               {/* زر الإعلان الأساسي */}
               <a
-                href={getWhatsAppUrl("مرحبًا ستريم ماستر، أود الاستفسار عن باقات واشتراكات الـ IPTV")}
+                href={getWhatsAppUrl("مرحبًا ستريم ماستر، أود الاستفسار عن باقات التفعيل التقني لدى المزود")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-slide slide-royal hidden sm:inline-flex items-center gap-2 bg-[#0b0b0f] text-white text-[13.5px] font-black px-5 py-2.5 rounded-full"
               >
-                اشترك — من $25 <IconArrow className="w-4 h-4" />
+                اطلب التفعيل — من $25 <IconArrow className="w-4 h-4" />
               </a>
 
               {/* زر قائمة الجوال */}
@@ -356,7 +356,7 @@ export default function Header({
               }}
               className="mt-5 bg-[#0b0b0f] text-white text-center font-black py-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer shrink-0"
             >
-              <IconZap className="w-4 h-4 text-[#d8ff3e]" /> اطلب تجربة مجانية
+              <IconZap className="w-4 h-4 text-[#d8ff3e]" /> طلب كود تجريبي
             </button>
             <div className="mt-4 flex items-center justify-center gap-1 text-[13px] text-black/60 font-bold">
               <IconStar className="w-3.5 h-3.5 fill-[#0b0b0f] text-[#0b0b0f]" /> 4.95/5 من
@@ -417,7 +417,7 @@ function DesktopPanel({
             }}
             className="text-[12.5px] font-black bg-[#d8ff3e] text-black px-4 py-2 rounded-full hover:bg-white transition flex items-center gap-1 cursor-pointer"
           >
-            <IconZap className="w-3.5 h-3.5" /> تجربة مجانية
+            <IconZap className="w-3.5 h-3.5" /> طلب كود تجريبي
           </button>
         </PanelFooter>
       </div>

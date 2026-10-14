@@ -189,7 +189,7 @@ export default function ChannelsPage() {
               </h2>
               <p className="mt-3 text-white/60 text-[14.5px] leading-relaxed font-medium">
                 القنوات الرياضية والترفيهية تُدار وتُقدَّم عبر سيرفرات المزودين الخارجيين بثبات عالٍ
-                — ويمكنك طلب تجربة مجانية من المزود قبل الاشتراك.
+                — ويمكنك طلب كود تجريبي من المزود لفحص توافق جهازك قبل التفعيل.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
@@ -200,12 +200,12 @@ export default function ChannelsPage() {
                 <IconZap className="w-4 h-4" /> اختر باقتك
               </a>
               <a
-                href={getWhatsAppUrl("مرحبًا، أريد تجربة مجانية للقنوات الرياضية")}
+                href={getWhatsAppUrl("مرحبًا، أود طلب كود تجربة مجانية من المزود لفحص التوافق على جهازي")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 border border-white/25 font-black text-[14.5px] px-7 py-3.5 rounded-full hover:bg-white hover:text-black transition"
               >
-                <IconChat className="w-4 h-4" /> تجربة مجانية
+                <IconChat className="w-4 h-4" /> طلب كود تجريبي
               </a>
             </div>
           </div>

@@ -146,7 +146,7 @@ export default function PlanPage({
               <a href={to("blog/choose-iptv-server/")} className="font-black text-[#2b4eff] underline underline-offset-4">
                 اقرأ دليل المقارنة
               </a>
-              ، ويمكنك دائماً طلب تجربة مجانية قبل الدفع.
+              ، ويمكنك دائماً طلب كود تجريبي قبل الدفع.
             </p>
           </div>
 
@@ -204,13 +204,13 @@ export default function PlanPage({
 
                 <a
                   href={getWhatsAppUrl(
-                    `مرحبًا، أريد باقة التفعيل والربط التقني لسيرفر ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${price} ${curr.symbol}`
+                    `مرحبًا ستريم ماستر، أود طلب كود تفعيل تقني لدى المزود لـ ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${price} ${curr.symbol}`
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-slide slide-white mt-4 w-full py-3.5 rounded-full bg-[#d8ff3e] text-black font-black text-[14.5px] flex items-center justify-center gap-2"
                 >
-                  <IconChat className="w-4 h-4" /> اشترك الآن عبر واتساب
+                  <IconChat className="w-4 h-4" /> اطلب كود التفعيل عبر واتساب
                 </a>
 
                 <div className="mt-2.5 grid grid-cols-2 gap-2.5">
@@ -224,7 +224,7 @@ export default function PlanPage({
                     onClick={onOpenTrial}
                     className="py-2.5 rounded-full border border-white/20 text-[12.5px] font-black hover:bg-white/10 transition cursor-pointer"
                   >
-                    تجربة مجانية
+                    طلب كود تجريبي
                   </button>
                 </div>
 

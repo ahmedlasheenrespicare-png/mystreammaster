@@ -64,7 +64,7 @@ export default function CartModal({
       })
       .join("\n");
 
-    const message = `مرحبًا ستريم ماستر، أود إتمام طلب الاشتراكات التالية:\n\n${itemsListText}\n\nالإجمالي المطلوب: ${totalPrice} ${curr.symbol}\nأرجو تزويدي ببيانات الدفع والتفعيل الفوري.`;
+    const message = `مرحبًا ستريم ماستر، أود إتمام طلب باقات التفعيل التقني التالية لدى المزود:\n\n${itemsListText}\n\nالإجمالي المطلوب: ${totalPrice} ${curr.symbol}\nأرجو تزويدي ببيانات الدفع وإصدار الكود.`;
 
     window.open(getWhatsAppUrl(message), "_blank");
     onClearCart();
@@ -167,7 +167,7 @@ export default function CartModal({
               onClick={handleCheckout}
               className="w-full py-3.5 rounded-full bg-[#16a34a] hover:bg-[#15803d] text-white font-black text-[15px] shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
-              <IconChat className="w-5 h-5" /> إتمام الطلب وتأكيد الدفع عبر واتساب
+              <IconChat className="w-5 h-5" /> إتمام طلب التفعيل عبر واتساب
             </button>
           </div>
         )}

@@ -10,7 +10,7 @@ interface TrialModalProps {
 
 export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
   const [device, setDevice] = useState("شاشة سامسونج أو LG Smart TV");
-  const [server, setServer] = useState("سيرفر نوفا (Nova Server) — الأفضل للمباريات");
+  const [server, setServer] = useState("سيرفر نوفا (Nova Server) — الأعلى ثباتاً وقت الذروة");
   const [phone, setPhone] = useState("");
 
   /* إتاحة: Escape + حبس التركيز داخل النافذة + قفل تمرير الخلفية + إعادة التركيز */
@@ -21,7 +21,7 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
 
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = `مرحبًا ستريم ماستر، أود طلب كود تجربة مجانية:\n- نوع الجهاز: ${device}\n- السيرفر المطلوب: ${server}\n- رقم الواتساب: ${phone || "نفس الرقم الحالي"}`;
+    const msg = `مرحبًا ستريم ماستر، أود طلب كود تجربة تقنية من المزود لفحص التوافق على جهازي:\n- نوع الجهاز: ${device}\n- السيرفر المطلوب: ${server}\n- رقم الواتساب: ${phone || "نفس الرقم الحالي"}`;
     window.open(getWhatsAppUrl(msg), "_blank");
     onClose();
   };
@@ -55,10 +55,10 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
             <IconZap className="w-6 h-6" />
           </span>
           <h3 className="font-display font-black text-[22px] tracking-tight">
-            طلب تجربة مجانية لمدة 6 ساعات
+            طلب كود فحص وتجربة من المزود (6 ساعات)
           </h3>
           <p className="text-[13.5px] text-black/55 mt-1.5 font-medium">
-            جرب جميع القنوات الرياضية والترفيهية فوراً على جهازك قبل دفع أي مبلغ.
+            اختبر توافق التطبيق على جهازك واستقرار اتصال سيرفر المزود قبل طلب التفعيل.
           </p>
         </div>
 
@@ -92,11 +92,11 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
               onChange={(e) => setServer(e.target.value)}
               className="w-full rounded-2xl border border-black/10 bg-[#faf9f6] px-3.5 py-3 text-[14px] font-bold focus:border-[#2b4eff] focus:outline-none focus:bg-white transition cursor-pointer"
             >
-              <option value="سيرفر نوفا (Nova Server) — الأفضل للمباريات">
-                سيرفر نوفا (Nova) — الأفضل للمباريات ⚽
+              <option value="سيرفر نوفا (Nova Server) — الأعلى ثباتاً وقت الذروة">
+                سيرفر نوفا (Nova) — الأعلى ثباتاً وقت الذروة ⚡
               </option>
-              <option value="سيرفر إيستار (iStar Pro) — الترفيه والأفلام">
-                سيرفر إيستار (iStar) — الترفيه والأفلام 🎬
+              <option value="سيرفر إيستار (iStar Pro) — المتوازن للأجهزة الذكية">
+                سيرفر إيستار (iStar) — المتوازن للأجهزة الذكية 📺
               </option>
               <option value="سيرفر موكا (Moka) — الاقتصادي للنت الضعيف">
                 سيرفر موكا (Moka) — الاقتصادي ⚡
@@ -121,12 +121,12 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
             type="submit"
             className="w-full py-3.5 rounded-full bg-[#0b0b0f] hover:bg-[#2b4eff] text-white font-black text-[15px] shadow-lg flex items-center justify-center gap-2 transition-all mt-4 cursor-pointer"
           >
-            <IconChat className="w-5 h-5 text-[#d8ff3e]" /> إرسال طلب التجربة فوراً عبر واتساب
+            <IconChat className="w-5 h-5 text-[#d8ff3e]" /> طلب كود الفحص التجريبي عبر واتساب
           </button>
         </form>
 
         <p className="text-[11.5px] text-black/40 text-center mt-4 font-medium">
-          يتم إرسال كود التجربة وشرح التشغيل خلال أقل من 5 دقائق عبر واتساب.
+          يتم إصدار كود التجربة من المزود مع إرشادات إعداد التطبيق خلال أقل من 5 دقائق عبر واتساب.
         </p>
       </div>
     </div>

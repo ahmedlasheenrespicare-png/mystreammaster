@@ -8,9 +8,13 @@ import {
   LIST_OVERSCAN,
   PHP_PROXY,
   RECENTS_KEY,
+  SMARTERS_USER_AGENT,
   STORAGE_KEY,
+  UA_LABEL,
+  UA_PRESET_SMARTERS,
   accountKey,
   accountLabel,
+  addUaVariants,
   buildDiagReport,
   buildModes,
   composeFailMsg,
@@ -100,6 +104,10 @@ import { Reveal } from "./motion";
    • دليل البرامج EPG (get_short_epg) مع شريط تقدّم «يعرض الآن / التالي»
    • مسارات متعددة للبث: مباشر + Cloudflare Worker + /proxy.php + أصلي
      (نفس نظام صفحة البث المباشر LivePlayer) وسقوط تلقائي بينها
+   • بصمة مشغل IPTV: بعد كل مسار يمر عبر وسيط نُجرّب نفس المسار بـ User-Agent
+     الخاص بـ IPTV Smarters/VLC (?smpua=smarters) — المتصفح لا يستطيع تغيير
+     الرأس بنفسه، فيرسله الوسيط للسيرفر ويتابع تحويل 302 ويحافظ على Range
+     ومعاملات الجلسة (التوكنات/الكوكيز) بين القائمة الرئيسية والمقاطع
    • مpegts.js لروابط TS الخام وhls.js للم3U8
    • تنقّل ريموت/كيبورد: ↑↓ القنوات، ←→ الصوت أو التقديم، F/M/مسافة، أرقام
    • عدة شاشات (2 أو 4) بانتقال الصوت بنقرة واحدة
@@ -449,6 +457,11 @@ function XtreamPlayerInner() {
   const cellRefs = useRef<(StageCellHandle | null)[]>([]);
   /* ذاكرة الجلسة لمسار البث الناجح (مثل needsProxySession في صفحة البث المباشر) */
   const preferredStreamModeRef = useRef<XtreamMode | null>(null);
+  /* ذاكرة الجلسة لبصمة User-Agent الناجحة ("smarters" = بصمة IPTV Smarters/VLC).
+     المتصفح لا يستطيع تغيير User-Agent، لذلك تُطلب من الوسيط بمعامل ?smpua=
+     ولو نجحت بصمة مع هذا المزوّد تُجرَّب أولاً في كل تشغيل تالٍ */
+  const preferredUaRef = useRef<string>("");
+  const [activeUa, setActiveUa] = useState("");
   const osdTimerRef = useRef(0);
   const zapRef = useRef({ buf: "", timer: 0 });
   const subUrlRef = useRef("");
@@ -921,6 +934,8 @@ function XtreamPlayerInner() {
     setAspect("auto");
     setPipOn(false);
     preferredStreamModeRef.current = null;
+    preferredUaRef.current = "";
+    setActiveUa("");
   }
 
   /* ============ مسار ملف M3U: تنزيل من السيرفر ثم رفع ============ */
@@ -1031,7 +1046,19 @@ function XtreamPlayerInner() {
 
   /* ========================================================================= */
   /*  بناء مرشّحين — نفس منطق الخلايا: مباشر → Worker → /proxy.php → أصلي        */
+  /*  وبعد كل مرشّح يمر عبر وسيط نسخة تحمل بصمة Smarters/VLC (?smpua=smarters)   */
+  /*  لأن المتصفح لا يستطيع تغيير User-Agent بنفسه — الوسيط يرسلها للسيرفر       */
   /* ========================================================================= */
+
+  /** يمرّر القائمة عبر addUaVariants مع إعدادات الوسيط الحالية */
+  function withUaLadder<T extends PlayCandidate>(list: T[]): T[] {
+    return addUaVariants(list, {
+      preset: UA_PRESET_SMARTERS,
+      preferred: preferredUaRef.current,
+      proxyBase: workerBase,
+      phpProxy: PHP_PROXY,
+    });
+  }
 
   function buildLiveCandidates(stream: Stream): PlayCandidate[] {
     if (stream.url) {
@@ -1041,7 +1068,7 @@ function XtreamPlayerInner() {
         phpProxy: PHP_PROXY,
         isHttpsSite: typeof window === "undefined" ? true : window.location.protocol === "https:",
       });
-      return [
+      return withUaLadder([
         ...urls.map((u) => ({
           url: u,
           native: false,
@@ -1053,12 +1080,12 @@ function XtreamPlayerInner() {
           isLive: true,
         })),
         { url: urls[0] ?? stream.url, native: true, label: "تشغيل أصلي مباشر", isLive: true },
-      ];
+      ]);
     }
     if (!account) return [];
     const ordered = orderedModes();
     const direct = ordered.find((m) => m.id === "direct-https") ?? ordered[0];
-    return [
+    return withUaLadder([
       ...ordered.map((m) => ({
         url: liveStreamUrl(m.base(account.host), account.username, account.password, stream.id),
         native: false,
@@ -1073,7 +1100,7 @@ function XtreamPlayerInner() {
         label: `${direct.label} (أصلي)`,
         isLive: true,
       },
-    ];
+    ]);
   }
 
   function buildMediaCandidates(
@@ -1082,7 +1109,7 @@ function XtreamPlayerInner() {
   ): PlayCandidate[] {
     if (!account) return [];
     const ordered = orderedModes();
-    return [
+    return withUaLadder([
       ...ordered.map((m) => ({
         url: buildUrl(m),
         native: false,
@@ -1091,7 +1118,7 @@ function XtreamPlayerInner() {
         isLive,
       })),
       { url: buildUrl(ordered[0]), native: true, mode: ordered[0], label: `${ordered[0].label} (أصلي)`, isLive },
-    ];
+    ]);
   }
 
   function makeLiveItem(stream: Stream): ViewItem {
@@ -1899,6 +1926,16 @@ function XtreamPlayerInner() {
                   <IconCheck className="w-3.5 h-3.5" />
                   {source === "m3u" ? `ملف قنوات: ${m3uName}` : `متصل — ${activeMode.label}`}
                 </span>
+                {activeUa === UA_PRESET_SMARTERS && (
+                  <span
+                    data-testid="ua-badge"
+                    title={SMARTERS_USER_AGENT}
+                    className="inline-flex items-center gap-1.5 bg-white/10 border border-[#d8ff3e]/30 text-[#d8ff3e] text-[11.5px] font-black px-3 py-1.5 rounded-full"
+                  >
+                    <IconZap className="w-3.5 h-3.5" />
+                    {UA_LABEL}
+                  </span>
+                )}
                 {source === "xtream" && userInfo && (
                   <>
                     <span className="text-[12.5px] font-bold text-white/60">
@@ -2097,6 +2134,11 @@ function XtreamPlayerInner() {
                               preferredStreamModeRef.current = mode;
                               setActiveMode(mode);
                             }
+                          }}
+                          onPreferredUa={(ua) => {
+                            /* البصمة التي نجح بها التشغيل — تُقدَّم في المحاولة القادمة */
+                            preferredUaRef.current = ua || "";
+                            setActiveUa(ua || "");
                           }}
                           onUnmute={() => setIsMuted(false)}
                           onSaveResume={handleSaveResume}

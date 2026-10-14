@@ -29,7 +29,7 @@ function stubFetch(response) {
     const url =
       input instanceof URL ? input.href : typeof input === "string" ? input : String(input.url);
     const headers = new Headers(init.headers || (input && input.headers) || {});
-    calls.push({ url, method: init.method || "GET", headers });
+    calls.push({ url, method: init.method || "GET", headers, redirect: init.redirect });
 
     const out = typeof response === "function" ? response(url, headers) : response;
     if (out instanceof Promise) return out;
@@ -223,6 +223,151 @@ test("17) يحجب المضيفات الداخلية والخاصة (SSRF)", asy
     assert.equal((await metadata.json()).error, "BLOCKED_HOST");
 
     assert.equal(stub.calls.length, 0, "لا يجب إجراء أي اتصال بمضيف محجوب");
+  } finally {
+    stub.restore();
+  }
+});
+
+/* ==========================================================================
+   بصمة المشغّل (User-Agent) + تحويل 302 + Range + معاملات جلسة القائمة
+   ========================================================================== */
+
+const SMARTERS_UA = "iptv_smarters_player_lite/1.4.2 VLC/3.1.2 LibVLC/3.1.2";
+const BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141 Safari/537.36";
+
+/* ١٨ — ?smpua=smarters → الوسيط يرسل بصمة Smarters/VLC للسيرفر الأصلي،
+   والمعامل نفسه لا يتسرب للسيرفر (هو توجيه للوسيط فقط) */
+test("18) يرسل بصمة IPTV Smarters/VLC ويحذف smpua من رابط السيرفر", async () => {
+  const stub = stubFetch(m3u8Response());
+  try {
+    const res = await worker.fetch(
+      new Request(`${PROXY}/h/srv.example/live/u/p/1.m3u8?token=abc123&smpua=smarters`, {
+        headers: { "User-Agent": BROWSER_UA },
+      })
+    );
+
+    assert.equal(stub.calls.length, 1);
+    assert.equal(
+      stub.calls[0].headers.get("user-agent"),
+      SMARTERS_UA,
+      "الوسيط هو القادر على تغيير User-Agent — المتصفح لا يستطيع"
+    );
+    assert.equal(stub.calls[0].url, "https://srv.example/live/u/p/1.m3u8?token=abc123");
+    assert.equal(stub.calls[0].url.includes("smpua"), false, "معامل الوسيط لا يصل للسيرفر");
+    assert.equal(stub.calls[0].redirect, "follow", "تحويل 302 يُتابع تلقائياً");
+    assert.equal(res.status, 200);
+  } finally {
+    stub.restore();
+  }
+});
+
+/* ١٩ — بصمة غير معروفة تُتجاهل (القائمة مغلقة) ويبقى User-Agent المتصفح */
+test("19) يتجاهل بصمة غير معروفة ويبقى على User-Agent المتصفح", async () => {
+  /* مصنع ردود (لا كائن واحد) — الاختبار يجري طلبين متتاليين */
+  const stub = stubFetch(() => m3u8Response());
+  try {
+    await worker.fetch(
+      new Request(`${PROXY}/h/srv.example/live/1.m3u8?smpua=curl%2F8.0`, {
+        headers: { "User-Agent": BROWSER_UA },
+      })
+    );
+    assert.equal(stub.calls[0].headers.get("user-agent"), BROWSER_UA);
+    assert.equal(stub.calls[0].url.includes("smpua"), false);
+
+    await worker.fetch(
+      new Request(`${PROXY}/?u=${encodeURIComponent("https://srv.example/live/1.m3u8")}`, {
+        headers: { "User-Agent": BROWSER_UA },
+      })
+    );
+    assert.equal(stub.calls[1].headers.get("user-agent"), BROWSER_UA, "بلا معامل = بصمة المتصفح");
+  } finally {
+    stub.restore();
+  }
+});
+
+/* ٢٠ — Range يمر للسيرفر الأصلي (التقديم/التراجع في الأفلام والمقاطع الجزئية) */
+test("20) يمرّر Range إلى السيرفر الأصلي مع البصمة", async () => {
+  const stub = stubFetch(
+    () =>
+      new Response("bytes", {
+        status: 206,
+        headers: { "content-type": "video/mp2t", "content-range": "bytes 0-1023/9000" },
+      })
+  );
+  try {
+    const res = await worker.fetch(
+      new Request(`${PROXY}/h/srv.example/movie/u/p/9.ts?smpua=smarters`, {
+        headers: { "User-Agent": BROWSER_UA, Range: "bytes=0-1023" },
+      })
+    );
+    assert.equal(stub.calls[0].headers.get("range"), "bytes=0-1023");
+    assert.equal(stub.calls[0].headers.get("user-agent"), SMARTERS_UA);
+    assert.equal(res.status, 206, "حالة الرد الجزئي تعود كما هي");
+    assert.equal(res.headers.get("content-range"), "bytes 0-1023/9000");
+  } finally {
+    stub.restore();
+  }
+});
+
+/* ٢١ — القائمة المعاد كتابتها تحفظ البصمة ومعاملات الجلسة لكل رابط فرعي:
+   المقاطع والقوائم الفرعية ومفاتيح فك التشفير تُطلب بنفس User-Agent ونفس التوكن،
+   وإلا فتح السيرفر جلسة جديدة وانقطع البث بعد أول مقطع */
+test("21) يعيد كتابة القائمة مع البصمة ومعاملات الجلسة للروابط الفرعية", async () => {
+  const manifest =
+    "#EXTM3U\n" +
+    "#EXT-X-VERSION:3\n" +
+    '#EXT-X-KEY:METHOD=AES-128,URI="key.php"\n' +
+    "#EXTINF:6.0,\n" +
+    "seg1.ts\n" +
+    "#EXTINF:6.0,\n" +
+    "https://other.example/live/seg2.ts?sig=xyz\n" +
+    "#EXTINF:6.0,\n" +
+    "sub/index.m3u8\n";
+
+  const stub = stubFetch(
+    () =>
+      new Response(manifest, {
+        status: 200,
+        headers: { "content-type": "application/vnd.apple.mpegurl" },
+      })
+  );
+  try {
+    const res = await worker.fetch(
+      new Request(`${PROXY}/h/srv.example/live/index.m3u8?token=abc123&smpua=smarters`)
+    );
+    const text = await res.text();
+
+    /* مقطع نسبي بلا استعلام → يرث توكن الجلسة + البصمة */
+    assert.ok(
+      text.includes("/h/srv.example/live/seg1.ts?token=abc123&smpua=smarters"),
+      `معاملات الجلسة والبصمة يجب أن تصلا للمقطع — actual: ${text}`
+    );
+    /* مفتاح فك التشفير كذلك */
+    assert.ok(text.includes('URI="/h/srv.example/live/key.php?token=abc123&smpua=smarters"'));
+    /* قائمة فرعية → نفس القاعدة */
+    assert.ok(text.includes("/h/srv.example/live/sub/index.m3u8?token=abc123&smpua=smarters"));
+    /* رابط على مضيف آخر وله توقيعه الخاص → لا نُضيف إليه توكن مضيف مختلف */
+    assert.ok(text.includes("/h/other.example/live/seg2.ts?sig=xyz&smpua=smarters"));
+    assert.equal(text.includes("seg2.ts?sig=xyz&token=abc123"), false);
+    /* لا يبقى أي رابط مباشر خارج الوسيط */
+    assert.equal(text.includes("https://other.example"), false);
+  } finally {
+    stub.restore();
+  }
+});
+
+/* ٢٢ — بلا بصمة: القائمة تُعاد كما كانت (توافق خلفي مع المشغّل القديم) */
+test("22) بلا smpua تبقى روابط القائمة كما كانت (توافق خلفي)", async () => {
+  const stub = stubFetch(m3u8Response());
+  try {
+    const res = await worker.fetch(
+      new Request(`${PROXY}/h/srv.example/live/index.m3u8?token=abc123`)
+    );
+    const text = await res.text();
+    assert.equal(text.includes("smpua"), false);
+    assert.ok(text.includes("/h/srv.example/live/seg1.ts?token=abc123"));
+    assert.equal(stub.calls[0].url, "https://srv.example/live/index.m3u8?token=abc123");
   } finally {
     stub.restore();
   }

@@ -14,9 +14,14 @@ import {
   MAX_ACCOUNTS,
   MAX_RECENTS,
   PHP_PROXY,
+  SMARTERS_USER_AGENT,
   STORAGE_KEY,
+  UA_LABEL,
+  UA_PARAM,
+  UA_PRESET_SMARTERS,
   accountKey,
   accountLabel,
+  addUaVariants,
   buildDiagReport,
   buildModes,
   composeFailMsg,
@@ -26,6 +31,7 @@ import {
   getProxyUrl,
   isHlsCandidateUrl,
   isNgrokUrl,
+  isProxiedUrl,
   isTrustedProxy,
   isValidAccount,
   liveStreamUrl,
@@ -79,6 +85,7 @@ import {
   toggleInList,
   upsertAccount,
   windowRange,
+  withUserAgentPreset,
 } from "../src/lib/xtream.mjs";
 
 const PROXY = "https://proxy.example";
@@ -817,4 +824,147 @@ test("38) aspectStyle يعطي أنماط العرض و isTsStreamUrl يميّز
   assert.equal(isTsStreamUrl("http://srv.com/live/u/p/5.m3u8"), false);
   assert.equal(isTsStreamUrl("http://srv.com/movie/u/p/5.mp4"), false);
   assert.equal(isTsStreamUrl(""), false);
+});
+
+/* ٣٩ — بصمة المشغّل: User-Agent الخاص بـ IPTV Smarters/VLC يُطلب من الوسيط
+   (المتصفح لا يستطيع تغيير الرأس بنفسه — رأس محظور في fetch/XHR) */
+test("39) withUserAgentPreset و isProxiedUrl: بصمة Smarters لروابط الوسيط فقط", () => {
+  assert.equal(SMARTERS_USER_AGENT, "iptv_smarters_player_lite/1.4.2 VLC/3.1.2 LibVLC/3.1.2");
+  assert.equal(UA_PARAM, "smpua");
+  assert.equal(UA_PRESET_SMARTERS, "smarters");
+
+  const target = "http://srv.com:8080/live/u/p/1.m3u8";
+  const php = `/proxy.php?url=${encodeURIComponent(target)}`;
+
+  /* بروكسي PHP: المعامل يُضاف لاستعلام الوسيط — لا داخل الرابط المُرمَّز */
+  assert.equal(withUserAgentPreset(php), `${php}&smpua=smarters`);
+  assert.equal(
+    decodeURIComponent(withUserAgentPreset(php).split("url=")[1].split("&")[0]),
+    target,
+    "الرابط الأصلي يجب ألا يتغير"
+  );
+  /* إضافة واحدة فقط (لا تكرار لو البصمة موجودة) */
+  assert.equal(withUserAgentPreset(withUserAgentPreset(php)), `${php}&smpua=smarters`);
+  assert.equal(withUserAgentPreset(`${php}&smpua=smarters`), `${php}&smpua=smarters`);
+
+  /* Worker بمسار /h/ بلا استعلام → ?smpua= ومع استعلام → &smpua= */
+  const opts = { proxyBase: PROXY };
+  assert.equal(
+    withUserAgentPreset(`${PROXY}/h/srv.com/live/1.m3u8`, UA_PRESET_SMARTERS, opts),
+    `${PROXY}/h/srv.com/live/1.m3u8?smpua=smarters`
+  );
+  assert.equal(
+    withUserAgentPreset(`${PROXY}/h/srv.com/live/1.m3u8?token=abc`, UA_PRESET_SMARTERS, opts),
+    `${PROXY}/h/srv.com/live/1.m3u8?token=abc&smpua=smarters`
+  );
+  assert.equal(
+    withUserAgentPreset(`${PROXY}/?u=${encodeURIComponent(target)}`, UA_PRESET_SMARTERS, opts),
+    `${PROXY}/?u=${encodeURIComponent(target)}&smpua=smarters`
+  );
+  /* الوسيط الرسمي يُعرف من نطاقه بلا تمرير proxyBase */
+  const official = "https://serverproject.ahmedlasheenrespicare.workers.dev/h/srv.com/1.m3u8";
+  assert.equal(withUserAgentPreset(official), `${official}?smpua=smarters`);
+
+  /* بصمة غير معروفة تُتجاهل (القائمة مغلقة في المشغّل والوسيط معاً) */
+  assert.equal(withUserAgentPreset(php, "curl/8"), php);
+  assert.equal(withUserAgentPreset(php, ""), php);
+
+  /* الروابط المباشرة: لا بصمة (لا وسيط = لا سيطرة على الرأس) */
+  assert.equal(withUserAgentPreset("https://srv.com/live/u/p/1.m3u8"), "https://srv.com/live/u/p/1.m3u8");
+  assert.equal(
+    withUserAgentPreset("https://srv.com/live/u/p/1.m3u8", UA_PRESET_SMARTERS, opts),
+    "https://srv.com/live/u/p/1.m3u8"
+  );
+  assert.equal(isProxiedUrl("https://srv.com/live/u/p/1.m3u8", { proxyBase: PROXY }), false);
+  assert.equal(isProxiedUrl(php), true);
+  assert.equal(isProxiedUrl("/proxy.php/h/srv.com/live/1.m3u8"), true);
+  assert.equal(isProxiedUrl(`${PROXY}/h/srv.com/live/1.m3u8`, { proxyBase: PROXY }), true);
+  assert.equal(isProxiedUrl(`${PROXY}/x/srv.com/live/1.m3u8`, { proxyBase: PROXY }), true);
+  /* الوسيط الرسمي يُعرف من نطاقه حتى بدون تمرير proxyBase */
+  assert.equal(
+    isProxiedUrl("https://serverproject.ahmedlasheenrespicare.workers.dev/h/srv.com/1.m3u8"),
+    true
+  );
+  assert.equal(isProxiedUrl(""), false);
+});
+
+/* ٤٠ — سلّم المرشّحات: بعد كل مرشّح عبر وسيط نسخة ببصمة Smarters/VLC،
+   وتُقدَّم البصمة لو نجحت سابقاً، والروابط المباشرة والأصلية لا تتغير */
+test("40) addUaVariants يضيف بصمة Smarters بعد كل مسار عبر وسيط ويحفظ الأصل", () => {
+  const directUrl = "https://srv.com/live/u/p/1.m3u8";
+  const phpUrl = `/proxy.php?url=${encodeURIComponent("http://srv.com/live/u/p/1.m3u8")}`;
+  const workerUrl = `${PROXY}/h/srv.com/live/u/p/1.m3u8`;
+  const mode = { id: "php-https", label: "بروكسي HTTPS", base: (h) => `/proxy.php?url=https://${h}` };
+
+  const candidates = [
+    { url: directUrl, native: false, label: "اتصال مباشر", isLive: true },
+    { url: workerUrl, native: false, label: "وسيط HTTPS", isLive: true, mode },
+    { url: phpUrl, native: false, label: "بروكسي HTTPS", isLive: true, mode },
+    /* المرشّح الأصلي يكرر رابطاً موجوداً عمداً — يجب ألا يُحذف */
+    { url: directUrl, native: true, label: "تشغيل أصلي مباشر", isLive: true },
+  ];
+
+  const ladder = addUaVariants(candidates, { proxyBase: PROXY });
+  assert.deepEqual(
+    ladder.map((c) => c.url),
+    [
+      directUrl,
+      workerUrl,
+      `${workerUrl}?smpua=smarters`,
+      phpUrl,
+      `${phpUrl}&smpua=smarters`,
+      directUrl,
+    ],
+    "كل وسيط تُجرَّب بعده نفس المسار ببصمة Smarters، والمباشر لا يتغير"
+  );
+  assert.deepEqual(
+    ladder.map((c) => c.ua ?? ""),
+    ["", "", "smarters", "", "smarters", ""],
+    "البصمة مسجّلة على المرشّح حتى تُذكر عند النجاح"
+  );
+  assert.equal(ladder[2].label, `وسيط HTTPS • ${UA_LABEL}`);
+  assert.equal(ladder[4].mode, mode, "نسخة البصمة تبقى على نفس المسار");
+  assert.equal(ladder[5].native, true, "التشغيل الأصلي المكرر يبقى في القائمة");
+  assert.equal(ladder[2].native, false);
+
+  /* نجحت البصمة سابقاً → تُجرَّب أولاً (توفير محاولة فاشلة في كل تشغيل) */
+  const preferred = addUaVariants(candidates, { proxyBase: PROXY, preferred: UA_PRESET_SMARTERS });
+  assert.equal(preferred[0].url, directUrl, "المباشر يبقى أولاً كما كان");
+  assert.equal(preferred[1].url, `${workerUrl}?smpua=smarters`, "البصمة تُقدَّم على نفس المسار");
+  assert.equal(preferred[2].url, workerUrl);
+  assert.deepEqual(preferred.slice(1, 3).map((c) => c.ua ?? ""), ["smarters", ""]);
+
+  /* قائمة بلا وسطاء (مباشر فقط) تبقى كما هي */
+  const plain = [{ url: directUrl, native: false, label: "اتصال مباشر" }];
+  assert.deepEqual(addUaVariants(plain, { proxyBase: PROXY }), plain);
+  /* ومرشّح ببصمة مضافة مسبقاً لا يُضاعَف */
+  const once = [{ url: `${phpUrl}&smpua=smarters`, native: false, label: "بروكسي", ua: "smarters" }];
+  assert.deepEqual(addUaVariants(once, { proxyBase: PROXY }), once);
+});
+
+/* ٤١ — مرشّحات ملف M3U مع البصمة: ngrok يبدأ بالوسيط وتُجرَّب البصمة بعده */
+test("41) m3uCandidates + addUaVariants: البصمة تأتي بعد كل رابط وسيط", () => {
+  const urls = m3uCandidates("http://srv.com/live/u/p/5.ts", {
+    proxyBase: PROXY,
+    isHttpsSite: true,
+  });
+  const ladder = addUaVariants(
+    urls.map((u) => ({ url: u, native: false, label: "مرشّح" })),
+    { proxyBase: PROXY }
+  );
+
+  const proxied = ladder.filter((c) => isProxiedUrl(c.url, { proxyBase: PROXY }));
+  assert.ok(proxied.length >= 3, "روابط الوسيط و/proxy.php كلها في السلّم");
+  /* كل رابط وسيط عادي يقابله رابط ببصمة Smarters */
+  const withUa = proxied.filter((c) => c.ua === UA_PRESET_SMARTERS);
+  assert.equal(withUa.length, proxied.length - withUa.length);
+  assert.ok(
+    withUa.every((c) => c.url.includes("smpua=smarters")),
+    "البصمة موجودة في كل مرشّح موسوم"
+  );
+  /* الروابط المباشرة لا تحمل البصمة إطلاقاً */
+  assert.ok(
+    ladder.filter((c) => !isProxiedUrl(c.url, { proxyBase: PROXY })).every((c) => !c.url.includes("smpua=")),
+    "لا معنى لبصمة في اتصال مباشر من المتصفح"
+  );
 });

@@ -417,3 +417,94 @@ test('عدة الشاشات (2 أو 4) ودرج القنوات داخل الفي
   await page.waitForTimeout(300);
   await page.keyboard.press('Escape');
 });
+
+/* ==========================================================================
+   بصمة المشغّل — User-Agent الخاص بـ IPTV Smarters / VLC
+   --------------------------------------------------------------------------
+   المتصفح لا يسمح لأي صفحة بتغيير User-Agent، لذلك يطلب المشغّل البصمة من
+   الوسيط بمعامل ?smpua=smarters. نفحص هنا سلّم المحاولات الحقيقي في الصفحة:
+   السيرفر (المحاكى) يرفض كل طلب بلا بصمة → يجب أن يجرّب المشغّل نفس المسار
+   بالبصمة، وأن يعلن نجاحها في الواجهة.
+========================================================================== */
+const SMARTERS_UA = 'iptv_smarters_player_lite/1.4.2 VLC/3.1.2 LibVLC/3.1.2';
+
+test('المشغّل يجرّب بصمة Smarters/VLC عبر الوسيط حين يرفض السيرفر المتصفح', async ({ page }) => {
+  const seen: string[] = [];
+  /* طلب بث: الرابط نفسه أو الهدف المُرمَّز داخل ?url= (وسيط /proxy.php) */
+  const isMedia = (u: URL) => {
+    const target = u.searchParams.get('url') || u.searchParams.get('u') || u.pathname;
+    return /\.(m3u8|m3u|ts|m4s|mp4)(\?|$)/i.test(target);
+  };
+
+  /* القائمة التي يرد بها البروكسي عند طلب البصمة — مقطع واحد يمر عبر البروكسي */
+  const manifest = [
+    '#EXTM3U',
+    '#EXT-X-VERSION:3',
+    '#EXT-X-TARGETDURATION:6',
+    '#EXT-X-MEDIA-SEQUENCE:0',
+    '#EXTINF:6.0,',
+    '/proxy.php?url=' +
+      encodeURIComponent(`https://${MOCK_HOST}/live/user1/${PASSWORD}/seg0.ts`) +
+      '&smpua=smarters',
+    '',
+  ].join('\n');
+
+  /* المسجَّل لاحقاً يُفحص أولاً: نعترض طلبات البث فقط ونُعيد الباقي لمحاكاة الدخول */
+  await page.route('**/*', (route) => {
+    const url = new URL(route.request().url());
+    const local = url.hostname === '127.0.0.1' || url.hostname === 'localhost';
+
+    if (local && url.pathname === '/proxy.php' && isMedia(url)) {
+      seen.push(url.toString());
+      const target = url.searchParams.get('url') || '';
+      /* بلا بصمة = السيرفر يحجب المتصفح (403) — كما تفعل لوحات Xtream كثيرة */
+      if (url.searchParams.get('smpua') !== 'smarters') {
+        return route.fulfill({ status: 403, body: 'user-agent not allowed' });
+      }
+      if (/\.ts(\?|$)/i.test(target)) return route.abort();
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/vnd.apple.mpegurl',
+        body: manifest,
+      });
+    }
+
+    /* الاتصال المباشر والوسيط الخارجي محجوبان في هذا الاختبار */
+    if (!local && isMedia(url)) {
+      seen.push(url.toString());
+      return route.abort();
+    }
+
+    return route.fallback();
+  });
+
+  const section = page.locator('#xtream');
+  await login(page);
+  await section.getByTestId('channel-row').first().click();
+
+  /* ① المشغّل جرّب نفس مسار البروكسي ببصمة Smarters/VLC */
+  await expect
+    .poll(() => seen.filter((u) => u.includes('/proxy.php') && u.includes('smpua=smarters')).length, {
+      timeout: 60000,
+      message: 'يجب أن يجرّب المشغّل بصمة IPTV Smarters/VLC عبر /proxy.php',
+    })
+    .toBeGreaterThan(0);
+
+  /* ② البصمة تُجرَّب بعد المسار العادي (لا تلغيه) */
+  const proxied = seen.filter((u) => u.includes('/proxy.php'));
+  const plainIdx = proxied.findIndex((u) => !u.includes('smpua='));
+  const uaIdx = proxied.findIndex((u) => u.includes('smpua=smarters'));
+  expect(plainIdx).toBeGreaterThanOrEqual(0);
+  expect(uaIdx).toBeGreaterThan(plainIdx);
+
+  /* ③ الاتصال المباشر بالسيرفر لا يحمل البصمة — المتصفح لا يستطيع إرسالها،
+     فالبصمة تظهر فقط في طلبات الوسيط (/proxy.php أو Worker) */
+  const direct = seen.filter((u) => new URL(u).hostname === MOCK_HOST);
+  expect(direct.length).toBeGreaterThan(0);
+  expect(direct.every((u) => !u.includes('smpua='))).toBe(true);
+
+  /* ④ الواجهة تعلن أن البث يعمل ببصمة المشغّل (مع القيمة الحرفية في title) */
+  const badge = section.getByTestId('ua-badge');
+  await expect(badge).toBeVisible({ timeout: 30000 });
+  await expect(badge).toHaveAttribute('title', SMARTERS_UA);
+});

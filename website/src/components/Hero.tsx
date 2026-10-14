@@ -73,6 +73,10 @@ const SLIDE_MS = 5000;
 /* الكلمات المتناوبة في القسم الداكن */
 const ENCHANT_WORDS = ["شاهِد", "عِش", "احتفِل"];
 
+/* الكلمة المتناوبة في العنوان الرئيسي (H1) — تُبدَّل قبل عبارة «كل ما تحب» */
+const HERO_TITLE_WORDS = ["شاهِد", "تابِع", "اكتشِف"];
+const HERO_TITLE_MS = 3000;
+
 interface HeroProps {
   onOpenTrial: () => void;
 }
@@ -294,12 +298,21 @@ function TvMockup({ index }: { index: number }) {
 export default function Hero({ onOpenTrial }: HeroProps) {
   const [index, setIndex] = useState(0);
   const [word, setWord] = useState(0);
+  const [heroWord, setHeroWord] = useState(0);
 
   /* تدوير شاشة الماكيت */
   useEffect(() => {
     const t = window.setInterval(() => {
       setIndex((i) => (i + 1) % STREAM_SLIDES.length);
     }, SLIDE_MS);
+    return () => window.clearInterval(t);
+  }, []);
+
+  /* تدوير كلمة العنوان الرئيسي */
+  useEffect(() => {
+    const t = window.setInterval(() => {
+      setHeroWord((w) => (w + 1) % HERO_TITLE_WORDS.length);
+    }, HERO_TITLE_MS);
     return () => window.clearInterval(t);
   }, []);
 
@@ -340,7 +353,12 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             threshold={0.3}
             step={130}
             lines={[
-              "شاهد كل ما تحب",
+              <>
+                <span key={heroWord} className="inline-block animate-word-in">
+                  {HERO_TITLE_WORDS[heroWord]}
+                </span>
+                {" كل ما تحب"}
+              </>,
               <>
                 بجودة 4K{" "}
                 <span className="font-serif italic font-normal">وبلا تقطيع</span>

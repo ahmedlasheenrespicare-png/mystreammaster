@@ -59,6 +59,8 @@ function applyHead(template, seo) {
     ['name="twitter:title"', seo.title],
     ['name="twitter:description"', seo.description],
     ['name="twitter:url"', seo.canonical],
+    ['property="og:image:alt"', seo.ogImageAlt],
+    ['name="twitter:image:alt"', seo.ogImageAlt],
     ['name="robots"', seo.robots],
   ];
 

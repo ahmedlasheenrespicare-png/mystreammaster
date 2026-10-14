@@ -58,13 +58,17 @@ export default function FAQ() {
                   </span>
                 </button>
 
-                {isOpen && (
-                  <div className="px-6 pb-6 animate-fade-in">
-                    <p className="text-[14px] md:text-[15px] leading-[1.9] text-white/65">
-                      {faq.a}
-                    </p>
-                  </div>
-                )}
+                {/* الإجابة موجودة دائماً في HTML (مخفية بصرياً عند الإغلاق)
+                    حتى يقرأها محرك البحث وتطابق بيانات FAQPage المنظّمة */}
+                <div hidden={!isOpen} className="px-6 pb-6 animate-fade-in">
+                  <p
+                    className={`text-[14px] md:text-[15px] leading-[1.9] ${
+                      isOpen ? "text-white/65" : "text-black/60"
+                    }`}
+                  >
+                    {faq.a}
+                  </p>
+                </div>
               </div>
               </Reveal>
             );

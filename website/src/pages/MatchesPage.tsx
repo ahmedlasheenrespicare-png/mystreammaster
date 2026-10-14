@@ -123,6 +123,11 @@ export default function MatchesPage() {
 
   return <section className="matches-page" aria-labelledby="matches-title">
     <div className="matches-container">
+      <nav className="text-[12.5px] font-bold text-black/40 mb-5" aria-label="مسار التصفح">
+        <a href="/" className="hover:text-black transition">الرئيسية</a>
+        <span className="mx-2">/</span>
+        <span className="text-black/70">مواعيد المباريات</span>
+      </nav>
       <header className="matches-hero">
         <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>

@@ -46,7 +46,10 @@ for (const file of await files(path.join(website, 'legacy'))) {
     content = $('<main id="main-content" class="sm-legacy"></main>');
     $('body').children().not('script').each((_, el) => content.append($(el).clone()));
   }
-  content.find('article h1').each((_, el) => { el.tagName = 'h2'; });
+  /* عنوان رئيسي واحد فقط لكل صفحة: أول h1 يبقى، وما عداه (عناوين داخل
+     نص المقال مكرّرة لعنوان الصفحة) يُخفَض إلى h2 — كان الخفض الشامل
+     يترك مقالات المدونة بلا أي h1. */
+  content.find('h1').each((i, el) => { if (i > 0) el.tagName = 'h2'; });
   $('body').empty().attr('class', `sm-page${relative === 'live-free.html' ? ' sm-player' : ''}`)
     .append(header).append(content).append(footer).append(scripts);
   // Decorative legacy effects and automatic ad placement can obscure the new UI.

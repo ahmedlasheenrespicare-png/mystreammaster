@@ -169,6 +169,27 @@ export default function CartModal({
             >
               <IconChat className="w-5 h-5" /> إتمام طلب التفعيل عبر واتساب
             </button>
+            <p className="text-[11.5px] text-black/50 text-center leading-relaxed">
+              بإرسال هذا الطلب، فإنك تقرّ باطلاعك وموافقتك على{" "}
+              <a
+                href="https://arena.ai/terms/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-[#2b4eff] underline underline-offset-2"
+              >
+                شروط الاستخدام وإخلاء المسؤولية
+              </a>{" "}
+              و
+              <a
+                href="https://arena.ai/refund/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-[#2b4eff] underline underline-offset-2"
+              >
+                سياسة الاسترجاع
+              </a>{" "}
+              الخاصة بالوساطة التقنية.
+            </p>
           </div>
         )}
       </div>

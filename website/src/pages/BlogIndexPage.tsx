@@ -15,12 +15,11 @@ export default function BlogIndexPage() {
         </nav>
 
         <h1 className="font-display font-black tracking-tight leading-[1.15] text-[34px] md:text-[50px]">
-          دلائل ومقالات{" "}
-          <span className="font-serif italic font-normal">عن IPTV</span>
+          الأدلة التقنية ومقالات التشغيل
         </h1>
         <p className="mt-4 max-w-[680px] text-[15.5px] text-black/60 font-medium leading-relaxed">
-          كل ما تحتاجه قبل الاشتراك وبعده: كيف تختبر ثبات السيرفر، وطريقة التثبيت على شاشات
-          سامسونج وLG، وكيف تختار الباقة المناسبة لسرعتك وجهازك.
+          شروحات مفصّلة حول دقة الفيديو، سرعات الإنترنت، إعداد تطبيقات الشاشات الذكية، ومعايير
+          المشاهدة القانونية.
         </p>
 
         <div className="mt-10 space-y-4">

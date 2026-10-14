@@ -123,6 +123,27 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
           >
             <IconChat className="w-5 h-5 text-[#d8ff3e]" /> طلب كود الفحص التجريبي عبر واتساب
           </button>
+          <p className="text-[11.5px] text-black/50 text-center leading-relaxed">
+            بإرسال هذا الطلب، فإنك تقرّ باطلاعك وموافقتك على{" "}
+            <a
+              href="https://arena.ai/terms/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#2b4eff] underline underline-offset-2"
+            >
+              شروط الاستخدام وإخلاء المسؤولية
+            </a>{" "}
+            و
+            <a
+              href="https://arena.ai/refund/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#2b4eff] underline underline-offset-2"
+            >
+              سياسة الاسترجاع
+            </a>{" "}
+            الخاصة بالوساطة التقنية.
+          </p>
         </form>
 
         <p className="text-[11.5px] text-black/40 text-center mt-4 font-medium">

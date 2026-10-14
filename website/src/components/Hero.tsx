@@ -446,14 +446,14 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-display font-black text-[20px] tracking-tight flex items-center gap-2">
-                    <IconZap className="w-5 h-5" /> تجربة مجانية سريعة
+                    <IconZap className="w-5 h-5" /> فحص تجريبي مجاني
                   </h3>
                   <span className="w-9 h-9 rounded-xl bg-[#0b0b0f] text-[#d8ff3e] grid place-items-center">
                     <IconTv className="w-4 h-4" />
                   </span>
                 </div>
                 <p className="text-[13.5px] leading-[1.8] text-black/70 font-medium">
-                  جرب السيرفر والقنوات الرياضية والترفيهية لمدة 6 ساعات مجاناً على شاشتك أو جوالك
+                  اختبر توافق التطبيق على جهازك واستقرار اتصال سيرفر المزود لمدة 6 ساعات مجاناً
                   قبل الشراء — بدون أي التزام مسبق.
                 </p>
               </div>
@@ -461,7 +461,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                 onClick={onOpenTrial}
                 className="btn-slide slide-royal mt-6 inline-flex items-center justify-center gap-2 bg-[#0b0b0f] text-white font-black text-[13.5px] px-5 py-3 rounded-full cursor-pointer"
               >
-                اطلب التجربة الآن <IconArrow className="w-4 h-4" />
+                طلب كود تجريبي <IconArrow className="w-4 h-4" />
               </button>
             </div>
           </Reveal>
@@ -525,7 +525,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                 </ul>
               </div>
               <a
-                href={getWhatsAppUrl("مرحبًا ستريم ماستر، أريد التحدث مع الدعم الفني للاشتراك")}
+                href={getWhatsAppUrl("مرحبًا ستريم ماستر، أريد التحدث مع الدعم الفني لطلب التفعيل التقني لدى المزود")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative mt-5 flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] py-3 text-[13px] font-black rounded-full transition"

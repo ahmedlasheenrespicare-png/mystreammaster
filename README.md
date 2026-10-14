@@ -128,6 +128,25 @@ player pages are separate and were not removed by this change.
   and any privacy changes required by the actual tracking implementation.
 - Targeted UI tests: `npm run test:ui --prefix website -- tests/watch-guide.spec.ts`.
 
+## البيانات المنظّمة للأحداث — Event JSON-LD
+
+- **السبب:** رصد Search Console مشاكل «Events» (حقول ناقصة)؛ مصدر الأخطاء الحرجة
+  (`Missing field "location"` و`"startDate"`) كان كيان `superEvent` داخل صفحة
+  المواجهة المكتفي بـ`@type` و`name` فقط، فتحسبه جوجل حدثاً مستقلاً ناقص الحقول،
+  ومعها نواقص الحقول الموصى بها في صفحة المتابعة وبطولة كأس العالم 2026.
+- **المعالجة:** كل كيان حدث في الموقع (المباراة، صفحة المتابعة، بطولة دوري أبطال
+  أوروبا 2026/27 كـ`superEvent`، وكأس العالم 2026) صار يحمل الحقول الإلزامية
+  (`name`، `startDate`، `location`) والموصى بها (`description`، `endDate`،
+  `image`، `performer`، `offers`، `organizer`، `eventStatus`،
+  `eventAttendanceMode`)، وبيانات البطولة موثّقة: مرحلة الدوري من 8 سبتمبر 2026
+  والنهائي 5 يونيو 2027 على ملعب رياض إير ميتروبوليتانو في مدريد.
+- **`offers`:** كيان `AggregateOffer` يعكس باقات المتجر المعروضة فعلاً في
+  `/store/` (25/35/45 دولاراً لنوفا وإيستار وموكا) مع رابط كل باقة وصفحتها
+  (`/nova/` و`/istar/` و`/moka/`)، فلا يُعلَّم أي سعر غير موجود على الموقع.
+- **الحماية من الارتداد:** `website/scripts/test-event-jsonld.mjs` (ضمن `npm test`)
+  يفحص اكتمال الحقول في المصادر المنسوخة والنسخ المنشورة معاً، ويتحقق أن المنشور
+  يطابق المصدر حتى لا تعود النواقص أو تنفصل النسختان.
+
 ## مشغّل اشتراكك الشخصي — تطوير القسم (`#xtream`)
 
 منطق القسم انتقل بالكامل إلى `website/src/lib/xtream.mjs` (دوال خالصة، بلا DOM

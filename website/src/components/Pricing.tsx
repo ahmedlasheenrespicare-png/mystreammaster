@@ -52,8 +52,8 @@ export default function Pricing({
             اختر باقتك و<span className="font-serif italic font-normal">سيرفرك</span> المفضل
           </h2>
           <p className="mt-4 text-[15px] md:text-[16.5px] text-black/60 font-medium leading-relaxed">
-            سيرفرات IPTV أصلية غير مضغوطة مع تفعيل فوري خلال دقائق وضمان ثبات كامل طوال مدة
-            اشتراكك.
+            باقات ربط تقني مع أبرز سيرفرات المزودين الخارجيين، مع تفعيل فوري ودعم فني لضبط الإعدادات
+            طوال مدة الاشتراك.
           </p>
 
           {/* المدة + العملة */}

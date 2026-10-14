@@ -38,7 +38,7 @@ export default function Testimonials() {
             يحبنا <span className="font-serif italic font-normal">الآلاف</span> من المشتركين
           </h2>
           <p className="mt-4 text-black/55 text-[15px] md:text-[16px] font-medium">
-            أكثر من 45,000 عميل يثقون في سيرفراتنا لتغطية أهم المباريات وأفلام السينما.
+            أكثر من 45,000 عميل يثقون في سيرفرات المزودين المتاحة عبر منصتنا.
           </p>
         </Reveal>
 

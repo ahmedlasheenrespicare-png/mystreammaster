@@ -90,8 +90,8 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 </span>
               </a>
               <p className="mt-5 text-white/50 text-[14px] leading-[1.9] max-w-sm">
-                المنصة الرائدة في اشتراكات وسيرفرات الـ IPTV في السعودية والخليج ومصر والعالم
-                العربي. ثبات 99.9% في قمة المباريات مع مكتبة أفلام ومسلسلات ضخمة محدثة يومياً.
+                المنصة التقنية الرائدة لخدمات الربط والدعم الفني لاشتراكات وسيرفرات المزودين في
+                السعودية والخليج ومصر والعالم العربي. ثبات 99.9% مع دعم فني متواصل على مدار الساعة.
               </p>
 
               <a
@@ -104,7 +104,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
               </a>
 
               <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-bold text-white/40">
-                {["مدى", "فيزا", "ماستركارد", "Apple Pay", "STC Pay", "فودافون كاش", "USDT"].map(
+                {["مدى", "فيزا", "ماستركارد", "Apple Pay", "STC Pay", "فودافون كاش"].map(
                   (p) => (
                     <span key={p} className="bg-white/[0.06] border border-white/10 px-2.5 py-1 rounded-full">
                       {p}
@@ -144,6 +144,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                   { t: "سياسة الخصوصية", href: to("privacy/") },
                   { t: "شروط الاستخدام", href: to("terms/") },
                   { t: "سياسة الاسترجاع", href: to("refund/") },
+                  { t: "المشاهدة القانونية", href: to("watch-legal.html") },
                   { t: "كأس العالم 2026", href: to("world-cup-2026/") },
                   { t: "التوقعات", href: to("predictions/") },
                   { t: "البحث", href: to("search/") },
@@ -245,6 +246,28 @@ export default function Footer({ onOpenTrial }: FooterProps) {
             <h3 className="font-display font-black tracking-tight leading-none text-[13vw] lg:text-[190px] text-center bg-gradient-to-b from-white/[0.14] to-white/[0.02] bg-clip-text text-transparent whitespace-nowrap">
               ستريم ماستر®
             </h3>
+          </div>
+
+          {/* إخلاء المسؤولية القانونية وسياسة DMCA */}
+          <div className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-[12.5px] leading-[1.9] text-white/55 text-right">
+            <p className="font-black text-[#d8ff3e] mb-1">
+              ⚠️ إخلاء مسؤولية قانوني وسياسة الملكية الفكرية (DMCA):
+            </p>
+            <p>
+              يعمل موقع <strong className="text-white/80">ستريم ماستر برو (Stream Master Pro)</strong> كوسيط تقني ودليل فهرسة فقط، ولا يقوم باستضافة أو تخزين أو رفع أو بث أي ملفات وسائط أو قنوات مرئية على خوادمه الخاصة. كافة العلامات التجارية المذكورة مملوكة لأصحابها الشرعيين، ويتحمل المستخدم وحده مسؤولية استخدامه للخدمة والامتثال للقوانين المحلية في بلده. للإبلاغ عن أي انتهاك لحقوق الطبع والنشر (DMCA) وطلب حذف الروابط خلال 24–72 ساعة، يرجى مراسلتنا عبر البريد الرسمي:{" "}
+              <a
+                href="mailto:support@streammasterstore.com"
+                className="text-white/80 underline hover:text-[#d8ff3e]"
+                dir="ltr"
+              >
+                support@streammasterstore.com
+              </a>{" "}
+              أو مراجعة{" "}
+              <a href={to("terms/")} className="text-white/80 underline hover:text-[#d8ff3e]">
+                وثيقة الشروط وسياسة DMCA
+              </a>
+              .
+            </p>
           </div>
 
           {/* الشريط السفلي */}

@@ -453,7 +453,7 @@ function DesktopPanel({
           ))}
         </div>
         <PanelFooter>
-          <p className="text-[13px] font-bold">سيرفرات أصلية — تفعيل فوري خلال 5 دقائق</p>
+          <p className="text-[13px] font-bold">سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</p>
           <a
             href={sectionHref("pricing")}
             onClick={onNavigate}

@@ -23,64 +23,63 @@ body{font-family:'Tajawal',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica 
 اشترك الآن
 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path> </svg> </a> <button aria-expanded="false" aria-label="فتح القائمة" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white transition-all hover:bg-white/10 lg:hidden" id="mobile-menu-toggle" type="button"> <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"></path> </svg> </button> </div> </div> <div class="hidden border-t border-white/5 bg-brand-bg/95 backdrop-blur-xl lg:hidden" id="mobile-menu"> <nav aria-label="التنقل للجوال" class="container-app flex flex-col gap-1 py-4"> <a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/"> الرئيسية </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/store/"> المتجر </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/servers/"> السيرفرات </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/blog/"> المدوّنة </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/faq/"> الأسئلة الشائعة </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/about/"> من نحن </a> <a class="btn-primary mt-2 w-full" href="/store/">
 اشترك الآن
-</a> </nav> </div> </header> <script type="module">function e(){try{const a=JSON.parse(localStorage.getItem("stream-master-cart")||"[]").reduce((n,d)=>n+d.quantity,0),t=document.getElementById("cart-count");t&&(t.textContent=String(a),a>0?(t.classList.remove("hidden"),t.classList.add("inline-flex")):(t.classList.add("hidden"),t.classList.remove("inline-flex")))}catch{}}e();window.addEventListener("cart-updated",e);window.addEventListener("storage",e);</script> <script type="module">const d=document.getElementById("mobile-menu-toggle"),t=document.getElementById("mobile-menu");d?.addEventListener("click",()=>{const e=!t?.classList.contains("hidden");t?.classList.toggle("hidden"),d.setAttribute("aria-expanded",String(!e)),d.setAttribute("aria-label",e?"فتح القائمة":"إغلاق القائمة")});t?.querySelectorAll("a").forEach(e=>{e.addEventListener("click",()=>{t.classList.add("hidden"),d?.setAttribute("aria-expanded","false")})});document.addEventListener("keydown",e=>{e.key==="Escape"&&!t?.classList.contains("hidden")&&(t.classList.add("hidden"),d?.setAttribute("aria-expanded","false"))});</script> <main class="relative z-10" id="main-content"> <section class="section pt-16"> <div class="container-app max-w-3xl"> <header class="mb-10"> <span class="badge mb-3">قانوني</span> <h1 class="mb-4 text-4xl font-black tracking-tight text-white sm:text-5xl"> سياسة الاسترداد | ستريم ماستر برو </h1> </header> <article class="prose prose-invert max-w-none prose-headings:font-black prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white"> <h1 id="سياسة-الاسترداد">سياسة الاسترداد</h1>
-<p>نسعى لرضاك الكامل. إذا لم تكن راضيًا عن خدمتنا، توضح هذه السياسة حقوقك في الاسترداد.</p>
-<h2 id="الحالات-التي-يحق-فيها-الاسترداد-الكامل">الحالات التي يحق فيها الاسترداد الكامل</h2>
-<h3 id="-ضمان-الـ-7-أيام">✅ ضمان الـ 7 أيام</h3>
-<p>إذا اشتريت اشتراكًا جديدًا ولم تستخدم الخدمة (لم تفعّل الكود)، يحق لك طلب <strong>استرداد كامل</strong> خلال <strong>7 أيام</strong> من تاريخ الشراء.</p>
-<h3 id="-انقطاع-الخدمة-الطارئ">✅ انقطاع الخدمة الطارئ</h3>
-<p>إذا انقطعت الخدمة لمدة <strong>48 ساعة متواصلة</strong> أو أكثر، يحق لك:</p>
-<ul>
-<li>استرداد كامل للفترة المتبقية.</li>
-<li>أو تمديد الاشتراك بمدة مساوية.</li>
-</ul>
-<h3 id="-عدم-مطابقة-المواصفات">✅ عدم مطابقة المواصفات</h3>
-<p>إذا كانت الخدمة المقدّمة تختلف جوهريًا عن المواصفات المعلنة (مثلاً: ادعينا 4K وأنت تستقبل HD فقط)، يحق لك الاسترداد.</p>
-<h2 id="الحالات-التي-لا-يحق-فيها-الاسترداد">الحالات التي لا يحق فيها الاسترداد</h2>
-<h3 id="-استخدام-الكود">❌ استخدام الكود</h3>
-<p>بمجرد استخدامك لكود التفعيل ومشاهدة أي محتوى، يعتبر أنك بدأت استخدام الخدمة.</p>
-<h3 id="-انقطاع-الإنترنت-من-جانبك">❌ انقطاع الإنترنت من جانبك</h3>
-<p>إذا كان الانقطاع بسبب اتصالك المحلي وليس السيرفر.</p>
-<h3 id="-تغيير-الرأي-بعد-7-أيام">❌ تغيير الرأي بعد 7 أيام</h3>
-<p>لا يمكن الاسترداد إذا تجاوزت 7 أيام من الشراء.</p>
-<h3 id="-استخدام-الخدمة-لأغراض-غير-مشروعة">❌ استخدام الخدمة لأغراض غير مشروعة</h3>
-<p>إذا تم إيقاف حسابك بسبب انتهاك شروط الاستخدام.</p>
-<h2 id="إجراءات-الاسترداد">إجراءات الاسترداد</h2>
-<h3 id="الخطوة-1-التواصل">الخطوة 1: التواصل</h3>
-<p>أرسل طلب الاسترداد عبر:</p>
-<ul>
-<li>📧 البريد الإلكتروني: <a href="mailto:support@streammasterstore.com">support@streammasterstore.com</a></li>
-<li>📱 WhatsApp: <a href="https://wa.me/201098950879">201098950879+</a></li>
-</ul>
-<h3 id="الخطوة-2-تقديم-المعلومات">الخطوة 2: تقديم المعلومات</h3>
-<p>حدّد:</p>
-<ul>
-<li>رقم الطلب أو كود التفعيل.</li>
-<li>سبب طلب الاسترداد.</li>
-<li>تاريخ الشراء.</li>
-</ul>
-<h3 id="الخطوة-3-المراجعة">الخطوة 3: المراجعة</h3>
-<p>سيراجع فريقنا طلبك خلال <strong>24 ساعة</strong> عمل.</p>
-<h3 id="الخطوة-4-الموافقة-أو-الرفض">الخطوة 4: الموافقة أو الرفض</h3>
-<p>سنُعلمك بالنتيجة عبر البريد الإلكتروني أو WhatsApp.</p>
-<h3 id="الخطوة-5-تنفيذ-الاسترداد">الخطوة 5: تنفيذ الاسترداد</h3>
-<p>عند الموافقة:</p>
-<ul>
-<li>يُحوّل المبلغ إلى <strong>نفس وسيلة الدفع</strong> الأصلية.</li>
-<li>المدة: <strong>5-14 يوم عمل</strong> حسب طريقة الدفع.</li>
-<li><strong>بدون رسوم</strong> على الاسترداد.</li>
-</ul>
-<h2 id="الاسترداد-الجزئي">الاسترداد الجزئي</h2>
-<p>في حالات خاصة (مثلاً انقطاع خدمة لفترة)، قد نقدم <strong>استردادًا جزئيًا</strong> أو <strong>تمديد اشتراك</strong>. القرار يعود لتقدير فريق الدعم.</p>
-<h2 id="الأسئلة-الشائعة">الأسئلة الشائعة</h2>
-<h3 id="هل-يمكنني-تحويل-اشتراكي-إلى-سيرفر-آخر">هل يمكنني تحويل اشتراكي إلى سيرفر آخر؟</h3>
-<p><strong>نعم</strong>، خلال أول 7 أيام، يمكنك التحويل من سيرفر لآخر بنفس المدة المتبقية (مع تعديل فرق السعر إن وُجد).</p>
-<h3 id="ماذا-لو-اشتريت-12-شهر-ثم-غيّرت-رأيي">ماذا لو اشتريت 12 شهر ثم غيّرت رأيي؟</h3>
-<p>لا يحق الاسترداد بعد استخدام الخدمة، لكن يمكنك طلب <strong>إيقاف التجديد</strong> في أي وقت.</p>
-<h3 id="ماذا-لو-دفعت-بالخطأ-مرتين">ماذا لو دفعت بالخطأ مرتين؟</h3>
-<p>سيُسترد المبلغ الإضافي تلقائيًا خلال 5 أيام عمل.</p>
+</a> </nav> </div> </header> <script type="module">function e(){try{const a=JSON.parse(localStorage.getItem("stream-master-cart")||"[]").reduce((n,d)=>n+d.quantity,0),t=document.getElementById("cart-count");t&&(t.textContent=String(a),a>0?(t.classList.remove("hidden"),t.classList.add("inline-flex")):(t.classList.add("hidden"),t.classList.remove("inline-flex")))}catch{}}e();window.addEventListener("cart-updated",e);window.addEventListener("storage",e);</script> <script type="module">const d=document.getElementById("mobile-menu-toggle"),t=document.getElementById("mobile-menu");d?.addEventListener("click",()=>{const e=!t?.classList.contains("hidden");t?.classList.toggle("hidden"),d.setAttribute("aria-expanded",String(!e)),d.setAttribute("aria-label",e?"فتح القائمة":"إغلاق القائمة")});t?.querySelectorAll("a").forEach(e=>{e.addEventListener("click",()=>{t.classList.add("hidden"),d?.setAttribute("aria-expanded","false")})});document.addEventListener("keydown",e=>{e.key==="Escape"&&!t?.classList.contains("hidden")&&(t.classList.add("hidden"),d?.setAttribute("aria-expanded","false"))});</script> <main class="relative z-10" id="main-content"> <section class="section pt-16"> <div class="container-app max-w-3xl"> <header class="mb-10"> <span class="badge mb-3">قانوني</span> <h1 class="mb-4 text-4xl font-black tracking-tight text-white sm:text-5xl"> سياسة إلغاء الاشتراك واسترداد الأموال | ستريم ماستر برو </h1> </header> <article class="prose prose-invert max-w-none prose-headings:font-black prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white">
+<p>حرصاً على الشفافية التامة ومنع أي خلافات مالية، تخضع عمليات الشراء والاشتراك في <strong>ستريم ماستر برو (Stream Master Pro)</strong> لقواعد إلغاء الاشتراك واسترداد الأموال المحددة والملزمة التالية.</p>
+
 <hr/>
-<p><a href="https://wa.me/201098950879">تواصل مع فريق الاسترداد ←</a></p> </article> </div> </section> </main> <footer class="relative z-10 mt-20 border-t border-white/5 bg-brand-bg-soft"> <div class="container-app section"> <div class="grid gap-12 lg:grid-cols-4"> <div class="lg:col-span-1"> <a class="mb-4 flex items-center gap-3" href="/"> <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-red to-red-700 shadow-lg shadow-red-500/30"> <svg class="h-7 w-7" fill="white" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M8 5v14l11-7z"></path> </svg> </div> <div class="flex flex-col"> <span class="text-lg font-black text-white">ستريم ماستر برو</span> <span class="text-xs text-gray-400">Stream Master Pro</span> </div> </a> <p class="mb-6 text-sm leading-relaxed text-gray-400"> افضل اشتراك IPTV بدون تقطيع في السعودية والخليج - ثبات 99.9% </p> <div class="flex gap-2"> <a aria-label="twitter" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://twitter.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="instagram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://instagram.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> i </span> </a><a aria-label="telegram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://t.me/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="youtube" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://youtube.com/@streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> y </span> </a> </div> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المتجر</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/store/"> كل الباقات </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/nova/"> سيرفر نوفا </a> </li><li>  </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/moka/"> سيرفر موكا </a> </li><li> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المساعدة</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/faq/"> الأسئلة الشائعة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/blog/"> المدوّنة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/status/"> حالة السيرفرات </a> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">قانوني</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/terms/"> شروط الاستخدام </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/privacy/"> سياسة الخصوصية </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/refund/"> سياسة الاسترداد </a> </li> </ul> <div class="mt-6 space-y-2"> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white" href="mailto:support@streammasterstore.com"> <span>📧</span> <span dir="ltr">support@streammasterstore.com</span> </a> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-green-400" href="https://wa.me/201098950879" rel="noopener noreferrer" target="_blank"> <span>💬</span> <span dir="ltr">+201098950879</span> </a> </div> </div> </div> <div class="mt-12 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80"> <strong class="block text-amber-300">⚠️ إخلاء مسؤولية:</strong>
+
+<h2 id="1-طبيعة-المنتجات-والخدمات-الرقمية">1. طبيعة المنتجات والخدمات الرقمية</h2>
+<p>نظراً لأن الخدمات المقدمة عبر <strong>ستريم ماستر برو</strong> هي خدمات رقمية وتفعيلية تبدأ فور إصدار وتسليم بيانات الاشتراك للمستخدم، فإن جميع المبيعات تُعد نهائية بمجرد تفعيل الاشتراك والبدء في استخدامه، مع مراعاة الاستثناءات المحددة أدناه. ونوصي جميع المستخدمين بطلب <strong>التجربة المجانية</strong> قبل إتمام الشراء للتحقق من توافق الخدمة مع أجهزتهم وسرعة الإنترنت لديهم.</p>
+
+<h2 id="2-الحالات-المؤهلة-لاسترداد-الأموال">2. الحالات المؤهلة لاسترداد الأموال</h2>
+<p>يحق للمستخدم طلب استرداد المبلغ المدفوع خلال مدة أقصاها <strong>72 ساعة (3 أيام)</strong> من تاريخ الشراء في الحالات الحصرية التالية فقط:</p>
+<ol>
+<li><strong>عدم استلام بيانات التفعيل:</strong> عدم تسليم بيانات أو كود تفعيل الاشتراك خلال المدة المحددة بعد إتمام عملية الدفع بنجاح، وعدم استجابة فريق الدعم الفني بعد التواصل معه.</li>
+<li><strong>عدم استخدام الكود مطلقاً:</strong> إذا اشترى المستخدم باقة جديدة ولم يقم بتفعيل الكود أو استخدامه نهائياً، وطلب الإلغاء خلال المهلة المحددة.</li>
+<li><strong>العطل التقني الكلي المثبت:</strong> وجود عطل تقني كلي ومثبت من طرفنا يمنع المستخدم من تشغيل الخدمة تماماً منذ لحظة الشراء، وفشل فريق الدعم الفني في معالجته أو توفير بديل مكافئ خلال <strong>48 ساعة عمل</strong> من تاريخ فتح تذكرة الدعم، شريطة تعاون المستخدم الكامل مع فريق الدعم لتشخيص المشكلة.</li>
+<li><strong>الدفع المكرر بالخطأ:</strong> في حال سحب مبلغ الاشتراك مرتين لنفس الطلب عن طريق الخطأ، يتم رد المبلغ الإضافي كاملاً وبشكل فوري.</li>
+</ol>
+
+<h2 id="3-الحالات-غير-المؤهلة-لاسترداد-الأموال">3. الحالات غير المؤهلة لاسترداد الأموال (موانع الاسترجاع)</h2>
+<p><strong>لا يحق للمستخدم المطالبة باسترداد الأموال كلياً أو جزئياً في أي من الحالات التالية:</strong></p>
+<ul>
+<li>❌ <strong>تغيير الرأي بعد التفعيل:</strong> استخدام كود التفعيل وتشغيل الخدمة فعلياً ثم الرغبة في الإلغاء لمجرد تغيير الرأي أو عدم الرغبة في إكمال مدة الاشتراك.</li>
+<li>❌ <strong>المشكلات التقنية من طرف المستخدم:</strong> ضعف أو تذبذب سرعة الإنترنت لدى المستخدم، أو عدم توافق جهازه أو شاشته، أو عدم معرفته بكيفية ضبط الإعدادات ورفضه اتباع تعليمات الدعم الفني.</li>
+<li>❌ <strong>قيود مزود خدمة الإنترنت (ISP):</strong> الحجب التقني أو القيود المفروضة من قِبل شركة الاتصالات أو مزود الإنترنت المحلي في دولة المستخدم.</li>
+<li>❌ <strong>تغييرات مصادر الأطراف الثالثة:</strong> توقف أو تحديث أو تعديل بعض القنوات أو الروابط الفرعية الخاضعة لخوادم الأطراف الثالثة المستقلة.</li>
+<li>❌ <strong>مخالفة شروط الخدمة:</strong> إيقاف أو حظر الحساب نتيجة انتهاك المستخدم لأي بند من بنود <a href="/terms/">شروط الخدمة</a> (مثل مشاركة الحساب على أكثر من جهاز في نفس الوقت، أو إعادة البث، أو الاستخدام التجاري في المقاهي والأماكن العامة).</li>
+<li>❌ <strong>انقضاء المهلة الزمنية:</strong> تقديم طلب الاسترجاع بعد مرور المهلة المحددة (72 ساعة من تاريخ الشراء).</li>
+</ul>
+
+<h2 id="4-إلغاء-الاشتراك-والتجديد">4. سياسة إلغاء الاشتراك والتجديد</h2>
+<ul>
+<li>لا يتم تجديد الاشتراكات المدفوعة لمرة واحدة تلقائياً إلا بطلب المستخدم.</li>
+<li>في حال وجود اشتراك بتجديد دوري، يمكن للمستخدم طلب إلغاء التجديد التلقائي في أي وقت قبل موعد استحقاق الفاتورة التالية بـ <strong>48 ساعة</strong> على الأقل. يوقف هذا الإلغاء عمليات السحب المستقبلية فقط، ولا يترتب عليه استرداد المبالغ عن الفترة الجارية السارية.</li>
+</ul>
+
+<h2 id="5-سياسة-النزاعات-المالية-وطلبات-الاسترجاع-القسري">5. سياسة النزاعات المالية وطلبات استرجاع المدفوعات (Chargebacks)</h2>
+<p>يلتزم المستخدم بالتواصل أولاً مع فريق الدعم الفني والمالي عبر قنوات التواصل الرسمية لحل أي إشكالية تتعلق بالفوترة أو الخدمة بشكل ودي وسريع.</p>
+<blockquote>
+<p><strong>⚠️ تنبيه قانوني هام:</strong> إن قيام المستخدم بفتح نزاع مالي أو طلب استرجاع قسري للمدفوعات (Chargeback) عبر البنك أو بوابة الدفع دون وجه حق وبعد استلام وتفعيل الخدمة يُعد خرقاً جسيماً لشروط العقد ومحاولة احتيال مالي. وفي هذه الحالة، يحتفظ <strong>ستريم ماستر برو</strong> بالحق في الإيقاف الفوري والنهائي للحساب، وإدراج بيانات المستخدم وعنوان الـ IP الخاص به في القائمة السوداء (Blacklist)، وتقديم كافة سجلات التفعيل والاستخدام لبوابة الدفع والجهات المختصة لإثبات استلام الخدمة والمطالبة بالحقوق القانونية.</p>
+</blockquote>
+
+<h2 id="6-إجراءات-طلب-الاسترداد-ومدة-المعالجة">6. إجراءات طلب الاسترداد ومدة المعالجة</h2>
+<ol>
+<li><strong>تقديم الطلب:</strong> إرسال رسالة رسمية إلى البريد الإلكتروني <a href="mailto:support@streammasterstore.com">support@streammasterstore.com</a> أو عبر واتساب الدعم الفني تتضمن: (رقم الطلب، البريد الإلكتروني أو رقم الهاتف، تاريخ الشراء، وسبب الطلب بالتفصيل).</li>
+<li><strong>المراجعة الفنية:</strong> يقوم القسم المختص بمراجعة الطلب والتحقق من سجلات التفعيل خلال <strong>24 إلى 48 ساعة عمل</strong>.</li>
+<li><strong>تنفيذ الاسترداد:</strong> في حال الموافقة على الطلب، يتم إرجاع المبلغ إلى <strong>نفس وسيلة الدفع الأصلية</strong> التي تم الشراء بها خلال مدة تتراوح بين <strong>5 إلى 14 يوم عمل</strong> (وفقاً لإجراءات البنك أو بوابة الدفع).</li>
+</ol>
+
+<hr/>
+
+<h2 id="7-التواصل-مع-القسم-المالي">7. التواصل مع القسم المالي والدعم</h2>
+<ul>
+<li>📧 <strong>البريد الإلكتروني الرسمي:</strong> <a href="mailto:support@streammasterstore.com">support@streammasterstore.com</a></li>
+<li>📱 <strong>واتساب الدعم الفني والمالي:</strong> <a href="https://wa.me/201098950879">+201098950879</a></li>
+</ul>
+<p>تُقرأ هذه السياسة بالتكامل مع <a href="/terms/">شروط الخدمة وسياسة DMCA وإخلاء المسؤولية</a> و<a href="/privacy/">سياسة الخصوصية وأمان الدفع</a>.</p>
+<hr/>
+<p><em>تاريخ آخر تحديث: أكتوبر 2026</em></p> </article> </div> </section> </main> <footer class="relative z-10 mt-20 border-t border-white/5 bg-brand-bg-soft"> <div class="container-app section"> <div class="grid gap-12 lg:grid-cols-4"> <div class="lg:col-span-1"> <a class="mb-4 flex items-center gap-3" href="/"> <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-red to-red-700 shadow-lg shadow-red-500/30"> <svg class="h-7 w-7" fill="white" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M8 5v14l11-7z"></path> </svg> </div> <div class="flex flex-col"> <span class="text-lg font-black text-white">ستريم ماستر برو</span> <span class="text-xs text-gray-400">Stream Master Pro</span> </div> </a> <p class="mb-6 text-sm leading-relaxed text-gray-400"> افضل اشتراك IPTV بدون تقطيع في السعودية والخليج - ثبات 99.9% </p> <div class="flex gap-2"> <a aria-label="twitter" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://twitter.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="instagram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://instagram.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> i </span> </a><a aria-label="telegram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://t.me/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="youtube" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://youtube.com/@streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> y </span> </a> </div> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المتجر</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/store/"> كل الباقات </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/nova/"> سيرفر نوفا </a> </li><li>  </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/moka/"> سيرفر موكا </a> </li><li> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المساعدة</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/faq/"> الأسئلة الشائعة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/blog/"> المدوّنة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/status/"> حالة السيرفرات </a> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">قانوني</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/terms/"> شروط الاستخدام </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/privacy/"> سياسة الخصوصية </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/refund/"> سياسة الاسترداد </a> </li> </ul> <div class="mt-6 space-y-2"> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white" href="mailto:support@streammasterstore.com"> <span>📧</span> <span dir="ltr">support@streammasterstore.com</span> </a> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-green-400" href="https://wa.me/201098950879" rel="noopener noreferrer" target="_blank"> <span>💬</span> <span dir="ltr">+201098950879</span> </a> </div> </div> </div> <div class="mt-12 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80"> <strong class="block text-amber-300">⚠️ إخلاء مسؤولية:</strong>
 الخدمة تعتمد على محتوى أطراف ثالثة ومحتوى مرخّص. المشترك هو المسؤول الوحيد عن
       المحتوى الذي يختار مشاهدته والامتثال لقوانين بلده. الموقع لا يوفّر ولا يشجّع على
       بث محتوى مقرصن.

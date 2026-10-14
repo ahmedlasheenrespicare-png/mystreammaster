@@ -110,7 +110,7 @@ export default function ContentTicker() {
       </div>
 
       <p className="relative mx-auto mt-8 max-w-[1370px] px-5 text-center text-[11.5px] leading-relaxed text-black/35">
-        شعارات القنوات والمنصات مملوكة لأصحابها وتُعرض للتعريف. المحتوى المدفوع (beIN، OSN، Shahid، Netflix …) غير مشمول في اشتراكنا ولا يُبثّ من الموقع، ونوفّر روابط اشتراكه الرسمي فقط:{" "}
+        شعارات القنوات والمنصات مملوكة لأصحابها وتُعرض للتعريف. المحتوى المدفوع (beIN، OSN، Shahid، Netflix …) غير مشمول في خدماتنا ولا يُبثّ من الموقع، ويعرض الدليل روابط اشتراكه الرسمي فقط:{" "}
         <a href="/watch-legal.html" className="font-semibold underline underline-offset-2 hover:text-black/70">
           /watch-legal.html
         </a>

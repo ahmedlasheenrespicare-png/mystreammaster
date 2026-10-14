@@ -16,12 +16,11 @@ export default function BlogTeaser() {
               دلائل ومقالات
             </p>
             <h2 className="font-display font-black tracking-tight leading-[1.15] text-[32px] md:text-[46px]">
-              اعرف قبل أن تُشترك{" "}
-              <span className="font-serif italic font-normal">وتوفّر وقتك</span>
+              دلائل تقنية لاختيار وإعداد جهازك بذكاء
             </h2>
             <p className="mt-4 text-[15px] text-black/60 font-medium leading-relaxed">
-              أدلة عملية مبنية على أسئلة حقيقية من مشتركينا: كيف تختبر السيرفر، وكيف تثبّت
-              الاشتراك على شاشتك، وكيف تختار الباقة المناسبة لسرعتك.
+              شروحات عملية مبنية على تجارب المستخدمين: كيف تقيس جودة الاتصال، وكيف تضبط تطبيقات
+              العرض على الشاشات الذكية، وكيف تختار السيرفر المتوافق مع سرعة شبكتك.
             </p>
           </div>
           <a

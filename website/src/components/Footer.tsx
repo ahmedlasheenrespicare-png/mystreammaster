@@ -148,7 +148,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                   { t: "كأس العالم 2026", href: to("world-cup-2026/") },
                   { t: "التوقعات", href: to("predictions/") },
                   { t: "البحث", href: to("search/") },
-                  { t: "البث المجاني", href: to("live-free.html") },
+                  { t: "مشغّل الويب الذكي", href: to("live-free.html") },
                 ] },
               ].map((col) => (
                 <div key={col.h}>

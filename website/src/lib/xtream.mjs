@@ -27,7 +27,7 @@ export const LIST_OVERSCAN = 6;
 
 export const SHARE_TOKEN_PREFIX = "SMP1";
 
-/* ثوابت الوسيط والبروكسي — مطابقة لصفحة البث المباشر (LivePlayer) */
+/* ثوابت الوسيط والبروكسي — تُستخدم في كل حلقات التشغيل */
 export const PHP_PROXY = "/proxy.php";
 export const PROXY_SESSION_KEY = "smp-proxy";
 export const OWNED_PROXY_PATTERN =

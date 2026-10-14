@@ -9,673 +9,1081 @@
       gtag('config', 'G-N7VT67MW57');
     </script>
 <meta charset="utf-8">
-<meta content="noindex, nofollow, noarchive" name="robots">
+<meta content="noindex, follow" name="robots">
 <meta content="no-referrer" name="referrer">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>البث المباشر المجاني | ستريم ماستر برو</title>
-<noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&amp;display=swap" rel="stylesheet"/></noscript>
-<script src="hls.min.js"></script>
-<script>
-if (typeof Hls === 'undefined') {
-  var _s = document.createElement('script');
-  _s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js';
-  _s.crossOrigin = 'anonymous';
-  _s.async = false;
-  document.head.appendChild(_s);
-}
-</script>
+<title>مشغّل اشتراكك الشخصي — شغّل باقتك من المتصفح واستعرض المميزات | ستريم ماستر برو</title>
+<meta content="صفحة مشغّل الاشتراك الشخصي في ستريم ماستر برو: أدخل بياناتك (سيرفر + مستخدم + كلمة سر أو رابط M3U) وشغّل باقتك داخل متصفحك، مع جولة تفاعلية وبطاقات تشرح المميزات. البيانات تُحفظ على جهازك فقط، والموقع لا يستضيف أي محتوى." name="description">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Tajawal',sans-serif;background:#060510;color:#e2e8f0;min-height:100vh}
-a{text-decoration:none;color:inherit}
-.promo-bar{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;text-align:center;padding:8px 16px;font-size:13px;font-weight:700}
-.site-header{position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(10,6,24,.85);backdrop-filter:blur(16px)}
-.header-inner{max-width:1400px;margin:0 auto;padding:0 20px;height:68px;display:flex;align-items:center;justify-content:space-between}
-.logo-area{display:flex;align-items:center;gap:12px}
-.logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#dc2626,#991b1b);display:grid;place-items:center;box-shadow:0 6px 18px rgba(220,38,38,.35)}
-.logo-text strong{display:block;color:#fff;font-size:15px;font-weight:900}
-.logo-text span{color:#94a3b8;font-size:11px}
-.nav{display:flex;gap:4px}
-.nav a{padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;color:#94a3b8}
-.nav a.active{background:rgba(255,255,255,.08);color:#fff}
-@media(max-width:900px){.nav{display:none}}
-.btn-live{background:#dc2626;color:#fff;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:800;display:flex;gap:6px;align-items:center}
-.btn-live span{width:8px;height:8px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.container{max-width:1400px;margin:0 auto;padding:16px 20px}
-.hero-mini{background:radial-gradient(600px 300px at 80% 0,rgba(220,38,38,.12),transparent),linear-gradient(180deg,#1a1033 0%,#0a0618 100%);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:18px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.hero-mini h1{font-size:22px;font-weight:900;color:#fff}
-.hero-mini h1 span{color:#fbbf24}
-.hero-mini p{color:#94a3b8;font-size:13px}
-.badge-free{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#86efac;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800}
-.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}
-@media(max-width:1024px){.layout{grid-template-columns:1fr}}
-.player-wrap{background:#000;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.08);position:relative;aspect-ratio:16/9}
-.player-wrap video{width:100%;height:100%;display:block;background:#000}
-.player-overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.6));cursor:pointer}
-.play-btn{width:72px;height:72px;border-radius:50%;background:rgba(220,38,38,.9);display:grid;place-items:center;box-shadow:0 10px 30px rgba(220,38,38,.4);transition:transform .2s}
-.play-btn:hover{transform:scale(1.08)}
-.player-bar{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.85));display:flex;justify-content:space-between;align-items:center}
-.channel-name{color:#fff;font-weight:800;font-size:14px;display:flex;gap:8px;align-items:center}
-.live-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;animation:pulse 1.5s infinite}
-.quality{font-size:11px;color:#cbd5e1;background:rgba(255,255,255,.12);padding:4px 8px;border-radius:999px}
-.channels{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;max-height:760px}
-.channels-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.channels-head h3{font-size:14px;font-weight:800;color:#fff}
-.filters{display:flex;gap:6px;flex-wrap:wrap}
-.filter-btn{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#94a3b8;cursor:pointer}
-.filter-btn.active{background:#dc2626;color:#fff;border-color:#dc2626}
-.channel-list{overflow:auto;flex:1}
-.ch{padding:11px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:all .15s}
-.ch:hover{background:rgba(255,255,255,.04)}
-.ch.active{background:rgba(220,38,38,.12);border-right:3px solid #dc2626}
-.ch-logo{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:18px;flex-shrink:0;border:1px solid rgba(255,255,255,.06)}
-.ch-info{flex:1;min-width:0}
-.ch-info b{display:block;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch-info span{font-size:11px;color:#94a3b8}
-.ch-status{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 8px rgba(34,197,94,.5)}
-.ch.active .ch-status{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.6)}
-.note{margin-top:12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.18);color:#fde68a;padding:10px 14px;border-radius:12px;font-size:12px;text-align:center}
-.status-msg{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:6px 12px;border-radius:999px;font-size:12px;display:none;z-index:5}
-.footer{border-top:1px solid rgba(255,255,255,.06);padding:18px;text-align:center;color:#64748b;font-size:12px;margin-top:16px}
+/* ==========================================================================
+   صفحة «مشغّل الويب الذكي» — مشغّل الاشتراك الشخصي واستعراض المميزات
+   --------------------------------------------------------------------------
+   • لا يوجد في هذه الصفحة أي رابط بث ولا أي قناة مجانية مدمجة (حُذفت نهائياً).
+   • القوائم التي يشاهدها المشترك تُجلب من مزوّده داخل مشغّله في متصفحه فقط.
+   • الجولة التفاعلية محاكاة رسمية للواجهة (بلا أي بث حقيقي).
+   • كل الأنماط هنا ببادئة wp- حتى لا تتعارض مع أنماط القوالب القديمة.
+========================================================================== */
+.wp-root{
+  --wp-ink:#0b0b0f;--wp-lime:#d8ff3e;--wp-blue:#2b4eff;--wp-cream:#faf9f6;
+  --wp-line:#0b0b0f1f;--wp-muted:#4c4c55;--wp-panel:#14141b;--wp-panel-2:#1d1d26;
+  font-family:Tajawal,system-ui,sans-serif;color:var(--wp-ink);
+}
+.wp-root *{box-sizing:border-box}
+.wp-root h1,.wp-root h2,.wp-root h3,.wp-root h4,.wp-root strong{color:inherit!important}
+.wp-root p,.wp-root li,.wp-root span{color:inherit}
+.wp-wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.wp-hero,.wp-dark,.wp-cta{color:#fff!important}
+.wp-hero{
+  position:relative;overflow:hidden;border-radius:34px;background:var(--wp-ink);
+  padding:44px 34px 38px;box-shadow:0 40px 90px -60px #000c;
+}
+.wp-hero::before{content:"";position:absolute;inset:-40% -10% auto auto;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,#2b4eff66,transparent 65%)}
+.wp-hero::after{content:"";position:absolute;inset:auto auto -45% -8%;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,#d8ff3e2e,transparent 65%)}
+.wp-hero>.wp-in{position:relative;z-index:1;max-width:860px}
+.wp-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;background:#ffffff1a;border:1px solid #ffffff2e;
+  border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:900;letter-spacing:.01em
+}
+.wp-eyebrow .wp-dot{width:8px;height:8px;border-radius:50%;background:var(--wp-lime);box-shadow:0 0 0 4px #d8ff3e33}
+.wp-hero h1{margin:18px 0 0;font-size:clamp(31px,5vw,58px);line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.wp-hero h1 em{font-style:normal;font-weight:400;color:#ffffffab}
+.wp-lead{margin:18px 0 0;font-size:clamp(15px,1.6vw,17px);line-height:1.95;color:#ffffffbd}
+.wp-lead b{color:var(--wp-lime)}
+.wp-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.wp-btn{
+  display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:15px 26px;
+  font-size:14.5px;font-weight:900;text-decoration:none;border:1px solid transparent;transition:transform .18s ease,background .18s ease,color .18s ease
+}
+.wp-btn:hover{transform:translateY(-2px)}
+.wp-btn-lime{background:var(--wp-lime);color:var(--wp-ink)!important}
+.wp-btn-ghost{border-color:#ffffff3d;color:#fff!important;background:#ffffff0f}
+.wp-btn-ghost:hover{background:#fff;color:var(--wp-ink)!important}
+.wp-btn-ink{background:var(--wp-ink);color:#fff!important}
+.wp-btn-line{border-color:var(--wp-line);color:var(--wp-ink)!important;background:#fff}
+.wp-btn-line:hover{border-color:var(--wp-ink)}
+.wp-note-line{margin-top:20px;font-size:12.8px;line-height:1.9;color:#ffffff8f;max-width:760px}
+.wp-quote{
+  margin-top:26px;border:1px solid #ffffff26;background:#ffffff0d;border-radius:20px;padding:16px 18px;
+  display:flex;gap:12px;align-items:flex-start;font-size:13.4px;line-height:1.95;color:#ffffffc4
+}
+.wp-quote .wp-quote-ico{flex:none;width:30px;height:30px;border-radius:10px;background:var(--wp-lime);color:var(--wp-ink)!important;display:grid;place-items:center;font-size:15px}
+.wp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.wp-chip{
+  display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:9px 15px;font-size:12.5px;font-weight:800;
+  background:#ffffff12;border:1px solid #ffffff21;color:#ffffffd6!important
+}
+.wp-section{margin-top:64px}
+.wp-section-head{max-width:840px}
+.wp-kicker{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--wp-blue)!important;margin:0 0 14px}
+.wp-kicker::before{content:"";width:32px;height:2px;background:var(--wp-blue);display:inline-block}
+.wp-section-head h2{margin:0;font-size:clamp(25px,3.4vw,40px);line-height:1.16;font-weight:900;letter-spacing:-.03em}
+.wp-section-head h2 em{font-style:normal;font-weight:400;color:#0b0b0f9c}
+.wp-section-head p{margin:14px 0 0;font-size:15.5px;line-height:1.95;color:var(--wp-muted)!important}
+.wp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.wp-step{background:#fff;border:1px solid var(--wp-line);border-radius:24px;padding:24px 22px;position:relative}
+.wp-step .wp-step-no{
+  width:38px;height:38px;border-radius:13px;background:var(--wp-ink);color:var(--wp-lime)!important;
+  display:grid;place-items:center;font-weight:900;font-size:16px
+}
+.wp-step h3{margin:16px 0 8px;font-size:17.5px;font-weight:900}
+.wp-step p{margin:0;font-size:14px;line-height:1.9;color:var(--wp-muted)!important}
+.wp-privacy{
+  margin-top:16px;border-radius:24px;padding:24px 22px;background:linear-gradient(135deg,#eef1ff,#f7f8f2);
+  border:1px solid #2b4eff2e
+}
+.wp-privacy h3{margin:0 0 10px;font-size:17px;font-weight:900;display:flex;align-items:center;gap:9px}
+.wp-privacy ul{margin:0;padding-inline-start:20px;font-size:14px;line-height:2;color:var(--wp-muted)!important}
+.wp-privacy li b{color:var(--wp-ink)!important}
+.wp-plainlist{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+/* ---------- الجولة التفاعلية ---------- */
+.wp-tour{
+  margin-top:26px;background:var(--wp-ink);border-radius:30px;padding:18px;color:#fff!important;
+  box-shadow:0 40px 90px -60px #000c
+}
+.wp-stage{position:relative;border:1px solid #ffffff1f;border-radius:22px;background:#0f0f16;overflow:hidden}
+.wp-stage-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;
+  border-bottom:1px solid #ffffff14;background:#ffffff08
+}
+.wp-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.wp-tab{
+  border:1px solid #ffffff1f;background:#ffffff0d;color:#ffffff9e!important;border-radius:999px;
+  padding:6px 13px;font-size:11.5px;font-weight:900;font-family:inherit;cursor:pointer
+}
+.wp-tab.is-on{background:var(--wp-lime);border-color:var(--wp-lime);color:var(--wp-ink)!important}
+.wp-stage-tag{font-size:11px;font-weight:800;color:#ffffff6b!important;white-space:nowrap}
+.wp-screens{position:relative;min-height:318px;padding:16px 16px 14px;background:
+  radial-gradient(600px 240px at 85% -10%,#2b4eff2e,transparent 70%),
+  radial-gradient(500px 220px at 10% 110%,#d8ff3e1a,transparent 70%)}
+.wp-scene[hidden]{display:none!important}
+.wp-scene{animation:wpFade .35s ease-out both}
+@keyframes wpFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wp-scene-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.wp-scene-top b{font-size:13.5px;font-weight:900;color:#fff!important}
+.wp-scene-top span{font-size:11px;font-weight:800;color:#ffffff6b!important}
+.wp-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wp-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.wp-grid-2x2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.wp-tile{background:var(--wp-panel);border:1px solid #ffffff14;border-radius:14px;padding:11px 12px;min-height:74px}
+.wp-tile-hi{border-color:var(--wp-lime);box-shadow:0 0 0 1px #d8ff3e59}
+.wp-tile small{display:block;font-size:10.5px;font-weight:800;color:#ffffff57!important}
+.wp-tile b{display:block;margin-top:5px;font-size:12.5px;font-weight:900;color:#fff!important}
+.wp-tile i{display:block;margin-top:8px;font-style:normal;font-size:10.5px;color:#ffffff6b!important}
+.wp-media{
+  border-radius:14px;border:1px solid #ffffff14;background:
+  linear-gradient(135deg,#232334,#141420);min-height:118px;display:grid;place-items:center;position:relative
+}
+.wp-media .wp-play{
+  width:44px;height:44px;border-radius:50%;background:var(--wp-lime);color:var(--wp-ink)!important;
+  display:grid;place-items:center;font-size:16px
+}
+.wp-media .wp-tagline{position:absolute;inset:auto 10px 9px 10px;display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:#ffffff8a!important}
+.wp-progress{height:6px;border-radius:999px;background:#ffffff1f;overflow:hidden;margin-top:10px}
+.wp-progress>i{display:block;height:100%;background:var(--wp-lime);border-radius:999px}
+.wp-rows{display:grid;gap:8px}
+.wp-row{display:flex;align-items:center;gap:10px;background:var(--wp-panel);border:1px solid #ffffff14;border-radius:12px;padding:9px 11px}
+.wp-row .wp-ico{width:28px;height:28px;flex:none;border-radius:9px;background:#ffffff12;display:grid;place-items:center;font-size:13px}
+.wp-row .wp-row-txt{min-width:0;flex:1}
+.wp-row .wp-row-txt b{display:block;font-size:12.3px;font-weight:800;color:#fff!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wp-row .wp-row-txt small{display:block;font-size:10.5px;color:#ffffff61!important}
+.wp-row .wp-badge{font-size:10px;font-weight:900;border-radius:999px;padding:4px 9px;background:#ffffff17;color:#ffffffc2!important;white-space:nowrap}
+.wp-row .wp-badge-lime{background:var(--wp-lime);color:var(--wp-ink)!important}
+.wp-row .wp-badge-rec{background:#ff5a5a;color:#fff!important}
+.wp-pills{display:flex;flex-wrap:wrap;gap:7px}
+.wp-pill{border:1px solid #ffffff21;background:#ffffff0f;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:800;color:#ffffffc2!important}
+.wp-pill.is-on{background:var(--wp-lime);border-color:var(--wp-lime);color:var(--wp-ink)!important}
+.wp-pill-lock{background:#ff5a5a2e;border-color:#ff5a5a80;color:#ffd9d9!important}
+.wp-frames{display:grid;grid-template-columns:1.35fr 1fr;gap:10px;align-items:start}
+.wp-pip{
+  border:1px dashed #ffffff3d;border-radius:14px;padding:11px;background:#ffffff08;font-size:11px;color:#ffffff9e!important;line-height:1.8
+}
+.wp-pip b{color:#fff!important}
+.wp-lineup{position:relative;height:76px;border-radius:14px;background:var(--wp-panel);border:1px solid #ffffff14;overflow:hidden;padding:8px}
+.wp-lineup .wp-block{position:absolute;top:8px;bottom:8px;border-radius:9px;background:#ffffff14;font-size:10px;color:#ffffffb8!important;display:grid;place-items:center;text-align:center;padding:0 4px}
+.wp-lineup .wp-block.is-now{background:var(--wp-lime);color:var(--wp-ink)!important;font-weight:900}
+.wp-nowline{position:absolute;top:0;bottom:0;width:2px;background:#ff5a5a}
+.wp-legend{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:10.5px;color:#ffffff6b!important}
+.wp-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:13px 16px;border-top:1px solid #ffffff14;background:#ffffff06}
+.wp-ctrl{display:flex;gap:6px}
+.wp-ctrl button{
+  width:42px;height:42px;border-radius:14px;border:1px solid #ffffff21;background:#ffffff0f;color:#fff!important;
+  font-size:15px;cursor:pointer;display:grid;place-items:center;font-family:inherit
+}
+.wp-ctrl button:hover{border-color:var(--wp-lime)}
+.wp-ctrl button.wp-ctrl-main{width:52px;background:var(--wp-lime);border-color:var(--wp-lime);color:var(--wp-ink)!important;font-size:17px}
+.wp-track{flex:1;min-width:180px}
+.wp-track-bar{height:6px;border-radius:999px;background:#ffffff26;overflow:hidden}
+.wp-track-bar>i{display:block;height:100%;width:0;background:var(--wp-lime)}
+.wp-track-meta{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:11.5px;font-weight:800;color:#ffffff99!important}
+.wp-caption{
+  margin:14px 2px 0;font-size:13.5px;line-height:1.95;color:#ffffffbd!important;min-height:52px
+}
+.wp-caption b{color:var(--wp-lime)!important}
+.wp-chapters{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.wp-chapter{
+  display:inline-flex;align-items:center;gap:7px;border-radius:999px;border:1px solid #ffffff21;background:#ffffff0d;
+  color:#ffffffb3!important;padding:8px 13px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit
+}
+.wp-chapter:hover{border-color:#ffffff59}
+.wp-chapter.is-on{background:var(--wp-lime);border-color:var(--wp-lime);color:var(--wp-ink)!important}
+.wp-chapter .wp-chapter-no{opacity:.6}
+.wp-disclaim{margin:14px 2px 0;font-size:11.5px;color:#ffffff6b!important;line-height:1.85}
+/* ---------- بطاقات المميزات ---------- */
+.wp-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:28px}
+.wp-card{background:#fff;border:1px solid var(--wp-line);border-radius:26px;padding:20px;display:flex;flex-direction:column}
+.wp-shot{position:relative;border-radius:18px;overflow:hidden;background:var(--wp-ink);border:1px solid #0b0b0f1a}
+.wp-shot svg{display:block;width:100%;height:auto}
+.wp-card h3{margin:18px 0 0;font-size:19px;font-weight:900;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.wp-card h3 .wp-badge-no{
+  width:30px;height:30px;flex:none;border-radius:10px;background:var(--wp-ink);color:var(--wp-lime)!important;
+  display:grid;place-items:center;font-size:13px
+}
+.wp-card>p{margin:11px 0 0;font-size:14px;line-height:1.95;color:var(--wp-muted)!important}
+.wp-card ul{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+.wp-card li{position:relative;padding-inline-start:24px;font-size:13.4px;line-height:1.85;color:#33333b!important}
+.wp-card li::before{
+  content:"✓";position:absolute;inset-inline-start:0;top:1px;width:17px;height:17px;border-radius:50%;
+  background:#e8ecff;color:var(--wp-blue)!important;font-size:10.5px;font-weight:900;display:grid;place-items:center
+}
+.wp-extra{margin-top:22px;background:#fff;border:1px solid var(--wp-line);border-radius:26px;padding:24px 22px}
+.wp-extra h3{margin:0 0 6px;font-size:18px;font-weight:900}
+.wp-extra>p{margin:0 0 16px;font-size:13.8px;color:var(--wp-muted)!important;line-height:1.9}
+.wp-extra-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.wp-extra-item{border:1px solid var(--wp-line);border-radius:18px;padding:14px 15px;background:var(--wp-cream)}
+.wp-extra-item b{display:block;font-size:13.5px;font-weight:900}
+.wp-extra-item span{display:block;margin-top:6px;font-size:12.5px;line-height:1.8;color:var(--wp-muted)!important}
+/* ---------- المتطلبات والأسئلة ---------- */
+.wp-req{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;margin-top:28px}
+.wp-panel{background:#fff;border:1px solid var(--wp-line);border-radius:26px;padding:24px 22px}
+.wp-panel h3{margin:0 0 14px;font-size:18px;font-weight:900}
+.wp-panel ol,.wp-panel ul{margin:0;padding-inline-start:20px;font-size:14px;line-height:2;color:var(--wp-muted)!important}
+.wp-panel code{
+  font-family:"Space Grotesk",ui-monospace,monospace;background:#0b0b0f0d;border-radius:6px;padding:2px 6px;
+  font-size:12.5px;color:var(--wp-ink)!important;direction:ltr;display:inline-block
+}
+.wp-faq{display:grid;gap:10px;margin-top:26px}
+.wp-faq details{background:#fff;border:1px solid var(--wp-line);border-radius:20px;padding:4px 18px}
+.wp-faq summary{cursor:pointer;font-size:14.8px;font-weight:900;padding:14px 0;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wp-faq summary::-webkit-details-marker{display:none}
+.wp-faq summary::after{content:"+";font-size:20px;font-weight:900;color:var(--wp-blue)!important;line-height:1}
+.wp-faq details[open] summary::after{content:"−"}
+.wp-faq p{margin:0 0 16px;font-size:13.8px;line-height:1.95;color:var(--wp-muted)!important}
+/* ---------- الخاتمة ---------- */
+.wp-cta{margin-top:34px;border-radius:32px;background:var(--wp-ink);padding:34px 30px;position:relative;overflow:hidden}
+.wp-cta::before{content:"";position:absolute;inset:-30% -6% auto auto;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,#d8ff3e33,transparent 65%)}
+.wp-cta>.wp-in{position:relative;z-index:1}
+.wp-cta h2{margin:0;font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:-.02em}
+.wp-cta p{margin:12px 0 0;font-size:14.5px;line-height:1.95;color:#ffffffbd!important;max-width:720px}
+.wp-cta .wp-actions{margin-top:22px}
+.wp-legal{margin-top:26px;font-size:12.4px;line-height:1.95;color:var(--wp-muted)!important}
+.wp-legal a{color:var(--wp-blue)!important;font-weight:800}
+.wp-reveal{animation:wpUp .6s ease-out both}
+@keyframes wpUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wp-root code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0b0b0f0d;border-radius:6px;padding:2px 6px;font-size:.92em}
+@media (max-width:980px){
+  .wp-steps,.wp-extra-grid{grid-template-columns:1fr}
+  .wp-cards{grid-template-columns:1fr}
+  .wp-req{grid-template-columns:1fr}
+  .wp-grid-4{grid-template-columns:repeat(2,1fr)}
+  .wp-frames{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wp-hero{padding:30px 20px 26px;border-radius:26px}
+  .wp-tour{padding:10px;border-radius:24px}
+  .wp-screens{padding:12px;min-height:280px}
+  .wp-grid-3{grid-template-columns:1fr 1fr}
+  .wp-grid-2x2{grid-template-columns:1fr}
+  .wp-section{margin-top:48px}
+}
+@media (prefers-reduced-motion:reduce){
+  .wp-scene{animation:none}
+  .wp-btn:hover{transform:none}
+}
 </style>
 <link rel="stylesheet" href="/_assets/storefront.css?v=20261013b"><script src="/_assets/storefront.js?v=20261013b" defer=""></script></head>
 <body class="sm-page sm-player"><a class="sm-skip" href="#main-content">تخطي إلى المحتوى</a>
 <div class="sm-announcement">ستريم ماستر برو — <strong>اشتراك واحد، ترفيه بلا حدود</strong><a href="/?trial=1">اطلب تجربتك المجانية ←</a></div>
 <header class="sm-header"><nav aria-label="القائمة الرئيسية" class="sm-nav">
 <a class="sm-brand" href="/"><span class="sm-mark">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a>
-<div class="sm-desktop"><div class="sm-dd" data-group="home" data-match=""><button type="button" class="sm-dd-btn" id="sm-dd-btn-home" aria-expanded="false" aria-controls="sm-dd-home">الرئيسية<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-home" id="sm-dd-home"><div class="sm-dd-box"><div class="sm-dd-grid sm-dd-grid-3"><a class="sm-dd-link" href="/#live-player"><span class="sm-dd-icon" aria-hidden="true">📡</span><span><b>دليل المشاهدة الرسمية</b><small>روابط القنوات والمنصات الرسمية</small></span></a><a class="sm-dd-link" href="/#xtream"><span class="sm-dd-icon" aria-hidden="true">▶️</span><span><b>مشغّل الاشتراك</b><small>شغّل باقتك من المتصفح</small></span></a><a class="sm-dd-link" href="/#pricing"><span class="sm-dd-icon" aria-hidden="true">💳</span><span><b>الباقات والأسعار</b><small>نوفا وإيستار وموكا</small></span></a><a class="sm-dd-link" href="/#server-finder"><span class="sm-dd-icon" aria-hidden="true">🧭</span><span><b>مساعد الاختيار</b><small>أي سيرفر يناسبك؟</small></span></a><a class="sm-dd-link" href="/#servers-compare"><span class="sm-dd-icon" aria-hidden="true">⚖️</span><span><b>مقارنة السيرفرات</b><small>الفروق بالتفصيل</small></span></a><a class="sm-dd-link" href="/#channels"><span class="sm-dd-icon" aria-hidden="true">📺</span><span><b>القنوات والمنصات</b><small>+15,000 قناة حية</small></span></a><a class="sm-dd-link" href="/#setup"><span class="sm-dd-icon" aria-hidden="true">🛠️</span><span><b>طريقة التشغيل</b><small>على كل الشاشات</small></span></a><a class="sm-dd-link" href="/#showcase"><span class="sm-dd-icon" aria-hidden="true">🎬</span><span><b>مكتبة المحتوى</b><small>أفلام ومسلسلات ورياضة</small></span></a><a class="sm-dd-link" href="/#blog-teaser"><span class="sm-dd-icon" aria-hidden="true">📰</span><span><b>أحدث المقالات</b><small>اعرف قبل أن تشترك</small></span></a><a class="sm-dd-link" href="/#reviews"><span class="sm-dd-icon" aria-hidden="true">⭐</span><span><b>آراء العملاء</b><small>تقييمات المشتركين</small></span></a><a class="sm-dd-link" href="/#faq"><span class="sm-dd-icon" aria-hidden="true">❓</span><span><b>الأسئلة الشائعة</b><small>إجابات سريعة</small></span></a></div><div class="sm-dd-foot"><a href="/">الصفحة الرئيسية — العودة للأعلى</a><a class="sm-dd-pill" href="/?trial=1">تجربة مجانية ↗</a></div></div></div></div><div class="sm-dd" data-group="servers" data-match="servers store cart nova istar moka"><button type="button" class="sm-dd-btn" id="sm-dd-btn-servers" aria-expanded="false" aria-controls="sm-dd-servers">السيرفرات والباقات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-servers" id="sm-dd-servers"><div class="sm-dd-box"><div class="sm-dd-cards"><a class="sm-dd-card sm-card-nova" href="/nova/"><span class="sm-dd-card-art" aria-hidden="true">⚽</span><b>سيرفر نوفا</b><small>الأقوى للمباريات</small></a><a class="sm-dd-card sm-card-istar" href="/istar/"><span class="sm-dd-card-art" aria-hidden="true">🎬</span><b>سيرفر إيستار</b><small>أفلام ومسلسلات 4K</small></a><a class="sm-dd-card sm-card-moka" href="/moka/"><span class="sm-dd-card-art" aria-hidden="true">⚡</span><b>سيرفر موكا</b><small>اقتصادي وثابت</small></a></div><div class="sm-dd-grid sm-dd-grid-3"><a class="sm-dd-link" href="/servers/"><span><b>كل السيرفرات</b><small>الباقات مع جدول المقارنة</small></span></a><a class="sm-dd-link" href="/store/"><span><b>المتجر</b><small>اختر باقتك وأضفها للسلة</small></span></a><a class="sm-dd-link" href="/cart/"><span><b>سلة المشتريات</b><small>راجع طلبك وأكمله</small></span></a></div><div class="sm-dd-foot"><span>سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</span><a class="sm-dd-pill" href="/#pricing">عرض الأسعار ↗</a></div></div></div></div><div class="sm-dd" data-group="watch" data-match="matches channels live-free.html world-cup-2026 predictions watch-legal.html"><button type="button" class="sm-dd-btn" id="sm-dd-btn-watch" aria-expanded="false" aria-controls="sm-dd-watch">القنوات والبث<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-watch" id="sm-dd-watch"><div class="sm-dd-box"><div class="sm-dd-grid"><a class="sm-dd-link" href="/matches/"><span><b>مواعيد المباريات</b><small>النتائج والمواعيد بتوقيتك</small></span></a><a class="sm-dd-link" href="/channels/"><span><b>مكتبة القنوات</b><small>ابحث في كل القنوات</small></span></a><a class="sm-dd-link" href="/live-free.html"><span><b>البث المجاني</b><small>قنوات مفتوحة مباشرة</small></span></a><a class="sm-dd-link" href="/world-cup-2026/"><span><b>كأس العالم 2026</b><small>المواعيد والقنوات الناقلة</small></span></a><a class="sm-dd-link" href="/predictions/"><span><b>توقعات المباريات</b><small>تحليلات قبل كل مباراة</small></span></a><a class="sm-dd-link" href="/watch-legal.html"><span><b>المشاهدة القانونية</b><small>الاشتراكات الرسمية</small></span></a></div></div></div></div><div class="sm-dd" data-group="blog" data-match="blog"><button type="button" class="sm-dd-btn" id="sm-dd-btn-blog" aria-expanded="false" aria-controls="sm-dd-blog">المقالات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-blog" id="sm-dd-blog"><div class="sm-dd-box"><div class="sm-dd-grid"><a class="sm-dd-link" href="/blog/"><span><b>كل المقالات والدلائل</b><small>أرشيف المدونة كاملاً</small></span></a><a class="sm-dd-link" href="/blog/choose-iptv-server/"><span><b>كيف تختار سيرفرك؟</b><small>نوفا أم إيستار أم موكا</small></span></a><a class="sm-dd-link" href="/blog/iptv-samsung-lg-setup/"><span><b>التشغيل على سامسونج و LG</b><small>خطوات مفصّلة</small></span></a><a class="sm-dd-link" href="/blog/test-iptv-server-stability/"><span><b>اختبار ثبات السيرفر</b><small>7 اختبارات قبل الدفع</small></span></a></div></div></div></div><div class="sm-dd" data-group="help" data-match="faq about status search privacy terms refund"><button type="button" class="sm-dd-btn" id="sm-dd-btn-help" aria-expanded="false" aria-controls="sm-dd-help">المساعدة<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-help" id="sm-dd-help"><div class="sm-dd-box"><div class="sm-dd-grid"><a class="sm-dd-link" href="/faq/"><span><b>الأسئلة الشائعة</b><small>كل ما يسأل عنه المشتركون</small></span></a><a class="sm-dd-link" href="/status/"><span><b>حالة الخدمة</b><small>حالة السيرفرات الآن</small></span></a><a class="sm-dd-link" href="/search/"><span><b>البحث في الموقع</b><small>ابحث في الصفحات والمقالات</small></span></a><a class="sm-dd-link" href="/about/"><span><b>من نحن</b><small>تعرّف على ستريم ماستر</small></span></a></div><div class="sm-dd-legal"><a href="/privacy/">الخصوصية</a><a href="/terms/">الشروط</a><a href="/refund/">الاسترجاع</a></div></div></div></div></div>
+<div class="sm-desktop"><div class="sm-dd" data-group="home" data-match=""><button type="button" class="sm-dd-btn" id="sm-dd-btn-home" aria-expanded="false" aria-controls="sm-dd-home">الرئيسية<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-home" id="sm-dd-home"><div class="sm-dd-box"><div class="sm-dd-grid sm-dd-grid-3"><a class="sm-dd-link" href="/#live-player"><span class="sm-dd-icon" aria-hidden="true">📡</span><span><b>دليل المشاهدة الرسمية</b><small>روابط القنوات والمنصات الرسمية</small></span></a><a class="sm-dd-link" href="/#xtream"><span class="sm-dd-icon" aria-hidden="true">▶️</span><span><b>مشغّل الاشتراك</b><small>شغّل باقتك من المتصفح</small></span></a><a class="sm-dd-link" href="/#pricing"><span class="sm-dd-icon" aria-hidden="true">💳</span><span><b>الباقات والأسعار</b><small>نوفا وإيستار وموكا</small></span></a><a class="sm-dd-link" href="/#server-finder"><span class="sm-dd-icon" aria-hidden="true">🧭</span><span><b>مساعد الاختيار</b><small>أي سيرفر يناسبك؟</small></span></a><a class="sm-dd-link" href="/#servers-compare"><span class="sm-dd-icon" aria-hidden="true">⚖️</span><span><b>مقارنة السيرفرات</b><small>الفروق بالتفصيل</small></span></a><a class="sm-dd-link" href="/#channels"><span class="sm-dd-icon" aria-hidden="true">📺</span><span><b>القنوات والمنصات</b><small>+15,000 قناة حية</small></span></a><a class="sm-dd-link" href="/#setup"><span class="sm-dd-icon" aria-hidden="true">🛠️</span><span><b>طريقة التشغيل</b><small>على كل الشاشات</small></span></a><a class="sm-dd-link" href="/#showcase"><span class="sm-dd-icon" aria-hidden="true">🎬</span><span><b>مكتبة المحتوى</b><small>أفلام ومسلسلات ورياضة</small></span></a><a class="sm-dd-link" href="/#blog-teaser"><span class="sm-dd-icon" aria-hidden="true">📰</span><span><b>أحدث المقالات</b><small>اعرف قبل أن تشترك</small></span></a><a class="sm-dd-link" href="/#reviews"><span class="sm-dd-icon" aria-hidden="true">⭐</span><span><b>آراء العملاء</b><small>تقييمات المشتركين</small></span></a><a class="sm-dd-link" href="/#faq"><span class="sm-dd-icon" aria-hidden="true">❓</span><span><b>الأسئلة الشائعة</b><small>إجابات سريعة</small></span></a></div><div class="sm-dd-foot"><a href="/">الصفحة الرئيسية — العودة للأعلى</a><a class="sm-dd-pill" href="/?trial=1">تجربة مجانية ↗</a></div></div></div></div><div class="sm-dd" data-group="servers" data-match="servers store cart nova istar moka"><button type="button" class="sm-dd-btn" id="sm-dd-btn-servers" aria-expanded="false" aria-controls="sm-dd-servers">السيرفرات والباقات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-servers" id="sm-dd-servers"><div class="sm-dd-box"><div class="sm-dd-cards"><a class="sm-dd-card sm-card-nova" href="/nova/"><span class="sm-dd-card-art" aria-hidden="true">⚽</span><b>سيرفر نوفا</b><small>الأقوى للمباريات</small></a><a class="sm-dd-card sm-card-istar" href="/istar/"><span class="sm-dd-card-art" aria-hidden="true">🎬</span><b>سيرفر إيستار</b><small>أفلام ومسلسلات 4K</small></a><a class="sm-dd-card sm-card-moka" href="/moka/"><span class="sm-dd-card-art" aria-hidden="true">⚡</span><b>سيرفر موكا</b><small>اقتصادي وثابت</small></a></div><div class="sm-dd-grid sm-dd-grid-3"><a class="sm-dd-link" href="/servers/"><span><b>كل السيرفرات</b><small>الباقات مع جدول المقارنة</small></span></a><a class="sm-dd-link" href="/store/"><span><b>المتجر</b><small>اختر باقتك وأضفها للسلة</small></span></a><a class="sm-dd-link" href="/cart/"><span><b>سلة المشتريات</b><small>راجع طلبك وأكمله</small></span></a></div><div class="sm-dd-foot"><span>سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</span><a class="sm-dd-pill" href="/#pricing">عرض الأسعار ↗</a></div></div></div></div><div class="sm-dd" data-group="watch" data-match="matches channels live-free.html world-cup-2026 predictions watch-legal.html"><button type="button" class="sm-dd-btn" id="sm-dd-btn-watch" aria-expanded="false" aria-controls="sm-dd-watch">القنوات والبث<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-watch" id="sm-dd-watch"><div class="sm-dd-box"><div class="sm-dd-grid"><a class="sm-dd-link" href="/matches/"><span><b>مواعيد المباريات</b><small>النتائج والمواعيد بتوقيتك</small></span></a><a class="sm-dd-link" href="/channels/"><span><b>مكتبة القنوات</b><small>ابحث في كل القنوات</small></span></a><a class="sm-dd-link" href="/live-free.html"><span><b>مشغّل الويب الذكي</b><small>شغّل اشتراكك واستعرض المميزات</small></span></a><a class="sm-dd-link" href="/world-cup-2026/"><span><b>كأس العالم 2026</b><small>المواعيد والقنوات الناقلة</small></span></a><a class="sm-dd-link" href="/predictions/"><span><b>توقعات المباريات</b><small>تحليلات قبل كل مباراة</small></span></a><a class="sm-dd-link" href="/watch-legal.html"><span><b>المشاهدة القانونية</b><small>الاشتراكات الرسمية</small></span></a></div></div></div></div><div class="sm-dd" data-group="blog" data-match="blog"><button type="button" class="sm-dd-btn" id="sm-dd-btn-blog" aria-expanded="false" aria-controls="sm-dd-blog">المقالات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-blog" id="sm-dd-blog"><div class="sm-dd-box"><div class="sm-dd-grid"><a class="sm-dd-link" href="/blog/"><span><b>كل المقالات والدلائل</b><small>أرشيف المدونة كاملاً</small></span></a><a class="sm-dd-link" href="/blog/choose-iptv-server/"><span><b>كيف تختار سيرفرك؟</b><small>نوفا أم إيستار أم موكا</small></span></a><a class="sm-dd-link" href="/blog/iptv-samsung-lg-setup/"><span><b>التشغيل على سامسونج و LG</b><small>خطوات مفصّلة</small></span></a><a class="sm-dd-link" href="/blog/test-iptv-server-stability/"><span><b>اختبار ثبات السيرفر</b><small>7 اختبارات قبل الدفع</small></span></a></div></div></div></div><div class="sm-dd" data-group="help" data-match="faq about status search privacy terms refund"><button type="button" class="sm-dd-btn" id="sm-dd-btn-help" aria-expanded="false" aria-controls="sm-dd-help">المساعدة<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button><div class="sm-dd-panel sm-dd-help" id="sm-dd-help"><div class="sm-dd-box"><div class="sm-dd-grid"><a class="sm-dd-link" href="/faq/"><span><b>الأسئلة الشائعة</b><small>كل ما يسأل عنه المشتركون</small></span></a><a class="sm-dd-link" href="/status/"><span><b>حالة الخدمة</b><small>حالة السيرفرات الآن</small></span></a><a class="sm-dd-link" href="/search/"><span><b>البحث في الموقع</b><small>ابحث في الصفحات والمقالات</small></span></a><a class="sm-dd-link" href="/about/"><span><b>من نحن</b><small>تعرّف على ستريم ماستر</small></span></a></div><div class="sm-dd-legal"><a href="/privacy/">الخصوصية</a><a href="/terms/">الشروط</a><a href="/refund/">الاسترجاع</a></div></div></div></div></div>
 <div class="sm-actions"><a class="sm-cart" href="/cart/" aria-label="سلة المشتريات"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 3h3l3 13h11l3-10H6"></path><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle></svg><span data-sm-cart-count="">0</span></a><a class="sm-cta" href="/?trial=1">تجربة مجانية ↗</a><button class="sm-menu-toggle" aria-label="فتح القائمة" aria-controls="sm-mobile-nav" aria-expanded="false">☰</button></div>
-</nav><div id="sm-mobile-nav" class="sm-mobile" hidden=""><details class="sm-acc" data-group="home" data-match=""><summary>الرئيسية<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/">الصفحة الرئيسية</a><a href="/#live-player">دليل المشاهدة الرسمية</a><a href="/#xtream">مشغّل الاشتراك</a><a href="/#pricing">الباقات والأسعار</a><a href="/#server-finder">مساعد الاختيار</a><a href="/#servers-compare">مقارنة السيرفرات</a><a href="/#channels">القنوات والمنصات</a><a href="/#setup">طريقة التشغيل</a><a href="/#showcase">مكتبة المحتوى</a><a href="/#blog-teaser">أحدث المقالات</a><a href="/#reviews">آراء العملاء</a><a href="/#faq">الأسئلة الشائعة</a></details><details class="sm-acc" data-group="servers" data-match="servers store cart nova istar moka"><summary>السيرفرات والباقات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/servers/">كل السيرفرات</a><a href="/nova/">سيرفر نوفا</a><a href="/istar/">سيرفر إيستار</a><a href="/moka/">سيرفر موكا</a><a href="/store/">المتجر</a><a href="/cart/">سلة المشتريات</a></details><details class="sm-acc" data-group="watch" data-match="matches channels live-free.html world-cup-2026 predictions watch-legal.html"><summary>القنوات والبث<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/matches/">مواعيد المباريات</a><a href="/channels/">مكتبة القنوات</a><a href="/live-free.html">البث المجاني</a><a href="/world-cup-2026/">كأس العالم 2026</a><a href="/predictions/">توقعات المباريات</a><a href="/watch-legal.html">المشاهدة القانونية</a></details><details class="sm-acc" data-group="blog" data-match="blog"><summary>المقالات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/blog/">كل المقالات والدلائل</a><a href="/blog/choose-iptv-server/">كيف تختار سيرفرك؟</a><a href="/blog/iptv-samsung-lg-setup/">التشغيل على سامسونج و LG</a><a href="/blog/test-iptv-server-stability/">اختبار ثبات السيرفر</a></details><details class="sm-acc" data-group="help" data-match="faq about status search privacy terms refund"><summary>المساعدة<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/faq/">الأسئلة الشائعة</a><a href="/status/">حالة الخدمة</a><a href="/search/">البحث في الموقع</a><a href="/about/">من نحن</a><a href="/privacy/">الخصوصية</a><a href="/terms/">الشروط</a><a href="/refund/">الاسترجاع</a></details></div></header><main id="main-content" class="sm-legacy"><div class="container">
-<div class="hero-mini">
-<div>
-<h1>📺 البث المباشر <span>المجاني</span> — 300 قناة</h1>
-<p>قنوات مفتوحة + 7 قناة مصرية تم فحصها وتعمل الآن ✅ — إخبارية • رياضية • دينية • مصرية • منوعات (MBC و Rotana محجوبة جغرافياً)</p>
-</div>
-<div class="badge-free">✅ تم الفحص • 200 OK • مجاني 100%</div>
-</div>
-<div class="layout">
-<div>
-<div class="player-wrap" id="playerWrap">
-<div class="status-msg" id="statusMsg">جاري التحميل...</div>
-<video controls="" id="video" playsinline="" poster="https://streammasterstore.com/images/og-default.png"></video>
-<div id="buffer-badge" style="position:absolute;bottom:70px;left:10px;z-index:5;display:flex;align-items:center;gap:8px">
-<span style="background:rgba(0,0,0,.75);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);color:#fff;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;display:flex;align-items:center;gap:6px"><span id="buffer-dot" style="width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block"></span> Buffer: <span id="buffer-val">0.0s</span></span>
-<span style="background:rgba(220,38,38,.85);border:1px solid rgba(255,255,255,.15);color:#fff;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;display:flex;align-items:center;gap:6px">⏱️ <span id="time-val">00:00</span> <span style="opacity:.7">•</span> <span id="buffer-level">auto</span></span>
-</div>
-<div class="player-overlay" id="overlay" onclick="playActive()">
-<div class="play-btn"><svg fill="white" height="32" viewBox="0 0 24 24" width="32"><path d="M8 5v14l11-7z"></path></svg></div>
-</div>
-<div class="player-bar">
-<div class="channel-name"><span class="live-dot"></span> <span id="nowName">اختر قناة</span> <span id="nowCat" style="font-size:11px;color:#94a3b8;font-weight:400"></span></div>
-<div class="quality" id="quality">HLS • مجاني</div>
-</div>
-</div>
-<div class="note">💡 جميع القنوات المعروضة هنا قنوات مفتوحة من مصادرها العامة. لو توقفت قناة جرب قناة أخرى — القنوات المشفرة تُشاهد عبر اشتراكاتها الرسمية فقط: <a href="/watch-legal.html" style="color:#fbbf24;text-decoration:underline">راجع دليل المشاهدة القانونية</a></div>
-</div>
-<div class="channels">
-<div class="channels-head">
-<h3>القنوات</h3>
-<div class="filters">
-<button class="filter-btn active" data-f="all" onclick="filterCh('all',this)">الكل</button>
-<button class="filter-btn" data-f="مصرية" onclick="filterCh('مصرية',this)">🇪🇬 مصرية</button>
-<button class="filter-btn" data-f="إخبارية" onclick="filterCh('إخبارية',this)">إخبارية</button>
-<button class="filter-btn" data-f="رياضية" onclick="filterCh('رياضية',this)">رياضية</button>
-<button class="filter-btn" data-f="دينية" onclick="filterCh('دينية',this)">دينية</button>
-<button class="filter-btn" data-f="منوعات" onclick="filterCh('منوعات',this)">منوعات</button>
-</div>
-</div>
-<div class="channel-list" id="list"></div>
-</div>
-</div>
-</div><div style="position:fixed;bottom:14px;left:14px;z-index:9999">
-<a href="/watch-legal.html" style="display:inline-block;padding:10px 14px;border-radius:12px;background:#1d4ed8;color:#fff;font:600 13px system-ui;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.4)">⚖️ تبحث عن قناة مشفّرة؟ مشاهدة قانونية</a></div></main><footer class="sm-footer"><div class="sm-footer-top"><div><a class="sm-brand" href="/"><span class="sm-mark">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a><p>المنصة التقنية لخدمات الربط والدعم الفني.<br>سيرفرات المزودين (نوفا وإيستار وموكا) — تفعيل سريع ودعم متواصل.</p><a class="sm-cta" href="https://wa.me/201098950879" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب ↗</a></div><div><h2>اكتشف أكثر</h2><a href="/store/">الباقات والأسعار</a><a href="/servers/">مقارنة السيرفرات</a><a href="/channels/">مكتبة القنوات</a><a href="/blog/">مقالات ودلائل</a><a href="/world-cup-2026/">كأس العالم 2026</a><a href="/predictions/">توقعات المباريات</a></div><div><h2>نحن هنا لمساعدتك</h2><a href="/about/">من نحن</a><a href="/faq/">الأسئلة الشائعة</a><a href="/status/">حالة الخدمة</a><a href="/privacy/">سياسة الخصوصية</a><a href="/terms/">شروط الاستخدام</a><a href="/refund/">سياسة الاسترجاع</a><a href="/watch-legal.html">المشاهدة القانونية</a></div></div><div class="sm-wordmark" aria-hidden="true">ستريم ماستر®</div><div class="sm-footer-disclaimer" style="margin:20px 0 8px;padding:16px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:16px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.6);font-size:12.5px;line-height:1.9"><strong style="display:block;color:#d8ff3e;margin-bottom:4px">⚠️ إخلاء مسؤولية قانوني وسياسة الملكية الفكرية (DMCA):</strong>يعمل موقع <strong style="color:rgba(255,255,255,0.85)">ستريم ماستر برو (Stream Master Pro)</strong> كوسيط تقني ودليل فهرسة فقط، ولا يقوم باستضافة أو تخزين أو رفع أو بث أي ملفات وسائط أو قنوات مرئية على خوادمه الخاصة. كافة العلامات التجارية المذكورة مملوكة لأصحابها الشرعيين، ويتحمل المستخدم وحده مسؤولية استخدامه للخدمة والامتثال للقوانين المحلية في بلده. للإبلاغ عن أي انتهاك لحقوق الطبع والنشر (DMCA) وطلب حذف الروابط خلال 24–72 ساعة، يرجى مراسلتنا عبر البريد الرسمي: <a href="mailto:support@streammasterstore.com" dir="ltr" style="color:#fff;text-decoration:underline">support@streammasterstore.com</a> أو مراجعة <a href="/terms/" style="color:#fff;text-decoration:underline">وثيقة الشروط وسياسة DMCA</a>.</div><div class="sm-footer-bottom"><span>© 2026 ستريم ماستر برو — جميع الحقوق محفوظة.</span><a href="#main-content">الرجوع للأعلى ↑</a></div></footer><script>
-// 300 قناة مجانية 🎉 تم فحصها بـ curl - كلها HTTP 200 OK (22 عامة + 7 مصرية + 10 إضافية - MBC/Rotana محجوبة جغرافياً من Hostinger)
-/* قائمة القنوات: تُحمَّل من /channels.json (ملف واحد مركزي يسهل تحديثه)،
-   مع الاحتفاظ بنسخة مدمجة كخطة بديلة إذا فشل التحميل. */
-const FALLBACK_CHANNELS = [
-  { name: "الجزيرة", logo:"🟡", url: "https://live-hls-web-aja.getaj.net/AJA/index.m3u8", cat:"إخبارية" },
-  { name: "الجزيرة مباشر", logo:"🔴", url: "https://live-hls-web-ajm.getaj.net/AJM/index.m3u8", cat:"إخبارية" },
-  { name: "الجزيرة مباشر 24", logo:"🔴", url: "https://live-hls-web-ajm24-fa.getaj.net/AJM24/index.m3u8", cat:"إخبارية" },
-  { name: "الجزيرة (بديل)", logo:"🟡", url: "https://live-hls-web-aja-fa.getaj.net/AJA/index.m3u8", cat:"إخبارية" },
-  { name: "العربية الحدث", logo:"⚫", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-hadath/2ff87ec4c2f3ede35295a20637d9f8fd/index.m3u8", cat:"إخبارية" },
-  { name: "الإخبارية السعودية", logo:"🟢", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-ekhbaria/297b3ef1cd0633ad9cfba7473a686a06/index.m3u8", cat:"إخبارية" },
-  { name: "France 24 عربي", logo:"🔵", url: "https://static.france24.com/live/F24_AR_HI_HLS/live_web.m3u8", cat:"إخبارية" },
-  { name: "DW عربي", logo:"🔷", url: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8", cat:"إخبارية" },
-  { name: "DW عربي 2", logo:"🔷", url: "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8", cat:"إخبارية" },
-  { name: "العربي TV", logo:"🟠", url: "https://live.kwikmotion.com/alaraby1live/alaraby_abr/playlist.m3u8", cat:"إخبارية" },
-  { name: "الغد TV", logo:"🟤", url: "https://eazyvwqssi.erbvr.com/alghadtv/alghadtv.m3u8", cat:"إخبارية" },
-  { name: "العراقية العامة", logo:"🇮🇶", url: "https://imn-live.esite-lab.com/hls/iraqia-general.m3u8", cat:"منوعات" },
-  { name: "العراقية سبورت", logo:"⚽", url: "https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8", cat:"رياضية" },
-  { name: "أغاني أغاني", logo:"🎵", url: "https://cdn.streamlane.tv/hls/aghanitv/index.m3u8", cat:"منوعات" },
-  { name: "Aghapy TV", logo:"✝️", url: "https://5b622f07944df.streamlock.net/aghapy.tv/aghapy.smil/playlist.m3u8", cat:"دينية" },
-  { name: "عجمان TV", logo:"🇦🇪", url: "https://cdn1.logichost.in/ajmantv/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Afghanistan International", logo:"🌍", url: "https://hls.afintl.com/hls/stream.m3u8", cat:"إخبارية" },
-  { name: "العربية أسواق", logo:"💹", url: "https://live.alarabiya.net/alarabiapublish/aswaaq.smil/playlist.m3u8", cat:"إخبارية" },
-  { name: "Huda TV (إسلامي)", logo:"🕌", url: "https://cdn.bestream.io:19360/elfaro1/elfaro1.m3u8", cat:"دينية" },
-  { name: "Big Buck Bunny 4K Demo", logo:"🐰", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", cat:"منوعات" },
-  { name: "Tears of Steel Demo", logo:"🎬", url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8", cat:"منوعات" },
-  { name: "NASA TV", logo:"🚀", url: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8", cat:"منوعات" },
-  // --- قنوات مصرية 🇪🇬 تم فحصها 200 OK (MBC محجوبة جغرافياً من سيرفر Hostinger - تم إخفاؤها) ---
-  { name: "Mix Hollywood مصر", logo:"🎬", url: "https://ml-pull-hwc.myco.io/MixTV/hls/index.m3u8", cat:"مصرية" },
-  { name: "Koogi TV أطفال", logo:"🧒", url: "https://5d658d7e9f562.streamlock.net/koogi.tv/koogi.smil/playlist.m3u8", cat:"مصرية" },
-  { name: "Coptic TV قبطية", logo:"✝️", url: "https://ctv.icopts.app/CTV/index.fmp4.m3u8", cat:"مصرية" },
-  { name: "Watan TV وطن", logo:"🇪🇬", url: "https://rp.tactivemedia.com/watantv_source/live/playlist.m3u8", cat:"مصرية" },
-  { name: "Mekameleen مكملين", logo:"📺", url: "https://mn-nl.mncdn.com/mekameleen/smil:mekameleentv.smil/playlist.m3u8", cat:"مصرية" },
-  { name: "9090 FM TV", logo:"📻", url: "https://9090video.mobtada.com/hls/stream.m3u8", cat:"مصرية" },
-  { name: "Al Masriyah المصرية", logo:"🇪🇬", url: "https://185.9.2.18/chid_247/index.m3u8", cat:"مصرية" },
-  // +13 للوصول 300 🎉 (مصادر متعددة 200 OK)
-  { name: "Yemen Today", logo:"📺", url: "https://video.yementdy.tv/hls/yementoday.m3u8", cat:"منوعات" },
-  { name: "View Media", logo:"📺", url: "https://viewmedia7219.bozztv.com/wmedia/viewmedia100/web_040/Stream/playlist.m3u8", cat:"منوعات" },
-  { name: "Live TV", logo:"📺", url: "https://vmi747311.contaboserver.net/hls/livetv.m3u8", cat:"منوعات" },
-  { name: "Mosaique FM Studio", logo:"📺", url: "https://webcam.mosaiquefm.net/mosatv/_definst_/studio/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Arabiya English", logo:"📺", url: "https://live.alarabiya.net/alarabiapublish/english/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "Loud FM", logo:"📺", url: "https://radio-loud-fm.mbc.net/radio-loud-fm_1.m3u8", cat:"منوعات" },
-  { name: "El Faro 4", logo:"📺", url: "https://cdn.bestream.io:19360/elfaro4/elfaro4.m3u8", cat:"منوعات" },
-  { name: "Peace TV Chinese", logo:"📺", url: "https://dzkyvlfyge.erbvr.com/PeaceTvChinese/index.m3u8", cat:"منوعات" },
-  { name: "MBC Persia", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-persia/818ee8e4b592dc497608f066d825bfb4/index.m3u8", cat:"منوعات" },
-  { name: "KTV 2 Kuwait", logo:"📺", url: "https://kwtktv2ta.cdn.mangomolo.com/ktv2/smil:ktv2.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Noursat English", logo:"📺", url: "https://svs.itworkscdn.net/noursatenglive/noursateng.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Afarin TV 1", logo:"📺", url: "https://5dcabf026b188.streamlock.net/afarinTV/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "Afarin TV 2", logo:"📺", url: "https://65f16f0fdfc51.streamlock.net/afarinTV/livestream/playlist.m3u8", cat:"منوعات" },
-  // --- دفعة +37 (200 OK) ---
-  { name: "Assirat", logo:"📺", url: "https://softverse.b-cdn.net/Assirat/assiratobs/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Mahriah", logo:"📺", url: "https://starmenajo.com/hls/almahriah/index.m3u8", cat:"منوعات" },
-  { name: "Al Masar", logo:"📺", url: "https://starmenajo.com/hls/almasar/index.m3u8", cat:"منوعات" },
-  { name: "Al Wesam", logo:"📺", url: "https://stream.addresses-sat.com/Alwesam/index.m3u8", cat:"منوعات" },
-  { name: "Al Abbassia", logo:"📺", url: "https://stream.alabbassia.com/live/alabbassia/index.m3u8", cat:"منوعات" },
-  { name: "Welat", logo:"📺", url: "https://stream.badinan.xyz/welat/tv/playlist.m3u8", cat:"منوعات" },
-  { name: "Ishtar TV", logo:"📺", url: "https://stream.ishtartv.com/live/iShtarHD/playlist.m3u8", cat:"منوعات" },
-  { name: "Hala TV", logo:"📺", url: "https://stream.panet.com/edge/halaTV/playlist.m3u8", cat:"منوعات" },
-  { name: "Shams TV", logo:"📺", url: "https://stream.shams.tv/hls/stream.m3u8", cat:"منوعات" },
-  { name: "Sky News OTT", logo:"📺", url: "https://stream.skynewsarabia.com/ott/ott.m3u8", cat:"منوعات" },
-  { name: "Sky Vertical", logo:"📺", url: "https://stream.skynewsarabia.com/vertical/vertical.m3u8", cat:"منوعات" },
-  { name: "Star Mena FHD", logo:"📺", url: "https://stream.starmenajo.com/hls/app/live/ts:fhd.m3u8", cat:"منوعات" },
-  { name: "Al Najah", logo:"📺", url: "https://streaming.najah.edu:8443/hls/AlNajah.m3u8", cat:"منوعات" },
-  { name: "Al Madina", logo:"📺", url: "https://streaming.zaytonatube.com:8081/AlMadinatv/almadina21/index.m3u8", cat:"منوعات" },
-  { name: "Shabab FM", logo:"📺", url: "https://streaming.zaytonatube.com:8081/ShababFM/shabab/index.m3u8", cat:"منوعات" },
-  { name: "Tchad TV", logo:"📺", url: "https://strhlslb01.streamakaci.tv/str_tchad_tchad/str_tchad_multi/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Iman", logo:"📺", url: "https://svs.itworkscdn.net/alimanlive/imantv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Wousta", logo:"📺", url: "https://svs.itworkscdn.net/alwoustalive/alwoustatv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Asharq Discovery", logo:"📺", url: "https://svs.itworkscdn.net/asharqdiscoverylive/asharqd.smil/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "Asharq Documentary", logo:"📺", url: "https://svs.itworkscdn.net/asharqdocumentarylive/asharqdocumentary.smil/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "Asharq Radio Vision", logo:"📺", url: "https://svs.itworkscdn.net/asharqradiovlive/asharqradiov/playlist.m3u8", cat:"منوعات" },
-  { name: "Kabla TV", logo:"📺", url: "https://svs.itworkscdn.net/kablatvlive/kabtv1.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Nour 1", logo:"📺", url: "https://svs.itworkscdn.net/nour1satlive/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "Nour 3", logo:"📺", url: "https://svs.itworkscdn.net/nour3satlive/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "Nour 4", logo:"📺", url: "https://svs.itworkscdn.net/nour4satlive/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "Nour 8", logo:"📺", url: "https://svs.itworkscdn.net/nour8satlive/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "Nour 9", logo:"📺", url: "https://svs.itworkscdn.net/nour9satlive/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "Pulse 95", logo:"📺", url: "https://svs.itworkscdn.net/pulse95live/pulse96/playlist.m3u8", cat:"منوعات" },
-  { name: "SAT7 Arabic", logo:"📺", url: "https://svs.itworkscdn.net/sat7arabiclive/sat7arabic.smil/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "SAT7 Kids", logo:"📺", url: "https://svs.itworkscdn.net/sat7kidslive/sat7kids.smil/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "SMC 2", logo:"📺", url: "https://svs.itworkscdn.net/smc2live/smc2tv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "SMC Radio", logo:"📺", url: "https://svs.itworkscdn.net/smcradiolive/smcradiolive/playlist.m3u8", cat:"منوعات" },
-  { name: "SMC Watar", logo:"📺", url: "https://svs.itworkscdn.net/smcwatarlive/smcwatar/playlist.m3u8", cat:"منوعات" },
-  { name: "VDL TV", logo:"📺", url: "https://svs.itworkscdn.net/vdltvlive/vdltv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Watania 1", logo:"📺", url: "https://sw1.tanitweb.net/TunisiaTV/_definst_/watania1/chunklist.m3u8", cat:"منوعات" },
-  { name: "Watania 2", logo:"📺", url: "https://sw1.tanitweb.net/TunisiaTV/_definst_/watania2/playlist.m3u8", cat:"منوعات" },
-  { name: "TRT Arabi", logo:"📺", url: "https://tv-trtarabi.medya.trt.com.tr/master.m3u8", cat:"منوعات" },
-  // +9 للوصول 250 🎉
-  { name: "MBC Iraq", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-iraq/e38c44b1b43474e1c39cb5b90203691e/index.m3u8", cat:"منوعات" },
-  { name: "MBC Masr USA", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-usa/cd8d40acdab28aac0582faa3bd3983f1/index.m3u8", cat:"منوعات" },
-  { name: "MBC Mood", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-mood/78367bf48ccdba501d0d014a10c21031/index.m3u8", cat:"منوعات" },
-  { name: "MBC Plus Drama", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-plus-drama/e37251ec2aac8f6c98f75cd0fa37cd28/index.m3u8", cat:"منوعات" },
-  { name: "MTV Lebanon", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mtv-lebanon/b8ebb2a5affb812f1541712adde10e26/index.m3u8", cat:"منوعات" },
-  { name: "Saudi TV", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-saudi-tv/2ad66056b51fd8c1b624854623112e43/index.m3u8", cat:"منوعات" },
-  { name: "SBC", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-sbc/90e09c0c28db26435799b4a14892a167/index.m3u8", cat:"منوعات" },
-  { name: "Thaqafeyyah", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-thaqafeyyah/28c0d2a20dbf1dc049ce15d3973f494b/index.m3u8", cat:"منوعات" },
-  { name: "Thikrayat", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-thikrayat/8cfa8fe0c96275735745b89c683b27e3/index.m3u8", cat:"منوعات" },
-  // --- دفعة +41 (200 OK) ---
-  { name: "Oman Sport", logo:"⚽", url: "https://partneta.cdn.mgmlcdn.com/omsport/smil:omsport.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Oman Cultural", logo:"📺", url: "https://partwota.cdn.mgmlcdn.com/omcultural/smil:omcultural.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Oman Live", logo:"📺", url: "https://partwota.cdn.mgmlcdn.com/omlive/smil:omlive.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Palestine EDU", logo:"📺", url: "https://pbc.furrera.ps/PalestineEDU/index.m3u8", cat:"منوعات" },
-  { name: "Palestine EDU", logo:"📺", url: "https://pbc.furrera.ps/musawahd/index.m3u8", cat:"منوعات" },
-  { name: "Palestine EDU", logo:"📺", url: "https://pbc.furrera.ps/palestinehd/index.m3u8", cat:"منوعات" },
-  { name: "Palestine EDU", logo:"📺", url: "https://pbc.furrera.ps/palestinelivehd/index.m3u8", cat:"منوعات" },
-  { name: "MCA TV", logo:"📺", url: "https://platform-iuoamc.uk/iptv/mca-tv/index.m3u8", cat:"منوعات" },
-  { name: "FastTV Archive", logo:"📺", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Archive/playlist.m3u8", cat:"منوعات" },
-  { name: "FastTV Comedy", logo:"😂", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Comedy/playlist.m3u8", cat:"منوعات" },
-  { name: "FastTV Drama", logo:"📺", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Drama/playlist.m3u8", cat:"منوعات" },
-  { name: "FastTV Song", logo:"🎵", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Song/playlist.m3u8", cat:"منوعات" },
-  { name: "FastTV Tourism", logo:"📺", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Tourism/playlist.m3u8", cat:"منوعات" },
-  { name: "FastTV Cooking", logo:"🍳", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/cooking/playlist.m3u8", cat:"منوعات" },
-  { name: "Iqraa Fast 1", logo:"📺", url: "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv1/playlist.m3u8", cat:"منوعات" },
-  { name: "Iqraa Fast 2", logo:"📺", url: "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv2/playlist.m3u8", cat:"منوعات" },
-  { name: "Iqraa Fast 3", logo:"📺", url: "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv3/playlist.m3u8", cat:"منوعات" },
-  { name: "Qatar Quran", logo:"🕌", url: "https://qatartv.akamaized.net/hls/live/20000612/qtvquran/master.m3u8", cat:"دينية" },
-  { name: "Palestinian TV", logo:"📺", url: "https://rp.tactivemedia.com/palestiniantv_source/live/playlist.m3u8", cat:"منوعات" },
-  { name: "RT Arabic", logo:"📺", url: "https://rt-arb.rttv.com/dvr/rtarab/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Ghadeer", logo:"📺", url: "https://sd343444.vodu.store:3356/live/Alghadeer/index.m3u8", cat:"منوعات" },
-  { name: "TX 001", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx001/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 002", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx002/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 004", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx004/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 008", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx008/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 010", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx010/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 011", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx011/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 012", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx012/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 019", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx019/playlist.m3u8", cat:"منوعات" },
-  { name: "TX 029", logo:"📺", url: "https://shd-amg-fast.edgenextcdn.net/tx029/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Souriya", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-souriya-tv/e3150760fa5fd62776225433b8c3d406/index.m3u8", cat:"منوعات" },
-  { name: "Big Time Plus", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-big-time-plus/924283f994779a311c1389698ff7e736/index.m3u8", cat:"منوعات" },
-  { name: "KSA Now", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-ksa-now/71ed3aa814c643306c0a8bc4fcc7d17f/index.m3u8", cat:"منوعات" },
-  { name: "MBC 1 USA", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1-usa/fdac3a4fc0473f1f56e07ec1d63a4b7b/index.m3u8", cat:"منوعات" },
-  { name: "MBC 1", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1/15cf99af5de54063fdabfefe66adc075/index.m3u8", cat:"منوعات" },
-  { name: "MBC 3 USA", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-3-usa/5d58265a862a476dc7f97694addb5ded/index.m3u8", cat:"منوعات" },
-  { name: "MBC 4", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-4/24f134f1cd63db9346439e96b86ca6ed/index.m3u8", cat:"منوعات" },
-  { name: "MBC 5", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-5/ee6b000cee0629411b666ab26cb13e9b/index.m3u8", cat:"منوعات" },
-  { name: "MBC Bollywood", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-bollywood/546eb40d7dcf9a209255dd2496903764/index.m3u8", cat:"منوعات" },
-  { name: "FastTV Drama", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-drama-usa/ea2f5db904aff224b7066e59c7f585a2/index.m3u8", cat:"منوعات" },
-  { name: "FastTV Drama", logo:"📺", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-drama/2c28a458e2f3253e678b07ac7d13fe71/index.m3u8", cat:"منوعات" },
-  // +4 للوصول 200 🎉
-  { name: "GodStands Arabic", logo:"📺", url: "https://online.godstands.tv:5443/WebRTCApp/streams/Arabic.m3u8", cat:"دينية" },
-  { name: "GodStands Kids Arabic", logo:"🧒", url: "https://online.godstands.tv:5443/WebRTCApp/streams/KidsArabic.m3u8", cat:"منوعات" },
-  { name: "OTV", logo:"📺", url: "https://otv.hibridcdn.net/otv/tv_abr/playlist.m3u8", cat:"منوعات" },
-  { name: "Oman TV", logo:"🇴🇲", url: "https://partneta.cdn.mgmlcdn.com/omantv/smil:omantv.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  // --- دفعة +41 قناة (200 OK) ---
-  { name: "Bradosti TV", logo:"📺", url: "https://live.bradosti.net/live/samaraweb_playlist.m3u8", cat:"منوعات" },
-  { name: "Channel 8 Kurdish", logo:"📺", url: "https://live.channel8.com/Channel8-Kurdish/index.fmp4.m3u8", cat:"منوعات" },
-  { name: "El Heddaf TV", logo:"📺", url: "https://live.elheddaftv.com:8081/elheddaftv/index.m3u8", cat:"منوعات" },
-  { name: "France 24", logo:"📺", url: "https://live.france24.com/hls/live/2037222-b/F24_AR_HI_HLS/master_5000.m3u8", cat:"إخبارية" },
-  { name: "I News", logo:"📰", url: "https://live.i-news.tv/hls/stream.m3u8", cat:"إخبارية" },
-  { name: "Future TV", logo:"📺", url: "https://live.kwikmotion.com/futurelive/ftv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Qatar TV 1", logo:"📺", url: "https://live.kwikmotion.com/qtv1live/qtv1.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Qatar TV 2", logo:"📺", url: "https://live.kwikmotion.com/qtv2live/qtv2.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Red TV", logo:"📺", url: "https://live.kwikmotion.com/redtvlive/redtv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Roya TV", logo:"📺", url: "https://live.kwikmotion.com/royatvpublic/royatv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Sajedda Radio", logo:"📺", url: "https://live.kwikmotion.com/sbrksajeddahradiolive/srpksajeddahradio/chunks.m3u8", cat:"منوعات" },
-  { name: "Khuzama Radio", logo:"📺", url: "https://live.kwikmotion.com/sbrksakhuzamaradiolive/srpkhuzama/playlist.m3u8", cat:"منوعات" },
-  { name: "Saneda Radio", logo:"📺", url: "https://live.kwikmotion.com/sbrksanedaradiolive/srpksanedaradio/playlist.m3u8", cat:"منوعات" },
-  { name: "Quran Radio", logo:"🕌", url: "https://live.kwikmotion.com/sbrksaquranradiolive/srpksaquranradio/playlist.m3u8", cat:"دينية" },
-  { name: "Ariyadh Radio", logo:"📺", url: "https://live.kwikmotion.com/sbrksariyadhradiolive/srpksariyadhradio/playlist.m3u8", cat:"منوعات" },
-  { name: "Saudia Radio", logo:"📺", url: "https://live.kwikmotion.com/sbrksasaudiaradiolive/srpksasaudiaradio/playlist.m3u8", cat:"منوعات" },
-  { name: "SMC 1", logo:"📺", url: "https://live.kwikmotion.com/smc1live/smc1tv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Quran Radio", logo:"🕌", url: "https://live.kwikmotion.com/smcquranlive/quranradiolive/playlist.m3u8", cat:"دينية" },
-  { name: "Syria TV 2", logo:"📺", url: "https://live.kwikmotion.com/syriatv02live/syriatv02.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Syria TV", logo:"📺", url: "https://live.kwikmotion.com/syriatvlive/syriatv.smil/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "Miracle TV", logo:"📺", url: "https://live.miracleonline.org/hls/miracle1.m3u8", cat:"دينية" },
-  { name: "Now Arabic", logo:"📺", url: "https://live.nowtelly.com/now_arabic/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Pal Today", logo:"📺", url: "https://live.paltodaytv.com/paltv/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Pal Today", logo:"📺", url: "https://live.paltodaytv.com/paltv/live/playlist_sfm4s.m3u8", cat:"منوعات" },
-  { name: "Press TV", logo:"📺", url: "https://live.presstv.ir/hls/ifilmar.m3u8", cat:"إخبارية" },
-  { name: "Sahara 24", logo:"📺", url: "https://live.saharamedias.net:3317/live/shara24live.m3u8", cat:"منوعات" },
-  { name: "Al Alam", logo:"📺", url: "https://live2.alalam.ir/alalam.m3u8", cat:"منوعات" },
-  { name: "Al Masirah Mubasher", logo:"📺", url: "https://live2.cdnbridge.tv/AlmasirahMubasher/Mubasher_All/playlist.m3u8", cat:"منوعات" },
-  { name: "Mission Asia", logo:"📺", url: "https://livecdn.live247stream.com/missionasia/tv/playlist.m3u8", cat:"منوعات" },
-  { name: "Marjaeya TV", logo:"📺", url: "https://livefa.marjaeyattv.com/mtv_ar/playlist.m3u8", cat:"منوعات" },
-  { name: "MTA 6 Asia", logo:"🕌", url: "https://livemtaasia.akamaized.net/hls/live/2039224/mta6asia/playlist.m3u8", cat:"دينية" },
-  { name: "MTA Asia 2", logo:"🕌", url: "https://livemtaasia.akamaized.net/hls/live/2039224/mtaasia2/playlist.m3u8", cat:"دينية" },
-  { name: "قناة", logo:"📺", url: "https://media1.livaat.com/static/AL-RASHEED-HD/playlist.m3u8", cat:"منوعات" },
-  { name: "Streambrothers", logo:"📺", url: "https://media2.streambrothers.com:1936/8122/8122/playlist.m3u8", cat:"منوعات" },
-  { name: "El Sharq", logo:"📺", url: "https://mn-nl.mncdn.com/elsharq_live/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Mekameleen 2", logo:"📺", url: "https://mn-nl.mncdn.com/mekameleen/smil:mekameleentv.smil/chunklist_b928000.m3u8", cat:"منوعات" },
-  { name: "Pal Abroad", logo:"📺", url: "https://mn-nl.mncdn.com/palabroad/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Habib TV", logo:"📺", url: "https://ncdn.telewebion.ir/habib/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Palestine TV", logo:"📺", url: "https://ncdn.telewebion.ir/palestine/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Wilayah", logo:"📺", url: "https://nl.livekadeh.com/hls2/alwilayah_tv.m3u8", cat:"منوعات" },
-  { name: "Vilayet TV", logo:"📺", url: "https://nl.livekadeh.com/hls2/vilayet.m3u8", cat:"منوعات" },
-  // --- قنوات مصرية إضافية (MBC الآن تعمل عبر البروكسي 200 OK) 🇪🇬 ---
-  { name: "MBC مصر", logo:"🇪🇬", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr/956eac069c78a35d47245db6cdbb1575/index.m3u8", cat:"مصرية" },
-  { name: "MBC مصر 2", logo:"🇪🇬", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-2/754931856515075b0aabf0e583495c68/index.m3u8", cat:"مصرية" },
-  { name: "MBC مصر دراما", logo:"🎭", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-masr-drama/567b703c19ede6598222de81b0e4508b/index.m3u8", cat:"مصرية" },
-  { name: "MBC 1 Egypt", logo:"🇪🇬", url: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-1-na/eec141533c90dd34722c503a296dd0d8/index.m3u8", cat:"مصرية" },
-  { name: "ATVSat", logo:"📺", url: "https://stream.atvsat.com/atvsatlive/smil:atvsatlive.smil/playlist.m3u8", cat:"مصرية" },
-  // +2 للوصول 150 🎉
-  { name: "Asil TV", logo:"📺", url: "https://live.asil.tv/asiltv/index.m3u8", cat:"منوعات" },
-  { name: "Beit Abbas TV", logo:"🕌", url: "https://live.beitolabbas.tv/live/beitolabbastv.m3u8", cat:"دينية" },
-  // --- دفعة +48 قناة (200 OK) ---
-  { name: "قناة 101", logo:"📺", url: "https://edge.fastpublish.me/live/index.m3u8", cat:"منوعات" },
-  { name: "Chada TV", logo:"📺", url: "https://edge13.vedge.infomaniak.com/livecast/ik:chadatv/manifest.m3u8", cat:"منوعات" },
-  { name: "Marina TV", logo:"📺", url: "https://ffs.gulfsat.com/Marina-TV-HD/index.m3u8", cat:"منوعات" },
-  { name: "قناة 104", logo:"📺", url: "https://fl1002.bozztv.com/gf-zarintv/index.m3u8", cat:"منوعات" },
-  { name: "Dijlah", logo:"📺", url: "https://ghaasiflu.online/Dijlah/index.m3u8", cat:"منوعات" },
-  { name: "قناة 106", logo:"📺", url: "https://ghaasiflu.online/alhqeqa/index.m3u8", cat:"منوعات" },
-  { name: "قناة 107", logo:"📺", url: "https://go5lm6a6dawb-hls-live.5centscdn.com/lwarabic/53132d996b4263ec0d7b602292c46eaf.sdp/playlist.m3u8", cat:"منوعات" },
-  { name: "Halab Today", logo:"📺", url: "https://halabtoday-live.lg.mncdn.com/halabtoday/livestream/playlist.m3u8", cat:"منوعات" },
-  { name: "قناة 109", logo:"📺", url: "https://halalondon-live.ercdn.net/halalondon/halalondon.m3u8", cat:"منوعات" },
-  { name: "قناة 110", logo:"📺", url: "https://hls.dabangasudan.org/hls/stream.m3u8", cat:"منوعات" },
-  { name: "Al Yaum", logo:"📺", url: "https://hlspackager.akamaized.net/live/DB/ALYAUM_TV/HLS/ALYAUM_TV.m3u8", cat:"منوعات" },
-  { name: "Kurdsat", logo:"📺", url: "https://hlspackager.akamaized.net/live/DB/KURDSAT_HD/HLS/KURDSAT_HD.m3u8", cat:"منوعات" },
-  { name: "Kurdsat", logo:"📺", url: "https://hlspackager.akamaized.net/live/DB/KURDSAT_NEWS/HLS/KURDSAT_NEWS.m3u8", cat:"إخبارية" },
-  { name: "Rojava", logo:"📺", url: "https://hlspackager.akamaized.net/live/DB/ROJAVA_HD/HLS/ROJAVA_HD.m3u8", cat:"منوعات" },
-  { name: "قناة 115", logo:"📺", url: "https://hlspackager.akamaized.net/live/DB/RONAHI_TV/HLS/RONAHI_TV.m3u8", cat:"منوعات" },
-  { name: "Zagros", logo:"📺", url: "https://hlspackager.akamaized.net/live/DB/ZAGROS_TV/HLS/ZAGROS_TV.m3u8", cat:"منوعات" },
-  { name: "قناة 117", logo:"📺", url: "https://hms.pfs.gdn/hms/v1/broadcast/hlmvmp2hfriode891/playlist.m3u8", cat:"منوعات" },
-  { name: "قناة 118", logo:"📺", url: "https://hms.pfs.gdn/v1/broadcast/one/playlist.m3u8", cat:"منوعات" },
-  { name: "قناة 119", logo:"📺", url: "https://hms.pfs.gdn/v1/broadcast/onefm/playlist.m3u8", cat:"منوعات" },
-  { name: "قناة 120", logo:"📺", url: "https://htvmada.mada.ps:4443/maannews/index.m3u8", cat:"إخبارية" },
-  { name: "قناة 121", logo:"📺", url: "https://htvmada.mada.ps:4443/wattan/index.m3u8", cat:"منوعات" },
-  { name: "قناة 122", logo:"📺", url: "https://i24newsarabic-cdn.encoders.immergo.tv/master.m3u8", cat:"إخبارية" },
-  { name: "قناة 123", logo:"📺", url: "https://jmc-live.ercdn.net/alistiqama/alistiqama.m3u8", cat:"منوعات" },
-  { name: "قناة 124", logo:"📺", url: "https://jmc-live.ercdn.net/altaghier/altaghier.m3u8", cat:"منوعات" },
-  { name: "قناة 125", logo:"📺", url: "https://jmc-live.ercdn.net/eritreatv/eritreatv.m3u8", cat:"منوعات" },
-  { name: "Jordan TV", logo:"📺", url: "https://jrtv-live.ercdn.net/jordanhd/jordanhd.m3u8", cat:"منوعات" },
-  { name: "Jordan TV", logo:"📺", url: "https://jrtv-live.ercdn.net/jordansporthd/jordansporthd.m3u8", cat:"رياضية" },
-  { name: "قناة 128", logo:"📺", url: "https://kilolink.pulsarstarsolutions.com/live/smil:tanasuhtv.smil/manifest.m3u8", cat:"منوعات" },
-  { name: "KTV", logo:"📺", url: "https://ktvlive.online/stream/hls/ch1.m3u8", cat:"منوعات" },
-  { name: "KTV", logo:"📺", url: "https://ktvlive.online/stream/hls/ch3.m3u8", cat:"منوعات" },
-  { name: "Kuwait 30", logo:"📺", url: "https://kwtethta.cdn.mangomolo.com/eth/smil:eth.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Kuwait 31", logo:"📺", url: "https://kwtkbta.cdn.mangomolo.com/kb/smil:kb.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Kuwait 32", logo:"📺", url: "https://kwtktv1ta.cdn.mangomolo.com/ktv1/smil:ktv1.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Kuwait 33", logo:"📺", url: "https://kwtktvaqta.cdn.mangomolo.com/ktvaq/smil:tktvaq.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Kuwait 34", logo:"📺", url: "https://kwtktvata.cdn.mangomolo.com/ktva/smil:tktva.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Kuwait 35", logo:"📺", url: "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "Kuwait 36", logo:"📺", url: "https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u8", cat:"منوعات" },
-  { name: "قناة 138", logo:"📺", url: "https://live-hls-apps-aja-fa.getaj.net/AJA/01.m3u8", cat:"منوعات" },
-  { name: "قناة 139", logo:"📺", url: "https://live-hls-apps-ajm-fa.getaj.net/AJM/index.m3u8", cat:"منوعات" },
-  { name: "قناة 140", logo:"📺", url: "https://live-hls-apps-ajm2-fa.getaj.net/AJM2/index.m3u8", cat:"منوعات" },
-  { name: "قناة 141", logo:"📺", url: "https://live-hls-apps-ajm24-fa.getaj.net/AJM24/index.m3u8", cat:"منوعات" },
-  { name: "قناة 142", logo:"📺", url: "https://live-hls-web-aja2-gcp.thehlive.com/AJA2/index.m3u8", cat:"منوعات" },
-  { name: "Asharq", logo:"📺", url: "https://live-news.asharq.com/asharq.m3u8", cat:"إخبارية" },
-  { name: "Sky News", logo:"📺", url: "https://live-stream.skynewsarabia.com/c-horizontal-channel/horizontal-stream/index.m3u8", cat:"إخبارية" },
-  { name: "Sky News", logo:"📺", url: "https://live-stream.skynewsarabia.com/c-vertical-channel/vertical-stream/index.m3u8", cat:"إخبارية" },
-  { name: "Spacetoon", logo:"📺", url: "https://live-uae-next.spacetoongo.com/ST_MENA_NEXT/hls/r9p2hjipmw2kl.m3u8", cat:"منوعات" },
-  { name: "Alawla", logo:"📺", url: "https://live.alawla.tv/hls/stream.m3u8", cat:"منوعات" },
-  { name: "Test", logo:"📺", url: "https://live.alissahost.net/hls/test.m3u8", cat:"منوعات" },
-  // --- القناة 100 🎉 ---
-  { name: "DW عربي Master", logo:"🔷", url: "https://dwamdstream103.akamaized.net/hls/live/2015526/dwstream103/master.m3u8", cat:"إخبارية" },
-  // --- دفعة +4 (200 OK) ---
-  { name: "Cloudfront 1", logo:"☁️", url: "https://d2ow8h651gs7dx.cloudfront.net/out/v1/371fb663da604e659a2fb99bf89d92d4/index.m3u8", cat:"منوعات" },
-  { name: "Cloudfront 2", logo:"☁️", url: "https://d6izdil55uftn.cloudfront.net/out/v1/0a06d1d6377c47edbd48721ed724bd08/index.m3u8", cat:"منوعات" },
-  { name: "CGTN Arabic Test", logo:"🇨🇳", url: "https://dash3.antik.sk/live/test_cgtn_arb_tizen/playlist.m3u8", cat:"إخبارية" },
-  { name: "Cloudfront 3", logo:"☁️", url: "https://dphwv2ufgnfsq.cloudfront.net/out/v1/59cd80dfe93a479eb8b4d79bc6f225ca/index.m3u8", cat:"منوعات" },
-  // --- دفعة جديدة +14 قناة (200 OK) ---
-  { name: "JWP Channel", logo:"📺", url: "https://cdn.fast.jwp.services/v1/channel/1_jB6940Ei_TvhvIHDL/manifest.m3u8", cat:"منوعات" },
-  { name: "AL24 News", logo:"🇩🇿", url: "https://cdn.live.easybroadcast.io/abr_corp/66_al24_u4yga6h/corp/66_al24_u4yga6h_240p/chunks.m3u8", cat:"إخبارية" },
-  { name: "Medi1 TV Arabic", logo:"🇲🇦", url: "https://cdn.live.easybroadcast.io/abr_corp/83_medi1tv-arabic_g90v4ec/playlist.m3u8", cat:"منوعات" },
-  { name: "Medi1 Maghreb", logo:"🇲🇦", url: "https://cdn.live.easybroadcast.io/abr_corp/83_medi1tv-maghreb_jnbspmg/playlist.m3u8", cat:"منوعات" },
-  { name: "LTV", logo:"📺", url: "https://cdn.streamlane.tv/hls/ltv/master.m3u8", cat:"منوعات" },
-  { name: "Wowza Live 1", logo:"📺", url: "https://cdn3.wowza.com/1/YStGZlJRdktzZkdK/VXROZWNW/hls/live/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Hayat Live", logo:"✝️", url: "https://cdn3.wowza.com/5/OE5HREpIcEkySlNT/alhayat-live/ngrp:livestream_all/playlist.m3u8", cat:"دينية" },
-  { name: "Ch4 TeenDoc", logo:"📺", url: "https://ch14.tv/live/ch4teendoc/playlist.m3u8", cat:"منوعات" },
-  { name: "MTA 1", logo:"🕌", url: "https://chlivemta1.akamaized.net/hls/live/2008145/mta1/playlist.m3u8", cat:"دينية" },
-  { name: "MTA 2", logo:"🕌", url: "https://chlivemta1.akamaized.net/hls/live/2008145/mta2/playlist.m3u8", cat:"دينية" },
-  { name: "MTA 3 Arabia", logo:"🕌", url: "https://chlivemta1.akamaized.net/hls/live/2010556/mta3alarabia/playlist.m3u8", cat:"دينية" },
-  { name: "Rasd TV 2", logo:"📺", url: "https://cloud.streamingconnect.tv/hls/rasdtv2/rasdtv.m3u8", cat:"إخبارية" },
-  { name: "CNBC", logo:"💹", url: "https://cnbc-live.akamaized.net/cnbc/master.m3u8", cat:"إخبارية" },
-  { name: "Cloudflare Stream", logo:"☁️", url: "https://customer-9vqui33qma2rownb.cloudflarestream.com/7792e558fe54e23bdd4b462ec275cdba/manifest/video.m3u8", cat:"منوعات" },
-  // --- دفعة جديدة +12 قناة مجانية (200 OK) ---
-  { name: "Alpha TV", logo:"📺", url: "https://alpha.tv.online.tm/hls/ch007.m3u8", cat:"منوعات" },
-  { name: "Al Rayyan 1", logo:"🇶🇦", url: "https://alrayyancdn.vidgyor.com/pub-noalrayy3pwz0l/liveabr/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "Al Rayyan 2", logo:"🇶🇦", url: "https://alrayyancdn.vidgyor.com/pub-nooldraybinbdh/liveabr/playlist_dvr.m3u8", cat:"منوعات" },
-  { name: "Al Wasat TV", logo:"🇱🇾", url: "https://alwasattv.hibridcdn.net/alwasattv/alwasat_abr/playlist.m3u8", cat:"إخبارية" },
-  { name: "Al Shallal", logo:"📺", url: "https://amg01480-alshallalfze-alshallal-ono-q0hfg.amagi.tv/playlist.m3u8", cat:"منوعات" },
-  { name: "Amman TV", logo:"🇯🇴", url: "https://ammantv-live.ercdn.net/ammantvhd/ammantvhd.m3u8", cat:"منوعات" },
-  { name: "Assahat TV", logo:"📺", url: "https://assahat.b-cdn.net/Assahat/assahatobs/index.m3u8", cat:"منوعات" },
-  { name: "Brightstar Arabic", logo:"⭐", url: "https://brightstar-arabic-pull-secure.akamaized.net/brightstararabic/stream.m3u8", cat:"منوعات" },
-  { name: "Al Ma Channels", logo:"📺", url: "https://bucharest.zeuscdn724.com/lb0/CH-AL-MA/index.m3u8", cat:"منوعات" },
-  { name: "Anystream IQ", logo:"🇮🇶", url: "https://cd198.anystream.uk:9092/iqapp/t5kb86tv/playlist.m3u8", cat:"منوعات" },
-  { name: "Libya Al Watanya", logo:"🇱🇾", url: "https://cdn-globecast.akamaized.net/live/eds/libya_al_watanya/hls_roku/index.m3u8", cat:"منوعات" },
-  { name: "Sudan TV", logo:"🇸🇩", url: "https://cdn-globecast.akamaized.net/live/eds/sudan_tv/hls_roku/index.m3u8", cat:"منوعات" },
-  // --- دفعة جديدة +15 قناة مجانية إضافية (200 OK) ---
-  { name: "Al Karma ME2", logo:"✝️", url: "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmame2.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Al Karma PA", logo:"✝️", url: "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmapa.smil/playlist.m3u8", cat:"دينية" },
-  { name: "My Stream", logo:"📺", url: "https://5a3ed7a72ed4b.streamlock.net/live/SMIL:myStream.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Karma AU", logo:"✝️", url: "https://5a8308add0b31.streamlock.net/alkarmatv.com/alkarmaau.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Al Karma NA1", logo:"✝️", url: "https://5aafcc5de91f1.streamlock.net/alkarmatv.com/alkarmana1.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Al Karma US", logo:"✝️", url: "https://5aafcc5de91f1.streamlock.net/alkarmatv.com/alkarmaus.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Al Magd 2", logo:"📺", url: "https://5aafcc5de91f1.streamlock.net/almagd.tv/almagd.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Atfal TV", logo:"🧒", url: "https://5aafcc5de91f1.streamlock.net/atfal1.com/atfal2/playlist.m3u8", cat:"منوعات" },
-  { name: "Bahrain Sports 2", logo:"🇧🇭", url: "https://5c7b683162943.streamlock.net/live/ngrp:bahrainsportstwo_all/playlist.m3u8", cat:"رياضية" },
-  { name: "Bahrain TV", logo:"🇧🇭", url: "https://5c7b683162943.streamlock.net/live/ngrp:bahraintvmain_all/playlist.m3u8", cat:"منوعات" },
-  { name: "Sports One", logo:"⚽", url: "https://5c7b683162943.streamlock.net/live/ngrp:sportsone_all/playlist.m3u8", cat:"رياضية" },
-  { name: "Live Stream", logo:"📺", url: "https://652930de05533.streamlock.net/live/ngrp:livestream_all/playlist.m3u8", cat:"منوعات" },
-  { name: "Muslim Network", logo:"🕌", url: "https://afghantv.app/hls2/muslimnetwork/index.m3u8", cat:"دينية" },
-  { name: "Al Aimma TV", logo:"🕌", url: "https://alaimma.tv/live/index.m3u8", cat:"دينية" },
-  { name: "Live 8443", logo:"📺", url: "https://659605a54e9a6.streamlock.net:8443/live/livestream/playlist.m3u8", cat:"منوعات" },
-  // --- قنوات إضافية جديدة +10 (فحص 200 OK عبر البروكسي - تنظيف) ---
-  { name: "Story Channel", logo:"📖", url: "https://136044159.r.cdnsun.net/storychannel.m3u8", cat:"منوعات" },
-  { name: "Al Aqsa TV", logo:"🕌", url: "https://43869de4e1a0d641.servers.dvcloud.tv/hls/al_aqsa_channel/6udfi7v8a3eof6nlps6e9ovfrs65c7l7.m3u8", cat:"دينية" },
-  { name: "Al Karma NA2", logo:"✝️", url: "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmaNA2.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Al Karma ME1", logo:"✝️", url: "https://58cc65c534c67.streamlock.net/alkarmatv.com/alkarmame1.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Al Magd TV", logo:"📺", url: "https://597f64b67707a.streamlock.net/almagd.tv/almagd.smil/playlist.m3u8", cat:"دينية" },
-  { name: "Bahrain International", logo:"🇧🇭", url: "https://5c7b683162943.streamlock.net/live/ngrp:bahraininternational_all/playlist.m3u8", cat:"منوعات" },
-  { name: "Bahrain Quran", logo:"🕌", url: "https://5c7b683162943.streamlock.net/live/ngrp:bahrainquran_all/playlist.m3u8", cat:"دينية" },
-  { name: "Al Fady TV", logo:"📺", url: "https://5d658d7e9f562.streamlock.net/alfadytv.tv/alfadytv.smil/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Sharqiya", logo:"🇮🇶", url: "https://5d94523502c2d.streamlock.net/alsharqiyalive/mystream/playlist.m3u8", cat:"إخبارية" },
-  { name: "Logos TV", logo:"✝️", url: "https://5a8308add0b31.streamlock.net/logoschannel.com/logostv.smil/playlist.m3u8", cat:"دينية" },
-  // --- قنوات إضافية جديدة +5 (فحص 200 OK) ---
-  { name: "Sky News عربية", logo:"☁️", url: "https://stream.skynewsarabia.com/hls/sna.m3u8", cat:"إخبارية" },
-  { name: "الجزيرة مباشر 2", logo:"🔴", url: "https://live-hls-web-ajm2-fa.getaj.net/AJM2/index.m3u8", cat:"إخبارية" },
-  { name: "العربية برامج", logo:"🔴", url: "https://live.alarabiya.net/alarabiapublish/aaprograms.smil/playlist.m3u8", cat:"إخبارية" },
-  { name: "الجزيرة صوت", logo:"🎙️", url: "https://live-hls-audio-web-aja.getaj.net/VOICE-AJA/index.m3u8", cat:"إخبارية" },
-  { name: "DW عربي 3", logo:"🔷", url: "https://dwamdstream103.akamaized.net/hls/live/2015526/dwstream103/index.m3u8", cat:"إخبارية" },
-  // --- قنوات إضافية مجانية +10 تم فحصها 200 OK عبر البروكسي ---
-  { name: "2M Monde +1", logo:"🇲🇦", url: "https://d2qh3gh0k5vp3v.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-n6pess5lwbghr/2M_ES.m3u8", cat:"منوعات" },
-  { name: "Abdulmajeed Abdullah", logo:"🎵", url: "https://d2hng5r56zpsbw.cloudfront.net/out/v1/9c4c990f44bb4767bb46271f326dd574/index.m3u8", cat:"منوعات" },
-  { name: "ABNsat", logo:"✝️", url: "https://mediaserver.abnvideos.com/streams/abnsat.m3u8", cat:"دينية" },
-  { name: "Al Araby 2", logo:"🟠", url: "https://live.kwikmotion.com/alaraby2live/alaraby2.smil/playlist.m3u8", cat:"إخبارية" },
-  { name: "Al Arabiya", logo:"🔴", url: "https://live.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8", cat:"إخبارية" },
-  { name: "Al Mayadeen", logo:"🟡", url: "https://mdnlv.cdn.octivid.com/almdn/smil:mpegts.stream.smil/playlist.m3u8", cat:"إخبارية" },
-  { name: "Al Masirah", logo:"🔴", url: "https://live.cdnbridge.tv/Almasirah/Almasirah_all/playlist.m3u8", cat:"إخبارية" },
-  { name: "Al Qamar", logo:"🌙", url: "https://streamer3.premio.link/alqamar/playlist.m3u8", cat:"منوعات" },
-  { name: "Al Hiwar", logo:"💬", url: "https://mn-nl.mncdn.com/alhiwar_live/smil:alhiwar.smil/playlist.m3u8", cat:"إخبارية" },
-  { name: "Avar TV", logo:"📺", url: "https://avr.host247.net/live/AvarTv/playlist.m3u8", cat:"إخبارية" },
-];
-let channels = FALLBACK_CHANNELS;
+</nav><div id="sm-mobile-nav" class="sm-mobile" hidden=""><details class="sm-acc" data-group="home" data-match=""><summary>الرئيسية<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/">الصفحة الرئيسية</a><a href="/#live-player">دليل المشاهدة الرسمية</a><a href="/#xtream">مشغّل الاشتراك</a><a href="/#pricing">الباقات والأسعار</a><a href="/#server-finder">مساعد الاختيار</a><a href="/#servers-compare">مقارنة السيرفرات</a><a href="/#channels">القنوات والمنصات</a><a href="/#setup">طريقة التشغيل</a><a href="/#showcase">مكتبة المحتوى</a><a href="/#blog-teaser">أحدث المقالات</a><a href="/#reviews">آراء العملاء</a><a href="/#faq">الأسئلة الشائعة</a></details><details class="sm-acc" data-group="servers" data-match="servers store cart nova istar moka"><summary>السيرفرات والباقات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/servers/">كل السيرفرات</a><a href="/nova/">سيرفر نوفا</a><a href="/istar/">سيرفر إيستار</a><a href="/moka/">سيرفر موكا</a><a href="/store/">المتجر</a><a href="/cart/">سلة المشتريات</a></details><details class="sm-acc" data-group="watch" data-match="matches channels live-free.html world-cup-2026 predictions watch-legal.html"><summary>القنوات والبث<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/matches/">مواعيد المباريات</a><a href="/channels/">مكتبة القنوات</a><a href="/live-free.html">مشغّل الويب الذكي</a><a href="/world-cup-2026/">كأس العالم 2026</a><a href="/predictions/">توقعات المباريات</a><a href="/watch-legal.html">المشاهدة القانونية</a></details><details class="sm-acc" data-group="blog" data-match="blog"><summary>المقالات<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/blog/">كل المقالات والدلائل</a><a href="/blog/choose-iptv-server/">كيف تختار سيرفرك؟</a><a href="/blog/iptv-samsung-lg-setup/">التشغيل على سامسونج و LG</a><a href="/blog/test-iptv-server-stability/">اختبار ثبات السيرفر</a></details><details class="sm-acc" data-group="help" data-match="faq about status search privacy terms refund"><summary>المساعدة<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary><a href="/faq/">الأسئلة الشائعة</a><a href="/status/">حالة الخدمة</a><a href="/search/">البحث في الموقع</a><a href="/about/">من نحن</a><a href="/privacy/">الخصوصية</a><a href="/terms/">الشروط</a><a href="/refund/">الاسترجاع</a></details></div></header><main class="wp-root sm-legacy" id="main-content">
+  <!-- ===================== المقدمة ===================== -->
+  <div class="wp-wrap">
+    <section class="wp-hero">
+      <div class="wp-in">
+        <span class="wp-eyebrow"><span class="wp-dot"></span> مشغّل ويب يعمل داخل متصفحك — الموقع لا يستضيف أي محتوى</span>
+        <h1>مشغّل اشتراكك الشخصي <em>واستعراض كل مميزاته</em></h1>
+        <p class="wp-lead">
+          عندك اشتراك لدى مزوّد قوائم تشغيل؟ أدخل بيانات اشتراكك: السيرفر واسم المستخدم وكلمة المرور،
+          أو رابط <b><bdi>M3U</bdi></b>، وستُحمَّل قائمتك وتُعرَض داخل مشغّل كامل يعمل في متصفحك محلياً:
+          قنوات مباشرة، مكتبة أفلام، مسلسلات وحلقات، دليل برامج، وتعدد شاشات.
+          بياناتك لا تُرسل إلى أي سيرفر تابع لنا، والموقع لا يستضيف قناةً ولا يبثّ ملفاً واحداً.
+        </p>
+        <div class="wp-actions">
+          <a class="wp-btn wp-btn-lime" href="/#xtream">افتح المشغّل وأدخل بياناتك ←</a>
+          <a class="wp-btn wp-btn-ghost" href="#wp-tour">شاهد الجولة التفاعلية ▸</a>
+        </div>
+        <p class="wp-note-line">
+          الحقول المطلوبة تأتي من مزوّدك: مضيف السيرفر (مثال <code style="direction:ltr;display:inline-block">host:port</code>)،
+          اسم المستخدم، وكلمة المرور — أو ملف/رابط قائمة <code style="direction:ltr;display:inline-block">M3U</code> إن كان مزوّدك يعطيك رابطاً واحداً.
+        </p>
+        <div class="wp-quote">
+          <span class="wp-quote-ico" aria-hidden="true">🔒</span>
+          <span>
+            <b>خصوصية افتراضية:</b> كل ما تُدخله يُحفظ في متصفحك أنت (<b>LocalStorage</b> للحسابات والمفضلة،
+            و<b>IndexedDB</b> لنسخة القوائم) حتى تفتح المشغّل في المرة القادمة بلا إعادة كتابة البيانات.
+            لا يوجد لدينا حساب على مزوّدك، ولا نرى كلمة مرورك، ولا نمرّر جلستك إلى أي طرف آخر.
+          </span>
+        </div>
+        <div class="wp-chips">
+          <span class="wp-chip">📺 مباشر + 🎬 أفلام + 🎞️ مسلسلات</span>
+          <span class="wp-chip">🗓️ دليل برامج EPG</span>
+          <span class="wp-chip">⏱️ إعادة بث / Timeshift</span>
+          <span class="wp-chip">🖥️ حتى 4 شاشات + PiP</span>
+          <span class="wp-chip">👥 حتى 8 حسابات</span>
+          <span class="wp-chip">🔐 قفل أبوي برمز</span>
+          <span class="wp-chip">⚡ قوائم IndexedDB فورية</span>
+        </div>
+      </div>
+    </section>
 
-async function loadChannels(){
-  try{
-    const res = await fetch('/channels.json', {cache:'no-cache'});
-    if(!res.ok) throw new Error(res.status);
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : data.channels;
-    if(Array.isArray(list) && list.length){
-      channels = list.filter(c => c && c.name && c.url);
-    }
-  }catch(e){ console.warn('channels.json غير متاح — استخدام النسخة المدمجة', e); }
-  return channels;
-}
+    <!-- ===================== كيف يعمل ===================== -->
+    <section class="wp-section" id="wp-how">
+      <div class="wp-section-head">
+        <p class="wp-kicker">كيف يعمل المشغّل</p>
+        <h2>ثلاث خطوات <em>وينفتح اشتراكك</em> على شاشتك</h2>
+        <p>المشغّل أداة عرض برمجية على المتصفح (Client-side Web Player): يقرأ بيانات اشتراكك من جهازك، يتصل بمزوّدك مباشرة، ويعرض ما يسمح به اشتراكك أنت.</p>
+      </div>
+      <div class="wp-steps">
+        <article class="wp-step wp-reveal">
+          <span class="wp-step-no">١</span>
+          <h3>أدخل بيانات اشتراكك</h3>
+          <p>اكتب مضيف السيرفر واسم المستخدم وكلمة المرور، أو اسحب ملف <code>M3U</code> الخاص بك إلى المشغّل. لا يُنشئ الموقع أي اشتراك ولا يبيع أكواداً — البيانات التي بحوزتك أنت.</p>
+        </article>
+        <article class="wp-step wp-reveal">
+          <span class="wp-step-no">٢</span>
+          <h3>تُحمَّل قوائمك من مزوّدك</h3>
+          <p>يتصل المشغّل بسيرفر مزوّدك مباشرة (Xtream Codes API) ويجلب التصنيفات والقنوات والأفلام والمسلسلات، ثم يخزّن نسخة محلية في <code>IndexedDB</code> لتُفتح فوراً في المرة القادمة.</p>
+        </article>
+        <article class="wp-step wp-reveal">
+          <span class="wp-step-no">٣</span>
+          <h3>شاهد من المتصفح</h3>
+          <p>تشغيل بضغطة واحدة مع مسارات بديلة تلقائية عند حجب الشبكة، وتحكم كامل في الجودة والصوت والترجمة ونسبة العرض — كل ذلك داخل الصفحة بلا أي برنامج يُثبَّت.</p>
+        </article>
+      </div>
+      <div class="wp-privacy">
+        <h3><span aria-hidden="true">🛡️</span> أين تُحفَظ بياناتك؟ وما دور الموقع بالضبط؟</h3>
+        <ul class="wp-plainlist">
+          <li><b>على جهازك فقط:</b> الحسابات والمفضلة وسجل المشاهدة ومتابعة التقدّم في <b>LocalStorage</b>، ونسخة القوائم الضخمة في <b>IndexedDB</b> — يمكنك حذف حساب واحد أو كل البيانات في أي لحظة من داخل المشغّل.</li>
+          <li><b>لا استضافة ولا إعادة بث:</b> الموقع لا يستضيف قنوات ولا يخزّن ملفات وسائط ولا يبثّ نيابةً عن أي جهة؛ الشاشة التي تراها تأتي من سيرفر مزوّدك إلى متصفحك أنت.</li>
+          <li><b>لا بيع صلاحيات:</b> لا نبيع اشتراكات قنوات مشفّرة ولا أكواد جاهزة؛ ما يقدّمه الموقع هو باقة التفعيل والربط التقني ودعم فني بالعربية، والاشتراكات الرسمية للمحتوى المدفوع تُشترى من أصحابها.</li>
+          <li><b>مسارات الاتصال شفافة:</b> قد يمرّ الطلب عبر وسيط تقني عند حجب الشبكة لسيرفر المزوّد، وفقط لتشغيل جلستك الخاصة.</li>
+        </ul>
+      </div>
+    </section>
 
-const video = document.getElementById('video');
-const listEl = document.getElementById('list');
-const nowName = document.getElementById('nowName');
-const nowCat = document.getElementById('nowCat');
-const overlay = document.getElementById('overlay');
-const statusMsg = document.getElementById('statusMsg');
-let hls, activeIndex = 0, currentFilter='all', searchQuery='', favOnly=false;
-const FAVK='smp_favs', LASTK='smp_last';
-function getFavs(){ try{ return JSON.parse(localStorage.getItem(FAVK)||'[]'); }catch(e){ return []; } }
-function isFav(u){ return getFavs().indexOf(u)!==-1; }
-function toggleFav(i, ev){
-  if(ev){ ev.stopPropagation(); }
-  const u = channels[i] && channels[i].url; if(!u) return;
-  const f = getFavs(); const k = f.indexOf(u);
-  if(k===-1){ f.push(u); showStatus('⭐ أُضيفت للمفضّلة',1500); } else { f.splice(k,1); showStatus('أُزيلت من المفضّلة',1500); }
-  localStorage.setItem(FAVK, JSON.stringify(f));
-  renderList(); buildFilters();
-}
+    <!-- ===================== الجولة التفاعلية ===================== -->
+    <section class="wp-section" id="wp-tour">
+      <div class="wp-section-head">
+        <p class="wp-kicker">جولة تفاعلية من داخل المشغّل</p>
+        <h2>شاهد الواجهة وهي تعمل <em>قبل أن تُدخل بياناتك</em></h2>
+        <p>
+          عرض متحرك يحاكي واجهة المشغّل وأنت تتنقّل بين أقسامه الثمانية: الأقسام الثلاثة، دليل البرامج،
+          تعدد الشاشات، الحسابات، القفل الأبوي، والتحكم المتقدم. <b>لا يوجد في هذه الجولة أي بث حقيقي</b>
+          ولا أسماء قنوات محمية — كل الأسماء التجريبية وهمية للتوضيح فقط.
+        </p>
+      </div>
 
-function showStatus(t, ms=2500){
-  statusMsg.textContent=t; statusMsg.style.display='block';
-  if(ms) setTimeout(()=> statusMsg.style.display='none', ms);
-}
+      <div class="wp-tour" data-wp-tour="" aria-roledescription="عرض توضيحي متحرك" aria-label="جولة تفاعلية داخل واجهة المشغّل" tabindex="0">
+        <div class="wp-stage">
+          <div class="wp-stage-bar">
+            <div class="wp-tabs" role="tablist" aria-label="أقسام المشغّل">
+              <button type="button" class="wp-tab is-on" data-wp-tab="" role="tab" aria-selected="true">LIVE مباشر</button>
+              <button type="button" class="wp-tab" data-wp-tab="" role="tab" aria-selected="false">VOD أفلام</button>
+              <button type="button" class="wp-tab" data-wp-tab="" role="tab" aria-selected="false">SERIES مسلسلات</button>
+            </div>
+            <span class="wp-stage-tag">عرض توضيحي — بلا بث حقيقي</span>
+          </div>
 
-function filtered(){
-  const q = searchQuery.trim().toLowerCase();
-  const favs = getFavs();
-  return channels.map((c,i)=> ({...c, idx:i})).filter(c=>{
-    if(favOnly && favs.indexOf(c.url)===-1) return false;
-    if(currentFilter!=='all' && c.cat!==currentFilter) return false;
-    if(q && !((c.name||'').toLowerCase().includes(q) || (c.cat||'').toLowerCase().includes(q))) return false;
-    return true;
-  });
-}
+          <div class="wp-screens">
+            <!-- المشهد ١: البث المباشر -->
+            <div class="wp-scene is-on" data-wp-scene="">
+              <div class="wp-scene-top"><b>البث المباشر — تصنيفاتك وقنواتك</b><span>القائمة من مزوّدك</span></div>
+              <div class="wp-pills" style="margin-bottom:10px">
+                <span class="wp-pill is-on">الكل</span>
+                <span class="wp-pill">أخبارية</span>
+                <span class="wp-pill">رياضية</span>
+                <span class="wp-pill">أطفال</span>
+                <span class="wp-pill">★ المفضلة (٤)</span>
+                <span class="wp-pill">🕘 الأخيرة (٦)</span>
+              </div>
+              <div class="wp-rows">
+                <div class="wp-row"><span class="wp-ico">📡</span><span class="wp-row-txt"><b>قناة تجريبية إخبارية</b><small>تبويب LIVE • متابعة مباشرة</small></span><span class="wp-badge wp-badge-lime">يُعرض الآن</span></div>
+                <div class="wp-row"><span class="wp-ico">🔎</span><span class="wp-row-txt"><b>بحث عربي ذكي</b><small>«الجزيره» تجد «الجزيرة» — تشكيل وهمزات</small></span><span class="wp-badge">بحث فوري</span></div>
+                <div class="wp-row"><span class="wp-ico">⌨️</span><span class="wp-row-txt"><b>تنقّل ريموت وكيبورد</b><small>↑↓ للقنوات • ←→ للصوت والتقديم • الأرقام للقناة</small></span><span class="wp-badge">اشتغل على أي شاشة</span></div>
+              </div>
+              <div class="wp-progress"><i style="width:38%"></i></div>
+              <div class="wp-legend"><span>التصنيفات تصل من مزوّدك كما هي</span><span>الترتيب قابل للتغيير والبحث في كل التصنيفات</span></div>
+            </div>
 
-function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+            <!-- المشهد ٢: الأفلام -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>مكتبة الأفلام (VOD) — استئناف من حيث توقفت</b><span>تفاصيل + تقييم + قصة</span></div>
+              <div class="wp-grid-3">
+                <div class="wp-media"><span class="wp-play" aria-hidden="true">▸</span><span class="wp-tagline"><span>فيلم تجريبي ١٢</span><span>4K</span></span></div>
+                <div class="wp-grid-3" style="grid-column:span 2;gap:8px">
+                  <div class="wp-tile"><small>التصنيف</small><b>أفلام تجريبية</b><i>★ 8.2</i></div>
+                  <div class="wp-tile"><small>الصيغة</small><b>MP4 / MKV</b><i>تشغيل مباشر</i></div>
+                  <div class="wp-tile"><small>نقطة التوقف</small><b>00:42:10</b><i>متابعة تلقائية</i></div>
+                </div>
+              </div>
+              <div class="wp-progress" style="margin-top:12px"><i style="width:64%"></i></div>
+              <div class="wp-legend"><span>«استئناف» يفتح الفيلم عند الثانية التي توقفت عندها</span><span>سجلّ الأفلام محفوظ لكل حساب على حدة</span></div>
+            </div>
 
-function renderList(){
-  const list = filtered();
-  listEl.innerHTML = list.map(c=>`
-    <div class="ch ${c.idx===activeIndex?'active':''}" onclick="selectChannel(${c.idx})">
-      <div class="ch-logo">${esc(c.logo)}</div>
-      <div class="ch-info"><b>${esc(c.name)}</b><span>${esc(c.cat)} • مجاني</span></div>
-      <div class="ch-fav" title="المفضّلة" onclick="toggleFav(${c.idx}, event)" style="cursor:pointer;font-size:16px;padding:0 6px;opacity:${isFav(c.url)?1:.35}">${isFav(c.url)?'★':'☆'}</div>
-      <div class="ch-status"></div>
-    </div>
-  `).join('');
-  if(list.length===0) listEl.innerHTML='<div style="padding:20px;text-align:center;color:#64748b;font-size:13px">لا توجد قنوات في هذا التصنيف</div>';
-}
+            <!-- المشهد ٣: المسلسلات -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>المسلسلات والحلقات — مواسم مرتّبة وتقدّم واضح</b><span>الموسم ١ • ٨ حلقات</span></div>
+              <div class="wp-rows">
+                <div class="wp-row"><span class="wp-ico">🎞️</span><span class="wp-row-txt"><b>الحلقة ١ — بداية المسلسل التجريبي</b><small>تمّت المشاهدة</small></span><span class="wp-badge">✔ 100%</span></div>
+                <div class="wp-row"><span class="wp-ico">🎞️</span><span class="wp-row-txt"><b>الحلقة ٢ — التالية</b><small>استئناف من 00:12:35</small></span><span class="wp-badge wp-badge-lime">تابع المشاهدة</span></div>
+                <div class="wp-row"><span class="wp-ico">🎞️</span><span class="wp-row-txt"><b>الحلقة ٣</b><small>لم تُشاهد بعد</small></span><span class="wp-badge">جديدة</span></div>
+              </div>
+              <div class="wp-progress" style="margin-top:12px"><i style="width:46%"></i></div>
+              <div class="wp-legend"><span>انتقال تلقائي للحلقة التالية مع حفظ الموضع</span><span>التقدّم يُحفظ في متصفحك لكل حساب</span></div>
+            </div>
 
-function buildFilters(){
-  const bar = document.querySelector('.filter-btn') && document.querySelector('.filter-btn').parentElement;
-  if(!bar) return;
-  const cats = [...new Set(channels.map(c=>c.cat).filter(Boolean))];
-  if(!document.getElementById('chSearch')){
-    const box = document.createElement('div');
-    box.style.cssText='display:flex;gap:8px;margin:0 0 10px;width:100%';
-    box.innerHTML = '<input id="chSearch" type="search" placeholder="🔎 ابحث عن قناة..." style="flex:1;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:14px;outline:none">' +
-      '<button id="favBtn" type="button" style="padding:9px 12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;cursor:pointer;font-size:14px;white-space:nowrap">⭐ المفضّلة</button>';
-    bar.parentElement.insertBefore(box, bar);
-    const inp = box.querySelector('#chSearch');
-    let t; inp.addEventListener('input', ()=>{ clearTimeout(t); t=setTimeout(()=>{ searchQuery=inp.value; renderList(); }, 120); });
-    box.querySelector('#favBtn').addEventListener('click', (e)=>{
-      favOnly=!favOnly;
-      e.currentTarget.style.background = favOnly ? '#1d4ed8' : '#0f172a';
-      renderList();
+            <!-- المشهد ٤: دليل البرامج وإعادة البث -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>دليل البرامج (EPG) — يعرض الآن / التالي</b><span>يُجلب من معلومات مزوّدك</span></div>
+              <div class="wp-lineup">
+                <div class="wp-block" style="inset-inline-start:8px;width:24%">برنامج سابق</div>
+                <div class="wp-block is-now" style="inset-inline-start:30%;width:30%">يعرض الآن — استوديو التحليل</div>
+                <div class="wp-block" style="inset-inline-start:62%;width:22%">البرنامج التالي</div>
+                <div class="wp-nowline" style="inset-inline-start:44%"></div>
+              </div>
+              <div class="wp-legend"><span>شريط تقدّم زمني للبرنامج الحالي</span><span>وصف الحلقة والوقت المتبقي</span></div>
+              <div class="wp-rows" style="margin-top:10px">
+                <div class="wp-row"><span class="wp-ico">⏱️</span><span class="wp-row-txt"><b>إعادة بث (Catch-up / Timeshift)</b><small>للقنوات التي تتيح الأرشيف لدى مزوّدك</small></span><span class="wp-badge wp-badge-lime">آخر ٢٤ ساعة</span></div>
+              </div>
+            </div>
+
+            <!-- المشهد ٥: تعدّد الشاشات و PiP -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>المشاهدة المتعددة — شاشة أو ٢ أو ٤</b><span>الصوت لنافذة واحدة بنقرة</span></div>
+              <div class="wp-frames">
+                <div class="wp-grid-2x2">
+                  <div class="wp-media wp-tile-hi"><span class="wp-play" aria-hidden="true">▸</span><span class="wp-tagline"><span>نافذة ١ 🔊</span><span>مباشر</span></span></div>
+                  <div class="wp-media"><span class="wp-play" aria-hidden="true">▸</span><span class="wp-tagline"><span>نافذة ٢</span><span>مباشر</span></span></div>
+                  <div class="wp-media"><span class="wp-play" aria-hidden="true">▸</span><span class="wp-tagline"><span>نافذة ٣</span><span>مباشر</span></span></div>
+                  <div class="wp-media"><span class="wp-play" aria-hidden="true">▸</span><span class="wp-tagline"><span>نافذة ٤</span><span>مباشر</span></span></div>
+                </div>
+                <div class="wp-pip">
+                  <b>صورة داخل صورة (PiP)</b><br>
+                  نافذة عائمة تكمل المشاهدة وأنت تتصفّح تبويباً آخر، مع أزرار ملء الشاشة والجودة
+                  وبثّ الشاشة إلى التلفاز عبر Chromecast / AirPlay.
+                </div>
+              </div>
+              <div class="wp-legend"><span>مثالي لمتابعة مباراتين أو قناة وخبر عاجل</span><span>كل نافذة لها أدواتها المستقلة</span></div>
+            </div>
+
+            <!-- المشهد ٦: الحسابات والمفضلة -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>إدارة الحسابات — حتى ٨ اشتراكات بتبديل فوري</b><span>لكل حساب ملفّه الخاص</span></div>
+              <div class="wp-pills" style="margin-bottom:10px">
+                <span class="wp-pill is-on">حساب البيت ★</span>
+                <span class="wp-pill">حساب الجوال</span>
+                <span class="wp-pill">حساب الشاليه</span>
+                <span class="wp-pill">+ إضافة حساب</span>
+              </div>
+              <div class="wp-grid-2x2">
+                <div class="wp-tile"><small>المفضلة</small><b>٣٤ قناة</b><i>محفوظة لكل حساب</i></div>
+                <div class="wp-tile"><small>سجل المشاهدة</small><b>٢٠ عنصراً</b><i>الأحدث أولاً</i></div>
+                <div class="wp-tile"><small>متابعة التقدّم</small><b>فيلم + حلقتان</b><i>يُستأنف تلقائياً</i></div>
+                <div class="wp-tile"><small>حذف فوري</small><b>حساب أو بيانات</b><i>من زرّ واحد</i></div>
+              </div>
+              <div class="wp-legend"><span>تبديل الحساب لا يُعيد تحميل القوائم من الصفر</span><span>القوائم تُحفظ في IndexedDB لكل مزوّد</span></div>
+            </div>
+
+            <!-- المشهد ٧: القفل الأبوي -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>الرقابة الأبوية — رمز سري واحد للتصنيفات</b><span>LIVE • VOD • SERIES</span></div>
+              <div class="wp-grid-3">
+                <div class="wp-tile"><small>مقفول 🔐</small><b>تصنيفات للكبار</b><i>تُطلب عند الفتح</i></div>
+                <div class="wp-tile"><small>مفتوح</small><b>أطفال • وثائقية</b><i>بلا رمز</i></div>
+                <div class="wp-tile wp-tile-hi"><small>رمز الدخول</small><b>• • • •</b><i>يُحفظ محلياً على جهازك</i></div>
+              </div>
+              <div class="wp-pills" style="margin-top:12px">
+                <span class="wp-pill wp-pill-lock">تصنيف مقفول — أدخل الرمز</span>
+                <span class="wp-pill">نسيت الرمز؟ إعادة تعيين من إعدادات المشغّل</span>
+              </div>
+              <div class="wp-legend"><span>القفل يعمل على المباشر والأفلام والمسلسلات</span><span>لا يُرسَل أي رمز إلى أي سيرفر</span></div>
+            </div>
+
+            <!-- المشهد ٨: التحكم المتقدم -->
+            <div class="wp-scene" data-wp-scene="" hidden="">
+              <div class="wp-scene-top"><b>تحكم متقدم في العرض + قوائم فورية</b><span>نسبة العرض • الصوت • الترجمة</span></div>
+              <div class="wp-grid-4">
+                <div class="wp-tile wp-tile-hi"><small>نسبة العرض</small><b>16:9</b><i>أو 4:3 و Fill</i></div>
+                <div class="wp-tile"><small>الصوت</small><b>المسار العربي</b><i>أو الأصلي</i></div>
+                <div class="wp-tile"><small>الترجمة</small><b>عربي / English</b><i>أو ملف SRT</i></div>
+                <div class="wp-tile"><small>IndexedDB</small><b>فتح فوري</b><i>بلا إعادة تنزيل</i></div>
+              </div>
+              <div class="wp-rows" style="margin-top:12px">
+                <div class="wp-row"><span class="wp-ico">⚡</span><span class="wp-row-txt"><b>قوائم ضخمة بسلاسة</b><small>عرض تدريجي (Virtual list) لعشرات آلاف العناصر</small></span><span class="wp-badge wp-badge-lime">بلا تهنيج</span></div>
+                <div class="wp-row"><span class="wp-ico">🩺</span><span class="wp-row-txt"><b>تقرير تشخيص عند فشل الاتصال</b><small>سبب واضح + رمز مشاركة بلا كلمة مرور</small></span><span class="wp-badge">دعم أسرع</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wp-controls">
+            <div class="wp-ctrl">
+              <button type="button" data-wp-act="prev" aria-label="المشهد السابق">⏮</button>
+              <button type="button" class="wp-ctrl-main" data-wp-act="play" aria-label="تشغيل الجولة" aria-pressed="false">▶</button>
+              <button type="button" data-wp-act="next" aria-label="المشهد التالي">⏭</button>
+            </div>
+            <div class="wp-track">
+              <div class="wp-track-bar"><i data-wp-bar=""></i></div>
+              <div class="wp-track-meta"><span data-wp-step="">1 / 8</span><span>جولة الواجهة — بلا بث حقيقي</span></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="wp-caption" data-wp-caption="" aria-live="polite">
+          <b>البث المباشر:</b> تصنيفاتك وقنواتك كما تصل من مزوّدك، مع بحث عربي شامل ومفضلة وسجل مشاهدة لكل حساب.
+        </p>
+        <div class="wp-chapters" role="group" aria-label="مشاهد الجولة">
+          <button type="button" class="wp-chapter is-on" data-wp-chapter="">١ <span>مباشر</span><span class="wp-chapter-no">LIVE</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٢ <span>أفلام</span><span class="wp-chapter-no">VOD</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٣ <span>مسلسلات</span><span class="wp-chapter-no">SERIES</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٤ <span>دليل البرامج</span><span class="wp-chapter-no">EPG</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٥ <span>تعدد الشاشات</span><span class="wp-chapter-no">2×2 + PiP</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٦ <span>الحسابات</span><span class="wp-chapter-no">8 PROFILES</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٧ <span>القفل الأبوي</span><span class="wp-chapter-no">PIN</span></button>
+          <button type="button" class="wp-chapter" data-wp-chapter="">٨ <span>التحكم المتقدم</span><span class="wp-chapter-no">A/V</span></button>
+        </div>
+        <p class="wp-disclaim">
+          هذه الجولة محاكاة واجهة فقط: لا تُشغّل أي قناة أو فيديو، ولا تحتوي أي رابط بث، وكل الأسماء والأرقام
+          الظاهرة تجريبية للتوضيح. المشغّل الحقيقي يعمل على بيانات اشتراكك أنت من قسم <b>#xtream</b> في الصفحة الرئيسية.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== معرض المميزات ===================== -->
+    <section class="wp-section" id="wp-features">
+      <div class="wp-section-head">
+        <p class="wp-kicker">معرض المميزات — من داخل الواجهة</p>
+        <h2>ست بطاقات تشرح <em>كل ما يمكنك فعله</em> في المشغّل</h2>
+        <p>الصور التالية رسوم توضيحية من داخل واجهة المشغّل نفسها — مشغّل واحد يجمع ما تحتاجه يومياً بلا تنقّل بين تطبيقات.</p>
+      </div>
+
+      <div class="wp-cards">
+        <!-- بطاقة ١ -->
+        <article class="wp-card wp-reveal">
+          <div class="wp-shot">
+            <svg viewBox="0 0 360 200" role="img" aria-label="رسم توضيحي: أقسام المشغّل الثلاثة مع شريط استئناف المشاهدة" xmlns="http://www.w3.org/2000/svg">
+              <title>الأقسام الثلاثة وشريط استئناف المشاهدة</title>
+              <rect width="360" height="200" fill="#0b0b0f"></rect>
+              <rect x="12" y="12" width="336" height="26" rx="9" fill="#1d1d26"></rect>
+              <rect x="20" y="18" width="58" height="14" rx="7" fill="#d8ff3e"></rect>
+              <text x="49" y="28.5" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="700" fill="#0b0b0f" text-anchor="middle">LIVE</text>
+              <rect x="84" y="18" width="58" height="14" rx="7" fill="#ffffff1f"></rect>
+              <text x="113" y="28.5" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="700" fill="#ffffffb8" text-anchor="middle">VOD</text>
+              <rect x="148" y="18" width="66" height="14" rx="7" fill="#ffffff1f"></rect>
+              <text x="181" y="28.5" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="700" fill="#ffffffb8" text-anchor="middle">SERIES</text>
+              <rect x="252" y="16" width="88" height="18" rx="9" fill="#2b4eff33" stroke="#2b4eff" stroke-width=".8"></rect>
+              <text x="296" y="28.5" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#cfd8ff" text-anchor="middle">بحث شامل</text>
+              <g fill="#1d1d26">
+                <rect x="12" y="48" width="105" height="52" rx="10"></rect>
+                <rect x="127" y="48" width="105" height="52" rx="10"></rect>
+                <rect x="242" y="48" width="106" height="52" rx="10"></rect>
+                <rect x="12" y="108" width="105" height="34" rx="10"></rect>
+                <rect x="127" y="108" width="105" height="34" rx="10"></rect>
+                <rect x="242" y="108" width="106" height="34" rx="10"></rect>
+              </g>
+              <g fill="#ffffff70" font-family="Tajawal,sans-serif" font-size="8.5">
+                <text x="24" y="72">قناة مباشرة ١</text>
+                <text x="139" y="72">قناة مباشرة ٢</text>
+                <text x="254" y="72">قناة مباشرة ٣</text>
+                <text x="24" y="128">فيلم تجريبي</text>
+                <text x="139" y="128">مسلسل تجريبي</text>
+                <text x="254" y="128">وثائقي تجريبي</text>
+              </g>
+              <g fill="#d8ff3e">
+                <circle cx="28" cy="90" r="3"></circle>
+                <circle cx="143" cy="90" r="3"></circle>
+                <circle cx="258" cy="90" r="3"></circle>
+              </g>
+              <rect x="12" y="156" width="336" height="8" rx="4" fill="#ffffff1f"></rect>
+              <rect x="12" y="156" width="196" height="8" rx="4" fill="#d8ff3e"></rect>
+              <circle cx="208" cy="160" r="7" fill="#fff"></circle>
+              <text x="12" y="186" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#ffffff8f">استئناف من 00:42:10 — موضعك محفوظ لكل حساب</text>
+              <text x="348" y="186" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#d8ff3e" text-anchor="end">INDEXEDDB</text>
+            </svg>
+          </div>
+          <h3><span class="wp-badge-no">١</span> الأقسام الثلاثة + استئناف المشاهدة</h3>
+          <p>
+            تبويب واحد لكل نوع محتوى في اشتراكك: <b>مباشر</b> لقنواتك، <b>أفلام</b> لمكتبة VOD،
+            و<b>مسلسلات</b> بالمواسم والحلقات. كل تشغيل يترك علامة موضع، فتعود إلى الثانية التي توقفت عندها بدل البحث من البداية.
+          </p>
+          <ul>
+            <li>تبويب مستقل للتصنيفات والمفضلة وسجل المشاهدة في كل قسم.</li>
+            <li>وصف الفيلم أو الحلقة، التقييم، والمدة قبل التشغيل.</li>
+            <li>حفظ تقدّم كل عنصر في متصفحك (LocalStorage) بدون أي حساب على الموقع.</li>
+          </ul>
+        </article>
+
+        <!-- بطاقة ٢ -->
+        <article class="wp-card wp-reveal">
+          <div class="wp-shot">
+            <svg viewBox="0 0 360 200" role="img" aria-label="رسم توضيحي: دليل البرامج الإلكتروني وشريط إعادة البث" xmlns="http://www.w3.org/2000/svg">
+              <title>دليل البرامج (EPG) وإعادة البث</title>
+              <rect width="360" height="200" fill="#0b0b0f"></rect>
+              <text x="12" y="24" font-family="Tajawal,sans-serif" font-size="10" font-weight="700" fill="#ffffffcf">دليل البرامج — يعرض الآن / التالي</text>
+              <text x="348" y="24" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#ffffff6b" text-anchor="end">EPG</text>
+              <rect x="12" y="34" width="336" height="46" rx="10" fill="#1d1d26"></rect>
+              <rect x="20" y="42" width="86" height="30" rx="8" fill="#ffffff14"></rect>
+              <rect x="114" y="42" width="112" height="30" rx="8" fill="#d8ff3e"></rect>
+              <rect x="234" y="42" width="106" height="30" rx="8" fill="#ffffff14"></rect>
+              <text x="63" y="61" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#ffffffb8" text-anchor="middle">برنامج سابق</text>
+              <text x="170" y="61" font-family="Tajawal,sans-serif" font-size="8" font-weight="900" fill="#0b0b0f" text-anchor="middle">استوديو التحليل</text>
+              <text x="287" y="61" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#ffffffb8" text-anchor="middle">البرنامج التالي</text>
+              <rect x="180" y="34" width="2" height="46" fill="#ff5a5a"></rect>
+              <rect x="12" y="88" width="336" height="34" rx="10" fill="#1d1d26"></rect>
+              <text x="24" y="109" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#ffffffb8">إعادة بث القناة — آخر 24 ساعة (Catch-up / Timeshift)</text>
+              <rect x="256" y="95" width="84" height="20" rx="10" fill="#2b4eff"></rect>
+              <text x="298" y="109" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="900" fill="#ffffff" text-anchor="middle">شغّل من البداية</text>
+              <g fill="#1d1d26">
+                <rect x="12" y="130" width="336" height="22" rx="8"></rect>
+                <rect x="12" y="158" width="336" height="22" rx="8"></rect>
+              </g>
+              <text x="24" y="145" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffff8f">شريط تقدّم زمني للبرنامج الحالي — كم بقي وكم مضى</text>
+              <text x="24" y="173" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffff8f">وصف الحلقة والموعد — كل ما يرسله مزوّدك في قوائمه</text>
+            </svg>
+          </div>
+          <h3><span class="wp-badge-no">٢</span> دليل البرامج (EPG) والتايم شيفت</h3>
+          <p>
+            تعرف ماذا يُعرض الآن وما التالي على كل قناة، مع شريط تقدّم زمني للبرنامج الحالي،
+            وإعادة بث (Catch-up) للقنوات التي تدعم الأرشيف عند مزوّدك — تعود لبداية ما فاتك بدل انتظار الإعادة.
+          </p>
+          <ul>
+            <li>«يعرض الآن» و«التالي» مع الوقت المتبقي لكل برنامج.</li>
+            <li>تفاصيل البرنامج: العنوان والوصف والوقت كما يرسلها المزوّد.</li>
+            <li>إعادة بث بمدد مختارة (ساعات) للقنوات التي تُتيح أرشيفاً في اشتراكك.</li>
+          </ul>
+        </article>
+
+        <!-- بطاقة ٣ -->
+        <article class="wp-card wp-reveal">
+          <div class="wp-shot">
+            <svg viewBox="0 0 360 200" role="img" aria-label="رسم توضيحي: تقسيم الشاشة إلى أربع نوافذ وصورة داخل صورة" xmlns="http://www.w3.org/2000/svg">
+              <title>المشاهدة المتعددة وصورة داخل صورة</title>
+              <rect width="360" height="200" fill="#0b0b0f"></rect>
+              <rect x="12" y="12" width="200" height="108" rx="10" fill="#23233a" stroke="#d8ff3e" stroke-width="1.4"></rect>
+              <rect x="220" y="12" width="128" height="50" rx="10" fill="#1d1d26"></rect>
+              <rect x="220" y="70" width="128" height="50" rx="10" fill="#1d1d26"></rect>
+              <rect x="12" y="128" width="200" height="58" rx="10" fill="#1d1d26"></rect>
+              <g fill="#ffffff1f">
+                <circle cx="112" cy="66" r="16"></circle>
+                <circle cx="284" cy="37" r="10"></circle>
+                <circle cx="284" cy="95" r="10"></circle>
+                <circle cx="112" cy="157" r="12"></circle>
+              </g>
+              <g fill="#d8ff3e">
+                <path d="M108 60l12 6-12 6z"></path>
+                <path d="M282 34l7 3-7 3z"></path>
+                <path d="M282 92l7 3-7 3z"></path>
+                <path d="M110 152l7 5-7 5z"></path>
+              </g>
+              <rect x="16" y="16" width="46" height="15" rx="7" fill="#d8ff3e"></rect>
+              <text x="39" y="27" font-family="Tajawal,sans-serif" font-size="8" font-weight="900" fill="#0b0b0f" text-anchor="middle">🔊 الصوت</text>
+              <text x="16" y="112" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffff9e">نافذة ١</text>
+              <text x="224" y="45" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffff9e">نافذة ٢</text>
+              <text x="224" y="103" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffff9e">نافذة ٣</text>
+              <text x="16" y="160" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffff9e">نافذة ٤</text>
+              <rect x="230" y="136" width="118" height="50" rx="10" fill="#ffffff0f" stroke="#ffffff3d" stroke-dasharray="4 3"></rect>
+              <text x="289" y="156" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="700" fill="#ffffffcf" text-anchor="middle">صورة داخل صورة</text>
+              <text x="289" y="170" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffff70" text-anchor="middle">PiP + ملء الشاشة</text>
+              <text x="20" y="192" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffff8f">2×2 أو شاشتان — صوت نافذة واحدة بنقرة واحدة</text>
+            </svg>
+          </div>
+          <h3><span class="wp-badge-no">٣</span> المشاهدة المتعددة (Multi-Screen) + PiP</h3>
+          <p>
+            قسّم الشاشة إلى <b>نافذتين أو أربع</b> لمتابعة أكثر من حدث في وقت واحد، والصوت لنافذة واحدة
+            تختارها بنقرة. وإن أردت متابعة العمل: نافذة <b>صورة داخل صورة</b> تُبقى البث ظاهراً فوق أي تبويب آخر.
+          </p>
+          <ul>
+            <li>تبديل الصوت بين النوافذ بضغطة واحدة على النافذة.</li>
+            <li>صورة داخل صورة (PiP) حسب دعم المتصفح، مع ملء الشاشة لكل نافذة.</li>
+            <li>إرسال الصورة إلى التلفاز عبر Chromecast / AirPlay أو بثّ الشاشة.</li>
+          </ul>
+        </article>
+
+        <!-- بطاقة ٤ -->
+        <article class="wp-card wp-reveal">
+          <div class="wp-shot">
+            <svg viewBox="0 0 360 200" role="img" aria-label="رسم توضيحي: ثمانية حسابات محفوظة مع المفضلة وسجل المشاهدة" xmlns="http://www.w3.org/2000/svg">
+              <title>إدارة الحسابات والمفضلة وسجل المشاهدة</title>
+              <rect width="360" height="200" fill="#0b0b0f"></rect>
+              <text x="12" y="24" font-family="Tajawal,sans-serif" font-size="10" font-weight="700" fill="#ffffffcf">الحسابات المحفوظة — تبديل فوري</text>
+              <g>
+                <rect x="12" y="34" width="66" height="20" rx="10" fill="#d8ff3e"></rect>
+                <text x="45" y="48" font-family="Tajawal,sans-serif" font-size="8" font-weight="900" fill="#0b0b0f" text-anchor="middle">حساب ١ ★</text>
+                <rect x="84" y="34" width="62" height="20" rx="10" fill="#ffffff1f"></rect>
+                <text x="115" y="48" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#ffffffb8" text-anchor="middle">حساب ٢</text>
+                <rect x="152" y="34" width="62" height="20" rx="10" fill="#ffffff1f"></rect>
+                <text x="183" y="48" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#ffffffb8" text-anchor="middle">حساب ٣</text>
+                <rect x="220" y="34" width="62" height="20" rx="10" fill="#ffffff1f"></rect>
+                <text x="251" y="48" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#ffffffb8" text-anchor="middle">حساب ٤</text>
+                <rect x="288" y="34" width="60" height="20" rx="10" fill="none" stroke="#ffffff3d" stroke-dasharray="4 3"></rect>
+                <text x="318" y="48" font-family="Tajawal,sans-serif" font-size="8" font-weight="700" fill="#ffffff9e" text-anchor="middle">+ إضافة</text>
+              </g>
+              <g fill="#ffffff1f">
+                <circle cx="24" cy="74" r="9"></circle><circle cx="48" cy="74" r="9"></circle><circle cx="72" cy="74" r="9"></circle>
+                <circle cx="96" cy="74" r="9"></circle><circle cx="120" cy="74" r="9"></circle><circle cx="144" cy="74" r="9"></circle>
+                <circle cx="168" cy="74" r="9"></circle><circle cx="192" cy="74" r="9"></circle>
+              </g>
+              <text x="212" y="78" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffff8f">حتى 8 حسابات — كل حساب بملفّه الخاص</text>
+              <rect x="12" y="94" width="164" height="94" rx="10" fill="#1d1d26"></rect>
+              <rect x="184" y="94" width="164" height="94" rx="10" fill="#1d1d26"></rect>
+              <text x="24" y="112" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#d8ff3e">★ المفضلة</text>
+              <text x="196" y="112" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#d8ff3e">🕘 سجل المشاهدة الأخيرة</text>
+              <g fill="#ffffff26">
+                <rect x="20" y="120" width="148" height="16" rx="6"></rect>
+                <rect x="20" y="142" width="148" height="16" rx="6"></rect>
+                <rect x="20" y="164" width="148" height="16" rx="6"></rect>
+                <rect x="192" y="120" width="148" height="16" rx="6"></rect>
+                <rect x="192" y="142" width="148" height="16" rx="6"></rect>
+                <rect x="192" y="164" width="148" height="16" rx="6"></rect>
+              </g>
+              <text x="28" y="132" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffffb8">قناة مفضلة ١</text>
+              <text x="28" y="154" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffffb8">قناة مفضلة ٢</text>
+              <text x="28" y="176" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffffb8">قناة مفضلة ٣</text>
+              <text x="200" y="132" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffffb8">آخر فيلم — 00:42</text>
+              <text x="200" y="154" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffffb8">آخر حلقة — 00:12</text>
+              <text x="200" y="176" font-family="Tajawal,sans-serif" font-size="8" fill="#ffffffb8">آخر قناة مباشرة</text>
+            </svg>
+          </div>
+          <h3><span class="wp-badge-no">٤</span> إدارة الحسابات والملفات الشخصية</h3>
+          <p>
+            احفظ حتى <b>8 حسابات</b> في متصفحك وبدّل بينها بضغطة: اشتراك البيت، اشتراك الجوال، أو حساب العائلة.
+            كل حساب يحتفظ بمفضلته وسجلّه ومتابعته الخاصة، فتبقى تجربتك كما تركتها تماماً.
+          </p>
+          <ul>
+            <li>شرائح حسابات أعلى المشغّل لتبديل فوري بلا إعادة كتابة البيانات.</li>
+            <li>مفضلة غير محدودة لكل حساب تقريباً، وسجل آخر 20 عنصراً مشاهدةً.</li>
+            <li>حذف أي حساب أو كل البيانات المحلية بزرّ واحد في أي وقت.</li>
+          </ul>
+        </article>
+
+        <!-- بطاقة ٥ -->
+        <article class="wp-card wp-reveal">
+          <div class="wp-shot">
+            <svg viewBox="0 0 360 200" role="img" aria-label="رسم توضيحي: قفل أبوي برمز سري على تصنيفات مختارة" xmlns="http://www.w3.org/2000/svg">
+              <title>الرقابة الأبوية برمز سري</title>
+              <rect width="360" height="200" fill="#0b0b0f"></rect>
+              <rect x="12" y="12" width="336" height="176" rx="14" fill="#14141b" stroke="#ffffff14"></rect>
+              <rect x="140" y="30" width="80" height="56" rx="12" fill="#0b0b0f" stroke="#ff5a5a" stroke-width="1.2"></rect>
+              <path d="M164 52v-8a16 16 0 0 1 32 0v8" fill="none" stroke="#ff5a5a" stroke-width="3"></path>
+              <rect x="160" y="52" width="40" height="26" rx="6" fill="#ff5a5a"></rect>
+              <circle cx="180" cy="64" r="4" fill="#14141b"></circle>
+              <text x="180" y="106" font-family="Tajawal,sans-serif" font-size="10" font-weight="900" fill="#ffffffd6" text-anchor="middle">تصنيف مقفول — أدخل الرمز</text>
+              <g fill="#ffffff2e">
+                <circle cx="152" cy="124" r="7"></circle><circle cx="180" cy="124" r="7"></circle>
+                <circle cx="208" cy="124" r="7"></circle><circle cx="236" cy="124" r="7"></circle>
+              </g>
+              <g fill="#d8ff3e">
+                <circle cx="152" cy="124" r="7"></circle><circle cx="180" cy="124" r="7"></circle>
+              </g>
+              <g fill="#1d1d26">
+                <rect x="119" y="138" width="26" height="18" rx="6"></rect><rect x="153" y="138" width="26" height="18" rx="6"></rect><rect x="187" y="138" width="26" height="18" rx="6"></rect>
+                <rect x="119" y="162" width="26" height="18" rx="6"></rect><rect x="153" y="162" width="26" height="18" rx="6"></rect><rect x="187" y="162" width="26" height="18" rx="6"></rect>
+                <rect x="221" y="138" width="26" height="18" rx="6"></rect><rect x="221" y="162" width="26" height="18" rx="6"></rect>
+              </g>
+              <g fill="#ffffff8f" font-family="Tajawal,sans-serif" font-size="9" text-anchor="middle">
+                <text x="132" y="151">1</text><text x="166" y="151">2</text><text x="200" y="151">3</text>
+                <text x="132" y="175">4</text><text x="166" y="175">5</text><text x="200" y="175">6</text>
+                <text x="234" y="151">7</text><text x="234" y="175">8</text>
+              </g>
+              <text x="268" y="150" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffff8f">قفل على:</text>
+              <text x="268" y="164" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffffb8">LIVE</text>
+              <text x="268" y="176" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffffb8">VOD + SERIES</text>
+            </svg>
+          </div>
+          <h3><span class="wp-badge-no">٥</span> الرقابة الأبوية (Parental PIN)</h3>
+          <p>
+            رمز سري واحد يقفل التصنيفات التي تختارها في المباشر والأفلام والمسلسلات؛ فلا يُفتح أي محتوى
+            مقفول إلا بعد إدخال الرمز — مفيد جداً إذا كان الجهاز يُشارَك مع الأطفال.
+          </p>
+          <ul>
+            <li>تحديد التصنيفات المقفولة بنفسك من داخل إعدادات المشغّل.</li>
+            <li>لوحة أرقام تُطلب عند فتح أي تصنيف أو فيلم أو مسلسل مقفول.</li>
+            <li>الرمز يُحفظ محلياً فقط، ولا يُرسل إلى أي سيرفر ولا يظهر في تقارير التشخيص.</li>
+          </ul>
+        </article>
+
+        <!-- بطاقة ٦ -->
+        <article class="wp-card wp-reveal">
+          <div class="wp-shot">
+            <svg viewBox="0 0 360 200" role="img" aria-label="رسم توضيحي: تغيير أبعاد الشاشة ومسارات الصوت والترجمة وتخزين القوائم محلياً" xmlns="http://www.w3.org/2000/svg">
+              <title>التحكم المتقدم في العرض وتخزين القوائم محلياً</title>
+              <rect width="360" height="200" fill="#0b0b0f"></rect>
+              <text x="12" y="24" font-family="Tajawal,sans-serif" font-size="10" font-weight="700" fill="#ffffffcf">تحكم متقدم في العرض</text>
+              <g>
+                <rect x="12" y="34" width="70" height="22" rx="9" fill="#d8ff3e"></rect>
+                <text x="47" y="49" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="900" fill="#0b0b0f" text-anchor="middle">16:9</text>
+                <rect x="88" y="34" width="60" height="22" rx="9" fill="#ffffff1f"></rect>
+                <text x="118" y="49" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="700" fill="#ffffffb8" text-anchor="middle">4:3</text>
+                <rect x="154" y="34" width="60" height="22" rx="9" fill="#ffffff1f"></rect>
+                <text x="184" y="49" font-family="Tajawal,sans-serif" font-size="8.5" font-weight="700" fill="#ffffffb8" text-anchor="middle">Fill</text>
+              </g>
+              <rect x="12" y="66" width="336" height="26" rx="9" fill="#1d1d26"></rect>
+              <text x="24" y="83" font-family="Tajawal,sans-serif" font-size="9" fill="#ffffffb8">مسار الصوت</text>
+              <text x="150" y="83" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#d8ff3e">العربي 5.1</text>
+              <text x="340" y="83" font-family="Tajawal,sans-serif" font-size="9" fill="#ffffff6b" text-anchor="end">الأصلي</text>
+              <rect x="12" y="98" width="336" height="26" rx="9" fill="#1d1d26"></rect>
+              <text x="24" y="115" font-family="Tajawal,sans-serif" font-size="9" fill="#ffffffb8">الترجمة</text>
+              <text x="150" y="115" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#d8ff3e">عربي (SRT / VTT)</text>
+              <text x="340" y="115" font-family="Tajawal,sans-serif" font-size="9" fill="#ffffff6b" text-anchor="end">رفع ملف</text>
+              <rect x="12" y="130" width="336" height="24" rx="9" fill="#2b4eff33" stroke="#2b4eff" stroke-width=".8"></rect>
+              <text x="24" y="146" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#cfd8ff">IndexedDB — قوائم محفوظة محلياً</text>
+              <text x="340" y="146" font-family="Tajawal,sans-serif" font-size="9" font-weight="700" fill="#d8ff3e" text-anchor="end">12,400 عنصر</text>
+              <rect x="12" y="160" width="336" height="8" rx="4" fill="#ffffff1f"></rect>
+              <rect x="12" y="160" width="288" height="8" rx="4" fill="#d8ff3e"></rect>
+              <text x="12" y="186" font-family="Tajawal,sans-serif" font-size="8.5" fill="#ffffff8f">فتح فوري + زر «تحديث القنوات» يعيد الجلب من مزوّدك</text>
+            </svg>
+          </div>
+          <h3><span class="wp-badge-no">٦</span> تحكم متقدم في العرض وقوائم فورية</h3>
+          <p>
+            غيّر <b>نسبة العرض</b> (16:9 و4:3 وFill) لتناسب شاشتك، واختر <b>مسار الصوت</b> و<b>الترجمة</b>
+            (بما فيها رفع ملف <code>SRT</code>/<code>VTT</code> خاص بك). ونسخة القوائم تُحفظ في <b>IndexedDB</b>
+            فيُفتح المشغّل فوراً في المرة القادمة بدل إعادة تنزيل آلاف العناصر.
+          </p>
+          <ul>
+            <li>عرض تدريجي (Virtual list) للقوائم الضخمة — تمرير سلس بلا تهنيج.</li>
+            <li>زر «تحديث القنوات» لمزامنة القوائم مع مزوّدك في أي وقت.</li>
+            <li>اختيار الجودة، وتجربة مسارات اتصال بديلة تلقائياً عند حجب الشبكة.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="wp-extra">
+        <h3>مميزات إضافية تعمل من أول دقيقة</h3>
+        <p>تفاصيل صغيرة تُشكّل فرقاً كبيراً في الاستخدام اليومي — كلها داخل المشغّل نفسه.</p>
+        <div class="wp-extra-grid">
+          <div class="wp-extra-item"><b>📂 تشغيل ملف M3U الخاص بك</b><span>اسحب ملف قنواتك أو اختره من جهازك، أو أدخل رابط M3U مباشرة — يقرأه المشغّل ويصنّفه تلقائياً بلا أي رفع للخارج.</span></div>
+          <div class="wp-extra-item"><b>🔁 مسارات اتصال متعددة</b><span>اتصال مباشر، ثم مسارات بديلة عند حجب الشبكة، مع تجربة بصمة مشغّل معتمدة تلقائياً للسيرفرات التي ترفض المتصفح.</span></div>
+          <div class="wp-extra-item"><b>⌨️ تنقّل ريموت وكيبورد</b><span>أسهم للقنوات والصوت، مسافة للتشغيل والإيقاف، F لملء الشاشة، وأرقام للانتقال إلى رقم القناة مباشرةً.</span></div>
+          <div class="wp-extra-item"><b>🔍 بحث عربي ذكي</b><span>يتجاهل الهمزات والتشكيل: «الجزيره» تجد «الجزيرة»، و«mbc» تجد القناة — والبحث في كل التصنيفات لا داخل تصنيف واحد.</span></div>
+          <div class="wp-extra-item"><b>🩺 تشخيص ومساعدة</b><span>عند تعذّر الاتصال يظهر السبب (شبكة، CORS، بيانات خاطئة) مع تقرير قابل للمشاركة — بلا كلمة مرورك أبداً.</span></div>
+          <div class="wp-extra-item"><b>♻️ تجربة مرنة على كل الأجهزة</b><span>يعمل على المتصفح الحديث في الجوال والتابلت والحاسوب — وتثبيته على سطح المكتب يتيح فتحه كتطبيق مستقل.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== المتطلبات والأسئلة ===================== -->
+    <section class="wp-section" id="wp-start">
+      <div class="wp-section-head">
+        <p class="wp-kicker">قبل أن تبدأ</p>
+        <h2>ما الذي تحتاجه <em>وما لا نحتاجه</em></h2>
+        <p>جهّز البيانات التالية، وستكون داخل المشغّل خلال دقيقة. لا نطلب منك أي بيانات دفع ولا أي معلومة شخصية.</p>
+      </div>
+      <div class="wp-req">
+        <div class="wp-panel">
+          <h3>تحتاجه فعلاً</h3>
+          <ol>
+            <li><b>بيانات اشتراكك من مزوّدك:</b> المضيف <code>host:port</code> أو رابط لوحة Xtream Codes، واسم المستخدم وكلمة المرور — أو رابط/ملف <code>M3U</code> إن كان هذا ما يمنحك إياه مزوّدك.</li>
+            <li><b>متصفح حديث:</b> Chrome أو Edge أو Safari أو Firefox بإصدار حديث (يُفضَّل آخر إصدار لضمان دعم صورة داخل صورة والترجمات).</li>
+            <li><b>اتصال مستقر:</b> الاتصال يتم بين متصفحك ومزوّدك؛ كلما كان الاتصال أفضل كان التشغيل أنعم.</li>
+          </ol>
+        </div>
+        <div class="wp-panel">
+          <h3>لا نحتاجه ولا نطلبه</h3>
+          <ul>
+            <li>لا نطلب رقم بطاقة ولا أي بيانات دفع داخل المشغّل.</li>
+            <li>لا نطلب إنشاء حساب على الموقع لمشاهدة اشتراكك.</li>
+            <li>لا نرسل بيانات اشتراكك إلى سيرفراتنا ولا نحتفظ بها (حتى رمز المشاركة للدعم يُبنى بلا كلمة مرور).</li>
+            <li>لا نبيع اشتراكات قنوات مشفّرة ولا أكواداً جاهزة — للاشتراكات الرسمية راجع <a href="/watch-legal.html">دليل المشاهدة الرسمية</a>.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="wp-faq">
+        <details open="">
+          <summary>هل الموقع يستضيف القنوات أو يبثّها؟</summary>
+          <p>لا. المشغّل أداة عرض على المتصفح فقط: الشاشة تأتي من سيرفر مزوّدك إلى جهازك مباشرة. الموقع لا يستضيف ملفات وسائط ولا يعيد بثّ قنوات ولا يخزّن أي محتوى، وما يُعرض يعتمد كلياً على صلاحيات اشتراكك لدى مزوّدك.</p>
+        </details>
+        <details>
+          <summary>أين تُخزَّن بياناتي، وهل يمكن حذفها؟</summary>
+          <p>الحسابات والمفضلة وسجل المشاهدة ومتابعة التقدّم في <code>LocalStorage</code>، ونسخة القوائم في <code>IndexedDB</code> — كلها داخل متصفحك. يمكنك حذف حساب واحد أو مسح كل البيانات المحلية من داخل المشغّل، أو بمسح بيانات الموقع من إعدادات المتصفح.</p>
+        </details>
+        <details>
+          <summary>اشتراكي يعمل على التطبيقات لكن لا يعمل هنا… ما السبب؟</summary>
+          <p>أكثر ثلاثة أسباب: (١) مزوّدك يقيّد عدد الاتصالات المتزامنة، فيفشل الاتصال لانشغال كل الخطوط — أغلق النسخة المفتوحة في جهاز آخر وأعد المحاولة. (٢) مزوّدك يقيّد بصمة المشغّل، والمشغّل يجرّب بصمة معتمدة تلقائياً عبر الوسيط في هذه الحالة. (٣) الشبكة تحجب سيرفر المزوّد، فينتقل المشغّل إلى مسار بديل؛ وإن استمر الفشل تظهر رسالة سبب واضحة مع تقرير تشخيص يمكن إرساله للدعم.</p>
+        </details>
+        <details>
+          <summary>هل يعمل على الجوال والتلفاز؟</summary>
+          <p>نعم على أي متصفح حديث. على الجوال قد تُخفى ميزة صورة داخل صورة حسب نظام التشغيل، وعلى شاشات التلفاز الذكية المتوافقة مع المتصفح يعمل المشغّل بالواجهة نفسها. وللدقة الأعلى استخدم نمط ملء الشاشة.</p>
+        </details>
+        <details>
+          <summary>ما الفرق بين هذه الصفحة وقسم المشغّل في الصفحة الرئيسية؟</summary>
+          <p>هذه الصفحة تعريفية: تشرح المميزات وتعرض جولة بصرية بلا أي بث ولا روابط. أما المشغّل الفعلي فيعمل في قسم <a href="/#xtream">#xtream</a> بالصفحة الرئيسية، وهناك تُدخل بياناتك وتشغّل قوائمك.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===================== الخاتمة ===================== -->
+    <section class="wp-cta">
+      <div class="wp-in">
+        <h2>جاهز تُشغّل اشتراكك من المتصفح؟</h2>
+        <p>
+          افتح المشغّل، أدخل بيانات مزوّدك أو ارفع ملف M3U، وستظهر قوائمك مباشرة مع كل المميزات التي شاهدتها
+          في الجولة — مباشر، أفلام، مسلسلات، EPG، تعدد شاشات، وقفل أبوي.
+        </p>
+        <div class="wp-actions">
+          <a class="wp-btn wp-btn-lime" href="/#xtream">افتح المشغّل الآن ←</a>
+          <a class="wp-btn wp-btn-ghost" href="/channels/">فهرس القنوات والتصنيفات</a>
+          <a class="wp-btn wp-btn-ghost" href="https://wa.me/201098950879" target="_blank" rel="noopener noreferrer">مساعدة عبر واتساب</a>
+        </div>
+      </div>
+    </section>
+
+    <p class="wp-legal">
+      تنبيه: هذه الصفحة تعريفية لمشغّل الويب، ولا تحتوي أي رابط بث أو قناة مدمجة. الموقع يعمل كوسيط تقني ودليل
+      فهرسة، ولا يستضيف أو يخزّن أو يعيد بث أي ملف وسائط؛ وتُعرض القوائم من مزوّد اشتراك المشترك داخل متصفحه
+      بصلاحياته هو. المحتوى المشفّر المملوك للغير يُشاهد عبر اشتراكاته الرسمية فقط —
+      <a href="/watch-legal.html">دليل المشاهدة الرسمية</a> — وللإبلاغ عن أي انتهاك راجع
+      <a href="/terms/">شروط الاستخدام وسياسة DMCA</a>.
+    </p>
+  </div>
+</main><footer class="sm-footer"><div class="sm-footer-top"><div><a class="sm-brand" href="/"><span class="sm-mark">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a><p>المنصة التقنية لخدمات الربط والدعم الفني.<br>سيرفرات المزودين (نوفا وإيستار وموكا) — تفعيل سريع ودعم متواصل.</p><a class="sm-cta" href="https://wa.me/201098950879" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب ↗</a></div><div><h2>اكتشف أكثر</h2><a href="/store/">الباقات والأسعار</a><a href="/servers/">مقارنة السيرفرات</a><a href="/channels/">مكتبة القنوات</a><a href="/blog/">مقالات ودلائل</a><a href="/world-cup-2026/">كأس العالم 2026</a><a href="/predictions/">توقعات المباريات</a></div><div><h2>نحن هنا لمساعدتك</h2><a href="/about/">من نحن</a><a href="/faq/">الأسئلة الشائعة</a><a href="/status/">حالة الخدمة</a><a href="/privacy/">سياسة الخصوصية</a><a href="/terms/">شروط الاستخدام</a><a href="/refund/">سياسة الاسترجاع</a><a href="/watch-legal.html">المشاهدة القانونية</a></div></div><div class="sm-wordmark" aria-hidden="true">ستريم ماستر®</div><div class="sm-footer-disclaimer" style="margin:20px 0 8px;padding:16px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:16px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.6);font-size:12.5px;line-height:1.9"><strong style="display:block;color:#d8ff3e;margin-bottom:4px">⚠️ إخلاء مسؤولية قانوني وسياسة الملكية الفكرية (DMCA):</strong>يعمل موقع <strong style="color:rgba(255,255,255,0.85)">ستريم ماستر برو (Stream Master Pro)</strong> كوسيط تقني ودليل فهرسة فقط، ولا يقوم باستضافة أو تخزين أو رفع أو بث أي ملفات وسائط أو قنوات مرئية على خوادمه الخاصة. كافة العلامات التجارية المذكورة مملوكة لأصحابها الشرعيين، ويتحمل المستخدم وحده مسؤولية استخدامه للخدمة والامتثال للقوانين المحلية في بلده. للإبلاغ عن أي انتهاك لحقوق الطبع والنشر (DMCA) وطلب حذف الروابط خلال 24–72 ساعة، يرجى مراسلتنا عبر البريد الرسمي: <a href="mailto:support@streammasterstore.com" dir="ltr" style="color:#fff;text-decoration:underline">support@streammasterstore.com</a> أو مراجعة <a href="/terms/" style="color:#fff;text-decoration:underline">وثيقة الشروط وسياسة DMCA</a>.</div><div class="sm-footer-bottom"><span>© 2026 ستريم ماستر برو — جميع الحقوق محفوظة.</span><a href="#main-content">الرجوع للأعلى ↑</a></div></footer><script>
+/* ==========================================================================
+   الجولة التفاعلية (Interactive UI Tour)
+   --------------------------------------------------------------------------
+   • محاكاة واجهة فقط: لا تشغيل وسائط، ولا روابط بث، ولا أي طلب شبكة.
+   • مبنيّة بـ DOM موجود مسبقاً: تعمل الجولة حتى لو تعطّل JavaScript (يظهر المشهد الأول).
+   • تحترم إعداد «تقليل الحركة» في نظام الزائر: تبدأ موقوفة وبانتقالات فورية.
+========================================================================== */
+(function () {
+  "use strict";
+
+  var tour = document.querySelector("[data-wp-tour]");
+  if (!tour) return;
+
+  var scenes = Array.prototype.slice.call(tour.querySelectorAll("[data-wp-scene]"));
+  var chapters = Array.prototype.slice.call(tour.querySelectorAll("[data-wp-chapter]"));
+  var tabs = Array.prototype.slice.call(tour.querySelectorAll("[data-wp-tab]"));
+  var caption = tour.querySelector("[data-wp-caption]");
+  var bar = tour.querySelector("[data-wp-bar]");
+  var step = tour.querySelector("[data-wp-step]");
+  var playBtn = tour.querySelector('[data-wp-act="play"]');
+  var prevBtn = tour.querySelector('[data-wp-act="prev"]');
+  var nextBtn = tour.querySelector('[data-wp-act="next"]');
+  if (scenes.length === 0) return;
+
+  var CAPTIONS = [
+    "<b>البث المباشر:</b> تصنيفاتك وقنواتك كما تصل من مزوّدك، مع بحث عربي شامل ومفضلة وسجل مشاهدة لكل حساب.",
+    "<b>مكتبة الأفلام:</b> شبكة بوسترات وتفاصيل، وزر «استئناف» يعيدك إلى الثانية التي توقفت عندها بالضبط.",
+    "<b>المسلسلات:</b> مواسم وحلقات مرتّبة، علامة تقدّم لكل حلقة، وانتقال تلقائي إلى الحلقة التالية.",
+    "<b>دليل البرامج (EPG):</b> «يعرض الآن / التالي» مع شريط زمني، وإعادة بث آخر الساعات للقنوات التي تدعم الأرشيف.",
+    "<b>تعدد الشاشات:</b> نافذتان أو أربع في وقت واحد، الصوت لنافذة واحدة بنقرة، وصورة داخل صورة لمتابعة العمل.",
+    "<b>الحسابات:</b> حتى 8 اشتراكات محفوظة بتبديل فوري، ولكل حساب مفضلته وسجلّه ومتابعته الخاصة.",
+    "<b>الرقابة الأبوية:</b> رمز سري واحد يقفل التصنيفات التي تختارها في المباشر والأفلام والمسلسلات.",
+    "<b>تحكم متقدم:</b> نسبة العرض، مسار الصوت، الترجمة (مع رفع SRT)، وقوائم تُفتح فوراً من IndexedDB."
+  ];
+  var TABS_OF_SCENE = [0, 1, 2, 0, 0, 0, 0, 0];
+  var DURATION = 7000;
+
+  var index = 0;
+  var playing = false;
+  var elapsed = 0;
+  var lastTs = 0;
+  var rafId = 0;
+  var reduce = false;
+  try {
+    reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  } catch (err) {
+    reduce = false;
+  }
+
+  function now() {
+    return typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+  }
+
+  function paintProgress() {
+    if (!bar) return;
+    var ratio = elapsed >= DURATION ? 1 : elapsed / DURATION;
+    bar.style.width = Math.max(0, Math.min(100, ratio * 100)).toFixed(2) + "%";
+  }
+
+  function syncTabs() {
+    var wanted = TABS_OF_SCENE[index] || 0;
+    tabs.forEach(function (tab, i) {
+      var on = i === wanted;
+      tab.classList.toggle("is-on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
     });
   }
-  const favN = channels.filter(c=> isFav(c.url)).length;
-  bar.innerHTML = '<button class="filter-btn active" data-f="all">الكل (' + channels.length + ')</button>' +
-    cats.map(c=>{
-      const n = channels.filter(x=>x.cat===c).length;
-      return '<button class="filter-btn" data-f="'+esc(c)+'">'+esc(c)+' ('+n+')</button>';
-    }).join('');
-  bar.querySelectorAll('.filter-btn').forEach(b=>{
-    b.addEventListener('click', ()=> filterCh(b.getAttribute('data-f'), b));
-  });
-}
 
-function filterCh(cat,btn){
-  currentFilter=cat;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderList();
-}
-
-function selectChannel(i){
-  activeIndex = i;
-  try{ localStorage.setItem(LASTK, channels[i] && channels[i].url); }catch(e){}
-  renderList();
-  const c = channels[i];
-  nowName.textContent = c.name;
-  nowCat.textContent = '• ' + c.cat;
-  overlay.style.display = 'grid';
-  showStatus('جاري تحميل ' + c.name + '...', 2000);
-  loadChannel(c.url);
-}
-
-function loadChannel(url){
-  if(hls){ try{hls.destroy()}catch(e){}; hls=null; }
-  video.pause();
-  video.removeAttribute('src');
-  video.load();
-  if(typeof Hls === 'undefined'){
-    showStatus('❌ Hls.js لم يحمل',4000);
-    return;
+  function syncControls() {
+    if (playBtn) {
+      playBtn.textContent = playing ? "⏸" : "▶";
+      playBtn.setAttribute("aria-label", playing ? "إيقاف الجولة مؤقتاً" : "تشغيل الجولة");
+      playBtn.setAttribute("aria-pressed", playing ? "true" : "false");
+    }
+    if (step) step.textContent = (index + 1) + " / " + scenes.length;
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
   }
-  // جرّب المباشر أولاً (أسرع) ثم البروكسي كـ fallback لو فشل
-  let triedProxy=false;
-  let proxiedUrl = url; // مباشر
-  let useProxy = false;
-  // القنوات اللي تحتاج بروكسي (CORS) - نجرب مباشر أولاً
-  console.log('Trying direct:', url);
-  if(Hls.isSupported()){
-    hls = new Hls({maxBufferLength:60, enableWorker:false});
-    const tryLoad = (u, isProxy) => {
-      console.log(isProxy?'Loading via proxy:':'Loading direct:', u);
-      hls.loadSource(isProxy ? 'proxy.php?url='+encodeURIComponent(u) : u);
-      hls.attachMedia(video);
-    };
-    tryLoad(url, false);
-    hls.on(Hls.Events.ERROR, (e,data)=>{
-      console.error('HLS ERROR',data);
-      if(data.fatal && !triedProxy){
-        triedProxy=true;
-        console.warn('Direct failed, switching to proxy...');
-        showStatus('جاري المحاولة عبر البروكسي...',2000);
-        try{ hls.destroy(); }catch(_){}
-        hls = new Hls({maxBufferLength:60, enableWorker:false});
-        hls.loadSource('proxy.php?url='+encodeURIComponent(url));
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ const lvl=hls.levels.length; if(lvl>2) hls.currentLevel=1; showStatus('تم التحميل عبر البروكسي ▶',1500); });
-        hls.on(Hls.Events.ERROR, (ee,dd)=>{ if(dd.fatal) showStatus('⚠️ خطأ: '+(dd.details||dd.type)+' - جرب قناة أخرى',4000); });
-        hls.on(Hls.Events.BUFFER_STALLED_ERROR, ()=>{ hls.recoverMediaError(); });
-      } else if(data.fatal){
-        showStatus('⚠️ خطأ: '+(data.details||data.type)+' - جرب قناة أخرى',4000);
-      }
+
+  function show(next, keepTime) {
+    index = (next + scenes.length) % scenes.length;
+    scenes.forEach(function (el, i) {
+      var on = i === index;
+      if (on) el.removeAttribute("hidden");
+      else el.setAttribute("hidden", "hidden");
+      el.classList.toggle("is-on", on);
     });
-    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ const lvl=hls.levels.length; if(lvl>2) hls.currentLevel=1; showStatus('تم التحميل - اضغط تشغيل ▶',1500); });
-    hls.on(Hls.Events.BUFFER_STALLED_ERROR, ()=>{ console.warn('buffer stalled, recovering'); hls.recoverMediaError(); });
-    // Skip the old proxiedUrl block
-    // Dummy to avoid duplicate
-    if(false){
-    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{ const lvl=hls.levels.length; if(lvl>2) hls.currentLevel=1; showStatus('تم التحميل - اضغط تشغيل ▶',1500); });
-    hls.on(Hls.Events.BUFFER_STALLED_ERROR, ()=>{ console.warn('buffer stalled, nudging'); hls.recoverMediaError(); }); }
-    hls.on(Hls.Events.ERROR, (e,data)=>{
-      console.error('HLS ERROR',data);
-      if(data.fatal){
-        let msg = data.details || data.type;
-        if(data.response) msg += ' ('+data.response.code+')';
-        showStatus('⚠️ خطأ: '+msg+' - جرب قناة أخرى',5000);
-      }
+    chapters.forEach(function (el, i) {
+      var on = i === index;
+      el.classList.toggle("is-on", on);
+      if (on) el.setAttribute("aria-current", "true");
+      else el.removeAttribute("aria-current");
     });
-  } else {
-    showStatus('المتصفح لا يدعم HLS',3000);
+    if (caption && CAPTIONS[index]) caption.innerHTML = CAPTIONS[index];
+    if (!keepTime) elapsed = 0;
+    syncTabs();
+    syncControls();
+    paintProgress();
   }
-}
 
-function playActive(){
-  showStatus('جاري التشغيل...',1500);
-  video.play().then(()=>{ overlay.style.display='none'; showStatus('▶ يعمل الآن',1200); }).catch(()=>{
-    video.muted=true;
-    video.play().then(()=> {overlay.style.display='none'; showStatus('▶ يعمل (صامت - فعّل الصوت)',2000);});
+  function frame(ts) {
+    if (!playing) return;
+    var delta = lastTs ? ts - lastTs : 0;
+    lastTs = ts;
+    elapsed += delta;
+    if (elapsed >= DURATION) {
+      show(index + 1);
+    } else {
+      paintProgress();
+    }
+    rafId = window.requestAnimationFrame(frame);
+  }
+
+  function play() {
+    if (playing) return;
+    playing = true;
+    lastTs = 0;
+    syncControls();
+    if (elapsed >= DURATION) elapsed = 0;
+    if (window.requestAnimationFrame) rafId = window.requestAnimationFrame(frame);
+  }
+
+  function pause() {
+    playing = false;
+    lastTs = 0;
+    if (rafId && window.cancelAnimationFrame) window.cancelAnimationFrame(rafId);
+    rafId = 0;
+    syncControls();
+  }
+
+  function toggle() {
+    if (playing) pause();
+    else play();
+  }
+
+  if (playBtn) playBtn.addEventListener("click", toggle);
+  if (prevBtn) prevBtn.addEventListener("click", function () { show(index - 1); });
+  if (nextBtn) nextBtn.addEventListener("click", function () { show(index + 1); });
+
+  chapters.forEach(function (btn, i) {
+    btn.addEventListener("click", function () { show(i); });
   });
-}
-video.addEventListener('play', ()=> overlay.style.display='none');
-setInterval(()=>{
-  try{
-    const buf = video.buffered.length ? (video.buffered.end(video.buffered.length-1) - video.currentTime) : 0;
-    const bv = document.getElementById('buffer-val');
-    const dot = document.getElementById('buffer-dot');
-    const lvl = document.getElementById('buffer-level');
-    if(bv) bv.textContent = buf.toFixed(1)+'s';
-    const tv=document.getElementById('time-val');
-    if(tv){
-      const s=Math.floor(video.currentTime%60).toString().padStart(2,'0');
-      const m=Math.floor(video.currentTime/60).toString().padStart(2,'0');
-      tv.textContent=m+':'+s;
-    }
-    if(dot) dot.style.background = buf>20 ? '#22c55e' : buf>5 ? '#fbbf24' : '#ef4444';
-    if(lvl && typeof hls !== 'undefined' && hls && hls.currentLevel !== undefined){
-      const cur = hls.currentLevel>=0 ? hls.levels[hls.currentLevel]?.height || hls.currentLevel : 'auto';
-      lvl.textContent = cur + (typeof cur==='number' ? 'p' : '');
-    }
-    // كل 10 ثواني اطبع في الـ status
-    if(Math.floor(Date.now()/10000) % 2 === 0 && buf>0 && window._lastBufLog !== Math.floor(Date.now()/10000)){
-      window._lastBufLog = Math.floor(Date.now()/10000);
-      console.log('[Buffer]', buf.toFixed(1)+'s', 'level', lvl?lvl.textContent:'');
-    }
-  }catch(e){}
-}, 1000);
-setInterval(()=>{
-  try{
-    const buf = video.buffered.length ? (video.buffered.end(video.buffered.length-1) - video.currentTime) : 0;
-    if(buf>0) showStatus('⏳ Buffer: '+buf.toFixed(1)+'s • '+(document.getElementById('buffer-level')?.textContent||''), 2500);
-  }catch(e){}
-}, 10000);
 
-video.addEventListener('pause', ()=> { if(!video.ended) overlay.style.display='grid'; });
-video.addEventListener('error', ()=> showStatus('⚠️ خطأ في التشغيل - جرب قناة أخرى',3000));
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener("click", function () {
+      var target = TABS_OF_SCENE.indexOf(i);
+      if (target >= 0) show(target);
+    });
+  });
 
-// init — حمّل القائمة المركزية ثم ابنِ الواجهة
-loadChannels().then(()=>{
-  buildFilters();
-  renderList();
-  let start = 0;
-  try{ const last = localStorage.getItem(LASTK);
-       const k = channels.findIndex(c=> c.url===last); if(k>-1) start=k; }catch(e){}
-  selectChannel(start);
-});
+  /* التنقّل بالكيبورد: ← التالي، → السابق (اتجاه RTL)، المسافة تشغيل/إيقاف */
+  tour.addEventListener("keydown", function (event) {
+    var tag = (event.target && event.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (event.key === "ArrowLeft") { show(index + 1); event.preventDefault(); }
+    else if (event.key === "ArrowRight") { show(index - 1); event.preventDefault(); }
+    else if (event.key === " " || event.key === "Spacebar") { toggle(); event.preventDefault(); }
+  });
+
+  /* إيقاف مؤقت عند مغادرة التبويب حتى لا تعمل الجولة في الخلفية */
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) pause();
+  });
+
+  tour.addEventListener("mouseenter", pause);
+
+  show(0);
+  if (!reduce) play();
+})();
 </script></body></html>

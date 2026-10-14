@@ -62,7 +62,7 @@ export default function PlanPage({
         <nav className="text-[12.5px] font-bold text-black/40 mb-5" aria-label="مسار التصفح">
           <a href={to("")} className="hover:text-black transition">الرئيسية</a>
           <span className="mx-2">/</span>
-          <a href={to("#pricing")} className="hover:text-black transition">الباقات</a>
+          <a href={to("servers/")} className="hover:text-black transition">السيرفرات والباقات</a>
           <span className="mx-2">/</span>
           <span className="text-black/70">{nameOnly}</span>
         </nav>

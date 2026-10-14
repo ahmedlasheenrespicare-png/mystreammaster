@@ -94,9 +94,9 @@ export default function App() {
       />
     );
   } else if (path === "/store" || path === "/servers") {
-    page = <div className="pt-[140px]"><h1 className="text-center font-display text-4xl font-black pt-8">باقات ستريم ماستر</h1><Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />{path === "/servers" && <ServersComparison />}</div>;
+    page = <div className="pt-[140px]"><nav className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">{path === "/store" ? "المتجر" : "السيرفرات والباقات"}</span></nav><h1 className="text-center font-display text-4xl font-black pt-8">باقات ستريم ماستر</h1><Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />{path === "/servers" && <ServersComparison />}</div>;
   } else if (path === "/faq") {
-    page = <div className="pt-[140px]"><h1 className="sr-only">الأسئلة الشائعة</h1><FAQ /></div>;
+    page = <div className="pt-[140px]"><nav className="max-w-[860px] mx-auto px-5 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">الأسئلة الشائعة</span></nav><h1 className="sr-only">الأسئلة الشائعة</h1><FAQ /></div>;
   } else if (path === "/cart") {
     page = <section className="pt-[180px] pb-24 px-5 text-center max-w-3xl mx-auto"><p className="text-[#2b4eff] font-bold mb-4">طلب التفعيل التقني يبدأ هنا</p><h1 className="font-display text-5xl font-black">سلة المشتريات</h1><p className="my-6 text-black/60">راجع الباقات المختارة وأكمل طلبك مع فريقنا عبر واتساب.</p><button onClick={openCart} className="rounded-full bg-[#0b0b0f] text-[#d8ff3e] font-bold px-8 py-4">عرض السلة ({cartItems.length})</button><a href="/store/" className="inline-block mx-4 font-bold underline">متابعة التسوق</a></section>;
   } else if (path === "/matches") {

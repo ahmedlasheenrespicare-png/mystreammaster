@@ -17,7 +17,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           <span className="mx-2">/</span>
           <a href={to("blog/")} className="hover:text-black transition">المدوّنة</a>
           <span className="mx-2">/</span>
-          <span className="text-black/70">{post.category}</span>
+          <span className="text-black/70">{post.title}</span>
         </nav>
 
         <article>

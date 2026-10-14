@@ -19,6 +19,14 @@ export interface SeoMeta {
 
 const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
 
+/* الصفة القانونية/التقنية للمنصة — نص واحد يُستخدم في بيانات المنظمة والمنتج
+   حتى لا يختلف وصف النشاط بين صفحة وأخرى في نتائج البحث. */
+export const ORG_ROLE =
+  "خدمات ربط تقني وإعداد مشغلات البث ودليل المشاهدة الرسمية";
+
+const ORG_DESCRIPTION =
+  "منصة خدمات ربط تقني في السعودية والخليج ومصر: تفعيل قوائم التشغيل (M3U / Xtream Codes) الصادرة من المزود الخارجي، وإعداد مشغلات البث على الشاشات والأجهزة، ودعم فني بالعربية، مع دليل للمشاهدة الرسمية للقنوات والمنصات. الموقع لا يستضيف المحتوى ولا يبثّه ولا يعيد بثّه.";
+
 /* تنظيم الموقع — يظهر في كل الصفحات */
 const organizationLd = {
   "@type": "Organization",
@@ -26,7 +34,7 @@ const organizationLd = {
   name: `${BRAND_NAME} — ${BRAND_EN}`,
   url: `${SITE_URL}/`,
   logo: `${SITE_URL}/icon-512.png`,
-  description: "اشتراكات وسيرفرات IPTV بثبات عالٍ بدون تقطيع في السعودية والخليج ومصر",
+  description: ORG_DESCRIPTION,
   contactPoint: {
     "@type": "ContactPoint",
     telephone: `+${WHATSAPP_DISPLAY.replace(/[^\d]/g, "")}`,
@@ -50,9 +58,9 @@ function breadcrumbs(items: { name: string; path: string }[]) {
 export function getSeo(path: string): SeoMeta {
   const clean = `/${path.replace(/^\/+|\/+$/g, "")}`;
   const base: SeoMeta = {
-    title: `${BRAND_NAME} | افضل اشتراك IPTV 2026 بدون تقطيع`,
+    title: `${BRAND_NAME} | ${ORG_ROLE} 2026`,
     description:
-      "اشتراكات وسيرفرات IPTV بثبات 99.9% في السعودية والخليج ومصر — قنوات رياضية وإخبارية ومكتبة أفلام، تفعيل فوري وتجربة مجانية.",
+      "خدمات ربط تقني وإعداد مشغلات البث (M3U / Xtream Codes) على شاشات سامسونج وLG وأندرويد وApple TV، مع دليل القنوات المفتوحة وخيارات المشاهدة الرسمية — تفعيل فوري ودعم فني بالعربية.",
     canonical: absolute(""),
     robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
     ogType: "website",
@@ -80,10 +88,11 @@ export function getSeo(path: string): SeoMeta {
         {
           "@type": "Product",
           "@id": `${SITE_URL}/#product`,
-          name: "اشتراك سيرفر IPTV بدون تقطيع 2026",
+          name: "باقة تفعيل وربط تقني لمشغلات البث 2026",
           description:
-            "اشتراكات IPTV أصلية بجودة 4K/Full HD مع تفعيل فوري وضمان ثبات طوال مدة الاشتراك.",
+            "خدمة تفعيل وربط تقني لمشغلات البث على جهازك: إعداد قوائم التشغيل (M3U / Xtream Codes) الصادرة من المزود الخارجي، وضبط الجودة والأجهزة، ودعم فني طوال مدة الباقة. المواصفات الفنية للسيرفر (عدد القنوات والمكتبة والجودة) يوفّرها المزود الخارجي، والموقع لا يستضيف المحتوى ولا يبثّه.",
           brand: { "@type": "Brand", name: BRAND_EN },
+          category: "Technical setup and activation service",
           offers: {
             "@type": "AggregateOffer",
             priceCurrency: "USD",
@@ -114,8 +123,8 @@ export function getSeo(path: string): SeoMeta {
     const nameOnly = plan.serverName.split("(")[0].trim();
     return {
       ...base,
-      title: `${nameOnly} — اشتراك IPTV ${plan.quality} | ${BRAND_NAME}`,
-      description: `${plan.description} ${plan.channelsCount} و${plan.vodCount} — يبدأ من ${cheapest} دولار سنوياً مع تفعيل فوري وتجربة مجانية.`,
+      title: `${nameOnly} — باقة تفعيل وربط تقني (IPTV ${plan.quality}) | ${BRAND_NAME}`,
+      description: `${plan.description} المواصفات الفنية (${plan.channelsCount} و${plan.vodCount}) يوفّرها سيرفر المزود الخارجي، وتشمل خدمتنا التفعيل والربط التقني والدعم الفني — تبدأ من ${cheapest} دولار سنوياً.`,
       canonical: absolute(`${plan.serverCode}/`),
       jsonLd: [
         organizationLd,
@@ -126,9 +135,9 @@ export function getSeo(path: string): SeoMeta {
         {
           "@type": "Product",
           name: plan.serverName,
-          description: plan.description,
+          description: `${plan.description} الخدمة المقدَّمة من الموقع هي التفعيل والربط التقني والدعم الفني؛ أما مواصفات السيرفر فهي لدى المزود الخارجي المستقل.`,
           brand: { "@type": "Brand", name: BRAND_EN },
-          category: "IPTV Subscription",
+          category: "Technical setup and activation service",
           url: absolute(`${plan.serverCode}/`),
           image: OG_IMAGE,
           offers: AVAILABLE_DURATIONS.map(months => ({
@@ -148,9 +157,9 @@ export function getSeo(path: string): SeoMeta {
   if (clean === "/channels") {
     return {
       ...base,
-      title: `قائمة القنوات المتوفرة في الاشتراك | ${BRAND_NAME}`,
+      title: `دليل القنوات المفتوحة وقنوات المزودين | ${BRAND_NAME}`,
       description:
-        "تصفّح القنوات الرياضية والإخبارية والعربية وقنوات الأطفال والوثائقيات المتوفرة داخل الاشتراك — بحث فوري وتصنيفات كاملة.",
+        "تصفّح القنوات المفتوحة التي تُشاهد مباشرة من مصادرها الرسمية، ودليل القنوات الرياضية والإخبارية والعربية لدى المزودين الخارجيين ضمن باقاتهم — بحث فوري وتصنيفات كاملة، مع روابط الاشتراك الرسمي للمنصات المشفّرة.",
       canonical: absolute("channels/"),
       jsonLd: [
         organizationLd,

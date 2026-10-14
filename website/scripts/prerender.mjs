@@ -33,16 +33,23 @@ function applyHead(template, seo) {
   let out = template;
 
   out = replaceTag(out, /<title>[\s\S]*?<\/title>/, `<title>${esc(seo.title)}</title>`);
+  /* وصف الصفحة: القالب قد يكتب الوسم على أكثر من سطر، فنستخدم نمطاً متسامحاً
+     مع المسافات والأسطر — وإن لم يوجد الوسم أصلاً نضيفه قبل </head>. */
   out = replaceTag(
     out,
-    /<meta name="description" content="[^"]*"\s*\/?>/,
+    /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
     `<meta name="description" content="${esc(seo.description)}" />`
   );
-  out = replaceTag(
-    out,
-    /<link rel="canonical" href="[^"]*"\s*\/?>/,
-    `<link rel="canonical" href="${seo.canonical}" />`
-  );
+  if (!/<meta\s+name="description"/.test(out)) {
+    out = out.replace("</head>", `    <meta name="description" content="${esc(seo.description)}" />\n  </head>`);
+  }
+  /* canonical: نفس المعالجة (قد يكون على سطر واحد أو موزّعاً) */
+  const canonicalTag = `<link rel="canonical" href="${seo.canonical}" />`;
+  if (/<link\s+rel="canonical"/.test(out)) {
+    out = replaceTag(out, /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/, canonicalTag);
+  } else {
+    out = out.replace("</head>", `    ${canonicalTag}\n  </head>`);
+  }
 
   const pairs = [
     ['property="og:title"', seo.title],
@@ -56,7 +63,8 @@ function applyHead(template, seo) {
   ];
 
   for (const [attr, value] of pairs) {
-    const re = new RegExp(`<meta ${attr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} content="[^"]*"\\s*\\/?>`);
+    const attrRe = attr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+    const re = new RegExp(`<meta ${attrRe} content="[^"]*"\\s*\\/?>`);
     const tag = `<meta ${attr} content="${esc(value)}" />`;
     if (re.test(out)) out = replaceTag(out, re, tag);
     else out = out.replace("</head>", `    ${tag}\n  </head>`);

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, type PricingPlan } from "../data";
+import {
+  CURRENCIES,
+  getWhatsAppUrl,
+  OUR_SERVICE_NOTE,
+  PRICING_PLANS,
+  PROVIDER_SPECS_NOTE,
+  type PricingPlan,
+} from "../data";
 import { to } from "../config";
 import { IconArrowUpRight, IconChat, IconCheck, IconShieldCheck, IconStar, IconZap } from "../components/Icons";
 import FAQ from "../components/FAQ";
@@ -9,6 +16,9 @@ import { Reveal } from "../components/motion";
    صفحة هبوط لكل باقة — /nova  /ultra  /istar  /moka
    • تُرسم مسبقاً وقت البناء بالكامل (عنوان ووصف وأسعار وميزات وباقة أسئلة)
    • تستهدف كلمة مفتاحية مستقلة لكل سيرفر بدل حشرها كلها في الصفحة الرئيسية
+   • فصل الصفتين في كل عناوينها الفرعية:
+       - المواصفات (القنوات/المكتبة/الجودة/الأجهزة) = مواصفات سيرفر المزود الخارجي
+       - ما يقدّمه الموقع = باقة التفعيل والربط التقني والدعم الفني
 ========================================================================== */
 
 interface PlanPageProps {
@@ -65,19 +75,28 @@ export default function PlanPage({
             </span>
             <h1 className="mt-4 font-display font-black tracking-tight leading-[1.15] text-[34px] md:text-[50px]">
               {nameOnly}{" "}
-              <span className="font-serif italic font-normal">اشتراك IPTV</span>
+              <span className="font-serif italic font-normal">تفعيل وربط تقني</span>
             </h1>
             <p className="mt-4 text-[15.5px] md:text-[17px] text-black/60 font-medium leading-relaxed">
               {plan.description}
             </p>
+            <p className="mt-3 text-[13.5px] md:text-[14.5px] text-black/50 font-medium leading-relaxed">
+              {OUR_SERVICE_NOTE}
+            </p>
 
-            {/* المواصفات */}
-            <dl className="mt-7 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] font-bold">
+            {/* المواصفات — لسيرفر المزود الخارجي لا للموقع */}
+            <h2 className="mt-9 font-display font-black text-[18px] tracking-tight">
+              مواصفات السيرفر لدى المزود الخارجي
+            </h2>
+            <p className="mt-2 text-[12.5px] text-black/45 font-medium leading-relaxed">
+              {PROVIDER_SPECS_NOTE}
+            </p>
+            <dl className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] font-bold">
               {[
-                ["القنوات", plan.channelsCount],
-                ["الأفلام والمسلسلات", plan.vodCount],
-                ["الجودة", plan.quality],
-                ["الأجهزة", plan.devices],
+                ["القنوات لدى المزود", plan.channelsCount],
+                ["الأفلام والمسلسلات لدى المزود", plan.vodCount],
+                ["الجودة المعلنة", plan.quality],
+                ["الأجهزة في نفس اللحظة", plan.devices],
               ].map(([k, v]) => (
                 <div key={k} className="rounded-2xl bg-white border border-black/10 p-3.5">
                   <dt className="text-black/40">{k}</dt>
@@ -86,10 +105,13 @@ export default function PlanPage({
               ))}
             </dl>
 
-            {/* الميزات */}
+            {/* ما نقدّمه نحن — باقة التفعيل والربط التقني والدعم */}
             <h2 className="mt-10 font-display font-black text-[22px] tracking-tight">
-              ماذا تحصل عليه في هذه الباقة؟
+              ماذا تشمل باقة التفعيل والربط التقني من موقعنا؟
             </h2>
+            <p className="mt-2 text-[13px] text-black/50 font-medium leading-relaxed">
+              البنود التالية هي خدمتنا نحن، وليست مواصفات بث يملكها الموقع.
+            </p>
             <ul className="mt-4 space-y-2.5">
               {plan.features.map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-[14px]">
@@ -103,7 +125,7 @@ export default function PlanPage({
 
             {/* محتوى نصي للفهرسة وللزائر */}
             <h2 className="mt-10 font-display font-black text-[22px] tracking-tight">
-              لمن هذه الباقة؟
+              لمن تناسب هذه الباقة من سيرفر المزود؟
             </h2>
             <p className="mt-3 text-[14.5px] leading-[1.9] text-black/60">
               {plan.serverCode === "moka" &&
@@ -182,7 +204,7 @@ export default function PlanPage({
 
                 <a
                   href={getWhatsAppUrl(
-                    `مرحبًا، أريد الاشتراك في ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${price} ${curr.symbol}`
+                    `مرحبًا، أريد باقة التفعيل والربط التقني لسيرفر ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${price} ${curr.symbol}`
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -214,13 +236,56 @@ export default function PlanPage({
                     <IconStar className="w-4 h-4 text-[#d8ff3e]" /> دعم فني 24/7 وضمان طوال المدة
                   </li>
                   <li className="flex items-center gap-2">
-                    <IconZap className="w-4 h-4 text-[#ff5c4d]" /> {plan.antiFreeze}
+                    <IconZap className="w-4 h-4 text-[#ff5c4d]" /> تقنية المزود: {plan.antiFreeze}
                   </li>
                 </ul>
               </div>
             </div>
           </Reveal>
         </div>
+
+        {/* توضيح الصفة التقنية والقانونية للباقة */}
+        <section className="mt-14 rounded-[24px] border border-black/10 bg-white p-6 sm:p-7">
+          <h2 className="font-display font-black text-[19px] tracking-tight">
+            ما الذي تشتريه من الموقع بالضبط؟
+          </h2>
+          <ul className="mt-4 space-y-2.5 text-[13.5px] leading-[1.9] text-black/65">
+            <li className="flex items-start gap-2.5">
+              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#0b0b0f] shrink-0" />
+              <span>
+                <strong className="text-black/85">من الموقع:</strong> باقة التفعيل والربط التقني —
+                إصدار/تسليم بيانات الاشتراك من المزود، وإعداد المشغّل على أجهزتك، والدعم الفني
+                بالعربية طوال مدة الباقة.
+              </span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#0b0b0f] shrink-0" />
+              <span>
+                <strong className="text-black/85">من المزود الخارجي:</strong> السيرفر نفسه وما عليه من
+                قنوات ومكتبات وجودات وأجهزة مدعومة — وهي أرقام يعلنها المزود وقد تتغيّر بحسب التوفر.
+              </span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#0b0b0f] shrink-0" />
+              <span>
+                <strong className="text-black/85">خارج نطاق الموقع:</strong> القنوات والمنصات المشفّرة
+                (الرياضة الحصرية ومنصات الأفلام والمسلسلات المدفوعة) تُشاهد عبر اشتراكاتها الرسمية فقط،
+                وروابطها مجمّعة في{" "}
+                <a
+                  href={to("watch-legal.html")}
+                  className="font-black text-[#2b4eff] underline underline-offset-4"
+                >
+                  دليل المشاهدة الرسمية
+                </a>
+                .
+              </span>
+            </li>
+          </ul>
+          <p className="mt-4 text-[12.5px] leading-[1.9] text-black/45">
+            الموقع لا يستضيف أي محتوى ولا يبثّه ولا يعيد بثّه، وجميع العلامات التجارية المذكورة
+            مملوكة لأصحابها وتُذكر للتعريف والمقارنة فقط.
+          </p>
+        </section>
 
         {/* الباقات الأخرى */}
         <section className="mt-16">
@@ -256,7 +321,7 @@ export default function PlanPage({
           </a>{" "}
           أو{" "}
           <a href={to("channels/")} className="font-black text-[#2b4eff] underline underline-offset-4">
-            تصفّح قائمة القنوات
+            تصفّح دليل القنوات المفتوحة
           </a>
           .
         </p>

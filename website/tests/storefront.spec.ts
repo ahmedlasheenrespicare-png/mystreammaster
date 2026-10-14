@@ -24,7 +24,7 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
 
 test('trial modal is above navigation, supports keyboard dismissal, and uses existing contact', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'اطلب تجربتك المجانية', exact: true }).first().click();
+  await page.getByRole('button', { name: 'طلب كود تجريبي', exact: true }).first().click();
   const dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByLabel('نوع جهازك:')).toBeVisible();

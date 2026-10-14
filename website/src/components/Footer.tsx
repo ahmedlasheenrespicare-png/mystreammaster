@@ -50,7 +50,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 />
               </h2>
               <p className="mt-6 text-white/55 text-[15.5px] md:text-[17px] max-w-xl mx-auto font-medium">
-                تجربة مجانية 6 ساعات — تفعيل فوري خلال 5 دقائق — ضمان كامل طوال مدة الاشتراك.
+                فحص تجريبي مجاني 6 ساعات — تفعيل فوري خلال 5 دقائق — ضمان كامل طوال مدة الاشتراك.
               </p>
               <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
@@ -193,7 +193,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                     onClick={onOpenTrial}
                     className="mt-2 text-[#d8ff3e] font-black hover:underline cursor-pointer text-[13px]"
                   >
-                    طلب تجربة مجانية 6 ساعات ←
+                    طلب كود فحص تجريبي (6 ساعات)
                   </button>
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
 
               {done ? (
                 <div className="mt-5 flex items-center justify-center gap-2 bg-[#d8ff3e] text-black rounded-full px-5 py-3.5 text-[14px] font-black w-fit mx-auto">
-                  <IconCheck className="w-4 h-4" /> أكمل طلب الاشتراك في نافذة واتساب.
+                  <IconCheck className="w-4 h-4" /> أكمل طلب التفعيل والدعم الفني عبر واتساب.
                 </div>
               ) : (
                 <form
@@ -234,7 +234,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                     type="submit"
                     className="btn-slide slide-white shrink-0 bg-[#d8ff3e] text-black font-black text-[13.5px] px-6 py-2.5 rounded-full cursor-pointer"
                   >
-                    اشترك
+                    انضم الآن
                   </button>
                 </form>
               )}

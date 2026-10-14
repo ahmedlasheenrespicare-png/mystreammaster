@@ -278,7 +278,7 @@ export default function Pricing({
                 <div className="relative mt-7 pt-5 space-y-2.5">
                   <a
                     href={getWhatsAppUrl(
-                      `مرحبًا ستريم ماستر، أود الاشتراك في ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${currentPrice} ${curr.symbol}`
+                      `مرحبًا ستريم ماستر، أود طلب كود تفعيل تقني لدى المزود لـ ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${currentPrice} ${curr.symbol}`
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -286,7 +286,7 @@ export default function Pricing({
                       dark ? "slide-white bg-[#d8ff3e] text-black" : "slide-royal bg-[#0b0b0f] text-white"
                     }`}
                   >
-                    <IconChat className="w-4 h-4" /> اشترك الآن عبر واتساب
+                    <IconChat className="w-4 h-4" /> اطلب كود التفعيل عبر واتساب
                   </a>
 
                   <button

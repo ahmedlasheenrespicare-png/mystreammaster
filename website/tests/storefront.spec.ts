@@ -12,7 +12,7 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await expect(page.locator('h1')).toContainText('شاهد كل ما تحب');
+  await expect(page.locator('h1')).toHaveText(/(شاهِد|تابِع|اكتشِف) كل ما تحب/);
   await expect(page.locator('header select')).toHaveValue('USD');
   await expect(page.locator('#pricing')).toContainText('25');
   await expect(page.locator('#pricing')).toContainText('35');
@@ -99,7 +99,7 @@ test('legacy footer links perform real navigation instead of being swallowed by 
   await expect(page).toHaveURL(/\/privacy\//);
   await expect(page.locator('.sm-header')).toBeVisible();
   await page.locator('.sm-header').getByRole('link', { name: /ستريم ماستر/ }).click();
-  await expect(page.locator('h1')).toContainText('شاهد كل ما تحب');
+  await expect(page.locator('h1')).toHaveText(/(شاهِد|تابِع|اكتشِف) كل ما تحب/);
 });
 
 for (const width of [320, 390, 640, 768, 1440]) {

@@ -6,8 +6,11 @@ import { IconArrowUpRight, IconChat, IconSearch, IconTv, IconZap } from "../comp
 /* =========================================================================
    صفحة كل القنوات — /channels
    • تُرسم مسبقاً وقت البناء بالقنوات المميّزة (تظهر لمحركات البحث فوراً)
-   • ثم تُحمَّل القائمة الكاملة (933 قناة) في المتصفح عند الطلب
+   • ثم تُحمَّل القائمة الكاملة (فهرس وصفي) في المتصفح عند الطلب
    • البحث والتصنيف و«تحميل المزيد» بلا أي مكتبة خارجية
+   الفهرس وصفي فقط (اسم + شعار + تصنيف) ولا يحتوي أي رابط بث: ملف channels.json
+   خالٍ تماماً من روابط .m3u8، والقوائم التي تُشغَّل تُجلب من مزوّد المشترك داخل
+   مشغّله في متصفحه (انظر قسم #xtream).
 ========================================================================== */
 
 const PAGE_SIZE = 60;
@@ -42,7 +45,10 @@ export default function ChannelsPage() {
       .then((data: { channels?: ChannelItem[] }) => {
         if (cancelled) return;
         const list = Array.isArray(data.channels) ? data.channels : [];
-        const clean = list.filter((c) => c?.name);
+        /* الفهرس الوصفي وحده: أي حقل رابط بث يُهمَل حتى لو ورد في الملف */
+        const clean: ChannelItem[] = list
+          .filter((c) => c?.name)
+          .map((c) => ({ name: c.name, logo: c.logo || "📺", cat: c.cat || "غير مصنّف" }));
         if (clean.length > 0) {
           setChannels(clean);
           setFullLoaded(true);

@@ -17,7 +17,7 @@ export default function WordBand() {
               key={i}
               className="font-display font-black italic text-[72px] md:text-[110px] leading-none tracking-tight text-stroke-white whitespace-nowrap px-6"
             >
-              شاهد • شاهد
+              ثبات • سرعة
             </span>
           ))}
         </div>
@@ -31,7 +31,7 @@ export default function WordBand() {
               key={i}
               className="font-display font-black italic text-[72px] md:text-[110px] leading-none tracking-tight text-[#d8ff3e] whitespace-nowrap px-6"
             >
-              قنوات • أفلام
+              تفعيل فوري • دعم 24/7
             </span>
           ))}
         </div>

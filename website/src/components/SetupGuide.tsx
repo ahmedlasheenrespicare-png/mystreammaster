@@ -51,12 +51,12 @@ export default function SetupGuide() {
                 d: "من متجر تطبيقات جهازك (App Store / Google Play / LG Store).",
               },
               {
-                t: "أدخل كود الاشتراك",
-                d: "بيانات Xtream Codes (المستخدم وكلمة المرور والسيرفر) تصلك فوراً.",
+                t: "أدخل بيانات الربط من المزود",
+                d: "بيانات Xtream Codes أو رابط M3U الصادر من المزود يصلك فوراً.",
               },
               {
-                t: "استمتع بالبث المباشر",
-                d: "القنوات والمكتبة تُحمّل فوراً — شاهد بجودة 4K مباشرة.",
+                t: "ابدأ التشغيل على تطبيقك",
+                d: "يتم جلب قوائم المزود تلقائياً على تطبيق جهازك بجودة تصل إلى 4K.",
               },
             ].map((s, i) => (
               <li key={s.t}>
@@ -78,7 +78,7 @@ export default function SetupGuide() {
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href={getWhatsAppUrl(
-                `مرحبًا ستريم ماستر، أحتاج مساعدة في تشغيل الاشتراك على ${currentDevice.device}`
+                `مرحبًا ستريم ماستر، أحتاج مساعدة تقنية في إعداد تطبيق المشغّل على ${currentDevice.device}`
               )}
               target="_blank"
               rel="noopener noreferrer"
@@ -157,7 +157,7 @@ export default function SetupGuide() {
                     تفعيل فوري
                   </div>
                   <div className="font-display font-black leading-[1.2] tracking-tight text-2xl">
-                    قنواتك على
+                    تطبيقاتك على
                     <br />
                     كل شاشة.
                   </div>

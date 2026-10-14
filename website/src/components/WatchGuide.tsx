@@ -1,6 +1,7 @@
 import { memo, useMemo, useRef, useState } from "react";
 import destinations from "../official-destinations.json";
 import { IconSearch, IconTv } from "./Icons";
+import { getDestinationUrl } from "../lib/affiliate";
 import "./watch-guide.css";
 
 const categories = ["الكل", "أخبار", "رياضة", "وثائقيات", "ترفيه", "منصات", "أفلام", "أطفال", "موسيقى", "دينية"];
@@ -46,7 +47,13 @@ function WatchGuide() {
                   <span className="wg-mini-label">تعرّف على خيارات الجهة المقدّمة</span>
                   <h2 id="watch-guide-selected-name">{selected.name}</h2>
                   <p className="wg-description">{selected.description}</p>
-                  <a className="wg-official" href={selected.url} target="_blank" rel="noopener noreferrer" aria-label={`انتقل إلى الموقع الرسمي: ${selected.name} (يفتح في تبويب جديد)`}>
+                  <a
+                    className="wg-official"
+                    href={getDestinationUrl(selected.url, "watch-guide")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`انتقل إلى الموقع الرسمي: ${selected.name} (يفتح في تبويب جديد)`}
+                  >
                     انتقل إلى الموقع الرسمي <span aria-hidden="true">↗</span>
                   </a>
                   <div className="wg-domain"><span aria-hidden="true">⌁</span><span>{new URL(selected.url).hostname}</span></div>

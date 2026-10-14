@@ -23,79 +23,118 @@ body{font-family:'Tajawal',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica 
 اشترك الآن
 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path> </svg> </a> <button aria-expanded="false" aria-label="فتح القائمة" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white transition-all hover:bg-white/10 lg:hidden" id="mobile-menu-toggle" type="button"> <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"></path> </svg> </button> </div> </div> <div class="hidden border-t border-white/5 bg-brand-bg/95 backdrop-blur-xl lg:hidden" id="mobile-menu"> <nav aria-label="التنقل للجوال" class="container-app flex flex-col gap-1 py-4"> <a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/"> الرئيسية </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/store/"> المتجر </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/servers/"> السيرفرات </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/blog/"> المدوّنة </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/faq/"> الأسئلة الشائعة </a><a class="rounded-xl px-4 py-3 text-base font-bold transition-all text-gray-300 hover:bg-white/5 hover:text-white" href="/about/"> من نحن </a> <a class="btn-primary mt-2 w-full" href="/store/">
 اشترك الآن
-</a> </nav> </div> </header> <script type="module">function e(){try{const a=JSON.parse(localStorage.getItem("stream-master-cart")||"[]").reduce((n,d)=>n+d.quantity,0),t=document.getElementById("cart-count");t&&(t.textContent=String(a),a>0?(t.classList.remove("hidden"),t.classList.add("inline-flex")):(t.classList.add("hidden"),t.classList.remove("inline-flex")))}catch{}}e();window.addEventListener("cart-updated",e);window.addEventListener("storage",e);</script> <script type="module">const d=document.getElementById("mobile-menu-toggle"),t=document.getElementById("mobile-menu");d?.addEventListener("click",()=>{const e=!t?.classList.contains("hidden");t?.classList.toggle("hidden"),d.setAttribute("aria-expanded",String(!e)),d.setAttribute("aria-label",e?"فتح القائمة":"إغلاق القائمة")});t?.querySelectorAll("a").forEach(e=>{e.addEventListener("click",()=>{t.classList.add("hidden"),d?.setAttribute("aria-expanded","false")})});document.addEventListener("keydown",e=>{e.key==="Escape"&&!t?.classList.contains("hidden")&&(t.classList.add("hidden"),d?.setAttribute("aria-expanded","false"))});</script> <main class="relative z-10" id="main-content"> <section class="section pt-16"> <div class="container-app max-w-3xl"> <header class="mb-10"> <span class="badge mb-3">قانوني</span> <h1 class="mb-4 text-4xl font-black tracking-tight text-white sm:text-5xl"> شروط الاستخدام | ستريم ماستر برو </h1> </header> <article class="prose prose-invert max-w-none prose-headings:font-black prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white"> <h1 id="شروط-الاستخدام">شروط الاستخدام</h1>
-<p>مرحبًا بك في <strong>ستريم ماستر برو</strong>. باستخدامك لخدماتنا، فإنك توافق على الشروط التالية.</p>
-<h2 id="1-القبول-بالشروط">1. القبول بالشروط</h2>
-<p>بمجرد شراء أي باقة من ستريم ماستر برو، فإنك تقرّ بأنك:</p>
+</a> </nav> </div> </header> <script type="module">function e(){try{const a=JSON.parse(localStorage.getItem("stream-master-cart")||"[]").reduce((n,d)=>n+d.quantity,0),t=document.getElementById("cart-count");t&&(t.textContent=String(a),a>0?(t.classList.remove("hidden"),t.classList.add("inline-flex")):(t.classList.add("hidden"),t.classList.remove("inline-flex")))}catch{}}e();window.addEventListener("cart-updated",e);window.addEventListener("storage",e);</script> <script type="module">const d=document.getElementById("mobile-menu-toggle"),t=document.getElementById("mobile-menu");d?.addEventListener("click",()=>{const e=!t?.classList.contains("hidden");t?.classList.toggle("hidden"),d.setAttribute("aria-expanded",String(!e)),d.setAttribute("aria-label",e?"فتح القائمة":"إغلاق القائمة")});t?.querySelectorAll("a").forEach(e=>{e.addEventListener("click",()=>{t.classList.add("hidden"),d?.setAttribute("aria-expanded","false")})});document.addEventListener("keydown",e=>{e.key==="Escape"&&!t?.classList.contains("hidden")&&(t.classList.add("hidden"),d?.setAttribute("aria-expanded","false"))});</script> <main class="relative z-10" id="main-content"> <section class="section pt-16"> <div class="container-app max-w-3xl"> <header class="mb-10"> <span class="badge mb-3">الوثيقة القانونية الشاملة</span> <h1 class="mb-4 text-4xl font-black tracking-tight text-white sm:text-5xl"> شروط الخدمة وسياسة الملكية الفكرية (DMCA) وإخلاء المسؤولية | ستريم ماستر برو </h1> </header> <article class="prose prose-invert max-w-none prose-headings:font-black prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white">
+<p>تُشكّل هذه الوثيقة القانونية اتفاقية ملزمة قانوناً بين المستخدم ومنصة <strong>ستريم ماستر برو (Stream Master Pro)</strong>، وتحدّد سياسة حقوق الطبع والنشر (DMCA)، وشروط الخدمة (ToS)، وإخلاء المسؤولية القانونية، لضمان الامتثال للقوانين واللوائح المعمول بها في مجال الملكية الفكرية والإعلام الرقمي.</p>
+
+<hr/>
+
+<h2 id="أولا-سياسة-حقوق-النشر-والملكية-الفكرية-dmca">أولاً: سياسة حقوق النشر والملكية الفكرية (DMCA Policy)</h2>
+
+<h3 id="1-طبيعة-الخدمة-ومبدأ-الوسيط-التقني">1. طبيعة الخدمة ومبدأ "الوسيط التقني" (Safe Harbor)</h3>
+<p>تحترم منصة <strong>ستريم ماستر برو (Stream Master Pro)</strong> حقوق الملكية الفكرية للآخرين وتلتزم بأحكام قانون الألفية للملكية الرقمية (DMCA) وكافة القوانين والاتفاقيات الدولية المعمول بها في مجال حقوق الطبع والنشر. وبموجب هذه السياسة، تقر وتؤكد المنصة بشكل قاطع لا لبس فيه على ما يلي:</p>
 <ul>
-<li>قرأت هذه الشروط وفهمتها.</li>
-<li>توافق على الالتزام بها.</li>
-<li>تبلغ 18 سنة أو أكثر.</li>
+<li><strong>عدم الاستضافة أو البث المباشر:</strong> لا يقوم موقع <strong>ستريم ماستر برو</strong> باستضافة، أو تخزين، أو رفع، أو إنتاج، أو إعادة بث أي ملفات وسائط مرئية أو مسموعة، أو قنوات تلفزيونية، أو تدفقات فيديو (Media Streams) على خوادمه الخاصة (Servers) بأي شكل من الأشكال.</li>
+<li><strong>دور الوسيط التقني:</strong> يقتصر دور <strong>ستريم ماستر برو</strong> على العمل كـ <strong>"وسيط تقني" (Technical Intermediary)</strong> ودليل فهرسة تقني يربط المستخدمين بخوادم أو روابط مملوكة ومدارة بالكامل من قِبل أطراف ثالثة مستقلة عبر شبكة الإنترنت العامة، بالإضافة إلى تقديم أدلة الإعداد التقني وروابط الإحالة إلى المنصات الرسمية عبر صفحة <a href="/watch-legal.html">المشاهدة القانونية</a>.</li>
+<li><strong>غياب الرقابة المسبقة:</strong> لا يملك <strong>ستريم ماستر برو</strong> أي سيطرة فعلية أو تقنية أو تحريرية على المحتوى الموجود على خوادم الأطراف الثالثة، ولا يملك صلاحية تعديل أو حذف المحتوى من مصادره الأصلية، وإنما تقتصر صلاحيته التقنية على إزالة أو تعطيل الروابط الخارجية المشار إليها عبر منصته متى ثبت انتهاكها لحقوق الملكية الفكرية.</li>
 </ul>
-<h2 id="2-الخدمة-المقدمة">2. الخدمة المقدمة</h2>
-<p>نقدّم خدمة <strong>IPTV (Internet Protocol Television)</strong> تشمل:</p>
+
+<h3 id="2-إجراءات-الإبلاغ-عن-انتهاكات-حقوق-النشر">2. إجراءات الإبلاغ عن انتهاكات حقوق النشر (DMCA Takedown Notice)</h3>
+<p>إذا كنت مالكاً لحقوق طبع ونشر (أو مفوضاً قانونياً بالتصرف نيابةً عن المالك) وتعتقد بحسن نية أن أي رابط أو عنصر متاح عبر <strong>ستريم ماستر برو</strong> يشير إلى محتوى ينتهك حقوق الملكية الفكرية الخاصة بك، يرجى إرسال إشعار رسمي مكتوب بانتهاك حقوق النشر (DMCA Notice) يتضمن البيانات الإلزامية التالية:</p>
+<ol>
+<li><strong>تحديد المصنف المحمي:</strong> وصف واضح ودقيق للعمل أو المصنف المحمي بحقوق الطبع والنشر الذي تدعي أنه تم انتهاكه.</li>
+<li><strong>تحديد موقع الرابط المنتهِك:</strong> تزويدنا بالرابط الإلكتروني الدقيق (URL) أو المعرّف التقني المحدد داخل موقع <strong>ستريم ماستر برو</strong> ليتمكن فريقنا التقني من تحديده بدقة.</li>
+<li><strong>إثبات الملكية أو التفويض:</strong> تقديم مستند رسمي يثبت ملكيتك للحقوق الفكرية أو تفويضك القانوني بالتصرف نيابةً عن المالك الحقيقي للحقوق.</li>
+<li><strong>بيانات التواصل الرسمية:</strong> الاسم الكامل، المسمى الوظيفي، اسم الشركة أو المؤسسة (إن وجد)، العنوان البريدي، رقم الهاتف، وعنوان بريد إلكتروني رسمي للتواصل.</li>
+<li><strong>إقرار حسن النية:</strong> عبارة صريحة تنص على أنك <em>"تعتقد بحسن نية أن استخدام المادة بالطريقة المشكو منها غير مصرح به من قِبل مالك حقوق النشر أو وكيله القانوني أو بموجب القانون"</em>.</li>
+<li><strong>إقرار صحة البيانات تحت طائلة المسؤولية:</strong> عبارة تنص على أن <em>"المعلومات الواردة في هذا الإشعار دقيقة وصحيحة، وتحت طائلة عقوبة الحنث باليمين، فإن المشتكي مفوض بالتصرف نيابةً عن مالك الحق الحصري المزعوم انتهاكه"</em>.</li>
+<li><strong>التوقيع القانوني:</strong> توقيع إلكتروني أو خطي للشخص المفوض بالتصرف نيابةً عن مالك حقوق النشر.</li>
+</ol>
+
+<h3 id="3-قناة-التواصل-وآلية-الاستجابة-السريعة">3. قناة التواصل وآلية الاستجابة السريعة</h3>
+<p>تُرسل جميع إشعارات انتهاك حقوق النشر حصرياً إلى البريد الإلكتروني المخصص للامتثال القانوني:</p>
 <ul>
-<li>بث القنوات التلفزيونية الحية.</li>
-<li>مكتبة VOD (أفلام ومسلسلات).</li>
-<li>خدمة Catch-up لمشاهدة البرامج السابقة.</li>
+<li>📧 <strong>البريد الإلكتروني القانوني (DMCA):</strong> <a href="mailto:support@streammasterstore.com">support@streammasterstore.com</a></li>
 </ul>
-<h2 id="3-الاستخدام-الشخصي">3. الاستخدام الشخصي</h2>
-<p>اشتراكك <strong>شخصي</strong> ولا يجوز:</p>
+<p>يلتزم <strong>ستريم ماستر برو</strong> بمراجعة جميع الإشعارات المستوفية للشروط القانونية أعلاه، والتعامل معها بأقصى سرعة ممكنة، وحذف أو تعطيل الوصول إلى الروابط محل الشكوى خلال مدة تتراوح بين <strong>24 إلى 72 ساعة عمل</strong> من تاريخ استلام الإشعار الصحيح، مع الاحتفاظ بالحق الكامل في إنهاء حسابات المستخدمين المكررين للانتهاكات دون إشعار مسبق.</p>
+
+<hr/>
+
+<h2 id="ثانيا-شروط-الخدمة-tos">ثانياً: شروط الخدمة (Terms of Service - ToS)</h2>
+
+<h3 id="1-قبول-الشروط-والأهلية-القانونية">1. قبول الشروط والأهلية القانونية</h3>
+<p>إن وصولك إلى موقع <strong>ستريم ماستر برو</strong> أو استخدامك لأي من خدماته أو اشتراكاته يُعد بمثابة إقرار صريح وموافقة قانونية ملزمة من طرفك على الالتزام بكافة بنود "شروط الخدمة" هذه. إذا كنت لا توافق على أي بند من هذه الشروط، فيجب عليك التوقف فوراً عن استخدام الموقع والخدمة. ويشترط للاستفادة من خدمات الموقع أن لا يقل عمر المستخدم عن <strong>18 عاماً</strong> (أو سن الرشد القانوني في دولته).</p>
+
+<h3 id="2-مسؤولية-الحساب-وأمان-البيانات">2. مسؤولية الحساب وأمان البيانات</h3>
 <ul>
-<li>❌ مايستارته مع أشخاص خارج أسرتك.</li>
-<li>❌ بيعه أو تأجيره لأطراف أخرى.</li>
-<li>❌ استخدامه لأغراض تجارية (مقاهي، فنادق، إلخ) بدون اتفاق منفصل.</li>
-<li>❌ إعادة بثه أو تسجيلة ونشره.</li>
+<li><strong>سرية بيانات الدخول:</strong> المستخدم هو المسؤول الوحيد والكامل عن الحفاظ على سرية بيانات حسابه (اسم المستخدم، كلمة المرور، رموز التفعيل، أو روابط الإعداد التقنية الخاصة به).</li>
+<li><strong>المسؤولية عن الأنشطة:</strong> يتحمل صاحب الحساب المسؤولية القانونية والمالية الكاملة عن كافة الأنشطة التي تتم من خلال حسابه، سواء تمت بعلمه أو بدون علمه.</li>
+<li><strong>الاستخدام الفردي المقيد:</strong> يُمنح الاشتراك للاستخدام الشخصي الفردي فقط وفق عدد الأجهزة المسموح بها في الباقة المختارة. يُمنع منعاً باتاً مشاركة بيانات الحساب مع أطراف أخرى أو تشغيل الاشتراك على عدة أجهزة من عناوين اتصال (IP) مختلفة في وقت واحد، ما لم تنص الباقة صراحةً على ذلك.</li>
 </ul>
-<h2 id="4-الدفع-والاشتراك">4. الدفع والاشتراك</h2>
+
+<h3 id="3-حظر-الاستخدام-التجاري-وإعادة-التوزيع">3. حظر الاستخدام التجاري وإعادة التوزيع (بند صارم)</h3>
+<p>تُمنح الخدمة للمستخدم بموجب ترخيص محدود، غير حصري، غير قابل للتحويل، وقابل للإلغاء، ومخصص <strong>للاستخدام الشخصي والمنزلي غير التجاري فقط</strong>. وبناءً عليه، يُحظر على المستخدم بشكل قاطع القيام بأي مما يلي:</p>
 <ul>
-<li>الأسعار بالريال السعودي (SAR) وتشمل ضريبة القيمة المضافة حيث ينطبق.</li>
-<li>الدفع عبر القنوات المعتمدة فقط (تحويل بنكي، STC Pay، مدى، Apple Pay).</li>
-<li>الاشتراك يبدأ من لحظة التفعيل (إصدار الكود).</li>
-<li>لا يتم تجديد الاشتراك تلقائيًا — يجب تجديده يدويًا.</li>
+<li>❌ <strong>إعادة البث أو التوزيع (Re-streaming / Redistribution):</strong> نسخ، أو إعادة بث، أو إعادة توجيه، أو مشاركة، أو تسجيل، أو توزيع أي جزء من الخدمة أو الروابط التقنية عبر أي شبكة عامة أو خاصة.</li>
+<li>❌ <strong>الاستغلال التجاري والعرض العام:</strong> بيع، أو تأجير، أو ترخيص الخدمة من الباطن، أو عرضها في الأماكن العامة أو التجارية (مثل المقاهي، المطاعم، الفنادق، النوادي، الاستراحات التجارية، أو التجمعات العامة).</li>
+<li>❌ <strong>التلاعب التقني والهندسة العكسية:</strong> محاولة إجراء هندسة عكسية، أو فحص الخوادم، أو استخراج الروابط بطرق آلية (Scraping)، أو التحايل على أنظمة الحماية والتشفير الخاصة بالموقع.</li>
 </ul>
-<h2 id="5-الاسترداد-والإلغاء">5. الاسترداد والإلغاء</h2>
+<blockquote>
+<p><strong>⚠️ جزاء المخالفة الصارم:</strong> في حال رصد أي انتهاك لهذا البند (سواء عبر مشاركة الحساب أو إعادة البث أو الاستخدام التجاري)، يحتفظ <strong>ستريم ماستر برو</strong> بالحق المطلق في <strong>الحظر الفوري والنهائي للحساب وإلغاء الاشتراك دون سابق إنذار ودون أي حق للمستخدم في المطالبة باسترداد أي مبالغ مدفوعة</strong>، مع الاحتفاظ بالحق في اتخاذ الإجراءات القانونية والمطالبة بالتعويض عن الأضرار.</p>
+</blockquote>
+
+<h3 id="4-شروط-الدفع-والاشتراكات-والتعديلات">4. شروط الدفع والاشتراكات والتعديلات</h3>
 <ul>
-<li>يحق لك طلب <strong>استرداد كامل</strong> خلال <strong>7 أيام</strong> من تاريخ الشراء إذا لم تستخدم الخدمة.</li>
-<li>بعد استخدام الخدمة أو انقضاء 7 أيام، لا يحق الاسترداد إلا في حالات خاصة يقدّرها فريق الدعم.</li>
+<li>تُدفع رسوم الاشتراك مقدماً وفق الباقة الزمنية التي يختارها المستخدم عبر وسائل الدفع المعتمدة.</li>
+<li>يتحمل المستخدم مسؤولية تقديم بيانات دفع صحيحة ومشروعة، ويقر بأنه المالك الشرعي أو المفوض باستخدام وسيلة الدفع.</li>
+<li>تبدأ مدة الاشتراك من لحظة إصدار وتسليم بيانات التفعيل للمستخدم.</li>
+<li>يحتفظ <strong>ستريم ماستر برو</strong> بالحق في تعديل أسعار الباقات أو ميزات الخدمة أو شروط الاستخدام في أي وقت، على أن تسري التعديلات السعرية على فترات التجديد اللاحقة وليس على الاشتراكات السارية التي تم دفعها بالفعل.</li>
 </ul>
-<h2 id="6-إخلاء-المسؤولية">6. إخلاء المسؤولية</h2>
-<p><strong>مهم</strong>: الخدمة تعتمد على محتوى طرف ثالث (قنوات تلفزيونية، مزودي محتوى). لا نضمن:</p>
+
+<hr/>
+
+<h2 id="ثالثا-إخلاء-المسؤولية-القانونية">ثالثاً: إخلاء المسؤولية القانونية (Legal Disclaimer)</h2>
+
+<h3 id="1-تقديم-الخدمة-كما-هي">1. تقديم الخدمة "كما هي" (AS IS &amp; AS AVAILABLE)</h3>
+<p>يتم توفير خدمات <strong>ستريم ماستر برو</strong> على أساس <strong>"كما هي" (As Is)</strong> و<strong>"حسب توفرها" (As Available)</strong> دون أي ضمانات من أي نوع، سواء كانت صريحة أو ضمنية، بما في ذلك — على سبيل المثال لا الحصر — ضمانات الجودة المطلقة، أو الملاءمة لغرض معين، أو التوفر المستمر دون انقطاع أو أخطاء تقنية.</p>
+
+<h3 id="2-عدم-المسؤولية-عن-محتوى-وخوادم-الأطراف-الثالثة">2. عدم المسؤولية عن محتوى وخوادم الأطراف الثالثة</h3>
+<p>يُخلي موقع <strong>ستريم ماستر برو</strong> ومالكوه وإدارته ومشغلوه مسؤوليتهم القانونية الكاملة عن:</p>
 <ul>
-<li>استمرار توفر جميع القنوات بنفس الجودة.</li>
-<li>خلو المحتوى من أي قيود قانونية في بلدك.</li>
-<li>دقة المعلومات الواردة في القنوات.</li>
+<li><strong>طبيعة المحتوى الخارجي:</strong> دقة، أو شرعية، أو جودة، أو ملائمة، أو محتوى أي قنوات أو وسائط أو روابط تُدار أو تُبث من قِبل خوادم الأطراف الثالثة؛ فالموقع لا يتحكم في هذا المحتوى ولا يصادق عليه ولا يتحمل أي تبعات قانونية أو مدنية أو جنائية ناشئة عن مشاهدته.</li>
+<li><strong>التغييرات المفاجئة في المصادر:</strong> توقف أو حذف أو تحديث أو تغيير أي قناة أو رابط أو محتوى من قِبل المصدر الأصلي الخارجي في أي وقت ودون إشعار مسبق.</li>
+<li><strong>مسؤولية الامتثال للقوانين المحلية:</strong> تقع على عاتق المستخدم وحده المسؤولية الكاملة عن التحقق من مدى توافق استخدامه للخدمة والمحتوى الذي يختار الوصول إليه مع القوانين واللوائح المحلية السارية في بلده أو منطقته الجغرافية.</li>
+<li><strong>العلامات التجارية:</strong> جميع أسماء وشعارات القنوات والمنصات المذكورة في الموقع هي علامات تجارية مسجلة مملوكة لأصحابها الشرعيين، ويقتصر ذكرها على أغراض التعريف الوصفي أو الإحالة إلى مصادرها الرسمية فقط دون ادعاء أي ملكية أو شراكة.</li>
 </ul>
-<p><strong>المشترك هو المسؤول الوحيد</strong> عن المحتوى الذي يختار مشاهدته وعن الامتثال للقوانين المحلية في بلده.</p>
-<h2 id="7-انقطاع-الخدمة">7. انقطاع الخدمة</h2>
-<p>قد تحدث انقطاعات بسبب:</p>
+
+<h3 id="3-الانقطاعات-التقنية-والقوة-القاهرة">3. الانقطاعات التقنية والقوة القاهرة</h3>
+<p>لا يتحمل <strong>ستريم ماستر برو</strong> أي مسؤولية قانونية أو التزام بالتعويض المالي عن أي توقف مؤقت أو دائم، أو تقطيع (Buffering)، أو بطء في الخدمة ناتج عن أي من الأسباب الخارجة عن الإرادة التالية:</p>
 <ul>
-<li>أعمال صيانة مبرمجة (نُعلن عنها مسبقًا).</li>
-<li>أعطال تقنية خارجة عن إرادتنا.</li>
-<li>قوة قاهرة.</li>
+<li>أعمال الصيانة الدورية أو التحديثات الطارئة على الأنظمة التقنية.</li>
+<li>أعطال خوادم المصادر الخارجية (Third-Party Servers) أو توقفها عن العمل من المصدر.</li>
+<li>ضعف أو عدم استقرار سرعة الإنترنت لدى المستخدم، أو عدم كفاءة أجهزته أو تطبيقات التشغيل المستخدمة من طرفه.</li>
+<li>الحجب التقني أو القيود المفروضة من قِبل مزودي خدمات الإنترنت (ISPs) أو الجهات التنظيمية في دولة المستخدم.</li>
+<li>ظروف القوة القاهرة الخارجة عن السيطرة، بما في ذلك الهجمات السيبرانية (مثل هجمات DDoS)، أو أعطال شبكات الاتصالات ومراكز البيانات العالمية، أو الكوارث الطبيعية.</li>
 </ul>
-<p>في حال الانقطاع الطارئ، يحق للمشترك طلب <strong>تمديد الاشتراك</strong> بمدة مساوية لمدة الانقطاع.</p>
-<h2 id="8-إنهاء-الخدمة">8. إنهاء الخدمة</h2>
-<p>نحتفظ بحق <strong>إيقاف الخدمة</strong> فورًا في حالات:</p>
+
+<h3 id="4-تحديد-المسؤولية-القانونية">4. تحديد المسؤولية (Limitation of Liability)</h3>
+<p>إلى أقصى حد يسمح به القانون المعمول به، لن يكون <strong>ستريم ماستر برو</strong> مسؤولاً في أي حال من الأحوال عن أي أضرار مباشرة، أو غير مباشرة، أو عرضية، أو تبعية، أو خاصة، أو خسائر في البيانات أو الأرباح تنشأ عن استخدام الخدمة أو عدم القدرة على استخدامها. وفي جميع الأحوال، لا تتجاوز المسؤولية المالية القصوى للموقع (إن ثبتت قضاءً) قيمة المبلغ الفعلي الذي دفعه المستخدم للموقع خلال آخر فترة اشتراك شهرية.</p>
+
+<hr/>
+
+<h2 id="رابعا-السياسات-المكملة-والتواصل-القانوني">رابعاً: السياسات المكمّلة والتواصل القانوني</h2>
+<p>تُقرأ هذه الوثيقة جنباً إلى جنب مع السياسات الرسمية المكملة لها على موقعنا:</p>
 <ul>
-<li>انتهاك شروط الاستخدام.</li>
-<li>إساءة استخدام الدعم الفني.</li>
-<li>محاولة اختراق السيرفر أو التلاعب بالخدمة.</li>
+<li>🔒 <a href="/privacy/">سياسة الخصوصية وأمان الدفع</a></li>
+<li>💳 <a href="/refund/">سياسة إلغاء الاشتراك واسترداد الأموال</a></li>
+<li>📺 <a href="/watch-legal.html">دليل المشاهدة القانونية والاشتراكات الرسمية</a></li>
 </ul>
-<h2 id="9-الخصوصية">9. الخصوصية</h2>
-<p>نلتزم بـ <a href="/privacy/">سياسة الخصوصية</a> الخاصة بنا. باستخدامك للخدمة، فأنت توافق على ممارسات الخصوصية المذكورة فيها.</p>
-<h2 id="10-التعديلات">10. التعديلات</h2>
-<p>نحتفظ بحق تعديل هذه الشروط في أي وقت. سيتم إبلاغ المشتركين بالتغييرات الجوهرية عبر البريد الإلكتروني أو إشعارات التطبيق.</p>
-<h2 id="11-القانون-المعمول-به">11. القانون المعمول به</h2>
-<p>تخضع هذه الشروط لـ <strong>قوانين المملكة العربية السعودية</strong>، وأي نزاع يُحل أمام محاكم <strong>الرياض</strong>.</p>
-<h2 id="12-التواصل">12. التواصل</h2>
-<p>لأي استفسار عن هذه الشروط:</p>
+<p>لأي استفسارات قانونية، أو إشعارات تتعلق بحقوق الملكية الفكرية (DMCA)، يرجى التواصل معنا عبر القنوات الرسمية التالية:</p>
 <ul>
-<li>📧 البريد الإلكتروني: <a href="mailto:support@streammasterstore.com">support@streammasterstore.com</a></li>
-<li>📱 WhatsApp: <a href="https://wa.me/201098950879">201098950879+</a></li>
+<li>📧 <strong>البريد الإلكتروني الرسمي:</strong> <a href="mailto:support@streammasterstore.com">support@streammasterstore.com</a></li>
+<li>📱 <strong>الدعم الفني عبر واتساب:</strong> <a href="https://wa.me/201098950879">+201098950879</a></li>
 </ul>
 <hr/>
-<p><em>آخر تحديث: يونيو 2026</em></p> </article> </div> </section> </main> <footer class="relative z-10 mt-20 border-t border-white/5 bg-brand-bg-soft"> <div class="container-app section"> <div class="grid gap-12 lg:grid-cols-4"> <div class="lg:col-span-1"> <a class="mb-4 flex items-center gap-3" href="/"> <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-red to-red-700 shadow-lg shadow-red-500/30"> <svg class="h-7 w-7" fill="white" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M8 5v14l11-7z"></path> </svg> </div> <div class="flex flex-col"> <span class="text-lg font-black text-white">ستريم ماستر برو</span> <span class="text-xs text-gray-400">Stream Master Pro</span> </div> </a> <p class="mb-6 text-sm leading-relaxed text-gray-400"> افضل اشتراك IPTV بدون تقطيع في السعودية والخليج - ثبات 99.9% </p> <div class="flex gap-2"> <a aria-label="twitter" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://twitter.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="instagram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://instagram.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> i </span> </a><a aria-label="telegram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://t.me/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="youtube" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://youtube.com/@streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> y </span> </a> </div> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المتجر</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/store/"> كل الباقات </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/nova/"> سيرفر نوفا </a> </li><li>  </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/moka/"> سيرفر موكا </a> </li><li> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المساعدة</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/faq/"> الأسئلة الشائعة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/blog/"> المدوّنة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/status/"> حالة السيرفرات </a> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">قانوني</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/terms/"> شروط الاستخدام </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/privacy/"> سياسة الخصوصية </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/refund/"> سياسة الاسترداد </a> </li> </ul> <div class="mt-6 space-y-2"> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white" href="mailto:support@streammasterstore.com"> <span>📧</span> <span dir="ltr">support@streammasterstore.com</span> </a> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-green-400" href="https://wa.me/201098950879" rel="noopener noreferrer" target="_blank"> <span>💬</span> <span dir="ltr">+201098950879</span> </a> </div> </div> </div> <div class="mt-12 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80"> <strong class="block text-amber-300">⚠️ إخلاء مسؤولية:</strong>
+<p><em>تاريخ آخر تحديث: أكتوبر 2026</em></p> </article> </div> </section> </main> <footer class="relative z-10 mt-20 border-t border-white/5 bg-brand-bg-soft"> <div class="container-app section"> <div class="grid gap-12 lg:grid-cols-4"> <div class="lg:col-span-1"> <a class="mb-4 flex items-center gap-3" href="/"> <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-red to-red-700 shadow-lg shadow-red-500/30"> <svg class="h-7 w-7" fill="white" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path d="M8 5v14l11-7z"></path> </svg> </div> <div class="flex flex-col"> <span class="text-lg font-black text-white">ستريم ماستر برو</span> <span class="text-xs text-gray-400">Stream Master Pro</span> </div> </a> <p class="mb-6 text-sm leading-relaxed text-gray-400"> افضل اشتراك IPTV بدون تقطيع في السعودية والخليج - ثبات 99.9% </p> <div class="flex gap-2"> <a aria-label="twitter" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://twitter.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="instagram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://instagram.com/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> i </span> </a><a aria-label="telegram" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://t.me/streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> t </span> </a><a aria-label="youtube" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-brand-red/50 hover:bg-brand-red/10 hover:text-brand-red-light" href="https://youtube.com/@streammasterpro" rel="noopener noreferrer" target="_blank"> <span class="text-xs font-black uppercase"> y </span> </a> </div> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المتجر</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/store/"> كل الباقات </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/nova/"> سيرفر نوفا </a> </li><li>  </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/servers/moka/"> سيرفر موكا </a> </li><li> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">المساعدة</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/faq/"> الأسئلة الشائعة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/blog/"> المدوّنة </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/status/"> حالة السيرفرات </a> </li> </ul> </div> <div> <h3 class="mb-4 text-sm font-black text-white">قانوني</h3> <ul class="space-y-3"> <li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/terms/"> شروط الاستخدام </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/privacy/"> سياسة الخصوصية </a> </li><li> <a class="text-sm text-gray-400 transition-colors hover:text-white" href="/refund/"> سياسة الاسترداد </a> </li> </ul> <div class="mt-6 space-y-2"> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white" href="mailto:support@streammasterstore.com"> <span>📧</span> <span dir="ltr">support@streammasterstore.com</span> </a> <a class="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-green-400" href="https://wa.me/201098950879" rel="noopener noreferrer" target="_blank"> <span>💬</span> <span dir="ltr">+201098950879</span> </a> </div> </div> </div> <div class="mt-12 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80"> <strong class="block text-amber-300">⚠️ إخلاء مسؤولية:</strong>
 الخدمة تعتمد على محتوى أطراف ثالثة ومحتوى مرخّص. المشترك هو المسؤول الوحيد عن
       المحتوى الذي يختار مشاهدته والامتثال لقوانين بلده. الموقع لا يوفّر ولا يشجّع على
       بث محتوى مقرصن.

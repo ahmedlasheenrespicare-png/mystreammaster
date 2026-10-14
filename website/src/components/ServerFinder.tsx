@@ -33,8 +33,8 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
       title: "ما هو المحتوى الأكثر أهمية بالنسبة لك؟",
       subtitle: "سنخصص لك السيرفر الذي يمتلك أعلى جودة في تخصصك",
       options: [
-        { label: "مباريات كرة القدم والدوريات الكبرى (beIN & SSC)", value: "sports", icon: "⚽" },
-        { label: "أفلام السينما ومسلسلات نتفليكس وشاهد VIP", value: "movies", icon: "🎬" },
+        { label: "مباريات كرة القدم والدوريات والبطولات الكبرى", value: "sports", icon: "⚽" },
+        { label: "أفلام السينما والمسلسلات العربية والعالمية", value: "movies", icon: "🎬" },
         { label: "توازن شامل بين الرياضة والأفلام وقنوات العائلة", value: "all", icon: "🌟" },
       ],
     },

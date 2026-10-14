@@ -130,6 +130,10 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
               </div>
             </section>
           )}
+              {/* تنبيه قانوني للمقالات */}
+              <div className="mt-10 rounded-2xl border border-black/10 bg-white px-5 py-4 text-[13px] leading-[1.85] text-black/60">
+                <strong className="text-black/80">تنبيه تقني وقانوني:</strong> المقالات المنشورة في هذا القسم هي لأغراض الشرح التقني وإرشادات إعداد الأجهزة فقط. جميع السيرفرات المذكورة تُدار من قِبل مزوديها الخارجيين المستقلين، ولا يستضيف الموقع أو يبث أي محتوى مرئي على خوادمه الخاصة.
+              </div>
         </article>
 
         {/* صندوق تحويل — للأدلة التعريفية صندوق محايد بدل صندوق البيع */}
@@ -155,11 +159,11 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           <div className="absolute -top-24 -end-24 w-[300px] h-[300px] bg-[#2b4eff]/40 blur-[110px] rounded-full" />
           <div className="relative">
             <h2 className="font-display font-black text-[22px] md:text-[28px] tracking-tight leading-snug">
-              {plan ? `جاهز لتجربة ${plan.serverName.split("(")[0].trim()}؟` : "جاهز لتجربة السيرفر على جهازك؟"}
+              {plan ? `جاهز لتجربة ${plan.serverName.split("(")[0].trim()}؟` : "جاهز لتجربة سيرفر المزود على جهازك؟"}
             </h2>
             <p className="mt-3 text-white/60 text-[14.5px] font-medium leading-relaxed max-w-[560px]">
-              اطلب تجربة مجانية وشاهد القنوات الرياضية والترفيهية بجودة السيرفر الحقيقية قبل أن تدفع —
-              التفعيل فوري خلال دقائق.
+              اطلب تجربة مجانية صادرة من المزود لاختبار استقرار الاتصال وتوافق التطبيق على جهازك قبل الاشتراك —
+              التفعيل والدعم الفني فوري خلال دقائق.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a

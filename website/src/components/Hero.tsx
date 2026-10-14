@@ -25,10 +25,10 @@ const STREAM_SLIDES = [
     kicker: "تغطية كأس العالم 2026 والدوريات الكبرى",
     img: "images/hero/slide-sports.jpg",
     badge: "بث مباشر 4K @ 50fps",
-    channelsTag: "beIN Sports 1-9 • SSC 1-5 • Alkass",
+    channelsTag: "القنوات الرياضية 4K • الدوريات العالمية",
     channel: {
-      switchLabel: "⚽ beIN Sports 4K",
-      name: "beIN Sports 1 Premium",
+      switchLabel: "⚽ رياضة 4K",
+      name: "البث الرياضي المباشر 4K",
       event: "دوري أبطال أوروبا — ريال مدريد × مانشستر سيتي",
       liveTag: "مباشر 4K",
       quality: "4K @ 50fps HDR",
@@ -40,10 +40,10 @@ const STREAM_SLIDES = [
     kicker: "مكتبة سينمائية عملاقة VOD",
     img: "images/hero/slide-cinema.jpg",
     badge: "مكتبة ترفيهية متجددة يومياً",
-    channelsTag: "Netflix Originals • Shahid VIP • OSN • HBO",
+    channelsTag: "الأفلام السينمائية • المسلسلات المترجمة • الوثائقيات",
     channel: {
       switchLabel: "🎬 سينما 4K",
-      name: "Shahid VIP & Netflix Cinema",
+      name: "مكتبة السينما والمسلسلات 4K",
       event: "أحدث الأفلام والمسلسلات الحصرية 2026",
       liveTag: "على الطلب 4K",
       quality: "True 4K UHD",
@@ -114,14 +114,14 @@ function TvMockup({ index }: { index: number }) {
           </p>
           <div className="space-y-1.5">
             {[
-              { n: "beIN Sports 1", live: true },
-              { n: "SSC 1 HD", live: true },
-              { n: "MBC 1 HD", live: false },
-              { n: "Netflix Cinema", live: false },
-              { n: "شاهد VIP", live: false },
-              { n: "OSN Movies", live: false },
-              { n: "SSC 3 HD", live: true },
-              { n: "MBC Drama", live: false },
+              { n: "الرياضية المباشرة 1", live: true },
+              { n: "الرياضية العربية 1 HD", live: true },
+              { n: "القناة العامة 1 HD", live: false },
+              { n: "قناة السينما 4K", live: false },
+              { n: "قناة الدراما العربية", live: false },
+              { n: "قناة الأفلام العالمية", live: false },
+              { n: "الرياضية المباشرة 2 HD", live: true },
+              { n: "قناة المسلسلات HD", live: false },
             ].map((e, i) => (
               <div
                 key={e.n}
@@ -479,8 +479,8 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                   </span>
                 </div>
                 <p className="text-[13.5px] leading-[1.8] text-white/85 font-medium">
-                  سيرفرات نوفا الأصلية وإيستار  مع بث مباشر لقنوات beIN وSSC بدقة 4K
-                  وسيرفرات احتياطية وقت الذروة.
+                  سيرفرات المزودين (نوفا وإيستار وموكا) بدعم تقني كامل وجودة بث تصل إلى 4K
+                  وسيرفرات احتياطية لدى المزود وقت الذروة.
                 </p>
               </div>
               <div className="relative mt-6 flex items-center justify-between gap-3">

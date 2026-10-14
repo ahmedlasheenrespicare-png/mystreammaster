@@ -13,14 +13,14 @@ export default function ServersComparison() {
       moka: "99.9%",
     },
     {
-      feature: "قنوات beIN Sports 4K & 50fps",
+      feature: "البث الرياضي بدقة 4K & 50fps لدى المزود",
       nova: "✓ متاحة بكافة المصادر",
       ultra: "✓ 4K أصلية فائقة Bitrate",
       istar: "✓ متاحة FHD & 4K",
       moka: "FHD & HD فقط",
     },
     {
-      feature: "قنوات SSC الرياضية السعودية",
+      feature: "تغطية البطولات العربية والخليجية لدى المزود",
       nova: "✓ متوفرة كاملة",
       ultra: "✓ متوفرة 4K",
       istar: "✓ متوفرة",

@@ -13,7 +13,8 @@
 ========================================================================== */
 
 import { absolute, BRAND_EN, BRAND_NAME, SITE_URL, WHATSAPP_DISPLAY } from "./config";
-import { AVAILABLE_DURATIONS, FAQS, PRICING_PLANS } from "./data";
+import { AVAILABLE_DURATIONS, EN_HOME_FAQS, EN_PLAN_FAQS, FAQ_SECTIONS, FAQ_SECTIONS_EN, FAQS, PRICING_PLANS, TRIAL_FAQS } from "./data";
+import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 
@@ -27,6 +28,10 @@ export interface SeoMeta {
   ogImage: string;
   ogImageAlt: string;
   jsonLd: Record<string, unknown>[];
+  /** لغة الصفحة — تحكم lang/dir وog:locale وinLanguage */
+  lang: "ar" | "en";
+  /** روابط hreflang للصفحات التجارية ذات النسختين (عربي/إنجليزي) */
+  alternates?: { hreflang: string; href: string }[];
 }
 
 const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
@@ -49,6 +54,12 @@ const OG_BY_ROUTE: Record<string, string> = {
   "store": "store",
   "servers": "servers",
   "faq": "faq",
+  /* النسخة الإنجليزية — تشارك صور نظيراتها العربية */
+  "en": "home",
+  "en/nova": "nova",
+  "en/istar": "istar",
+  "en/moka": "moka",
+  "en/faq": "faq",
   "channels": "channels",
   "matches": "matches",
   "nova": "nova",
@@ -154,6 +165,8 @@ interface WebPageOpts {
   description: string;
   published?: string;
   modified?: string;
+  /** لغة الصفحة (inLanguage) — الافتراضي العربية */
+  lang?: string;
   /** معرّف الكيان الرئيسي في الصفحة (منتج/مقال/أسئلة) إن وُجد */
   mainEntityId?: string;
   /** هل تُرفق قائمة مسار التنقل؟ (الرئيسية هي جذر المسار فلا قائمة لها) */
@@ -174,7 +187,7 @@ function webPageLd(o: WebPageOpts) {
     url: o.canonical,
     name: o.name,
     description: o.description,
-    inLanguage: "ar",
+    inLanguage: o.lang ?? "ar",
     isPartOf: { "@id": WEBSITE_ID },
     datePublished: o.published ?? PAGES_DATE,
     dateModified: o.modified ?? o.published ?? PAGES_DATE,
@@ -205,7 +218,20 @@ function faqLd(canonical: string, faqs: { q: string; a: string }[]) {
 export function getSeo(path: string): SeoMeta {
   const clean = `/${path.replace(/^\/+|\/+$/g, "")}`;
   const routeKey = clean.replace(/^\/|\/$/g, "");
+  /* النسخة الإنجليزية (الصفحات التجارية فقط): لغة الصفحة وروابط hreflang
+     تُحسب من المسار وحده، فتتوارثها كل الفروع التي تنتشر من base */
+  const pair = LOCALE_PAIRS.find((p) => p.ar === clean || p.en === clean);
   const base: SeoMeta = {
+    lang: clean === "/en" || clean.startsWith("/en/") ? "en" : "ar",
+    ...(pair
+      ? {
+          alternates: [
+            { hreflang: "ar", href: absolute(pair.ar.replace(/^\//, "")) },
+            { hreflang: "en", href: absolute(pair.en.replace(/^\//, "")) },
+            { hreflang: "x-default", href: absolute(pair.ar.replace(/^\//, "")) },
+          ],
+        }
+      : {}),
     title: `${BRAND_NAME} | ربط تقني وإعداد مشغلات البث 2026`,
     description:
       "خدمات ربط تقني وإعداد مشغلات البث (M3U / Xtream Codes) على سامسونج وLG وأندرويد وApple TV، مع دليل القنوات المفتوحة وخيارات المشاهدة الرسمية ودعم فني بالعربية.",
@@ -302,7 +328,7 @@ export function getSeo(path: string): SeoMeta {
   if (clean === "/faq") {
     const canonical = absolute("faq");
     const description =
-      "إجابات الأسئلة الشائعة حول التفعيل والربط التقني: استلام بيانات الاشتراك، التجربة المجانية، سرعة الإنترنت المطلوبة، الأجهزة المدعومة، وطرق الدفع والدعم.";
+      "أكثر من 25 إجابة مفصلة عن التفعيل والربط التقني وإعداد المشغلات: استلام بيانات الاشتراك، الدفع وحالات الاسترجاع، الأجهزة المدعومة، والتجديد والترقية بين نوفا وإيستار وموكا.";
     return {
       ...base,
       title: `الأسئلة الشائعة | ${BRAND_NAME}`,
@@ -323,9 +349,135 @@ export function getSeo(path: string): SeoMeta {
           ],
           canonical
         ),
-        faqLd(canonical, FAQS),
+        /* أسئلة أقسام صفحة الأسئلة كلها ظاهرة فعلاً فيها بنفس هذا الترتيب */
+        faqLd(canonical, FAQ_SECTIONS.flatMap((s) => s.faqs)),
       ],
     };
+  }
+
+  /* ===== التجربة المجانية (أسئلتها السبعة ظاهرة كلها في الصفحة) ===== */
+  if (clean === "/trial") {
+    const canonical = absolute("trial");
+    const title = `تجربة IPTV مجانية 6 ساعات | ${BRAND_NAME}`;
+    const description =
+      "اطلب كود فحص وتجربة مجانياً من المزود الخارجي لمدة 6 ساعات: افحص توافق المشغّل مع جهازك وثبات البث وجودة الصورة على اتصالك قبل دفع أي مبلغ، وبدون بطاقة أو التزام.";
+    return {
+      ...base,
+      title,
+      description,
+      canonical,
+      ogImageAlt: `تجربة IPTV مجانية 6 ساعات — ${BRAND_NAME}`,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: title,
+          description,
+          published: "2026-10-15",
+          mainEntityId: `${canonical}#faq`,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "" },
+            { name: "التجربة المجانية", path: "trial" },
+          ],
+          canonical
+        ),
+        /* أسئلة التجربة السبعة ظاهرة كلها في قسم أسئلة الصفحة بنفس الترتيب */
+        faqLd(canonical, TRIAL_FAQS),
+      ],
+    };
+  }
+
+  /* ===== النسخة الإنجليزية — الصفحات التجارية فقط (/en) ===== */
+  if (clean === "/en" || clean.startsWith("/en/")) {
+    const enPlan = PRICING_PLANS.find((p) => clean === `/en/${p.serverCode}`);
+    if (clean === "/en") {
+      const canonical = absolute("en");
+      const title = `Streaming Player Setup & Technical Activation | ${BRAND_EN}`;
+      const description =
+        "Technical activation and player setup for M3U and Xtream Codes on Samsung, LG, Android and Apple TV — with an official viewing guide and technical support.";
+      return {
+        ...base,
+        title,
+        description,
+        canonical,
+        ogImageAlt: `${BRAND_EN} — technical activation and streaming player setup`,
+        jsonLd: [
+          webPageLd({ canonical, name: title, description, lang: "en", published: "2026-10-15", mainEntityId: `${canonical}#faq` }),
+          breadcrumbs([{ name: "Home", path: "en" }], canonical),
+          /* الأسئلة الستة ظاهرة كلها في قسم الأسئلة بالرئيسية الإنجليزية */
+          faqLd(canonical, EN_HOME_FAQS),
+        ],
+      };
+    }
+    if (enPlan) {
+      const canonical = absolute(`en/${enPlan.serverCode}`);
+      const price = enPlan.prices["12"].USD;
+      const title = `${enPlan.en.name} — Technical Activation & Player Setup | ${BRAND_EN}`;
+      const description = `Technical activation & player setup package for the ${enPlan.en.name}: provider-issued subscription data, device setup and technical support — from $${price} per year.`;
+      return {
+        ...base,
+        title,
+        description,
+        canonical,
+        ogImageAlt: `${enPlan.en.name} — technical activation package by ${BRAND_EN}`,
+        jsonLd: [
+          webPageLd({ canonical, name: title, description, lang: "en", published: "2026-10-15", mainEntityId: `${canonical}#product` }),
+          breadcrumbs(
+            [
+              { name: "Home", path: "en" },
+              { name: enPlan.en.name, path: `en/${enPlan.serverCode}` },
+            ],
+            canonical
+          ),
+          {
+            "@type": "Product",
+            "@id": `${canonical}#product`,
+            name: `${enPlan.en.name} — technical activation package`,
+            description: `${enPlan.en.description} The service provided by this website is technical activation, linking and technical support; the server specifications themselves are announced by the independent external provider.`,
+            brand: { "@type": "Brand", name: BRAND_EN },
+            category: "Technical setup and activation service",
+            url: canonical,
+            image: OG_IMAGE,
+            offers: AVAILABLE_DURATIONS.map((months) => ({
+              "@type": "Offer",
+              name: `${Number(months)} months`,
+              price: String(enPlan.prices[months].USD),
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+              url: canonical,
+            })),
+          },
+          /* الأسئلة الأربعة ظاهرة كلها في صفحة السيرفر الإنجليزية */
+          faqLd(canonical, EN_PLAN_FAQS),
+        ],
+      };
+    }
+    if (clean === "/en/faq") {
+      const canonical = absolute("en/faq");
+      const title = `FAQ — Activation, Payment, Devices & Renewals | ${BRAND_EN}`;
+      const description =
+        "Answers in English about technical activation and player setup: receiving your subscription details, payment and refunds, supported devices and switching servers.";
+      return {
+        ...base,
+        title,
+        description,
+        canonical,
+        ogImageAlt: `Frequently asked questions — ${BRAND_EN}`,
+        jsonLd: [
+          webPageLd({ canonical, name: title, description, lang: "en", published: "2026-10-15", mainEntityId: `${canonical}#faq` }),
+          breadcrumbs(
+            [
+              { name: "Home", path: "en" },
+              { name: "FAQ", path: "en/faq" },
+            ],
+            canonical
+          ),
+          /* أسئلة الأقسام الأربعة ظاهرة كلها في الصفحة بنفس هذا الترتيب */
+          faqLd(canonical, FAQ_SECTIONS_EN.flatMap((s) => s.faqs)),
+        ],
+      };
+    }
   }
 
   if (clean === "/matches") {
@@ -684,4 +836,17 @@ export function applySeoToDocument(path: string) {
     document.head.appendChild(link);
   }
   link.href = seo.canonical;
+
+  /* لغة المستند واتجاهه وروابط hreflang تتبع لغة الصفحة الحالية */
+  document.documentElement.lang = seo.lang;
+  document.documentElement.dir = seo.lang === "en" ? "ltr" : "rtl";
+  setMeta('meta[property="og:locale"]', "content", seo.lang === "en" ? "en_US" : "ar_SA");
+  document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
+  for (const alt of seo.alternates ?? []) {
+    const l = document.createElement("link");
+    l.rel = "alternate";
+    l.hreflang = alt.hreflang;
+    l.href = alt.href;
+    document.head.appendChild(l);
+  }
 }

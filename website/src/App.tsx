@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { readCart, saveCart } from "./cart-storage";
 import Pricing from "./components/Pricing";
-import FAQ from "./components/FAQ";
 import ServersComparison from "./components/ServersComparison";
 import Header from "./components/Header";
 import FloatingActions from "./components/FloatingActions";
@@ -19,6 +18,14 @@ import PlanPage from "./pages/PlanPage";
 import BlogIndexPage from "./pages/BlogIndexPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import FaqPage from "./pages/FaqPage";
+import TrialPage from "./pages/TrialPage";
+import EnHomePage from "./pages/EnHomePage";
+import EnPlanPage from "./pages/EnPlanPage";
+import EnFaqPage from "./pages/EnFaqPage";
+import EnHeader from "./components/EnHeader";
+import EnFooter from "./components/EnFooter";
+import { isEnPath } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { PRICING_PLANS, PricingPlan } from "./data";
@@ -81,13 +88,20 @@ export default function App() {
   }, []);
 
   /* ===== توجيه الصفحات ===== */
+  const enPlan = PRICING_PLANS.find((p) => path === `/en/${p.serverCode}`);
   const plan = PRICING_PLANS.find((p) => path === `/${p.serverCode}`);
   const post = BLOG_POSTS.find((p) => path === `/blog/${p.slug}`);
   const leagueLanding = LEAGUE_LANDINGS.find((l) => path === `/matches/${l.slug}`);
   const teamLanding = TEAM_LANDINGS.find((t) => path === `/world-cup-2026/${t.slug}`);
 
   let page;
-  if (path === "/") {
+  if (path === "/en") {
+    page = <EnHomePage />;
+  } else if (enPlan) {
+    page = <EnPlanPage plan={enPlan} />;
+  } else if (path === "/en/faq") {
+    page = <EnFaqPage />;
+  } else if (path === "/") {
     page = (
       <HomePage
         currency={currency}
@@ -101,7 +115,9 @@ export default function App() {
   } else if (path === "/store" || path === "/servers") {
     page = <div className="pt-[140px]"><nav className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">{path === "/store" ? "المتجر" : "السيرفرات والباقات"}</span></nav><h1 className="text-center font-display text-4xl font-black pt-8">باقات ستريم ماستر</h1><Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />{path === "/servers" && <ServersComparison />}</div>;
   } else if (path === "/faq") {
-    page = <div className="pt-[140px]"><nav className="max-w-[860px] mx-auto px-5 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">الأسئلة الشائعة</span></nav><h1 className="sr-only">الأسئلة الشائعة</h1><FAQ /></div>;
+    page = <FaqPage />;
+  } else if (path === "/trial") {
+    page = <TrialPage onOpenTrial={openTrial} />;
   } else if (path === "/cart") {
     page = <section className="pt-[180px] pb-24 px-5 text-center max-w-3xl mx-auto"><p className="text-[#2b4eff] font-bold mb-4">طلب التفعيل التقني يبدأ هنا</p><h1 className="font-display text-5xl font-black">سلة المشتريات</h1><p className="my-6 text-black/60">راجع الباقات المختارة وأكمل طلبك مع فريقنا عبر واتساب.</p><button onClick={openCart} className="rounded-full bg-[#0b0b0f] text-[#d8ff3e] font-bold px-8 py-4">عرض السلة ({cartItems.length})</button><a href="/store/" className="inline-block mx-4 font-bold underline">متابعة التسوق</a></section>;
   } else if (leagueLanding) {
@@ -135,23 +151,27 @@ export default function App() {
   return (
     <div
       className="min-h-screen bg-[#faf9f6] text-[#0b0b0f] flex flex-col font-sans selection:bg-[#0b0b0f] selection:text-[#d8ff3e]"
-      dir="rtl"
+      dir={isEnPath(path) ? "ltr" : "rtl"}
     >
       <ScrollProgress />
       <SmoothScroll />
 
-      <Header
-        currentCurrency={currency}
-        onCurrencyChange={setCurrency}
-        cartCount={cartItems.length}
-        onOpenCart={openCart}
-        onOpenTrial={openTrial}
-      />
+      {isEnPath(path) ? (
+        <EnHeader />
+      ) : (
+        <Header
+          currentCurrency={currency}
+          onCurrencyChange={setCurrency}
+          cartCount={cartItems.length}
+          onOpenCart={openCart}
+          onOpenTrial={openTrial}
+        />
+      )}
 
-      <a href="#main-content" className="skip-link">تخطي إلى المحتوى</a>
+      <a href="#main-content" className="skip-link">{isEnPath(path) ? "Skip to content" : "تخطي إلى المحتوى"}</a>
       <main id="main-content" className="flex-1">{page}</main>
 
-      <Footer onOpenTrial={openTrial} />
+      {isEnPath(path) ? <EnFooter /> : <Footer onOpenTrial={openTrial} />}
       <FloatingActions onOpenTrial={openTrial} />
 
       <TrialModal isOpen={isTrialOpen} onClose={closeTrial} />

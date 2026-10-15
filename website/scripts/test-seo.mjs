@@ -5,7 +5,7 @@
      • <title> فريد (≤80 حرفاً) + meta description فريد (70–175 حرفاً)
      • canonical مطلق يطابق مسار الصفحة + robots = index, follow صراحة
      • og:* وtwitter:* كاملة + og:image:alt وأبعاد الصورة معلنة
-     • lang="ar" dir="rtl" + عنوان h1 واحد فقط
+     • lang="ar" dir="rtl" (أو lang="en" dir="ltr" لصفحات /en الإنجليزية) + h1 واحد فقط
      • JSON-LD صالح: WebPage كامل الحقول + BreadcrumbList مطابق لمسار
        التنقّل الظاهر، وOrganization/WebSite في الرئيسية فقط
      • FAQPage لا يحمل إلا أسئلة ظاهرة فعلاً، وProduct لا يعرض إلا
@@ -124,8 +124,10 @@ test('بيانات <head> كاملة وفريدة لكل صفحة قابلة ل�
     assert.equal(canonical && decodeURIComponent(canonical), urlOf(rel), `${rel}: canonical لا يطابق المسار`);
 
     assert.match(meta(html, 'name', 'robots') || '', /^index, follow/, `${rel}: robots ليست index, follow صراحة`);
-    assert.match(html, /<html[^>]+lang="ar"/, `${rel}: lang ليست ar`);
-    assert.match(html, /<html[^>]+dir="rtl"/, `${rel}: dir ليست rtl`);
+    /* الصفحات الإنجليزية /en: lang="en" dir="ltr" — استثناء صريح باعتماد المالك */
+    const isEnglish = rel.startsWith("en/");
+    assert.match(html, isEnglish ? /<html[^>]+lang="en"/ : /<html[^>]+lang="ar"/, `${rel}: lang غير مطابقة للغة الصفحة`);
+    assert.match(html, isEnglish ? /<html[^>]+dir="ltr"/ : /<html[^>]+dir="rtl"/, `${rel}: dir غير مطابقة للغة الصفحة`);
 
     for (const [attr, key] of [
       ['property', 'og:title'], ['property', 'og:description'], ['property', 'og:url'],
@@ -169,7 +171,7 @@ test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المن�
       assert.ok(webPage.breadcrumb, `${rel}: WebPage لا يشير إلى breadcrumb`);
       const items = [...crumb.itemListElement].sort((a, b) => a.position - b.position);
       assert.equal(decodeURIComponent(items.at(-1).item), urlOf(rel), `${rel}: آخر عنصر في المسار لا يطابق الصفحة`);
-      const nav = html.match(/<nav[^>]+aria-label=["'][^"']*مسار[^"']*["'][^>]*>([\s\S]*?)<\/nav>/i);
+      const nav = html.match(/<nav[^>]+aria-label=["'][^"']*(?:مسار|Breadcrumb)[^"']*["'][^>]*>([\s\S]*?)<\/nav>/i);
       assert.ok(nav, `${rel}: لا يوجد مسار تنقّل ظاهر يطابق BreadcrumbList`);
       const navText = visibleText(nav[1]);
       for (const item of items) {
@@ -186,7 +188,7 @@ test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المن�
     }
     /* وأي منتج بأسعار يجب أن يعرض سعراً ظاهراً فعلاً */
     for (const node of nodes.filter((n) => typesOf(n).includes('Product'))) {
-      if (node.offers) assert.match(text, /\d+([.,]\d+)?\s*(ر\.س|\$|دولار|ج\.م|د\.إ)/, `${rel}: Product بلا سعر ظاهر`);
+      if (node.offers) assert.match(text, /(\d+([.,]\d+)?\s*(ر\.س|\$|دولار|ج\.م|د\.إ)|\$\s*\d+([.,]\d+)?)/, `${rel}: Product بلا سعر ظاهر`);
     }
   }
 });

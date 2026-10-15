@@ -24,6 +24,24 @@ Header always set Cross-Origin-Opener-Policy "same-origin"
 <FilesMatch "^(scoreboard\.php)$">
   Header always set X-Robots-Tag "noindex, nofollow"
 </FilesMatch>
+
+# 1.1) وسيط التضمين (مشغّل البث الخاص في /player.html)
+#      الوثيقة المُضمَّنة لا تخضع لسياسة الموقع ولا لقيود التأطير (وإلا حُجب
+#      المشغّل داخل الإطار) — embed.php نفسه يرسل سياسة أمان خاصة به عبر
+#      ترويسة Content-Security-Policy ووسم <meta> داخل المستند.
+<FilesMatch "^embed\.php$">
+  Header unset Content-Security-Policy
+  Header unset X-Frame-Options
+  Header unset Cross-Origin-Opener-Policy
+  Header unset Strict-Transport-Security
+  Header always unset Content-Security-Policy
+  Header always unset X-Frame-Options
+  Header always unset Cross-Origin-Opener-Policy
+  Header always set Cache-Control "no-store"
+  Header always set X-Robots-Tag "noindex, nofollow"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "no-referrer"
+</FilesMatch>
 </IfModule>
 
 # 2) تفعيل الضغط والتخزين المؤقت (Hostinger LiteSpeed)
@@ -48,6 +66,11 @@ ExpiresByType application/vnd.apple.mpegurl "access plus 1 hour"
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
+
+# 3.1) مشغّل البث الخاص: /player/<مسار> يمر عبر وسيط التضمين (embed.php)
+#      فيبقى مصدر المشغّل على نفس النطاق (بلا تعديل في CSP ولا رابط نفق ظاهر).
+#      القاعدة قبل فحص وجود الملف حتى لا يُخدَم /player/ كمجلد.
+RewriteRule ^player/(.*)$ embed.php?u=player&p=/$1 [L,QSA]
 
 # لا تعيد توجيه الملفات الموجودة
 RewriteCond %{REQUEST_FILENAME} -f [OR]

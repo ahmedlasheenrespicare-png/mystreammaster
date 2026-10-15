@@ -30,9 +30,27 @@ const DARK_PAGES = new Set([
   'manchester-united-atletico/watch/index.html',
 ]);
 
+/* صفحات تنشر كما هي بلا قالب (لا هيدر ولا فوتر ولا storefront.css): مشغّل
+   البث الخاص يملأ الشاشة، وأي غلاف حوله يكسر ارتفاع الإطار ويضيف تنقّلاً
+   فوق الفيديو. تبقى في website/legacy/ لتُنشر مع بقية الصفحات القديمة، لكنها
+   لا تمر بمسار الغلاف — تُنسخ كاملة مع تنظيف المسافات في آخر الأسطر فقط. */
+const STANDALONE_PAGES = new Set(['player.html']);
+
+async function publishStandalone(file, relative) {
+  const $ = load(await fs.readFile(file, 'utf8'));
+  const destination = path.join(root, relative);
+  await fs.mkdir(path.dirname(destination), { recursive: true });
+  await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));
+}
+
 let count = 0;
 for (const file of await files(path.join(website, 'legacy'))) {
   const relative = path.relative(path.join(website, 'legacy'), file);
+  if (STANDALONE_PAGES.has(relative)) {
+    await publishStandalone(file, relative);
+    count++;
+    continue;
+  }
   const $ = load(await fs.readFile(file, 'utf8'));
   const main = $('main').first();
   const scripts = $('body > script').clone();

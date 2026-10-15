@@ -8,6 +8,9 @@ Disallow: /admin/
 Disallow: /admin-dashboard/
 Disallow: /live-free
 Disallow: /live-free.html
+Disallow: /player.html
+Disallow: /player/
+Disallow: /embed.php
 Disallow: /proxy.php
 Disallow: /search/
 Disallow: /cart/

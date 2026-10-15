@@ -25,6 +25,23 @@ export const HOME_SECTIONS = [
   { id: "faq", label: "الأسئلة الشائعة", desc: "إجابات سريعة", icon: "❓" },
 ];
 
+/**
+ * تصنيفات دليل المشاهدة الرسمية — تُسجَّل هنا حتى تكون روابط الصفحات
+ * الثابتة واضحة ومشتركة بين صفحة القنوات وخريطة الموقع.
+ * sourceCategory يطابق حرفياً التصنيف الظاهر في official-destinations.json.
+ */
+export const CHANNEL_CATEGORY_LINKS = [
+  { slug: "sports", sourceCategory: "رياضة", label: "قنوات الرياضة", desc: "القنوات والمنصات المدرجة في دليل المشاهدة الرسمية", icon: "⚽" },
+  { slug: "news", sourceCategory: "أخبار", label: "القنوات الإخبارية", desc: "مواقع الجهات الإخبارية الرسمية", icon: "📰" },
+  { slug: "movies", sourceCategory: "أفلام", label: "قنوات الأفلام", desc: "قنوات الأفلام وروابط الجهات المالكة", icon: "🎬" },
+  { slug: "entertainment", sourceCategory: "ترفيه", label: "قنوات الترفيه", desc: "جهات الترفيه في دليل المشاهدة الرسمية", icon: "📺" },
+  { slug: "platforms", sourceCategory: "منصات", label: "منصات المشاهدة", desc: "روابط منصات المشاهدة الرسمية", icon: "▶️" },
+  { slug: "documentaries", sourceCategory: "وثائقيات", label: "القنوات الوثائقية", desc: "جهات البرامج الوثائقية وروابطها", icon: "🌍" },
+  { slug: "kids", sourceCategory: "أطفال", label: "قنوات الأطفال", desc: "مواقع الجهات المخصصة للأطفال", icon: "🧒" },
+  { slug: "music", sourceCategory: "موسيقى", label: "القنوات الموسيقية", desc: "جهات الموسيقى وروابط مواقعها", icon: "🎵" },
+  { slug: "religious", sourceCategory: "دينية", label: "القنوات الدينية", desc: "روابط الجهات المصنّفة دينية", icon: "🕌" },
+];
+
 /** صفحات السيرفرات — تُعرض كبطاقات في القائمة المنسدلة */
 export const SERVER_PAGES = [
   { code: "nova", label: "سيرفر نوفا", desc: "الأقوى للمباريات", emoji: "⚽", grad: "from-[#2b4eff] to-[#7c5cff]" },

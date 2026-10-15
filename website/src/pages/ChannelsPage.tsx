@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FEATURED_CHANNELS, getWhatsAppUrl, type ChannelItem } from "../data";
 import { to } from "../config";
+import { CHANNEL_CATEGORY_PAGES } from "../content/channel-categories";
 import { IconArrowUpRight, IconChat, IconSearch, IconTv, IconZap } from "../components/Icons";
 
 /* =========================================================================
@@ -102,11 +103,41 @@ export default function ChannelsPage() {
             <span className="font-serif italic font-normal">لدى المزودين</span>
           </h1>
           <p className="mt-4 text-[15px] md:text-[16.5px] text-black/60 font-medium leading-relaxed">
-            ابحث بين آلاف القنوات الرياضية والإخبارية والعربية وقنوات الأطفال والوثائقيات،
-            واختر التصنيف الذي يهمك. للوصول إلى الجهات المقدّمة للمحتوى، استخدم دليل المشاهدة
-            الرسمية في الصفحة الرئيسية؛ توافر المشاهدة ورسومها يخضعان لشروط كل جهة ومنطقتك.
+            يعرض هذا الفهرس أسماءً وتصنيفات وصفية لقنوات يدرجها مزوّدون خارجيون؛ ولا يتضمن روابط بث.
+            للوصول إلى مواقع الجهات الرسمية، استخدم دليل المشاهدة الرسمية المنفصل أدناه. خيارات المحتوى
+            والتوفر والرسوم تحددها كل جهة ومنطقتك.
           </p>
         </div>
+
+        {/* صفحات التصنيفات ثابتة ومشتقة من دليل المشاهدة الرسمية نفسه */}
+        <section className="mt-8 rounded-[24px] border border-black/10 bg-white p-5 sm:p-6" aria-labelledby="official-category-links">
+          <div className="max-w-[800px]">
+            <h2 id="official-category-links" className="font-display font-black text-[20px] md:text-[24px]">
+              تصنيفات دليل المشاهدة الرسمية
+            </h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-black/55">
+              صفحات ثابتة تجمع الجهات حسب التصنيف الوارد في الدليل، مع روابط مواقعها الرسمية. المحتوى وحقوقه وخيارات مشاهدته لدى كل جهة؛ هذا الموقع لا يستضيف البث ولا يعيده.
+            </p>
+          </div>
+          <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {CHANNEL_CATEGORY_PAGES.map((item) => (
+              <li key={item.slug}>
+                <a
+                  href={to(`channels/${item.slug}/`)}
+                  className="flex min-h-[64px] items-center gap-3 rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3 transition hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b4eff]"
+                >
+                  <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-lg">{item.icon}</span>
+                  <span className="min-w-0">
+                    <span className="block font-black text-[13px]">{item.label}</span>
+                    <span className="mt-0.5 block text-[11px] font-bold text-black/45">
+                      {item.items.length.toLocaleString("ar-EG")} جهة · روابط المواقع الرسمية
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {/* أدوات التصفية */}
         <div className="mt-8 rounded-[24px] border border-black/10 bg-white p-4 sm:p-5 shadow-sm">

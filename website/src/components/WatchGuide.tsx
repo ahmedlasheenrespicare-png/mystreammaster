@@ -2,7 +2,8 @@ import { memo, useMemo, useRef, useState } from "react";
 import destinations from "../official-destinations.json";
 import { IconSearch, IconTv } from "./Icons";
 import { getDestinationUrl } from "../lib/affiliate";
-import { SITE_HOST } from "../config";
+import { SITE_HOST, to } from "../config";
+import { CHANNEL_CATEGORY_PAGES } from "../content/channel-categories";
 import "./watch-guide.css";
 
 const categories = ["الكل", "أخبار", "رياضة", "وثائقيات", "ترفيه", "منصات", "أفلام", "أطفال", "موسيقى", "دينية"];
@@ -97,6 +98,33 @@ function WatchGuide() {
             <div className="wg-side-footer">اختر جهة لعرض معلوماتها ورابط موقعها</div>
           </aside>
         </div>
+        <nav className="mt-8 rounded-3xl border border-black/10 bg-white p-5 sm:p-6" aria-label="صفحات تصنيفات دليل المشاهدة الرسمية">
+          <div className="max-w-[850px]">
+            <h3 className="font-display text-[19px] font-black sm:text-[22px]">صفحات تصنيفات دليل المشاهدة الرسمية</h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-black/55">
+              هذه صفحات ثابتة لقوائم الجهات المصنّفة في الدليل. وهي منفصلة عن فهرس القنوات لدى المزوّدين؛ كل رابط يقود إلى موقع الجهة نفسها.
+            </p>
+          </div>
+          <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {CHANNEL_CATEGORY_PAGES.map((item) => (
+              <li key={item.slug}>
+                <a
+                  href={to(`channels/${item.slug}/`)}
+                  className="flex min-h-12 items-center gap-3 rounded-2xl border border-black/10 bg-[#faf9f6] px-4 py-3 text-black/75 transition hover:border-black hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b4eff]"
+                >
+                  <span aria-hidden="true" className="text-lg">{item.icon}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[13px] font-black">{item.label}</span>
+                    <span className="mt-0.5 block text-[11px] font-bold text-black/45">
+                      {item.items.length.toLocaleString("ar-EG")} جهة مدرجة
+                    </span>
+                  </span>
+                  <span aria-hidden="true" className="text-black/35">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <p className="wg-disclaimer">هذا القسم دليل روابط فقط؛ لا يستضيف الموقع البث أو يشغّله. توافر المشاهدة ورسومها يخضعان لشروط الجهة المقدّمة ومنطقتك.<br />يشمل الدليل وجهات مجانية ومدفوعة؛ وقد يفتح الرابط موقع الشبكة المالكة. الإدراج لا يدل على شراكة أو اعتماد من الجهات المذكورة.</p>
       </div>
       <dialog className="wg-dialog" ref={dialogRef} aria-labelledby="watch-guide-help-title">

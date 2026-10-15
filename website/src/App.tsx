@@ -11,6 +11,7 @@ import { useRouter } from "./router";
 import { applySeoToDocument } from "./seo";
 import HomePage from "./pages/HomePage";
 import ChannelsPage from "./pages/ChannelsPage";
+import ChannelCategoryPage from "./pages/ChannelCategoryPage";
 import MatchesPage from "./pages/MatchesPage";
 import LeagueLandingPage from "./pages/LeagueLandingPage";
 import TeamLandingPage from "./pages/TeamLandingPage";
@@ -28,6 +29,7 @@ import EnFooter from "./components/EnFooter";
 import { isEnPath } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
+import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { PRICING_PLANS, PricingPlan } from "./data";
 import { ScrollProgress, SmoothScroll } from "./components/motion";
 
@@ -93,6 +95,7 @@ export default function App() {
   const post = BLOG_POSTS.find((p) => path === `/blog/${p.slug}`);
   const leagueLanding = LEAGUE_LANDINGS.find((l) => path === `/matches/${l.slug}`);
   const teamLanding = TEAM_LANDINGS.find((t) => path === `/world-cup-2026/${t.slug}`);
+  const channelCategory = CHANNEL_CATEGORY_PAGES.find((category) => path === `/channels/${category.slug}`);
 
   let page;
   if (path === "/en") {
@@ -126,6 +129,8 @@ export default function App() {
     page = <TeamLandingPage landing={teamLanding} />;
   } else if (path === "/matches") {
     page = <MatchesPage />;
+  } else if (channelCategory) {
+    page = <ChannelCategoryPage category={channelCategory} />;
   } else if (path === "/channels") {
     page = <ChannelsPage />;
   } else if (path === "/blog") {

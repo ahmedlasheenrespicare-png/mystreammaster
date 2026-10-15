@@ -13,7 +13,7 @@ import {
   IconTv,
   IconZap,
 } from "./Icons";
-import { getWhatsAppUrl } from "../data";
+import { getWhatsAppUrl, LOWEST_PLAN_PRICE_USD } from "../data";
 import { ALL_BRANDS } from "./ContentTicker";
 import { LineReveal, MouseParallax, Parallax, Reveal, RevealImage } from "./motion";
 
@@ -485,7 +485,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               </div>
               <div className="relative mt-6 flex items-center justify-between gap-3">
                 <span className="text-[13.5px] font-black text-[#ffe3c7]">
-                  باقات تبدأ من 25 دولار / سنة
+                  باقات تبدأ من {LOWEST_PLAN_PRICE_USD} دولار / سنة
                 </span>
                 <a
                   href="#pricing"
@@ -646,7 +646,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               href="#pricing"
               className="inline-flex items-center gap-2 text-[12.5px] font-black text-[#d8ff3e] underline underline-offset-4 hover:text-white transition"
             >
-              ابدأ من 25 دولار / سنة <IconArrowUpRight className="w-4 h-4" />
+              ابدأ من {LOWEST_PLAN_PRICE_USD} دولار / سنة <IconArrowUpRight className="w-4 h-4" />
             </a>
           </div>
         </div>

@@ -24,6 +24,14 @@ export const SITE_URL = (
   "https://streammasterstore.com"
 ).replace(/\/+$/, "");
 
+/* النطاق بلا بروتوكول ولا شرطة ختامية — يُشتق من SITE_URL نفسه حتى لا يُكتب
+   الدومين يدوياً في أي مكوّن آخر (عرضه، أو بناء بريد الدعم منه). */
+export const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
+
+/* بريد الدعم الرسمي — يُشتق من النطاق ليظل المصدر واحداً.
+   ملاحظة: النص المعروض للمستخدم لا يتغيّر؛ المتغيّر يمنع تكرار القيمة فقط. */
+export const SUPPORT_EMAIL = `support@${SITE_HOST}`;
+
 /* مسار النشر: "/" محلياً و "/serverproject/" على GitHub Pages */
 export const BASE = import.meta.env.BASE_URL || "/";
 

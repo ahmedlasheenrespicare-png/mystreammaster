@@ -20,6 +20,7 @@ import {
 import { PRICING_PLANS } from "./data";
 import { BLOG_POSTS } from "./content/posts";
 import { landingRoutes } from "./content/competitions";
+import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { BASE } from "./config";
 
 interface RouterValue {
@@ -59,6 +60,7 @@ const APP_PATHS = new Set(["/", "/channels", "/matches", "/blog", "/store", "/se
   ...PRICING_PLANS.map(p => `/${p.serverCode}`),
   ...PRICING_PLANS.map(p => `/en/${p.serverCode}`),
   ...BLOG_POSTS.map(p => `/blog/${p.slug}`),
+  ...CHANNEL_CATEGORY_PAGES.map(category => `/channels/${category.slug}`),
   ...landingRoutes()]);
 
 function currentLocation() {

@@ -17,6 +17,7 @@ import { AVAILABLE_DURATIONS, EN_HOME_FAQS, EN_PLAN_FAQS, FAQ_SECTIONS, FAQ_SECT
 import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
+import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 
 export interface SeoMeta {
   title: string;
@@ -61,6 +62,15 @@ const OG_BY_ROUTE: Record<string, string> = {
   "en/moka": "moka",
   "en/faq": "faq",
   "channels": "channels",
+  "channels/sports": "channels-sports",
+  "channels/news": "channels-news",
+  "channels/movies": "channels-movies",
+  "channels/entertainment": "channels-entertainment",
+  "channels/platforms": "channels-platforms",
+  "channels/documentaries": "channels-documentaries",
+  "channels/kids": "channels-kids",
+  "channels/music": "channels-music",
+  "channels/religious": "channels-religious",
   "matches": "matches",
   "nova": "nova",
   "istar": "istar",
@@ -586,6 +596,7 @@ export function getSeo(path: string): SeoMeta {
           canonical,
           name: base.title,
           description: base.description,
+          modified: "2026-10-15",
           mainEntityId: `${SITE_URL}/#product`,
           withBreadcrumb: false,
         }),
@@ -667,19 +678,21 @@ export function getSeo(path: string): SeoMeta {
   /* ===== صفحة القنوات ===== */
   if (clean === "/channels") {
     const canonical = absolute("channels/");
+    const title = "فهرس القنوات لدى المزوّدين وروابط الجهات الرسمية";
     const description =
-      "تصفّح القنوات المفتوحة التي تُشاهد من مصادرها الرسمية، ودليل قنوات المزودين الخارجيين الرياضية والإخبارية والعربية — بحث فوري وتصنيفات كاملة وروابط رسمية.";
+      "فهرس وصفي لأسماء وتصنيفات القنوات التي يدرجها مزودون خارجيون، مع صفحات مستقلة لروابط الجهات الرسمية. لا يتضمن الفهرس روابط بث؛ تفاصيل المحتوى والتوفر لدى كل جهة.";
     return {
       ...base,
-      title: `دليل وفهرس القنوات والتصنيفات | ${BRAND_NAME}`,
+      title,
       description,
       canonical,
-      ogImageAlt: `دليل وفهرس القنوات — ${BRAND_NAME}`,
+      ogImageAlt: "فهرس قنوات المزوّدين ودليل روابط الجهات الرسمية",
       jsonLd: [
         webPageLd({
           canonical,
-          name: `دليل وفهرس القنوات والتصنيفات | ${BRAND_NAME}`,
+          name: title,
           description,
+          modified: "2026-10-15",
         }),
         breadcrumbs(
           [
@@ -688,6 +701,106 @@ export function getSeo(path: string): SeoMeta {
           ],
           canonical
         ),
+      ],
+    };
+  }
+
+  /* ===== صفحات تصنيفات دليل المشاهدة الرسمية ===== */
+  const channelCategory = CHANNEL_CATEGORY_PAGES.find((category) => clean === `/channels/${category.slug}`);
+  if (channelCategory) {
+    const seoBySlug: Record<string, { title: string; description: string; imageAlt: string }> = {
+      sports: {
+        title: "القنوات الرياضية وروابط مواقعها الرسمية في دليل المشاهدة",
+        description: "دليل الجهات الرياضية وروابط مواقعها الرسمية لمعرفة الباقات وخيارات المتابعة؛ الحقوق والتوفر قد يختلفان حسب البلد، ولا يشغّل هذا الموقع أي بث رياضي. راجع الشروط.",
+        imageAlt: "القنوات والمنصات الرياضية — دليل المشاهدة الرسمية",
+      },
+      news: {
+        title: "القنوات الإخبارية وروابط مواقع الجهات الرسمية في الدليل",
+        description: "قائمة جهات الأخبار وروابط مواقعها الرسمية للاطلاع على طرق المتابعة والمحتوى المتاح؛ تختلف الخدمات حسب المنطقة، ولا يستضيف هذا الموقع بثاً إخبارياً. راجع المصدر.",
+        imageAlt: "القنوات والجهات الإخبارية — دليل المشاهدة الرسمية",
+      },
+      movies: {
+        title: "قنوات الأفلام وروابط الجهات الرسمية في دليل المشاهدة",
+        description: "قائمة قنوات الأفلام وروابط مواقع الجهات المالكة للاطلاع على محتوى كل جهة؛ لا يعرض الموقع أفلاماً أو يقدّم بثاً أو يضمن توفر عنوان محدد. تحقق لدى الجهة.",
+        imageAlt: "قنوات الأفلام — دليل روابط الجهات الرسمية",
+      },
+      entertainment: {
+        title: "القنوات الترفيهية وروابط مواقع الجهات الرسمية في الدليل",
+        description: "دليل روابط جهات الترفيه ومواقعها الأصلية؛ راجع كل جهة لمعرفة محتواها وخيارات الوصول والتوفر في منطقتك، من دون بث داخل الموقع. والمعلومات الكاملة لدى الجهة.",
+        imageAlt: "قنوات الترفيه — دليل المشاهدة الرسمية",
+      },
+      platforms: {
+        title: "منصات المشاهدة وروابط الجهات الرسمية وخيارات الوصول",
+        description: "قائمة منصات المشاهدة وروابطها الرسمية؛ راجع كل منصة لمكتبتها واشتراكاتها والتوفر الجغرافي، فالموقع لا يبيع اشتراكاتها أو يستضيف محتواها. تحقق من التفاصيل لدى المنصة.",
+        imageAlt: "منصات المشاهدة — روابط المواقع الرسمية",
+      },
+      documentaries: {
+        title: "القنوات الوثائقية وروابط الجهات الرسمية في دليل المشاهدة",
+        description: "جهات الوثائقيات المسجلة في الدليل مع روابط مواقعها الأصلية؛ تحقق من البرامج وطرق المتابعة والتوفر لدى الجهة، فالموقع لا يستضيف أو يعيد بث المواد. راجع الجهة للتفاصيل.",
+        imageAlt: "القنوات الوثائقية — دليل المشاهدة الرسمية",
+      },
+      kids: {
+        title: "قنوات الأطفال وروابط المواقع الرسمية في دليل المشاهدة",
+        description: "دليل الجهات المدرجة للأطفال وروابط مواقعها الرسمية؛ راجع كل جهة للمحتوى والقيود العمرية والتوفر في منطقتك، فهذا الموقع لا يستضيف بثاً للأطفال. تابع التفاصيل في الموقع الرسمي.",
+        imageAlt: "قنوات الأطفال — دليل روابط الجهات الرسمية",
+      },
+      music: {
+        title: "قنوات الموسيقى وروابط الجهات الرسمية في دليل المشاهدة",
+        description: "قائمة الجهات الموسيقية وروابط مواقعها الأصلية لمعرفة طرق الاستماع أو المشاهدة والتوفر؛ لا يشغّل الموقع الموسيقى ولا يستضيفها أو يعيد بثها. تفقّد موقع الجهة.",
+        imageAlt: "القنوات الموسيقية — دليل المشاهدة الرسمية",
+      },
+      religious: {
+        title: "القنوات الدينية وروابط مواقع الجهات الرسمية في الدليل",
+        description: "روابط الجهات المصنفة دينية لمراجعة البرامج وخيارات الوصول المنشورة لديها؛ قد يختلف التوفر حسب المنطقة، ولا يستضيف هذا الموقع أي بث. راجع موقع الجهة للتفاصيل.",
+        imageAlt: "القنوات الدينية — دليل روابط الجهات الرسمية",
+      },
+    };
+    const categorySeo = seoBySlug[channelCategory.slug];
+    if (!categorySeo) throw new Error(`Missing SEO metadata for channel category: ${channelCategory.slug}`);
+
+    const canonical = absolute(`channels/${channelCategory.slug}/`);
+    const listId = `${canonical}#itemlist`;
+    const published = "2026-10-15";
+    const itemList = {
+      "@type": "ItemList",
+      "@id": listId,
+      name: channelCategory.h1,
+      description: channelCategory.intro[0],
+      url: canonical,
+      numberOfItems: channelCategory.items.length,
+      itemListOrder: "https://schema.org/ItemListUnordered",
+      itemListElement: channelCategory.items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        item: item.url,
+      })),
+    };
+
+    return {
+      ...base,
+      title: categorySeo.title,
+      description: categorySeo.description,
+      canonical,
+      ogImageAlt: categorySeo.imageAlt,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: channelCategory.h1,
+          description: categorySeo.description,
+          published,
+          modified: published,
+          mainEntityId: listId,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "/" },
+            { name: "القنوات", path: "/channels/" },
+            { name: channelCategory.label, path: `/channels/${channelCategory.slug}/` },
+          ],
+          canonical
+        ),
+        itemList,
       ],
     };
   }

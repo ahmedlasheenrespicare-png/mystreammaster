@@ -15,6 +15,14 @@ export interface ServerPage {
   grad: string;
 }
 
+export interface ChannelCategoryLink {
+  slug: string;
+  sourceCategory: string;
+  label: string;
+  desc: string;
+  icon: string;
+}
+
 export interface NavLink {
   href: string;
   label: string;
@@ -31,6 +39,7 @@ export interface NavGroup {
 }
 
 export declare const HOME_SECTIONS: HomeSection[];
+export declare const CHANNEL_CATEGORY_LINKS: ChannelCategoryLink[];
 export declare const SERVER_PAGES: ServerPage[];
 export declare const NAV_GROUPS: NavGroup[];
 export declare const EN_PAGES: NavLink[];

@@ -5,13 +5,16 @@ import { getSeo, type SeoMeta } from "./seo";
 import { BLOG_POSTS } from "./content/posts";
 import { landingRoutes } from "./content/competitions";
 import { PRICING_PLANS } from "./data";
+import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 
 /* كل مسارات الموقع — يستخدمها سكربت البناء المسبق ليعرف ما الذي يجب رسمه */
 export function getAllRoutes(): string[] {
   return [
     "/",
     "/en", "/en/nova", "/en/istar", "/en/moka", "/en/faq",
-    "/channels", "/matches", "/store", "/servers", "/cart", "/faq", "/trial",
+    "/channels",
+    ...CHANNEL_CATEGORY_PAGES.map((category) => `/channels/${category.slug}`),
+    "/matches", "/store", "/servers", "/cart", "/faq", "/trial",
     "/blog",
     ...BLOG_POSTS.map((p) => `/blog/${p.slug}`),
     ...PRICING_PLANS.map((p) => `/${p.serverCode}`),

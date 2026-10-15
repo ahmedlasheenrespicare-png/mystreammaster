@@ -132,6 +132,13 @@ export default function MatchesPage() {
         <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>
 
+      <nav className="matches-league-links" aria-label="صفحات البطولات">
+        <strong>صفحات البطولات:</strong>
+        <a href="/matches/الدوري-الإنجليزي/">مباريات الدوري الإنجليزي</a>
+        <a href="/matches/دوري-أبطال-أوروبا/">دوري أبطال أوروبا</a>
+        <a href="/matches/الدوري-السعودي/">مباريات الدوري السعودي</a>
+      </nav>
+
       <section className="matches-featured" aria-labelledby="featured-match-title">
         <div className="matches-featured-copy">
           <span className="matches-featured-kicker">تغطية خاصة · دوري أبطال أوروبا</span>

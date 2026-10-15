@@ -77,6 +77,22 @@ function applyHead(template, seo) {
     else out = out.replace("</head>", `    ${tag}\n  </head>`);
   }
 
+  /* روابط hreflang للصفحات التجارية ذات النسختين (عربي/إنجليزي) */
+  if (seo.alternates && seo.alternates.length > 0) {
+    const links = seo.alternates
+      .map((a) => `    <link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`)
+      .join("\n");
+    out = out.replace("</head>", `${links}\n  </head>`);
+  }
+
+  /* لغة واجهة المشاركة الاجتماعية تتبع لغة الصفحة */
+  if (seo.lang === "en") {
+    out = out.replace(
+      '<meta property="og:locale" content="ar_SA" />',
+      '<meta property="og:locale" content="en_US" />\n    <meta property="og:locale:alternate" content="ar_SA" />'
+    );
+  }
+
   /* بيانات منظّمة (JSON-LD) خاصة بكل صفحة */
   if (seo.jsonLd && seo.jsonLd.length > 0) {
     const ld = JSON.stringify({ "@context": "https://schema.org", "@graph": seo.jsonLd });
@@ -86,6 +102,24 @@ function applyHead(template, seo) {
     );
   }
 
+  return out;
+}
+
+/* صفحات مستثناة من إعلانات AdSense نهائياً: 404 والسلة (والبحث وصفحة عدم
+   الاتصال صفحتان قديمتان تُستثنيان من مصدريهما في website/legacy).
+   جوجل يعتبر هذه الصفحات مواضع إعلانية غير صالحة ووجود الإعلانات عليها
+   يعرّض حساب الناشر للخطر، فيُحذف مُحمِّل adsbygoogle من HTML المُسلَّم
+   لها فقط — بينما يبقى GA4 كما هو دون أي مساس (قاعدة مطلقة). */
+const NO_ADS_ROUTES = new Set(["/cart", "/__notfound__"]);
+const ADSENSE_COMMENT = /<!-- Google AdSense[^>]*-->\s*/;
+const ADSENSE_LOADER =
+  /<script[^>]*pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js[^>]*>\s*<\/script>/;
+
+function stripAdsense(html, route) {
+  const out = html.replace(ADSENSE_COMMENT, "").replace(ADSENSE_LOADER, "");
+  if (out.includes("googlesyndication")) {
+    throw new Error(`مُحمِّل AdSense ما زال موجوداً في صفحة مستثناة: ${route}`);
+  }
   return out;
 }
 
@@ -136,7 +170,13 @@ async function main() {
   let count = 0;
   for (const route of routes) {
     const { html, seo } = renderPage(route);
-    const page = applyHead(template, seo);
+    const headed = applyHead(template, seo);
+    const withAds = NO_ADS_ROUTES.has(route) ? stripAdsense(headed, route) : headed;
+    /* الصفحات الإنجليزية تُسلَّم بـ lang="en" dir="ltr" بدل قالب العربية */
+    const page =
+      route === "/en" || route.startsWith("/en/")
+        ? withAds.replace('<html lang="ar" dir="rtl">', '<html lang="en" dir="ltr">')
+        : withAds;
     await writeRouteHtml(page, route, html);
     if (!String(seo.robots || "").startsWith("noindex")) indexableRoutes.push(route);
     count++;
@@ -145,7 +185,10 @@ async function main() {
 
   /* صفحة 404 */
   const notFound = renderPage("/__notfound__");
-  const notFoundHtml = applyHead(template, { ...notFound.seo, robots: "noindex, follow" });
+  const notFoundHtml = stripAdsense(
+    applyHead(template, { ...notFound.seo, robots: "noindex, follow" }),
+    "/__notfound__"
+  );
   await fs.writeFile(
     path.join(DIST, "404.html"),
     notFoundHtml.replace('<div id="root"></div>', `<div id="root">${notFound.html}</div>`)

@@ -45,7 +45,9 @@ const EXPECTED_EVENT_COUNT = {
 
 const REQUIRED = ['name', 'startDate', 'location'];
 const RECOMMENDED = ['description', 'endDate', 'image', 'performer', 'organizer', 'eventStatus', 'eventAttendanceMode'];
-const EVENT_STATUSES = ['EventScheduled', 'EventCancelled', 'EventPostponed', 'EventRescheduled', 'EventMovedOnline'].map(
+/* EventCompleted أُضيفت بعد انتهاء كأس العالم 2026 فعلياً (النهائي 19 يوليو
+   2026): حالة الحدث في صفحة البطولة يجب أن تعكس اكتماله، لا أن يبقى مجدولاً. */
+const EVENT_STATUSES = ['EventScheduled', 'EventCancelled', 'EventPostponed', 'EventRescheduled', 'EventMovedOnline', 'EventCompleted'].map(
   (s) => `https://schema.org/${s}`,
 );
 const ATTENDANCE_MODES = ['Offline', 'Online', 'Mixed'].map((m) => `https://schema.org/${m}EventAttendanceMode`);
@@ -198,8 +200,17 @@ test('صفحة المباراة تعرّف كيان الحدث بمعرّف ثا
   }
 });
 
-test('صفحة المتابعة لا تكرّر حدث المباراة وتشير إلى كيانه الأصلي', async () => {
-  for (const file of bothTrees(WATCH_PAGE)) {
+test('حدث كأس العالم 2026 مكتمل (انتهى فعلياً في 19 يوليو 2026)', async () => {
+  for (const file of bothTrees(WORLD_CUP_PAGE)) {
+    const events = await readEvents(file);
+    assert.equal(events.length, 1, `${file}: يجب أن تعرّف حدث البطولة مرة واحدة`);
+    const [[, wc]] = events;
+    assert.equal(wc.eventStatus, 'https://schema.org/EventCompleted', `${file}: eventStatus يجب أن يكون EventCompleted بعد انتهاء البطولة`);
+    assert.ok(Date.parse(wc.endDate) < Date.now(), `${file}: endDate يجب أن يكون في الماضي`);
+  }
+});
+
+test('صفحة المتابعة لا تكرّر حدث المباراة وتشير إلى كيانه الأصلي', async () => {  for (const file of bothTrees(WATCH_PAGE)) {
     const blocks = await readBlocks(file);
     assert.equal(blocks.flatMap((block) => eventNodes(block)).length, 0, `${file}: يجب ألا تكرّر حدث المباراة`);
     const webPage = blocks.flatMap(graphNodes).find((node) => typesOf(node).includes('WebPage'));

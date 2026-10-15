@@ -33,4 +33,5 @@ export interface NavGroup {
 export declare const HOME_SECTIONS: HomeSection[];
 export declare const SERVER_PAGES: ServerPage[];
 export declare const NAV_GROUPS: NavGroup[];
+export declare const EN_PAGES: NavLink[];
 export declare function activeGroupKey(path: string): string;

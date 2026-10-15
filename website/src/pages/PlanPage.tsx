@@ -225,6 +225,12 @@ export default function PlanPage({
                     طلب كود تجريبي
                   </button>
                 </div>
+                <a
+                  href={to("trial/")}
+                  className="mt-3 block text-center text-[12px] font-bold text-white/50 underline underline-offset-4 hover:text-white transition"
+                >
+                  تفاصيل التجربة المجانية 6 ساعات وشروطها قبل الطلب
+                </a>
 
                 <ul className="mt-5 space-y-2 text-[12.5px] font-bold text-white/60">
                   <li className="flex items-center gap-2">

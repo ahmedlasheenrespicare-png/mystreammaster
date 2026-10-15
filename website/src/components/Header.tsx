@@ -12,6 +12,7 @@ import {
 } from "./Icons";
 import { CURRENCIES, getWhatsAppUrl } from "../data";
 import { to } from "../config";
+import { counterpartPath } from "../i18n";
 import { useRouter } from "../router";
 import {
   HOME_SECTIONS,
@@ -243,6 +244,16 @@ export default function Header({
 
             {/* الإجراءات */}
             <div className="flex items-center gap-2">
+              {/* مبدّل اللغة — للصفحات التجارية الإنجليزية */}
+              <a
+                href={to(counterpartPath(path).replace(/^\//, ""))}
+                hrefLang="en"
+                aria-label="English version"
+                className="h-10 inline-flex items-center rounded-full border border-black/10 bg-white px-3 text-[12px] font-black tracking-wide transition hover:border-black"
+              >
+                EN
+              </a>
+
               {/* محول العملة */}
               <select
                 aria-label="اختر العملة"

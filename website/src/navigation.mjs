@@ -46,10 +46,11 @@ export const NAV_GROUPS = [
   {
     key: "servers",
     label: "السيرفرات والباقات",
-    match: ["servers", "store", "cart", "nova", "istar", "moka"],
+    match: ["servers", "store", "cart", "trial", "nova", "istar", "moka"],
     links: [
       { href: "servers/", label: "كل السيرفرات", desc: "الباقات مع جدول المقارنة" },
       { href: "store/", label: "المتجر", desc: "اختر باقتك وأضفها للسلة" },
+      { href: "trial/", label: "تجربة مجانية 6 ساعات", desc: "افحص التوافق والثبات قبل الاشتراك" },
       { href: "cart/", label: "سلة المشتريات", desc: "راجع طلبك وأكمله" },
     ],
   },
@@ -116,6 +117,19 @@ export const NAV_GROUPS = [
       { href: "refund/", label: "الاسترجاع" },
     ],
   },
+];
+
+/**
+ * الصفحات الإنجليزية — النسخة الإنجليزية للصفحات التجارية فقط.
+ * تُسجَّل هنا (قاعدة: لا صفحات يتيمة) وتستخدمها ترويسة النسخة الإنجليزية
+ * ومبدّل اللغة في الهيدر العربي، وأزواجها العربية في src/i18n.ts.
+ */
+export const EN_PAGES = [
+  { href: "en/", label: "Home", desc: "Technical activation & player setup" },
+  { href: "en/nova/", label: "Nova Server", desc: "Activation package for matches & sports" },
+  { href: "en/istar/", label: "iStar Pro Server", desc: "Activation package for movies & series" },
+  { href: "en/moka/", label: "Moka Server", desc: "Activation package for limited speeds" },
+  { href: "en/faq/", label: "FAQ", desc: "Activation, payment, devices & renewals" },
 ];
 
 /**

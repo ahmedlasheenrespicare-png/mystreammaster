@@ -19,6 +19,7 @@ import {
 } from "react";
 import { PRICING_PLANS } from "./data";
 import { BLOG_POSTS } from "./content/posts";
+import { landingRoutes } from "./content/competitions";
 import { BASE } from "./config";
 
 interface RouterValue {
@@ -35,10 +36,17 @@ const RouterContext = createContext<RouterValue>({
   navigate: () => {},
 });
 
-/* إزالة بادئة النشر + تطبيع الشكل حتى نقارن المسارات بثبات */
+/* إزالة بادئة النشر + تطبيع الشكل حتى نقارن المسارات بثبات.
+   المسارات العربية تصل مشفّرة من المتصفح، فتفك ترميزها هنا ليتطابق
+   مع السلاجات النصية في APP_PATHS وقوائم المحتوى. */
 export function normalizePath(pathname: string): string {
   const base = BASE.replace(/\/+$/, ""); /* "" أو "/serverproject" */
   let out = pathname;
+  try {
+    out = decodeURI(out);
+  } catch {
+    /* مسار غير صالح الترميز — نستخدمه كما هو */
+  }
   if (base && out.startsWith(base)) out = out.slice(base.length);
   out = `/${out.replace(/^\/+/, "")}`;
   out = out.replace(/index\.html$/, "");
@@ -48,7 +56,8 @@ export function normalizePath(pathname: string): string {
 
 const APP_PATHS = new Set(["/", "/channels", "/matches", "/blog", "/store", "/servers", "/cart", "/faq",
   ...PRICING_PLANS.map(p => `/${p.serverCode}`),
-  ...BLOG_POSTS.map(p => `/blog/${p.slug}`)]);
+  ...BLOG_POSTS.map(p => `/blog/${p.slug}`),
+  ...landingRoutes()]);
 
 function currentLocation() {
   if (typeof window === "undefined") return { path: "/", search: "" };

@@ -19,10 +19,11 @@ export interface NavLink {
   href: string;
   label: string;
   desc?: string;
+  icon?: string;
 }
 
 export interface NavGroup {
-  key: "home" | "servers" | "watch" | "blog" | "help";
+  key: "home" | "servers" | "watch" | "tournaments" | "blog" | "help";
   label: string;
   match: string[];
   links: NavLink[];

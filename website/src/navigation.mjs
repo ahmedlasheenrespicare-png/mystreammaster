@@ -67,6 +67,29 @@ export const NAV_GROUPS = [
     ],
   },
   {
+    key: "tournaments",
+    label: "البطولات والمنتخبات",
+    /* مسارات كاملة (بادئة) — تفوز على مطابقة المقطع الأول في activeGroupKey */
+    match: [
+      "matches/الدوري-الإنجليزي", "matches/دوري-أبطال-أوروبا", "matches/الدوري-السعودي",
+      "world-cup-2026/المغرب", "world-cup-2026/مصر", "world-cup-2026/الجزائر", "world-cup-2026/تونس",
+      "world-cup-2026/السعودية", "world-cup-2026/قطر", "world-cup-2026/العراق", "world-cup-2026/الأردن",
+    ],
+    links: [
+      { href: "matches/الدوري-الإنجليزي/", label: "مباريات الدوري الإنجليزي", desc: "الجدول والقنوات الناقلة", icon: "🏴" },
+      { href: "matches/دوري-أبطال-أوروبا/", label: "مباريات دوري أبطال أوروبا", desc: "المواعيد والنتائج", icon: "🏆" },
+      { href: "matches/الدوري-السعودي/", label: "مباريات الدوري السعودي", desc: "الجدول والتوقيتات", icon: "🇸🇦" },
+      { href: "world-cup-2026/المغرب/", label: "منتخب المغرب", desc: "المباريات والتوقيتات", icon: "🇲🇦" },
+      { href: "world-cup-2026/مصر/", label: "منتخب مصر", desc: "المباريات والتوقيتات", icon: "🇪🇬" },
+      { href: "world-cup-2026/الجزائر/", label: "منتخب الجزائر", desc: "المباريات والتوقيتات", icon: "🇩🇿" },
+      { href: "world-cup-2026/تونس/", label: "منتخب تونس", desc: "المباريات والتوقيتات", icon: "🇹🇳" },
+      { href: "world-cup-2026/السعودية/", label: "منتخب السعودية", desc: "المباريات والتوقيتات", icon: "🇸🇦" },
+      { href: "world-cup-2026/قطر/", label: "منتخب قطر", desc: "المباريات والتوقيتات", icon: "🇶🇦" },
+      { href: "world-cup-2026/العراق/", label: "منتخب العراق", desc: "المباريات والتوقيتات", icon: "🇮🇶" },
+      { href: "world-cup-2026/الأردن/", label: "منتخب الأردن", desc: "المباريات والتوقيتات", icon: "🇯🇴" },
+    ],
+  },
+  {
     key: "blog",
     label: "المقالات",
     match: ["blog"],
@@ -97,6 +120,8 @@ export const NAV_GROUPS = [
 
 /**
  * أي مجموعة تخص المسار الحالي؟ (لتمييز عنصر الهيدر النشط)
+ * المطابقة بالأطول: مدخلات المطابقة قد تكون مقطعاً أول ("matches") أو مساراً
+ * كاملاً كبادئة ("matches/الدوري-الإنجليزي") — فيفوز الأدق عند التعارض.
  * @param {string} path مسار بلا بادئة النشر مثل "/nova" أو "/blog/xxx/"
  */
 export function activeGroupKey(path) {
@@ -107,7 +132,20 @@ export function activeGroupKey(path) {
   } catch {
     /* مسار غير صالح الترميز — نستخدمه كما هو */
   }
-  const first = decoded.replace(/^\/+/, "").split("/")[0];
-  const group = NAV_GROUPS.find((g) => g.match.includes(first));
-  return group ? group.key : "";
+  const clean = decoded.replace(/^\/+/, "").replace(/\/+$/, "");
+  const first = clean.split("/")[0];
+  let bestKey = "";
+  let bestLen = 0;
+  for (const group of NAV_GROUPS) {
+    for (const entry of group.match) {
+      const hit =
+        entry === first ||
+        (entry.includes("/") && (clean === entry || clean.startsWith(`${entry}/`)));
+      if (hit && entry.length > bestLen) {
+        bestKey = group.key;
+        bestLen = entry.length;
+      }
+    }
+  }
+  return bestKey;
 }

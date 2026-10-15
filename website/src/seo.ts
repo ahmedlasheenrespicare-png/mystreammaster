@@ -15,6 +15,7 @@
 import { absolute, BRAND_EN, BRAND_NAME, SITE_URL, WHATSAPP_DISPLAY } from "./config";
 import { AVAILABLE_DURATIONS, FAQS, PRICING_PLANS } from "./data";
 import { BLOG_POSTS } from "./content/posts";
+import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 
 export interface SeoMeta {
   title: string;
@@ -32,6 +33,8 @@ const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 /* تاريخ نشر/تحديث الصفحات الثابتة في هذه النسخة من الموقع */
 const PAGES_DATE = "2026-10-14";
+/* تاريخ نشر صفحات هبوط البطولات والمنتخبات */
+const LANDING_DATE = "2026-10-15";
 
 export const INDEX_ROBOTS =
   "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
@@ -285,6 +288,72 @@ export function getSeo(path: string): SeoMeta {
           ],
           canonical
         ),
+      ],
+    };
+  }
+
+  /* ===== صفحات هبوط البطولات — /matches/{البطولة} ===== */
+  const leagueLanding = LEAGUE_LANDINGS.find((l) => clean === `/matches/${l.slug}`);
+  if (leagueLanding) {
+    const canonical = absolute(`matches/${leagueLanding.slug}`);
+    return {
+      ...base,
+      title: leagueLanding.title,
+      description: leagueLanding.description,
+      canonical,
+      ogImageAlt: `${leagueLanding.h1} — ${BRAND_NAME}`,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: leagueLanding.title,
+          description: leagueLanding.description,
+          published: LANDING_DATE,
+          modified: LANDING_DATE,
+          mainEntityId: `${canonical}#faq`,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "" },
+            { name: "مواعيد المباريات", path: "matches" },
+            { name: leagueLanding.h1, path: `matches/${leagueLanding.slug}` },
+          ],
+          canonical
+        ),
+        /* الأسئلة ظاهرة فعلاً في الصفحة (عناصر details) */
+        faqLd(canonical, leagueLanding.faq),
+      ],
+    };
+  }
+
+  /* ===== صفحات المنتخبات العربية — /world-cup-2026/{المنتخب} ===== */
+  const teamLanding = TEAM_LANDINGS.find((t) => clean === `/world-cup-2026/${t.slug}`);
+  if (teamLanding) {
+    const canonical = absolute(`world-cup-2026/${teamLanding.slug}`);
+    return {
+      ...base,
+      title: teamLanding.title,
+      description: teamLanding.description,
+      canonical,
+      ogImageAlt: `${teamLanding.h1} — ${BRAND_NAME}`,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: teamLanding.title,
+          description: teamLanding.description,
+          published: LANDING_DATE,
+          modified: LANDING_DATE,
+          mainEntityId: `${canonical}#faq`,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "" },
+            { name: "كأس العالم 2026", path: "world-cup-2026" },
+            { name: teamLanding.h1, path: `world-cup-2026/${teamLanding.slug}` },
+          ],
+          canonical
+        ),
+        /* الأسئلة ظاهرة فعلاً في الصفحة (عناصر details) */
+        faqLd(canonical, teamLanding.faq),
       ],
     };
   }

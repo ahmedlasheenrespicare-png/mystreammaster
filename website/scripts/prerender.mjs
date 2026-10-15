@@ -98,8 +98,9 @@ function sitemap(routes) {
   const today = new Date().toISOString().slice(0, 10);
   const urls = routes
     .map(
+      /* encodeURI يرمّز السلاجات العربية ويبقي بنية الرابط — نفس صيغة sitemap-0.xml */
       (r) => `  <url>
-    <loc>${SITE_URL}/${r === "/" ? "" : r.replace(/^\//, "") + "/"}</loc>
+    <loc>${encodeURI(`${SITE_URL}/${r === "/" ? "" : r.replace(/^\//, "") + "/"}`)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${r === "/" ? "daily" : "weekly"}</changefreq>
     <priority>${r === "/" ? "1.0" : "0.8"}</priority>

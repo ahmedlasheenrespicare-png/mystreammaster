@@ -34,8 +34,11 @@ export function to(path = ""): string {
 }
 
 /* الرابط الكامل على الإنترنت (canonical/og) — ينتهي دائماً بشرطة مائلة
-   حتى يطابق شكل الروابط في sitemap.xml تماماً (روابط المجلدات) */
+   حتى يطابق شكل الروابط في sitemap.xml تماماً (روابط المجلدات).
+   كل مسار يُرمَّز (percent-encode) ليطابق صيغة السلاجات العربية المنشورة. */
 export function absolute(path = ""): string {
   const clean = path.replace(/^\/+|\/+$/g, "");
-  return clean ? `${SITE_URL}/${clean}/` : `${SITE_URL}/`;
+  return clean
+    ? `${SITE_URL}/${clean.split("/").map(encodeURIComponent).join("/")}/`
+    : `${SITE_URL}/`;
 }

@@ -13,11 +13,14 @@ import { applySeoToDocument } from "./seo";
 import HomePage from "./pages/HomePage";
 import ChannelsPage from "./pages/ChannelsPage";
 import MatchesPage from "./pages/MatchesPage";
+import LeagueLandingPage from "./pages/LeagueLandingPage";
+import TeamLandingPage from "./pages/TeamLandingPage";
 import PlanPage from "./pages/PlanPage";
 import BlogIndexPage from "./pages/BlogIndexPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import { BLOG_POSTS } from "./content/posts";
+import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { PRICING_PLANS, PricingPlan } from "./data";
 import { ScrollProgress, SmoothScroll } from "./components/motion";
 
@@ -80,6 +83,8 @@ export default function App() {
   /* ===== توجيه الصفحات ===== */
   const plan = PRICING_PLANS.find((p) => path === `/${p.serverCode}`);
   const post = BLOG_POSTS.find((p) => path === `/blog/${p.slug}`);
+  const leagueLanding = LEAGUE_LANDINGS.find((l) => path === `/matches/${l.slug}`);
+  const teamLanding = TEAM_LANDINGS.find((t) => path === `/world-cup-2026/${t.slug}`);
 
   let page;
   if (path === "/") {
@@ -99,6 +104,10 @@ export default function App() {
     page = <div className="pt-[140px]"><nav className="max-w-[860px] mx-auto px-5 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">الأسئلة الشائعة</span></nav><h1 className="sr-only">الأسئلة الشائعة</h1><FAQ /></div>;
   } else if (path === "/cart") {
     page = <section className="pt-[180px] pb-24 px-5 text-center max-w-3xl mx-auto"><p className="text-[#2b4eff] font-bold mb-4">طلب التفعيل التقني يبدأ هنا</p><h1 className="font-display text-5xl font-black">سلة المشتريات</h1><p className="my-6 text-black/60">راجع الباقات المختارة وأكمل طلبك مع فريقنا عبر واتساب.</p><button onClick={openCart} className="rounded-full bg-[#0b0b0f] text-[#d8ff3e] font-bold px-8 py-4">عرض السلة ({cartItems.length})</button><a href="/store/" className="inline-block mx-4 font-bold underline">متابعة التسوق</a></section>;
+  } else if (leagueLanding) {
+    page = <LeagueLandingPage landing={leagueLanding} />;
+  } else if (teamLanding) {
+    page = <TeamLandingPage landing={teamLanding} />;
   } else if (path === "/matches") {
     page = <MatchesPage />;
   } else if (path === "/channels") {

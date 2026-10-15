@@ -1,0 +1,194 @@
+/* ==========================================================================
+   تنسيقات أقسام صفحات هبوط البطولات والمنتخبات
+   --------------------------------------------------------------------------
+   معتمدة على مقاييس matches.css نفسها (مسافات، ألوان، RTL بخصائص منطقية)
+   ========================================================================== */
+
+.landing-section {
+  margin: 34px 0;
+}
+
+.landing-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+  font-weight: 900;
+  margin-bottom: 14px;
+}
+
+.landing-section > p {
+  margin-top: 12px;
+  color: #3f3f46;
+  font-size: 0.92rem;
+  line-height: 2;
+}
+
+.landing-section a {
+  color: #2b4eff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.landing-section a:hover {
+  color: #0b0b0f;
+}
+
+.landing-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.landing-card {
+  background: #fff;
+  border: 1px solid #e4e1d8;
+  border-radius: 18px;
+  padding: 20px 22px;
+}
+
+.landing-card h3 {
+  font-size: 1.02rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.landing-card p {
+  color: #52525c;
+  font-size: 0.86rem;
+  line-height: 1.95;
+}
+
+.landing-card a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+}
+
+.landing-notice {
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #e8dfc2;
+  background: #faf5e6;
+  color: #5c4a12;
+  font-size: 0.82rem;
+  line-height: 2;
+}
+
+.landing-faq {
+  display: grid;
+  gap: 10px;
+}
+
+.landing-faq details {
+  background: #fff;
+  border: 1px solid #e4e1d8;
+  border-radius: 14px;
+  padding: 4px 18px;
+}
+
+.landing-faq summary {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.92rem;
+  padding: 13px 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.landing-faq summary:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.landing-faq details p {
+  color: #52525c;
+  font-size: 0.87rem;
+  line-height: 2.05;
+  padding-bottom: 14px;
+}
+
+.landing-service {
+  margin: 40px 0 10px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(216, 255, 62, 0.35);
+  background: linear-gradient(112deg, #10131b, #171b28);
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.landing-service p {
+  flex: 1 1 320px;
+  color: #d8dae0;
+  font-size: 0.88rem;
+  line-height: 2;
+}
+
+.landing-service-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-service-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #d8ff3e;
+  color: #0b0b0f;
+  font-size: 0.84rem;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.landing-service-cta:hover {
+  transform: translateY(-2px);
+  background: #e4ff7a;
+  color: #0b0b0f;
+}
+
+.landing-service-link {
+  color: #d8ff3e;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.landing-service-link:hover {
+  color: #fff;
+}
+
+.landing-service :is(a, button):focus-visible {
+  outline: 3px solid #d8ff3e;
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+@media (max-width: 560px) {
+  .landing-service {
+    padding: 18px;
+  }
+
+  .landing-service-links {
+    width: 100%;
+  }
+
+  .landing-service-cta {
+    width: 100%;
+  }
+}

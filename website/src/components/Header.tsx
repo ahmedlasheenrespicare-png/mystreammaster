@@ -466,6 +466,31 @@ function DesktopPanel({
     );
   }
 
+  if (group.key === "tournaments") {
+    /* شبكة ثلاثية بعرض لوحة الرئيسية — 11 صفحة بطولة ومنتخب في صفوف مرتّبة */
+    return (
+      <div className="w-[640px]">
+        <div className="grid grid-cols-3 gap-1">
+          {group.links.map((l) => (
+            <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />
+          ))}
+        </div>
+        <PanelFooter>
+          <a href={to("matches/")} onClick={onNavigate} className="text-[13px] font-bold hover:text-[#d8ff3e] transition">
+            كل مواعيد المباريات — التقويم الكامل
+          </a>
+          <a
+            href={to("world-cup-2026/")}
+            onClick={onNavigate}
+            className="text-[12.5px] font-black bg-[#d8ff3e] text-black px-4 py-2 rounded-full hover:bg-white transition"
+          >
+            كأس العالم 2026 <IconArrowUpRight className="w-3.5 h-3.5" />
+          </a>
+        </PanelFooter>
+      </div>
+    );
+  }
+
   return (
     <div className="w-[300px]">
       <div className="grid gap-0.5">

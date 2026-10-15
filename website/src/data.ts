@@ -132,6 +132,20 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
 ];
 
+/* ==========================================================================
+   أقل سعر بين الباقات — يُشتق من PRICING_PLANS نفسه.
+   الغرض: أي مكوّن يريد عرض «تبدأ من … دولار» يقرأ الرقم من هنا بدل كتابته
+   يدوياً، فيبقى مصدر الأسعار واحداً (data.ts) ويتحدّث تلقائياً مع الكتالوج.
+========================================================================== */
+
+/** المدة المعروضة فعلاً في المتجر (مدة واحدة حالياً: 12 شهراً) */
+const ACTIVE_DURATION = AVAILABLE_DURATIONS[0];
+
+/** أقل سعر بالدولار بين كل الباقات للمدة المعروضة */
+export const LOWEST_PLAN_PRICE_USD = Math.min(
+  ...PRICING_PLANS.map((plan) => plan.prices[ACTIVE_DURATION].USD),
+);
+
 export const CHANNEL_CATEGORIES = [
   {
     id: "sports",

@@ -10,7 +10,7 @@ import {
   IconZap,
 } from "./Icons";
 import { getWhatsAppUrl, WHATSAPP_DISPLAY } from "../data";
-import { to } from "../config";
+import { SUPPORT_EMAIL, to } from "../config";
 import { LineReveal, Reveal } from "./motion";
 
 interface FooterProps {
@@ -256,11 +256,11 @@ export default function Footer({ onOpenTrial }: FooterProps) {
             <p>
               يعمل موقع <strong className="text-white/80">ستريم ماستر برو (Stream Master Pro)</strong> كوسيط تقني ودليل فهرسة فقط، ولا يقوم باستضافة أو تخزين أو رفع أو بث أي ملفات وسائط أو قنوات مرئية على خوادمه الخاصة. كافة العلامات التجارية المذكورة مملوكة لأصحابها الشرعيين، ويتحمل المستخدم وحده مسؤولية استخدامه للخدمة والامتثال للقوانين المحلية في بلده. للإبلاغ عن أي انتهاك لحقوق الطبع والنشر (DMCA) وطلب حذف الروابط خلال 24–72 ساعة، يرجى مراسلتنا عبر البريد الرسمي:{" "}
               <a
-                href="mailto:support@streammasterstore.com"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-white/80 underline hover:text-[#d8ff3e]"
                 dir="ltr"
               >
-                support@streammasterstore.com
+                {SUPPORT_EMAIL}
               </a>{" "}
               أو مراجعة{" "}
               <a href={to("terms/")} className="text-white/80 underline hover:text-[#d8ff3e]">

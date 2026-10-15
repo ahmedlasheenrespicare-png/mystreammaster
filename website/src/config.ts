@@ -19,10 +19,14 @@ export const PROXY_BASE = "https://serverproject.ahmedlasheenrespicare.workers.d
    العنوان الأساسي للموقع — يُستخدم في canonical و sitemap و og:url
    يمكن تغييره من متغيّر البيئة VITE_SITE_URL أثناء البناء
 ========================================================================== */
-export const SITE_URL = (
-  (import.meta.env.VITE_SITE_URL as string | undefined) ||
-  "https://streammasterstore.com"
-).replace(/\/+$/, "");
+/* النطاق والهوية المشتقة منه تأتي من src/site.mjs — وحدة JS خالصة تصلح
+   للاستيراد من تطبيق React ومن سكربتات البناء في Node معاً، فيبقى مصدر
+   النطاق والبريد واحداً في كل المشروع (راجع التعليق هناك). */
+import { SITE_HOST, SITE_URL, SUPPORT_EMAIL } from "./site.mjs";
+
+/* يُعاد تصديرها من هنا لأن config.ts هو مصدر الهوية المعتمد للمكوّنات،
+   بينما تبقى القيمة نفسها معرّفة مرة واحدة في site.mjs. */
+export { SITE_HOST, SITE_URL, SUPPORT_EMAIL };
 
 /* مسار النشر: "/" محلياً و "/serverproject/" على GitHub Pages */
 export const BASE = import.meta.env.BASE_URL || "/";

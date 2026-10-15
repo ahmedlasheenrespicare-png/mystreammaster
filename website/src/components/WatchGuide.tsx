@@ -2,6 +2,7 @@ import { memo, useMemo, useRef, useState } from "react";
 import destinations from "../official-destinations.json";
 import { IconSearch, IconTv } from "./Icons";
 import { getDestinationUrl } from "../lib/affiliate";
+import { SITE_HOST } from "../config";
 import "./watch-guide.css";
 
 const categories = ["الكل", "أخبار", "رياضة", "وثائقيات", "ترفيه", "منصات", "أفلام", "أطفال", "موسيقى", "دينية"];
@@ -38,7 +39,7 @@ function WatchGuide() {
             <div className="wg-card">
               <div className="wg-browser">
                 <div className="wg-dots" aria-hidden="true"><i /><i /><i /></div>
-                <div className="wg-address"><span>streammasterstore.com / watch-guide</span></div>
+                <div className="wg-address"><span>{SITE_HOST} / watch-guide</span></div>
                 <span className="wg-badge">دليل روابط</span>
               </div>
               <div className="wg-screen">

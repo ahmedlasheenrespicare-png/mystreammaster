@@ -121,4 +121,5 @@ sw1.tanitweb.net
 test-streams.mux.dev
 tv-trtarabi.medya.trt.com.tr
 tv-trtworld.medya.trt.com.tr
+trycloudflare.com
 webcam.mosaiquefm.net

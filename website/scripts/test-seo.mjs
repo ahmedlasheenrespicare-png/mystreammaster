@@ -30,6 +30,7 @@ const NOINDEX = new Set([
   '404.html',
   'offline.html',
   'live-free.html',
+  'player.html',
   'search/index.html',
   'cart/index.html',
 ]);

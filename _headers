@@ -34,6 +34,17 @@
   X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-store
   X-Frame-Options: DENY
+/player.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+/embed.php
+  # وسيط تضمين مشغّل البث الخاص (/player/…).
+  # ملاحظة: سياسة الموقع أعلاه (/‎*) لا تُطبق على هذه الاستجابة في نشر
+  # Hostinger — .htaccess يلغي CSP و X-Frame-Options لهذا الملف تحديداً —
+  # و embed.php يرسل سياسته الخاصة (ترويسة Content-Security-Policy + وسم meta).
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
 /live-free*
   X-Robots-Tag: noindex, nofollow, noarchive
 /proxy.php

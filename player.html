@@ -1,0 +1,171 @@
+<!DOCTYPE html><html dir="rtl" lang="ar"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0b0b0f">
+<title>مشغّل البث الخاص | ستريم ماستر برو</title>
+<meta name="description" content="صفحة مشغّل البث الخاص لمشتركي ستريم ماستر برو — تُفتح من رابطك الشخصي مباشرة.">
+<style>
+/* ==========================================================================
+   صفحة «مشغّل البث الخاص» — صفحة مستقلة (بلا هيدر/فوتر الموقع)
+   --------------------------------------------------------------------------
+   • المصدر ليس رابطاً خارجياً في الصفحة: المشغّل يُحمَّل من /player/… على نفس
+     النطاق، والوسيط /embed.php هو الذي يجلبه من أصل البث الخاص (stream-embed.conf).
+     فأي تغيير في رابط المشغّل = سطر واحد في الإعدادات، بلا تعديل هنا ولا في CSP.
+   • كل الأصناف ببادئة pp- حتى لا تتعارض مع أنماط القالب (storefront.css).
+========================================================================== */
+:root{--pp-bg:#0b0b0f;--pp-panel:#14141b;--pp-lime:#d8ff3e;--pp-line:#ffffff1f;--pp-muted:#ffffffa6}
+*{box-sizing:border-box}
+html,body{height:100%}
+body.pp-body{
+  margin:0;background:var(--pp-bg);color:#fff;
+  font-family:Tajawal,system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex;flex-direction:column;min-height:100dvh;overflow-x:hidden
+}
+.pp-bar{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:12px 18px;border-bottom:1px solid var(--pp-line);background:#0b0b0f
+}
+.pp-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:900;font-size:17px}
+.pp-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:var(--pp-lime);color:#0b0b0f;font-size:16px}
+.pp-brand small{display:block;font-size:9px;letter-spacing:2px;font-weight:700;opacity:.55}
+.pp-live{
+  display:inline-flex;align-items:center;gap:8px;border:1px solid var(--pp-line);
+  border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700;color:var(--pp-muted)
+}
+.pp-dot{width:8px;height:8px;border-radius:50%;background:var(--pp-lime);box-shadow:0 0 0 4px #d8ff3e26;animation:ppPulse 2s ease-in-out infinite}
+@keyframes ppPulse{50%{opacity:.35}}
+.pp-spacer{flex:1 1 auto}
+.pp-btn{
+  display:inline-flex;align-items:center;gap:8px;border:1px solid var(--pp-line);background:#ffffff0d;
+  color:#fff;border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;font-weight:700;
+  text-decoration:none;cursor:pointer;transition:background .18s ease,border-color .18s ease
+}
+.pp-btn:hover{background:#ffffff1a;border-color:#ffffff3d}
+.pp-btn-lime{background:var(--pp-lime);border-color:var(--pp-lime);color:#0b0b0f}
+.pp-btn-lime:hover{background:#e6ff6b;border-color:#e6ff6b}
+.pp-stage{position:relative;flex:1 1 auto;background:#000;display:flex}
+.pp-frame{width:100%;height:100%;min-height:min(78vh,720px);border:0;display:block;background:#000}
+.pp-loading{
+  position:absolute;inset:0;display:grid;place-items:center;gap:14px;background:#000;
+  color:var(--pp-muted);font-size:14px;text-align:center;padding:24px;transition:opacity .4s ease
+}
+.pp-loading[hidden]{display:none}
+.pp-spinner{width:42px;height:42px;border-radius:50%;border:3px solid #ffffff26;border-top-color:var(--pp-lime);animation:ppSpin .9s linear infinite;margin:0 auto 6px}
+@keyframes ppSpin{to{transform:rotate(360deg)}}
+.pp-failed{border:1px dashed #ffffff2e;border-radius:18px;background:#14141b;padding:20px 22px;max-width:520px}
+.pp-failed b{display:block;color:#fff;font-size:15px;margin-bottom:8px}
+.pp-failed p{margin:0 0 14px;line-height:1.95;font-size:13.5px}
+.pp-failed code{direction:ltr;display:inline-block;background:#0b0b0f;border:1px solid var(--pp-line);border-radius:8px;padding:2px 8px;font-size:12.5px;color:var(--pp-lime)}
+.pp-note{padding:12px 18px;font-size:12.5px;line-height:1.9;color:#ffffff80;border-top:1px solid var(--pp-line)}
+.pp-note a{color:var(--pp-lime)}
+.pp-fullscreen .pp-bar,.pp-fullscreen .pp-note{display:none}
+.pp-fullscreen .pp-frame{min-height:100dvh}
+@media (max-width:640px){
+  .pp-brand{font-size:15px}
+  .pp-btn{padding:8px 13px;font-size:12.5px}
+  .pp-frame{min-height:56vh}
+}
+@media (prefers-reduced-motion:reduce){.pp-dot,.pp-spinner{animation:none}}
+</style>
+</head>
+<body class="pp-body">
+
+<div class="pp-bar">
+  <a class="pp-brand" href="/"><span class="pp-mark" aria-hidden="true">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a>
+  <span class="pp-live"><span class="pp-dot" aria-hidden="true"></span> مشغّل البث الخاص</span>
+  <span class="pp-spacer"></span>
+  <button class="pp-btn" type="button" id="pp-reload">إعادة تحميل المشغّل</button>
+  <button class="pp-btn pp-btn-lime" type="button" id="pp-expand">ملء الشاشة</button>
+</div>
+
+<div class="pp-stage" id="pp-stage">
+  <!-- المصدر على نفس النطاق: /player/… يخدمه /embed.php من أصل البث الخاص.
+       لتغيير مصدر المشغّل عدّل stream-embed.conf فقط (سطر واحد). -->
+  <iframe id="pp-frame" class="pp-frame" src="/player/five_channels_full.html" title="مشغّل البث الخاص — ستريم ماستر برو" referrerpolicy="no-referrer" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen="" loading="lazy">
+  </iframe>
+  <div class="pp-loading" id="pp-loading">
+    <div>
+      <span class="pp-spinner" aria-hidden="true"></span>
+      جارٍ تشغيل المشغّل…
+    </div>
+  </div>
+</div>
+
+<p class="pp-note">
+  إن لم يبدأ التشغيل خلال ثوانٍ: تأكد من اتصال الإنترنت ثم اضغط «إعادة تحميل المشغّل».
+  للمشاهدة داخل تطبيقك أو على جهاز الاستقبال استخدم بيانات اشتراكك، أو
+  <a href="/live-free.html">افتح مشغّل الويب الذكي</a> ·
+  <a href="/watch-legal.html">المشاهدة القانونية</a>
+</p>
+
+<script>
+/* تحميل/أعطال الإطار: الإطار لا يُطلق حدث خطأ عند فشل المصدر، لذلك نعتمد مهلة
+   زمنية + رسالة load لإخفاء مؤشر التحميل وعرض رسالة واضحة عند التعطل. */
+(() => {
+  const frame = document.getElementById('pp-frame');
+  const loading = document.getElementById('pp-loading');
+  const stage = document.getElementById('pp-stage');
+  const SRC = frame.getAttribute('src');
+  const TIMEOUT_MS = 20000;
+  let timer = 0;
+
+  const showFailure = () => {
+    clearTimeout(timer);
+    if (loading.dataset.failed === '1') return;
+    loading.dataset.failed = '1';
+    loading.innerHTML =
+      '<div class="pp-failed">' +
+      '<b>تعذّر تحميل المشغّل</b>' +
+      '<p>لم يستجب مصدر البث الخاص. المشغّل يمر عبر <code>/embed.php</code> فيحتاج استضافة تشغّل PHP ' +
+      '(المعاينة الثابتة و GitHub Pages لا تشغّله). وإن كنت صاحب الموقع فحدّث أصل المشغّل في ' +
+      '<code>stream-embed.conf</code> — الرابط الحالي نفق مؤقت يتغير مع كل إعادة تشغيل.</p>' +
+      '<button class="pp-btn pp-btn-lime" type="button" id="pp-retry">إعادة المحاولة</button>' +
+      '</div>';
+    const retry = document.getElementById('pp-retry');
+    if (retry) retry.addEventListener('click', reload);
+  };
+
+  const reload = () => {
+    clearTimeout(timer);
+    loading.dataset.failed = '0';
+    loading.innerHTML = '<div><span class="pp-spinner" aria-hidden="true"></span>جارٍ تشغيل المشغّل…</div>';
+    loading.hidden = false;
+    /* إضافة طابع زمني: يتجاوز أي نسخة مخزّنة من صفحة المشغّل */
+    frame.src = SRC + (SRC.includes('?') ? '&' : '?') + 'r=' + Date.now();
+    arm();
+  };
+
+  const arm = () => { timer = setTimeout(showFailure, TIMEOUT_MS); };
+
+  frame.addEventListener('load', () => {
+    clearTimeout(timer);
+    loading.hidden = true;
+  });
+
+  document.getElementById('pp-reload').addEventListener('click', reload);
+
+  const expand = document.getElementById('pp-expand');
+  const setLabel = () => {
+    expand.textContent = document.fullscreenElement ? 'إنهاء ملء الشاشة' : 'ملء الشاشة';
+  };
+  expand.addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await stage.requestFullscreen();
+    } catch {
+      /* المتصفح رفض (أو iOS): نبديل صنف CSS كبديل */
+      document.body.classList.toggle('pp-fullscreen');
+      setLabel();
+    }
+    setLabel();
+  });
+  document.addEventListener('fullscreenchange', setLabel);
+
+  arm();
+})();
+</script>
+
+
+</body></html>

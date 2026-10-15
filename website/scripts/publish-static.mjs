@@ -52,10 +52,15 @@ for (const file of await files(path.join(website, 'legacy'))) {
   content.find('h1').each((i, el) => { if (i > 0) el.tagName = 'h2'; });
   $('body').empty().attr('class', `sm-page${relative === 'live-free.html' ? ' sm-player' : ''}`)
     .append(header).append(content).append(footer).append(scripts);
-  // Decorative legacy effects and automatic ad placement can obscure the new UI.
+  // Decorative legacy effects can obscure the new UI, so they stay stripped.
+  // AdSense (googlesyndication) used to be stripped here too, which removed the
+  // loader script from every legacy page and left the <ins> markup inert — no ad
+  // could ever render. It is now kept so the tag ships on every page.
+  // ampproject stays stripped: the AMP auto-ads component needs the AMP runtime,
+  // which these pages do not load, so it is dead weight that only costs a request.
   $('script').each((_, el) => {
     const script = $(el);
-    if (/3d-effects|googlesyndication|ampproject/.test((script.attr('src') || '') + script.text())) script.remove();
+    if (/3d-effects|ampproject/.test((script.attr('src') || '') + script.text())) script.remove();
   });
   $('link[href*="3d-effects"], link[href*="pricing-minimal"], link[href*="fonts.googleapis"], link[href*="fonts.gstatic"]').remove();
   // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.

@@ -1,0 +1,3 @@
+# ads.txt — Stream Master Pro (streammasterstore.com)
+# يُنشر تلقائياً إلى /ads.txt في الجذر عبر website/dist أثناء البناء.
+google.com, pub-8373438380621206, DIRECT, f08c47fec0942fa0

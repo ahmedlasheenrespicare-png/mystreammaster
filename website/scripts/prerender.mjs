@@ -56,6 +56,11 @@ function applyHead(template, seo) {
     ['property="og:description"', seo.description],
     ['property="og:url"', seo.canonical],
     ['property="og:type"', seo.ogType],
+    /* صورة المشاركة خاصة بالصفحة — الأبعاد ثابتة 1200×630 لكل صور /images/og/ */
+    ['property="og:image"', seo.ogImage],
+    ['property="og:image:width"', "1200"],
+    ['property="og:image:height"', "630"],
+    ['name="twitter:image"', seo.ogImage],
     ['name="twitter:title"', seo.title],
     ['name="twitter:description"', seo.description],
     ['name="twitter:url"', seo.canonical],

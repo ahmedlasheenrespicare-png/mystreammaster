@@ -23,11 +23,65 @@ export interface SeoMeta {
   canonical: string;
   robots: string;
   ogType: "website" | "article";
+  /** صورة المشاركة المطلقة — خاصة بالصفحة، بمقاس 1200×630 */
+  ogImage: string;
   ogImageAlt: string;
   jsonLd: Record<string, unknown>[];
 }
 
 const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
+
+/* ==========================================================================
+   صورة المشاركة الخاصة بكل صفحة — 1200×630
+   --------------------------------------------------------------------------
+   القاعدة ٣ تشترط صورة مشاركة **خاصة بالصفحة**. كانت كل صفحات الموقع تُبنى من
+   قالب index.html واحد فتخرج كلها بنفس og:image (الصورة العامة)، بينما كان
+   og:image:alt وحده يختلف — فصارت 39 صفحة تتشارك صورة واحدة.
+
+   هذه الخريطة هي مكان الربط الوحيد: مفتاحها المسار بلا الشرطتين، وقيمتها اسم
+   الملف داخل /images/og/. أي مسار بلا مقابل يعود إلى صورة الرئيسية.
+========================================================================== */
+const ogImageFor = (file: string): string => `${SITE_URL}/images/og/${file}.png`;
+
+const OG_BY_ROUTE: Record<string, string> = {
+  /* الصفحات الثابتة */
+  "": "home",
+  "store": "store",
+  "servers": "servers",
+  "faq": "faq",
+  "channels": "channels",
+  "matches": "matches",
+  "nova": "nova",
+  "istar": "istar",
+  "moka": "moka",
+  "blog": "blog",
+  /* صفحة وظيفية (noindex) — لا تُشارك، فتبقى على صورة الرئيسية */
+  "cart": "home",
+  /* مقالات المدونة */
+  "blog/test-iptv-server-stability": "blog-test-iptv-stability",
+  "blog/iptv-samsung-lg-setup": "blog-iptv-samsung-lg-setup",
+  "blog/choose-iptv-server": "blog-choose-iptv-server",
+  "blog/video-resolution-hd-fhd-4k": "blog-video-resolution",
+  "blog/internet-speed-for-video-streaming": "blog-internet-speed",
+  "blog/hdr-and-frame-rate-explained": "blog-hdr-frame-rate",
+  "blog/android-tv-boxes-buying-guide": "blog-android-tv-boxes",
+  "blog/phone-and-computer-viewing-setup": "blog-phone-computer-setup",
+  "blog/risks-of-unverified-apps": "blog-risks-of-unverified-apps",
+  "blog/what-is-unlicensed-streaming": "blog-what-is-unlicensed-streaming",
+  /* صفحات هبوط البطولات — /matches/{slug} */
+  "matches/الدوري-الإنجليزي": "league-premier-league",
+  "matches/الدوري-السعودي": "league-saudi-pro-league",
+  "matches/دوري-أبطال-أوروبا": "league-uefa-champions",
+  /* صفحات المنتخبات — /world-cup-2026/{slug} */
+  "world-cup-2026/المغرب": "wc-morocco",
+  "world-cup-2026/مصر": "wc-egypt",
+  "world-cup-2026/الجزائر": "wc-algeria",
+  "world-cup-2026/تونس": "wc-tunisia",
+  "world-cup-2026/السعودية": "wc-saudi-arabia",
+  "world-cup-2026/قطر": "wc-qatar",
+  "world-cup-2026/العراق": "wc-iraq",
+  "world-cup-2026/الأردن": "wc-jordan",
+};
 const OG_IMAGE_ALT = `${BRAND_NAME} — خدمات الربط التقني وإعداد مشغلات البث`;
 const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -106,6 +160,13 @@ interface WebPageOpts {
   withBreadcrumb?: boolean;
 }
 
+/* صورة الصفحة تُشتق من رابطها عبر نفس خريطة صور المشاركة، فيبقى وصف الصفحة
+   في البيانات المنظّمة متسقاً مع صورة مشاركتها بدل الإشارة إلى صورة عامة. */
+function ogImageFromCanonical(canonical: string): string {
+  const route = decodeURIComponent(canonical.replace(SITE_URL, "")).replace(/^\/|\/$/g, "");
+  return ogImageFor(OG_BY_ROUTE[route] ?? "home");
+}
+
 function webPageLd(o: WebPageOpts) {
   const ld: Record<string, unknown> = {
     "@type": "WebPage",
@@ -119,7 +180,7 @@ function webPageLd(o: WebPageOpts) {
     dateModified: o.modified ?? o.published ?? PAGES_DATE,
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: OG_IMAGE,
+      url: ogImageFromCanonical(o.canonical),
       width: 1200,
       height: 630,
     },
@@ -143,6 +204,7 @@ function faqLd(canonical: string, faqs: { q: string; a: string }[]) {
 
 export function getSeo(path: string): SeoMeta {
   const clean = `/${path.replace(/^\/+|\/+$/g, "")}`;
+  const routeKey = clean.replace(/^\/|\/$/g, "");
   const base: SeoMeta = {
     title: `${BRAND_NAME} | ربط تقني وإعداد مشغلات البث 2026`,
     description:
@@ -150,6 +212,7 @@ export function getSeo(path: string): SeoMeta {
     canonical: absolute(""),
     robots: INDEX_ROBOTS,
     ogType: "website",
+    ogImage: ogImageFor(OG_BY_ROUTE[routeKey] ?? "home"),
     ogImageAlt: OG_IMAGE_ALT,
     jsonLd: [],
   };
@@ -603,6 +666,12 @@ export function applySeoToDocument(path: string) {
   setMeta('meta[property="og:description"]', "content", seo.description);
   setMeta('meta[property="og:url"]', "content", seo.canonical);
   setMeta('meta[property="og:type"]', "content", seo.ogType);
+  /* صورة المشاركة تتغيّر مع الصفحة مثل باقي الوسوم — وإلا بقيت صورة الصفحة
+     الأولى ظاهرة عند التنقّل داخل الموقع */
+  setMeta('meta[property="og:image"]', "content", seo.ogImage);
+  setMeta('meta[property="og:image:width"]', "content", "1200");
+  setMeta('meta[property="og:image:height"]', "content", "630");
+  setMeta('meta[name="twitter:image"]', "content", seo.ogImage);
   setMeta('meta[property="og:image:alt"]', "content", seo.ogImageAlt);
   setMeta('meta[name="twitter:title"]', "content", seo.title);
   setMeta('meta[name="twitter:description"]', "content", seo.description);

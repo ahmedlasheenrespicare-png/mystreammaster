@@ -169,6 +169,19 @@ export const MATCH_CENTER_FINISHED_PROBE = {
        بمعرّف فريق ونتيجة، و`competitionName` (دوري/كأس رابطة/تشامبيونشيب).
        لا وسم وديات صريح ولا ملعب ولا وقت إضافي/ترجيح في العينة المرصودة. */
     seasonseries: 'present-head-to-head-last-5-all-competitions',
+    /* `boxscore` مفتاحه الوحيد `teams`، ولكل فريق نفس 29 إحصائية ترتيباً
+       وتسميةً (استحواذ، تسديدات كلية/على المرمى، ركنيات، أخطاء، تسلل،
+       بطاقات، تمريرات ودقتها، تصديات، اعتراضات...). لا إحصائية خارج
+       المرمى باسمها — لا تُشتق إلا بتعريف موثق. */
+    teamStatistics: 'boxscore.teams-29-stats-identical-both-sides',
+    /* أحداث موجودة (23 لهذه المباراة) بشكل: id، type{text,type}، period،
+       clock{value,displayValue}، scoringPlay، wallclock، shootout. أنماط
+       الهدف/التبديل/VAR التفصيلية لم تُرصد بعد — عينة [0] كانت Kickoff. */
+    keyEvents: 'present-23-first-is-kickoff',
+    /* `lastFiveGames` لكل فريق 5 أحداث، ببطولة مسماة «2026-27 English
+       Premier League» في العينة (نطاق دوري هنا) ونتيجة نصية «5-2».
+       حقول التاريخ/الخصم/الاتجاه في الحدث الواحد لم تُرصد بعد. */
+    lastFiveGames: 'present-5-per-team-league-labelled',
     /* حتى بعد النهاية: مفتاح `lineups` غير موجود أصلاً، و`rosters` بطول 2. */
     lineupsKey: 'absent-even-after-full-time',
     rosters: 'present-length-2-structure-unprobed',
@@ -178,10 +191,10 @@ export const MATCH_CENTER_FINISHED_PROBE = {
     leaders: 'player-stat-leaders-no-ratings',
   },
   stillUnprobed: [
-    'مفاتيح `boxscore` وأسماء إحصائيات الفريقين (كانت في الجزء المقصوص)',
-    '`keyEvents`: العدد والبنية ونوعا التبديلات وVAR',
-    '`lastFiveGames`: العدد وفترة العينة وبنية الحدث الواحد',
+    'أنماط `keyEvents` التفصيلية: هدف/بطاقة/تبديل/جزاء/VAR وبنية لاعبيها',
+    'حدث `lastFiveGames` الواحد كاملاً: التاريخ والخصم واتجاه النتيجة',
     'بنية `rosters`: هل تحمل أساسيين/خطة لمباراة منتهية أم قوائم فقط',
+    'سلوك `boxscore`/`keyEvents` أثناء اللعب (مسبار P2 يوم مباراة حية)',
   ],
 };
 

@@ -31,7 +31,7 @@ export interface NavLink {
 }
 
 export interface NavGroup {
-  key: "home" | "servers" | "watch" | "tournaments" | "blog" | "help";
+  key: "home" | "servers" | "watch" | "analysis" | "tournaments" | "blog" | "help";
   label: string;
   match: string[];
   links: NavLink[];

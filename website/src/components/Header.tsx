@@ -180,7 +180,7 @@ export default function Header({
             {/* القوائم المنسدلة — سطح المكتب */}
             <div
               ref={navRef}
-              className="desktop-nav hidden xl:flex items-center gap-0.5 text-[14px] font-bold tracking-tight"
+              className="desktop-nav hidden min-[1360px]:flex items-center gap-0.5 text-[13px] font-bold tracking-tight"
             >
               {NAV_GROUPS.map((group) => {
                 const isOpen = openKey === group.key;
@@ -209,7 +209,7 @@ export default function Header({
                       }}
                       aria-expanded={isOpen}
                       aria-controls={`nav-panel-${group.key}`}
-                      className={`relative flex items-center gap-1 px-3.5 py-2.5 rounded-full transition cursor-pointer ${
+                      className={`relative flex items-center gap-1 px-1.5 py-2.5 rounded-full transition cursor-pointer ${
                         isOpen ? "bg-black/[0.07]" : "hover:bg-black/[0.06]"
                       }`}
                     >
@@ -295,7 +295,7 @@ export default function Header({
               {/* زر قائمة الجوال */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="xl:hidden w-10 h-10 rounded-full bg-[#0b0b0f] text-white grid place-items-center cursor-pointer"
+                className="min-[1360px]:hidden w-10 h-10 rounded-full bg-[#0b0b0f] text-white grid place-items-center cursor-pointer"
                 aria-label="القائمة"
                 aria-expanded={mobileOpen}
                 aria-controls="storefront-mobile-nav"
@@ -310,7 +310,7 @@ export default function Header({
       {/* قائمة الجوال — مجموعات قابلة للطي (مجموعة الصفحة الحالية مفتوحة) */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-[54] bg-[#0b0b0f]/60 backdrop-blur-sm xl:hidden animate-fade-in"
+          className="fixed inset-0 z-[54] bg-[#0b0b0f]/60 backdrop-blur-sm min-[1360px]:hidden animate-fade-in"
           onClick={() => setMobileOpen(false)}
         >
           <div
@@ -344,7 +344,7 @@ export default function Header({
                   </button>
                   {expanded && (
                     <div id={`mobile-group-${group.key}`} className="pb-3 grid gap-0.5">
-                      {mobileLinks(group).map((l) => (
+                      {group.key === "analysis" ? <AnalysisMenu group={group} onNavigate={() => setMobileOpen(false)} /> : mobileLinks(group).map((l) => (
                         <a
                           key={l.href}
                           href={l.href}
@@ -398,6 +398,19 @@ function mobileLinks(group: NavGroup): { href: string; label: string; icon?: str
   return [...group.links, ...(group.legal ?? [])].map((l) => ({ href: pageHref(l), label: l.label }));
 }
 
+function AnalysisMenu({group, onNavigate}: {group: NavGroup; onNavigate: () => void}) {
+  const [season, ...matches] = group.links;
+  return <details className="rounded-xl border border-black/10">
+    <summary className="flex cursor-pointer items-center justify-between gap-3 p-3 text-[14px] font-black list-none">{season.label}<span aria-hidden="true">⌄</span></summary>
+    <div className="border-t border-black/10 p-2">
+      <p className="px-3 py-2 text-[12px] font-bold text-black/60">الجولة الثانية</p>
+      <PanelLink href={pageHref(season)} label="صفحة البطولة والموسم" onNavigate={onNavigate} />
+      <PanelLink href={pageHref(season) + "#reports"} label="كل مباريات الجولة الثانية" onNavigate={onNavigate} />
+      {matches.map(link => <PanelLink key={link.href} href={pageHref(link)} label={link.label} desc={link.desc} onNavigate={onNavigate} />)}
+    </div>
+  </details>;
+}
+
 /* محتوى القائمة المنسدلة لكل مجموعة على سطح المكتب */
 function DesktopPanel({
   group,
@@ -408,6 +421,7 @@ function DesktopPanel({
   onNavigate: () => void;
   onOpenTrial: () => void;
 }) {
+  if (group.key === "analysis") return <div className="w-[340px] max-w-full"><AnalysisMenu group={group} onNavigate={onNavigate} /></div>;
   if (group.key === "home") {
     return (
       <div className="w-[640px]">

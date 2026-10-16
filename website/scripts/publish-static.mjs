@@ -6,6 +6,12 @@ import { header, footer } from './legacy-shell.mjs';
 import { renderFixtureCharts } from '../public/_assets/fixture-charts.js';
 import { renderFixtureStandings } from '../public/_assets/fixture-standings.js';
 import { renderFixtureLineups } from './render-fixture-lineups.mjs';
+import { renderCityParisReport } from './render-city-paris.mjs';
+import { renderGalatasarayBarcelonaReport } from './render-galatasaray-barcelona.mjs';
+import { renderRomaMadridReport } from './render-roma-madrid.mjs';
+import { renderMatchAnalysis } from './render-match-analysis.mjs';
+import { applyLegacyAnalysisSeo } from './apply-legacy-analysis-seo.mjs';
+import { getLegacyAnalysisSeo } from '../dist-ssr/entry-server.js';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -29,6 +35,13 @@ for (const file of await files(path.join(website, 'dist'))) {
 
 // مسارات الصفحات التي تستخدم خلفية داكنة (#080b12) فيبقى لون شريط المتصفح داكنًا.
 const DARK_PAGES = new Set([
+  'match-analysis/index.html',
+  'galatasaray-barcelona/index.html',
+  'galatasaray-barcelona/watch/index.html',
+  'roma-real-madrid/index.html',
+  'roma-real-madrid/watch/index.html',
+  'manchester-city-psg/index.html',
+  'manchester-city-psg/watch/index.html',
   'manchester-united-atletico/index.html',
   'manchester-united-atletico/watch/index.html',
 ]);
@@ -46,6 +59,20 @@ async function publishStandalone(file, relative) {
   await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));
 }
 
+// New analysis page sources live in src/, not in generated/published HTML.
+// Keep derived legacy snapshots solely for compatibility with retained-page tests.
+for (const source of await files(path.join(website, 'src/pages/analysis'))) {
+  if (!source.endsWith('.html')) continue;
+  const relative = path.relative(path.join(website, 'src/pages/analysis'), source);
+  const seo = getLegacyAnalysisSeo(relative.replace(/\/index\.html$/, ''));
+  if (!seo) throw new Error(`Missing central SEO for analysis template ${relative}`);
+  const $ = load(await fs.readFile(source, 'utf8'));
+  applyLegacyAnalysisSeo($, seo);
+  const snapshot = path.join(website, 'legacy', relative);
+  await fs.mkdir(path.dirname(snapshot), { recursive: true });
+  await fs.writeFile(snapshot, $.html().replace(/[ \t]+$/gm, ''));
+}
+
 let count = 0;
 for (const file of await files(path.join(website, 'legacy'))) {
   const relative = path.relative(path.join(website, 'legacy'), file);
@@ -55,6 +82,25 @@ for (const file of await files(path.join(website, 'legacy'))) {
     continue;
   }
   const $ = load(await fs.readFile(file, 'utf8'));
+  const analysisSeo = getLegacyAnalysisSeo(relative.replace(/\/index\.html$/, ''));
+  if (analysisSeo) {
+    applyLegacyAnalysisSeo($, analysisSeo);
+    // Derived source-head snapshots keep legacy source-level validators meaningful.
+    // The sole editable SEO definitions remain in src/seo.ts, not these snapshots.
+    await fs.writeFile(file, $.html().replace(/[ \t]+$/gm, ''));
+  }
+  if ($('main[data-city-paris-report]').length) {
+    renderCityParisReport($, JSON.parse(await fs.readFile(path.join(website, 'src/content/city-paris-report.json'), 'utf8')));
+  }
+  if ($('main[data-roma-madrid-report]').length) {
+    renderRomaMadridReport($, JSON.parse(await fs.readFile(path.join(website, 'src/content/roma-madrid-report.json'), 'utf8')));
+  }
+  if ($('main[data-galatasaray-barcelona-report]').length) {
+    renderGalatasarayBarcelonaReport($, JSON.parse(await fs.readFile(path.join(website, 'src/content/galatasaray-barcelona-report.json'), 'utf8')));
+  }
+  if ($('[data-analysis-cards]').length) {
+    renderMatchAnalysis($, JSON.parse(await fs.readFile(path.join(website, 'src/content/match-analysis.json'), 'utf8')));
+  }
   // Bake charts from the visible official tables, using the same pure renderer as
   // the optional browser enhancement. No API call or duplicated UEFA dataset.
   $('[data-fixture-charts]').each((_, element) => {

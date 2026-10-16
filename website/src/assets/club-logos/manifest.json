@@ -1,0 +1,47 @@
+{
+  "repository": "https://github.com/JoseArroyave/football-logos",
+  "revision": "1b0a81b0a5538131a2867b3c28a19a459a51d987",
+  "license": "MIT",
+  "logos": [
+    {
+      "slug": "as-roma",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/italy/AS_Roma.svg",
+      "sha": "803d8b300d7f9b285f1aa4e89bd32bfcd80674d9"
+    },
+    {
+      "slug": "real-madrid",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/spain/Real_Madrid.svg",
+      "sha": "fc2dfec81bfbfe4e9bf6504cc5e563b31a59abf7"
+    },
+    {
+      "slug": "manchester-city",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/england/Manchester_City.svg",
+      "sha": "999b93a75f72169ad51214de7a9be72005b82b3a"
+    },
+    {
+      "slug": "paris-saint-germain",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/france/Paris_Saint-Germain_(PSG).svg",
+      "sha": "99ff4baa9daa9f4e84f1b77a4dec1fe18efbefbf"
+    },
+    {
+      "slug": "atletico-madrid",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/spain/Atletico_Madrid.svg",
+      "sha": "a62892a7def82850082775227e4d37be7de52a6c"
+    },
+    {
+      "slug": "manchester-united",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/england/Manchester_United.svg",
+      "sha": "e682df65bd8bdb96b2119c7a98ad90ba06c99e38"
+    },
+    {
+      "slug": "galatasaray",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/turkey/Galatasaray.svg",
+      "sha": "9d3364a4095f3568823a576621954a24fa715949"
+    },
+    {
+      "slug": "barcelona",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/spain/Barcelona.svg",
+      "sha": "6a3f91ba246425fdd18a0283b566d00ce200b84f"
+    }
+  ]
+}

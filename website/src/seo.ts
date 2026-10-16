@@ -1,3 +1,4 @@
+import analysisCollection from "./content/match-analysis.json";
 /* ==========================================================================
    بيانات SEO لكل مسار — مصدر واحد يستخدمه:
    • الموقع عند التنقّل بين الصفحات (تحديث العنوان والوصف)
@@ -1062,4 +1063,857 @@ export function applySeoToDocument(path: string) {
     l.href = alt.href;
     document.head.appendChild(l);
   }
+}
+
+/* Legacy analysis SEO is owned here too. The build synchronizes the <head>
+   snapshots in legacy/ for existing source-level validators. Do not edit those
+   generated SEO tags: change this registry instead. Tracking is never replaced. */
+const LEGACY_ANALYSIS_SEO: Record<string, SeoMeta> = {
+  "match-analysis": {
+    "title": "دوري أبطال أوروبا 2026/2027 | تحليل مباريات الجولة الثانية",
+    "description": "تقارير الجولة الثانية لدوري أبطال أوروبا 2026/27: روما وريال مدريد، وسيتي وباريس، وأتلتيكو ويونايتد، وجالاتا سراي وبرشلونة؛ التشكيل والأرقام والمراجعات العربية.",
+    "canonical": "__SITE__/match-analysis/",
+    "robots": "index, follow, max-image-preview:large",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/match-analysis-og.png",
+    "ogImageAlt": "تحليل المباريات — أربعة تقارير من الجولة الثانية لدوري أبطال أوروبا",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/match-analysis/#webpage",
+        "url": "__SITE__/match-analysis/",
+        "name": "دوري أبطال أوروبا 2026/2027 | تحليل مباريات الجولة الثانية",
+        "description": "تقارير الجولة الثانية لدوري أبطال أوروبا 2026/27: روما وريال مدريد، وسيتي وباريس، وأتلتيكو ويونايتد، وجالاتا سراي وبرشلونة؛ التشكيل والأرقام والمراجعات العربية.",
+        "inLanguage": "ar",
+        "datePublished": "2026-10-16",
+        "dateModified": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/match-analysis-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/match-analysis/#breadcrumb"
+        }
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "__SITE__/match-analysis/#collection",
+        "url": "__SITE__/match-analysis/",
+        "name": "دوري أبطال أوروبا — موسم 2026/2027 — الجولة الثانية",
+        "isPartOf": {
+          "@id": "__SITE__/match-analysis/#webpage"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/match-analysis/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          }
+        ]
+      }
+    ]
+  },
+  "manchester-city-psg": {
+    "title": "مانشستر سيتي 2–4 باريس | تحليل مباراة 14 أكتوبر 2026",
+    "description": "مانشستر سيتي 2–4 باريس سان جيرمان: تقرير مباراة 14 أكتوبر 2026 في دوري أبطال أوروبا، مع التشكيل والتقييمات والإحصائيات والتحليل والمراجع الرسمية.",
+    "canonical": "__SITE__/manchester-city-psg/",
+    "robots": "index, follow, max-image-preview:large",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/manchester-city-psg-og.png",
+    "ogImageAlt": "مانشستر سيتي 2–4 باريس سان جيرمان · 14 أكتوبر 2026",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/manchester-city-psg/#webpage",
+        "url": "__SITE__/manchester-city-psg/",
+        "name": "مانشستر سيتي 2–4 باريس | تحليل مباراة 14 أكتوبر 2026",
+        "description": "مانشستر سيتي 2–4 باريس سان جيرمان: تقرير مباراة 14 أكتوبر 2026 في دوري أبطال أوروبا، مع التشكيل والتقييمات والإحصائيات والتحليل والمراجع الرسمية.",
+        "inLanguage": "ar",
+        "citation": [
+          "https://www.uefa.com/uefachampionsleague/match/2049580--man-city-vs-paris/",
+          "https://www.mancity.com/news/mens/city-v-psg-14-october-match-report-63927601"
+        ],
+        "dateModified": "2026-10-16",
+        "datePublished": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/manchester-city-psg-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/manchester-city-psg/#breadcrumb"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "متى مباراة مانشستر سيتي وباريس سان جيرمان؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "أُقيمت المباراة الأربعاء 14 أكتوبر 2026 وفق نتائج UEFA. توقيت الانطلاق المقدّم من صاحب الموقع: 22:00 بتوقيت مصر ومكة، الموافق 19:00 UTC."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "أين تُقام المباراة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "أُقيم اللقاء على ملعب مدينة مانشستر (الاتحاد)، على أرض مانشستر سيتي، وفق ورقة UEFA الرسمية."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "ما القنوات الناقلة للمباراة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "تعتمد القنوات والمنصات الناقلة على البطولة وبلد المشاهدة. لم نؤكد ناقلاً لهذا اللقاء؛ راجع دليل المشاهدة الرسمية وإعلان الجهة المالكة للحقوق في بلدك."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "هل يوجد بث مباشر داخل الصفحة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "انتهت المباراة. الصفحة لا تستضيف بثاً أو إعادة؛ تفتح روابط الملخص لدى النادي وخيارات المشاهدة الرسمية في صفحات الجهات الأصلية."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "أين التشكيل والنتيجة والإحصائيات؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "تشكيل البداية والبدلاء ودقائق التبديلات والتقييمات موجودة أعلاه. التقييمات من FotMob فقط؛ غياب الدرجة يظهر «غير متاح»، ولا تُنقل تقييمات مباراة أخرى."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/manchester-city-psg/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "المواجهة الأوروبية",
+            "item": "__SITE__/manchester-city-psg/"
+          }
+        ]
+      }
+    ]
+  },
+  "manchester-city-psg/watch": {
+    "title": "متابعة سيتي وباريس | النتيجة والمشاهدة الرسمية",
+    "description": "انتهت مواجهة مانشستر سيتي وباريس سان جيرمان بنتيجة 2–4 يوم 14 أكتوبر 2026، وفق المراجع الرسمية. تابع مواعيد المباريات القادمة ودليل المشاهدة الرسمية.",
+    "canonical": "__SITE__/manchester-city-psg/watch/",
+    "robots": "index, follow, max-image-preview:large",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/manchester-city-psg-watch-og.png",
+    "ogImageAlt": "مانشستر سيتي 2–4 باريس سان جيرمان · 14 أكتوبر 2026",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/manchester-city-psg/watch/#webpage",
+        "url": "__SITE__/manchester-city-psg/watch/",
+        "name": "متابعة سيتي وباريس | النتيجة والمشاهدة الرسمية",
+        "description": "انتهت مواجهة مانشستر سيتي وباريس سان جيرمان بنتيجة 2–4 يوم 14 أكتوبر 2026، وفق المراجع الرسمية. تابع مواعيد المباريات القادمة ودليل المشاهدة الرسمية.",
+        "inLanguage": "ar",
+        "datePublished": "2026-10-16",
+        "dateModified": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/manchester-city-psg-watch-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/manchester-city-psg/watch/#breadcrumb"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/manchester-city-psg/watch/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "صفحة المواجهة",
+            "item": "__SITE__/manchester-city-psg/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "المتابعة",
+            "item": "__SITE__/manchester-city-psg/watch/"
+          }
+        ]
+      }
+    ]
+  },
+  "roma-real-madrid": {
+    "title": "روما 3–4 ريال مدريد | نتيجة مباراة 14 أكتوبر 2026",
+    "description": "روما 3–4 ريال مدريد: تقرير مباراة 14 أكتوبر 2026 في دوري أبطال أوروبا، مع التشكيل والتقييمات والإحصائيات والتحليل والمراجع الرسمية.",
+    "canonical": "__SITE__/roma-real-madrid/",
+    "robots": "index, follow, max-image-preview:large",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/roma-real-madrid-og.png",
+    "ogImageAlt": "روما 3–4 ريال مدريد · 14 أكتوبر 2026",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/roma-real-madrid/#webpage",
+        "url": "__SITE__/roma-real-madrid/",
+        "name": "روما 3–4 ريال مدريد | نتيجة مباراة 14 أكتوبر 2026",
+        "description": "روما 3–4 ريال مدريد: تقرير مباراة 14 أكتوبر 2026 في دوري أبطال أوروبا، مع التشكيل والتقييمات والإحصائيات والتحليل والمراجع الرسمية.",
+        "inLanguage": "ar",
+        "citation": [
+          "https://www.uefa.com/uefachampionsleague/match/2049581--roma-vs-real-madrid/",
+          "https://www.realmadrid.com/en-US/news/football/first-team/reports/cronica-roma-real-madrid-14-10-2026"
+        ],
+        "dateModified": "2026-10-16",
+        "datePublished": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/roma-real-madrid-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/roma-real-madrid/#breadcrumb"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "متى مباراة روما وريال مدريد؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "أُقيمت المباراة الأربعاء 14 أكتوبر 2026 في الجولة الثانية من دوري أبطال أوروبا، الساعة 19:00 UTC، الموافق 22:00 بتوقيت مصر ومكة."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "أين تُقام المباراة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "أُقيم اللقاء على ملعب الأولمبيكو، على أرض روما، وفق ورقة UEFA الرسمية."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "ما القنوات الناقلة للمباراة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "تعتمد القنوات والمنصات الناقلة على البطولة وبلد المشاهدة. لم نؤكد ناقلاً لهذا اللقاء؛ راجع دليل المشاهدة الرسمية وإعلان الجهة المالكة للحقوق في بلدك."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "هل يوجد بث مباشر داخل الصفحة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "انتهت المباراة. الصفحة لا تستضيف بثاً أو إعادة؛ تفتح روابط الملخص لدى النادي وخيارات المشاهدة الرسمية في صفحات الجهات الأصلية."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "أين التشكيل والنتيجة والإحصائيات؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "تشكيل البداية والبدلاء ودقائق التبديلات والتقييمات موجودة أعلاه. التقييمات من FotMob فقط؛ غياب الدرجة يظهر «غير متاح»، ولا تُنقل تقييمات مباراة أخرى."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/roma-real-madrid/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "المواجهة الأوروبية",
+            "item": "__SITE__/roma-real-madrid/"
+          }
+        ]
+      }
+    ]
+  },
+  "roma-real-madrid/watch": {
+    "title": "متابعة روما وريال مدريد | النتيجة والمشاهدة الرسمية",
+    "description": "انتهت مواجهة روما وريال مدريد بنتيجة 3–4 يوم 14 أكتوبر 2026، وفق المراجع الرسمية. تابع مواعيد المباريات القادمة ودليل المشاهدة الرسمية.",
+    "canonical": "__SITE__/roma-real-madrid/watch/",
+    "robots": "index, follow, max-image-preview:large",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/roma-real-madrid-watch-og.png",
+    "ogImageAlt": "روما 3–4 ريال مدريد · 14 أكتوبر 2026",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/roma-real-madrid/watch/#webpage",
+        "url": "__SITE__/roma-real-madrid/watch/",
+        "name": "متابعة روما وريال مدريد | النتيجة والمشاهدة الرسمية",
+        "description": "انتهت مواجهة روما وريال مدريد بنتيجة 3–4 يوم 14 أكتوبر 2026، وفق المراجع الرسمية. تابع مواعيد المباريات القادمة ودليل المشاهدة الرسمية.",
+        "inLanguage": "ar",
+        "datePublished": "2026-10-16",
+        "dateModified": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/roma-real-madrid-watch-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/roma-real-madrid/watch/#breadcrumb"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/roma-real-madrid/watch/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "صفحة المواجهة",
+            "item": "__SITE__/roma-real-madrid/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "المتابعة",
+            "item": "__SITE__/roma-real-madrid/watch/"
+          }
+        ]
+      }
+    ]
+  },
+    "galatasaray-barcelona": {
+      "title": "جالاتا سراي 1–4 برشلونة | تحليل الجولة الثانية 2026",
+      "description": "تحليل فوز برشلونة 4–1 على جالاتا سراي في الجولة الثانية لدوري الأبطال 2026/27: ملخص الأهداف والتشكيل وتقييمات اللاعبين والإحصائيات ومراجعة عربية موثقة.",
+      "canonical": "__SITE__/galatasaray-barcelona/",
+      "robots": "index, follow, max-image-preview:large",
+      "ogType": "article",
+      "ogImage": "__SITE__/images/matches/galatasaray-barcelona-og.png",
+      "ogImageAlt": "جالاتا سراي 1–4 برشلونة · 13 أكتوبر 2026",
+      "lang": "ar",
+      "jsonLd": [
+        {
+          "@type": "WebPage",
+          "@id": "__SITE__/galatasaray-barcelona/#webpage",
+          "url": "__SITE__/galatasaray-barcelona/",
+          "name": "جالاتا سراي 1–4 برشلونة | تحليل الجولة الثانية 2026",
+          "description": "تحليل فوز برشلونة 4–1 على جالاتا سراي في الجولة الثانية لدوري الأبطال 2026/27: ملخص الأهداف والتشكيل وتقييمات اللاعبين والإحصائيات ومراجعة عربية موثقة.",
+          "inLanguage": "ar",
+          "citation": [
+            "https://www.uefa.com/uefachampionsleague/match/2049576--galatasaray-vs-barcelona/",
+            "https://www.fcbarcelona.com/en/football/first-team/news/4591863/galatasaray-1-4-fc-barcelona-heaven-in-hell"
+          ],
+          "dateModified": "2026-10-16",
+          "datePublished": "2026-10-16",
+          "primaryImageOfPage": {
+            "@type": "ImageObject",
+            "url": "__SITE__/images/matches/galatasaray-barcelona-og.png",
+            "width": 1200,
+            "height": 630
+          },
+          "breadcrumb": {
+            "@id": "__SITE__/galatasaray-barcelona/#breadcrumb"
+          },
+          "mainEntity": {
+            "@id": "__SITE__/galatasaray-barcelona/#article"
+          }
+        },
+        {
+          "@type": "Article",
+          "@id": "__SITE__/galatasaray-barcelona/#article",
+          "url": "__SITE__/galatasaray-barcelona/",
+          "headline": "جالاتا سراي 1–4 برشلونة | تحليل الجولة الثانية 2026",
+          "description": "تحليل فوز برشلونة 4–1 على جالاتا سراي في الجولة الثانية لدوري الأبطال 2026/27: ملخص الأهداف والتشكيل وتقييمات اللاعبين والإحصائيات ومراجعة عربية موثقة.",
+          "inLanguage": "ar",
+          "datePublished": "2026-10-16",
+          "dateModified": "2026-10-16",
+          "image": {
+            "@type": "ImageObject",
+            "url": "__SITE__/images/matches/galatasaray-barcelona-og.png",
+            "width": 1200,
+            "height": 630
+          },
+          "author": {
+            "@id": "__SITE__/#organization"
+          },
+          "publisher": {
+            "@id": "__SITE__/#organization"
+          },
+          "mainEntityOfPage": {
+            "@id": "__SITE__/galatasaray-barcelona/#webpage"
+          },
+          "citation": [
+            "https://www.uefa.com/uefachampionsleague/match/2049576--galatasaray-vs-barcelona/",
+            "https://www.fcbarcelona.com/en/football/first-team/news/4591863/galatasaray-1-4-fc-barcelona-heaven-in-hell"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "متى مباراة جالاتا سراي وبرشلونة؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "أُقيمت المباراة الثلاثاء 13 أكتوبر 2026 في الجولة الثانية من دوري أبطال أوروبا، الساعة 19:00 UTC، الموافق 22:00 بتوقيت مصر ومكة."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "أين تُقام المباراة؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "أُقيم اللقاء على ملعب رامس بارك، على أرض جالاتا سراي، وفق ورقة UEFA الرسمية."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "ما القنوات الناقلة للمباراة؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "تعتمد القنوات والمنصات الناقلة على البطولة وبلد المشاهدة. لم نؤكد ناقلاً لهذا اللقاء؛ راجع دليل المشاهدة الرسمية وإعلان الجهة المالكة للحقوق في بلدك."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "هل يوجد بث مباشر داخل الصفحة؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "انتهت المباراة. الصفحة لا تستضيف بثاً أو إعادة؛ تفتح روابط الملخص لدى النادي وخيارات المشاهدة الرسمية في صفحات الجهات الأصلية."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "أين التشكيل والنتيجة والإحصائيات؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "تشكيل البداية والبدلاء ودقائق التبديلات والتقييمات موجودة أعلاه. التقييمات من FotMob فقط؛ غياب الدرجة يظهر «غير متاح»، ولا تُنقل تقييمات مباراة أخرى."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "__SITE__/galatasaray-barcelona/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "الرئيسية",
+              "item": "__SITE__/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "تحليل المباريات",
+              "item": "__SITE__/match-analysis/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "المواجهة الأوروبية",
+              "item": "__SITE__/galatasaray-barcelona/"
+            }
+          ]
+        }
+      ]
+    },
+    "galatasaray-barcelona/watch": {
+      "title": "متابعة جالاتا سراي وبرشلونة | دليل المشاهدة الرسمية",
+      "description": "نتيجة جالاتا سراي وبرشلونة 1–4 في الجولة الثانية يوم 13 أكتوبر 2026؛ صفحة المتابعة ودليل المشاهدة الرسمية ومواعيد المباريات القادمة، دون بث أو إعادة هنا.",
+      "canonical": "__SITE__/galatasaray-barcelona/watch/",
+      "robots": "index, follow, max-image-preview:large",
+      "ogType": "website",
+      "ogImage": "__SITE__/images/matches/galatasaray-barcelona-watch-og.png",
+      "ogImageAlt": "جالاتا سراي 1–4 برشلونة · 13 أكتوبر 2026",
+      "lang": "ar",
+      "jsonLd": [
+        {
+          "@type": "WebPage",
+          "@id": "__SITE__/galatasaray-barcelona/watch/#webpage",
+          "url": "__SITE__/galatasaray-barcelona/watch/",
+          "name": "متابعة جالاتا سراي وبرشلونة | دليل المشاهدة الرسمية",
+          "description": "نتيجة جالاتا سراي وبرشلونة 1–4 في الجولة الثانية يوم 13 أكتوبر 2026؛ صفحة المتابعة ودليل المشاهدة الرسمية ومواعيد المباريات القادمة، دون بث أو إعادة هنا.",
+          "inLanguage": "ar",
+          "datePublished": "2026-10-16",
+          "dateModified": "2026-10-16",
+          "primaryImageOfPage": {
+            "@type": "ImageObject",
+            "url": "__SITE__/images/matches/galatasaray-barcelona-watch-og.png",
+            "width": 1200,
+            "height": 630
+          },
+          "breadcrumb": {
+            "@id": "__SITE__/galatasaray-barcelona/watch/#breadcrumb"
+          },
+          "mainEntity": {
+            "@id": "__SITE__/galatasaray-barcelona/#article"
+          },
+          "about": {
+            "@id": "__SITE__/galatasaray-barcelona/#webpage"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "__SITE__/galatasaray-barcelona/watch/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "الرئيسية",
+              "item": "__SITE__/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "تحليل المباريات",
+              "item": "__SITE__/match-analysis/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "صفحة المواجهة",
+              "item": "__SITE__/galatasaray-barcelona/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "المتابعة",
+              "item": "__SITE__/galatasaray-barcelona/watch/"
+            }
+          ]
+        }
+      ]
+    },
+  "manchester-united-atletico": {
+    "title": "أتلتيكو 2–0 مانشستر يونايتد | تحليل الجولة الثانية",
+    "description": "تحليل فوز أتلتيكو مدريد 2–0 على مانشستر يونايتد في الجولة الثانية لدوري أبطال أوروبا 2026/27؛ النتيجة والتشكيل والإحصائيات والمراجعات العربية ومصادرها.",
+    "canonical": "__SITE__/manchester-united-atletico/",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/manchester-united-atletico-og.png",
+    "ogImageAlt": "مانشستر يونايتد × أتلتيكو مدريد في دوري أبطال أوروبا",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "SportsEvent",
+        "@id": "__SITE__/manchester-united-atletico/#match",
+        "name": "أتلتيكو مدريد ضد مانشستر يونايتد — دوري أبطال أوروبا",
+        "description": "مواجهة أتلتيكو مدريد (صاحب الأرض) ومانشستر يونايتد في الجولة الثانية من مرحلة الدوري لدوري أبطال أوروبا 2026/27.",
+        "sport": "Soccer",
+        "startDate": "2026-10-13T19:00:00Z",
+        "endDate": "2026-10-13T20:50:00Z",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "url": "__SITE__/manchester-united-atletico/",
+        "image": [
+          "__SITE__/images/matches/manchester-united-atletico-og.png"
+        ],
+        "location": {
+          "@type": "Place",
+          "name": "رياض إير ميتروبوليتانو",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Av. de Luis Aragonés, 4",
+            "addressLocality": "Madrid",
+            "postalCode": "28022",
+            "addressRegion": "Comunidad de Madrid",
+            "addressCountry": "ES"
+          }
+        },
+        "performer": [
+          {
+            "@type": "SportsTeam",
+            "name": "أتلتيكو مدريد"
+          },
+          {
+            "@type": "SportsTeam",
+            "name": "مانشستر يونايتد"
+          }
+        ],
+        "homeTeam": {
+          "@type": "SportsTeam",
+          "name": "أتلتيكو مدريد"
+        },
+        "awayTeam": {
+          "@type": "SportsTeam",
+          "name": "مانشستر يونايتد"
+        },
+        "organizer": {
+          "@type": "Organization",
+          "name": "UEFA",
+          "url": "https://www.uefa.com/uefachampionsleague/"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/manchester-united-atletico/#webpage",
+        "url": "__SITE__/manchester-united-atletico/",
+        "name": "أتلتيكو 2–0 مانشستر يونايتد | تحليل الجولة الثانية",
+        "description": "تحليل فوز أتلتيكو مدريد 2–0 على مانشستر يونايتد في الجولة الثانية لدوري أبطال أوروبا 2026/27؛ النتيجة والتشكيل والإحصائيات والمراجعات العربية ومصادرها.",
+        "inLanguage": "ar-EG",
+        "datePublished": "2026-10-13",
+        "dateModified": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/manchester-united-atletico-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "mainEntity": {
+          "@id": "__SITE__/manchester-united-atletico/#match"
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/manchester-united-atletico/#breadcrumb"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/manchester-united-atletico/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "المواجهة الأوروبية",
+            "item": "__SITE__/manchester-united-atletico/"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "__SITE__/manchester-united-atletico/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "متى موعد مباراة مانشستر يونايتد وأتلتيكو مدريد؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "تقام المباراة يوم الثلاثاء 13 أكتوبر 2026، في الساعة 10:00 مساءً بتوقيت القاهرة (19:00 UTC)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "أين تُقام مباراة أتلتيكو مدريد ومانشستر يونايتد؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "تقام المباراة على ملعب رياض إير ميتروبوليتانو في مدريد، إسبانيا."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "انتهت المباراة — أين أتابع المباريات القادمة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "زر المشاهدة ينقلك إلى صفحة المتابعة داخل الموقع، وهي تعرض تنويه انتهاء اللقاء وروابط مواعيد المباريات القادمة والقنوات الناقلة الرسمية عبر دليل المشاهدة الرسمية."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "manchester-united-atletico/watch": {
+    "title": "متابعة أتلتيكو ومانشستر يونايتد | النتيجة والمشاهدة الرسمية",
+    "description": "انتهت مباراة مانشستر يونايتد وأتلتيكو مدريد (13 أكتوبر 2026). لا يوجد بث مباشر داخل الموقع — تابع ستريم ماستر لمواعيد المباريات القادمة والقنوات والباقات.",
+    "canonical": "__SITE__/manchester-united-atletico/watch/",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "ogType": "website",
+    "ogImage": "__SITE__/images/matches/manchester-united-atletico-watch-og.png",
+    "ogImageAlt": "انتهت مباراة مانشستر يونايتد وأتلتيكو مدريد — تابع المباريات القادمة",
+    "lang": "ar",
+    "jsonLd": [
+      {
+        "@type": "WebPage",
+        "@id": "__SITE__/manchester-united-atletico/watch/#webpage",
+        "url": "__SITE__/manchester-united-atletico/watch/",
+        "name": "متابعة أتلتيكو ومانشستر يونايتد | النتيجة والمشاهدة الرسمية",
+        "inLanguage": "ar",
+        "description": "انتهت مباراة مانشستر يونايتد وأتلتيكو مدريد (13 أكتوبر 2026). لا يوجد بث مباشر داخل الموقع — تابع ستريم ماستر لمواعيد المباريات القادمة والقنوات والباقات.",
+        "isPartOf": {
+          "@id": "__SITE__/#website"
+        },
+        "datePublished": "2026-10-13",
+        "dateModified": "2026-10-16",
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "__SITE__/images/matches/manchester-united-atletico-watch-og.png",
+          "width": 1200,
+          "height": 630
+        },
+        "breadcrumb": {
+          "@id": "__SITE__/manchester-united-atletico/watch/#breadcrumb"
+        },
+        "about": {
+          "@id": "__SITE__/manchester-united-atletico/#match"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "__SITE__/manchester-united-atletico/watch/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "الرئيسية",
+            "item": "__SITE__/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "تحليل المباريات",
+            "item": "__SITE__/match-analysis/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "صفحة المواجهة",
+            "item": "__SITE__/manchester-united-atletico/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "المتابعة",
+            "item": "__SITE__/manchester-united-atletico/watch/"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "هل يوجد بث مباشر لهذه المباراة داخل الموقع؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "لا. هذه صفحة متابعة داخلية توضّح أن المباراة انتهت؛ لا يُعرض أي بث مباشر ولا يُخزَّن أي رابط بث. لاستكمال المتابعة استخدم مصدراً مرخصاً ومتاحاً في منطقتك عبر دليل المشاهدة الرسمية."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "أين أرى النتيجة النهائية وإحصائيات المباراة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "في صفحة المواجهة: صندوق النتيجة ولوحة «إحصائيات المباراة» يقرآن من مصدر النتائج نفسه المستخدم في صفحة مواعيد المباريات."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "كيف أتابع المباريات القادمة؟",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "افتح مواعيد المباريات واختر منطقتك الزمنية، ثم حدّد البطولة أو ابحث عن فريقك. ولتشغيل الباقات على أجهزتك، اطلب تجربة مجانية أو تصفّح المتجر."
+            }
+          }
+        ]
+      }
+    ]
+  }
+};
+
+export function getLegacyAnalysisSeo(route: string): SeoMeta | null {
+  const key = route.replace(/^\/+|\/+$/g, "");
+  const source = LEGACY_ANALYSIS_SEO[key];
+  if (!source) return null;
+  const seo: SeoMeta = JSON.parse(JSON.stringify(source).split("__SITE__").join(SITE_URL));
+  if (key === "match-analysis") {
+    const webpage = seo.jsonLd.find(node => node["@type"] === "WebPage")!;
+    const collection = seo.jsonLd.find(node => node["@type"] === "CollectionPage")!;
+    webpage.mainEntity = { "@id": collection["@id"] };
+    collection.mainEntity = {
+      "@type": "ItemList", "@id": `${seo.canonical}#matches`,
+      numberOfItems: analysisCollection.reports.length,
+      itemListElement: analysisCollection.reports.map((report, index) => ({
+        "@type": "ListItem", position: index + 1,
+        name: `${report.home} × ${report.away}`,
+        url: absolute(report.slug), item: { "@id": `${absolute(report.slug)}#webpage` },
+      })),
+    };
+  }
+  return seo;
 }

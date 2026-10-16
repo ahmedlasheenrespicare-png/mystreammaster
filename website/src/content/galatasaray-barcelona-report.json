@@ -1,0 +1,1615 @@
+{
+  "version": 1,
+  "date": "2026-10-13",
+  "kickoff": "2026-10-13T19:00:00Z",
+  "reviewedOn": "2026-10-16",
+  "matchId": "2049576",
+  "fotmobEventId": "6106338",
+  "sources": [
+    [
+      "uefa-match",
+      "UEFA · صفحة المباراة",
+      "https://www.uefa.com/uefachampionsleague/match/2049576--galatasaray-vs-barcelona/",
+      "جالاتا سراي 1–4 برشلونة، الجولة الثانية، 13 أكتوبر 2026، 19:00 UTC."
+    ],
+    [
+      "uefa-report",
+      "UEFA · تقرير الجولة",
+      "https://www.uefa.com/uefachampionsleague/news/02aa-21d1f3303cf3-f0d4f4701545-1000--champions-league-matchday-2-tuesday-highlights-and-round-u/",
+      "النتيجة وتسلسل العودة وجائزة رجل المباراة للامين يامال؛ اعتمدت فقرة هذه المواجهة فقط."
+    ],
+    [
+      "barcelona-report",
+      "برشلونة · تقرير النادي",
+      "https://www.fcbarcelona.com/en/football/first-team/news/4591863/galatasaray-1-4-fc-barcelona-heaven-in-hell",
+      "الأهداف في الدقائق 28 و43 و50 و53 و65، والتعادل 1–1 عند الاستراحة، وتحول المباراة في الشوط الثاني. لا يُعتمد وصف الهدف الملغى لاختلافه عن مزود الأحداث."
+    ],
+    [
+      "uefa-lineups",
+      "UEFA · ورقة التشكيل",
+      "https://www.uefa.com/newsfiles/UCL/2027/2049576_LU.pdf",
+      "ورقة تشكيل اللقاء؛ روجعت الأسماء والأرقام مع FotMob بسبب تداخل أعمدة النص المستخرج من PDF."
+    ],
+    [
+      "fotmob",
+      "FotMob · التشكيل والتقييمات",
+      "https://www.fotmob.com/matches/barcelona-vs-galatasaray/2gt1cx#6106338",
+      "التشكيل والخطط والبدلاء وتقييماتهم ودقائق التبديلات. لامين يامال 9.0؛ ريناتو نهاغا وغافي بلا تقييم منشور. الاستحواذ لدى هذا المزود 29–71، لا يُخلط بنسبة UEFA البالغة 35–65."
+    ],
+    [
+      "uefa-stats",
+      "UEFA · الإحصائيات النهائية",
+      "https://www.uefa.com/uefachampionsleague/match/2049576--galatasaray-vs-barcelona/statistics/",
+      "المصدر الوحيد للجداول والرسوم: التسديدات 5–22، على المرمى 3–10، الاستحواذ 35–65، التمريرات المكتملة 227–643."
+    ],
+    [
+      "history",
+      "برشلونة · سجل المواجهات منذ 2011",
+      "https://www.fcbarcelona.com/en/matches/141466/galatasaray-fc-barcelona-uefa-champions-league-2026-2027",
+      "يعرض ثلاث مواجهات منذ 2011، لا السجل التاريخي الكامل: 1–4 في 2026، و1–2 و0–0 في الدوري الأوروبي 2022. الأرقام في بطاقاتنا بترتيب جالاتا سراي ثم برشلونة بصرف النظر عن الملعب."
+    ],
+    [
+      "standings",
+      "ESPN · ترتيب دوري الأبطال",
+      "https://www.espn.com/soccer/standings/_/league/uefa.champions",
+      "لقطة 16 أكتوبر 2026، 36 فريقاً: برشلونة الثاني بست نقاط وجالاتا سراي الخامس والثلاثون دون نقاط. ليست ترتيباً مؤرخاً بصافرة نهاية اللقاء."
+    ],
+    [
+      "turkey-standings",
+      "ESPN · ترتيب الدوري التركي",
+      "https://www.espn.com/soccer/standings/_/league/tur.1",
+      "لقطة ثابتة مراجعة في 16 أكتوبر 2026، 18 فريقاً؛ جالاتا سراي الأول بـ16 نقطة بعد سبع مباريات. لا تحديث تلقائي ولا طلب PHP لهذا التقرير."
+    ],
+    [
+      "spain-standings",
+      "ESPN · ترتيب الدوري الإسباني",
+      "https://www.espn.com/soccer/standings/_/league/esp.1",
+      "لقطة ثابتة مراجعة في 16 أكتوبر 2026، 20 فريقاً؛ برشلونة الأول بـ24 نقطة بعد ثماني مباريات."
+    ],
+    [
+      "ali-saed-review",
+      "علي سعيد · مراجعة عربية على YouTube",
+      "https://www.youtube.com/watch?v=IMvuTFGF35g",
+      "علي سعيد (Ali Saed)، نُشر 14 أكتوبر 2026، المدة 13:34. عنوانه: برشلونة بسبع ارواح رباعية مجنونة في اسطنبول و لامين يامال يتلاعب بـ جلطة سراي. الخلاصة مبنية على الوصف والجزء المتاح من التفريغ؛ لا تدّعي مشاهدة الفيديو كاملاً، ولا تعتمد أخطاء الأسماء الواردة في التفريغ مصدراً للتشكيل."
+    ]
+  ],
+  "stats": [
+    [
+      "التهديد الهجومي",
+      [
+        [
+          "attempts",
+          "إجمالي التسديدات",
+          5,
+          22
+        ],
+        [
+          "on-target",
+          "تسديدات على المرمى",
+          3,
+          10
+        ],
+        [
+          "off-target",
+          "تسديدات خارج المرمى",
+          2,
+          7
+        ],
+        [
+          "blocked",
+          "التسديدات المحجوبة",
+          0,
+          5
+        ],
+        [
+          "woodwork",
+          "إصابة إطار المرمى",
+          0,
+          0
+        ],
+        [
+          "corners",
+          "الركنيات",
+          1,
+          6
+        ]
+      ]
+    ],
+    [
+      "الاستحواذ والتمرير",
+      [
+        [
+          "possession",
+          "الاستحواذ",
+          "35%",
+          "65%"
+        ],
+        [
+          "passes-attempted",
+          "محاولات التمرير",
+          286,
+          697
+        ],
+        [
+          "passes-completed",
+          "التمريرات المكتملة",
+          227,
+          643
+        ],
+        [
+          "passing-accuracy",
+          "دقة التمرير",
+          "79%",
+          "92%"
+        ],
+        [
+          "attacks",
+          "الهجمات",
+          14,
+          58
+        ],
+        [
+          "dribbles",
+          "المراوغات",
+          7,
+          28
+        ]
+      ]
+    ],
+    [
+      "الدفاع والحراسة",
+      [
+        [
+          "recoveries",
+          "استعادة الكرة",
+          32,
+          30
+        ],
+        [
+          "tackles",
+          "التدخلات",
+          28,
+          15
+        ],
+        [
+          "tackles-won",
+          "التدخلات الناجحة",
+          13,
+          10
+        ],
+        [
+          "clearances",
+          "إبعاد الكرة",
+          18,
+          7
+        ],
+        [
+          "saves",
+          "تصديات الحارس",
+          6,
+          2
+        ],
+        [
+          "goals-conceded",
+          "الأهداف المستقبلة",
+          4,
+          1
+        ]
+      ]
+    ],
+    [
+      "الانضباط والفرص",
+      [
+        [
+          "fouls",
+          "الأخطاء المرتكبة",
+          12,
+          10
+        ],
+        [
+          "yellow-cards",
+          "البطاقات الصفراء",
+          2,
+          0
+        ],
+        [
+          "red-cards",
+          "البطاقات الحمراء",
+          0,
+          0
+        ],
+        [
+          "offsides",
+          "التسلل",
+          8,
+          7
+        ],
+        [
+          "clear-chances",
+          "الفرص الواضحة",
+          0,
+          3
+        ],
+        [
+          "assists",
+          "التمريرات الحاسمة",
+          1,
+          4
+        ]
+      ]
+    ]
+  ],
+  "events": [
+    [
+      28,
+      "باتراكوف يفتتح التسجيل",
+      "جالاتا سراي يتقدم بعد انطلاقة لياو؛ تسديدة باتراكوف تغيّر اتجاهها قبل دخول المرمى."
+    ],
+    [
+      43,
+      "كانسيلو يعادل النتيجة",
+      "تمريرة من داني أولمو، وإنهاء من كانسيلو يعيد برشلونة قبل الاستراحة."
+    ],
+    [
+      50,
+      "فيرمين يمنح برشلونة الأفضلية",
+      "عرضية من لامين يامال ورأسية من فيرمين لوبيز: النتيجة 1–2."
+    ],
+    [
+      53,
+      "غوردون يوسع الفارق",
+      "صناعة ثانية من يامال في ثلاث دقائق وغوردون يسجل الهدف الثالث."
+    ],
+    [
+      65,
+      "أديمي يحسم النتيجة",
+      "البديل كريم أديمي يسجل الرابع بعد تمريرة من غابرييل جيسوس وفق سجل الأحداث."
+    ]
+  ],
+  "history": [
+    [
+      "2026-10-13",
+      "13 أكتوبر 2026",
+      "2026/27",
+      1,
+      4,
+      "دوري أبطال أوروبا"
+    ],
+    [
+      "2022-03-17",
+      "17 مارس 2022",
+      "2021/22",
+      1,
+      2,
+      "الدوري الأوروبي"
+    ],
+    [
+      "2022-03-10",
+      "10 مارس 2022",
+      "2021/22",
+      0,
+      0,
+      "الدوري الأوروبي"
+    ]
+  ],
+  "teams": [
+    {
+      "slug": "galatasaray",
+      "name": "جالاتا سراي",
+      "coach": "أوكان بوروك",
+      "formation": "4-2-3-1",
+      "shape": [
+        1,
+        4,
+        2,
+        3,
+        1
+      ],
+      "starters": [
+        {
+          "id": "603669",
+          "number": 1,
+          "name": "أوغورجان تشاكير",
+          "rating": 6.2
+        },
+        {
+          "id": "890232",
+          "number": 53,
+          "name": "باريش ألبير يلماز",
+          "rating": 4.9,
+          "minute": 67
+        },
+        {
+          "id": "643533",
+          "number": 6,
+          "name": "دافينسون سانشيز",
+          "rating": 4.9
+        },
+        {
+          "id": "906945",
+          "number": 4,
+          "name": "إسماعيل ياكوبس",
+          "rating": 5.6
+        },
+        {
+          "id": "1041660",
+          "number": 17,
+          "name": "إيرين إلمالي",
+          "rating": 5.8
+        },
+        {
+          "id": "592909",
+          "number": 34,
+          "name": "لوكاس توريرا",
+          "rating": 5.4,
+          "minute": 81
+        },
+        {
+          "id": "421786",
+          "number": 99,
+          "name": "ماريو ليمينا",
+          "rating": 5.9,
+          "minute": 58
+        },
+        {
+          "id": "845991",
+          "number": 11,
+          "name": "يونس أكغون",
+          "rating": 6.3,
+          "minute": 58
+        },
+        {
+          "id": "1504343",
+          "number": 83,
+          "name": "أليكسي باتراكوف",
+          "rating": 7.4,
+          "minute": 58
+        },
+        {
+          "id": "848844",
+          "number": 27,
+          "name": "رافاييل لياو",
+          "rating": 7.4
+        },
+        {
+          "id": "687681",
+          "number": 45,
+          "name": "فيكتور أوسيمين",
+          "rating": 5.8
+        }
+      ],
+      "substitutes": [
+        {
+          "id": "902710",
+          "number": 8,
+          "name": "غابرييل سارا",
+          "rating": 6.3,
+          "minute": 58
+        },
+        {
+          "id": "1200631",
+          "number": 18,
+          "name": "ليزلي أوغوشوكو",
+          "rating": 6.1,
+          "minute": 58
+        },
+        {
+          "id": "530859",
+          "number": 10,
+          "name": "ليروي ساني",
+          "rating": 6.2,
+          "minute": 58
+        },
+        {
+          "id": "583601",
+          "number": 7,
+          "name": "رولاند سالاي",
+          "rating": 6.4,
+          "minute": 67
+        },
+        {
+          "id": "1741323",
+          "number": 74,
+          "name": "ريناتو نهاغا",
+          "rating": null,
+          "minute": 81
+        }
+      ],
+      "unused": [
+        [
+          70,
+          "إينيس بويوك"
+        ],
+        [
+          24,
+          "جانكات يلماز"
+        ],
+        [
+          42,
+          "عبد الكريم بردكجي"
+        ],
+        [
+          3,
+          "إل شاداي بيتشيابو"
+        ],
+        [
+          20,
+          "إلكاي غوندوغان"
+        ],
+        [
+          73,
+          "بيرات لوش"
+        ],
+        [
+          21,
+          "دينيز غول"
+        ]
+      ]
+    },
+    {
+      "slug": "barcelona",
+      "name": "برشلونة",
+      "coach": "هانزي فليك",
+      "formation": "4-2-3-1",
+      "shape": [
+        1,
+        4,
+        2,
+        3,
+        1
+      ],
+      "starters": [
+        {
+          "id": "1167220",
+          "number": 1,
+          "name": "جوان غارسيا",
+          "rating": 7.7
+        },
+        {
+          "id": "940573",
+          "number": 24,
+          "name": "إريك غارسيا",
+          "rating": 7.4,
+          "minute": 74
+        },
+        {
+          "id": "1532137",
+          "number": 5,
+          "name": "باو كوبارسي",
+          "rating": 7.0
+        },
+        {
+          "id": "1598982",
+          "number": 18,
+          "name": "جيرارد مارتين",
+          "rating": 7.3
+        },
+        {
+          "id": "361757",
+          "number": 2,
+          "name": "جواو كانسيلو",
+          "rating": 8.6
+        },
+        {
+          "id": "675088",
+          "number": 16,
+          "name": "رودري",
+          "rating": 7.7
+        },
+        {
+          "id": "1083323",
+          "number": 8,
+          "name": "بيدري",
+          "rating": 7.5,
+          "minute": 74
+        },
+        {
+          "id": "1467236",
+          "number": 10,
+          "name": "لامين يامال",
+          "rating": 9.0
+        },
+        {
+          "id": "1404415",
+          "number": 7,
+          "name": "فيرمين لوبيز",
+          "rating": 8.0,
+          "minute": 82
+        },
+        {
+          "id": "906937",
+          "number": 17,
+          "name": "أنتوني غوردون",
+          "rating": 8.4,
+          "minute": 59
+        },
+        {
+          "id": "614834",
+          "number": 20,
+          "name": "داني أولمو",
+          "rating": 8.0,
+          "minute": 59
+        }
+      ],
+      "substitutes": [
+        {
+          "id": "576165",
+          "number": 9,
+          "name": "غابرييل جيسوس",
+          "rating": 7.0,
+          "minute": 59
+        },
+        {
+          "id": "959594",
+          "number": 14,
+          "name": "كريم أديمي",
+          "rating": 7.4,
+          "minute": 59
+        },
+        {
+          "id": "705450",
+          "number": 23,
+          "name": "جول كوندي",
+          "rating": 6.2,
+          "minute": 74
+        },
+        {
+          "id": "1573126",
+          "number": 22,
+          "name": "مارك برنال",
+          "rating": 6.5,
+          "minute": 74
+        },
+        {
+          "id": "1279040",
+          "number": 6,
+          "name": "غافي",
+          "rating": null,
+          "minute": 82
+        }
+      ],
+      "unused": [
+        [
+          25,
+          "دومينيك ليفاكوفيتش"
+        ],
+        [
+          13,
+          "فويتشيخ تشيزني"
+        ],
+        [
+          3,
+          "أليخاندرو بالدي"
+        ],
+        [
+          12,
+          "تشافي إسبارت"
+        ],
+        [
+          4,
+          "برايان فارينياس"
+        ],
+        [
+          29,
+          "حمزة عبد الكريم"
+        ]
+      ]
+    }
+  ],
+  "standings": [
+    {
+      "ok": true,
+      "provider": "ESPN",
+      "league": "uefa.champions",
+      "phase": "league",
+      "season": 2026,
+      "fetchedAt": "2026-10-15T22:34:51Z",
+      "stale": true,
+      "sourceUrl": "https://www.espn.com/soccer/standings/_/league/uefa.champions",
+      "entries": [
+        {
+          "teamId": "160",
+          "name": "Paris Saint-Germain",
+          "rank": 1,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 10,
+          "goalsAgainst": 3,
+          "goalDifference": 7,
+          "points": 6
+        },
+        {
+          "teamId": "83",
+          "name": "Barcelona",
+          "rank": 2,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 9,
+          "goalsAgainst": 2,
+          "goalDifference": 7,
+          "points": 6
+        },
+        {
+          "teamId": "362",
+          "name": "Aston Villa",
+          "rank": 3,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 9,
+          "goalsAgainst": 2,
+          "goalDifference": 7,
+          "points": 6
+        },
+        {
+          "teamId": "134",
+          "name": "VfB Stuttgart",
+          "rank": 4,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 6,
+          "goalsAgainst": 1,
+          "goalDifference": 5,
+          "points": 6
+        },
+        {
+          "teamId": "364",
+          "name": "Liverpool",
+          "rank": 5,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 8,
+          "goalsAgainst": 4,
+          "goalDifference": 4,
+          "points": 6
+        },
+        {
+          "teamId": "2250",
+          "name": "Sporting CP",
+          "rank": 6,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 5,
+          "goalsAgainst": 1,
+          "goalDifference": 4,
+          "points": 6
+        },
+        {
+          "teamId": "359",
+          "name": "Arsenal",
+          "rank": 7,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 4,
+          "goalsAgainst": 0,
+          "goalDifference": 4,
+          "points": 6
+        },
+        {
+          "teamId": "86",
+          "name": "Real Madrid",
+          "rank": 8,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "goalDifference": 2,
+          "points": 6
+        },
+        {
+          "teamId": "244",
+          "name": "Real Betis",
+          "rank": 9,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "goalDifference": 2,
+          "points": 6
+        },
+        {
+          "teamId": "132",
+          "name": "Bayern Munich",
+          "rank": 10,
+          "played": 2,
+          "wins": 1,
+          "draws": 1,
+          "losses": 0,
+          "goalsFor": 8,
+          "goalsAgainst": 3,
+          "goalDifference": 5,
+          "points": 4
+        },
+        {
+          "teamId": "493",
+          "name": "Shakhtar Donetsk",
+          "rank": 11,
+          "played": 2,
+          "wins": 1,
+          "draws": 1,
+          "losses": 0,
+          "goalsFor": 4,
+          "goalsAgainst": 2,
+          "goalDifference": 2,
+          "points": 4
+        },
+        {
+          "teamId": "2572",
+          "name": "Como",
+          "rank": 12,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "goalDifference": 2,
+          "points": 3
+        },
+        {
+          "teamId": "360",
+          "name": "Manchester United",
+          "rank": 13,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 2,
+          "goalDifference": 2,
+          "points": 3
+        },
+        {
+          "teamId": "102",
+          "name": "Villarreal",
+          "rank": 14,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 5,
+          "goalsAgainst": 4,
+          "goalDifference": 1,
+          "points": 3
+        },
+        {
+          "teamId": "1068",
+          "name": "Atlético Madrid",
+          "rank": 15,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 2,
+          "goalDifference": 1,
+          "points": 3
+        },
+        {
+          "teamId": "570",
+          "name": "Club Brugge",
+          "rank": 16,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 6,
+          "goalsAgainst": 6,
+          "goalDifference": 0,
+          "points": 3
+        },
+        {
+          "teamId": "382",
+          "name": "Manchester City",
+          "rank": 17,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 4,
+          "goalDifference": 0,
+          "points": 3
+        },
+        {
+          "teamId": "124",
+          "name": "Borussia Dortmund",
+          "rank": 18,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 3,
+          "goalDifference": 0,
+          "points": 3
+        },
+        {
+          "teamId": "175",
+          "name": "Lens",
+          "rank": 19,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 4,
+          "goalDifference": -1,
+          "points": 3
+        },
+        {
+          "teamId": "887",
+          "name": "AEK Athens",
+          "rank": 20,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 3,
+          "goalDifference": -1,
+          "points": 3
+        },
+        {
+          "teamId": "11420",
+          "name": "RB Leipzig",
+          "rank": 21,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 4,
+          "goalDifference": -2,
+          "points": 3
+        },
+        {
+          "teamId": "21922",
+          "name": "Sabah FK",
+          "rank": 22,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 4,
+          "goalDifference": -2,
+          "points": 3
+        },
+        {
+          "teamId": "142",
+          "name": "Feyenoord Rotterdam",
+          "rank": 23,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 7,
+          "goalDifference": -3,
+          "points": 3
+        },
+        {
+          "teamId": "2980",
+          "name": "Bodo/Glimt",
+          "rank": 24,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 5,
+          "goalDifference": -4,
+          "points": 3
+        },
+        {
+          "teamId": "104",
+          "name": "AS Roma",
+          "rank": 25,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 5,
+          "goalDifference": -1,
+          "points": 1
+        },
+        {
+          "teamId": "148",
+          "name": "PSV Eindhoven",
+          "rank": 26,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 2,
+          "goalDifference": -1,
+          "points": 1
+        },
+        {
+          "teamId": "510",
+          "name": "VIKING FK",
+          "rank": 27,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 6,
+          "goalDifference": -2,
+          "points": 1
+        },
+        {
+          "teamId": "436",
+          "name": "Fenerbahce",
+          "rank": 28,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 7,
+          "goalDifference": -6,
+          "points": 1
+        },
+        {
+          "teamId": "110",
+          "name": "Internazionale",
+          "rank": 29,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 4,
+          "goalsAgainst": 6,
+          "goalDifference": -2,
+          "points": 0
+        },
+        {
+          "teamId": "437",
+          "name": "FC Porto",
+          "rank": 30,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 5,
+          "goalDifference": -3,
+          "points": 0
+        },
+        {
+          "teamId": "494",
+          "name": "Slavia Prague",
+          "rank": 31,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 5,
+          "goalDifference": -3,
+          "points": 0
+        },
+        {
+          "teamId": "114",
+          "name": "Napoli",
+          "rank": 32,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 1,
+          "goalsAgainst": 4,
+          "goalDifference": -3,
+          "points": 0
+        },
+        {
+          "teamId": "4411",
+          "name": "LASK Linz",
+          "rank": 33,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 3,
+          "goalsAgainst": 7,
+          "goalDifference": -4,
+          "points": 0
+        },
+        {
+          "teamId": "166",
+          "name": "Lille",
+          "rank": 34,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 6,
+          "goalDifference": -4,
+          "points": 0
+        },
+        {
+          "teamId": "432",
+          "name": "Galatasaray",
+          "rank": 35,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 7,
+          "goalDifference": -5,
+          "points": 0
+        },
+        {
+          "teamId": "521",
+          "name": "Slovan Bratislava",
+          "rank": 36,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 1,
+          "goalsAgainst": 9,
+          "goalDifference": -8,
+          "points": 0
+        }
+      ],
+      "reviewedOn": "2026-10-16"
+    },
+    {
+      "ok": true,
+      "provider": "ESPN",
+      "league": "tur.1",
+      "phase": "league",
+      "season": 2026,
+      "reviewedOn": "2026-10-16",
+      "stale": true,
+      "sourceUrl": "https://www.espn.com/soccer/standings/_/league/tur.1",
+      "entries": [
+        {
+          "teamId": "432",
+          "name": "Galatasaray",
+          "rank": 1,
+          "played": 7,
+          "wins": 5,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 16,
+          "goalsAgainst": 11,
+          "goalDifference": 5,
+          "points": 16
+        },
+        {
+          "teamId": "1895",
+          "name": "Besiktas",
+          "rank": 2,
+          "played": 7,
+          "wins": 5,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 16,
+          "goalsAgainst": 8,
+          "goalDifference": 8,
+          "points": 15
+        },
+        {
+          "teamId": "132335",
+          "name": "Amed SFK",
+          "rank": 3,
+          "played": 7,
+          "wins": 4,
+          "draws": 2,
+          "losses": 1,
+          "goalsFor": 17,
+          "goalsAgainst": 9,
+          "goalDifference": 8,
+          "points": 14
+        },
+        {
+          "teamId": "436",
+          "name": "Fenerbahce",
+          "rank": 4,
+          "played": 7,
+          "wins": 4,
+          "draws": 1,
+          "losses": 2,
+          "goalsFor": 19,
+          "goalsAgainst": 6,
+          "goalDifference": 13,
+          "points": 13
+        },
+        {
+          "teamId": "997",
+          "name": "Trabzonspor",
+          "rank": 5,
+          "played": 7,
+          "wins": 4,
+          "draws": 1,
+          "losses": 2,
+          "goalsFor": 16,
+          "goalsAgainst": 5,
+          "goalDifference": 11,
+          "points": 13
+        },
+        {
+          "teamId": "9078",
+          "name": "Alanyaspor",
+          "rank": 6,
+          "played": 7,
+          "wins": 3,
+          "draws": 3,
+          "losses": 1,
+          "goalsFor": 8,
+          "goalsAgainst": 6,
+          "goalDifference": 2,
+          "points": 12
+        },
+        {
+          "teamId": "995",
+          "name": "Kocaelispor",
+          "rank": 7,
+          "played": 7,
+          "wins": 4,
+          "draws": 0,
+          "losses": 3,
+          "goalsFor": 8,
+          "goalsAgainst": 6,
+          "goalDifference": 2,
+          "points": 12
+        },
+        {
+          "teamId": "132334",
+          "name": "Çorum FK",
+          "rank": 8,
+          "played": 7,
+          "wins": 3,
+          "draws": 1,
+          "losses": 3,
+          "goalsFor": 16,
+          "goalsAgainst": 12,
+          "goalDifference": 4,
+          "points": 10
+        },
+        {
+          "teamId": "6870",
+          "name": "Kasimpasa",
+          "rank": 9,
+          "played": 7,
+          "wins": 2,
+          "draws": 4,
+          "losses": 1,
+          "goalsFor": 8,
+          "goalsAgainst": 8,
+          "goalDifference": 0,
+          "points": 10
+        },
+        {
+          "teamId": "7656",
+          "name": "Caykur Rizespor",
+          "rank": 10,
+          "played": 7,
+          "wins": 3,
+          "draws": 1,
+          "losses": 3,
+          "goalsFor": 7,
+          "goalsAgainst": 9,
+          "goalDifference": -2,
+          "points": 10
+        },
+        {
+          "teamId": "7914",
+          "name": "Istanbul Basaksehir",
+          "rank": 11,
+          "played": 7,
+          "wins": 2,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 10,
+          "goalsAgainst": 11,
+          "goalDifference": -1,
+          "points": 8
+        },
+        {
+          "teamId": "20070",
+          "name": "Gaziantep FK",
+          "rank": 12,
+          "played": 7,
+          "wins": 2,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 7,
+          "goalsAgainst": 10,
+          "goalDifference": -3,
+          "points": 8
+        },
+        {
+          "teamId": "996",
+          "name": "Genclerbirligi",
+          "rank": 13,
+          "played": 7,
+          "wins": 2,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 7,
+          "goalsAgainst": 15,
+          "goalDifference": -8,
+          "points": 8
+        },
+        {
+          "teamId": "19267",
+          "name": "Erzurum BB",
+          "rank": 14,
+          "played": 7,
+          "wins": 2,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 3,
+          "goalsAgainst": 11,
+          "goalDifference": -8,
+          "points": 8
+        },
+        {
+          "teamId": "789",
+          "name": "Goztepe",
+          "rank": 15,
+          "played": 7,
+          "wins": 1,
+          "draws": 3,
+          "losses": 3,
+          "goalsFor": 15,
+          "goalsAgainst": 15,
+          "goalDifference": 0,
+          "points": 6
+        },
+        {
+          "teamId": "7648",
+          "name": "Konyaspor",
+          "rank": 16,
+          "played": 7,
+          "wins": 1,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 4,
+          "goalsAgainst": 8,
+          "goalDifference": -4,
+          "points": 5
+        },
+        {
+          "teamId": "11429",
+          "name": "Samsunspor",
+          "rank": 17,
+          "played": 7,
+          "wins": 1,
+          "draws": 1,
+          "losses": 5,
+          "goalsFor": 6,
+          "goalsAgainst": 15,
+          "goalDifference": -9,
+          "points": 4
+        },
+        {
+          "teamId": "20729",
+          "name": "Eyupspor",
+          "rank": 18,
+          "played": 7,
+          "wins": 1,
+          "draws": 0,
+          "losses": 6,
+          "goalsFor": 2,
+          "goalsAgainst": 20,
+          "goalDifference": -18,
+          "points": 3
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "provider": "ESPN",
+      "league": "esp.1",
+      "phase": "league",
+      "season": 2026,
+      "fetchedAt": "2026-10-15T22:34:51Z",
+      "stale": true,
+      "sourceUrl": "https://www.espn.com/soccer/table/_/league/esp.1/season/2026",
+      "entries": [
+        {
+          "teamId": "83",
+          "name": "Barcelona",
+          "rank": 1,
+          "played": 8,
+          "wins": 8,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 34,
+          "goalsAgainst": 7,
+          "goalDifference": 27,
+          "points": 24
+        },
+        {
+          "teamId": "1068",
+          "name": "Atlético Madrid",
+          "rank": 2,
+          "played": 8,
+          "wins": 6,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 18,
+          "goalsAgainst": 8,
+          "goalDifference": 10,
+          "points": 19
+        },
+        {
+          "teamId": "244",
+          "name": "Real Betis",
+          "rank": 3,
+          "played": 8,
+          "wins": 6,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 14,
+          "goalsAgainst": 9,
+          "goalDifference": 5,
+          "points": 19
+        },
+        {
+          "teamId": "86",
+          "name": "Real Madrid",
+          "rank": 4,
+          "played": 8,
+          "wins": 6,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 19,
+          "goalsAgainst": 8,
+          "goalDifference": 11,
+          "points": 18
+        },
+        {
+          "teamId": "243",
+          "name": "Sevilla",
+          "rank": 5,
+          "played": 8,
+          "wins": 4,
+          "draws": 2,
+          "losses": 2,
+          "goalsFor": 13,
+          "goalsAgainst": 12,
+          "goalDifference": 1,
+          "points": 14
+        },
+        {
+          "teamId": "89",
+          "name": "Real Sociedad",
+          "rank": 6,
+          "played": 8,
+          "wins": 4,
+          "draws": 1,
+          "losses": 3,
+          "goalsFor": 12,
+          "goalsAgainst": 15,
+          "goalDifference": -3,
+          "points": 13
+        },
+        {
+          "teamId": "96",
+          "name": "Alavés",
+          "rank": 7,
+          "played": 8,
+          "wins": 3,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 12,
+          "goalsAgainst": 8,
+          "goalDifference": 4,
+          "points": 11
+        },
+        {
+          "teamId": "90",
+          "name": "Deportivo",
+          "rank": 8,
+          "played": 8,
+          "wins": 2,
+          "draws": 4,
+          "losses": 2,
+          "goalsFor": 12,
+          "goalsAgainst": 11,
+          "goalDifference": 1,
+          "points": 10
+        },
+        {
+          "teamId": "85",
+          "name": "Celta Vigo",
+          "rank": 9,
+          "played": 8,
+          "wins": 1,
+          "draws": 5,
+          "losses": 2,
+          "goalsFor": 8,
+          "goalsAgainst": 6,
+          "goalDifference": 2,
+          "points": 8
+        },
+        {
+          "teamId": "93",
+          "name": "Athletic Club",
+          "rank": 10,
+          "played": 6,
+          "wins": 2,
+          "draws": 2,
+          "losses": 2,
+          "goalsFor": 7,
+          "goalsAgainst": 6,
+          "goalDifference": 1,
+          "points": 8
+        },
+        {
+          "teamId": "102",
+          "name": "Villarreal",
+          "rank": 11,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 13,
+          "goalsAgainst": 13,
+          "goalDifference": 0,
+          "points": 8
+        },
+        {
+          "teamId": "88",
+          "name": "Espanyol",
+          "rank": 12,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 11,
+          "goalsAgainst": 11,
+          "goalDifference": 0,
+          "points": 8
+        },
+        {
+          "teamId": "101",
+          "name": "Rayo Vallecano",
+          "rank": 13,
+          "played": 7,
+          "wins": 2,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 11,
+          "goalsAgainst": 16,
+          "goalDifference": -5,
+          "points": 8
+        },
+        {
+          "teamId": "2922",
+          "name": "Getafe",
+          "rank": 14,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 4,
+          "goalsAgainst": 10,
+          "goalDifference": -6,
+          "points": 8
+        },
+        {
+          "teamId": "87",
+          "name": "Racing Santander",
+          "rank": 15,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 13,
+          "goalsAgainst": 23,
+          "goalDifference": -10,
+          "points": 8
+        },
+        {
+          "teamId": "97",
+          "name": "Osasuna",
+          "rank": 16,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 8,
+          "goalsAgainst": 18,
+          "goalDifference": -10,
+          "points": 8
+        },
+        {
+          "teamId": "1538",
+          "name": "Levante",
+          "rank": 17,
+          "played": 7,
+          "wins": 1,
+          "draws": 3,
+          "losses": 3,
+          "goalsFor": 11,
+          "goalsAgainst": 15,
+          "goalDifference": -4,
+          "points": 6
+        },
+        {
+          "teamId": "3751",
+          "name": "Elche",
+          "rank": 18,
+          "played": 8,
+          "wins": 1,
+          "draws": 3,
+          "losses": 4,
+          "goalsFor": 11,
+          "goalsAgainst": 17,
+          "goalDifference": -6,
+          "points": 6
+        },
+        {
+          "teamId": "94",
+          "name": "Valencia",
+          "rank": 19,
+          "played": 8,
+          "wins": 1,
+          "draws": 2,
+          "losses": 5,
+          "goalsFor": 6,
+          "goalsAgainst": 15,
+          "goalDifference": -9,
+          "points": 5
+        },
+        {
+          "teamId": "99",
+          "name": "Málaga",
+          "rank": 20,
+          "played": 8,
+          "wins": 0,
+          "draws": 4,
+          "losses": 4,
+          "goalsFor": 4,
+          "goalsAgainst": 13,
+          "goalDifference": -9,
+          "points": 4
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ali-saed",
+      "analyst": "علي سعيد",
+      "videoId": "IMvuTFGF35g",
+      "matchId": "2049576",
+      "publishedOn": "2026-10-14",
+      "duration": "13:34",
+      "channel": "Ali Saed - علي سعيد",
+      "scope": "match",
+      "scopeLabel": "مراجعة مخصّصة للمباراة",
+      "title": "إيقاع الشوط الثاني ودور لامين يامال",
+      "summary": "يركز علي سعيد على تسارع إيقاع برشلونة وضغطه بعد الاستراحة، وعلى دور لامين يامال في صناعة الهدفين الثاني والثالث. ويشيد بخروج بيدري من الضغط في الشوط الأول. هذه خلاصة للوصف والجزء المتاح من التفريغ، وليست مراجعة كاملة لكل ما ورد في الفيديو."
+    }
+  ]
+}

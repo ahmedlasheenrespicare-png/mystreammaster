@@ -143,3 +143,18 @@ body.sm-page{background:var(--sm-cream)!important;color:var(--sm-ink)!important;
 .sm-legacy .stat-label,.sm-legacy .score-label,.sm-legacy .rule-text,.sm-legacy .update-footer,.sm-legacy .loading-text{color:#62626e!important}
 
 .sm-cart{display:flex;align-items:center;gap:6px}
+/* Keep all seven navigation groups and the trial action inside the capsule. */
+@media(min-width:1280px){.sm-nav{gap:12px;padding-inline:18px}.sm-dd-btn{font-size:13px;padding-inline:6px}.sm-brand{font-size:20px}}
+@media(min-width:1280px) and (max-width:1359px){.sm-desktop{display:none}.sm-menu-toggle{display:block}}
+
+/* Competition-season disclosure shared by desktop and mobile legacy navigation. */
+.sm-season{border:1px solid #0b0b0f1a;border-radius:12px;overflow:hidden}
+.sm-season>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;padding:12px;font-size:14px;font-weight:800;line-height:1.7;color:#0b0b0f}
+.sm-season>summary::-webkit-details-marker{display:none}
+.sm-season>summary:focus-visible{outline:2px solid #4667db;outline-offset:-3px}
+.sm-season[open]>summary>span{transform:rotate(180deg)}
+.sm-season-body{border-top:1px solid #0b0b0f1a;padding:6px}
+.sm-season-body>p{margin:6px 10px;font-size:12px;color:#555;font-weight:700}
+.sm-mobile .sm-season{margin:0 12px 12px}
+.sm-mobile .sm-season>summary{font-size:14px;padding:12px}
+.sm-mobile .sm-season .sm-dd-link{display:flex;padding:10px;border-radius:8px}

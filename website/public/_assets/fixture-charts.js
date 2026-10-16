@@ -12,8 +12,8 @@ export const CHART_METRICS = [
   { key: 'red-cards', label: 'البطاقات الحمراء', group: 'defence', espn: 'redCards' },
 ];
 
-const HOME = 'أتلتيكو مدريد';
-const AWAY = 'مانشستر يونايتد';
+const HOME = typeof document !== 'undefined' ? document.getElementById('analysis-charts')?.dataset.homeTeam || 'أتلتيكو مدريد' : 'أتلتيكو مدريد';
+const AWAY = typeof document !== 'undefined' ? document.getElementById('analysis-charts')?.dataset.awayTeam || 'مانشستر يونايتد' : 'مانشستر يونايتد';
 const esc = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
 export function chartValue(raw, percent = false) {

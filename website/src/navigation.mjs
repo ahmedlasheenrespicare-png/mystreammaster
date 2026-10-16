@@ -85,6 +85,18 @@ export const NAV_GROUPS = [
     ],
   },
   {
+    key: "analysis",
+    label: "تحليل المباريات",
+    match: ["match-analysis", "roma-real-madrid", "manchester-city-psg", "manchester-united-atletico", "galatasaray-barcelona"],
+    links: [
+      { href: "match-analysis/", label: "دوري أبطال أوروبا — موسم 2026/2027", desc: "تحليلات البطولة مرتبة حسب الجولات" },
+      { href: "roma-real-madrid/", label: "روما × ريال مدريد", desc: "عودة ريال مدريد في الجولة الثانية" },
+      { href: "manchester-city-psg/", label: "مانشستر سيتي × باريس", desc: "أفضلية باريس وثنائية هالاند" },
+      { href: "manchester-united-atletico/", label: "أتلتيكو × مانشستر يونايتد", desc: "تفاصيل فوز أتلتيكو بهدفين" },
+      { href: "galatasaray-barcelona/", label: "جالاتا سراي × برشلونة", desc: "عودة برشلونة برباعية في إسطنبول" },
+    ],
+  },
+  {
     key: "tournaments",
     label: "البطولات والمنتخبات",
     /* مسارات كاملة (بادئة) — تفوز على مطابقة المقطع الأول في activeGroupKey */

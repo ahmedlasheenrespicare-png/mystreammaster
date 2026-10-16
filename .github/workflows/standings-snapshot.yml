@@ -34,6 +34,9 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    # الكتابة مطلوبة لخطوة الالتزام أدناه، وتُقيَّد بفرع غير main في الخطوة نفسها
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,6 +48,27 @@ jobs:
           SNAPSHOT_LEAGUES: ${{ inputs.snapshot_leagues || 'uefa.champions eng.1 esp.1' }}
           PROBE_LEAGUES: ${{ inputs.probe_leagues || 'fra.1 ger.1 ita.1 egy.1 ksa.1' }}
         run: node website/scripts/fetch-standings-snapshot.mjs
+      - name: Publish fetched data into the repository
+        # البوابة الإنتاجية: main لا يُكتب فيه من هذا التشغيل أبداً.
+        if: github.ref != 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if [ -f website/.standings-out/standings-snapshot.json ]; then
+            cp website/.standings-out/standings-snapshot.json website/src/content/standings-snapshot.json
+          fi
+          if [ -f website/.standings-out/probe.json ]; then
+            cp website/.standings-out/probe.json website/docs/standings-probe-report.json
+          fi
+          if git diff --quiet -- website/src/content/standings-snapshot.json website/docs/standings-probe-report.json; then
+            echo "لا تغيير في البيانات المجلوبة — لا التزام."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add website/src/content/standings-snapshot.json website/docs/standings-probe-report.json
+          # [skip ci]: بيانات فقط بلا كود، فلا داعي لإعادة تشغيل البوابات ولا خطر حلقة.
+          git commit -m "تحديث بيانات الترتيب من المصدر الموثوق (ESPN) — تشغيل آلي [skip ci]"
+          git push
       - name: Summarize
         if: always()
         run: |

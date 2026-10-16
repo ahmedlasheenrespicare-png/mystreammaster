@@ -39,24 +39,42 @@ test('لقطة التوثيق القائمة لم تُمس: ثلاث بطولا�
   for (const table of reference.tables) {
     assert.equal(table.ok, true);
     assert.equal(table.entries.length, table.league === 'uefa.champions' ? 36 : 20, table.league);
+    /* تاريخ القراءة مجمَّد: أي تحديث آلي يجب أن يكتب في لقطة صفحات البطولات
+       وحدها، فلا تتغيّر الصفحات الموثّقة بلا مراجعة تحريرية. */
+    assert.equal(table.fetchedAt, '2026-10-15T22:34:51Z', `${table.league}: لقطة التوثيق تغيّر وقت قراءتها`);
   }
 });
 
-test('لقطة صفحات البطولات تحمل نفس أرقام اللقطة المراجَعة حرفياً', () => {
+test('لقطة صفحات البطولات: إمّا النسخة المراجَعة المجمّدة وإمّا نسخة آلية مُحكَّمة — ولا حالة ثالثة', () => {
   assert.equal(snapshot.version, 1);
-  const byLeague = new Map(snapshot.tables.map((table) => [table.league, table]));
-  for (const table of reference.tables) {
-    const copy = byLeague.get(table.league);
-    assert.ok(copy, `${table.league}: غير موجود في لقطة صفحات البطولات`);
-    assert.equal(copy.season, table.season, `${table.league}: الموسم`);
-    assert.equal(copy.fetchedAt, table.fetchedAt, `${table.league}: وقت القراءة`);
-    assert.equal(copy.sourceUrl, table.sourceUrl, `${table.league}: رابط الأصل`);
-    assert.equal(copy.phase, table.phase, `${table.league}: المرحلة`);
-    assert.deepEqual(
-      copy.entries.map((row) => [row.teamId, row.name, row.rank, row.played, row.points, row.goalDifference]),
-      table.entries.map((row) => [row.teamId, row.name, row.rank, row.played, row.points, row.goalDifference]),
-      `${table.league}: أرقام اللقطة تغيّرت`,
-    );
+  for (const table of snapshot.tables) {
+    /* نفس تحقق الواجهة — لقطة لا تجتازه لا تصل إلى HTML أصلاً */
+    const validated = standings.validateStandings(table, table.league);
+    assert.equal(validated.entries.length, standings.standingsConfig(table.league).count, `${table.league}: عدد الصفوف`);
+    /* القاعدة الحاكمة: لا رقم مُخترع — كل صف يحمل اسماً ومعرّفاً من المصدر */
+    for (const row of table.entries) {
+      assert.ok(row.name.trim().length > 0 && /^[1-9]\d{0,11}$/.test(row.teamId), `${table.league}: صف بلا هوية مصدر`);
+    }
+    if (table.stale === true) {
+      /* الحالة الأولى: النسخة المراجَعة المنقولة حرفياً — يجب أن تطابق اللقطة
+         الموثّقة صفاً بصف، فلا يُدخل أحد تعديلاً يدوياً ويسمّيه «مراجَعاً». */
+      const original = reference.tables.find((entry) => entry.league === table.league);
+      assert.ok(original, `${table.league}: لا مقابل لها في اللقطة الموثّقة`);
+      assert.equal(table.fetchedAt, original.fetchedAt, `${table.league}: وقت قراءة النسخة المراجَعة تغيّر`);
+      assert.match(snapshot.provenance, /fixture-standings-snapshot\.json/, 'أصل النسخة المراجَعة غير موثّق');
+      assert.deepEqual(
+        table.entries.map((row) => [row.teamId, row.name, row.rank, row.points, row.goalDifference]),
+        original.entries.map((row) => [row.teamId, row.name, row.rank, row.points, row.goalDifference]),
+        `${table.league}: أرقام النسخة المراجَعة لا تطابق اللقطة الموثّقة`,
+      );
+    } else {
+      /* الحالة الثانية: نسخة مجلوبة آلياً من نقطة المصدر — تُشترط وثيقة الأصل */
+      assert.equal(table.stale, false, `${table.league}: قراءة حديثة يجب ألا تكون موسومة قديمة`);
+      assert.match(table.sourceUrl, /^https:\/\/site\.web\.api\.espn\.com\/apis\/v2\/sports\/soccer\/[a-z0-9.]+\/standings$/, `${table.league}: رابط الأصل ليس نقطة المصدر المعتمدة`);
+      assert.ok(Number.isFinite(Date.parse(table.fetchedAt)), `${table.league}: وقت قراءة غير سليم`);
+      assert.match(snapshot.provenance, /ESPN/, 'أصل اللقطة غير موثّق');
+      assert.match(snapshot.provenance, /probe-standings\.mjs/, 'المحكّم المستخدم غير موثّق في الأصل');
+    }
   }
 });
 

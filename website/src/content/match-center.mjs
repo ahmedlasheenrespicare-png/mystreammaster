@@ -151,6 +151,40 @@ export const MATCH_CENTER_SUMMARY_PROBE = {
   ],
 };
 
+/* ==========================================================================
+   فحص P1 — `summary` لمباراة منتهية (Fulham at Ipswich Town, 401879265)
+   --------------------------------------------------------------------------
+   أرسل صاحب المشروع المخرجات في 2026-10-16 (وصلت مقصوصة الرأس). المؤكد منها
+   حرفياً أدناه؛ وما كان في الجزء المقصوص يبقى «غير مفحوص» ولا يُستنتج.
+========================================================================== */
+export const MATCH_CENTER_FINISHED_PROBE = {
+  probedAt: '2026-10-16T00:00:00Z',
+  provider: 'espn',
+  endpoint: 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879265',
+  subjectEventId: '401879265',
+  matchStateAtProbe: 'finished (STATUS_FULL_TIME, 2026-10-10)',
+  confirmed: {
+    /* `seasonseries` مصفوفة بسلسلة «head-to-head» واحدة: عنوان، «Last 5
+       Matchups»، وأحداث بكلٍّ من: id وتاريخ وحالة post مكتملة، ومتنافسان
+       بمعرّف فريق ونتيجة، و`competitionName` (دوري/كأس رابطة/تشامبيونشيب).
+       لا وسم وديات صريح ولا ملعب ولا وقت إضافي/ترجيح في العينة المرصودة. */
+    seasonseries: 'present-head-to-head-last-5-all-competitions',
+    /* حتى بعد النهاية: مفتاح `lineups` غير موجود أصلاً، و`rosters` بطول 2. */
+    lineupsKey: 'absent-even-after-full-time',
+    rosters: 'present-length-2-structure-unprobed',
+    /* `gameInfo` = ملعب (id واسم ومدينة/دولة فقط) + حضور. لا حكم في العينة. */
+    gameInfo: 'venue+attendance-only-no-referee-in-sample',
+    /* قادة إحصائيات لاعبين (تمريرات دقيقة، تدخلات دفاعية...) بلا أي تقييم. */
+    leaders: 'player-stat-leaders-no-ratings',
+  },
+  stillUnprobed: [
+    'مفاتيح `boxscore` وأسماء إحصائيات الفريقين (كانت في الجزء المقصوص)',
+    '`keyEvents`: العدد والبنية ونوعا التبديلات وVAR',
+    '`lastFiveGames`: العدد وفترة العينة وبنية الحدث الواحد',
+    'بنية `rosters`: هل تحمل أساسيين/خطة لمباراة منتهية أم قوائم فقط',
+  ],
+};
+
 /** حكم مفتاح في استجابة `summary` — `null` إن لم يُفحص المفتاح. */
 export function summaryKeyVerdict(key) {
   const entry = MATCH_CENTER_SUMMARY_PROBE.usage.find(item => item.key === key);

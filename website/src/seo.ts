@@ -18,6 +18,8 @@ import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
+import { MATCH_CENTER_COMPETITION, allMatchesVerified, matchByRoute } from "./content/match-center.mjs";
+import { dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
 
 export interface SeoMeta {
   title: string;
@@ -33,6 +35,11 @@ export interface SeoMeta {
   lang: "ar" | "en";
   /** روابط hreflang للصفحات التجارية ذات النسختين (عربي/إنجليزي) */
   alternates?: { hreflang: string; href: string }[];
+  /**
+   * لون شريط المتصفح لهذه الصفحة. غيابه يعني «اترك القيمة العامة» — ولا تُنسخ
+   * القيمة العامة هنا، بل تُقرأ من القالب نفسه حتى لا يتباعد تعريفان لها.
+   */
+  themeColor?: string;
 }
 
 const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
@@ -110,6 +117,14 @@ const WEBSITE_ID = `${SITE_URL}/#website`;
 const PAGES_DATE = "2026-10-14";
 /* تاريخ نشر صفحات هبوط البطولات والمنتخبات */
 const LANDING_DATE = "2026-10-15";
+/* تاريخ صفحات مركز المباراة. **ثابت عمداً**: البند 13 يمنع تغيير
+   `dateModified` مع كل تحديث، وإلا أعاد الموقع إعلان الصفحة جديدة كل 60 ثانية
+   مع كل دورة قراءة — وهذا إساءة استخدام واضحة لبيانات منظّمة. */
+const MATCH_CENTER_DATE = "2026-10-16";
+/* البند 4: الصفحة داكنة، فـ`theme-color` العامة الكريمية `#faf9f6` ترسم شريط
+   متصفح فاتحاً فوق صفحة كحلية. تُضبط لكل مسار بدل تغيير القيمة العامة التي
+   تخص 47 صفحة أخرى ليست من هذه المهمة. */
+const MATCH_CENTER_NIGHT = "#080b12";
 
 export const INDEX_ROBOTS =
   "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
@@ -155,6 +170,29 @@ const websiteLd = {
     "query-input": "required name=search_term_string",
   },
 };
+
+/* ── لماذا لا يُنشر كيان `SportsEvent` على صفحات مركز المباراة ──────────
+   البند 13 يشترط أن تكون بيانات الحدث «حقيقية ومكتملة — لا كيان حدث ناقصاً».
+   وفحص المشروع القائم `scripts/test-event-jsonld.mjs` (ويُشفّر إرشادات جوجل)
+   يشترط في كل كيان حدث: `name` و`startDate` و`location` **وأيضاً** `endDate`
+   و`image` و`performer` و`organizer` و`eventStatus` و`eventAttendanceMode`،
+   وللملعب الواحد عنواناً تفصيلياً: `streetAddress` و`addressLocality`
+   و`postalCode` و`addressCountry`.
+
+   ومن المصدر المؤكد (تقرير §12) نملك ثلاثة فقط: الاسم، `startDate`، واسم
+   الملعب. والباقي لا يُجمع بصدق:
+   • `endDate` — مباراة **مجدولة** لا نهاية معلنة لها؛ واشتقاقها «بداية + ساعتين»
+     اختراع رقم، والبند 2 يمنع الوعد بما لا يغطيه المصدر.
+   • `image` — البند 12 يمنع الصور بلا إذن، وصورة العلامة العامة ليست صورة الحدث.
+   • `organizer` — لم يرد في الحمولة، ولا تُنسب جهة تنظيم بلا مصدر.
+   • العنوان التفصيلي — الحمولة حملت اسم الملعب وحده، فالشارع والمدينة والرمز
+     البريدي ليست منه، واستنتاجها تخمين.
+
+   لذلك تُنشر `WebPage` و`BreadcrumbList` (كلاهما كامل وحقيقي) ويُحجب كيان
+   الحدث، بدل نشر كيان ناقص يخرق البند 13 أو حقول مختلَقة تخرق البند 2 —
+   ودون تليين الفحص القائم لتمرير كيان ناقص (البند 14). يُعاد النظر في كيان
+   الحدث حين تُتحقق هذه الحقول من مصدر، لا قبل ذلك.
+────────────────────────────────────────────────────────────────────── */
 
 function breadcrumbs(items: { name: string; path: string }[], canonical: string) {
   return {
@@ -514,6 +552,54 @@ export function getSeo(path: string): SeoMeta {
           canonical
         ),
       ],
+    };
+  }
+
+  /* ===== مركز المباراة — /matches/{البطولة}/{المباراة} ===== */
+  const centerMatch = matchByRoute(clean);
+  if (centerMatch) {
+    const canonical = absolute(`matches/${centerMatch.competitionSlug}/${centerMatch.slug}`);
+    /* البوابة: كيان الحدث والفهرسة معاً معلقان على تأكيد المعرّفات من المصدر.
+       مباراة غير مطابَقة لا تُفهرس ولا تُنشر بكيان حدث ناقص (البندان 2 و13). */
+    const verified = allMatchesVerified();
+    const day = dayLabelInZone(centerMatch.kickoffUtc, "Africa/Cairo");
+    const time = kickoffLabel(centerMatch.kickoffUtc, "Africa/Cairo");
+    const title = `${centerMatch.home.name} ضد ${centerMatch.away.name} — مركز المباراة | ${BRAND_NAME}`;
+    /* الوصف داخل نافذة الفحص القائم (70–175 حرفاً) وفريد لكل مباراة: أسماء
+       الفريقين والملعب تكفي للتمييز، فلا يتكرر النص حرفياً بين الصفحات. */
+    /* الوصف داخل نافذة الفحص القائم (70–175 حرفاً) وفريد لكل مباراة: أسماء
+       الفريقين والملعب والموعد تكفي للتمييز، فلا يتكرر النص بين الصفحات.
+       ولا يُقتطع بـ`slice` — الاقتطاع الصامت ينتج وصفاً مبتور النهاية. */
+    const description = `مركز مباراة ${centerMatch.home.name} و${centerMatch.away.name} في ${MATCH_CENTER_COMPETITION.name}، ${day} ${time} بتوقيت القاهرة، ملعب ${centerMatch.venue ?? "غير متاح"}. النتيجة من المصدر.`;
+    const jsonLd: Record<string, unknown>[] = [
+      webPageLd({
+        canonical,
+        name: title,
+        description,
+        published: MATCH_CENTER_DATE,
+        modified: MATCH_CENTER_DATE,
+      }),
+      breadcrumbs(
+        [
+          { name: "الرئيسية", path: "" },
+          { name: "مواعيد المباريات", path: "matches" },
+          { name: MATCH_CENTER_COMPETITION.name, path: `matches/${MATCH_CENTER_COMPETITION.slug}` },
+          { name: `${centerMatch.home.shortName} × ${centerMatch.away.shortName}`, path: `matches/${centerMatch.competitionSlug}/${centerMatch.slug}` },
+        ],
+        canonical
+      ),
+    ];
+    /* لا كيان حدث هنا — السبب مسجّل في التعليق أعلى هذا الملف. */
+    return {
+      ...base,
+      title,
+      description,
+      canonical,
+      robots: verified ? INDEX_ROBOTS : "noindex, follow",
+      ogType: "website",
+      ogImageAlt: `${centerMatch.home.name} ضد ${centerMatch.away.name} — ${BRAND_NAME}`,
+      themeColor: MATCH_CENTER_NIGHT,
+      jsonLd,
     };
   }
 
@@ -911,6 +997,9 @@ export function getSeo(path: string): SeoMeta {
 }
 
 /* تحديث وسوم الرأس أثناء التنقّل داخل الموقع (بدون إعادة تحميل) */
+/* القيمة الأصلية لـ`theme-color` كما وردت في القالب — تُحفظ مرة واحدة. */
+let originalThemeColor: string | null = null;
+
 export function applySeoToDocument(path: string) {
   if (typeof document === "undefined") return;
   const seo = getSeo(path);
@@ -925,6 +1014,12 @@ export function applySeoToDocument(path: string) {
     }
     el.setAttribute(attr, value);
   };
+  /* القيمة العامة تُقرأ من القالب عند أول تنقّل وتُستعاد عند مغادرة الصفحة
+     الداكنة — فلا يُنسخ رقم `index.html` هنا فيتباعد عنه. */
+  if (originalThemeColor === null) {
+    originalThemeColor = document.head.querySelector('meta[name="theme-color"]')?.getAttribute("content") ?? "";
+  }
+  setMeta('meta[name="theme-color"]', "content", seo.themeColor ?? originalThemeColor);
   setMeta('meta[name="description"]', "content", seo.description);
   setMeta('meta[name="robots"]', "content", seo.robots);
   setMeta('meta[property="og:title"]', "content", seo.title);

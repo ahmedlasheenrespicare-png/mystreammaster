@@ -77,6 +77,16 @@ function applyHead(template, seo) {
     else out = out.replace("</head>", `    ${tag}\n  </head>`);
   }
 
+  /* لون شريط المتصفح: يُستبدل فقط للمسارات التي تعلن لوناً خاصاً (صفحة مركز
+     المباراة الداكنة). وباقي المسارات تبقى على قيمة القالب العامة، فلا يُلمس
+     ما لا يخصّ هذه المهمة. */
+  if (seo.themeColor) {
+    const themeRe = /<meta name="theme-color" content="[^"]*"\s*\/?>/;
+    const themeTag = `<meta name="theme-color" content="${esc(seo.themeColor)}" />`;
+    if (themeRe.test(out)) out = replaceTag(out, themeRe, themeTag);
+    else out = out.replace("</head>", `    ${themeTag}\n  </head>`);
+  }
+
   /* روابط hreflang للصفحات التجارية ذات النسختين (عربي/إنجليزي) */
   if (seo.alternates && seo.alternates.length > 0) {
     const links = seo.alternates

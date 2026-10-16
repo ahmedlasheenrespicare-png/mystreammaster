@@ -14,6 +14,7 @@ import ChannelsPage from "./pages/ChannelsPage";
 import ChannelCategoryPage from "./pages/ChannelCategoryPage";
 import MatchesPage from "./pages/MatchesPage";
 import LeagueLandingPage from "./pages/LeagueLandingPage";
+import MatchCenterPage from "./pages/MatchCenterPage";
 import TeamLandingPage from "./pages/TeamLandingPage";
 import PlanPage from "./pages/PlanPage";
 import BlogIndexPage from "./pages/BlogIndexPage";
@@ -30,6 +31,7 @@ import { isEnPath } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
+import { matchByRoute } from "./content/match-center.mjs";
 import { PRICING_PLANS, PricingPlan } from "./data";
 import { ScrollProgress, SmoothScroll } from "./components/motion";
 
@@ -93,6 +95,9 @@ export default function App() {
   const enPlan = PRICING_PLANS.find((p) => path === `/en/${p.serverCode}`);
   const plan = PRICING_PLANS.find((p) => path === `/${p.serverCode}`);
   const post = BLOG_POSTS.find((p) => path === `/blog/${p.slug}`);
+  /* مركز المباراة: /matches/{البطولة}/{المباراة} — ثلاثة مقاطع، فلا يتقاطع
+     مع مسار هبوط البطولة ذي المقطعين. */
+  const matchCenter = matchByRoute(path);
   const leagueLanding = LEAGUE_LANDINGS.find((l) => path === `/matches/${l.slug}`);
   const teamLanding = TEAM_LANDINGS.find((t) => path === `/world-cup-2026/${t.slug}`);
   const channelCategory = CHANNEL_CATEGORY_PAGES.find((category) => path === `/channels/${category.slug}`);
@@ -123,6 +128,8 @@ export default function App() {
     page = <TrialPage onOpenTrial={openTrial} />;
   } else if (path === "/cart") {
     page = <section className="pt-[180px] pb-24 px-5 text-center max-w-3xl mx-auto"><p className="text-[#2b4eff] font-bold mb-4">طلب التفعيل التقني يبدأ هنا</p><h1 className="font-display text-5xl font-black">سلة المشتريات</h1><p className="my-6 text-black/60">راجع الباقات المختارة وأكمل طلبك مع فريقنا عبر واتساب.</p><button onClick={openCart} className="rounded-full bg-[#0b0b0f] text-[#d8ff3e] font-bold px-8 py-4">عرض السلة ({cartItems.length})</button><a href="/store/" className="inline-block mx-4 font-bold underline">متابعة التسوق</a></section>;
+  } else if (matchCenter) {
+    page = <MatchCenterPage match={matchCenter} />;
   } else if (leagueLanding) {
     page = <LeagueLandingPage landing={leagueLanding} />;
   } else if (teamLanding) {

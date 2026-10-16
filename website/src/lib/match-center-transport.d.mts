@@ -154,8 +154,11 @@ export interface FetchSnapshotOptions extends MockSnapshotOptions {
 
 export interface SnapshotResult {
   data: MatchSnapshot;
-  cache: CacheState | string;
+  cache: CacheState;
 }
+
+/** يحصر حالة المخبأ في القيم المعلنة؛ نص غير معروف يصير `MISS`. */
+export function normalizeCacheState(value: unknown): CacheState;
 
 export function fetchMatchSnapshot(
   match: MatchDefinition,

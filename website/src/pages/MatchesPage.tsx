@@ -1,6 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
+import { matchByExternalId, matchCenterPath } from '../content/match-center.mjs';
+import { to } from '../config';
 import './matches.css';
+
+/* البند 3: «إضافة رابط مركز المباراة إلى البطاقة في صفحة المواعيد القائمة —
+   بلا صفحة مكررة». الربط **بمعرّف المباراة من المصدر**، لا باسم الفريق ولا
+   بوقت البداية: ثلاثة أحداث في eng.1 تبدأ 14:00Z يوم 2026-10-17، فالربط
+   بالاسم أو بالوقت يخطئ، والمعرّف وحده لا. */
+function matchCenterLink(match: Match): string | null {
+  /* `Match.id` في هذه الصفحة مركّب: `${league}:${eventId}`. */
+  const separator = match.id.indexOf(':');
+  const eventId = separator === -1 ? match.id : match.id.slice(separator + 1);
+  if (!eventId) return null;
+  const found = matchByExternalId('espn', eventId);
+  /* ولا رابط إلا إن تطابقت المسابقة أيضاً — فلا يربط معرّفٌ صفحةً ببطولة أخرى. */
+  return found && found.leagueId === match.league ? to(matchCenterPath(found).replace(/^\//, '')) : null;
+}
 
 const REFRESH_MS = 60_000;
 type Board = { matches: Match[]; updated: string };
@@ -174,6 +190,7 @@ export default function MatchesPage() {
         <div className="match-card-top"><span className={`match-status status-${match.state}`}>{match.state === 'live' ? `● مباشر · ${match.detail}` : match.detail}</span>{match.venue && <span className="match-venue" dir="auto">{match.venue}</span>}</div>
         <div className="match-contest"><Team team={match.home} /><div className="match-score">{match.state === 'live' || match.state === 'finished' ? <strong aria-label={`النتيجة: ${match.home.score ?? 'غير متاحة'} إلى ${match.away.score ?? 'غير متاحة'}`}>{match.home.score ?? '—'} <span>:</span> {match.away.score ?? '—'}</strong> : <><strong>{kickoff(match.date, zone)}</strong><small>موعد البداية</small></>}</div><Team team={match.away} /></div>
         <div className="match-times">{TIME_ZONES.slice(0, 3).concat(TIME_ZONES.slice(0, 3).some(z => z.id === zone) ? [] : [{ id: zone, name: selectedZoneName }]).map(z => <div key={z.id}><span>{z.id === 'Asia/Riyadh' ? 'مكة' : z.id === 'Africa/Cairo' ? 'مصر' : z.name}</span><time dateTime={match.date}>{kickoff(match.date, z.id)}</time><small>{dayLabel(dayInZone(new Date(match.date), z.id))}</small></div>)}</div>
+        {(() => { const href = matchCenterLink(match); return href ? <a className="match-center-link" href={href}>مركز المباراة <span aria-hidden="true">↗</span></a> : null; })()}
       </article>)}</div></section>)}</div>
       <aside className="matches-note"><strong>عن البيانات والتوقيت</strong><p>المصدر: <a href="https://www.espn.com/soccer/scoreboard" target="_blank" rel="noopener noreferrer">ESPN</a> عبر وسيط الخادم (<code>/scoreboard.php</code>) مع تخزين مؤقت قصير. تشمل الصفحة البطولات الموجودة في قائمة التصفية فقط، وتُعرض أسماء الفرق كما يرسلها المصدر. التحديث كل دقيقة أثناء ظهور الصفحة؛ قد تتأخر النتائج أو تتغير المواعيد حسب المصدر، وهذه ليست خدمة نتائج رسمية مضمونة. يُحسب التوقيت الصيفي تلقائيًا لمصر وبقية المناطق. قد يختلف تاريخ المباراة بين البلدان.</p></aside>
       <noscript><p>يرجى تفعيل JavaScript لتحميل مواعيد المباريات وتحديث النتائج تلقائيًا.</p></noscript>

@@ -96,6 +96,9 @@ export function forbiddenSummaryKeys(): string[];
 
 export function matchCenterPath(match: MatchCenterFixture): string;
 export function matchCenterRoutes(): string[];
+/** المسارات مطبَّعة بلا شرطة أخيرة — للموجّه و`getAllRoutes()`. */
+export function matchCenterRouteIds(): string[];
+export function matchByRoute(path: string | null | undefined): MatchCenterFixture | null;
 export function matchBySlug(slug: string): MatchCenterFixture | null;
 export function matchByExternalId(provider: ProviderId | string, externalId: string | number | null): MatchCenterFixture | null;
 export function allMatchesVerified(): boolean;

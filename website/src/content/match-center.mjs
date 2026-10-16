@@ -292,6 +292,28 @@ export function matchCenterRoutes() {
   return MATCH_CENTER_MATCHES.map(matchCenterPath);
 }
 
+/* `matchCenterPath` تنتهي بشرطة مائلة لأنها شكل الرابط المنشور (canonical
+   وhref). أما الموجّه و`getAllRoutes()` فيعملان بمسارات **مطبَّعة بلا شرطة
+   أخيرة** — `normalizePath` في `router.tsx` يجرّدها، و`sitemap()` في
+   `prerender.mjs` يضيفها بنفسه. فتمرير الشكل ذي الشرطة إلى هناك ينتج `//`
+   في خريطة الموقع ولا يطابق أي مسار في `APP_PATHS`. شكلان مشتقان من مصدر
+   واحد، لا مساران مكتوبان يدوياً. */
+function stripTrailingSlash(route) {
+  const out = String(route).replace(/\/+$/, '');
+  return out || '/';
+}
+
+/** المسارات مطبَّعة للموجّه والبناء المسبق. */
+export function matchCenterRouteIds() {
+  return MATCH_CENTER_MATCHES.map(match => stripTrailingSlash(matchCenterPath(match)));
+}
+
+/** مطابقة مسار مُطبَّع بتعريف المباراة — يستخدمها `App.tsx` و`seo.ts`. */
+export function matchByRoute(path) {
+  const normalized = stripTrailingSlash(String(path ?? ''));
+  return MATCH_CENTER_MATCHES.find(match => stripTrailingSlash(matchCenterPath(match)) === normalized) || null;
+}
+
 export function matchBySlug(slug) {
   return MATCH_CENTER_MATCHES.find(match => match.slug === slug) || null;
 }

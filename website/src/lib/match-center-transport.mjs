@@ -16,7 +16,7 @@
 
    قاعدتان بنيويتان:
 
-   • **المحاكاة تمر عبر نفس المكیّف**. `mockSnapshot` تبني حمولة بشكل الخادم
+   • **المحاكاة تمر عبر نفس المكيّف**. `mockSnapshot` تبني حمولة بشكل الخادم
      ثم تدفعها إلى `adaptSnapshot`، فكل اختبار على المحاكاة يختبر مسار
      التحليل الحقيقي أيضاً. لو بُنيت اللقطة مباشرة لتباعد المساران وصار
      الاختبار يثبت ما لا يستعمله الإنتاج.
@@ -120,6 +120,14 @@ function firstString(...values) {
     if (typeof value === 'string' && value.trim() !== '') return value.trim();
   }
   return null;
+}
+
+/* حالة المخبأ تُحصر في القيم المعلنة: نص غير معروف من الخادم لا يصير حالة
+   جديدة بصمت، و`MISS` هي الافتراض الأمين (لم تُخدم من المخبأ). */
+const CACHE_STATES = new Set(['HIT', 'MISS', 'STALE', 'MOCK']);
+export function normalizeCacheState(value) {
+  const upper = typeof value === 'string' ? value.trim().toUpperCase() : '';
+  return CACHE_STATES.has(upper) ? upper : 'MISS';
 }
 
 /* الغياب يصير `null` — لا `{}` ولا `0` ولا `[]`. البند 8: «القيم الناقصة تبقى
@@ -351,7 +359,7 @@ export function mockEvents(scenarioId, { cancelGoal = true, elapsed = null } = {
  *
  * ⚠️ هذه الدالة **للمحاكاة وحدها**. في الإنتاج لا تُشتق الحالة من مرور الوقت
  * إطلاقاً: `normalizeStatus` لا تقبل `now`، والبند 6 صريح — «وصول العدّاد إلى
- * الصفر لا يقلب المباراة إلى مباشر без تأكيد البيانات». هنا الساعة تقوم مقام
+ * الصفر لا يقلب المباراة إلى مباشر بلا تأكيد البيانات». هنا الساعة تقوم مقام
  * **مصدر يبلغ عن الحالة**، لا مقام استنتاج من عندنا.
  */
 export function mockPhaseAt(match, now) {
@@ -482,7 +490,7 @@ export async function fetchMatchSnapshot(match, options = {}) {
     throw new TransportError('MALFORMED_JSON');
   }
 
-  return { data: adaptSnapshot(payload, match), cache: firstString(payload?.cache) || 'MISS' };
+  return { data: adaptSnapshot(payload, match), cache: normalizeCacheState(payload?.cache) };
 }
 
 /* ─────────────────── تسوية الوعود لشكل `mergeReads` ───────────────────

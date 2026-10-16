@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {
   MATCH_CODES,
+  MATCH_CENTER_DIAGNOSTICS,
   PHASES,
   POLL_INTERVALS,
   POST_MATCH_WINDOW_MS,
@@ -16,7 +17,9 @@ import {
   eventKey,
   formatInZone,
   freshnessLabel,
+  isResultOfficial,
   isStaleRead,
+  isTrustworthyReadAt,
   kickoffLabel,
   matchByFixtureId,
   matchPath,
@@ -29,8 +32,10 @@ import {
   pollIntervalFor,
   pollingAllowed,
   radarPoints,
+  readAtProblem,
   resolveTab,
   shouldStopPolling,
+  stampCompletion,
 } from '../src/lib/match-center.mjs';
 import {
   MATCH_CENTER_COMPETITION,
@@ -312,24 +317,147 @@ test('freshness wording never claims "updated now" for a retry, a failure or a s
   const now = Date.parse('2026-10-17T15:00:30Z');
   const fresh = freshnessLabel({ readAt: '2026-10-17T15:00:00Z', cache: 'HIT', now });
   assert.equal(fresh.text, 'محدَّث الآن');
-  assert.equal(fresh.honest, true);
+  assert.equal(fresh.level, 'fresh');
 
   const staleCache = freshnessLabel({ readAt: '2026-10-17T14:50:00Z', cache: 'STALE', now });
   assert.notEqual(staleCache.text, 'محدَّث الآن');
-  assert.equal(staleCache.honest, false);
+  assert.equal(staleCache.level, 'stale');
   assert.match(staleCache.text, /نسخة مخزّنة/);
 
   const failed = freshnessLabel({ readAt: '2026-10-17T15:00:00Z', cache: 'MISS', now, failed: true });
-  assert.equal(failed.honest, false);
+  assert.equal(failed.level, 'failed');
   assert.match(failed.text, /تعذر التحديث/);
 
   const missing = freshnessLabel({ readAt: null, now, failed: false });
-  assert.equal(missing.honest, false);
+  assert.equal(missing.level, 'failed');
 
   // A successful-but-old read is described by its real age, not as "now".
+  const aging = freshnessLabel({ readAt: '2026-10-17T14:59:00Z', cache: 'MISS', now });
+  assert.notEqual(aging.text, 'محدَّث الآن');
+  assert.equal(aging.level, 'aging');
+  assert.match(aging.text, /قبل/);
+
   const old = freshnessLabel({ readAt: '2026-10-17T14:55:00Z', cache: 'MISS', now });
   assert.notEqual(old.text, 'محدَّث الآن');
+  assert.equal(old.level, 'stale', 'five minutes old against 60s polling is stale, not merely aging');
   assert.match(old.text, /قبل/);
+
+  // A future-dated read is not "fresh" merely because its computed age clamps to
+  // zero; mergeReads refuses that same payload, so the label must agree with it.
+  const future = freshnessLabel({ readAt: '2027-01-01T00:00:00Z', cache: 'MISS', now });
+  assert.notEqual(future.text, 'محدَّث الآن');
+  assert.equal(future.level, 'invalid');
+  assert.equal(freshnessLabel({ readAt: 'not-a-date', cache: 'MISS', now }).level, 'invalid');
+
+  // Only 'fresh' may be presented as a live reading, and all five levels are
+  // reachable and distinct so the UI can style each honestly.
+  const probes = {
+    fresh: '2026-10-17T15:00:00Z', aging: '2026-10-17T14:59:00Z', stale: '2026-10-17T14:50:00Z',
+    failed: null, invalid: '2027-01-01T00:00:00Z',
+  };
+  for (const [level, readAt] of Object.entries(probes)) {
+    assert.equal(freshnessLabel({ readAt, cache: 'MISS', now }).level, level);
+  }
+  assert.equal(new Set(Object.values(probes).map(readAt => freshnessLabel({ readAt, cache: 'MISS', now }).level)).size, 5);
+});
+
+/* ── 4b. Read integrity: the timestamp that guards staleness ──────── */
+
+test('a payload with no usable readAt is refused, because storing it would disable staleness protection for good', () => {
+  const now = Date.parse('2026-10-17T15:05:00Z');
+  for (const bad of [undefined, null, '', 'not-a-date', 1792249500000]) {
+    const store = mergeReads({}, { a: { status: 'fulfilled', value: { data: { matchId: 'a', readAt: bad, score: { home: 1, away: 0 } } } } }, now);
+    assert.equal(store.a.data, null, `readAt ${JSON.stringify(bad)} must not be stored as a reading`);
+    assert.ok(store.a.failure, `readAt ${JSON.stringify(bad)} is reported, not swallowed`);
+    assert.equal(store.a.failure, 'MISSING_READ_AT');
+    assert.ok(MATCH_CENTER_DIAGNOSTICS.MISSING_READ_AT, 'the code has a visitor-facing label');
+  }
+  // Without this refusal an older payload would overwrite a newer one, since a
+  // stored reading with no timestamp makes every later read look newer.
+  const good = mergeReads({}, { a: { status: 'fulfilled', value: { data: snapshot('a', { readAt: '2026-10-17T15:00:00Z', score: { home: 1, away: 0 } }) } } }, now);
+  assert.deepEqual(good.a.data.score, { home: 1, away: 0 });
+  const afterBad = mergeReads(good, { a: { status: 'fulfilled', value: { data: { matchId: 'a', score: { home: 9, away: 9 } } } } }, now);
+  assert.deepEqual(afterBad.a.data.score, { home: 1, away: 0 }, 'the confirmed reading survives the malformed one');
+  assert.equal(afterBad.a.failure, 'MISSING_READ_AT');
+});
+
+test('a future-dated read cannot freeze the data layer, and a stored bogus timestamp is dropped rather than trusted', () => {
+  const now = Date.parse('2026-10-17T15:05:00Z');
+  const future = '2027-01-01T00:00:00Z';
+  const store = mergeReads({}, { a: { status: 'fulfilled', value: { data: snapshot('a', { readAt: future, score: { home: 9, away: 9 } }) } } }, now);
+  assert.equal(store.a.data, null, 'the bogus reading is refused on arrival');
+  assert.equal(store.a.failure, 'FUTURE_READ_AT');
+
+  // Even if a future timestamp somehow got stored, it must not become the
+  // baseline that rejects every genuine update after it.
+  const poisoned = { a: { data: snapshot('a', { readAt: future, score: { home: 9, away: 9 } }), failure: null } };
+  const recovered = mergeReads(poisoned, {
+    a: { status: 'fulfilled', value: { data: snapshot('a', { readAt: '2026-10-17T15:04:00Z', score: { home: 2, away: 1 } }) } },
+  }, now);
+  assert.deepEqual(recovered.a.data.score, { home: 2, away: 1 }, 'updates resume after a poisoned timestamp');
+  assert.equal(recovered.a.failure, null);
+
+  // Small clock skew is tolerated: the source may legitimately be seconds ahead.
+  const skew = mergeReads({}, { a: { status: 'fulfilled', value: { data: snapshot('a', { readAt: '2026-10-17T15:05:30Z' }) } } }, now);
+  assert.ok(skew.a.data, '30 seconds of skew is accepted');
+  assert.equal(skew.a.failure, null);
+  // The tolerance boundary is inclusive, so pin it explicitly and then step past it.
+  assert.equal(isTrustworthyReadAt('2026-10-17T15:07:00Z', now), true, 'exactly at the tolerance is still trusted');
+  assert.equal(isTrustworthyReadAt('2026-10-17T15:07:01Z', now), false, 'one second past the tolerance is not skew');
+  assert.equal(isTrustworthyReadAt(future, now), false);
+  assert.equal(isTrustworthyReadAt(undefined, now), false);
+  assert.equal(isTrustworthyReadAt(1792249500000, now), false, 'a numeric timestamp is not an ISO readAt');
+  assert.equal(readAtProblem('2026-10-17T15:00:00Z', now), null);
+  assert.equal(readAtProblem('', now), 'MISSING_READ_AT');
+  assert.equal(readAtProblem(future, now), 'FUTURE_READ_AT');
+});
+
+/* ── 4c. Completion stamping: when polling is allowed to stop ─────── */
+
+test('the settle window is measured from a stamped full time, never from the latest read', () => {
+  // Rule 8 eases requests after full time; rule 11 keeps late statistics and
+  // ratings coming. Measuring the window from readAt would make it elapse never,
+  // because every poll renews readAt.
+  const finishedAt = '2026-10-17T16:00:00Z';
+  const status = stampCompletion(
+    normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn'),
+    normalizeStatus(espnStatus('STATUS_FULL_TIME', { completed: true }), 'espn'),
+    finishedAt,
+  );
+  assert.equal(status.code, 'finished');
+  assert.equal(status.finishedAt, finishedAt);
+
+  const complete = snapshot('m', { statistics: [{ key: 'possession', label: 'x', home: 1, away: 1 }], ratings: [] });
+  // Three hours later, with a readAt only seconds old, polling still stops.
+  const late = Date.parse('2026-10-17T19:00:00Z');
+  const freshRead = snapshot('m', { readAt: '2026-10-17T18:59:30Z', statistics: [], ratings: [] });
+  assert.equal(shouldStopPolling(status, freshRead, late), true, 'a fresh read does not reopen the window');
+  assert.equal(shouldStopPolling(status, complete, late), true);
+  // Inside the window it keeps going.
+  assert.equal(shouldStopPolling(status, complete, Date.parse('2026-10-17T16:30:00Z')), false);
+});
+
+test('the stamp is written once, preserved across later reads, and cleared if the source reopens the match', () => {
+  const live = normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn');
+  const fullTime = normalizeStatus(espnStatus('STATUS_FULL_TIME', { completed: true }), 'espn');
+  const first = stampCompletion(live, fullTime, '2026-10-17T16:00:00Z');
+  assert.equal(first.finishedAt, '2026-10-17T16:00:00Z');
+
+  // A later read an hour on must not move the stamp, or the window never ends.
+  const second = stampCompletion(first, normalizeStatus(espnStatus('STATUS_FULL_TIME', { completed: true }), 'espn'), '2026-10-17T17:00:00Z');
+  assert.equal(second.finishedAt, '2026-10-17T16:00:00Z', 'stamp is preserved');
+
+  // A correction that puts the match back in play clears it.
+  const reopened = stampCompletion(second, live, '2026-10-17T17:05:00Z');
+  assert.equal(reopened.finishedAt, null);
+  // And it is stamped again if the match finishes once more.
+  assert.equal(stampCompletion(reopened, fullTime, '2026-10-17T17:10:00Z').finishedAt, '2026-10-17T17:10:00Z');
+
+  // A completed status with no readable stamp keeps polling: continuing is the
+  // cautious choice, stopping on an unknown time is not.
+  assert.equal(stampCompletion(null, fullTime, null).finishedAt, null);
+  assert.equal(shouldStopPolling(stampCompletion(null, fullTime, null), snapshot('m', { statistics: [], ratings: [] }), Date.parse('2027-01-01T00:00:00Z')), false);
+  assert.equal(stampCompletion(null, null, '2026-10-17T16:00:00Z'), null);
 });
 
 /* ── 5. Cross-match isolation for the two simultaneous kickoffs ───── */
@@ -460,6 +588,47 @@ test('a score change explained by announced goals is not a correction; an unexpl
   assert.ok(reversal, 'score corrected downward');
 });
 
+test('an own goal credits the opponent and is not mistaken for a score correction', () => {
+  // An own goal must not debit the conceding side: doing so produced a false
+  // "the source corrected the score" alert on every own goal, in both directions.
+  const awayOwnGoal = [{ kind: 'goal', event: normalizeEvent({ type: 'Own Goal', minute: 30, team: { name: 'Away', homeAway: 'away' }, player: { name: 'X' } }) }];
+  assert.equal(awayOwnGoal[0].event.type, 'own_goal');
+  assert.equal(awayOwnGoal[0].event.teamSide, 'away');
+  // Away concedes, so home goes 1 -> 2 and away stays 0.
+  assert.equal(detectScoreCorrection({ home: 1, away: 0 }, { home: 2, away: 0 }, awayOwnGoal), null);
+
+  const homeOwnGoal = [{ kind: 'goal', event: normalizeEvent({ type: 'Own Goal', minute: 30, team: { name: 'Home', homeAway: 'home' }, player: { name: 'Y' } }) }];
+  // Home concedes, so away goes 0 -> 1 and home is unchanged.
+  assert.equal(detectScoreCorrection({ home: 1, away: 0 }, { home: 1, away: 1 }, homeOwnGoal), null);
+  // But crediting the wrong side is still a genuine correction.
+  assert.ok(detectScoreCorrection({ home: 1, away: 0 }, { home: 2, away: 0 }, homeOwnGoal), 'home scoring off its own own-goal is unexplained');
+
+  // A normal goal by each side explains a 1-1 -> 2-2 move.
+  const both = [
+    { kind: 'goal', event: normalizeEvent({ type: 'Goal', minute: 50, team: { homeAway: 'home' }, player: { name: 'H' } }) },
+    { kind: 'goal', event: normalizeEvent({ type: 'Goal', minute: 63, team: { homeAway: 'away' }, player: { name: 'A' } }) },
+  ];
+  assert.equal(detectScoreCorrection({ home: 1, away: 1 }, { home: 2, away: 2 }, both), null);
+
+  // A missed penalty and a cancelled goal move nothing.
+  const miss = [{ kind: 'goal', event: normalizeEvent({ type: 'Penalty Missed', minute: 20, team: { homeAway: 'home' }, player: { name: 'Z' } }) }];
+  assert.equal(detectScoreCorrection({ home: 0, away: 0 }, { home: 0, away: 0 }, miss), null);
+  const cancelled = [{ kind: 'cancelled', event: normalizeEvent({ id: 4, type: 'VAR Cancelled', minute: 44, team: { homeAway: 'home' }, player: { name: 'W' } }) }];
+  assert.ok(cancelled[0].event.cancelled);
+  assert.ok(detectScoreCorrection({ home: 1, away: 0 }, { home: 0, away: 0 }, cancelled), 'a disallowed goal must show as a correction');
+
+  // A goal whose side the source did not send is an attribution gap, not a
+  // corrected score: the total still adds up, so no false alert is raised.
+  const unattributed = [{ kind: 'goal', event: normalizeEvent({ type: 'Goal', minute: 70, player: { name: 'N' } }) }];
+  assert.equal(unattributed[0].event.teamSide, null);
+  assert.equal(detectScoreCorrection({ home: 0, away: 0 }, { home: 1, away: 0 }, unattributed), null);
+  // ...but a total that does not add up is still reported.
+  assert.ok(detectScoreCorrection({ home: 0, away: 0 }, { home: 2, away: 1 }, unattributed));
+  // Malformed announcement lists do not throw.
+  assert.equal(detectScoreCorrection({ home: 1, away: 0 }, { home: 1, away: 0 }, null), null);
+  assert.equal(detectScoreCorrection({ home: 1, away: 0 }, { home: 1, away: 0 }, [null, {}]), null);
+});
+
 /* ── 7. Head-to-head ──────────────────────────────────────────────── */
 
 test('the upcoming match stays out of its own head-to-head until it is actually completed', () => {
@@ -503,6 +672,36 @@ test('an unclassified meeting is not silently labelled a friendly', () => {
   assert.equal(merged[1].friendly, null, 'unknown stays unknown, never guessed false');
   // Incomplete entries never enter the record even if dated.
   assert.equal(mergeH2h([{ date: '2026-01-01', completed: false }], null).length, 0);
+});
+
+test('only an official result enters the record: an abandoned match without a score does not', () => {
+  // Rule 5 asks for "آخر ثلاث مواجهات مكتملة". A match abandoned after kickoff
+  // has ended but has no official result, so counting it would either show a
+  // meeting with no score or push a genuine meeting out of the last three.
+  const abandoned = normalizeStatus(espnStatus('STATUS_ABANDONED'), 'espn');
+  assert.equal(abandoned.completed, true, 'it did end');
+  assert.equal(isResultOfficial(abandoned, null), false, 'but there is no official result');
+  assert.equal(isResultOfficial(abandoned, { home: 2, away: 0 }), false, 'a partial score is still not a final one');
+  const fullTime = normalizeStatus(espnStatus('STATUS_FULL_TIME', { completed: true }), 'espn');
+  assert.equal(isResultOfficial(fullTime, { home: 2, away: 0 }), true);
+  assert.equal(isResultOfficial(fullTime, { home: 2, away: null }), false);
+  assert.equal(isResultOfficial(fullTime, null), false);
+  assert.equal(isResultOfficial(normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn'), { home: 1, away: 0 }), false);
+
+  const history = [
+    { date: '2025-12-01', home: 'A', away: 'B', homeGoals: 1, awayGoals: 1, completed: true },
+    { date: '2025-04-10', home: 'B', away: 'A', homeGoals: 0, awayGoals: 2, completed: true },
+    { date: '2025-01-15', home: 'A', away: 'B', homeGoals: 3, awayGoals: 1, completed: true },
+  ];
+  const noScore = { date: '2026-10-17', home: 'A', away: 'B', homeGoals: null, awayGoals: null, completed: true };
+  const merged = mergeH2h(history, noScore);
+  assert.equal(merged.length, 3, 'the scoreless meeting is not inserted');
+  assert.ok(!merged.some(entry => entry.date === '2026-10-17'));
+  assert.deepEqual(merged.map(entry => entry.date), ['2025-12-01', '2025-04-10', '2025-01-15'], 'the real three are kept');
+  // Malformed stored entries are filtered out too, not just the incoming one.
+  assert.equal(mergeH2h([{ date: '2025-01-01', completed: true, homeGoals: null, awayGoals: null }, { date: 'nonsense', completed: true, homeGoals: 1, awayGoals: 0 }], null).length, 0);
+  assert.equal(mergeH2h(null, null).length, 0, 'a null record does not throw');
+  assert.equal(mergeH2h(history, null, 0).length, 0, 'a zero limit is respected');
 });
 
 /* ── 8. Tabs ──────────────────────────────────────────────────────── */
@@ -555,10 +754,14 @@ test('arrow keys walk the tablist in visual RTL order', () => {
 
 /* ── 9. Comparison and radar honesty ──────────────────────────────── */
 
+/* Every metric declares its provider on purpose: a comparison whose rows do not
+   name a source cannot be checked for mixing, so the contract refuses it. The
+   fixtures below therefore carry one, which makes these tests stricter than
+   before rather than looser. */
 const AXES = [
-  { key: 'possession', label: 'الاستحواذ', unit: '%', home: 62, away: 38 },
-  { key: 'shots', label: 'التسديدات', unit: 'تسديدة', home: 14, away: 7 },
-  { key: 'passes', label: 'التمريرات', unit: 'تمريرة', home: 540, away: 310 },
+  { key: 'possession', label: 'الاستحواذ', unit: '%', home: 62, away: 38, provider: 'snapshot' },
+  { key: 'shots', label: 'التسديدات', unit: 'تسديدة', home: 14, away: 7, provider: 'snapshot' },
+  { key: 'passes', label: 'التمريرات', unit: 'تمريرة', home: 540, away: 310, provider: 'snapshot' },
 ];
 
 test('a valid comparison draws a polygon and normalizes against the pair maximum, not a 0–100 score', () => {
@@ -639,9 +842,9 @@ test('match numbers and season averages cannot share one radar', () => {
   // Rule 9: pre-match uses homogeneous period data; live and post use this
   // match's own numbers. Mixing them compares one game against a whole season.
   const mixed = buildComparison([
-    { key: 'possession', label: 'الاستحواذ', home: 60, away: 40, mode: 'match' },
-    { key: 'shots_avg', label: 'متوسط التسديدات', home: 12, away: 9, mode: 'season' },
-    { key: 'passes', label: 'التمريرات', home: 500, away: 400, mode: 'match' },
+    { key: 'possession', label: 'الاستحواذ', home: 60, away: 40, mode: 'match', provider: 'snapshot' },
+    { key: 'shots_avg', label: 'متوسط التسديدات', home: 12, away: 9, mode: 'season', provider: 'snapshot' },
+    { key: 'passes', label: 'التمريرات', home: 500, away: 400, mode: 'match', provider: 'snapshot' },
   ]);
   assert.equal(mixed.ok, false);
   assert.equal(mixed.reason, 'MIXED_MODES');
@@ -662,13 +865,42 @@ test('provider odds and win probabilities are never presented as actual statisti
 });
 
 test('more than six axes are refused rather than silently truncated', () => {
-  const many = Array.from({ length: 7 }, (_, index) => ({ key: `k${index}`, label: `محور ${index}`, home: index + 1, away: index + 2 }));
+  const many = Array.from({ length: 7 }, (_, index) => ({ key: `k${index}`, label: `محور ${index}`, home: index + 1, away: index + 2, provider: 'snapshot' }));
   const result = buildComparison(many);
   assert.equal(result.ok, false);
   assert.equal(result.reason, 'TOO_MANY_AXES');
   assert.match(result.message, /ستة محاور/);
   // Exactly six is allowed.
   assert.equal(buildComparison(many.slice(0, 6)).ok, true);
+});
+
+test('a malformed metric row refuses the whole comparison instead of crashing the render path', () => {
+  // buildComparison is called while rendering, so a throw would take the page
+  // down. Degrading to a clear message is the required behaviour.
+  for (const broken of [null, undefined, 42, 'possession', {}, { key: 'shots' }, { label: 'تسديدات' }]) {
+    const result = buildComparison([...AXES.slice(0, 2), broken]);
+    assert.equal(result.ok, false, `broken row ${JSON.stringify(broken)}`);
+    assert.equal(result.reason, 'INVALID_METRICS', `broken row ${JSON.stringify(broken)}`);
+    assert.equal(result.tableOk, false, `a broken dataset renders no table either: ${JSON.stringify(broken)}`);
+  }
+});
+
+test('a comparison whose rows name no source is refused, since uniformity cannot be checked', () => {
+  // Rule 2 forbids mixing providers; without a declared provider there is no way
+  // to know whether the three rows even came from the same one.
+  const undeclared = [
+    { key: 'possession', label: 'الاستحواذ', home: 62, away: 38 },
+    { key: 'shots', label: 'التسديدات', home: 14, away: 7 },
+    { key: 'passes', label: 'التمريرات', home: 540, away: 310 },
+  ];
+  const result = buildComparison(undeclared);
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'UNDECLARED_PROVIDER');
+  assert.equal(result.tableOk, false);
+  assert.equal(result.axes.length, 0);
+  // Declaring it once for the whole comparison is enough.
+  assert.equal(buildComparison(undeclared, { provider: 'snapshot' }).ok, true);
+  assert.equal(buildComparison(undeclared, { provider: 'snapshot' }).provider, 'snapshot');
 });
 
 test('pre-match comparison requires a declared sample size, and the sample is carried through', () => {

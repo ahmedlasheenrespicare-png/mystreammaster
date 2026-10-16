@@ -27,6 +27,10 @@
    المطابقة — عندها يُرفع noindex ويُصدر JSON-LD كاملاً وحقيقياً.
 ========================================================================== */
 
+/* منطق الربط والتحقق يعيش في طبقة العقد وحدها، وهذا الملف يستهلكه ولا يعيد
+   كتابته — فلا ينشأ تعريفان للتحقق يتباعدان لاحقاً. */
+import { isVerified, matchByFixtureId } from '../lib/match-center.mjs';
+
 /* البطولة الأم — المسار المتداخل تحت صفحة البطولة القائمة (القرار المعتمد).
    `slug` و`leagueId` هما الموجودان فعلاً في `content/competitions.ts`
    (`LEAGUE_LANDINGS[0]`) وفي `ALLOWED_LEAGUES` داخل `scoreboard.php`. */
@@ -173,14 +177,13 @@ export function matchBySlug(slug) {
  * وحده». المباراتان الأوليان تتشاركان البطولة والتوقيت معاً، فأي ربط
  * بالاسم أو بالوقت وحده يُنتج التباساً — لذلك الربط بالمعرّف إلزامي، وهذه
  * الدالة ترفض صراحةً السقوط إلى الاسم حين يكون المعرّف غائباً.
+ *
+ * تفوّض إلى `matchByFixtureId` في طبقة العقد بدل إعادة كتابتها: منطق الربط
+ * واحد، فلا ينشأ نسختان تتباعدان لاحقاً (وهو ما يمنعه البند 3 أصلاً: قالب
+ * مشترك لا نسخ متكررة من الشفرة).
  */
 export function matchByExternalId(provider, externalId) {
-  const wanted = String(externalId ?? '').trim();
-  if (wanted === '') return null;
-  return MATCH_CENTER_MATCHES.find(match => {
-    const id = match.externalIds?.[provider];
-    return id !== undefined && id !== null && String(id).trim() === wanted;
-  }) || null;
+  return matchByFixtureId(MATCH_CENTER_MATCHES, provider, externalId);
 }
 
 /**
@@ -188,7 +191,5 @@ export function matchByExternalId(provider, externalId) {
  * وبلا JSON-LD. تُقلَب تلقائياً عند تأكيد المعرّفات.
  */
 export function allMatchesVerified() {
-  return MATCH_CENTER_MATCHES.every(match =>
-    match.verification === 'confirmed'
-    && Object.values(match.externalIds || {}).some(id => id !== null && id !== undefined && String(id).trim() !== ''));
+  return MATCH_CENTER_MATCHES.every(match => isVerified(match));
 }

@@ -216,12 +216,27 @@ export function countdownParts(kickoffUtc, now) {
 
 /* البند 11: «عدم كتابة «محدث الآن» لمجرد إعادة المحاولة أو استلام نسخة
    مخزنة قديمة». التسمية تُشتق من `readAt` وحالة الكاش، لا من لحظة الطلب. */
+/* حدّ «محدَّث الآن»: 75 ثانية تغطي دورة التحديث (60 ث) وعمر كاش الخادم
+   (45 ث في `scoreboard.php`) معاً. وما زاد على ثلاث دقائق يُعرض قديماً. */
+export const FRESH_NOW_SECONDS = 75;
+export const FRESH_AGING_SECONDS = 180;
+
+/* البند 11: «عدم كتابة «محدَّث الآن» لمجرد إعادة المحاولة أو استلام نسخة
+   مخزنة قديمة». التسمية تُشتق من `readAt` وحالة الكاش، لا من لحظة الطلب.
+
+   تُرجع `level` بدل علم منطقي غامض، لأن الواجهة تحتاج أن تفرّق أربع حالات
+   لا اثنتين: طازجة، تتقادم، مخزّنة/قديمة، ومتعذّرة أو غير صالحة. و`fresh`
+   وحدها هي التي يجوز عرضها على أنها قراءة حالية. */
 export function freshnessLabel({ readAt, cache = 'MISS', now, failed = false }) {
-  if (failed || !readAt) return { text: 'تعذر التحديث — تُعرض آخر قراءة مؤكدة', honest: false };
+  if (failed || !readAt) return { text: 'تعذر التحديث — تُعرض آخر قراءة مؤكدة', level: 'failed' };
+  /* وقت قراءة مستقبلي أو تالف ليس حداثة. بلا هذا الفحص كان `Math.max(0, …)`
+     يحوّل العمر السالب إلى صفر فيُعرض «محدَّث الآن» لقراءة مرفوضة أصلاً —
+     وهو تناقض مع `mergeReads` التي ترفضها. */
+  if (!isTrustworthyReadAt(readAt, now)) return { text: 'وقت القراءة الوارد غير صالح — تُعرض آخر قراءة مؤكدة', level: 'invalid' };
   const age = Math.max(0, Math.round((now - Date.parse(readAt)) / 1000));
-  if (cache === 'STALE') return { text: `نسخة مخزّنة على الخادم (عمرها ${describeAge(age)}) — المصدر لا يستجيب`, honest: false };
-  if (age <= 75) return { text: 'محدَّث الآن', honest: true };
-  return { text: `آخر قراءة قبل ${describeAge(age)}`, honest: age <= 180 };
+  if (cache === 'STALE') return { text: `نسخة مخزّنة على الخادم (عمرها ${describeAge(age)}) — المصدر لا يستجيب`, level: 'stale' };
+  if (age <= FRESH_NOW_SECONDS) return { text: 'محدَّث الآن', level: 'fresh' };
+  return { text: `آخر قراءة قبل ${describeAge(age)}`, level: age <= FRESH_AGING_SECONDS ? 'aging' : 'stale' };
 }
 
 function describeAge(seconds) {
@@ -232,6 +247,37 @@ function describeAge(seconds) {
 }
 
 /* ───────────── رفض الأقدم + عزل فشل المباريات (البند 11) ───────────── */
+
+/* رموز التشخيص الخاصة بطبقة مركز المباراة. تُعرض للزائر بالعربية، وتبقى
+   منفصلة عن `DIAGNOSTIC_LABELS` في `matches.mjs` لأن هذه الأعطال تخص قراءة
+   مباراة واحدة لا جدول بطولة كامل. */
+export const MATCH_CENTER_DIAGNOSTICS = {
+  MISSING_READ_AT: 'الاستجابة لا تحمل وقت قراءة، فلا يمكن التأكد من حداثتها',
+  FUTURE_READ_AT: 'وقت القراءة الوارد من المصدر في المستقبل (انحراف في ساعته)',
+  STALE_READ: 'وصلت قراءة أقدم من المحفوظة فتُركت بلا استخدام',
+  INVALID_METRICS: 'بنية أرقام المقارنة الواردة غير صالحة',
+  UNDECLARED_PROVIDER: 'أرقام المقارنة لا تعلن مصدرها، فلا يمكن ضمان تجانسها',
+};
+
+/* سماحية انحراف الساعة. المصدر أو وسيط الخادم قد يسبق ساعتنا بثوانٍ؛ ما زاد
+   على دقيقتين ليس حداثة بل عطباً، لأنه **يجمّد كل تحديث لاحق بصمت**: أي قراءة
+   حقيقية بعدها ستبدو «أقدم» فتُرفض إلى الأبد. */
+export const READ_AT_FUTURE_TOLERANCE_MS = 120_000;
+
+/** هل وقت القراءة صالح للاعتماد عليه كأساس للمقارنة الزمنية؟ */
+export function isTrustworthyReadAt(readAt, now, tolerance = READ_AT_FUTURE_TOLERANCE_MS) {
+  if (typeof readAt !== 'string' || readAt.trim() === '') return false;
+  const parsed = Date.parse(readAt);
+  if (!Number.isFinite(parsed)) return false;
+  return parsed <= now + tolerance;
+}
+
+/** سبب رفض وقت القراءة، أو `null` إن كان صالحاً. */
+export function readAtProblem(readAt, now) {
+  if (typeof readAt !== 'string' || readAt.trim() === '' || !Number.isFinite(Date.parse(readAt))) return 'MISSING_READ_AT';
+  if (Date.parse(readAt) > now + READ_AT_FUTURE_TOLERANCE_MS) return 'FUTURE_READ_AT';
+  return null;
+}
 
 /* «رفض الاستجابات الأقدم وعدم استبدال قراءة حديثة بأخرى قديمة». المساواة
    تُرفض أيضاً: استبدال قراءة بأخرى بنفس الوقت يسبب وميضاً وإعادة إعلان
@@ -244,27 +290,40 @@ export function isStaleRead(incoming, current) {
 
 /* البند 3 و11: «فشل مباراة لا يمسح بيانات المباراتين الأخريين». الدمج
    يحافظ على آخر قراءة مؤكدة لكل مباراة على حدة، ويلصق الفشل بتلك المباراة
-   فقط مع سببها — فلا يظهر خطأ شامل ولا تُفقد بيانات سليمة. */
+   فقط مع سببها — فلا يظهر خطأ شامل ولا تُفقد بيانات سليمة.
+
+   قراءتان تُرفضان هنا صراحةً لأن قبولهما أخطر من رفضهما:
+   • بلا `readAt` صالح → تُخزَّن بلا أساس زمني، فتتعطل حماية الأقدم كلياً
+     وتصير أي قراءة لاحقة (حتى الأقدم) مقبولة.
+   • بـ`readAt` مستقبلي → تُقبل مرة واحدة ثم ترفض كل قراءة حقيقية بعدها.
+   وفي الحالتين تُسجَّل كعطلة مرئية بدل أن تمر بصمت. */
 export function mergeReads(current, results, now) {
   const next = { ...current };
   for (const [matchId, result] of Object.entries(results)) {
-    const existing = next[matchId];
+    const existing = next[matchId] || null;
+    /* قراءة مخزّنة بوقت غير جدير بالثقة (مستقبلي أو تالف) ليست مرجعاً صالحاً:
+       تُسقط من الأساس حتى لا تحجب التحديثات الحقيقية التي تليها. */
+    const trustedData = existing?.data && isTrustworthyReadAt(existing.data.readAt, now) ? existing.data : null;
+    const baseline = existing ? { ...existing, data: trustedData } : null;
+
     if (result?.status === 'fulfilled' && result.value?.data) {
-      if (isStaleRead(result.value.data, existing?.data)) {
-        /* استجابة أقدم: تُحفظ كما هي مع تسجيل أن محاولة جرت، دون لمس القيم. */
-        if (existing) next[matchId] = { ...existing, rejectedStale: (existing.rejectedStale || 0) + 1 };
+      const problem = readAtProblem(result.value.data.readAt, now);
+      if (problem) {
+        next[matchId] = { ...(baseline || {}), data: trustedData, failure: problem, attemptedAt: now };
+        continue;
+      }
+      if (isStaleRead(result.value.data, trustedData)) {
+        /* استجابة أقدم: تُحفظ القيم كما هي مع تسجيل أن محاولة جرت. */
+        next[matchId] = baseline
+          ? { ...baseline, rejectedStale: (baseline.rejectedStale || 0) + 1 }
+          : { data: null, failure: 'STALE_READ', rejectedStale: 1, attemptedAt: now };
         continue;
       }
       next[matchId] = { data: result.value.data, failure: null, cache: result.value.cache || 'MISS', readAt: result.value.data.readAt, attemptedAt: now };
       continue;
     }
     /* البند 11: «الاحتفاظ بآخر قراءة مؤكدة مع وقتها وتحذير واضح عند الفشل». */
-    next[matchId] = {
-      ...(existing || {}),
-      data: existing?.data || null,
-      failure: result?.code || 'NETWORK_ERROR',
-      attemptedAt: now,
-    };
+    next[matchId] = { ...(baseline || {}), data: trustedData, failure: result?.code || 'NETWORK_ERROR', attemptedAt: now };
   }
   return next;
 }
@@ -358,11 +417,55 @@ export function normalizeEvent(raw) {
   };
 }
 
-function scoreOf(event) {
+/* أنواع الأحداث التي تحرّك النتيجة فعلاً. */
+const SCORING_TYPES = new Set(['goal', 'penalty', 'own_goal']);
+
+/* كم هدفاً يضيفه هذا الحدث إلى رصيد طرف بعينه.
+   الهدف العكسي يحتاج عناية خاصة: من سجّله في مرماه **لا يُخصم** منه هدف،
+   بل يُضاف هدف لخصمه. لذلك لا يصلح هنا رقم بإشارة واحدة (‎-1‎) يُطبق على
+   الطرفين — فقد كان ذلك ينتج تنبيه «صُحّحت النتيجة» كذباً عند كل هدف عكسي. */
+function creditsSide(event, side) {
   if (!event || event.cancelled) return 0;
-  if (event.type === 'goal' || event.type === 'penalty') return 1;
-  if (event.type === 'own_goal') return -1; /* هدف في مرمى الفريق صاحب الحدث */
-  return 0;
+  if (event.type === 'goal' || event.type === 'penalty') return event.teamSide === side ? 1 : 0;
+  if (event.type === 'own_goal') {
+    if (event.teamSide === 'home') return side === 'away' ? 1 : 0;
+    if (event.teamSide === 'away') return side === 'home' ? 1 : 0;
+    return 0; /* الطرف غير معروف من المصدر — انظر معالجة الفجوة أدناه */
+  }
+  return 0; /* ركلة جزاء مهدرة وإشعارات VAR والبطاقات والتبديلات لا تحرّك النتيجة */
+}
+
+/* البند 7: «دعم تصحيح النتيجة». إن تغيّرت النتيجة بما لا تفسّره الأهداف
+   المعلنة، فهي مراجعة من المصدر (VAR أو تصحيح يدوي) وتستحق تنبيهاً مستقلاً.
+
+   تُفرَّق حالتان حتى لا نزعج الزائر بإنذار كاذب:
+   • **مراجعة حقيقية** — المجموع نفسه تغيّر بما لا تفسّره الأهداف المعلنة.
+   • **فجوة إسناد** — المجموع مفسَّر تماماً لكن طرفاً غير منسوب لأن المصدر لم
+     يرسل جانب الفريق في حدث ما. هذه ليست تصحيحاً للنتيجة فلا يُعلن. */
+export function detectScoreCorrection(previousScore, nextScore, announcedGoals) {
+  if (!previousScore || !nextScore) return null;
+  const deltaHome = (nextScore.home ?? 0) - (previousScore.home ?? 0);
+  const deltaAway = (nextScore.away ?? 0) - (previousScore.away ?? 0);
+  const goals = Array.isArray(announcedGoals) ? announcedGoals.filter(item => item?.event) : [];
+  const explainedHome = goals.reduce((sum, item) => sum + creditsSide(item.event, 'home'), 0);
+  const explainedAway = goals.reduce((sum, item) => sum + creditsSide(item.event, 'away'), 0);
+  if (deltaHome === explainedHome && deltaAway === explainedAway) return null;
+
+  /* فجوة إسناد: حدث يحرّك النتيجة لكن المصدر لم يرسل جانب الفريق فيه. يُحسب
+     في الإجمالي لا في أي طرف، لأن جمعه إلى طرف بعينه تخمين. فإن تطابق
+     الإجمالي مع هذا المقدار غير المنسوب فالنتيجة مفسَّرة ولا يُعلن تصحيح. */
+  const unattributedTotal = goals.reduce((sum, item) => {
+    const event = item.event;
+    if (!SCORING_TYPES.has(event.type) || event.teamSide !== null) return sum;
+    return sum + (event.cancelled ? -1 : 1);
+  }, 0);
+  if (unattributedTotal !== 0 && deltaHome + deltaAway === explainedHome + explainedAway + unattributedTotal) return null;
+
+  return {
+    from: previousScore,
+    to: nextScore,
+    message: `صُحّحت النتيجة من المصدر: ${previousScore.home ?? '—'}–${previousScore.away ?? '—'} صارت ${nextScore.home ?? '—'}–${nextScore.away ?? '—'}`,
+  };
 }
 
 /* بصمة **الإعلان** تختلف عن بصمة **الهوية**. الهوية هي معرّف الحدث وحده،
@@ -417,22 +520,6 @@ export function planAnnouncements({ matchId, previousEvents = [], nextEvents = [
   return { announce, knownKeys: Array.from(known) };
 }
 
-/* البند 7: «دعم تصحيح النتيجة». إن تغيّرت النتيجة بما لا تفسّره الأهداف
-   المعلنة، فهي مراجعة من المصدر (VAR أو تصحيح يدوي) وتستحق تنبيهاً مستقلاً. */
-export function detectScoreCorrection(previousScore, nextScore, announcedGoals) {
-  if (!previousScore || !nextScore) return null;
-  const deltaHome = (nextScore.home ?? 0) - (previousScore.home ?? 0);
-  const deltaAway = (nextScore.away ?? 0) - (previousScore.away ?? 0);
-  const explainedHome = announcedGoals.reduce((sum, a) => sum + (a.event.teamSide === 'home' ? scoreOf(a.event) : a.event.teamSide === 'away' && a.event.type === 'own_goal' ? 1 : 0), 0);
-  const explainedAway = announcedGoals.reduce((sum, a) => sum + (a.event.teamSide === 'away' ? scoreOf(a.event) : a.event.teamSide === 'home' && a.event.type === 'own_goal' ? 1 : 0), 0);
-  if (deltaHome === explainedHome && deltaAway === explainedAway) return null;
-  return {
-    from: previousScore,
-    to: nextScore,
-    message: `صُحّحت النتيجة من المصدر: ${previousScore.home ?? '—'}–${previousScore.away ?? '—'} صارت ${nextScore.home ?? '—'}–${nextScore.away ?? '—'}`,
-  };
-}
-
 /* ────────── سجل المواجهات: آخر ثلاث مكتملة بلا تكرار (البند 5، 6، 8) ────────── */
 
 function h2hKey(entry) {
@@ -441,20 +528,57 @@ function h2hKey(entry) {
   return `d:${entry?.date || ''}|${entry?.home || ''}|${entry?.away || ''}`;
 }
 
+/* البند 5: «آخر ثلاث مواجهات مكتملة». الاكتمال وحده لا يكفي — مباراة أُلغيت
+   بعد بدايتها «مكتملة» بمعنى أنها انتهت، لكن ليس لها نتيجة رسمية، وإدخالها
+   بلا هدفين يعرض مواجهة بلا نتيجة أو يدفع بمواجهة صحيحة خارج الثلاث. لذلك
+   يشترط هذا الفحص نتيجة رسمية من المصدر: حالة `finished` وهدفان حاضران. */
+export function isResultOfficial(status, score) {
+  if (status?.code !== 'finished') return false;
+  return !!score && score.home !== null && score.away !== null;
+}
+
+function isCountableH2h(entry) {
+  return entry?.completed === true
+    && typeof entry?.date === 'string' && entry.date !== ''
+    && Number.isFinite(Date.parse(entry.date))
+    && entry.homeGoals !== null && entry.homeGoals !== undefined
+    && entry.awayGoals !== null && entry.awayGoals !== undefined;
+}
+
 /* البند 6: «سجل المواجهات لا يتضمن المباراة المقبلة قبل اكتمالها».
    البند 8: «تحديث آخر ثلاث مواجهات مكتملة لإدخال هذا اللقاء دون تكراره».
    البند 5: «تمييز الوديات» → الحقل `friendly` يبقى كما أرسله المصدر؛ وإن لم
    يميّزه المصدر يبقى `null` فتعرض الواجهة «نوع البطولة غير محدد» ولا تخمّن. */
 export function mergeH2h(existing = [], self = null, limit = 3) {
-  const completed = existing.filter(entry => entry?.completed === true && entry?.date);
-  if (self && self.completed === true && self.date) {
+  const completed = (Array.isArray(existing) ? existing : []).filter(isCountableH2h);
+  if (self && isCountableH2h(self)) {
     const key = h2hKey(self);
     if (!completed.some(entry => h2hKey(entry) === key)) completed.push(self);
   }
   return completed
     .slice()
     .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
-    .slice(0, limit);
+    .slice(0, Math.max(0, limit));
+}
+
+/* ───────── ختم لحظة النهاية: شرط توقف التحديث (البند 8 و11) ───────── */
+
+/* لماذا هذه الدالة ضرورية؟
+   لأن `normalizeStatus` لا تعرف متى انتهت المباراة — تعرف فقط **أنها** انتهت.
+   ولو قِيست نافذة التخفيف من `readAt` لتجددت مع كل قراءة، فتظل أصغر من
+   النافذة دائماً و**لا يتوقف التحديث أبداً**. لذلك يُختم الوقت مرة عند أول
+   قراءة تؤكد النهاية، ويُحفظ بعدها، ويُمحى إن أعاد المصدر فتح المباراة. */
+export function stampCompletion(previousStatus, nextStatus, readAt) {
+  if (!nextStatus) return nextStatus;
+  if (!nextStatus.completed) {
+    /* مباراة أعيد فتحها (تصحيح، أو استئناف بعد توقف) تفقد ختمها. */
+    return { ...nextStatus, finishedAt: null };
+  }
+  const previousFinishedAt = previousStatus?.finishedAt;
+  if (typeof previousFinishedAt === 'string' && Number.isFinite(Date.parse(previousFinishedAt))) {
+    return { ...nextStatus, finishedAt: previousFinishedAt };
+  }
+  return { ...nextStatus, finishedAt: typeof readAt === 'string' && Number.isFinite(Date.parse(readAt)) ? readAt : null };
 }
 
 /* ─────────── معدلات التحديث حسب نوع البيانات (البند 11) ─────────── */
@@ -484,7 +608,11 @@ export function pollIntervalFor(status, dataType) {
 
 export function shouldStopPolling(status, data, now) {
   if (status?.phase !== 'post') return false;
-  const finishedAt = Date.parse(status.finishedAt || data?.readAt || '');
+  /* تُقاس النافذة من الختم الذي تضعه `stampCompletion` — **ولا ترتد إلى
+     `readAt` إطلاقاً**، لأن `readAt` يتجدد مع كل قراءة فتظل النافذة غير
+     منقضية أبداً ويستمر الطلب إلى ما لا نهاية. وإن غاب الختم نواصل الطلب:
+     الاستمرار حذرٌ أرخص من التوقف على موعد لا نعرفه. */
+  const finishedAt = typeof status.finishedAt === 'string' ? Date.parse(status.finishedAt) : NaN;
   if (!Number.isFinite(finishedAt)) return false;
   if (now - finishedAt < POST_MATCH_WINDOW_MS) return false;
   const hasStats = data?.statistics !== null && data?.statistics !== undefined;
@@ -522,9 +650,28 @@ export function buildComparison(metrics, { mode = 'match', sample = null, provid
     return fail('NO_DATA', 'لا تتوفر أرقام مقارنة من المصدر لهذه المباراة.', []);
   }
 
+  /* صف تالف يعني أن مجموعة الأرقام كلها غير موثوقة. تُرفض المقارنة كاملة بدل
+     إسقاط الصف بصمت — فإسقاطه قد يترك مضلعاً يبدو سليماً وهو ناقص. والأهم
+     أن هذه الدالة تُستدعى من مسار العرض، فلا يجوز أن ترمي استثناءً يهدم
+     الصفحة؛ التدهور الآمن رسالة واضحة لا انهيار. */
+  if (metrics.some(metric => !metric || typeof metric !== 'object' || typeof metric.key !== 'string' || typeof metric.label !== 'string')) {
+    return fail('INVALID_METRICS', MATCH_CENTER_DIAGNOSTICS.INVALID_METRICS, []);
+  }
+
+  /* البند 9: «عدم استخدام توقعات المزود أو احتمالات الفوز على أنها إحصائيات
+     فعلية». يُفحص **قبل** بقية الشروط لأن تشخيصه هو الأنفع: احتمال فوز وارد
+     في المقارنة خطأ في المادة نفسها، لا نقص في وصفها. */
+  if (metrics.some(metric => FORBIDDEN_METRIC.test(String(metric.key || '')))) {
+    return fail('FORBIDDEN_METRIC', 'لا تُعرض توقعات المزود أو احتمالات الفوز ضمن الإحصائيات الفعلية.', []);
+  }
+
   /* البند 2 و9: مزوّد واحد لكل المقارنة. أرقام مزوّدين مختلفين في لوحة واحدة
-     مقارنة باطلة حتى لو بدت الأرقام متقاربة. */
+     مقارنة باطلة حتى لو بدت الأرقام متقاربة. وإن لم يُعلن أي مزوّد فلا سبيل
+     إلى ضمان التجانس أصلاً، فالرفض أولى من الرسم. */
   const providers = new Set(metrics.map(m => m.provider ?? provider).filter(Boolean));
+  if (providers.size === 0) {
+    return fail('UNDECLARED_PROVIDER', MATCH_CENTER_DIAGNOSTICS.UNDECLARED_PROVIDER, []);
+  }
   if (providers.size > 1) {
     return fail('MIXED_PROVIDERS', 'لا يمكن عرض المقارنة: أرقامها واردة من أكثر من مصدر، ودمجها في لوحة واحدة مضلل.', []);
   }
@@ -532,11 +679,6 @@ export function buildComparison(metrics, { mode = 'match', sample = null, provid
   const modes = new Set(metrics.map(m => m.mode ?? mode));
   if (modes.size > 1) {
     return fail('MIXED_MODES', 'لا يمكن عرض المقارنة: بعض الأرقام من المباراة نفسها وبعضها من فترة أوسع.', []);
-  }
-
-  const forbidden = metrics.filter(m => FORBIDDEN_METRIC.test(String(m.key || '')));
-  if (forbidden.length) {
-    return fail('FORBIDDEN_METRIC', 'لا تُعرض توقعات المزود أو احتمالات الفوز ضمن الإحصائيات الفعلية.', []);
   }
 
   if (metrics.length > MAX_AXES) {

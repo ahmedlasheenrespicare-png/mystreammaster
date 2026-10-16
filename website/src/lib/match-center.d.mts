@@ -177,7 +177,8 @@ export interface ComparisonAxis {
 
 export type ComparisonReason =
   | 'OK' | 'NO_DATA' | 'MIXED_PROVIDERS' | 'MIXED_MODES'
-  | 'FORBIDDEN_METRIC' | 'TOO_MANY_AXES' | 'NO_SAMPLE' | 'INSUFFICIENT_AXES';
+  | 'FORBIDDEN_METRIC' | 'TOO_MANY_AXES' | 'NO_SAMPLE' | 'INSUFFICIENT_AXES'
+  | 'INVALID_METRICS' | 'UNDECLARED_PROVIDER';
 
 export interface Comparison {
   ok: boolean;
@@ -201,7 +202,9 @@ export interface CountdownParts {
   totalMs: number;
 }
 
-export interface Freshness { text: string; honest: boolean }
+/** البند 11: `fresh` وحدها تُعرض على أنها قراءة حالية. */
+export type FreshnessLevel = 'fresh' | 'aging' | 'stale' | 'failed' | 'invalid';
+export interface Freshness { text: string; level: FreshnessLevel }
 
 export interface Tab { id: TabId; label: string }
 
@@ -262,6 +265,10 @@ export const MATCH_ZONES: string[];
 export const TABS: Tab[];
 export const POLL_INTERVALS: Record<MatchPhase, Record<string, number | null>>;
 export const POST_MATCH_WINDOW_MS: number;
+export const FRESH_NOW_SECONDS: number;
+export const FRESH_AGING_SECONDS: number;
+export const MATCH_CENTER_DIAGNOSTICS: Record<string, string>;
+export const READ_AT_FUTURE_TOLERANCE_MS: number;
 
 export function normalizeStatus(raw: unknown, provider?: ProviderId | string): MatchStatus;
 export function deriveScore(status: MatchStatus | null, rawHome: unknown, rawAway: unknown): MatchScore | null;
@@ -270,6 +277,8 @@ export function kickoffLabel(iso: string, zone: string): string;
 export function dayLabelInZone(iso: string, zone: string): string;
 export function countdownParts(kickoffUtc: string, now: number): CountdownParts | null;
 export function freshnessLabel(input: { readAt: string | null; cache?: CacheState; now: number; failed?: boolean }): Freshness;
+export function isTrustworthyReadAt(readAt: unknown, now: number, tolerance?: number): boolean;
+export function readAtProblem(readAt: unknown, now: number): 'MISSING_READ_AT' | 'FUTURE_READ_AT' | null;
 export function isStaleRead(incoming: { readAt?: string } | null, current: { readAt?: string } | null): boolean;
 export function mergeReads(current: ReadStore, results: Record<string, SettledResult>, now: number): ReadStore;
 export function defaultTab(status: MatchStatus | null): TabId;
@@ -279,7 +288,9 @@ export function eventKey(matchId: string, event: Partial<MatchEvent>): string;
 export function normalizeEvent(raw: unknown): MatchEvent;
 export function planAnnouncements(input: PlanAnnouncementsInput): PlanAnnouncementsResult;
 export function detectScoreCorrection(previousScore: MatchScore | null, nextScore: MatchScore | null, announcedGoals: Announcement[]): ScoreCorrection | null;
+export function isResultOfficial(status: MatchStatus | null, score: MatchScore | null): boolean;
 export function mergeH2h(existing: H2hEntry[], self?: (H2hEntry & { completed: boolean }) | null, limit?: number): H2hEntry[];
+export function stampCompletion(previousStatus: MatchStatus | null, nextStatus: MatchStatus | null, readAt: string | null): MatchStatus | null;
 export function pollIntervalFor(status: MatchStatus | null, dataType: string): number | null;
 export function shouldStopPolling(status: MatchStatus | null, data: MatchSnapshot | null, now: number): boolean;
 export function pollingAllowed(input: { hidden: boolean; online: boolean }): boolean;

@@ -743,3 +743,39 @@ test('form and head-to-head from the provider reach the snapshot aggregated by t
   const absent = adaptSnapshot(payload(HOME, {}), HOME);
   assert.equal(absent.form, null);
 });
+
+// ── مرحلة 2: أحداث الخط الزمني وإحصائيات البوكس سكور (شكل P1 المؤكد) ──
+test('مرحلة 2: التبديل يضع المبدَّل لاعباً مرتبطاً، والهدف لا يدّعي مساعدة', () => {
+  const live = { status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } } };
+  const snap = adaptSnapshot(payload(HOME, {
+    ...live,
+    events: [
+      { id: 's1', type: 'Substitution', minute: 60, extraMinute: null, period: 2, side: 'home',
+        player: { id: 'p1', name: 'الوافد الجديد' }, assist: { id: 'p2', name: 'المستبدَل القديم' },
+        team: { name: HOME.name, homeAway: 'home' }, detail: 'Substitution' },
+      { id: 'g1', type: 'Goal - Volley', minute: 45, extraMinute: 2, period: 1, side: 'home',
+        player: { id: 'p3', name: 'المسجّل' }, assist: null, // مشارك ثانٍ بدور غير مؤكد لا يُسمّى مساعدة
+        team: { name: HOME.name, homeAway: 'home' }, detail: 'هدف من تسديدة قوية' },
+    ],
+  }), HOME);
+  assert.equal(snap.events[0].type, 'substitution');
+  assert.equal(snap.events[0].relatedPlayer.name, 'المستبدَل القديم');
+  assert.equal(snap.events[1].type, 'goal');
+  assert.deepEqual([snap.events[1].minute, snap.events[1].extraMinute], [45, 2]);
+  assert.equal(snap.events[1].relatedPlayer, null);
+  assert.equal(snap.events[1].player.name, 'المسجّل');
+  assert.equal(snap.events[1].id, 'g1', 'معرّف المصدر محفوظ لبصمة الإعلان');
+});
+
+test('مرحلة 2: الإحصائيات تمر كما أرسلها الخادم — صفر حقيقي يبقى وغياب يبقى غياباً', () => {
+  const live = { status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } } };
+  const rows = [
+    { key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 58, away: 42 },
+    { key: 'totalShots', label: 'التسديدات', unit: '', home: 0, away: 0 },
+    { key: 'foulsCommitted', label: 'الأخطاء', unit: '', home: 7, away: null },
+  ];
+  const snap = adaptSnapshot(payload(HOME, { ...live, statistics: rows }), HOME);
+  assert.deepEqual(snap.statistics, rows); // لا إعادة تسمية ولا تحويل صفر↔null
+  const absent = adaptSnapshot(payload(HOME, { ...live }), HOME);
+  assert.equal(absent.statistics, null, 'قبل تأكيد المصدر تبقى «غير متاح» لا أصفار');
+});

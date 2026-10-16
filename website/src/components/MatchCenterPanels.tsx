@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import {
   MATCH_ZONES,
   buildComparison,
@@ -397,18 +398,34 @@ export function LivePanel({ match, snapshot, status }: PanelProps) {
       ) : (
         <div className="mc-table-wrap">
           <table className="mc-table">
-            <caption>أرقام المباراة كما أرسلها المصدر</caption>
+            <caption>أرقام المباراة كما أرسلها المصدر — الأشرطة نسبية لأعلى قيمة في كل صف</caption>
             <thead>
               <tr><th scope="col">{match.home.name}</th><th scope="col">الإحصائية</th><th scope="col">{match.away.name}</th></tr>
             </thead>
             <tbody>
-              {statistics.map(stat => (
-                <tr key={stat.key}>
-                  <td data-side="home">{stat.home ?? 'غير متاح'}</td>
-                  <th scope="row">{stat.label}{stat.unit ? ` (${stat.unit})` : ''}</th>
-                  <td data-side="away">{stat.away ?? 'غير متاح'}</td>
-                </tr>
-              ))}
+              {statistics.map(stat => {
+                /* أشرطة نسبية لأعلى قيمة في الصف (معلنة في التسمية أعلاه)،
+                   والرقم الأصلي ووحدته ظاهران — الشريط لا يحل محل الرقم. */
+                const peak = Math.max(Math.abs(stat.home ?? 0), Math.abs(stat.away ?? 0));
+                const width = (value: number | null) => (value === null || peak === 0 ? 0 : Math.round((Math.abs(value) / peak) * 100));
+                return (
+                  <Fragment key={stat.key}>
+                    <tr>
+                      <td data-side="home">{stat.home ?? 'غير متاح'}</td>
+                      <th scope="row">{stat.label}{stat.unit ? ` (${stat.unit})` : ''}</th>
+                      <td data-side="away">{stat.away ?? 'غير متاح'}</td>
+                    </tr>
+                    <tr key={`${stat.key}-bar`} className="mc-statbar-row" aria-hidden="true">
+                      <td colSpan={3}>
+                        <span className="mc-statbar">
+                          <span className="mc-statbar-home" style={{ width: `${width(stat.home)}%` }} />
+                          <span className="mc-statbar-away" style={{ width: `${width(stat.away)}%` }} />
+                        </span>
+                      </td>
+                    </tr>
+                  </Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -491,18 +508,34 @@ export function ReportPanel({ match, snapshot, status }: PanelProps) {
       ) : (
         <div className="mc-table-wrap">
           <table className="mc-table">
-            <caption>إحصائيات المباراة النهائية</caption>
+            <caption>إحصائيات المباراة النهائية — الأشرطة نسبية لأعلى قيمة في كل صف</caption>
             <thead>
               <tr><th scope="col">{match.home.name}</th><th scope="col">الإحصائية</th><th scope="col">{match.away.name}</th></tr>
             </thead>
             <tbody>
-              {statistics.map(stat => (
-                <tr key={stat.key}>
-                  <td data-side="home">{stat.home ?? 'غير متاح'}</td>
-                  <th scope="row">{stat.label}{stat.unit ? ` (${stat.unit})` : ''}</th>
-                  <td data-side="away">{stat.away ?? 'غير متاح'}</td>
-                </tr>
-              ))}
+              {statistics.map(stat => {
+                /* أشرطة نسبية لأعلى قيمة في الصف (معلنة في التسمية أعلاه)،
+                   والرقم الأصلي ووحدته ظاهران — الشريط لا يحل محل الرقم. */
+                const peak = Math.max(Math.abs(stat.home ?? 0), Math.abs(stat.away ?? 0));
+                const width = (value: number | null) => (value === null || peak === 0 ? 0 : Math.round((Math.abs(value) / peak) * 100));
+                return (
+                  <Fragment key={stat.key}>
+                    <tr>
+                      <td data-side="home">{stat.home ?? 'غير متاح'}</td>
+                      <th scope="row">{stat.label}{stat.unit ? ` (${stat.unit})` : ''}</th>
+                      <td data-side="away">{stat.away ?? 'غير متاح'}</td>
+                    </tr>
+                    <tr key={`${stat.key}-bar`} className="mc-statbar-row" aria-hidden="true">
+                      <td colSpan={3}>
+                        <span className="mc-statbar">
+                          <span className="mc-statbar-home" style={{ width: `${width(stat.home)}%` }} />
+                          <span className="mc-statbar-away" style={{ width: `${width(stat.away)}%` }} />
+                        </span>
+                      </td>
+                    </tr>
+                  </Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>

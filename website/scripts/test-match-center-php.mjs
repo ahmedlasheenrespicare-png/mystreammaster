@@ -126,14 +126,18 @@ test('unverified fields are declared absent rather than guessed', () => {
   // Rule 2: never promise what the integration does not cover. Report 12.5
   // established that statistics, lineups and h2h shapes are unverified, and
   // that ESPN has no player ratings at all.
-  for (const field of ['statistics', 'lineups', 'ratings', 'seasonComparison', 'seasonSample']) {
+  for (const field of ['lineups', 'ratings', 'seasonComparison', 'seasonSample']) {
     assert.match(source, new RegExp(`'${field}'\\s*=>\\s*null`), `${field} must be sent as null`);
   }
   assert.ok(source.includes('ESPN لا يوفّر تقييمات لاعبين إطلاقاً'), 'the permanent ratings limit is documented in the file');
-  // Events default to an empty list, which the UI renders as «غير متاح».
-  assert.match(source, /\$events = \[\];/);
+  // Events default to an empty list outside detail states, which the UI
+  // renders as «غير متاح»; Statistics the same (pre-match boxscore values
+  // were never verified by a probe, so they stay null before kickoff).
+  assert.match(source, /if \(\$isDetail\) \{\s*\$events\s+= mc_read_events\(\$summaryRaw, \$header\['competitors'\]\);/);
+  assert.match(source, /\$statistics\s+= mc_read_statistics\(\$summaryRaw, \$header\['competitors'\]\);/);
+  // Default outside detail states stays empty/null — never a pre-match guess.
   // And an event item lacking a minute or a type is dropped, not published.
-  assert.match(source, /if \(\$minute === null \|\| \$text === null\) \{\s*continue;/);
+  assert.match(source, /if \(\$minute === null\) \{\s*continue;/);
 });
 
 test('every response declares its provider and the identity of the match it carries', () => {
@@ -244,8 +248,44 @@ test('the form and head-to-head readers are wired to their confirmed summary key
   assert.match(source, /\$summary\['seasonseries'\]/);
   // Summary is fetched even before kickoff now, but events are only parsed
   // for detail states: a pre-match response cannot leak events into «مباشر».
-  assert.match(source, /if \(\$isDetail\) \{\s*\$events = mc_read_events/);
+  assert.match(source, /\$events\s+= mc_read_events\(\$summaryRaw, \$header\['competitors'\]\);/);
   const payloadBlock = source.slice(source.indexOf('$payload = ['));
   assert.match(payloadBlock, /'form'\s*=>/);
   assert.match(payloadBlock, /'h2h'\s*=>/);
+});
+
+test('stage 2: statistics reader binds sides by team id and never derives shots off target', () => {
+  // الشكل المؤكد بـ P1: boxscore.teams[{team.id,statistics[{name,value|displayValue}]}].
+  assert.match(source, /function mc_read_statistics\(array \$summary, array \$competitors\): \?array/);
+  assert.match(source, /const MC_STAT_LABELS = \[/);
+  for (const name of ['possessionPct','totalShots','shotsOnTarget','blockedShots','wonCorners','foulsCommitted','offsides','passPct','saves','yellowCards','redCards']) {
+    assert.match(source, new RegExp(`'${name}'\\s*=>`), `stat label map must include ${name}`);
+  }
+  // لا اشتقاق: «خارج المرمى» غير موجودة بالاسم في قائمة P1 ولا تُحسب بطرح.
+  assert.doesNotMatch(source, /shotsOffTarget/);
+  // الربط بهوية الفريق لا بترتيب المصفوفة، والصف يُحذف فقط إذا غاب عند
+  // الجانبين معاً — الصفر الحقيقي المرسل يبقى صفراً.
+  assert.match(source, /\$sideOfTeam\[\$id\] = \$competitor\['homeAway'\]/);
+  assert.match(source, /if \(\$home === null && \$away === null\) \{\s*continue;/);
+  assert.match(source, /function mc_num\(mixed \$value\): int\|float\|null/);
+  // قبل البداية لا تُقرأ الإحصائيات (قيم P3 قبل البداية غير مُتحقق منها).
+  assert.match(source, /if \(\$isDetail\) \{\s*\$events\s+= mc_read_events/);
+  assert.match(source, /'statistics'\s+=> \$statistics,/);
+});
+
+test('stage 2: mc_read_events implements the P1-confirmed keyEvents shape', () => {
+  // أحداث الإطار (Kickoff/Halftime/…) ليست أحداث خط زمني — تُستبعد بالنص.
+  assert.match(source, /const MC_FRAME_EVENT_TYPES = \['kickoff', 'halftime'/);
+  assert.match(source, /in_array\(strtolower\(\$text\), MC_FRAME_EVENT_TYPES, true\)/);
+  // الدقيقة والبدل الضائع من clock.displayValue، والتفصيل shortText فقط.
+  assert.ok(source.includes("/(\\d+)(?:\\+(\\d+))?/"), 'minute parses from clock.displayValue');
+  assert.match(source, /isset\(\$m\[2\]\) && \$m\[2\] !== '' \? \(int\) \$m\[2\] : null/);
+  assert.match(source, /'detail'\s+=> mc_str\(\$item\['shortText'\] \?\? null\)/);
+  assert.doesNotMatch(source, /\$item\['text'\] \?\? ''/);
+  // المشاركون: [0] الفاعل دائماً؛ الثاني في قناة assist للتبديل وحده
+  // (الخارج)، فلا يُدّعى للمشارك الثاني في الهدف دور «مساعدة» غير مؤكد.
+  assert.match(source, /'player'\s+=> \$participants\[0\] \?\? \['id' => null, 'name' => null\]/);
+  assert.match(source, /'assist'\s+=> \$isSubstitution \? \(\$participants\[1\] \?\? null\) : null/);
+  // معرّف المصدر محفوظ (بصمة الإعلان لا تتغير عند تصحيح VAR).
+  assert.match(source, /'id'\s+=> mc_str\(\$item\['id'\] \?\? null\) \?\? \('k' \. \$index\)/);
 });

@@ -68,6 +68,8 @@ export interface ServerPayload {
   score?: { home?: unknown; away?: unknown } | null;
   competitors?: unknown[] | null;
   events?: unknown[] | null;
+  /** شعارا الفريقين من المصدر — يُقبل `https://` وحده. */
+  logos?: { home?: unknown; away?: unknown } | null;
   statistics?: unknown;
   lineups?: unknown;
   ratings?: unknown;

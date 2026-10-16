@@ -624,3 +624,91 @@ test('mock phase boundaries are stable and never invent a state the source did n
     assert.ok(resolveScenario(mockPhaseAt(HOME, kickoff + minutes * 60_000)), `T+${minutes}m`);
   }
 });
+
+/* ── Logos (rule 4: only assets permitted for use; rule 12: no re-hosting) ── */
+
+test('a team logo is accepted only over https, from either payload shape', () => {
+  const live = { status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } } };
+  const espn = adaptSnapshot(payload(HOME, {
+    ...live,
+    competitors: [
+      { homeAway: 'home', team: { logo: 'https://a.espncdn.com/i/teamlogos/soccer/500x500/mc.png', score: '1' } },
+      { homeAway: 'away', team: { logo: 'https://a.espncdn.com/i/teamlogos/soccer/500x500/itfc.png', score: '0' } },
+    ],
+  }), HOME);
+  assert.equal(espn.logos.home, 'https://a.espncdn.com/i/teamlogos/soccer/500x500/mc.png');
+  assert.equal(espn.logos.away, 'https://a.espncdn.com/i/teamlogos/soccer/500x500/itfc.png');
+
+  const normalized = adaptSnapshot(payload(HOME, {
+    ...live,
+    logos: { home: 'https://cdn.example/home.png', away: 'https://cdn.example/away.png' },
+  }), HOME);
+  assert.deepEqual(normalized.logos, { home: 'https://cdn.example/home.png', away: 'https://cdn.example/away.png' });
+
+  // When both shapes are present the normalized object wins for BOTH sides.
+  // Falling back per side would let one read take the home logo from one shape
+  // and the away logo from the other - the same defect as mixing two providers
+  // in one number (rule 2), and invisible because the result looks plausible.
+  const both = adaptSnapshot(payload(HOME, {
+    ...live,
+    logos: { home: 'https://cdn.example/h.png', away: null },
+    competitors: [{ homeAway: 'away', team: { logo: 'https://cdn.example/from-competitors.png' } }],
+  }), HOME);
+  assert.deepEqual(both.logos, { home: 'https://cdn.example/h.png', away: null });
+
+  // The same precedence holds for the score: a partial normalized score is not
+  // completed from the raw shape, so a read never spans two shapes.
+  const partialScore = adaptSnapshot(payload(HOME, {
+    ...live,
+    score: { home: 2 },
+    competitors: [{ homeAway: 'away', team: { score: '5' } }],
+  }), HOME);
+  assert.deepEqual(partialScore.score, { home: 2, away: null });
+});
+
+test('an insecure or non-absolute logo is dropped rather than rendered', () => {
+  const live = { status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } } };
+  // Same rule matches.mjs already applies in production, so the two cannot
+  // drift: https:// only.
+  const hostile = [
+    'http://insecure.example/a.png',
+    'javascript:alert(1)',
+    'data:image/png;base64,AAAA',
+    '//cdn.example/protocol-relative.png',
+    '/relative/path.png',
+    'https:/one-slash.example/a.png',
+    '   ',
+    '',
+    null,
+    undefined,
+    42,
+    { url: 'https://cdn.example/a.png' },
+    ['https://cdn.example/a.png'],
+  ];
+  for (const value of hostile) {
+    const snapshot = adaptSnapshot(payload(HOME, { ...live, logos: { home: value, away: value } }), HOME);
+    assert.equal(snapshot.logos.home, null, `${JSON.stringify(value)} must not become a logo`);
+    assert.equal(snapshot.logos.away, null);
+  }
+  // A missing logo is null, not undefined and not an empty string, so the
+  // monogram renders instead of a broken image.
+  const absent = adaptSnapshot(payload(HOME, live), HOME);
+  assert.deepEqual(absent.logos, { home: null, away: null });
+});
+
+test('the mock fabricates no assets, so a simulated page never loads an outside image', () => {
+  // Rule 12 forbids images without permission; a mock that invented logo URLs
+  // would either fetch a third party during a test or imply permission we do
+  // not have. Monograms stand in until a real read supplies https logos.
+  for (const scenario of MOCK_SCENARIOS) {
+    const snapshot = mockSnapshot(HOME, { scenario: scenario.id });
+    assert.deepEqual(snapshot.logos, { home: null, away: null }, scenario.id);
+  }
+  // But the mock path still carries logos when a payload supplies them, so the
+  // rendering path is testable without a live source.
+  const withLogos = mockSnapshot(HOME, {
+    scenario: 'finished',
+    overrides: { logos: { home: 'https://cdn.example/h.png', away: 'https://cdn.example/a.png' } },
+  });
+  assert.deepEqual(withLogos.logos, { home: 'https://cdn.example/h.png', away: 'https://cdn.example/a.png' });
+});

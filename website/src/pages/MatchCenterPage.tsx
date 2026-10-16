@@ -25,7 +25,44 @@ import './match-center.css';
 function monogram(sourceName: string | null, fallback: string): string {
   const base = (sourceName || fallback || '').trim();
   if (!base) return '؟';
-  return base.split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase();
+  const parts = base.split(/\s+/).slice(0, 2);
+  /* اسم من كلمة واحدة يعطي حرفاً واحداً ('B' لبرينتفورد) فيبدو الشعار فارغاً
+     بجانب 'MC' و'NU'. فحرفان من الكلمة الواحدة، وحرف أول من كل كلمة حين تكون
+     الكلمات اثنتين — وكلاهما من الاسم اللاتيني الوارد من المصدر لا من تخمين. */
+  return (parts.length >= 2 ? parts.map(part => part[0]).join('') : parts[0].slice(0, 2)).toUpperCase();
+}
+
+/* البند 4: شعارا الفريقين «عند توفر أصول مسموح باستخدامها». الرابط يصل مع
+   القراءة الحية من المصدر ولا يُخزَّن في التعريفات، فالرابط غير المؤكد لا
+   يُنشر في HTML ثابت. و`alt=""` لأن اسم الفريق نص مجاور — فالصورة زخرفية،
+   وهو نفس عرف `Team` في `MatchesPage`.
+
+   وعند فشل التحميل تعود الأحرف الأولى بدل فراغ غير مرئي: `visibility:hidden`
+   الذي تستخدمه صفحة المواعيد يترك فجوة بحجم الصورة، والفريقان هنا عمودا
+   ترويسة متناظران فالفجوة تُخلّ بالمحاذاة. */
+function Crest({ logo, sourceName, shortName, side }: {
+  logo: string | null;
+  sourceName: string | null;
+  shortName: string;
+  side: 'home' | 'away';
+}) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => { setFailed(false); }, [logo]);
+  if (logo && !failed) {
+    return (
+      <img
+        className={`mc-logo mc-logo--${side}`}
+        src={logo}
+        alt=""
+        width="64"
+        height="64"
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+  return <span className="mc-crest" aria-hidden="true">{monogram(sourceName, shortName)}</span>;
 }
 
 export default function MatchCenterPage({ match }: { match: MatchCenterFixture }) {
@@ -94,7 +131,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
         {/* ── الترويسة: الفريقان والمسابقة والملعب والموعد (البند 4) ── */}
         <header className="mc-hero">
           <div className={`mc-team mc-team--home${flash === 'home' ? ' mc-team--flash' : ''}`}>
-            <span className="mc-crest" aria-hidden="true">{monogram(match.home.sourceName, match.home.shortName)}</span>
+            <Crest logo={snapshot?.logos?.home ?? null} sourceName={match.home.sourceName} shortName={match.home.shortName} side="home" />
             <span className="mc-team-name">{match.home.name}</span>
             <span className="mc-team-tag">المضيف</span>
           </div>
@@ -139,7 +176,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
           </div>
 
           <div className={`mc-team mc-team--away${flash === 'away' ? ' mc-team--flash' : ''}`}>
-            <span className="mc-crest" aria-hidden="true">{monogram(match.away.sourceName, match.away.shortName)}</span>
+            <Crest logo={snapshot?.logos?.away ?? null} sourceName={match.away.sourceName} shortName={match.away.shortName} side="away" />
             <span className="mc-team-name">{match.away.name}</span>
             <span className="mc-team-tag">الضيف</span>
           </div>

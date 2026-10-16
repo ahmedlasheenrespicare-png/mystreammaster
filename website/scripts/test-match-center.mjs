@@ -74,6 +74,7 @@ function snapshot(matchId, overrides = {}) {
     lineups: null,
     ratings: null,
     h2h: [],
+    logos: { home: null, away: null },
     seasonComparison: null,
     seasonSample: null,
     ...overrides,

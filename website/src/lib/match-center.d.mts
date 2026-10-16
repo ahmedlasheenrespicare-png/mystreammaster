@@ -131,6 +131,14 @@ export interface MatchSnapshot {
   lineups: MatchLineups | null;
   ratings: ScoredPlayer[] | null;
   h2h: H2hEntry[];
+  /**
+   * شعارا الفريقين كما يرسلهما المصدر، `https://` فقط (البند 4).
+   *
+   * `null` حين لا يرسل المصدر شعاراً — فتُعرض الأحرف الأولى بدل صورة مكسورة.
+   * لا تُخزَّن روابط شعارات في تعريفات المباريات: الرابط غير المؤكد لا يُنشر
+   * في HTML ثابت، بل يصل مع القراءة الحية.
+   */
+  logos: { home: string | null; away: string | null };
   /** البند 9: أرقام المقارنة قبل اللقاء تحتاج عينة معلنة. */
   seasonComparison: ComparisonMetric[] | null;
   seasonSample: ComparisonSample | null;
@@ -301,6 +309,9 @@ export function planAnnouncements(input: PlanAnnouncementsInput): PlanAnnounceme
 export const SCORING_TYPES: ReadonlySet<string>;
 
 /** النتيجة كما تفسّرها الأحداث المعلنة — بلا تعريف ثانٍ للاحتساب. */
+/** البند 4 و12: رابط شعار `https://` فقط، وإلا `null`. */
+export function safeLogoUrl(value: unknown): string | null;
+
 export function scoreFromEvents(events: unknown): {
   home: number;
   away: number;

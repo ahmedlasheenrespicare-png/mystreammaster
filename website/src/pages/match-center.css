@@ -71,6 +71,9 @@
 }
 .mc-team--home .mc-crest { background: radial-gradient(circle at 32% 26%, rgba(124, 92, 255, .5), rgba(124, 92, 255, .12)); color: #efeaff; }
 .mc-team--away .mc-crest { background: radial-gradient(circle at 32% 26%, rgba(216, 255, 62, .34), rgba(216, 255, 62, .07)); color: var(--mc-lime); }
+/* الشعار من المصدر: نفس مقاس دائرة الأحرف الأولى حتى لا تتحرك الترويسة عند
+   وصوله أو عند فشل تحميله. */
+.mc-logo { inline-size: clamp(52px, 13vw, 78px); block-size: clamp(52px, 13vw, 78px); object-fit: contain; border-radius: 50%; background: rgba(255, 255, 255, .04); border: 1px solid var(--mc-line); padding: 5px; }
 .mc-team-name { font-weight: 800; font-size: clamp(.9rem, 3.4vw, 1.16rem); line-height: 1.4; overflow-wrap: anywhere; }
 .mc-team-tag { font-size: .68rem; color: var(--mc-muted); font-weight: 700; }
 

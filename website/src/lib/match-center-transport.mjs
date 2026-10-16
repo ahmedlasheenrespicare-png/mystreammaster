@@ -30,6 +30,7 @@
 import {
   deriveScore,
   isVerified,
+  safeLogoUrl,
   normalizeEvent,
   normalizeStatus,
   scoreFromEvents,
@@ -179,17 +180,21 @@ export function matchCenterEndpoint(match) {
      seasonComparison, seasonSample
    } */
 
-function readSideScore(payload, side) {
-  /* شكلنا المطبَّع أولاً، ثم شكل ESPN الخام — وكلاهما يمر بـ`deriveScore`
-     نفسها، فلا يُشتق المجموع مرتين بقاعدتين.
+/* الشكل المطبَّع له أولوية **ككائن كامل**، لا لكل طرف على حدة.
 
-     ⚠️ يُعاد دائماً غلاف `{ score }`: `deriveScore` تقرأ `raw.score` ثم
-     `raw.goals` ثم `raw` نفسه. وإرجاع كائن النتيجة كاملاً `{home, away}`
-     لكلا الطرفين كان يجعلها لا تجد رقماً في أي مستوى، فتعيد `null` — أي
-     نتيجة غائبة في كل مباراة، وهو عطل يبدو كتصميم «لا نتيجة قبل البداية». */
+   لو جاز السقوط إلى `competitors` لطرفٍ واحد، لأمكن أن تأتي نتيجة المضيف من
+   شكل ونتيجة الضيف من شكل آخر في القراءة نفسها — وهذا خلط مصدرين في رقم واحد
+   يمنعه البند 2، وأصعب ما يمكن ملاحظته لأن النتيجة تبدو معقولة. فإن وُجد
+   `score` فهو وحده المرجع للطرفين، ناقصاً كان أو كاملاً.
+
+   ⚠️ يُعاد دائماً غلاف `{ score }`: `deriveScore` تقرأ `raw.score` ثم
+   `raw.goals` ثم `raw` نفسه. وإرجاع كائن النتيجة كاملاً `{home, away}` لكلا
+   الطرفين كان يجعلها لا تجد رقماً في أي مستوى فتعيد `null` — أي نتيجة غائبة
+   في كل مباراة، وهو عطل يبدو كتصميم «لا نتيجة قبل البداية». */
+function readSideScore(payload, side) {
   const direct = payload?.score;
-  if (direct && typeof direct === 'object' && !Array.isArray(direct) && side in direct) {
-    return { score: direct[side] };
+  if (direct && typeof direct === 'object' && !Array.isArray(direct)) {
+    return { score: side in direct ? direct[side] : null };
   }
   const competitors = Array.isArray(payload?.competitors) ? payload.competitors : null;
   if (competitors) {
@@ -206,6 +211,22 @@ function firstIdentity(...values) {
   for (const value of values) {
     if (typeof value === 'string' && value.trim() !== '') return value.trim();
     if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  }
+  return null;
+}
+
+/* نفس أولوية الكائن الكامل التي لـ`readSideScore`: إن وُجد `logos` فهو المرجع
+   للطرفين. شعار مضيف من شكل وشعار ضيف من شكل آخر ليس خلط أرقام، لكنه نفس
+   العلة — قراءة واحدة من مصدرين. */
+function readSideLogo(payload, side) {
+  const direct = payload?.logos;
+  if (direct && typeof direct === 'object' && !Array.isArray(direct)) {
+    return safeLogoUrl(side in direct ? direct[side] : null);
+  }
+  const competitors = Array.isArray(payload?.competitors) ? payload.competitors : null;
+  if (competitors) {
+    const found = competitors.find(item => item?.homeAway === side || item?.team?.homeAway === side);
+    if (found) return safeLogoUrl(found.team?.logo ?? found.logo);
   }
   return null;
 }
@@ -263,6 +284,9 @@ export function adaptSnapshot(payload, match) {
     /* ESPN لا يوفّر تقييمات اللاعبين إطلاقاً (تقرير §12.3) — يبقى `null`. */
     ratings: absentToNull(payload.ratings),
     h2h: Array.isArray(payload.h2h) ? payload.h2h : [],
+    /* البند 4: الشعار من المصدر بشرط `https://` نفسه الذي تشترطه صفحة
+       المواعيد القائمة. شكلنا المطبَّع أولاً ثم شكل ESPN الخام. */
+    logos: { home: readSideLogo(payload, 'home'), away: readSideLogo(payload, 'away') },
     seasonComparison: absentToNull(payload.seasonComparison),
     seasonSample: absentToNull(payload.seasonSample),
   };

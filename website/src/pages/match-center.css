@@ -27,7 +27,10 @@
   --mc-red: #ef3340;
   --mc-radius: 18px;
 
-  min-height: 100vh;
+  /* بلا `min-height: 100vh`: الارتفاع يتبع المحتوى. القيمة كانت تجعل القسم
+     يتمدّد إلى ارتفاع النافذة نفسها — وهو ما يكسر أي لقطة بنافذة طويلة
+     (منطقة فارغة ضخمة)، ولا يضيف شيئاً في الصفحة الحقيقية لأن المحتوى أطول
+     من النافذة دائماً، والخلفية ترسم على صندوق القسم لا على النافذة. */
   padding: 132px 16px 96px;
   color: var(--mc-text);
   background:
@@ -193,6 +196,14 @@
 .mc-live-region { position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* ── الاستجابية: 320 → 1440 ─────────────────────────────────────── */
+/* على 320–420px الشريط الأفقي القابل للتمرير كان يُخرج التبويب الخامس
+   («بعد المباراة») عن الشاشة، فلا يصل إليه الزائر إلا بتمرير لا يوحي به شيء.
+   لذلك تتحول القائمة إلى شبكة خمسة أعمدة متساوية ويلتف النص داخل العمود:
+   الخمسة ظاهرة كلها، ومقاس اللمس يبقى 44px، ولا تمرير أفقياً ولا نص مبتور. */
+@media (max-width: 420px) {
+  .mc-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; overflow-x: visible; padding: 5px; border-radius: 16px; }
+  .mc-tab { min-width: 0; padding: 8px 3px; font-size: .68rem; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
+}
 @media (max-width: 720px) {
   .mc-page { padding: 112px 12px 104px; }
   .mc-hero { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px 12px; }
@@ -200,6 +211,7 @@
      تخالف ترتيب DOM الذي تقرأه قارئ الشاشة. */
   .mc-mid { order: 0; min-width: 0; }
   .mc-mini { display: flex; }
+  /* بين 421 و720px يبقى الشريط أفقياً قابلاً للتمرير — والاتساع يكفي هنا. */
   .mc-tab { flex: 0 0 auto; }
 }
 @media (min-width: 900px) {

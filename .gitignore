@@ -5,3 +5,7 @@ website/dist-ssr/
 website/test-results/
 website/playwright-report/
 *.log
+
+# لقطات مركز المباراة — ناتج `scripts/capture-match-center.mjs` القابل لإعادة
+# الإنتاج. تُسلَّم في مساحة العمل للمراجعة ولا تدخل المستودع (30 ميغابايت).
+website/docs/match-center-shots/

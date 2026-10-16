@@ -29,6 +29,7 @@ import {
   MOCK_PROVIDER_ID,
   SERVER_PROVIDER_ID,
   describeTransportCode,
+  resolveScenario,
   fetchMatchSnapshot,
   settle,
   type SettledSnapshot,
@@ -128,6 +129,21 @@ export interface MatchCenterState {
   clearAnnouncements: () => void;
 }
 
+/* أداة معاينة واختبار يدوي **لبيئة التطوير وحدها**: `?mockScenario=finished`.
+
+   لماذا تُقيَّد: المباريات الثلاث غداً، فبلا هذا المفتاح لا تُظهر المعاينة إلا
+   «لم تبدأ»، ولا سبيل إلى فحص الحالات الأخرى التي يطلبها البند 14 بصرياً.
+   ولماذا هي آمنة: تُحترم فقط حين `allowMock` صحيح (وهو `import.meta.env.DEV`)،
+   وتُطابَق ضد السيناريوهات المسجّلة فاسمٌ مجهول يُتجاهل، وفي البناء المنشور
+   يُحذف هذا الفرع مع المزوّد المحاكي كله — فلا يستطيع زائر أن يفرض حالة
+   مختلَقة على صفحة حقيقية. */
+function devScenario(allowMock: boolean): string | undefined {
+  if (!allowMock || typeof window === 'undefined') return undefined;
+  const wanted = new URLSearchParams(window.location.search).get('mockScenario');
+  const scenario = wanted ? resolveScenario(wanted) : null;
+  return scenario ? scenario.id : undefined;
+}
+
 export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOptions = {}): MatchCenterState {
   const isDev = Boolean(import.meta.env?.DEV);
   const provider = options.provider ?? (isDev ? MOCK_PROVIDER_ID : SERVER_PROVIDER_ID);
@@ -146,6 +162,7 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
   /* البند 5: اختيار الزائر يُحفظ ولا يُنتزع منه عند تحديث أو عند هدف. */
   const [userTab, setUserTab] = useState<TabId | null>(null);
 
+  const scenario = useMemo(() => devScenario(allowMock), [allowMock]);
   const storeRef = useRef<ReadStore>({});
   const knownKeysRef = useRef<string[]>([]);
   const seededRef = useRef(false);
@@ -283,6 +300,7 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
       const settled = await settle(fetchMatchSnapshot(match, {
         provider,
         allowMock,
+        scenario,
         signal: controller.signal,
         now: Date.now(),
       }));
@@ -306,7 +324,7 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
       controller?.abort();
       if (timer) window.clearTimeout(timer);
     };
-  }, [match, provider, allowMock, applyResult]);
+  }, [match, provider, allowMock, scenario, applyResult]);
 
   /* البند 11: «الاستئناف عند العودة أو عودة الاتصال». أول تشغيل يتولاه
      الأثر السابق، فتُتخطى أول دورة هنا حتى لا يُطلب مرتين عند التركيب. */

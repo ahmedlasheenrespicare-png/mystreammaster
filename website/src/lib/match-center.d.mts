@@ -87,6 +87,32 @@ export interface H2hEntry {
   awayGoals: number | null;
 }
 
+/** بند الرسالة التكميلية 1ب: مباراة واحدة داخل سجل مستوى فريق. */
+export interface FormMatch {
+  fixtureId: string | number | null;
+  date: string;
+  competition: string | null;
+  opponent: string | null;
+  venue: 'home' | 'away';
+  goalsFor: number;
+  goalsAgainst: number;
+  result: 'W' | 'D' | 'L';
+}
+
+/** تجميع مستوى فريق على العدد الفعلي — المتوسطات مقسومة على `played`. */
+export interface TeamForm {
+  matches: FormMatch[];
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  avgGoalsFor: number;
+  avgGoalsAgainst: number;
+  competitions: string[];
+}
+
 export interface StandingEntry {
   teamId: string | number | null;
   name: string;
@@ -131,6 +157,8 @@ export interface MatchSnapshot {
   lineups: MatchLineups | null;
   ratings: ScoredPlayer[] | null;
   h2h: H2hEntry[];
+  /** مستوى الفريقين من المصدر، أو `null` إن لم يرسل سجلاً قابلاً للعدّ. */
+  form: { home: TeamForm | null; away: TeamForm | null } | null;
   /**
    * شعارا الفريقين كما يرسلهما المصدر، `https://` فقط (البند 4).
    *
@@ -322,6 +350,7 @@ export function scoreFromEvents(events: unknown): {
 export function detectScoreCorrection(previousScore: MatchScore | null, nextScore: MatchScore | null, announcedGoals: Announcement[]): ScoreCorrection | null;
 export function isResultOfficial(status: MatchStatus | null, score: MatchScore | null): boolean;
 export function mergeH2h(existing: H2hEntry[], self?: (H2hEntry & { completed: boolean }) | null, limit?: number): H2hEntry[];
+export function summarizeForm(entries: unknown, teamId: string | number | null | undefined, limit?: number): TeamForm | null;
 export function stampCompletion(previousStatus: MatchStatus | null, nextStatus: MatchStatus | null, readAt: string | null): MatchStatus | null;
 export function pollIntervalFor(status: MatchStatus | null, dataType: string): number | null;
 export function shouldStopPolling(status: MatchStatus | null, data: MatchSnapshot | null, now: number): boolean;

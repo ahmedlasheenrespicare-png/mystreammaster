@@ -27,9 +27,14 @@
  *  • المؤكد من المصدر: الحالة والنتيجة ووقت المباراة والملعب والشعارات.
  *  • الأحداث: تُقرأ من `keyEvents` إن وُجدت وبنيه مُتحقَّق؛ وإلا مصفوفة فارغة
  *    فتعرض الواجهة «غير متاح». **لا تُختلق أحداث**.
- *  • الإحصائيات والتشكيلات والتقييمات والمواجهات: تُرسل `null` صراحةً. لم يُتحقق
- *    من بنيتها من المصدر، وإرسال تخمين لها أسوأ من إعلان غيابها. تقييمات
- *    اللاعبين لا يوفّرها ESPN إطلاقاً فتبقى `null` بصفة نهائية.
+ *  • مستوى الفريقين والمواجهات (المرحلة الثانية، بموافقة 2026-10-16): تُقرأ
+ *    من `lastFiveGames` و`seasonseries` في `summary` — بنيتاهما مؤكدتان
+ *    بمسابير P1/P3 على مباراة منتهية (`MATCH_CENTER_FINISHED_PROBE` و
+ *    `MATCH_CENTER_PREMATCH_PROBE`). التجميع (W/D/L والمتوسطات) في طبقة
+ *    العقد وحدها؛ هذا الوسيط يستخرج الحقول مطبّعةً فقط.
+ *  • الإحصائيات والتشكيلات والتقييمات: تُرسل `null` صراحةً حتى مرحلتها
+ *    المعتمدة. تقييمات اللاعبين لا يوفّرها ESPN إطلاقاً فتبقى `null`
+ *    بصفة نهائية.
  */
 
 declare(strict_types=1);
@@ -418,6 +423,130 @@ function mc_read_events(array $summary, array $competitors): array {
     return $out;
 }
 
+/**
+ * مستوى الفريقين من `summary.lastFiveGames` (بنية مؤكدة بمسابير P1/P3).
+ *
+ * الاستخراج مطبّع فقط: التجميع والمتوسطات في طبقة العقد (`summarizeForm`)،
+ * وربط كل قائمة بطرفها من هذه المباراة بمعرّف فريق المصدر لا بالاسم.
+ * قائمة بلا معرّف فريق معروف تُسقط — ربطها بالترتيب تخمين.
+ *
+ * @return array{home:array<int,array<string,mixed>>,away:array<int,array<string,mixed>>}|null
+ */
+function mc_read_form(array $summary, array $competitors): ?array {
+    $groups = $summary['lastFiveGames'] ?? null;
+    if (!is_array($groups)) {
+        return null;
+    }
+
+    $sideOfTeam = [];
+    foreach ($competitors as $competitor) {
+        $id = $competitor['team']['id'] ?? null;
+        if (is_string($id) && $id !== '') {
+            $sideOfTeam[$id] = $competitor['homeAway'];
+        }
+    }
+
+    $out = ['home' => [], 'away' => []];
+    foreach ($groups as $group) {
+        if (!is_array($group)) {
+            continue;
+        }
+        $teamId = $group['team']['id'] ?? null;
+        if (!is_string($teamId) || !isset($sideOfTeam[$teamId])) {
+            continue;
+        }
+        $side = $sideOfTeam[$teamId];
+        foreach ((array) ($group['events'] ?? []) as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $out[$side][] = [
+                'fixtureId'    => mc_str($item['id'] ?? null),
+                'date'         => mc_str($item['gameDate'] ?? ($item['date'] ?? null)),
+                'competition'  => mc_str($item['competitionName'] ?? ($item['leagueName'] ?? null)),
+                'opponent'     => mc_str($item['opponent']['displayName'] ?? null),
+                'homeTeamId'   => mc_str($item['homeTeamId'] ?? null),
+                'awayTeamId'   => mc_str($item['awayTeamId'] ?? null),
+                'homeGoals'    => mc_int($item['homeTeamScore'] ?? null),
+                'awayGoals'    => mc_int($item['awayTeamScore'] ?? null),
+            ];
+        }
+    }
+
+    return ($out['home'] === [] && $out['away'] === []) ? null : $out;
+}
+
+/**
+ * المواجهات السابقة من `summary.seasonseries` (بنية مؤكدة بمسابير P1/P3):
+ * سلسلة «head-to-head» بآخر خمس مواجهات عبر البطولات. الاكتمال والنتيجة
+ * من المصدر؛ والودية تُشتق من اسم البطولة كما يرسله المصدر وحده
+ * (بطولة مسماة Friendly)، فلا تُخمَّن بطولة رسمية وديةً ولا العكس.
+ * الملعب غير موجود في عناصر السلسلة فلا يُرسل — يبقى «غير متاح».
+ *
+ * @return array<int,array<string,mixed>>
+ */
+function mc_read_h2h(array $summary): array {
+    $series = $summary['seasonseries'] ?? null;
+    if (!is_array($series)) {
+        return [];
+    }
+
+    $events = [];
+    foreach ($series as $item) {
+        if (is_array($item) && ($item['type'] ?? '') === 'head-to-head' && is_array($item['events'] ?? null)) {
+            $events = $item['events'];
+            break;
+        }
+    }
+    if ($events === [] && is_array($series[0]['events'] ?? null)) {
+        $events = $series[0]['events'];
+    }
+
+    $out = [];
+    foreach ($events as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $home = null;
+        $away = null;
+        foreach ((array) ($item['competitors'] ?? []) as $competitor) {
+            if (!is_array($competitor)) {
+                continue;
+            }
+            $entry = [
+                'name'  => mc_str($competitor['team']['displayName'] ?? null),
+                'score' => mc_int($competitor['score'] ?? null),
+            ];
+            if (($competitor['homeAway'] ?? '') === 'away') {
+                $away = $entry;
+            } else {
+                $home = $entry;
+            }
+        }
+        $date = mc_str($item['date'] ?? null);
+        if ($home === null || $away === null || $date === null || $home['name'] === null || $away['name'] === null) {
+            continue;
+        }
+        $competition = mc_str($item['competitionName'] ?? null);
+        $typeCompleted = is_array($item['statusType'] ?? null)
+            ? (($item['statusType']['completed'] ?? false) === true)
+            : false;
+        $out[] = [
+            'fixtureId'   => mc_str($item['id'] ?? null),
+            'date'        => $date,
+            'competition' => $competition,
+            'year'        => null,
+            'friendly'    => $competition !== null && stripos($competition, 'friend') !== false,
+            'completed'   => $typeCompleted || ($item['status'] ?? '') === 'post',
+            'home'        => $home['name'],
+            'away'        => $away['name'],
+            'homeGoals'   => $home['score'],
+            'awayGoals'   => $away['score'],
+        ];
+    }
+    return $out;
+}
+
 // ───────────────────────── الطلب ─────────────────────────
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
@@ -498,8 +627,14 @@ $stateName = strtoupper((string) ($header['status']['type']['name'] ?? ''));
 $isDetail  = in_array($stateCode, ['in', 'post'], true)
     || in_array($stateName, MC_DETAIL_STATUS_NAMES, true);
 
+/* `summary` تُطلب دائماً (مخبأة لكل حدث): قبل البداية تحمل مستوى الفريقين
+   والمواجهات (مسبار P3 أكد امتلاءهما وخلو أحداثها)، وأثناء/بعد المباراة
+   تحمل الأحداث أيضاً. أما تحليل الأحداث فيبقى مشروطاً بالحالة كما كان —
+   فلا تُقرأ أحداث مباراة لم تبدأ ولو وصلت. */
 $events = [];
-if ($isDetail) {
+$form   = null;
+$h2h    = [];
+{
     $summaryKey   = 'sm_' . $binding['event'];
     $summaryCache = mc_read_cache($summaryKey);
     $summaryRaw   = null;
@@ -524,7 +659,11 @@ if ($isDetail) {
            نقطة تفصيلية لا يمحو قراءة أساسية ناجحة. */
     }
     if (is_array($summaryRaw)) {
-        $events = mc_read_events($summaryRaw, $header['competitors']);
+        $form = mc_read_form($summaryRaw, $header['competitors']);
+        $h2h  = mc_read_h2h($summaryRaw);
+        if ($isDetail) {
+            $events = mc_read_events($summaryRaw, $header['competitors']);
+        }
     }
 }
 
@@ -546,12 +685,15 @@ $payload = [
     'logos'    => $header['logos'],
     'venue'    => $header['venue'],
     'events'   => $events,
+    /* مستوى الفريقين والمواجهات من `summary` (بناؤهما مؤكد بمسابير
+       P1/P3). غيابهما `null`/`[]` فيعرضان «غير متاح» — لا يُستكملان. */
+    'form'             => $form,
+    'h2h'              => $h2h,
     /* البند 2 و§12.5: هذه لم تُتحقق بنيتها من المصدر، فتُعلن غائبة صراحةً.
        `null` هنا يعني «غير متاح» في الواجهة، ولا يتحول صفراً ولا كائناً فارغاً. */
     'statistics'       => null,
     'lineups'          => null,
     'ratings'          => null, /* ESPN لا يوفّر تقييمات لاعبين إطلاقاً */
-    'h2h'              => [],
     'seasonComparison' => null,
     'seasonSample'     => null,
 ];

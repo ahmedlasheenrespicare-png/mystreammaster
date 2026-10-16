@@ -34,6 +34,7 @@ import {
   normalizeEvent,
   normalizeStatus,
   scoreFromEvents,
+  summarizeForm,
 } from './match-center.mjs';
 
 /* ─────────────────────────── عناوين النقل ─────────────────────────── */
@@ -284,6 +285,15 @@ export function adaptSnapshot(payload, match) {
     /* ESPN لا يوفّر تقييمات اللاعبين إطلاقاً (تقرير §12.3) — يبقى `null`. */
     ratings: absentToNull(payload.ratings),
     h2h: Array.isArray(payload.h2h) ? payload.h2h : [],
+    /* مستوى الفريقين: التجميع في طبقة العقد وحدها (`summarizeForm`)، مربوط
+       بمعرّف فريق المزوّد من تعريف المباراة — لا باسم الفريق. جانب بلا سجل
+       قابل للعدّ يبقى `null` فيعرض «غير متاح»، ولا يُستكمل بصفر. */
+    form: payload.form && typeof payload.form === 'object'
+      ? {
+          home: summarizeForm(payload.form.home, match?.home?.externalIds?.espn),
+          away: summarizeForm(payload.form.away, match?.away?.externalIds?.espn),
+        }
+      : null,
     /* البند 4: الشعار من المصدر بشرط `https://` نفسه الذي تشترطه صفحة
        المواعيد القائمة. شكلنا المطبَّع أولاً ثم شكل ESPN الخام. */
     logos: { home: readSideLogo(payload, 'home'), away: readSideLogo(payload, 'away') },
@@ -456,6 +466,7 @@ export function mockSnapshot(match, options = {}) {
     lineups: null,
     ratings: null,
     h2h: [],
+    form: null,
     seasonComparison: null,
     seasonSample: null,
     ...options.overrides,

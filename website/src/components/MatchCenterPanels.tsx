@@ -13,6 +13,7 @@ import {
   type MatchSnapshot,
   type MatchStatus,
   type ScoredPlayer,
+  type TeamForm,
 } from '../lib/match-center.mjs';
 import MatchCenterRadar from './MatchCenterRadar';
 
@@ -46,6 +47,51 @@ function Unavailable({ title, note }: { title: string; note?: string }) {
 }
 
 /* ─────────────────────────── 1) معاينة ─────────────────────────── */
+
+/* بند الرسالة التكميلية 1ب: W/D/L بنصٍّ لا بلون وحده، والمتوسطان مسمّيان،
+   والقسمة على العدد الفعلي المعروض بجانبهما. */
+const RESULT_WORD: Record<TeamForm['matches'][number]['result'], string> = { W: 'فوز', D: 'تعادل', L: 'خسارة' };
+
+function FormSide({ name, form }: { name: string; form: TeamForm | null }) {
+  if (!form) {
+    return (
+      <section>
+        <h4>{name}</h4>
+        <Unavailable title="غير متاح" note="لم يرسل المصدر سجل مباريات قابلاً للعدّ لهذا الفريق." />
+      </section>
+    );
+  }
+  const num = (value: number) => new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 2 }).format(value);
+  return (
+    <section>
+      <h4>{name}</h4>
+      <ol className="mc-events" aria-label={`آخر ${form.played} مباريات ${name}`}>
+        {form.matches.map((item, index) => (
+          <li className="mc-event" key={item.fixtureId ?? `${item.date}-${index}`}>
+            <span className="mc-event-minute">{RESULT_WORD[item.result]}</span>
+            <span className="mc-event-body">
+              {item.venue === 'home' ? 'ضد' : 'لدى'} {item.opponent ?? 'خصم غير مسمّى من المصدر'}
+              <small>
+                <span className="mc-num">{item.goalsFor}–{item.goalsAgainst}</span>
+                {' · '}
+                {formatInZone(item.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                {item.competition ? ` · ${item.competition}` : ''}
+              </small>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="mc-note">
+        آخر <span className="mc-num">{num(form.played)}</span> مباريات موثقة: فوز <span className="mc-num">{num(form.wins)}</span> ·
+        تعادل <span className="mc-num">{num(form.draws)}</span> · خسارة <span className="mc-num">{num(form.losses)}</span> ·
+        سجّل <span className="mc-num">{num(form.goalsFor)}</span> واستقبل <span className="mc-num">{num(form.goalsAgainst)}</span>.
+        متوسط أهداف مسجّلة <span className="mc-num">{num(form.avgGoalsFor)}</span> ومتوسط أهداف مستقبَلة{' '}
+        <span className="mc-num">{num(form.avgGoalsAgainst)}</span> — كلاهما مقسوم على العدد الفعلي أعلاه.
+        {form.competitions.length > 0 && <> النطاق: {form.competitions.join('، ')}.</>}
+      </p>
+    </section>
+  );
+}
 
 export function PreviewPanel({ match, snapshot, status, now }: PanelProps) {
   const code = status?.code ?? 'scheduled';
@@ -103,6 +149,12 @@ export function PreviewPanel({ match, snapshot, status, now }: PanelProps) {
 
       <h3>مقارنة قبل اللقاء</h3>
       <MatchCenterRadar comparison={comparison} homeName={match.home.name} awayName={match.away.name} />
+
+      <h3>مستوى الفريقين — آخر مباريات موثقة</h3>
+      <div style={{ display: 'grid', gap: 18, gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))' }}>
+        <FormSide name={match.home.name} form={snapshot?.form?.home ?? null} />
+        <FormSide name={match.away.name} form={snapshot?.form?.away ?? null} />
+      </div>
 
       <h3>الترتيب</h3>
       <p className="mc-note">
@@ -171,7 +223,7 @@ export function HistoryPanel({ match, snapshot, status }: PanelProps) {
               {entries.map((entry, index) => (
                 <tr key={entry.fixtureId ? `id-${entry.fixtureId}` : `${entry.date}-${index}`}>
                   <td className="mc-num">{formatInZone(entry.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
-                  <td>{entry.competition ?? 'غير متاح'}</td>
+                  <td>{entry.competition ?? 'غير متاح'}{entry.friendly ? ' (ودية)' : ''}</td>
                   <td>{entry.home} × {entry.away}</td>
                   <td className="mc-num">
                     {entry.homeGoals ?? '—'} – {entry.awayGoals ?? '—'}

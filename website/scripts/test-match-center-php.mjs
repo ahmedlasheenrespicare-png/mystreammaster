@@ -233,3 +233,19 @@ test('no credential can reach the response', () => {
   assert.ok(!/'odds'|'pickcenter'|'ticketsInfo'|'news'/.test(payloadBlock),
     'fields forbidden by rules 9, 12 and 13 are not forwarded at all');
 });
+
+test('the form and head-to-head readers are wired to their confirmed summary keys', () => {
+  // Phase 2 (owner approval 2026-10-16): lastFiveGames and seasonseries were
+  // confirmed by probes P1/P3 before any reader was written for them
+  // (MATCH_CENTER_FINISHED_PROBE / MATCH_CENTER_PREMATCH_PROBE).
+  assert.match(source, /function mc_read_form\(array \$summary, array \$competitors\)/);
+  assert.match(source, /function mc_read_h2h\(array \$summary\)/);
+  assert.match(source, /\$summary\['lastFiveGames'\]/);
+  assert.match(source, /\$summary\['seasonseries'\]/);
+  // Summary is fetched even before kickoff now, but events are only parsed
+  // for detail states: a pre-match response cannot leak events into «مباشر».
+  assert.match(source, /if \(\$isDetail\) \{\s*\$events = mc_read_events/);
+  const payloadBlock = source.slice(source.indexOf('$payload = ['));
+  assert.match(payloadBlock, /'form'\s*=>/);
+  assert.match(payloadBlock, /'h2h'\s*=>/);
+});

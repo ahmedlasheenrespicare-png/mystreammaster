@@ -59,4 +59,7 @@ jobs:
         with:
           name: standings-snapshot
           if-no-files-found: warn
+          # المجلد مخفي (يبدأ بنقطة) ليُستثنى من Git تلقائياً، ورفع المصنوعات
+          # يستثني المخفي افتراضياً — فيجب تصريحه هنا، وإلا خرج المصنوع فارغاً.
+          include-hidden-files: true
           path: website/.standings-out/

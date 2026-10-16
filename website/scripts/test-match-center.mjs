@@ -1077,7 +1077,14 @@ test('every stored value traces to the received source payload, and nothing beyo
     assert.equal(match.home.logo, null, 'no logo is downloaded or self-hosted');
     assert.equal(match.away.logo, null);
     assert.equal(match.round, null, 'matchday was not in the payload');
-    assert.equal(match.home.externalIds.espn, null, 'team ids were not in the payload either');
+    // Team ids were absent from the first payload, then confirmed by the P0
+    // payload (2026-10-16): each stored id must trace to `receivedTeams`.
+    const homeReceived = MATCH_CENTER_VERIFICATION.receivedTeams.find(t => t.event === match.externalIds.espn && t.side === 'home');
+    const awayReceived = MATCH_CENTER_VERIFICATION.receivedTeams.find(t => t.event === match.externalIds.espn && t.side === 'away');
+    assert.equal(match.home.externalIds.espn, homeReceived?.id, `${match.slug}: home team id traces to P0`);
+    assert.equal(match.away.externalIds.espn, awayReceived?.id, `${match.slug}: away team id traces to P0`);
+    assert.equal(homeReceived?.name, match.home.sourceName, `${match.slug}: home team name in P0`);
+    assert.equal(awayReceived?.name, match.away.sourceName, `${match.slug}: away team name in P0`);
   }
 
   // Ids that are not ours still resolve to nothing: no fallback to team name or

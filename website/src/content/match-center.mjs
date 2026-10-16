@@ -45,6 +45,17 @@ export const MATCH_CENTER_VERIFICATION = {
     { id: '401879259', date: '2026-10-17T14:00Z', name: 'Ipswich Town at Manchester City', venue: 'Etihad Stadium', inTrial: true },
     { id: '401879258', date: '2026-10-17T16:30Z', name: "Aston Villa at Newcastle United", venue: "St. James' Park", inTrial: true },
   ],
+  /* مخرجات P0 (2026-10-16، ثاني إرسال من صاحب المشروع لنفس نقطة النهاية):
+     `competitors[].team.id` لكل فريق — أصل معرّفات الفرق الستة المخزّنة في
+     `externalIds.espn` لكل فريق، وبها يُربط Form بالفريق لا باسمه. */
+  receivedTeams: [
+    { event: '401879259', side: 'home', id: '382', name: 'Manchester City' },
+    { event: '401879259', side: 'away', id: '373', name: 'Ipswich Town' },
+    { event: '401879262', side: 'home', id: '337', name: 'Brentford' },
+    { event: '401879262', side: 'away', id: '364', name: 'Liverpool' },
+    { event: '401879258', side: 'home', id: '361', name: 'Newcastle United' },
+    { event: '401879258', side: 'away', id: '362', name: 'Aston Villa' },
+  ],
   /* قاعدة اشتقاق `sourceName`: اسم الحدث لدى ESPN بصيغة «{الضيف} at {المضيف}».
      الاسم الحاسم وقت التشغيل هو `competitors[].team.displayName` الذي تقرأه
      `parseScoreboard` في `lib/matches.mjs` فعلاً؛ أما `sourceName` هنا فللقطة
@@ -188,14 +199,17 @@ export const MATCH_CENTER_MATCHES = [
          يُستضاف محلياً (البند 12)؛ طبقة البيانات الحية تملؤه من
          `team.logo` الذي ترسله ESPN، كما تفعل `MatchesPage` اليوم. */
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      /* معرّف فريق ESPN مؤكد من مخرجات P0 (2026-10-16، أرسلها صاحب المشروع):
+         `competitors[].team.id` لحدث 401879259. به تُربط نتائج Form بالفريق لا باسمه. */
+      externalIds: { espn: '382', apifootball: null },
     },
     away: {
       name: 'إيبسويتش تاون',
       shortName: 'إيبسويتش',
       sourceName: 'Ipswich Town',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      /* معرّف فريق ESPN من P0 — انظر `MATCH_CENTER_VERIFICATION.receivedTeams`. */
+      externalIds: { espn: '373', apifootball: null },
     },
   },
   {
@@ -216,14 +230,14 @@ export const MATCH_CENTER_MATCHES = [
       shortName: 'برينتفورد',
       sourceName: 'Brentford',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '337', apifootball: null },
     },
     away: {
       name: 'ليفربول',
       shortName: 'ليفربول',
       sourceName: 'Liverpool',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '364', apifootball: null },
     },
   },
   {
@@ -245,14 +259,14 @@ export const MATCH_CENTER_MATCHES = [
       shortName: 'نيوكاسل',
       sourceName: 'Newcastle United',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '361', apifootball: null },
     },
     away: {
       name: 'أستون فيلا',
       shortName: 'فيلا',
       sourceName: 'Aston Villa',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '362', apifootball: null },
     },
   },
 ];

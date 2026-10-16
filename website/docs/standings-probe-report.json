@@ -1,0 +1,67 @@
+{
+  "probedAt": "2026-10-16T23:24:29.240Z",
+  "base": "https://site.web.api.espn.com",
+  "snapshot": [
+    {
+      "league": "uefa.champions",
+      "uid": "s:600~l:775",
+      "season": 2026,
+      "teams": 36
+    },
+    {
+      "league": "eng.1",
+      "uid": "s:600~l:700",
+      "season": 2026,
+      "teams": 20
+    },
+    {
+      "league": "esp.1",
+      "uid": "s:600~l:740",
+      "season": 2026,
+      "teams": 20
+    }
+  ],
+  "probe": [
+    {
+      "league": "fra.1",
+      "ok": true,
+      "uid": "s:600~l:710",
+      "season": 2026,
+      "teams": 18,
+      "suggestedCount": 18,
+      "url": "https://site.web.api.espn.com/apis/v2/sports/soccer/fra.1/standings"
+    },
+    {
+      "league": "ger.1",
+      "ok": true,
+      "uid": "s:600~l:720",
+      "season": 2026,
+      "teams": 18,
+      "suggestedCount": 18,
+      "url": "https://site.web.api.espn.com/apis/v2/sports/soccer/ger.1/standings"
+    },
+    {
+      "league": "ita.1",
+      "ok": true,
+      "uid": "s:600~l:730",
+      "season": 2026,
+      "teams": 20,
+      "suggestedCount": 20,
+      "url": "https://site.web.api.espn.com/apis/v2/sports/soccer/ita.1/standings"
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "error": "UPSTREAM_HTTP_400"
+    },
+    {
+      "league": "ksa.1",
+      "ok": true,
+      "uid": "s:600~l:21231",
+      "season": 2026,
+      "teams": 18,
+      "suggestedCount": 18,
+      "url": "https://site.web.api.espn.com/apis/v2/sports/soccer/ksa.1/standings"
+    }
+  ]
+}

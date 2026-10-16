@@ -174,27 +174,39 @@ export const MATCH_CENTER_FINISHED_PROBE = {
        بطاقات، تمريرات ودقتها، تصديات، اعتراضات...). لا إحصائية خارج
        المرمى باسمها — لا تُشتق إلا بتعريف موثق. */
     teamStatistics: 'boxscore.teams-29-stats-identical-both-sides',
-    /* أحداث موجودة (23 لهذه المباراة) بشكل: id، type{text,type}، period،
-       clock{value,displayValue}، scoringPlay، wallclock، shootout. أنماط
-       الهدف/التبديل/VAR التفصيلية لم تُرصد بعد — عينة [0] كانت Kickoff. */
-    keyEvents: 'present-23-first-is-kickoff',
-    /* `lastFiveGames` لكل فريق 5 أحداث، ببطولة مسماة «2026-27 English
-       Premier League» في العينة (نطاق دوري هنا) ونتيجة نصية «5-2».
-       حقول التاريخ/الخصم/الاتجاه في الحدث الواحد لم تُرصد بعد. */
-    lastFiveGames: 'present-5-per-team-league-labelled',
-    /* حتى بعد النهاية: مفتاح `lineups` غير موجود أصلاً، و`rosters` بطول 2. */
+    /* أحداث ببنية كاملة: id، type{id,text,type} (Goal 70 وGoal - Header
+       وبطاقة صفراء 94 وتبديل 76 وانطلاقة/استراحة/نهاية كأحداث إطارية)،
+       period، clock{value بالثواني، displayValue «55'»}، scoringPlay،
+       team{id}، participants[athlete] (مسجّل/مبدَّل/مُنذر)، wallclock.
+       عينة هذه المباراة بلا جزاء ولا طرد ولا VAR — فئتا «ملغى/مؤكد بعد
+       VAR» لم تُرصدا بعد وتبقيان غير معايرتين حتى عينة تحملها. */
+    keyEvents: 'present-full-shape-goal-sub-card-confirmed-var-unseen',
+    /* ⚠️ اكتشاف لا يُبنى عليه بعد: أحداث الأهداف تحمل `fieldPositionX/Y`
+       و`fieldPosition2X/Y` و`goalPositionY` (نسب مئوية ظاهرياً). هذه
+       مواقع **أهداف فقط** من `keyEvents`، لا كل التسديدات، ودلالة
+       المحاور/الاتجاه غير موثقة — فلا تفتح باب Shot map (انظر التقرير). */
+    goalCoordinates: 'present-on-goals-only-semantics-undocumented',
+    /* حدث Form كامل: gameDate، home/awayTeamId ونتيجتاهما، gameResult
+       (W/D/L من منظور الفريق صاحب القائمة)، competitionName، opponent.
+       آخر 5 هنا كلها دوري — والنطاق يُقرأ من كل حدث لا يُفترض. */
+    lastFiveGames: 'present-5-per-team-full-event-shape',
+    /* `rosters` (لا `lineups`): لكل فريق formation («4-2-3-1» هنا) وقائمة
+       20 وwinner. حقول العنصر الواحد (أساسي/بديل) لم تُرصد بعد، وتوقيت
+       الظهور قبل البداية مجهول — فالتشكيل المؤكد مشروط لا مفتوح. */
+    rosters: 'present-formation-and-20-per-team-entry-shape-unprobed',
+    /* حتى بعد النهاية: مفتاح `lineups` غير موجود أصلاً. */
     lineupsKey: 'absent-even-after-full-time',
-    rosters: 'present-length-2-structure-unprobed',
     /* `gameInfo` = ملعب (id واسم ومدينة/دولة فقط) + حضور. لا حكم في العينة. */
     gameInfo: 'venue+attendance-only-no-referee-in-sample',
     /* قادة إحصائيات لاعبين (تمريرات دقيقة، تدخلات دفاعية...) بلا أي تقييم. */
     leaders: 'player-stat-leaders-no-ratings',
   },
   stillUnprobed: [
-    'أنماط `keyEvents` التفصيلية: هدف/بطاقة/تبديل/جزاء/VAR وبنية لاعبيها',
-    'حدث `lastFiveGames` الواحد كاملاً: التاريخ والخصم واتجاه النتيجة',
-    'بنية `rosters`: هل تحمل أساسيين/خطة لمباراة منتهية أم قوائم فقط',
-    'سلوك `boxscore`/`keyEvents` أثناء اللعب (مسبار P2 يوم مباراة حية)',
+    'عنصر `rosters[].roster` الواحد: علم الأساسي/البديل والمركز والرقم',
+    'عدد `participants` في أهداف بصناعة (هل الثاني هو الصانع؟)',
+    'حدث ملغى/مؤكد بعد VAR أو جزاء أو طرد — تصنيفها وشكلها',
+    'سلوك `boxscore`/`keyEvents`/`rosters` أثناء اللعب وتوقيت التشكيلات (P2)',
+    'هل تحمل كل الأهداف إحداثيات دائماً، وما دلالة محاورها واتجاهها',
   ],
 };
 

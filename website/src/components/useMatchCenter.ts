@@ -145,7 +145,10 @@ function devScenario(allowMock: boolean): string | undefined {
 }
 
 export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOptions = {}): MatchCenterState {
-  const isDev = Boolean(import.meta.env?.DEV);
+  /* `import.meta.env.DEV` بوصول مباشر لا اختياري (`?.`): vite يستبدل الوصول
+     المباشر حرفياً بـ`false` في البناء المنشور، فيحذف Rollup الفرع كله. بصيغة
+     `?.` يبقى الفرع حياً بعلمٍ كاذب — سلوكه صحيح لكنه شحنٌ لكود ميت. */
+  const isDev = import.meta.env.DEV === true;
   const provider = options.provider ?? (isDev ? MOCK_PROVIDER_ID : SERVER_PROVIDER_ID);
   const allowMock = options.allowMock ?? isDev;
 
@@ -162,7 +165,12 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
   /* البند 5: اختيار الزائر يُحفظ ولا يُنتزع منه عند تحديث أو عند هدف. */
   const [userTab, setUserTab] = useState<TabId | null>(null);
 
-  const scenario = useMemo(() => devScenario(allowMock), [allowMock]);
+  /* نفس السبب: شرط ثابت الكذب في الإنتاج يحذف الاستدعاء — ومعه قراءة
+     `location.search` — فلا يبقى في الحزمة المنشورة ما يقرأ رابط الزائر. */
+  const scenario = useMemo(
+    () => (import.meta.env.DEV === true ? devScenario(allowMock) : undefined),
+    [allowMock],
+  );
   const storeRef = useRef<ReadStore>({});
   const knownKeysRef = useRef<string[]>([]);
   const seededRef = useRef(false);

@@ -116,8 +116,14 @@ export interface MatchSnapshot {
   /** معرّف المباراة الداخلي الثابت (الـslug)، لا معرّف المزوّد. */
   matchId: string;
   provider: ProviderId | string;
-  /** البند 11: وقت القراءة — أساس رفض الاستجابات الأقدم. */
-  readAt: string;
+  /**
+   * البند 11: وقت القراءة — أساس رفض الاستجابات الأقدم.
+   *
+   * `null` حالة واقعية لا خطأ في النوع: حمولة المصدر قد تصل بلا وقت قراءة،
+   * وطبقة العقد تعالجها برمز `MISSING_READ_AT` وترفض تخزينها. إعلانها
+   * `string` وحدها كان يعني أن النوع يكذب عن حالة يختبرها العقد فعلاً.
+   */
+  readAt: string | null;
   status: MatchStatus;
   score: MatchScore | null;
   events: MatchEvent[];
@@ -208,7 +214,9 @@ export interface Freshness { text: string; level: FreshnessLevel }
 
 export interface Tab { id: TabId; label: string }
 
-export type CacheState = 'HIT' | 'MISS' | 'STALE';
+/* `MOCK` حالة قائمة لا بديل عن `MISS`: قراءة المحاكاة لم تمر بمخبأ الخادم،
+   ووسمها `MISS` يوحي بأن طلباً حقيقياً جرى. */
+export type CacheState = 'HIT' | 'MISS' | 'STALE' | 'MOCK';
 
 /** البند 11: لكل مباراة آخر قراءة مؤكدة + فشلها الخاص، بلا تداخل. */
 export interface MatchRead {
@@ -281,7 +289,7 @@ export function countdownParts(kickoffUtc: string, now: number): CountdownParts 
 export function freshnessLabel(input: { readAt: string | null; cache?: CacheState; now: number; failed?: boolean }): Freshness;
 export function isTrustworthyReadAt(readAt: unknown, now: number, tolerance?: number): boolean;
 export function readAtProblem(readAt: unknown, now: number): 'MISSING_READ_AT' | 'FUTURE_READ_AT' | null;
-export function isStaleRead(incoming: { readAt?: string } | null, current: { readAt?: string } | null): boolean;
+export function isStaleRead(incoming: { readAt?: string | null } | null, current: { readAt?: string | null } | null): boolean;
 export function mergeReads(current: ReadStore, results: Record<string, SettledResult>, now: number): ReadStore;
 export function defaultTab(status: MatchStatus | null): TabId;
 export function resolveTab(status: MatchStatus | null, userChoice: TabId | null): TabId;
@@ -289,6 +297,17 @@ export function nextTabId(currentId: TabId, direction: 'next' | 'previous'): Tab
 export function eventKey(matchId: string, event: Partial<MatchEvent>): string;
 export function normalizeEvent(raw: unknown): MatchEvent;
 export function planAnnouncements(input: PlanAnnouncementsInput): PlanAnnouncementsResult;
+/** أنواع الأحداث التي تحرّك النتيجة فعلاً. */
+export const SCORING_TYPES: ReadonlySet<string>;
+
+/** النتيجة كما تفسّرها الأحداث المعلنة — بلا تعريف ثانٍ للاحتساب. */
+export function scoreFromEvents(events: unknown): {
+  home: number;
+  away: number;
+  /** أحداث تحرّك النتيجة ولم يرسل المصدر جانب الفريق فيها. */
+  unattributed: number;
+};
+
 export function detectScoreCorrection(previousScore: MatchScore | null, nextScore: MatchScore | null, announcedGoals: Announcement[]): ScoreCorrection | null;
 export function isResultOfficial(status: MatchStatus | null, score: MatchScore | null): boolean;
 export function mergeH2h(existing: H2hEntry[], self?: (H2hEntry & { completed: boolean }) | null, limit?: number): H2hEntry[];

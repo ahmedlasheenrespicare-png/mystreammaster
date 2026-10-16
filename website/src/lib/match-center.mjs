@@ -417,8 +417,10 @@ export function normalizeEvent(raw) {
   };
 }
 
-/* أنواع الأحداث التي تحرّك النتيجة فعلاً. */
-const SCORING_TYPES = new Set(['goal', 'penalty', 'own_goal']);
+/* أنواع الأحداث التي تحرّك النتيجة فعلاً. تُصدَّر لأن طبقة النقل تبني بها
+   محاكاة لا تختلف نتيجتها عن أحداثها — وتكرار القائمة هناك يعني تعريفين
+   لـ«أي حدث يُحتسب» يمكن أن يتباعدا. */
+export const SCORING_TYPES = new Set(['goal', 'penalty', 'own_goal']);
 
 /* كم هدفاً يضيفه هذا الحدث إلى رصيد طرف بعينه.
    الهدف العكسي يحتاج عناية خاصة: من سجّله في مرماه **لا يُخصم** منه هدف،
@@ -433,6 +435,25 @@ function creditsSide(event, side) {
     return 0; /* الطرف غير معروف من المصدر — انظر معالجة الفجوة أدناه */
   }
   return 0; /* ركلة جزاء مهدرة وإشعارات VAR والبطاقات والتبديلات لا تحرّك النتيجة */
+}
+
+/**
+ * النتيجة كما تفسّرها الأحداث المعلنة — مشتقة عبر `creditsSide` نفسها التي
+ * يستعملها `detectScoreCorrection`، فلا ينشأ تعريف ثانٍ للاحتساب.
+ *
+ * `unattributed` أحداث تحرّك النتيجة لكن المصدر لم يرسل جانب الفريق فيها؛ لا
+ * تُضاف إلى أي طرف لأن إسنادها تخمين (البند 2)، لكنها تُعلن رقماً حتى يظهر
+ * النقص بدل أن يختفي داخل مجموع يبدو تاماً.
+ */
+export function scoreFromEvents(events) {
+  const list = Array.isArray(events) ? events : [];
+  const home = list.reduce((sum, event) => sum + creditsSide(event, 'home'), 0);
+  const away = list.reduce((sum, event) => sum + creditsSide(event, 'away'), 0);
+  const unattributed = list.reduce((sum, event) => {
+    if (!event || event.cancelled || !SCORING_TYPES.has(event.type) || event.teamSide !== null) return sum;
+    return sum + 1;
+  }, 0);
+  return { home, away, unattributed };
 }
 
 /* البند 7: «دعم تصحيح النتيجة». إن تغيّرت النتيجة بما لا تفسّره الأهداف

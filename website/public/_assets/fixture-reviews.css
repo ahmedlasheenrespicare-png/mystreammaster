@@ -1,0 +1,39 @@
+/* Isolated, static editorial references. No embeds, remote images or fonts. */
+.fixture-reviews{--fr-line:rgba(184,199,226,.22);--fr-muted:#bac5d9;color:#f4f7ff}
+.fixture-reviews .fr-heading p{max-width:870px;color:var(--fr-muted);line-height:1.95}
+.fixture-reviews .fr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.fixture-reviews .fr-card{--fr-accent:#d1baff;display:flex;flex-direction:column;min-width:0;padding:1.4rem;border:1px solid var(--fr-line);border-block-start:3px solid var(--fr-accent);border-radius:18px;background:linear-gradient(145deg,#171e35,#101827)}
+.fixture-reviews .fr-card--context{--fr-accent:#c2ee8e}
+.fixture-reviews .fr-card-top{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-block-end:1rem}
+.fixture-reviews .fr-play{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border:1px solid rgba(255,149,164,.36);border-radius:12px;background:#3b2434;color:#ffb1bd}
+.fixture-reviews .fr-play svg{display:block}
+.fixture-reviews .fr-scope{border:1px solid var(--fr-line);border-radius:999px;padding:.3rem .65rem;font-size:.71rem;line-height:1.8;color:#d8e1f3}
+.fixture-reviews .fr-card h3{font-size:1.12rem;line-height:1.8;color:#f4f7ff;margin:0 0 .2rem}
+.fixture-reviews .fr-channel{align-self:flex-start;max-width:100%;font-size:.76rem;line-height:1.9;color:var(--fr-accent);text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere}
+.fixture-reviews .fr-original-label{margin:1.1rem 0 .25rem;font-size:.68rem;color:var(--fr-muted)}
+.fixture-reviews .fr-video-title{font-size:.9rem;line-height:1.95;color:#e8eefb;margin:0;overflow-wrap:anywhere}
+.fixture-reviews .fr-video-title cite{font-style:normal}
+.fixture-reviews .fr-date{font-size:.71rem;line-height:1.95;color:var(--fr-muted);margin:.7rem 0 0}
+.fixture-reviews .fr-summary{font-size:.81rem;line-height:2;color:#c9d4e8;margin:1rem 0 1.3rem}
+.fixture-reviews .fr-summary-label{color:#edf3ff;font-weight:700}
+.fixture-reviews .fr-open-video{display:flex;align-items:center;justify-content:space-between;gap:.7rem;width:100%;padding:.8rem .9rem;margin-block-start:auto;border:1px solid var(--fr-accent);border-radius:10px;background:#202a3b;color:#f4f7ff;font-size:.8rem;font-weight:700;line-height:1.9;text-decoration:none}
+.fixture-reviews .fr-open-video span:first-child{min-width:0;overflow-wrap:anywhere}
+.fixture-reviews .fr-open-video span:last-child{flex-shrink:0;color:var(--fr-accent)}
+.fixture-reviews .fr-open-video:hover{background:#2b3650}
+.fixture-reviews .fr-editorial-note,.fixture-reviews .fr-checked{font-size:.75rem;line-height:1.95;color:var(--fr-muted);margin:1rem 0 0}
+.fixture-reviews .fr-editorial-note a{color:#d1baff;text-decoration:underline;text-underline-offset:3px}
+.fixture-reviews a:focus-visible{outline:3px solid #f4de92;outline-offset:4px;border-radius:3px}
+@media(max-width:800px){.fixture-reviews .fr-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){.fixture-reviews .fr-card{padding:1rem .85rem;border-radius:14px}.fixture-reviews .fr-card h3{font-size:1.02rem}.fixture-reviews .fr-video-title{font-size:.84rem}.fixture-reviews .fr-summary{font-size:.77rem}.fixture-reviews .fr-scope{font-size:.67rem;padding-inline:.5rem}.fixture-reviews .fr-open-video{padding:.7rem .65rem;font-size:.76rem}}
+@media(prefers-reduced-motion:reduce){.fixture-reviews *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Source references are grouped here; review cards retain only author and summary. */
+.fixture-documentation .report-source{min-width:0;overflow-wrap:anywhere}
+.fixture-documentation .fd-original-title{color:#e8eefb;line-height:1.9;margin:.65rem 0}
+.fixture-documentation cite{font-style:normal}
+.fixture-documentation .fd-links{display:flex;flex-direction:column;align-items:flex-start;gap:.7rem;margin-block-start:.8rem;min-width:0}
+.fixture-documentation .fd-channel{font-size:.76rem;line-height:1.9}
+.fixture-documentation .fd-video-link{display:inline-flex;align-items:center;justify-content:space-between;gap:.5rem;max-width:100%;padding:.6rem .8rem;border:1px solid #bca6ec;border-radius:9px;background:#202a3b;color:#f4f7ff;font-size:.78rem;line-height:1.9;text-decoration:none}
+.fixture-documentation .fd-leagues{padding-inline-start:1.2rem;font-size:.78rem;line-height:1.9;color:#bac5d9}
+.fixture-documentation a:focus-visible{outline:3px solid #f4de92;outline-offset:4px;border-radius:3px}
+.fixture-documentation .official-highlight-link{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.fixture-documentation .fd-original-label{font-size:.69rem;color:#bac5d9;margin:.8rem 0 .2rem}

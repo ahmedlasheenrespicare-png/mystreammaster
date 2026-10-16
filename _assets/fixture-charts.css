@@ -1,0 +1,54 @@
+/* Scoped, native match-analysis charts. No library, remote font or external asset. */
+.fixture-charts{--fc-home:#bca7ff;--fc-away:#b9ed82;--fc-muted:#b6c0d5;--fc-line:rgba(180,197,227,.19);margin-block:1.5rem 2rem;padding:clamp(1rem,3vw,1.65rem);border:1px solid var(--fc-line);border-radius:22px;background:linear-gradient(145deg,rgba(22,31,57,.96),rgba(11,20,39,.96));color:#f4f7ff;isolation:isolate}
+.fixture-charts [hidden]{display:none!important}
+.fixture-charts .fc-heading{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1rem;margin-block-end:1.1rem}
+.fixture-charts .fc-eyebrow{display:block;font-size:.76rem;font-weight:700;letter-spacing:.015em;color:var(--fc-away);margin-block-end:.35rem}
+.fixture-charts .fc-heading h3{font-size:clamp(1.2rem,2.4vw,1.6rem);line-height:1.5;margin:0 0 .3rem;color:#f4f7ff}
+.fixture-charts .fc-heading p{margin:0;color:var(--fc-muted);font-size:.9rem;line-height:1.9}
+.fixture-charts .fc-source-badge{display:inline-flex;align-items:center;min-height:30px;padding:.35rem .7rem;border:1px solid rgba(185,237,130,.32);border-radius:999px;background:rgba(185,237,130,.075);color:#d6f5b7;font-size:.74rem;font-weight:700;white-space:normal}
+.fixture-charts[data-feed-state=stale] .fc-source-badge{color:#ffe0a3;border-color:rgba(255,204,117,.4);background:rgba(255,204,117,.08)}
+.fixture-charts .fc-controls{display:grid;gap:.7rem;padding-block:1rem;border-block:1px solid var(--fc-line)}
+.fixture-charts .fc-control-line{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem .9rem;min-width:0}
+.fixture-charts .fc-control-label{font-size:.76rem;font-weight:700;color:var(--fc-muted);min-width:5.7rem}
+.fixture-charts .fc-button-group{display:flex;flex-wrap:wrap;gap:.45rem;min-width:0}
+.fixture-charts button{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:44px;max-width:100%;padding:.5rem .8rem;border:1px solid var(--fc-line);border-radius:11px;background:#17223c;color:#d8e1f4;font:inherit;font-size:.78rem;font-weight:600;line-height:1.6;cursor:pointer;transition:background-color .16s ease,border-color .16s ease}
+.fixture-charts button:hover{background:#22314f;border-color:rgba(188,167,255,.65)}
+.fixture-charts button[aria-pressed=true]{color:#fff;background:#343057;border-color:#bca7ff;box-shadow:inset 0 -2px 0 #bca7ff}
+.fixture-charts button:focus-visible,.fixture-charts a:focus-visible{outline:3px solid #f4de92;outline-offset:4px}
+.fixture-charts .fc-status{margin:.9rem 0 .4rem;color:#e5eafb;font-size:.82rem;line-height:1.95;min-height:1.6em}
+.fixture-charts .fc-context{margin:.3rem 0 1.1rem;color:var(--fc-muted);font-size:.78rem;line-height:1.95}
+.fixture-charts .fc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem}
+.fixture-charts .fc-card{min-width:0;padding:1.05rem;border:1px solid var(--fc-line);border-radius:15px;background:rgba(5,13,29,.58);overflow:hidden}
+.fixture-charts .fc-card h4{margin:0 0 1rem;font-size:.91rem;font-weight:700;line-height:1.6;color:#f4f7ff}
+.fixture-charts .fc-bar-row+.fc-bar-row{margin-block-start:1rem}
+.fixture-charts .fc-value-line{display:flex;align-items:center;justify-content:space-between;gap:.6rem;min-width:0;font-size:.72rem;line-height:1.7}
+.fixture-charts .fc-value-line>span{display:inline-flex;align-items:center;gap:.38rem;min-width:0;color:#d6deef}
+.fixture-charts .fc-value{color:#fff;font-size:1.02rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
+.fixture-charts .fc-dot{display:inline-block;flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--fc-home)}
+.fixture-charts [data-team=away] .fc-dot,.fixture-charts [data-chart-highlight=away] .fc-dot{background:var(--fc-away)}
+.fixture-charts .fc-bar-svg{display:block;width:100%;height:8px;margin-block-start:.45rem;overflow:visible}
+.fixture-charts .fc-bar-track{fill:#26324b}
+.fixture-charts .fc-bar-fill{fill:var(--fc-home);transform-box:view-box;transform-origin:100% 50%}
+.fixture-charts [data-team=away] .fc-bar-fill{fill:var(--fc-away)}
+.fixture-charts .fc-scale{margin:1rem 0 0;color:var(--fc-muted);font-size:.66rem;line-height:1.8}
+.fixture-charts .fc-missing{margin:.6rem 0 0;color:#ffe0a3;font-size:.73rem;line-height:1.9}
+.fixture-charts .fc-donut-layout{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem 1rem}
+.fixture-charts .fc-donut{display:block;width:132px;max-width:100%;height:auto;flex-shrink:0;overflow:visible}
+.fixture-charts .fc-ring-track,.fixture-charts .fc-ring{fill:none;stroke-width:13}
+.fixture-charts .fc-ring-track{stroke:#26324b}
+.fixture-charts .fc-ring--home{stroke:var(--fc-home)}
+.fixture-charts .fc-ring--away{stroke:var(--fc-away)}
+.fixture-charts .fc-ring-caption{fill:#d6deef;font-size:12px;font-family:inherit}
+.fixture-charts .fc-ring-unit{fill:var(--fc-muted);font-size:10px;font-family:inherit}
+.fixture-charts .fc-donut-values{flex:1 1 125px;min-width:0;display:grid;gap:.7rem}
+.fixture-charts .fc-provenance{margin:1rem 0 0;font-size:.73rem;line-height:1.95;color:var(--fc-muted)}
+.fixture-charts .fc-provenance a{color:#d6c8ff;text-decoration:underline;text-underline-offset:3px}
+.fixture-charts[data-highlight=home] [data-team=away] .fc-bar-fill,.fixture-charts[data-highlight=home] .fc-ring--away,.fixture-charts[data-highlight=away] [data-team=home] .fc-bar-fill,.fixture-charts[data-highlight=away] .fc-ring--home{opacity:.22}
+.fixture-charts .fc-animate .fc-bar-fill{animation:fc-bar-enter .7s cubic-bezier(.2,.7,.2,1)}
+.fixture-charts .fc-animate .fc-donut{animation:fc-ring-enter .7s ease-out}
+@keyframes fc-bar-enter{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes fc-ring-enter{from{opacity:.4;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@media(min-width:900px){.fixture-charts .fc-card[data-metric=possession]{grid-column:span 1}.fixture-charts .fc-donut-layout{flex-wrap:wrap}}
+@media(max-width:1050px){.fixture-charts .fc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.fixture-charts{border-radius:17px;padding:1rem .85rem}.fixture-charts .fc-grid{grid-template-columns:minmax(0,1fr)}.fixture-charts .fc-control-line{align-items:flex-start;gap:.4rem}.fixture-charts .fc-control-label{flex-basis:100%}.fixture-charts button{padding:.5rem .65rem;font-size:.74rem}.fixture-charts .fc-card{padding:.95rem}.fixture-charts .fc-value-line{font-size:.75rem}.fixture-charts .fc-donut-layout{flex-wrap:nowrap}.fixture-charts .fc-donut{width:110px}.fixture-charts .fc-donut-values{flex-basis:0}.fixture-charts .fc-donut-values .fc-value-line{align-items:flex-start;flex-direction:column;gap:.1rem}.fixture-charts .fc-status{font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){.fixture-charts *,.fixture-charts *::before,.fixture-charts *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

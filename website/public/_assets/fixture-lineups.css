@@ -1,0 +1,68 @@
+/* Original, isolated HTML/CSS lineup: no player photos, library or browser script. */
+.fixture-lineups{--fl-line:rgba(184,199,226,.2);--fl-muted:#b8c5d9;color:#f4f7ff}
+.fixture-lineups .fl-heading p{max-width:880px;color:var(--fl-muted);line-height:1.95}
+.fixture-lineups .fl-context{font-size:.8rem;line-height:1.95;color:var(--fl-muted);margin:.9rem 0 1.25rem}
+.fixture-lineups .fl-recognition{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-block:1rem}
+.fixture-lineups .fl-recognition p{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .8rem;margin:0;padding:1rem;border:1px solid var(--fl-line);border-radius:14px;background:#141f32}
+.fixture-lineups .fl-recognition p>span:first-child{flex-basis:100%;font-size:.73rem;color:var(--fl-muted)}
+.fixture-lineups .fl-recognition strong{font-size:.96rem;color:#f4f7ff}
+.fixture-lineups .fl-recognition a{font-size:.74rem;color:#d3c4ff;text-decoration:underline;text-underline-offset:3px}
+.fixture-lineups .fl-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:start}
+.fixture-lineups .fl-team{--fl-accent:#c4b2ff;--fl-shirt:#353451;min-width:0;padding:1.1rem;border:1px solid var(--fl-line);border-block-start:3px solid var(--fl-accent);border-radius:18px;background:linear-gradient(155deg,#151d33,#0e1728)}
+.fixture-lineups .fl-team--united{--fl-accent:#c2ee8e;--fl-shirt:#293c30}
+.fixture-lineups .fl-team-heading{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-block-end:1rem}
+.fixture-lineups .fl-team-kicker{font-size:.73rem;color:var(--fl-muted);margin:0 0 .3rem}
+.fixture-lineups .fl-team h3{margin:0;color:#f4f7ff;font-size:1.15rem;line-height:1.8}
+.fixture-lineups .fl-coach{font-size:.77rem;line-height:1.8;margin:.25rem 0 0;color:var(--fl-muted)}
+.fixture-lineups .fl-formation-badge{display:grid;gap:.1rem;text-align:center;padding:.4rem .65rem;border:1px solid var(--fl-line);border-radius:12px;background:#1b2940}
+.fixture-lineups .fl-formation-badge span{font-size:.64rem;color:var(--fl-muted)}
+.fixture-lineups .fl-formation-badge bdi{font-size:1.2rem;font-weight:800;letter-spacing:.08em;color:var(--fl-accent)}
+.fixture-lineups .fl-group-heading{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:1.2rem 0 .7rem;font-size:.86rem;line-height:1.8;color:#eef3ff}
+.fixture-lineups .fl-group-heading span{font-size:.7rem;font-weight:400;color:var(--fl-muted)}
+.fixture-lineups .fl-pitch{position:relative;isolation:isolate;overflow:hidden;border:1px solid rgba(173,213,200,.3);border-radius:14px;background:repeating-linear-gradient(0deg,#102c31 0,#102c31 64px,#123137 64px,#123137 128px)}
+.fixture-lineups .fl-pitch:before{content:"";position:absolute;inset:13px;border:1px solid rgba(206,240,219,.2);border-radius:2px;z-index:-1;pointer-events:none}
+.fixture-lineups .fl-pitch:after{content:"";position:absolute;inset-inline:13px;inset-block-start:50%;border-block-start:1px solid rgba(206,240,219,.2);z-index:-1;pointer-events:none}
+.fixture-lineups .fl-pitch-centre{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;aspect-ratio:1;border:1px solid rgba(206,240,219,.2);border-radius:50%;z-index:-1;pointer-events:none}
+.fixture-lineups ol,.fixture-lineups ul{list-style:none;margin:0;padding:0}
+.fixture-lineups .fl-formation{min-block-size:650px;padding:1.3rem .3rem;display:flex;flex-direction:column-reverse;justify-content:space-around;gap:1rem}
+.fixture-lineups .fl-line-players{direction:rtl;display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:.2rem}
+.fixture-lineups .fl-line-players[data-players="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fixture-lineups .fl-line-players[data-players="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+.fixture-lineups .fl-line-players[data-players="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+.fixture-lineups .fl-line-players[data-players="5"]{grid-template-columns:repeat(5,minmax(0,1fr))}
+.fixture-lineups .fl-player{display:flex;flex-direction:column;align-items:center;gap:.28rem;min-width:0;text-align:center;color:#f1f7f7}
+.fixture-lineups .fl-shirt{display:grid;place-items:center;min-width:32px;height:32px;border:1px solid var(--fl-accent);border-radius:10px;background:var(--fl-shirt);color:#fff;font-size:.83rem;font-weight:800;font-variant-numeric:tabular-nums;box-shadow:0 3px 12px #0003}
+.fixture-lineups .fl-player-name{max-width:100%;padding-inline:.12rem;overflow-wrap:anywhere;font-size:.77rem;font-weight:700;line-height:1.7;color:#f1f7f7}
+.fixture-lineups .fl-captain{display:block;font-size:.61rem;line-height:1.7;color:var(--fl-accent);font-weight:600}
+.fixture-lineups .fl-rating{display:inline-block;flex-shrink:0;max-width:100%;padding:.16rem .38rem;border:1px solid rgba(196,222,238,.25);border-radius:7px;background:#192b3d;color:#f4f7ff;font-size:.8rem;line-height:1.5;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fixture-lineups .fl-rating small{font-size:.6rem;font-weight:500;color:#c3d0e2;margin-inline-start:.12rem}
+.fixture-lineups .fl-player--featured .fl-rating,.fixture-lineups [data-recognition="fotmob"] .fl-rating{border-color:#c2ee8e;background:#c2ee8e;color:#152319}
+.fixture-lineups .fl-player--featured .fl-rating small,.fixture-lineups [data-recognition="fotmob"] .fl-rating small{color:#304733}
+.fixture-lineups .fl-player-event{font-size:.65rem;line-height:1.7;color:#d9e6e6}
+.fixture-lineups .fl-player-event--red{padding-inline:.3rem;background:#542c38;color:#ffe0e8;border-radius:4px}
+.fixture-lineups .fl-substitutes-wrap{border:1px solid var(--fl-line);border-radius:12px;overflow:hidden}
+.fixture-lineups .fl-substitutes{width:100%;table-layout:fixed;border-collapse:collapse;font-size:.77rem;color:#edf2fc}
+.fixture-lineups .fl-substitutes caption{caption-side:bottom;text-align:start;padding:.65rem;font-size:.67rem;line-height:1.8;color:var(--fl-muted);background:#111d31}
+.fixture-lineups .fl-substitutes th,.fixture-lineups .fl-substitutes td{padding:.7rem .3rem;line-height:1.9;text-align:center;border-block-end:1px solid rgba(184,199,226,.12);overflow-wrap:anywhere}
+.fixture-lineups .fl-substitutes thead th{color:#e8effc;background:#223049;font-size:.7rem;font-weight:700}
+.fixture-lineups .fl-substitutes tbody th{text-align:start;font-weight:600}
+.fixture-lineups .fl-substitutes .fl-number{width:31px}
+.fixture-lineups .fl-substitutes .fl-minute{width:48px}
+.fixture-lineups .fl-substitutes .fl-score{width:79px}
+.fixture-lineups .fl-substitutes tbody tr:nth-child(even){background:#162238}
+.fixture-lineups .fl-rating--unavailable{white-space:normal;line-height:1.6;font-size:.69rem;font-weight:600;color:#f7dfb0;background:#302c29;border-color:#5b5141}
+.fixture-lineups .fl-unavailable-note{font-size:.72rem;line-height:1.95;color:#f7dfb0;margin:.7rem 0}
+.fixture-lineups .fl-unused{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem .7rem}
+.fixture-lineups .fl-unused li{display:flex;align-items:flex-start;gap:.5rem;min-width:0;font-size:.74rem;line-height:1.9;color:#c9d3e6}
+.fixture-lineups .fl-unused bdi{min-width:22px;color:var(--fl-accent);font-variant-numeric:tabular-nums;text-align:center}
+.fixture-lineups .fl-unused span{overflow-wrap:anywhere}
+.fixture-lineups .fl-sources{padding:1rem 1.1rem;margin-block-start:1rem;border:1px solid var(--fl-line);border-radius:12px;background:#101a2b}
+.fixture-lineups .fl-sources p{font-size:.75rem;line-height:1.95;color:var(--fl-muted);margin:.25rem 0 .6rem}
+.fixture-lineups .fl-sources a{color:#d3c4ff;text-decoration:underline;text-underline-offset:3px}
+.fixture-lineups a:focus-visible{outline:3px solid #f4de92;outline-offset:4px;border-radius:2px}
+@media(max-width:900px){.fixture-lineups .fl-teams{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){.fixture-lineups .fl-recognition{grid-template-columns:minmax(0,1fr)}.fixture-lineups .fl-team{padding:1rem .6rem;border-radius:14px}.fixture-lineups .fl-team h3{font-size:1rem}.fixture-lineups .fl-player-name{font-size:.72rem}.fixture-lineups .fl-line-players{gap:.15rem}.fixture-lineups .fl-rating{padding:.14rem .25rem;font-size:.75rem}.fixture-lineups .fl-pitch:before{inset:8px}.fixture-lineups .fl-pitch:after{inset-inline:8px}.fixture-lineups .fl-formation{padding-inline:.15rem}.fixture-lineups .fl-substitutes{font-size:.74rem}.fixture-lineups .fl-substitutes .fl-minute{width:39px}.fixture-lineups .fl-substitutes .fl-score{width:64px}.fixture-lineups .fl-substitutes .fl-number{width:25px}.fixture-lineups .fl-substitutes th,.fixture-lineups .fl-substitutes td{padding:.6rem .25rem}.fixture-lineups .fl-unused{gap:.5rem}.fixture-lineups .fl-context{font-size:.76rem}}
+@media(prefers-reduced-motion:reduce){.fixture-lineups *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Keep both distinct award labels readable under the shared legacy theme. */
+.fixture-lineups .fl-recognition strong{color:#f4f7ff!important}
+.fixture-lineups .fl-award-note{font-size:.74rem;color:#b8c5d9}

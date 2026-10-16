@@ -3,6 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import { header, footer } from './legacy-shell.mjs';
+import { renderFixtureCharts } from '../public/_assets/fixture-charts.js';
+import { renderFixtureStandings } from '../public/_assets/fixture-standings.js';
+import { renderFixtureLineups } from './render-fixture-lineups.mjs';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -52,6 +55,28 @@ for (const file of await files(path.join(website, 'legacy'))) {
     continue;
   }
   const $ = load(await fs.readFile(file, 'utf8'));
+  // Bake charts from the visible official tables, using the same pure renderer as
+  // the optional browser enhancement. No API call or duplicated UEFA dataset.
+  $('[data-fixture-charts]').each((_, element) => {
+    const rows = {};
+    $('#uefa-stats [data-stat]').each((__, row) => {
+      const cells = $(row).find('td');
+      rows[$(row).attr('data-stat')] = { home: cells.eq(0).text().trim(), away: cells.eq(1).text().trim() };
+    });
+    $(element).html(renderFixtureCharts(rows, $('#uefa-stats time').first().text().trim()));
+  });
+  if ($('[data-fixture-lineups]').length) {
+    // Confirmed starting XIs and dated provider ratings are complete without JS.
+    // Rendering is build-only: do not introduce another browser feed or PHP API.
+    const lineup = JSON.parse(await fs.readFile(path.join(website, 'src/content/fixture-lineups-snapshot.json'), 'utf8'));
+    $('[data-fixture-lineups]').html(renderFixtureLineups(lineup));
+  }
+  if ($('[data-fixture-standings]').length) {
+    // A dated, reviewed ESPN snapshot is present in the HTML without JavaScript.
+    // Runtime refreshes use the separately approved, same-origin PHP endpoint.
+    const snapshot = JSON.parse(await fs.readFile(path.join(website, 'src/content/fixture-standings-snapshot.json'), 'utf8'));
+    $('[data-fixture-standings]').html(renderFixtureStandings(snapshot));
+  }
   const main = $('main').first();
   const scripts = $('body > script').clone();
   let content;

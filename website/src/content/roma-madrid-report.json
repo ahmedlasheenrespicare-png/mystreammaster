@@ -1,0 +1,1684 @@
+{
+  "version": 1,
+  "date": "2026-10-14",
+  "kickoff": "2026-10-14T19:00:00Z",
+  "reviewedOn": "2026-10-16",
+  "matchId": "2049581",
+  "espnEventId": "401915414",
+  "sources": [
+    [
+      "uefa-match",
+      "UEFA · صفحة المباراة",
+      "https://www.uefa.com/uefachampionsleague/match/2049581--roma-vs-real-madrid/",
+      "هوية اللقاء 2049581، روما يستضيف ريال مدريد في الأولمبيكو، 14 أكتوبر 2026، الجولة الثانية."
+    ],
+    [
+      "uefa-report",
+      "UEFA · تقرير الجولة",
+      "https://www.uefa.com/uefachampionsleague/news/02aa-21d3f8c574f1-e140f41454d4-1000--champions-league-highlights-and-round-up-real-madrid-and-p/",
+      "النتيجة 3–4 وتسلسل العودة وجائزة رجل المباراة لإندريك. تقرير الجولة مشترك، والفقرة المعتمدة تخص روما وريال مدريد فقط."
+    ],
+    [
+      "madrid-report",
+      "ريال مدريد · تقرير النادي",
+      "https://www.realmadrid.com/en-US/news/football/first-team/reports/cronica-roma-real-madrid-14-10-2026",
+      "تقرير العودة وتفاصيل الأهداف. توجد فروق في دقائق بعض الأهداف داخل النص؛ الجدول الزمني هنا وفق ESPN وBBC، ولا تُدمج الدقائق المختلفة."
+    ],
+    [
+      "uefa-lineups",
+      "UEFA · ورقة التشكيل الرسمية",
+      "https://www.uefa.com/newsfiles/UCL/2027/2049581_LU.pdf",
+      "الأسماء وأرقام القمصان والقائدان والحكم والملعب. أعمدة البدلاء متداخلة في استخراج PDF؛ روجعت مع FotMob."
+    ],
+    [
+      "fotmob",
+      "FotMob · التشكيل والتقييمات",
+      "https://www.fotmob.com/matches/real-madrid-vs-roma/2hatyy#6106274",
+      "الخطط وتقييمات اللاعبين ودقائق التبديلات من FotMob فقط. مالين أعلى تقييم 8.7، بينما جائزة UEFA لإندريك. كوليراكيس بلا تقييم منشور. يسجل FotMob هدف إسبي في 82′، ودخول إسبي في 79′ وبيليردي وبيليغريني في 64′؛ تختلف بعض الدقائق عن ESPN. الاستحواذ 54–46 والتمريرات تختلف عن UEFA، فلا تُستخدم في الجداول النهائية."
+    ],
+    [
+      "uefa-stats",
+      "UEFA · الإحصائيات النهائية",
+      "https://www.uefa.com/uefachampionsleague/match/2049581--roma-vs-real-madrid/statistics/",
+      "المصدر الوحيد للجداول النهائية والرسوم التسعة: الاستحواذ 50–50، التسديدات 14–16، الركنيات 5–9، التمريرات المكتملة 491–416."
+    ],
+    [
+      "espn-match",
+      "ESPN · النتيجة وتسلسل الأهداف",
+      "https://www.espn.com/soccer/match/_/gameId/401915414/real-madrid-as-roma",
+      "هوية ESPN: 401915414؛ روما 104 صاحب الأرض وريال مدريد 86 ضيفه. الأهداف: 20،25،51،57،83،85،90. تستخدم القراءة الاختيارية هذا اللقاء وحده، ولا تستبدل إحصائيات UEFA."
+    ],
+    [
+      "bbc",
+      "BBC · تقرير المباراة",
+      "https://www.bbc.com/sport/football/live/cmwyqp5q1lypt",
+      "تأكيد النتيجة والأهداف والموعد 19:00 UTC والأولمبيكو والحضور 64256. يتفق تسلسل الأهداف مع ESPN."
+    ],
+    [
+      "history",
+      "UEFA · سجل المواجهات الرسمية",
+      "https://www.uefa.com/uefachampionsleague/history/h2h/50051/50137/",
+      "آخر ثلاث مواجهات رسمية: 14 أكتوبر 2026 (روما 3–4 ريال)، 27 نوفمبر 2018 (روما 0–2 ريال)، 19 سبتمبر 2018 (ريال 3–0 روما). الوديات غير داخلة في هذا القسم."
+    ],
+    [
+      "standings",
+      "ESPN · ترتيب دوري الأبطال",
+      "https://www.espn.com/soccer/table/_/league/uefa.champions/season/2026",
+      "لقطة كاملة من 36 فريقاً للموسم 2026/27، راجعت في 16 أكتوبر 2026؛ ريال مدريد الثامن بـ6 نقاط وروما الخامس والعشرون بنقطة. ليست إعادة بناء للترتيب عند صافرة المباراة."
+    ],
+    [
+      "italy-standings",
+      "ESPN · ترتيب الدوري الإيطالي",
+      "https://www.espn.com/soccer/standings/_/league/ita.1",
+      "لقطة 16 أكتوبر 2026: 20 فريقاً، روما الثالث بـ14 نقطة بعد 6 مباريات. UID للواجهة العامة s:600~l:730؛ لا يُعاد حساب ترتيب التعادلات."
+    ],
+    [
+      "spain-standings",
+      "ESPN · ترتيب الدوري الإسباني",
+      "https://www.espn.com/soccer/table/_/league/esp.1/season/2026",
+      "لقطة الجدول المراجعة للموسم 2026/27: ريال مدريد الرابع بـ18 نقطة بعد 8 مباريات. تاريخ قراءة اللقطة الأصلية 15 أكتوبر 2026، وتاريخ هذه المراجعة 16 أكتوبر."
+    ],
+    [
+      "highlights",
+      "UEFA · الملخص الرسمي",
+      "https://www.uefa.com/uefachampionsleague/video/highlights/02aa-21d4181a99d8-5669c22cfdba-1000--champions-league-highlights-roma-3-4-real-madrid/",
+      "ملخص المواجهة من UEFA، مدته 1:59 وفق سجل المواجهات. يفتح على موقع الجهة الأصلية؛ توفر المشاهدة يخضع للبلد والحقوق."
+    ],
+    [
+      "awaad-review",
+      "محمد عواد · سيلفي سبورت",
+      "https://www.youtube.com/watch?v=whtGr0wtW3U",
+      "عنوان الفيديو: «ريال مدريد يقلب النتيجة على روما - باريس سان جيرمان يهزم مانشستر سيتي - هاتريك باركولا». تاريخ النشر: 2026-10-14؛ المدة 11:59. حصاد ليلة الأبطال، ويشمل روما وريال مدريد ومباريات أخرى. تم التحقق من القناة والوصف والتاريخ ونص الحديث. الخلاصة صياغة تحريرية لآراء المحلل، لا اقتباس حرفي ولا مصدر بديل للإحصائيات الرسمية."
+    ],
+    [
+      "nasrallah-review",
+      "ممدوح نصرالله · Mamdouh NasrAllah",
+      "https://www.youtube.com/watch?v=TP5-CX67cgg",
+      "عنوان الفيديو: «ريال مدريد يعود ريمونتادا جديدة امام روما في ليالي الأبطال لا مثيل للريال مورينيو مشيت معاه جامد». تاريخ النشر: 2026-10-14؛ المدة 32:10. نقاش مستقل لعودة ريال مدريد أمام روما. تم التحقق من القناة والوصف والتاريخ ونص الحديث. الخلاصة صياغة تحريرية لآراء المحلل، لا اقتباس حرفي ولا مصدر بديل للإحصائيات الرسمية."
+    ]
+  ],
+  "stats": [
+    [
+      "التهديد الهجومي",
+      [
+        [
+          "attempts",
+          "إجمالي التسديدات",
+          14,
+          16
+        ],
+        [
+          "on-target",
+          "تسديدات على المرمى",
+          7,
+          8
+        ],
+        [
+          "off-target",
+          "تسديدات خارج المرمى",
+          4,
+          8
+        ],
+        [
+          "blocked",
+          "التسديدات المحجوبة",
+          3,
+          0
+        ],
+        [
+          "woodwork",
+          "إصابة إطار المرمى",
+          0,
+          0
+        ],
+        [
+          "corners",
+          "الركنيات",
+          5,
+          9
+        ]
+      ]
+    ],
+    [
+      "الاستحواذ والتمرير",
+      [
+        [
+          "possession",
+          "الاستحواذ",
+          "50%",
+          "50%"
+        ],
+        [
+          "passes-attempted",
+          "محاولات التمرير",
+          553,
+          478
+        ],
+        [
+          "passes-completed",
+          "التمريرات المكتملة",
+          491,
+          416
+        ],
+        [
+          "passing-accuracy",
+          "دقة التمرير",
+          "89%",
+          "87%"
+        ],
+        [
+          "crosses-attempted",
+          "محاولات العرضيات",
+          16,
+          21
+        ],
+        [
+          "crosses-completed",
+          "العرضيات المكتملة",
+          2,
+          5
+        ]
+      ]
+    ],
+    [
+      "الدفاع والحراسة",
+      [
+        [
+          "recoveries",
+          "استعادة الكرة",
+          42,
+          44
+        ],
+        [
+          "tackles",
+          "التدخلات",
+          10,
+          11
+        ],
+        [
+          "tackles-won",
+          "التدخلات الناجحة",
+          4,
+          8
+        ],
+        [
+          "clearances",
+          "إبعاد الكرة",
+          13,
+          13
+        ],
+        [
+          "saves",
+          "تصديات الحارس",
+          4,
+          4
+        ],
+        [
+          "goals-conceded",
+          "الأهداف المستقبلة",
+          4,
+          3
+        ]
+      ]
+    ],
+    [
+      "الانضباط والتحولات",
+      [
+        [
+          "fouls",
+          "الأخطاء المرتكبة",
+          15,
+          8
+        ],
+        [
+          "yellow-cards",
+          "البطاقات الصفراء",
+          3,
+          1
+        ],
+        [
+          "red-cards",
+          "البطاقات الحمراء",
+          0,
+          0
+        ],
+        [
+          "offsides",
+          "التسلل",
+          1,
+          1
+        ],
+        [
+          "attacks",
+          "الهجمات",
+          51,
+          42
+        ],
+        [
+          "dribbles",
+          "المراوغات",
+          7,
+          23
+        ]
+      ]
+    ]
+  ],
+  "history": [
+    [
+      "2026-10-14",
+      "14 أكتوبر 2026",
+      "2026/27",
+      3,
+      4
+    ],
+    [
+      "2018-11-27",
+      "27 نوفمبر 2018",
+      "2018/19",
+      0,
+      2
+    ],
+    [
+      "2018-09-19",
+      "19 سبتمبر 2018",
+      "2018/19",
+      0,
+      3
+    ]
+  ],
+  "events": [
+    [
+      20,
+      "دي رون يفتتح التسجيل",
+      "تسديدة من خارج المنطقة تمنح روما التقدم."
+    ],
+    [
+      25,
+      "مبابي يعادل النتيجة",
+      "تسديدة بعيدة بعد تمريرة ديوماندي؛ الشوط الأول ينتهي 1–1."
+    ],
+    [
+      51,
+      "مالين يعيد التقدم لروما",
+      "هدف بعد تمريرة رودريغو مورا."
+    ],
+    [
+      57,
+      "مالين يضيف هدفه الثاني",
+      "تمريرة سولي تضعه أمام المرمى؛ روما يتقدم 3–1."
+    ],
+    [
+      83,
+      "إسبي يبدأ العودة",
+      "متابعة لرأسية إندريك التي تصدى لها غوليني؛ FotMob يسجل الهدف في 82′."
+    ],
+    [
+      85,
+      "إندريك يسجل التعادل",
+      "رأسية من ركنية غولر تعيد النتيجة إلى 3–3."
+    ],
+    [
+      90,
+      "روديغر يحسم النتيجة",
+      "متابعة لركنية أخرى من غولر تمنح ريال مدريد الفوز 4–3."
+    ]
+  ],
+  "teams": [
+    {
+      "slug": "roma",
+      "name": "روما",
+      "coach": "جان بييرو غاسبريني",
+      "formation": "3-4-1-2",
+      "shape": [
+        1,
+        3,
+        4,
+        1,
+        2
+      ],
+      "starters": [
+        {
+          "id": "553849",
+          "number": 95,
+          "name": "بييرلويجي غوليني",
+          "rating": 5.2
+        },
+        {
+          "id": "588687",
+          "number": 23,
+          "name": "جانلوكا مانشيني",
+          "rating": 6.1,
+          "minute": 64,
+          "captain": true
+        },
+        {
+          "id": "787242",
+          "number": 5,
+          "name": "إيفان نديكا",
+          "rating": 5.8
+        },
+        {
+          "id": "671203",
+          "number": 22,
+          "name": "ماريو هيرموسو",
+          "rating": 7.3,
+          "minute": 81
+        },
+        {
+          "id": "1320176",
+          "number": 43,
+          "name": "ويسلي",
+          "rating": 7.1
+        },
+        {
+          "id": "198559",
+          "number": 15,
+          "name": "مارتن دي رون",
+          "rating": 7.6
+        },
+        {
+          "id": "1016132",
+          "number": 17,
+          "name": "مانو كونيه",
+          "rating": 6.5,
+          "minute": 17
+        },
+        {
+          "id": "726345",
+          "number": 20,
+          "name": "ناهويل مولينا",
+          "rating": 7.1
+        },
+        {
+          "id": "1280082",
+          "number": 18,
+          "name": "ماتياس سولي",
+          "rating": 8.6,
+          "minute": 64
+        },
+        {
+          "id": "660301",
+          "number": 14,
+          "name": "دونيل مالين",
+          "rating": 8.7
+        },
+        {
+          "id": "325916",
+          "number": 21,
+          "name": "باولو ديبالا",
+          "rating": 6.6,
+          "minute": 46
+        }
+      ],
+      "substitutes": [
+        {
+          "id": "1451196",
+          "number": 61,
+          "name": "نيكولو بيسيلي",
+          "rating": 6.4,
+          "minute": 17
+        },
+        {
+          "id": "1525065",
+          "number": 86,
+          "name": "رودريغو مورا",
+          "rating": 7.1,
+          "minute": 46
+        },
+        {
+          "id": "958464",
+          "number": 26,
+          "name": "ليوناردو بيليردي",
+          "rating": 5.6,
+          "minute": 64
+        },
+        {
+          "id": "540307",
+          "number": 7,
+          "name": "لورينزو بيليغريني",
+          "rating": 6.3,
+          "minute": 64
+        },
+        {
+          "id": "1337884",
+          "number": 3,
+          "name": "كونستانتينوس كوليراكيس",
+          "rating": null,
+          "minute": 81
+        }
+      ],
+      "unused": [
+        [
+          32,
+          "ديفيس فاسكيز"
+        ],
+        [
+          70,
+          "جورجيو دي مارزي"
+        ],
+        [
+          87,
+          "دانييلي غيلاردي"
+        ],
+        [
+          2,
+          "ديفاين رينش"
+        ],
+        [
+          77,
+          "إيمانويل لولي"
+        ],
+        [
+          9,
+          "سانتياغو كاسترو"
+        ]
+      ]
+    },
+    {
+      "slug": "madrid",
+      "name": "ريال مدريد",
+      "coach": "جوزيه مورينيو",
+      "formation": "4-2-3-1",
+      "shape": [
+        1,
+        4,
+        2,
+        3,
+        1
+      ],
+      "starters": [
+        {
+          "id": "170323",
+          "number": 1,
+          "name": "تيبو كورتوا",
+          "rating": 6.4
+        },
+        {
+          "id": "593118",
+          "number": 24,
+          "name": "دينزل دومفريس",
+          "rating": 5.7,
+          "minute": 59
+        },
+        {
+          "id": "820140",
+          "number": 16,
+          "name": "إبراهيما كوناتي",
+          "rating": 6.2
+        },
+        {
+          "id": "276738",
+          "number": 22,
+          "name": "أنطونيو روديغر",
+          "rating": 7.3
+        },
+        {
+          "id": "873289",
+          "number": 17,
+          "name": "مارك كوكوريلا",
+          "rating": 6.3,
+          "minute": 78
+        },
+        {
+          "id": "743533",
+          "number": 8,
+          "name": "فيديريكو فالفيردي",
+          "rating": 7.2,
+          "captain": true
+        },
+        {
+          "id": "914458",
+          "number": 14,
+          "name": "أوريلين تشواميني",
+          "rating": 6.9,
+          "minute": 70
+        },
+        {
+          "id": "1735453",
+          "number": 25,
+          "name": "يان ديوماندي",
+          "rating": 8.5,
+          "minute": 79
+        },
+        {
+          "id": "1077894",
+          "number": 5,
+          "name": "جود بيلينغهام",
+          "rating": 7.4
+        },
+        {
+          "id": "846033",
+          "number": 7,
+          "name": "فينيسيوس جونيور",
+          "rating": 5.7,
+          "minute": 59
+        },
+        {
+          "id": "701154",
+          "number": 10,
+          "name": "كيليان مبابي",
+          "rating": 8.2
+        }
+      ],
+      "substitutes": [
+        {
+          "id": "1253890",
+          "number": 15,
+          "name": "أردا غولر",
+          "rating": 8.3,
+          "minute": 59
+        },
+        {
+          "id": "1406729",
+          "number": 9,
+          "name": "إندريك",
+          "rating": 7.7,
+          "minute": 59
+        },
+        {
+          "id": "488139",
+          "number": 20,
+          "name": "برناردو سيلفا",
+          "rating": 6.5,
+          "minute": 70
+        },
+        {
+          "id": "1190025",
+          "number": 18,
+          "name": "ألفارو كاريراس",
+          "rating": 6.2,
+          "minute": 78
+        },
+        {
+          "id": "1610744",
+          "number": 19,
+          "name": "كارلوس إسبي",
+          "rating": 7.1,
+          "minute": 79
+        }
+      ],
+      "unused": [
+        [
+          13,
+          "أندري لونين"
+        ],
+        [
+          26,
+          "سيرخيو ميستري"
+        ],
+        [
+          4,
+          "دين هويسن"
+        ],
+        [
+          12,
+          "ترينت ألكسندر أرنولد"
+        ],
+        [
+          6,
+          "إدواردو كامافينغا"
+        ],
+        [
+          27,
+          "تياغو بيتارش"
+        ],
+        [
+          21,
+          "إبراهيم دياز"
+        ]
+      ]
+    }
+  ],
+  "standings": [
+    {
+      "ok": true,
+      "provider": "ESPN",
+      "league": "uefa.champions",
+      "phase": "league",
+      "season": 2026,
+      "fetchedAt": "2026-10-15T22:34:51Z",
+      "stale": true,
+      "sourceUrl": "https://www.espn.com/soccer/standings/_/league/uefa.champions",
+      "entries": [
+        {
+          "teamId": "160",
+          "name": "Paris Saint-Germain",
+          "rank": 1,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 10,
+          "goalsAgainst": 3,
+          "goalDifference": 7,
+          "points": 6
+        },
+        {
+          "teamId": "83",
+          "name": "Barcelona",
+          "rank": 2,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 9,
+          "goalsAgainst": 2,
+          "goalDifference": 7,
+          "points": 6
+        },
+        {
+          "teamId": "362",
+          "name": "Aston Villa",
+          "rank": 3,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 9,
+          "goalsAgainst": 2,
+          "goalDifference": 7,
+          "points": 6
+        },
+        {
+          "teamId": "134",
+          "name": "VfB Stuttgart",
+          "rank": 4,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 6,
+          "goalsAgainst": 1,
+          "goalDifference": 5,
+          "points": 6
+        },
+        {
+          "teamId": "364",
+          "name": "Liverpool",
+          "rank": 5,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 8,
+          "goalsAgainst": 4,
+          "goalDifference": 4,
+          "points": 6
+        },
+        {
+          "teamId": "2250",
+          "name": "Sporting CP",
+          "rank": 6,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 5,
+          "goalsAgainst": 1,
+          "goalDifference": 4,
+          "points": 6
+        },
+        {
+          "teamId": "359",
+          "name": "Arsenal",
+          "rank": 7,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 4,
+          "goalsAgainst": 0,
+          "goalDifference": 4,
+          "points": 6
+        },
+        {
+          "teamId": "86",
+          "name": "Real Madrid",
+          "rank": 8,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "goalDifference": 2,
+          "points": 6
+        },
+        {
+          "teamId": "244",
+          "name": "Real Betis",
+          "rank": 9,
+          "played": 2,
+          "wins": 2,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "goalDifference": 2,
+          "points": 6
+        },
+        {
+          "teamId": "132",
+          "name": "Bayern Munich",
+          "rank": 10,
+          "played": 2,
+          "wins": 1,
+          "draws": 1,
+          "losses": 0,
+          "goalsFor": 8,
+          "goalsAgainst": 3,
+          "goalDifference": 5,
+          "points": 4
+        },
+        {
+          "teamId": "493",
+          "name": "Shakhtar Donetsk",
+          "rank": 11,
+          "played": 2,
+          "wins": 1,
+          "draws": 1,
+          "losses": 0,
+          "goalsFor": 4,
+          "goalsAgainst": 2,
+          "goalDifference": 2,
+          "points": 4
+        },
+        {
+          "teamId": "2572",
+          "name": "Como",
+          "rank": 12,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 6,
+          "goalsAgainst": 4,
+          "goalDifference": 2,
+          "points": 3
+        },
+        {
+          "teamId": "360",
+          "name": "Manchester United",
+          "rank": 13,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 2,
+          "goalDifference": 2,
+          "points": 3
+        },
+        {
+          "teamId": "102",
+          "name": "Villarreal",
+          "rank": 14,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 5,
+          "goalsAgainst": 4,
+          "goalDifference": 1,
+          "points": 3
+        },
+        {
+          "teamId": "1068",
+          "name": "Atlético Madrid",
+          "rank": 15,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 2,
+          "goalDifference": 1,
+          "points": 3
+        },
+        {
+          "teamId": "570",
+          "name": "Club Brugge",
+          "rank": 16,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 6,
+          "goalsAgainst": 6,
+          "goalDifference": 0,
+          "points": 3
+        },
+        {
+          "teamId": "382",
+          "name": "Manchester City",
+          "rank": 17,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 4,
+          "goalDifference": 0,
+          "points": 3
+        },
+        {
+          "teamId": "124",
+          "name": "Borussia Dortmund",
+          "rank": 18,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 3,
+          "goalDifference": 0,
+          "points": 3
+        },
+        {
+          "teamId": "175",
+          "name": "Lens",
+          "rank": 19,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 3,
+          "goalsAgainst": 4,
+          "goalDifference": -1,
+          "points": 3
+        },
+        {
+          "teamId": "887",
+          "name": "AEK Athens",
+          "rank": 20,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 3,
+          "goalDifference": -1,
+          "points": 3
+        },
+        {
+          "teamId": "11420",
+          "name": "RB Leipzig",
+          "rank": 21,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 4,
+          "goalDifference": -2,
+          "points": 3
+        },
+        {
+          "teamId": "21922",
+          "name": "Sabah FK",
+          "rank": 22,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 2,
+          "goalsAgainst": 4,
+          "goalDifference": -2,
+          "points": 3
+        },
+        {
+          "teamId": "142",
+          "name": "Feyenoord Rotterdam",
+          "rank": 23,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 7,
+          "goalDifference": -3,
+          "points": 3
+        },
+        {
+          "teamId": "2980",
+          "name": "Bodo/Glimt",
+          "rank": 24,
+          "played": 2,
+          "wins": 1,
+          "draws": 0,
+          "losses": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 5,
+          "goalDifference": -4,
+          "points": 3
+        },
+        {
+          "teamId": "104",
+          "name": "AS Roma",
+          "rank": 25,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 5,
+          "goalDifference": -1,
+          "points": 1
+        },
+        {
+          "teamId": "148",
+          "name": "PSV Eindhoven",
+          "rank": 26,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 2,
+          "goalDifference": -1,
+          "points": 1
+        },
+        {
+          "teamId": "510",
+          "name": "VIKING FK",
+          "rank": 27,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 4,
+          "goalsAgainst": 6,
+          "goalDifference": -2,
+          "points": 1
+        },
+        {
+          "teamId": "436",
+          "name": "Fenerbahce",
+          "rank": 28,
+          "played": 2,
+          "wins": 0,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 1,
+          "goalsAgainst": 7,
+          "goalDifference": -6,
+          "points": 1
+        },
+        {
+          "teamId": "110",
+          "name": "Internazionale",
+          "rank": 29,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 4,
+          "goalsAgainst": 6,
+          "goalDifference": -2,
+          "points": 0
+        },
+        {
+          "teamId": "437",
+          "name": "FC Porto",
+          "rank": 30,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 5,
+          "goalDifference": -3,
+          "points": 0
+        },
+        {
+          "teamId": "494",
+          "name": "Slavia Prague",
+          "rank": 31,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 5,
+          "goalDifference": -3,
+          "points": 0
+        },
+        {
+          "teamId": "114",
+          "name": "Napoli",
+          "rank": 32,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 1,
+          "goalsAgainst": 4,
+          "goalDifference": -3,
+          "points": 0
+        },
+        {
+          "teamId": "4411",
+          "name": "LASK Linz",
+          "rank": 33,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 3,
+          "goalsAgainst": 7,
+          "goalDifference": -4,
+          "points": 0
+        },
+        {
+          "teamId": "166",
+          "name": "Lille",
+          "rank": 34,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 6,
+          "goalDifference": -4,
+          "points": 0
+        },
+        {
+          "teamId": "432",
+          "name": "Galatasaray",
+          "rank": 35,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 2,
+          "goalsAgainst": 7,
+          "goalDifference": -5,
+          "points": 0
+        },
+        {
+          "teamId": "521",
+          "name": "Slovan Bratislava",
+          "rank": 36,
+          "played": 2,
+          "wins": 0,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 1,
+          "goalsAgainst": 9,
+          "goalDifference": -8,
+          "points": 0
+        }
+      ],
+      "reviewedOn": "2026-10-16"
+    },
+    {
+      "league": "ita.1",
+      "season": 2026,
+      "sourceUrl": "https://www.espn.com/soccer/standings/_/league/ita.1",
+      "entries": [
+        {
+          "teamId": "110",
+          "name": "Internazionale",
+          "rank": 1,
+          "played": 6,
+          "wins": 5,
+          "draws": 1,
+          "losses": 0,
+          "goalsFor": 18,
+          "goalsAgainst": 8,
+          "goalDifference": 10,
+          "points": 16
+        },
+        {
+          "teamId": "112",
+          "name": "Lazio",
+          "rank": 2,
+          "played": 6,
+          "wins": 5,
+          "draws": 1,
+          "losses": 0,
+          "goalsFor": 11,
+          "goalsAgainst": 4,
+          "goalDifference": 7,
+          "points": 16
+        },
+        {
+          "teamId": "104",
+          "name": "AS Roma",
+          "rank": 3,
+          "played": 6,
+          "wins": 4,
+          "draws": 2,
+          "losses": 0,
+          "goalsFor": 14,
+          "goalsAgainst": 3,
+          "goalDifference": 11,
+          "points": 14
+        },
+        {
+          "teamId": "2925",
+          "name": "Cagliari",
+          "rank": 4,
+          "played": 6,
+          "wins": 4,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 6,
+          "goalsAgainst": 3,
+          "goalDifference": 3,
+          "points": 13
+        },
+        {
+          "teamId": "103",
+          "name": "AC Milan",
+          "rank": 5,
+          "played": 6,
+          "wins": 3,
+          "draws": 3,
+          "losses": 0,
+          "goalsFor": 11,
+          "goalsAgainst": 5,
+          "goalDifference": 6,
+          "points": 12
+        },
+        {
+          "teamId": "111",
+          "name": "Juventus",
+          "rank": 6,
+          "played": 6,
+          "wins": 3,
+          "draws": 2,
+          "losses": 1,
+          "goalsFor": 9,
+          "goalsAgainst": 5,
+          "goalDifference": 4,
+          "points": 11
+        },
+        {
+          "teamId": "2572",
+          "name": "Como",
+          "rank": 7,
+          "played": 6,
+          "wins": 3,
+          "draws": 2,
+          "losses": 1,
+          "goalsFor": 9,
+          "goalsAgainst": 6,
+          "goalDifference": 3,
+          "points": 11
+        },
+        {
+          "teamId": "114",
+          "name": "Napoli",
+          "rank": 8,
+          "played": 6,
+          "wins": 3,
+          "draws": 1,
+          "losses": 2,
+          "goalsFor": 10,
+          "goalsAgainst": 6,
+          "goalDifference": 4,
+          "points": 10
+        },
+        {
+          "teamId": "4057",
+          "name": "Frosinone",
+          "rank": 9,
+          "played": 6,
+          "wins": 3,
+          "draws": 1,
+          "losses": 2,
+          "goalsFor": 9,
+          "goalsAgainst": 7,
+          "goalDifference": 2,
+          "points": 10
+        },
+        {
+          "teamId": "105",
+          "name": "Atalanta",
+          "rank": 10,
+          "played": 6,
+          "wins": 3,
+          "draws": 0,
+          "losses": 3,
+          "goalsFor": 8,
+          "goalsAgainst": 8,
+          "goalDifference": 0,
+          "points": 9
+        },
+        {
+          "teamId": "3997",
+          "name": "Sassuolo",
+          "rank": 11,
+          "played": 6,
+          "wins": 2,
+          "draws": 2,
+          "losses": 2,
+          "goalsFor": 10,
+          "goalsAgainst": 10,
+          "goalDifference": 0,
+          "points": 8
+        },
+        {
+          "teamId": "239",
+          "name": "Torino",
+          "rank": 12,
+          "played": 6,
+          "wins": 2,
+          "draws": 1,
+          "losses": 3,
+          "goalsFor": 7,
+          "goalsAgainst": 9,
+          "goalDifference": -2,
+          "points": 7
+        },
+        {
+          "teamId": "113",
+          "name": "Lecce",
+          "rank": 13,
+          "played": 6,
+          "wins": 2,
+          "draws": 0,
+          "losses": 4,
+          "goalsFor": 6,
+          "goalsAgainst": 12,
+          "goalDifference": -6,
+          "points": 6
+        },
+        {
+          "teamId": "107",
+          "name": "Bologna",
+          "rank": 14,
+          "played": 6,
+          "wins": 1,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 5,
+          "goalsAgainst": 7,
+          "goalDifference": -2,
+          "points": 5
+        },
+        {
+          "teamId": "118",
+          "name": "Udinese",
+          "rank": 15,
+          "played": 6,
+          "wins": 1,
+          "draws": 1,
+          "losses": 4,
+          "goalsFor": 9,
+          "goalsAgainst": 13,
+          "goalDifference": -4,
+          "points": 4
+        },
+        {
+          "teamId": "4007",
+          "name": "Monza",
+          "rank": 16,
+          "played": 6,
+          "wins": 1,
+          "draws": 1,
+          "losses": 4,
+          "goalsFor": 9,
+          "goalsAgainst": 15,
+          "goalDifference": -6,
+          "points": 4
+        },
+        {
+          "teamId": "3263",
+          "name": "Genoa",
+          "rank": 17,
+          "played": 6,
+          "wins": 1,
+          "draws": 1,
+          "losses": 4,
+          "goalsFor": 5,
+          "goalsAgainst": 11,
+          "goalDifference": -6,
+          "points": 4
+        },
+        {
+          "teamId": "115",
+          "name": "Parma",
+          "rank": 18,
+          "played": 6,
+          "wins": 1,
+          "draws": 1,
+          "losses": 4,
+          "goalsFor": 4,
+          "goalsAgainst": 10,
+          "goalDifference": -6,
+          "points": 4
+        },
+        {
+          "teamId": "109",
+          "name": "Fiorentina",
+          "rank": 19,
+          "played": 6,
+          "wins": 1,
+          "draws": 1,
+          "losses": 4,
+          "goalsFor": 7,
+          "goalsAgainst": 14,
+          "goalDifference": -7,
+          "points": 4
+        },
+        {
+          "teamId": "17530",
+          "name": "Venezia",
+          "rank": 20,
+          "played": 6,
+          "wins": 0,
+          "draws": 0,
+          "losses": 6,
+          "goalsFor": 5,
+          "goalsAgainst": 16,
+          "goalDifference": -11,
+          "points": 0
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "provider": "ESPN",
+      "league": "esp.1",
+      "phase": "league",
+      "season": 2026,
+      "fetchedAt": "2026-10-15T22:34:51Z",
+      "stale": true,
+      "sourceUrl": "https://www.espn.com/soccer/table/_/league/esp.1/season/2026",
+      "entries": [
+        {
+          "teamId": "83",
+          "name": "Barcelona",
+          "rank": 1,
+          "played": 8,
+          "wins": 8,
+          "draws": 0,
+          "losses": 0,
+          "goalsFor": 34,
+          "goalsAgainst": 7,
+          "goalDifference": 27,
+          "points": 24
+        },
+        {
+          "teamId": "1068",
+          "name": "Atlético Madrid",
+          "rank": 2,
+          "played": 8,
+          "wins": 6,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 18,
+          "goalsAgainst": 8,
+          "goalDifference": 10,
+          "points": 19
+        },
+        {
+          "teamId": "244",
+          "name": "Real Betis",
+          "rank": 3,
+          "played": 8,
+          "wins": 6,
+          "draws": 1,
+          "losses": 1,
+          "goalsFor": 14,
+          "goalsAgainst": 9,
+          "goalDifference": 5,
+          "points": 19
+        },
+        {
+          "teamId": "86",
+          "name": "Real Madrid",
+          "rank": 4,
+          "played": 8,
+          "wins": 6,
+          "draws": 0,
+          "losses": 2,
+          "goalsFor": 19,
+          "goalsAgainst": 8,
+          "goalDifference": 11,
+          "points": 18
+        },
+        {
+          "teamId": "243",
+          "name": "Sevilla",
+          "rank": 5,
+          "played": 8,
+          "wins": 4,
+          "draws": 2,
+          "losses": 2,
+          "goalsFor": 13,
+          "goalsAgainst": 12,
+          "goalDifference": 1,
+          "points": 14
+        },
+        {
+          "teamId": "89",
+          "name": "Real Sociedad",
+          "rank": 6,
+          "played": 8,
+          "wins": 4,
+          "draws": 1,
+          "losses": 3,
+          "goalsFor": 12,
+          "goalsAgainst": 15,
+          "goalDifference": -3,
+          "points": 13
+        },
+        {
+          "teamId": "96",
+          "name": "Alavés",
+          "rank": 7,
+          "played": 8,
+          "wins": 3,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 12,
+          "goalsAgainst": 8,
+          "goalDifference": 4,
+          "points": 11
+        },
+        {
+          "teamId": "90",
+          "name": "Deportivo",
+          "rank": 8,
+          "played": 8,
+          "wins": 2,
+          "draws": 4,
+          "losses": 2,
+          "goalsFor": 12,
+          "goalsAgainst": 11,
+          "goalDifference": 1,
+          "points": 10
+        },
+        {
+          "teamId": "85",
+          "name": "Celta Vigo",
+          "rank": 9,
+          "played": 8,
+          "wins": 1,
+          "draws": 5,
+          "losses": 2,
+          "goalsFor": 8,
+          "goalsAgainst": 6,
+          "goalDifference": 2,
+          "points": 8
+        },
+        {
+          "teamId": "93",
+          "name": "Athletic Club",
+          "rank": 10,
+          "played": 6,
+          "wins": 2,
+          "draws": 2,
+          "losses": 2,
+          "goalsFor": 7,
+          "goalsAgainst": 6,
+          "goalDifference": 1,
+          "points": 8
+        },
+        {
+          "teamId": "102",
+          "name": "Villarreal",
+          "rank": 11,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 13,
+          "goalsAgainst": 13,
+          "goalDifference": 0,
+          "points": 8
+        },
+        {
+          "teamId": "88",
+          "name": "Espanyol",
+          "rank": 12,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 11,
+          "goalsAgainst": 11,
+          "goalDifference": 0,
+          "points": 8
+        },
+        {
+          "teamId": "101",
+          "name": "Rayo Vallecano",
+          "rank": 13,
+          "played": 7,
+          "wins": 2,
+          "draws": 2,
+          "losses": 3,
+          "goalsFor": 11,
+          "goalsAgainst": 16,
+          "goalDifference": -5,
+          "points": 8
+        },
+        {
+          "teamId": "2922",
+          "name": "Getafe",
+          "rank": 14,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 4,
+          "goalsAgainst": 10,
+          "goalDifference": -6,
+          "points": 8
+        },
+        {
+          "teamId": "87",
+          "name": "Racing Santander",
+          "rank": 15,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 13,
+          "goalsAgainst": 23,
+          "goalDifference": -10,
+          "points": 8
+        },
+        {
+          "teamId": "97",
+          "name": "Osasuna",
+          "rank": 16,
+          "played": 8,
+          "wins": 2,
+          "draws": 2,
+          "losses": 4,
+          "goalsFor": 8,
+          "goalsAgainst": 18,
+          "goalDifference": -10,
+          "points": 8
+        },
+        {
+          "teamId": "1538",
+          "name": "Levante",
+          "rank": 17,
+          "played": 7,
+          "wins": 1,
+          "draws": 3,
+          "losses": 3,
+          "goalsFor": 11,
+          "goalsAgainst": 15,
+          "goalDifference": -4,
+          "points": 6
+        },
+        {
+          "teamId": "3751",
+          "name": "Elche",
+          "rank": 18,
+          "played": 8,
+          "wins": 1,
+          "draws": 3,
+          "losses": 4,
+          "goalsFor": 11,
+          "goalsAgainst": 17,
+          "goalDifference": -6,
+          "points": 6
+        },
+        {
+          "teamId": "94",
+          "name": "Valencia",
+          "rank": 19,
+          "played": 8,
+          "wins": 1,
+          "draws": 2,
+          "losses": 5,
+          "goalsFor": 6,
+          "goalsAgainst": 15,
+          "goalDifference": -9,
+          "points": 5
+        },
+        {
+          "teamId": "99",
+          "name": "Málaga",
+          "rank": 20,
+          "played": 8,
+          "wins": 0,
+          "draws": 4,
+          "losses": 4,
+          "goalsFor": 4,
+          "goalsAgainst": 13,
+          "goalDifference": -9,
+          "points": 4
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "awaad",
+      "analyst": "محمد عواد",
+      "videoId": "whtGr0wtW3U",
+      "matchId": "2049581",
+      "publishedOn": "2026-10-14",
+      "duration": "11:59",
+      "channel": "سيلفي سبورت",
+      "scope": "roundup",
+      "scopeLabel": "ضمن مراجعة ليلة الأبطال",
+      "title": "البناء تحت الضغط ودور البدلاء",
+      "videoTitle": "ريال مدريد يقلب النتيجة على روما - باريس سان جيرمان يهزم مانشستر سيتي - هاتريك باركولا",
+      "summary": "يناقش محمد عواد صعوبة خروج ريال مدريد بالكرة أمام ضغط روما، وحاجة الوسط للاعب يدير اللعب. ويربط تحسن الأداء بدخول غولر وبرناردو سيلفا وتراجع روما بدنياً، مع إبراز دور الركنيات في قلب النتيجة."
+    },
+    {
+      "id": "nasrallah",
+      "analyst": "ممدوح نصرالله",
+      "videoId": "TP5-CX67cgg",
+      "matchId": "2049581",
+      "publishedOn": "2026-10-14",
+      "duration": "32:10",
+      "channel": "Mamdouh NasrAllah",
+      "scope": "match",
+      "scopeLabel": "مراجعة مخصّصة للمباراة",
+      "title": "العودة ودروس اختيار التشكيل",
+      "videoTitle": "ريال مدريد يعود ريمونتادا جديدة امام روما في ليالي الأبطال لا مثيل للريال مورينيو مشيت معاه جامد",
+      "summary": "يبرز ممدوح نصرالله أثر غولر وبرناردو سيلفا وإندريك وإسبي، وينتقد صعوبة بناء اللعب بتشكيل البداية. ويرى في العودة فرصة لمورينيو لإعادة النظر في الاختيارات الأساسية، لا مجرد احتفال بالنتيجة."
+    }
+  ]
+}

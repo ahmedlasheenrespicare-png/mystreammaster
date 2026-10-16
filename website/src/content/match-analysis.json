@@ -1,0 +1,65 @@
+{
+  "reviewedOn": "2026-10-16",
+  "reports": [
+    {
+      "slug": "roma-real-madrid",
+      "date": "2026-10-14",
+      "dateLabel": "الأربعاء، 14 أكتوبر 2026",
+      "home": "روما",
+      "away": "ريال مدريد",
+      "homeScore": 3,
+      "awayScore": 4,
+      "homeLogo": "as-roma-club-badge.webp",
+      "awayLogo": "real-madrid-club-badge.webp",
+      "accent": "violet",
+      "tag": "عودة في الدقائق الأخيرة",
+      "headline": "سبع دقائق قلبت كل شيء",
+      "summary": "من تأخر 3–1 إلى فوز 4–3؛ كيف غيّرت الركنيات والبدلاء مسار اللقاء؟ ملخص العودة، وتقييمات اللاعبين، وقراءة لأبرز لحظات الحسم."
+    },
+    {
+      "slug": "manchester-city-psg",
+      "date": "2026-10-14",
+      "dateLabel": "الأربعاء، 14 أكتوبر 2026",
+      "home": "مانشستر سيتي",
+      "away": "باريس سان جيرمان",
+      "homeScore": 2,
+      "awayScore": 4,
+      "homeLogo": "manchester-city-club-badge.webp",
+      "awayLogo": "paris-saint-germain-club-badge.webp",
+      "accent": "blue",
+      "tag": "أفضلية باريس المبكرة",
+      "headline": "ثلاثية قبل صافرة الاستراحة",
+      "summary": "باريس يحسم الأفضلية بثلاثية في الشوط الأول، وثنائية هالاند لا تكفي للعودة. قراءة في فاعلية الضيوف وأثر تبديلات سيتي، مع الإحصائيات والمراجعات العربية."
+    },
+    {
+      "slug": "manchester-united-atletico",
+      "date": "2026-10-13",
+      "dateLabel": "الثلاثاء، 13 أكتوبر 2026",
+      "home": "أتلتيكو مدريد",
+      "away": "مانشستر يونايتد",
+      "homeScore": 2,
+      "awayScore": 0,
+      "homeLogo": "atletico-madrid-club-badge.webp",
+      "awayLogo": "manchester-united-club-badge.webp",
+      "accent": "red",
+      "tag": "فوز بشباك نظيفة",
+      "headline": "أتلتيكو يحسم المواجهة بهدفين",
+      "summary": "فوز أتلتيكو بهدفين دون رد أمام يونايتد. تفاصيل الهدفين، وتشكيل الفريقين وتقييماتهما، وقراءة في الضغط وردّ الفعل الدفاعي، مع مراجعات المحللين العرب."
+    },
+    {
+      "slug": "galatasaray-barcelona",
+      "date": "2026-10-13",
+      "dateLabel": "الثلاثاء، 13 أكتوبر 2026",
+      "home": "جالاتا سراي",
+      "away": "برشلونة",
+      "homeScore": 1,
+      "awayScore": 4,
+      "homeLogo": "galatasaray-club-badge.webp",
+      "awayLogo": "barcelona-club-badge.webp",
+      "accent": "violet",
+      "tag": "عودة كتالونية في إسطنبول",
+      "headline": "يامال يصنع التحول بعد الاستراحة",
+      "summary": "من تأخر بهدف إلى فوز برباعية؛ كانسيلو يعادل ويامال يصنع هدفين متتاليين. ملخص اللقاء، والتشكيل والتقييمات، وأرقام المباراة ومراجعة عربية موثقة."
+    }
+  ]
+}

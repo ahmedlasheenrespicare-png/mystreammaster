@@ -37,3 +37,7 @@ export function renderTree(path: string) {
 export function renderPage(path: string): { html: string; seo: SeoMeta } {
   return { html: renderToString(renderTree(path)), seo: getSeo(path) };
 }
+
+// Build-only exports: legacy pages share the central SEO and identity sources.
+export { getLegacyAnalysisSeo } from "./seo";
+export { BRAND_NAME, SITE_URL } from "./config";

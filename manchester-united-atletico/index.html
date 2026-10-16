@@ -102,6 +102,11 @@
         ]
       }
     </script>
+    <link rel="stylesheet" href="/_assets/fixture-charts.css?v=20261016a">
+    <link rel="stylesheet" href="/_assets/fixture-standings.css?v=20261016a">
+    <link rel="stylesheet" href="/_assets/fixture-lineups.css?v=20261016b">
+    <link rel="stylesheet" href="/_assets/fixture-reviews.css?v=20261016b">
+    <link rel="stylesheet" href="/_assets/fixture-history.css?v=20261016a">
     <style>
       .sm-legacy.fixture-page,
       .sm-legacy.fixture-page * { box-sizing: border-box; }
@@ -676,13 +681,137 @@
         text-align: center;
       }
 
+      /* التقرير الرسمي ثابت في HTML؛ لوحتا ESPN تظلان تحديثاً منفصلاً. */
+      .sm-legacy.fixture-page [id] { scroll-margin-top: 150px; }
+      .sm-legacy.fixture-page a:focus-visible,
+      .sm-legacy.fixture-page summary:focus-visible { outline: 3px solid var(--lime); outline-offset: 5px; }
+      .sm-legacy.fixture-page .fixture-subtitle { max-width: 760px; margin-inline: auto; line-height: 1.85; }
+      .sm-legacy.fixture-page .fixture-final-result { margin: 22px auto 0; }
+      .sm-legacy.fixture-page .result-state {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #e8f6b3;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .sm-legacy.fixture-page .result-state::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); }
+      .sm-legacy.fixture-page .fixture-final-score {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto auto minmax(0, 1fr);
+        align-items: center;
+        gap: clamp(7px, 2vw, 18px);
+        max-width: 540px;
+        margin: 8px auto;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .sm-legacy.fixture-page .fixture-final-score strong { color: var(--lime) !important; font: 900 clamp(32px, 5vw, 48px)/1.2 Arial, sans-serif; }
+      .sm-legacy.fixture-page .fixture-final-score > span:first-child { text-align: end; }
+      .sm-legacy.fixture-page .fixture-final-score > span:last-child { text-align: start; }
+      .sm-legacy.fixture-page .result-source { color: var(--muted); font-size: 11px; }
+      .sm-legacy.fixture-page .result-source a { text-underline-offset: 4px; }
+      .sm-legacy.fixture-page .report-nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 24px 0 0;
+      }
+      .sm-legacy.fixture-page .report-nav a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 9px 15px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(8, 12, 20, .62);
+        color: #e1e7ee;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .sm-legacy.fixture-page .report-nav a:hover { border-color: rgba(216, 255, 62, .45); color: var(--lime); }
+      .sm-legacy.fixture-page .report-summary-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; align-items: start; }
+      .sm-legacy.fixture-page .report-story,
+      .sm-legacy.fixture-page .report-timeline,
+      .sm-legacy.fixture-page .official-stat-card,
+      .sm-legacy.fixture-page .report-highlight,
+      .sm-legacy.fixture-page .report-source {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(15, 21, 32, .8);
+      }
+      .sm-legacy.fixture-page .report-story { padding: clamp(20px, 3vw, 30px); }
+      .sm-legacy.fixture-page .report-story p { margin: 0 0 16px; color: #c2cad6; font-size: 14px; line-height: 2; }
+      .sm-legacy.fixture-page .report-story p:last-child { margin-bottom: 0; }
+      .sm-legacy.fixture-page .report-story strong { color: var(--text) !important; }
+      .sm-legacy.fixture-page .report-story .report-player { padding-top: 15px; border-top: 1px solid var(--line); color: #e8f6b3; }
+      .sm-legacy.fixture-page .report-timeline { display: grid; gap: 0; margin: 0; padding: 8px 22px; list-style: none; }
+      .sm-legacy.fixture-page .report-timeline li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 13px; padding-block: 18px; }
+      .sm-legacy.fixture-page .report-timeline li + li { border-top: 1px solid var(--line); }
+      .sm-legacy.fixture-page .report-minute { align-self: start; padding: 9px 4px; border-radius: 12px; background: rgba(216, 255, 62, .08); color: var(--lime); font-size: 14px; font-weight: 900; text-align: center; }
+      .sm-legacy.fixture-page .report-minute--red { background: rgba(239, 51, 64, .1); color: #ffb5ba; }
+      .sm-legacy.fixture-page .report-moment strong { display: block; color: var(--text) !important; font-size: 14px; }
+      .sm-legacy.fixture-page .report-moment p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.9; }
+      .sm-legacy.fixture-page .report-note { max-width: 900px; margin: 20px auto 0; color: var(--muted); font-size: 12px; line-height: 1.9; text-align: center; }
+      .sm-legacy.fixture-page .report-note a,
+      .sm-legacy.fixture-page .report-story a { color: #e8f6b3; text-decoration: underline; text-underline-offset: 4px; }
+      .sm-legacy.fixture-page .official-stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+      .sm-legacy.fixture-page .official-stat-card { overflow: hidden; }
+      .sm-legacy.fixture-page h3.official-stat-title { margin: 0; padding: 20px 20px 15px; color: var(--text) !important; font-size: 18px !important; }
+      .sm-legacy.fixture-page .official-stats-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
+      .sm-legacy.fixture-page .official-stats-table caption { padding: 0 20px 12px; color: var(--muted); font-size: 11px; text-align: start; }
+      .sm-legacy.fixture-page .official-stats-table th,
+      .sm-legacy.fixture-page .official-stats-table td { padding: 13px 12px; border-top: 1px solid var(--line); line-height: 1.7; overflow-wrap: anywhere; }
+      .sm-legacy.fixture-page .official-stats-table thead th { background: rgba(255, 255, 255, .035); font-size: 11px; font-weight: 800; text-align: center; }
+      .sm-legacy.fixture-page .official-stats-table thead th:first-child { width: 46%; text-align: start; }
+      .sm-legacy.fixture-page .official-stats-table thead th:nth-child(2) { color: #cdc2ff; }
+      .sm-legacy.fixture-page .official-stats-table thead th:nth-child(3) { color: #e8f6b3; }
+      .sm-legacy.fixture-page .official-stats-table tbody th { color: #c2cad6; font-weight: 500; text-align: start; }
+      .sm-legacy.fixture-page .official-stats-table td { color: var(--text); font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; }
+      .sm-legacy.fixture-page .official-stats-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, .018); }
+      .sm-legacy.fixture-page .preview-grid--report { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sm-legacy.fixture-page .report-highlight { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: center; padding: clamp(22px, 4vw, 38px); background: linear-gradient(120deg, rgba(216, 255, 62, .07), rgba(15, 21, 32, .85) 60%); }
+      .sm-legacy.fixture-page .report-play-mark { display: grid; place-items: center; width: 76px; height: 76px; border: 1px solid rgba(216, 255, 62, .3); border-radius: 22px; color: var(--lime); background: rgba(216, 255, 62, .05); }
+      .sm-legacy.fixture-page .report-play-mark svg { width: 30px; height: 30px; }
+      .sm-legacy.fixture-page .report-highlight h2 { margin: 0; color: var(--text) !important; font-size: clamp(23px, 3vw, 32px) !important; }
+      .sm-legacy.fixture-page .report-highlight p { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.9; }
+      .sm-legacy.fixture-page .official-highlight-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; margin-top: 18px; padding: 12px 22px; border: 1px solid rgba(216, 255, 62, .45); border-radius: 999px; background: var(--lime); color: #10130a !important; font-size: 13px; font-weight: 900; text-decoration: none; }
+      .sm-legacy.fixture-page .official-highlight-link:hover { background: #e5ff7d; }
+      .sm-legacy.fixture-page .report-live-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+      .sm-legacy.fixture-page .report-live-grid > section { margin-top: 0; }
+      .sm-legacy.fixture-page .report-sources-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+      .sm-legacy.fixture-page .report-source { padding: 22px; }
+      .sm-legacy.fixture-page h3.report-source-title { margin: 0 0 9px; color: var(--text) !important; font-size: 17px !important; }
+      .sm-legacy.fixture-page .report-source a { display: inline-block; min-height: 44px; padding-block: 6px; color: #e8f6b3; font-size: 13px; font-weight: 800; text-underline-offset: 4px; }
+      .sm-legacy.fixture-page .report-source p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.9; }
       @media (max-width: 840px) {
+        .sm-legacy.fixture-page .report-live-grid,
+        .sm-legacy.fixture-page .report-summary-grid,
+        .sm-legacy.fixture-page .report-sources-grid { grid-template-columns: 1fr; }
         .sm-legacy.fixture-page { padding-top: 145px !important; }
         .sm-legacy.fixture-page .fact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .sm-legacy.fixture-page .preview-grid { grid-template-columns: 1fr; }
         .sm-legacy.fixture-page .preview-card { min-height: 0; }
       }
       @media (max-width: 620px) {
+        .sm-legacy.fixture-page .official-stats-grid,
+        .sm-legacy.fixture-page .preview-grid--report { grid-template-columns: 1fr; }
+        .sm-legacy.fixture-page .fixture-final-score { font-size: 11px; gap: 7px; }
+        .sm-legacy.fixture-page .report-nav { gap: 6px; }
+        .sm-legacy.fixture-page .report-nav a { padding-inline: 12px; font-size: 11px; }
+        .sm-legacy.fixture-page .report-story { padding: 20px; }
+        .sm-legacy.fixture-page .report-timeline { padding-inline: 16px; }
+        .sm-legacy.fixture-page .report-timeline li { grid-template-columns: 42px minmax(0, 1fr); gap: 10px; }
+        .sm-legacy.fixture-page .official-stats-table th,
+        .sm-legacy.fixture-page .official-stats-table td { padding: 12px 9px; font-size: 12px; }
+        .sm-legacy.fixture-page .official-stats-table thead th { font-size: 10px; }
+        .sm-legacy.fixture-page .report-highlight { grid-template-columns: 1fr; gap: 18px; }
+        .sm-legacy.fixture-page .report-play-mark { width: 56px; height: 56px; border-radius: 16px; }
+        .sm-legacy.fixture-page .official-highlight-link { width: 100%; padding-inline: 14px; text-align: center; }
         .sm-legacy.fixture-page { padding: 132px 16px 55px !important; }
         .sm-legacy.fixture-page .fixture-breadcrumb { margin-bottom: 22px; font-size: 11px; }
         .sm-legacy.fixture-page .fixture-heading { margin-bottom: 25px; }
@@ -753,7 +882,24 @@
               <span class="title-times" aria-hidden="true">×</span>
               <span>أتلتيكو مدريد</span>
             </h1>
-            <p class="fixture-subtitle">مشاهدة مباراة مانشستر يونايتد وأتلتيكو مدريد في دوري أبطال أوروبا 2026/27 — الثلاثاء 13 أكتوبر، 10 مساءً بتوقيت القاهرة.</p>
+            <p class="fixture-subtitle">فاز أتلتيكو مدريد على مانشستر يونايتد بهدفين دون رد في دوري أبطال أوروبا، يوم الثلاثاء 13 أكتوبر 2026. هنا ملخص اللقاء، وإحصائيات المباراة النهائية، وقراءة تحليلية لأبرز لحظاته.</p>
+            <div class="fixture-final-result" role="group" aria-label="النتيجة النهائية: أتلتيكو مدريد 2، مانشستر يونايتد 0">
+              <span class="result-state">صافرة النهاية</span>
+              <p class="fixture-final-score" aria-hidden="true">
+                <span>أتلتيكو مدريد</span><strong>2</strong><span>:</span><strong>0</strong><span>مانشستر يونايتد</span>
+              </p>
+            </div>
+            <nav class="report-nav" aria-label="أقسام تقرير المباراة">
+              <a href="#match-summary">ملخص المباراة</a>
+              <a href="#head-to-head">آخر المواجهات</a>
+              <a href="#match-lineups">التشكيل والتقييمات</a>
+              <a href="#uefa-stats">إحصائيات المباراة</a>
+              <a href="#preview">تحليل المباراة</a>
+              <a href="#arabic-reviews">المراجعات العربية</a>
+              <a href="#competition-standings">ترتيب البطولات</a>
+              <a href="#official-highlights">الملخص الرسمي</a>
+              <a href="#report-sources">التوثيق والمراجعة</a>
+            </nav>
           </header>
 
           <article class="match-card" aria-label="بطاقة مباراة أتلتيكو مدريد ومانشستر يونايتد">
@@ -797,35 +943,9 @@
               </div>
             </div>
 
-            <section class="fixture-scoreboard" id="fixture-scoreboard" data-state="loading" data-stale="false" data-league="uefa.champions" data-match-day="2026-10-13" aria-labelledby="scoreboard-title">
-              <div class="scoreboard-header">
-                <h3 class="scoreboard-title" id="scoreboard-title">النتيجة من جدول المباريات</h3>
-                <span class="scoreboard-status" id="scoreboard-status" role="status" aria-live="polite">جارٍ التحقق من النتيجة…</span>
-              </div>
-              <div class="scoreboard-line" dir="rtl" aria-label="نتيجة أتلتيكو مدريد ومانشستر يونايتد" aria-live="polite">
-                <span class="scoreboard-team">أتلتيكو مدريد</span>
-                <strong class="scoreboard-value" id="score-atletico">—</strong>
-                <span class="scoreboard-divider" aria-hidden="true">:</span>
-                <strong class="scoreboard-value" id="score-manchester-united">—</strong>
-                <span class="scoreboard-team">مانشستر يونايتد</span>
-              </div>
-            <p class="scoreboard-updated"><span id="scoreboard-updated-text">تُحدّث البيانات تلقائياً كل دقيقة.</span> · المصدر نفسه المستخدم في <a href="/matches/">صفحة مواعيد المباريات</a>.</p>
-          </section>
 
-          <section class="fixture-stats" id="fixture-stats" data-state="loading" data-stale="false" data-league="uefa.champions" data-match-day="2026-10-13" aria-labelledby="fixture-stats-title">
-            <div class="stats-header">
-              <h3 class="stats-title" id="fixture-stats-title">إحصائيات المباراة</h3>
-              <span class="stats-status" id="stats-status" role="status" aria-live="polite">في انتظار بيانات المباراة…</span>
-            </div>
-            <div class="stats-legend">
-              <span class="stats-legend-home"><i aria-hidden="true"></i>أتلتيكو مدريد</span>
-              <span class="stats-legend-away"><i aria-hidden="true"></i>مانشستر يونايتد</span>
-            </div>
-            <div class="stats-body" id="stats-body">
-              <p class="stats-empty" id="stats-empty">تُعرض إحصائيات المباراة من مصدر النتائج نفسه بعد انطلاق اللقاء: الاستحواذ، التسديدات، الركنيات والأخطاء — بلا أي أرقام تقديرية.</p>
-            </div>
-            <p class="stats-updated">المصدر: ESPN عبر <a href="/matches/">وسيط جدول المباريات</a> · تُقرأ الأرقام كما يرسلها المصدر ولا تُقدَّر محليًا.</p>
-          </section>
+
+
 
             <div class="countdown-box" id="match-countdown" data-kickoff="2026-10-13T19:00:00Z" aria-label="العد التنازلي لانطلاق المباراة">
               <div>
@@ -859,8 +979,8 @@
       <section class="fixture-section fixture-shell" aria-labelledby="match-facts-title">
         <header class="section-heading">
           <span class="section-kicker">بطاقة اللقاء</span>
-          <h2 class="section-title" id="match-facts-title">كل ما تحتاج معرفته قبل البداية</h2>
-          <p>مواجهة في مرحلة الدوري من دوري أبطال أوروبا؛ يستضيف أتلتيكو مدريد الفريق الإنجليزي على أرضه في العاصمة الإسبانية.</p>
+          <h2 class="section-title" id="match-facts-title">تفاصيل المباراة</h2>
+          <p>أُقيم اللقاء على أرض أتلتيكو مدريد في الجولة الثانية من مرحلة الدوري لدوري أبطال أوروبا 2026/27.</p>
         </header>
         <div class="fact-grid">
           <article class="fact-card"><small>المسابقة</small><strong>دوري أبطال أوروبا</strong><span>موسم 2026/27 · مرحلة الدوري</span></article>
@@ -870,28 +990,867 @@
         </div>
       </section>
 
+      <section class="fixture-section fixture-shell" id="match-summary" aria-labelledby="match-summary-title">
+        <header class="section-heading">
+          <span class="section-kicker">القصة في دقائق</span>
+          <h2 class="section-title" id="match-summary-title">ملخص مباراة أتلتيكو مدريد ومانشستر يونايتد</h2>
+          <p>هدف مبكر، ومحاولات اصطدمت بإطار المرمى، وطرد قبل الهدف الثاني. هذا تسلسل أبرز لحظات اللقاء كما وثّقته التقارير الرسمية.</p>
+        </header>
+        <div class="report-summary-grid">
+          <div class="report-story">
+            <p>حسم أتلتيكو مدريد المواجهة <strong>بهدفين دون رد</strong>. افتتح بابلو باريوس التسجيل في الدقيقة الأولى بعد تمريرة من أليكس باينا، فوجد مانشستر يونايتد نفسه مطالباً بالعودة إلى المباراة منذ بدايتها.</p>
+            <p>أبقت محاولات الفريقين اللقاء مفتوحاً: أصاب غريمالدو إطار المرمى من ركلة حرة، وأصاب ألفاريز القائم في الشوط الثاني، بينما اصطدمت محاولة لبرونو فيرنانديز بالعارضة. وأُلغي هدف لجوني كاردوسو بعد مراجعة تقنية الفيديو بسبب لمسة يد في بناء الهجمة.</p>
+            <p>في الدقيقة 74 طُرد ليني يورو بعد تدخل على جوناثان ديفيد. وبعدها سجّل البديل أديمولا لوكمان الهدف الثاني في الدقيقة 79، متابعاً كرة ردّها الحارس بعد محاولة ديفيد. حافظ أتلتيكو على تقدمه حتى صافرة النهاية.</p>
+            <p class="report-player">رجل المباراة: <strong>أليكس باينا</strong>.</p>
+          </div>
+          <ol class="report-timeline" aria-label="أبرز أحداث المباراة بالترتيب الزمني">
+            <li>
+              <span class="report-minute"><bdi dir="ltr">1′</bdi></span>
+              <div class="report-moment"><strong>باريوس يفتتح التسجيل</strong><p>أتلتيكو مدريد يتقدم بهدف من صناعة أليكس باينا.</p></div>
+            </li>
+            <li>
+              <span class="report-minute report-minute--red"><bdi dir="ltr">74′</bdi></span>
+              <div class="report-moment"><strong>بطاقة حمراء لليني يورو</strong><p>مانشستر يونايتد يُكمل اللقاء بعشرة لاعبين بعد مراجعة تقنية الفيديو.</p></div>
+            </li>
+            <li>
+              <span class="report-minute"><bdi dir="ltr">79′</bdi></span>
+              <div class="report-moment"><strong>لوكمان يضيف الهدف الثاني</strong><p>متابعة لمحاولة جوناثان ديفيد تمنح أتلتيكو تقدماً بهدفين دون رد.</p></div>
+            </li>
+            <li>
+              <span class="report-minute">نهاية</span>
+              <div class="report-moment"><strong>أتلتيكو مدريد 2 — مانشستر يونايتد 0</strong><p>فوز أتلتيكو الأول في مرحلة الدوري لهذا الموسم.</p></div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="fixture-section fixture-shell fixture-history" id="head-to-head" aria-labelledby="head-to-head-title">
+        <header class="section-heading fh-heading">
+          <span class="section-kicker">المواجهات المباشرة · من الأحدث إلى الأقدم</span>
+          <h2 class="section-title" id="head-to-head-title">نتائج آخر ثلاث مواجهات بين الفريقين</h2>
+          <p>أحدث ثلاث مواجهات مكتملة حتى <time datetime="2026-10-16">16 أكتوبر 2026</time>، وتشمل مباراة هذا التقرير والمباريات الودية، وليست مقتصرة على اللقاءات الرسمية.</p>
+        </header>
+        <ol class="fh-grid" aria-label="آخر ثلاث مواجهات مكتملة بترتيب زمني تنازلي">
+          <li class="fh-item" data-history-match="2026-10-13" data-history-competition="champions-league" data-history-year="2026" data-history-friendly="false">
+            <article class="fh-card" aria-labelledby="fh-20261013-title">
+              <div class="fh-card-top"><span class="fh-kind">مواجهة رسمية</span><span class="fh-current">مباراة هذا التقرير</span></div>
+              <h3 id="fh-20261013-title">دوري أبطال أوروبا</h3>
+              <p class="fh-date"><time datetime="2026-10-13">13 أكتوبر 2026</time></p>
+              <div class="fh-scoreboard" dir="rtl" role="group" aria-label="النتيجة: أتلتيكو مدريد 2، مانشستر يونايتد 0">
+                <div class="fh-team" data-history-team="atletico"><span class="fh-team-name">أتلتيكو مدريد</span><span class="fh-goals"><bdi dir="ltr">2</bdi></span></div>
+                <span class="fh-separator" aria-hidden="true">—</span>
+                <div class="fh-team" data-history-team="united"><span class="fh-team-name">مانشستر يونايتد</span><span class="fh-goals"><bdi dir="ltr">0</bdi></span></div>
+              </div>
+              <dl class="fh-details"><div><dt>السنة</dt><dd data-history-calendar-year=""><bdi dir="ltr">2026</bdi></dd></div><div><dt>الموسم</dt><dd><bdi dir="ltr">2026/27</bdi></dd></div></dl>
+            </article>
+          </li>
+          <li class="fh-item" data-history-match="2026-08-01" data-history-competition="club-friendly" data-history-year="2026" data-history-friendly="true">
+            <article class="fh-card" aria-labelledby="fh-20260801-title">
+              <div class="fh-card-top"><span class="fh-kind fh-kind--friendly">مباراة ودية</span></div>
+              <h3 id="fh-20260801-title">كأس سنابدراجون</h3>
+              <p class="fh-date"><time datetime="2026-08-01">1 أغسطس 2026</time></p>
+              <div class="fh-scoreboard" dir="rtl" role="group" aria-label="النتيجة: أتلتيكو مدريد 1، مانشستر يونايتد 2">
+                <div class="fh-team" data-history-team="atletico"><span class="fh-team-name">أتلتيكو مدريد</span><span class="fh-goals"><bdi dir="ltr">1</bdi></span></div>
+                <span class="fh-separator" aria-hidden="true">—</span>
+                <div class="fh-team" data-history-team="united"><span class="fh-team-name">مانشستر يونايتد</span><span class="fh-goals"><bdi dir="ltr">2</bdi></span></div>
+              </div>
+              <dl class="fh-details"><div><dt>السنة</dt><dd data-history-calendar-year=""><bdi dir="ltr">2026</bdi></dd></div><div><dt>نوع اللقاء</dt><dd>ودية للأندية</dd></div></dl>
+            </article>
+          </li>
+          <li class="fh-item" data-history-match="2022-07-30" data-history-competition="club-friendly" data-history-year="2022" data-history-friendly="true">
+            <article class="fh-card" aria-labelledby="fh-20220730-title">
+              <div class="fh-card-top"><span class="fh-kind fh-kind--friendly">مباراة ودية</span></div>
+              <h3 id="fh-20220730-title">ودية للأندية</h3>
+              <p class="fh-date"><time datetime="2022-07-30">30 يوليو 2022</time></p>
+              <div class="fh-scoreboard" dir="rtl" role="group" aria-label="النتيجة: أتلتيكو مدريد 1، مانشستر يونايتد 0">
+                <div class="fh-team" data-history-team="atletico"><span class="fh-team-name">أتلتيكو مدريد</span><span class="fh-goals"><bdi dir="ltr">1</bdi></span></div>
+                <span class="fh-separator" aria-hidden="true">—</span>
+                <div class="fh-team" data-history-team="united"><span class="fh-team-name">مانشستر يونايتد</span><span class="fh-goals"><bdi dir="ltr">0</bdi></span></div>
+              </div>
+              <dl class="fh-details"><div><dt>السنة</dt><dd data-history-calendar-year=""><bdi dir="ltr">2022</bdi></dd></div><div><dt>نوع اللقاء</dt><dd>ودية للأندية</dd></div></dl>
+            </article>
+          </li>
+        </ol>
+        <p class="fh-note">ترتيب الفريقين ثابت في البطاقات؛ النتيجة تحت اسم كل فريق، ولا يعبّر ترتيب العرض عن صاحب الأرض أو ملعب اللقاء.</p>
+      </section>
+
+      <!-- Confirmed lineup and reviewed provider ratings are baked into the HTML. -->
+      <section class="fixture-section fixture-shell fixture-lineups" id="match-lineups" aria-labelledby="match-lineups-title" data-fixture-lineups=""><header class="section-heading fl-heading"><span class="section-kicker">من بدأ المواجهة؟ · 13 أكتوبر 2026</span><h2 class="section-title" id="match-lineups-title">تشكيل الفريقين وتقييمات اللاعبين</h2><p>تشكيل البداية المؤكد، لا تشكيل متوقّع؛ الأساسيون والبدلاء والقادة ودقائق التبديلات، مع تقييمات اللاعبين على مقياس 10.</p></header>
+    <p class="fl-context" data-lineups-reading="">لقطة بعد انتهاء المباراة · مراجعة البيانات: <time datetime="2026-10-15T23:30:24.459Z">١٦ أكتوبر ٢٠٢٦ في ٠٢:٣٠</time> بتوقيت القاهرة. التقييمات ليست لحظية ولا تُحدَّث آلياً، ولا تغيّر إحصائيات المباراة النهائية أو جداول الترتيب المتجددة.</p>
+    <div class="fl-recognition"><p data-recognition="fotmob"><span>أعلى تقييم منشور</span><strong>بابلو باريوس</strong><span class="fl-rating" data-player-rating="8.3"><bdi dir="ltr">8.3<small>/10</small></bdi></span></p><p data-recognition="uefa"><span>الجائزة الرسمية لرجل المباراة</span><strong>أليكس باينا</strong><span class="fl-award-note">جائزة مستقلة عن التقييم الرقمي</span></p></div>
+    <p class="fl-context" id="lineups-pitch-note">الرسم توضيحي لتشكيل البداية، والهجوم إلى أعلى؛ لا يمثّل مواقع اللاعبين أو تحرّكاتهم خلال اللقاء. الأسماء والأرقام والتقييمات ظاهرة حتى دون JavaScript.</p>
+    <div class="fl-teams"><article class="fl-team fl-team--atletico" data-lineup-team="atletico" aria-labelledby="fl-atletico-title">
+    <header class="fl-team-heading"><div><p class="fl-team-kicker">صاحب الأرض · تشكيل البداية</p><h3 id="fl-atletico-title">أتلتيكو مدريد</h3><p class="fl-coach">المدرب: دييغو سيميوني</p></div><div class="fl-formation-badge"><span>خطة البداية</span><bdi dir="ltr" data-lineup-formation="">4-4-2</bdi></div></header>
+    <h4 class="fl-group-heading" id="fl-atletico-starters">التشكيل الأساسي <span>11 لاعباً</span></h4>
+    <div class="fl-pitch" aria-labelledby="fl-atletico-starters" aria-describedby="lineups-pitch-note"><span class="fl-pitch-centre" aria-hidden="true"></span><ol class="fl-formation"><li class="fl-line" data-formation-line="0"><ol class="fl-line-players" data-players="1" aria-label="حراسة المرمى"><li class="fl-player" data-starting-player="250012069" data-source-name="Jan Oblak">
+    <span class="fl-shirt"><bdi dir="ltr">13</bdi></span><span class="fl-player-name">يان أوبلاك<small class="fl-captain">القائد</small></span><span class="fl-rating" data-player-rating="8.2"><bdi dir="ltr">8.2<small>/10</small></bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="1"><ol class="fl-line-players" data-players="4" aria-label="خط الدفاع"><li class="fl-player" data-starting-player="250079670" data-source-name="Marcos Llorente">
+    <span class="fl-shirt"><bdi dir="ltr">14</bdi></span><span class="fl-player-name">ماركوس يورينتي</span><span class="fl-rating" data-player-rating="7.7"><bdi dir="ltr">7.7<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250144325" data-source-name="Cristian Romero">
+    <span class="fl-shirt"><bdi dir="ltr">21</bdi></span><span class="fl-player-name">كريستيان روميرو</span><span class="fl-rating" data-player-rating="7.4"><bdi dir="ltr">7.4<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250092668" data-source-name="Dávid Hancko">
+    <span class="fl-shirt"><bdi dir="ltr">17</bdi></span><span class="fl-player-name">دافيد هانكو</span><span class="fl-rating" data-player-rating="7.2"><bdi dir="ltr">7.2<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250042422" data-source-name="Alejandro Grimaldo">
+    <span class="fl-shirt"><bdi dir="ltr">22</bdi></span><span class="fl-player-name">أليخاندرو غريمالدو</span><span class="fl-rating" data-player-rating="7.4"><bdi dir="ltr">7.4<small>/10</small></bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="2"><ol class="fl-line-players" data-players="4" aria-label="خط الوسط"><li class="fl-player" data-starting-player="250153634" data-source-name="Giuliano Simeone">
+    <span class="fl-shirt"><bdi dir="ltr">20</bdi></span><span class="fl-player-name">جوليانو سيميوني</span><span class="fl-rating" data-player-rating="6.6"><bdi dir="ltr">6.6<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">88′</bdi></span>
+  </li><li class="fl-player fl-player--featured" data-starting-player="250139036" data-source-name="Pablo Barrios">
+    <span class="fl-shirt"><bdi dir="ltr">8</bdi></span><span class="fl-player-name">بابلو باريوس</span><span class="fl-rating" data-player-rating="8.3"><bdi dir="ltr">8.3<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">61′</bdi></span>
+  </li><li class="fl-player" data-starting-player="250150915" data-source-name="Johnny Cardoso">
+    <span class="fl-shirt"><bdi dir="ltr">5</bdi></span><span class="fl-player-name">جوني كاردوسو</span><span class="fl-rating" data-player-rating="7.1"><bdi dir="ltr">7.1<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250106963" data-source-name="Álex Baena">
+    <span class="fl-shirt"><bdi dir="ltr">10</bdi></span><span class="fl-player-name">أليكس باينا</span><span class="fl-rating" data-player-rating="7.8"><bdi dir="ltr">7.8<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">71′</bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="3"><ol class="fl-line-players" data-players="2" aria-label="خط الهجوم"><li class="fl-player" data-starting-player="250121584" data-source-name="Kang-in Lee">
+    <span class="fl-shirt"><bdi dir="ltr">7</bdi></span><span class="fl-player-name">لي كانغ إن</span><span class="fl-rating" data-player-rating="6.7"><bdi dir="ltr">6.7<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">61′</bdi></span>
+  </li><li class="fl-player" data-starting-player="250172668" data-source-name="Julián Alvarez">
+    <span class="fl-shirt"><bdi dir="ltr">19</bdi></span><span class="fl-player-name">خوليان ألفاريز</span><span class="fl-rating" data-player-rating="6.5"><bdi dir="ltr">6.5<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">71′</bdi></span>
+  </li></ol></li></ol></div>
+    <h4 class="fl-group-heading" id="fl-atletico-substitutes">البدلاء الذين شاركوا</h4>
+    <div class="fl-substitutes-wrap"><table class="fl-substitutes" aria-labelledby="fl-atletico-substitutes"><caption>أتلتيكو مدريد · دقائق الدخول · التقييم على 10</caption><thead><tr><th scope="col" class="fl-number">رقم</th><th scope="col">اللاعب</th><th scope="col" class="fl-minute">دخول</th><th scope="col" class="fl-score">التقييم</th></tr></thead><tbody><tr data-substitute-player="250194472" data-source-name="Marc Pubill"><td><bdi dir="ltr">18</bdi></td><th scope="row">مارك بوبيل</th><td><bdi dir="ltr">61′</bdi></td><td><span class="fl-rating" data-player-rating="6.3"><bdi dir="ltr">6.3<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250102035" data-source-name="Jonathan David"><td><bdi dir="ltr">15</bdi></td><th scope="row">جوناثان ديفيد</th><td><bdi dir="ltr">61′</bdi></td><td><span class="fl-rating" data-player-rating="5.6"><bdi dir="ltr">5.6<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250101557" data-source-name="Morten Hjulmand"><td><bdi dir="ltr">23</bdi></td><th scope="row">مورتن هيولماند</th><td><bdi dir="ltr">71′</bdi></td><td><span class="fl-rating" data-player-rating="6.1"><bdi dir="ltr">6.1<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250099258" data-source-name="Ademola Lookman"><td><bdi dir="ltr">11</bdi></td><th scope="row">أديمولا لوكمان</th><td><bdi dir="ltr">71′</bdi></td><td><span class="fl-rating" data-player-rating="7.2"><bdi dir="ltr">7.2<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250112513" data-source-name="Robin Le Normand"><td><bdi dir="ltr">24</bdi></td><th scope="row">روبن لو نورمان</th><td><bdi dir="ltr">88′</bdi></td><td><span class="fl-rating fl-rating--unavailable" data-rating-unavailable="">غير متاح</span></td></tr></tbody></table></div>
+    <p class="fl-unavailable-note">«غير متاح» يعني غياب تقييم منشور لهذا اللاعب، رغم مشاركته؛ ليس صفراً أو تقييماً محسوباً محلياً.</p>
+    <h4 class="fl-group-heading" id="fl-atletico-unused">بدلاء لم يشاركوا</h4><ul class="fl-unused" aria-labelledby="fl-atletico-unused"><li data-unused-player="250137521"><bdi dir="ltr">1</bdi><span>خوان موسو</span></li><li data-unused-player="250172343"><bdi dir="ltr">4</bdi><span>رودريغو ميندوزا</span></li><li data-unused-player="250061361"><bdi dir="ltr">9</bdi><span>ألكسندر سورلوث</span></li><li data-unused-player="250197651"><bdi dir="ltr">16</bdi><span>أرناو أورتيز</span></li><li data-unused-player="250212698"><bdi dir="ltr">27</bdi><span>ليتوبا</span></li><li data-unused-player="250176826"><bdi dir="ltr">30</bdi><span>داني مارتينيز</span></li><li data-unused-player="250176947"><bdi dir="ltr">46</bdi><span>خورخي كاستيو</span></li></ul>
+  </article><article class="fl-team fl-team--united" data-lineup-team="united" aria-labelledby="fl-united-title">
+    <header class="fl-team-heading"><div><p class="fl-team-kicker">الفريق الضيف · تشكيل البداية</p><h3 id="fl-united-title">مانشستر يونايتد</h3><p class="fl-coach">المدرب: مايكل كاريك</p></div><div class="fl-formation-badge"><span>خطة البداية</span><bdi dir="ltr" data-lineup-formation="">4-2-3-1</bdi></div></header>
+    <h4 class="fl-group-heading" id="fl-united-starters">التشكيل الأساسي <span>11 لاعباً</span></h4>
+    <div class="fl-pitch" aria-labelledby="fl-united-starters" aria-describedby="lineups-pitch-note"><span class="fl-pitch-centre" aria-hidden="true"></span><ol class="fl-formation"><li class="fl-line" data-formation-line="0"><ol class="fl-line-players" data-players="1" aria-label="حراسة المرمى"><li class="fl-player" data-starting-player="250118908" data-source-name="Senne Lammens">
+    <span class="fl-shirt"><bdi dir="ltr">1</bdi></span><span class="fl-player-name">سيني لامينس</span><span class="fl-rating" data-player-rating="7.1"><bdi dir="ltr">7.1<small>/10</small></bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="1"><ol class="fl-line-players" data-players="4" aria-label="خط الدفاع"><li class="fl-player" data-starting-player="250081628" data-source-name="Diogo Dalot">
+    <span class="fl-shirt"><bdi dir="ltr">2</bdi></span><span class="fl-player-name">ديوغو دالوت</span><span class="fl-rating" data-player-rating="6.8"><bdi dir="ltr">6.8<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250165232" data-source-name="Leny Yoro">
+    <span class="fl-shirt"><bdi dir="ltr">15</bdi></span><span class="fl-player-name">ليني يورو</span><span class="fl-rating" data-player-rating="6.4"><bdi dir="ltr">6.4<small>/10</small></bdi></span><span class="fl-player-event fl-player-event--red">طرد <bdi dir="ltr">74′</bdi></span>
+  </li><li class="fl-player" data-starting-player="250132803" data-source-name="Lisandro Martínez">
+    <span class="fl-shirt"><bdi dir="ltr">6</bdi></span><span class="fl-player-name">ليساندرو مارتينيز</span><span class="fl-rating" data-player-rating="7.2"><bdi dir="ltr">7.2<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250189295" data-source-name="Ayden Heaven">
+    <span class="fl-shirt"><bdi dir="ltr">26</bdi></span><span class="fl-player-name">آيدن هيفن</span><span class="fl-rating" data-player-rating="6.5"><bdi dir="ltr">6.5<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">80′</bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="2"><ol class="fl-line-players" data-players="2" aria-label="خط الوسط"><li class="fl-player" data-starting-player="250182090" data-source-name="Andrey Santos">
+    <span class="fl-shirt"><bdi dir="ltr">17</bdi></span><span class="fl-player-name">أندري سانتوس</span><span class="fl-rating" data-player-rating="7.0"><bdi dir="ltr">7.0<small>/10</small></bdi></span>
+  </li><li class="fl-player" data-starting-player="250188249" data-source-name="Carlos Baleba">
+    <span class="fl-shirt"><bdi dir="ltr">20</bdi></span><span class="fl-player-name">كارلوس باليبا</span><span class="fl-rating" data-player-rating="6.8"><bdi dir="ltr">6.8<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">66′</bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="3"><ol class="fl-line-players" data-players="3" aria-label="خط الوسط"><li class="fl-player" data-starting-player="250078886" data-source-name="Bruno Fernandes">
+    <span class="fl-shirt"><bdi dir="ltr">8</bdi></span><span class="fl-player-name">برونو فيرنانديز<small class="fl-captain">القائد</small></span><span class="fl-rating" data-player-rating="7.2"><bdi dir="ltr">7.2<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">80′</bdi></span>
+  </li><li class="fl-player" data-starting-player="250064006" data-source-name="Youri Tielemans">
+    <span class="fl-shirt"><bdi dir="ltr">18</bdi></span><span class="fl-player-name">يوري تيليمانس</span><span class="fl-rating" data-player-rating="6.5"><bdi dir="ltr">6.5<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">66′</bdi></span>
+  </li><li class="fl-player" data-starting-player="250088246" data-source-name="Marcus Rashford">
+    <span class="fl-shirt"><bdi dir="ltr">9</bdi></span><span class="fl-player-name">ماركوس راشفورد</span><span class="fl-rating" data-player-rating="6.0"><bdi dir="ltr">6.0<small>/10</small></bdi></span><span class="fl-player-event">خرج <bdi dir="ltr">66′</bdi></span>
+  </li></ol></li><li class="fl-line" data-formation-line="4"><ol class="fl-line-players" data-players="1" aria-label="خط الهجوم"><li class="fl-player" data-starting-player="250137260" data-source-name="Bryan Mbeumo">
+    <span class="fl-shirt"><bdi dir="ltr">19</bdi></span><span class="fl-player-name">بريان مبيومو</span><span class="fl-rating" data-player-rating="6.6"><bdi dir="ltr">6.6<small>/10</small></bdi></span>
+  </li></ol></li></ol></div>
+    <h4 class="fl-group-heading" id="fl-united-substitutes">البدلاء الذين شاركوا</h4>
+    <div class="fl-substitutes-wrap"><table class="fl-substitutes" aria-labelledby="fl-united-substitutes"><caption>مانشستر يونايتد · دقائق الدخول · التقييم على 10</caption><thead><tr><th scope="col" class="fl-number">رقم</th><th scope="col">اللاعب</th><th scope="col" class="fl-minute">دخول</th><th scope="col" class="fl-score">التقييم</th></tr></thead><tbody><tr data-substitute-player="250106762" data-source-name="Joshua Zirkzee"><td><bdi dir="ltr">11</bdi></td><th scope="row">جوشوا زيركزي</th><td><bdi dir="ltr">66′</bdi></td><td><span class="fl-rating" data-player-rating="6.1"><bdi dir="ltr">6.1<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250076240" data-source-name="Mason Mount"><td><bdi dir="ltr">7</bdi></td><th scope="row">ماسون ماونت</th><td><bdi dir="ltr">66′</bdi></td><td><span class="fl-rating" data-player-rating="6.9"><bdi dir="ltr">6.9<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250121405" data-source-name="Amad Diallo"><td><bdi dir="ltr">16</bdi></td><th scope="row">أماد ديالو</th><td><bdi dir="ltr">66′</bdi></td><td><span class="fl-rating" data-player-rating="6.8"><bdi dir="ltr">6.8<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250110943" data-source-name="Matheus Cunha"><td><bdi dir="ltr">10</bdi></td><th scope="row">ماتيوس كونيا</th><td><bdi dir="ltr">80′</bdi></td><td><span class="fl-rating" data-player-rating="6.6"><bdi dir="ltr">6.6<small>/10</small></bdi></span></td></tr><tr data-substitute-player="250075007" data-source-name="Harry Maguire"><td><bdi dir="ltr">5</bdi></td><th scope="row">هاري ماغواير</th><td><bdi dir="ltr">80′</bdi></td><td><span class="fl-rating" data-player-rating="6.1"><bdi dir="ltr">6.1<small>/10</small></bdi></span></td></tr></tbody></table></div>
+
+    <h4 class="fl-group-heading" id="fl-united-unused">بدلاء لم يشاركوا</h4><ul class="fl-unused" aria-labelledby="fl-united-unused"><li data-unused-player="250021790"><bdi dir="ltr">12</bdi><span>كارل دارلو</span></li><li data-unused-player="250128702"><bdi dir="ltr">45</bdi><span>ديرموت مي</span></li><li data-unused-player="50327424"><bdi dir="ltr">4</bdi><span>ماتيس دي ليخت</span></li><li data-unused-player="250182699"><bdi dir="ltr">31</bdi><span>شيا لاسي</span></li><li data-unused-player="250182726"><bdi dir="ltr">39</bdi><span>تايلر فليتشر</span></li><li data-unused-player="250190140"><bdi dir="ltr">41</bdi><span>هاري أماس</span></li><li data-unused-player="250190131"><bdi dir="ltr">57</bdi><span>دانيال أرمر</span></li></ul>
+  </article></div>
+    <p class="fl-context">التقييمات لقطة بعد المباراة؛ لا يُحسب متوسط للفريق محلياً، ولا تُقدَّر الدرجات الغائبة.</p></section>
+
+      <section class="fixture-section fixture-shell" id="uefa-stats" aria-labelledby="uefa-stats-title">
+        <header class="section-heading">
+          <span class="section-kicker">المباراة بالأرقام</span>
+          <h2 class="section-title" id="uefa-stats-title">إحصائيات المباراة النهائية</h2>
+          <p>24 إحصائية نهائية للمباراة. الأرقام موجودة في الصفحة مباشرةً، ولا تحتاج إلى تشغيل JavaScript أو انتظار تحميل بيانات.</p>
+        </header>
+        <div class="official-stats-grid">
+          <article class="official-stat-card" aria-labelledby="official-attack-title">
+            <h3 class="official-stat-title" id="official-attack-title">التهديد الهجومي</h3>
+            <table class="official-stats-table">
+              <caption>التهديد الهجومي — القيم النهائية للمباراة</caption>
+              <thead><tr><th scope="col">الإحصائية</th><th scope="col">أتلتيكو مدريد</th><th scope="col">مانشستر يونايتد</th></tr></thead>
+              <tbody>
+                <tr class="official-stat-row" data-stat="attempts"><th scope="row">إجمالي التسديدات</th><td><bdi dir="ltr">11</bdi></td><td><bdi dir="ltr">8</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="on-target"><th scope="row">تسديدات على المرمى</th><td><bdi dir="ltr">5</bdi></td><td><bdi dir="ltr">4</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="off-target"><th scope="row">تسديدات خارج المرمى</th><td><bdi dir="ltr">5</bdi></td><td><bdi dir="ltr">2</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="blocked"><th scope="row">التسديدات المحجوبة</th><td><bdi dir="ltr">1</bdi></td><td><bdi dir="ltr">2</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="woodwork"><th scope="row">إصابة إطار المرمى</th><td><bdi dir="ltr">2</bdi></td><td><bdi dir="ltr">1</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="corners"><th scope="row">الركنيات</th><td><bdi dir="ltr">2</bdi></td><td><bdi dir="ltr">5</bdi></td></tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="official-stat-card" aria-labelledby="official-passing-title">
+            <h3 class="official-stat-title" id="official-passing-title">الاستحواذ والتمرير</h3>
+            <table class="official-stats-table">
+              <caption>الاستحواذ والتمرير — القيم النهائية للمباراة</caption>
+              <thead><tr><th scope="col">الإحصائية</th><th scope="col">أتلتيكو مدريد</th><th scope="col">مانشستر يونايتد</th></tr></thead>
+              <tbody>
+                <tr class="official-stat-row" data-stat="possession"><th scope="row">الاستحواذ</th><td><bdi dir="ltr">57%</bdi></td><td><bdi dir="ltr">43%</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="passes-attempted"><th scope="row">محاولات التمرير</th><td><bdi dir="ltr">666</bdi></td><td><bdi dir="ltr">479</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="passes-completed"><th scope="row">التمريرات المكتملة</th><td><bdi dir="ltr">595</bdi></td><td><bdi dir="ltr">406</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="passing-accuracy"><th scope="row">دقة التمرير</th><td><bdi dir="ltr">89%</bdi></td><td><bdi dir="ltr">85%</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="crosses-attempted"><th scope="row">محاولات العرضيات</th><td><bdi dir="ltr">5</bdi></td><td><bdi dir="ltr">9</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="crosses-completed"><th scope="row">العرضيات المكتملة</th><td><bdi dir="ltr">1</bdi></td><td><bdi dir="ltr">1</bdi></td></tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="official-stat-card" aria-labelledby="official-defence-title">
+            <h3 class="official-stat-title" id="official-defence-title">الدفاع والجهد</h3>
+            <table class="official-stats-table">
+              <caption>الدفاع والجهد — القيم النهائية للمباراة</caption>
+              <thead><tr><th scope="col">الإحصائية</th><th scope="col">أتلتيكو مدريد</th><th scope="col">مانشستر يونايتد</th></tr></thead>
+              <tbody>
+                <tr class="official-stat-row" data-stat="recoveries"><th scope="row">الكرات المستعادة</th><td><bdi dir="ltr">42</bdi></td><td><bdi dir="ltr">36</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="tackles"><th scope="row">التدخلات</th><td><bdi dir="ltr">17</bdi></td><td><bdi dir="ltr">22</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="tackles-won"><th scope="row">التدخلات الناجحة</th><td><bdi dir="ltr">5</bdi></td><td><bdi dir="ltr">13</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="clearances"><th scope="row">الإبعادات المكتملة</th><td><bdi dir="ltr">9</bdi></td><td><bdi dir="ltr">9</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="saves"><th scope="row">تصديات الحارس</th><td><bdi dir="ltr">4</bdi></td><td><bdi dir="ltr">3</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="distance"><th scope="row">المسافة المقطوعة (كم)</th><td><bdi dir="ltr">114.149</bdi></td><td><bdi dir="ltr">112.21</bdi></td></tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="official-stat-card" aria-labelledby="official-discipline-title">
+            <h3 class="official-stat-title" id="official-discipline-title">الهجمات والانضباط</h3>
+            <table class="official-stats-table">
+              <caption>الهجمات والانضباط — القيم النهائية للمباراة</caption>
+              <thead><tr><th scope="col">الإحصائية</th><th scope="col">أتلتيكو مدريد</th><th scope="col">مانشستر يونايتد</th></tr></thead>
+              <tbody>
+                <tr class="official-stat-row" data-stat="attacks"><th scope="row">الهجمات</th><td><bdi dir="ltr">41</bdi></td><td><bdi dir="ltr">37</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="dribbles"><th scope="row">المراوغات</th><td><bdi dir="ltr">12</bdi></td><td><bdi dir="ltr">14</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="offsides"><th scope="row">التسلل</th><td><bdi dir="ltr">1</bdi></td><td><bdi dir="ltr">2</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="fouls"><th scope="row">الأخطاء المرتكبة</th><td><bdi dir="ltr">11</bdi></td><td><bdi dir="ltr">13</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="yellow-cards"><th scope="row">البطاقات الصفراء</th><td><bdi dir="ltr">2</bdi></td><td><bdi dir="ltr">1</bdi></td></tr>
+                <tr class="official-stat-row" data-stat="red-cards"><th scope="row">البطاقات الحمراء</th><td><bdi dir="ltr">0</bdi></td><td><bdi dir="ltr">1</bdi></td></tr>
+              </tbody>
+            </table>
+          </article>
+        </div>
+        <p class="report-note" id="uefa-stats-note">مراجعة الأرقام النهائية: <time datetime="2026-10-16">16 أكتوبر 2026</time>. هذه لقطة ثابتة لا تُحدَّث تلقائياً ولا تُدمج باللوحات المتجددة؛ قد تختلف تعريفات الإحصاءات بين القراءات.</p>
+      </section>
+
       <section class="fixture-section fixture-shell" id="preview" aria-labelledby="preview-title">
         <header class="section-heading">
-          <span class="section-kicker">نظرة فنية</span>
-          <h2 class="section-title" id="preview-title">مواجهة بين التنظيم والسرعة</h2>
-          <p>قراءة عامة لما قد يصنع الفارق؛ التشكيلات والخطط الفعلية تتضح مع اقتراب موعد المباراة.</p>
+          <span class="section-kicker">قراءة بعد صافرة النهاية</span>
+          <h2 class="section-title" id="preview-title">تحليل المباراة: أين ظهر الفارق؟</h2>
+          <p>قراءة تحريرية تستند إلى الأرقام النهائية وأحداث اللقاء. الاستنتاجات التالية تحليل للمعلومات المنشورة، وليست تصريحات من المدربين أو تحليلاً رسمياً.</p>
         </header>
-        <div class="preview-grid">
+        <!-- The publisher fills this region with complete static SVG charts from #uefa-stats. -->
+        <section class="fixture-charts" id="analysis-charts" aria-labelledby="fixture-charts-title" data-fixture-charts=""><div class="fc-heading"><div><span class="fc-eyebrow">مقارنة بصرية بين الفريقين</span><h3 id="fixture-charts-title">التحليل بالأرقام</h3><p>رسوم للمقارنة بين الفريقين، بأرقام ظاهرة دائماً إلى جانب الرسم.</p></div><span class="fc-source-badge" data-chart-badge="">أرقام نهائية</span></div>
+    <div class="fc-controls" data-chart-controls="" hidden="">
+      <div class="fc-control-line"><span class="fc-control-label">عرض الأرقام</span><div class="fc-button-group" role="group" aria-label="طريقة عرض أرقام الرسوم"><button type="button" data-chart-source="uefa" aria-pressed="true">أرقام نهائية</button><button type="button" data-chart-source="espn" aria-pressed="false">تحديث تلقائي</button></div></div>
+      <div class="fc-control-line"><span class="fc-control-label">المؤشرات</span><div class="fc-button-group" role="group" aria-label="تصفية مؤشرات الرسوم"><button type="button" data-chart-filter="all" aria-pressed="true">كل المؤشرات</button><button type="button" data-chart-filter="attack" aria-pressed="false">الهجوم</button><button type="button" data-chart-filter="passing" aria-pressed="false">التمرير والاستحواذ</button><button type="button" data-chart-filter="defence" aria-pressed="false">الدفاع والانضباط</button></div></div>
+      <div class="fc-control-line"><span class="fc-control-label">إبراز فريق</span><div class="fc-button-group fc-legend" role="group" aria-label="إبراز رسوم فريق"><button type="button" data-chart-highlight="home" aria-pressed="false"><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</button><button type="button" data-chart-highlight="away" aria-pressed="false"><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</button></div></div>
+    </div>
+    <p class="fc-status" data-chart-status="" role="status" aria-live="polite">المعروض أرقام المباراة النهائية، المراجعة في 16 أكتوبر 2026.</p>
+    <p class="fc-context">التحليل النصي يعتمد الأرقام النهائية. اختيار التحديث التلقائي يغيّر الرسوم فقط، ولا يُعدّل الملخص أو الجداول النهائية أو نص التحليل. الأرقام المفقودة لا تُستكمل من قراءة أخرى.</p>
+    <div class="fc-grid" data-chart-cards=""><article class="fc-card" data-metric="attempts" data-chart-group="attack" data-complete="true" aria-labelledby="fc-attempts-title">
+      <h4 id="fc-attempts-title">إجمالي التسديدات</h4>
+      <div class="fc-bars" role="img" aria-label="إجمالي التسديدات: أتلتيكو مدريد 11، مانشستر يونايتد 8"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">11</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">8</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="27.2727" y="0" width="72.7273" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article>
+<article class="fc-card" data-metric="on-target" data-chart-group="attack" data-complete="true" aria-labelledby="fc-on-target-title">
+      <h4 id="fc-on-target-title">التسديدات على المرمى</h4>
+      <div class="fc-bars" role="img" aria-label="التسديدات على المرمى: أتلتيكو مدريد 5، مانشستر يونايتد 4"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">5</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">4</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="20" y="0" width="80" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article>
+<article class="fc-card" data-metric="corners" data-chart-group="attack" data-complete="true" aria-labelledby="fc-corners-title">
+      <h4 id="fc-corners-title">الركنيات</h4>
+      <div class="fc-bars" role="img" aria-label="الركنيات: أتلتيكو مدريد 2، مانشستر يونايتد 5"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">2</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="60" y="0" width="40" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">5</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article>
+<article class="fc-card" data-metric="possession" data-chart-group="passing" data-complete="true" aria-labelledby="fc-possession-title">
+      <h4 id="fc-possession-title">الاستحواذ</h4>
+      <div class="fc-donut-layout">
+    <svg class="fc-donut" viewBox="0 0 140 140" role="img" aria-label="الاستحواذ: أتلتيكو مدريد 57%، مانشستر يونايتد 43%" focusable="false">
+      <circle class="fc-ring-track" cx="70" cy="70" r="54"></circle>
+      <g transform="rotate(-90 70 70)"><circle class="fc-ring fc-ring--home" cx="70" cy="70" r="54" pathLength="100" stroke-dasharray="57 43"></circle><circle class="fc-ring fc-ring--away" cx="70" cy="70" r="54" pathLength="100" stroke-dasharray="43 57" stroke-dashoffset="-57"></circle></g>
+      <text x="70" y="68" text-anchor="middle" class="fc-ring-caption">الاستحواذ</text><text x="70" y="88" text-anchor="middle" class="fc-ring-unit">نسبة مئوية</text>
+    </svg>
+    <div class="fc-donut-values"><div class="fc-value-line" data-team="home"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">57%</bdi></div><div class="fc-value-line" data-team="away"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">43%</bdi></div></div>
+  </div>
+      <p class="fc-scale">مقياس النسبة: من 0 إلى 100%</p>
+
+    </article>
+<article class="fc-card" data-metric="passes-completed" data-chart-group="passing" data-complete="true" aria-labelledby="fc-passes-completed-title">
+      <h4 id="fc-passes-completed-title">التمريرات المكتملة</h4>
+      <div class="fc-bars" role="img" aria-label="التمريرات المكتملة: أتلتيكو مدريد 595، مانشستر يونايتد 406"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">595</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">406</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="31.764700000000005" y="0" width="68.2353" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article>
+<article class="fc-card" data-metric="passing-accuracy" data-chart-group="passing" data-complete="true" aria-labelledby="fc-passing-accuracy-title">
+      <h4 id="fc-passing-accuracy-title">دقة التمرير</h4>
+      <div class="fc-bars" role="img" aria-label="دقة التمرير: أتلتيكو مدريد 89%، مانشستر يونايتد 85%"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">89%</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="11" y="0" width="89" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">85%</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="15" y="0" width="85" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">مقياس النسبة: من 0 إلى 100%</p>
+
+    </article>
+<article class="fc-card" data-metric="saves" data-chart-group="defence" data-complete="true" aria-labelledby="fc-saves-title">
+      <h4 id="fc-saves-title">تصديات الحارس</h4>
+      <div class="fc-bars" role="img" aria-label="تصديات الحارس: أتلتيكو مدريد 4، مانشستر يونايتد 3"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">4</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">3</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="25" y="0" width="75" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article>
+<article class="fc-card" data-metric="fouls" data-chart-group="defence" data-complete="true" aria-labelledby="fc-fouls-title">
+      <h4 id="fc-fouls-title">الأخطاء المرتكبة</h4>
+      <div class="fc-bars" role="img" aria-label="الأخطاء المرتكبة: أتلتيكو مدريد 11، مانشستر يونايتد 13"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">11</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="15.384600000000006" y="0" width="84.6154" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">13</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article>
+<article class="fc-card" data-metric="red-cards" data-chart-group="defence" data-complete="true" aria-labelledby="fc-red-cards-title">
+      <h4 id="fc-red-cards-title">البطاقات الحمراء</h4>
+      <div class="fc-bars" role="img" aria-label="البطاقات الحمراء: أتلتيكو مدريد 0، مانشستر يونايتد 1"><div class="fc-bar-row" data-team="home">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>أتلتيكو مدريد</span><bdi class="fc-value" dir="ltr" data-chart-value="home">0</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="100" y="0" width="0" height="8" rx="4"></rect></svg>
+  </div><div class="fc-bar-row" data-team="away">
+    <div class="fc-value-line"><span><i class="fc-dot" aria-hidden="true"></i>مانشستر يونايتد</span><bdi class="fc-value" dir="ltr" data-chart-value="away">1</bdi></div>
+    <svg class="fc-bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="fc-bar-track" x="0" y="0" width="100" height="8" rx="4"></rect><rect class="fc-bar-fill" x="0" y="0" width="100" height="8" rx="4"></rect></svg>
+  </div></div>
+      <p class="fc-scale">طول الشريط للمقارنة داخل هذا المؤشر فقط</p>
+
+    </article></div>
+    <p class="fc-provenance" data-chart-provenance="">مقياس المقارنة مستقل لكل مؤشر؛ التحديث التلقائي لا يستبدل الجداول النهائية.</p>
+    <p class="fc-context" data-chart-static-note="">الرسوم والأرقام النهائية ظاهرة دون JavaScript. التصفية والتحديث التلقائي تحسينان اختياريان عند تفعيله.</p></section>
+        <div class="preview-grid preview-grid--report">
           <article class="preview-card preview-card--red">
-            <span class="preview-index">01 / مانشستر يونايتد</span>
-            <h3 class="preview-title">التحول الهجومي السريع</h3>
-            <p>قد تكون سرعة نقل الكرة واستغلال المساحات بعد افتكاكها من أبرز مفاتيح الفريق الضيف، خصوصاً عند الانتقال من الدفاع إلى الهجوم.</p>
+            <span class="preview-index">01 / البداية</span>
+            <h3 class="preview-title">هدف مبكر فرض مطاردة النتيجة</h3>
+            <p>منح هدف باريوس في الدقيقة الأولى أتلتيكو أفضلية منذ البداية. القراءة الأقرب أن يونايتد اضطر إلى البحث عن التعادل معظم اللقاء؛ لكن توقيت الهدف وحده لا يكفي للجزم بأن أتلتيكو غيّر خطته أو تعمّد التراجع.</p>
           </article>
           <article class="preview-card preview-card--blue">
-            <span class="preview-index">02 / أتلتيكو مدريد</span>
-            <h3 class="preview-title">تماسك الخطوط واستغلال الأرض</h3>
-            <p>على صاحب الأرض فرض إيقاعه عبر التنظيم والضغط في التوقيت المناسب، ثم تحويل الكرات المستعادة إلى فرص أمام جمهوره.</p>
+            <span class="preview-index">02 / التحكم بالكرة</span>
+            <h3 class="preview-title">تفوق في الاستحواذ وحجم التمرير</h3>
+            <p>بلغ استحواذ أتلتيكو 57% مقابل 43%، و595 تمريرة مكتملة مقابل 406. ومع 11 تسديدة مقابل 8، تظهر أفضلية في حجم اللعب والمحاولات، لا دليلاً على سيطرة مطلقة أو على أن كل استحواذ تحوّل إلى فرصة خطرة.</p>
           </article>
           <article class="preview-card preview-card--lime">
-            <span class="preview-index">03 / نقطة الحسم</span>
-            <h3 class="preview-title">معركة وسط الملعب</h3>
-            <p>السيطرة على الكرات الثانية والتوازن عند فقدان الكرة قد يمنحان أحد الفريقين أفضلية في مباراة أوروبية متقاربة.</p>
+            <span class="preview-index">03 / التهديد الهجومي</span>
+            <h3 class="preview-title">الشباك النظيفة لا تعني غياب الفرص</h3>
+            <p>وصلت 4 محاولات ليونايتد إلى المرمى، وسجّل أوبلاك 4 تصديات. وأصاب الفريق إطار المرمى مرة، مقابل مرتين لأتلتيكو. لذلك لا تختصر نتيجة 2–0 وحدها حجم التهديد الذي واجهه صاحب الأرض؛ كان للحارس وإهدار المحاولات أثر في بقاء الفارق.</p>
           </article>
+          <article class="preview-card preview-card--red">
+            <span class="preview-index">04 / التحول الأخير</span>
+            <h3 class="preview-title">الطرد ثم مساهمة البدلاء</h3>
+            <p>جاء طرد يورو في الدقيقة 74، ثم هدف لوكمان في الدقيقة 79 بعد محاولة من ديفيد؛ وكلا لاعبي أتلتيكو شارك بديلاً. تسلسل الحدثين يوضح صعوبة الدقائق الأخيرة على يونايتد، لكنه لا يثبت أن الطرد وحده حسم لقاء كان أتلتيكو متقدماً فيه بالفعل.</p>
+          </article>
+        </div>
+        <p class="report-note">لا تُنسب نوايا تكتيكية مؤكدة إلى أي مدرب اعتماداً على الأرقام وحدها.</p>
+      </section>
+
+      <section class="fixture-section fixture-shell fixture-reviews" id="arabic-reviews" aria-labelledby="arabic-reviews-title">
+        <header class="section-heading fr-heading">
+          <span class="section-kicker">قراءات تحليلية · بعد صافرة النهاية</span>
+          <h2 class="section-title" id="arabic-reviews-title">مراجعات المحللين العرب</h2>
+          <p>مراجعتان ترتبطان بمواجهة 13 أكتوبر 2026: مرور فني على اللقاء ضمن حصاد الجولة، ونقاش أوسع لما بعد خسارة يونايتد. نوع كل مراجعة واضح على بطاقتها.</p>
+        </header>
+        <div class="fr-grid">
+          <article class="fr-card" data-analyst-review="yibbAkJUu78" data-review-scope="roundup" aria-labelledby="review-awaad-title">
+            <div class="fr-card-top"><span class="fr-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg></span><span class="fr-scope">ضمن مراجعة الجولة</span></div>
+            <h3 id="review-awaad-title">محمد عواد</h3>
+                        <h4 class="fr-video-title">تنسيق الضغط وردّ الفعل الدفاعي</h4>
+                        <p class="fr-summary"><span class="fr-summary-label">خلاصة القراءة:</span> يركّز محمد عواد على تنسيق ضغط مانشستر يونايتد وردّ فعل المدافعين في الهدفين، ضمن مراجعته لعدة مباريات من الجولة، وليس في حلقة مخصّصة بالكامل لهذا اللقاء.</p>
+            <a class="fr-open-video" href="#source-awaad-review" aria-label="تفاصيل مراجعة محمد عواد والفيديو في قسم التوثيق والمراجعة"><span>تفاصيل مراجعة محمد عواد</span><span aria-hidden="true">↓</span></a>
+          </article>
+          <article class="fr-card fr-card--context" data-analyst-review="MYbD3-0BvoA" data-review-scope="aftermath" aria-labelledby="review-nasrallah-title">
+            <div class="fr-card-top"><span class="fr-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"></path></svg></span><span class="fr-scope">نقاش ما بعد الهزيمة</span></div>
+            <h3 id="review-nasrallah-title">ممدوح نصرالله</h3>
+                        <h4 class="fr-video-title">سياق الفريق بعد الخسارة</h4>
+                        <p class="fr-summary"><span class="fr-summary-label">خلاصة القراءة:</span> يناقش ممدوح نصرالله السياق الإداري والفني لمانشستر يونايتد بعد الخسارة أمام أتلتيكو، والجدل حول دعم كاريك وبناء قائمة الفريق؛ وليس تحليلاً تفصيلياً لكل لقطة في المباراة.</p>
+            <a class="fr-open-video" href="#source-nasrallah-review" aria-label="تفاصيل مراجعة ممدوح نصرالله والفيديو في قسم التوثيق والمراجعة"><span>تفاصيل مراجعة ممدوح نصرالله</span><span aria-hidden="true">↓</span></a>
+          </article>
+        </div>
+        <p class="fr-editorial-note">الخلاصات صياغة تحريرية، وليست اقتباساً حرفياً. تُنسب كل قراءة إلى صاحبها ولا تستبدل الأرقام النهائية للمباراة.</p>
+      </section>
+
+      <!-- The publisher renders all three reviewed standings tables here before delivery. -->
+      <section class="fixture-section fixture-shell fixture-standings" id="competition-standings" aria-labelledby="competition-standings-title" data-fixture-standings=""><header class="section-heading fs-heading"><span class="section-kicker">الصورة الأوسع · ترتيب البطولات</span><h2 class="section-title" id="competition-standings-title">ترتيب الفريقين أوروبياً ومحلياً</h2><p>دوري أبطال أوروبا بنظام جدول دوري موحّد، وليس مجموعات منفصلة. هنا الجدول الكامل، ثم الدوري الإنجليزي لمانشستر يونايتد والدوري الإسباني لأتلتيكو مدريد.</p></header>
+    <div class="fs-auto-note"><span class="fs-auto-dot" aria-hidden="true"></span><p>تحديث تلقائي كل خمس دقائق أثناء ظهور الصفحة واتصالها، عبر وسيط الترتيب المستقل. وقت القراءة والموسم واضحان لكل جدول؛ قد يتأخر المصدر.</p></div>
+    <p class="fs-context">هذه جداول الموسم المبيّن مع كل بطولة، وليست ترتيباً تاريخياً عند صافرة نهاية المباراة، ولا تغيّر إحصائيات المباراة النهائية أو نص التحليل.</p>
+    <p class="fs-global-status" data-standings-global-status="" role="status">المعروض لقطة مراجعة موثّقة؛ يبدأ التحقق التلقائي عند تحميل الواجهة.</p>
+    <div class="fs-grid"><article class="fs-card fs-card--europe" data-standing-league="uefa.champions" data-season="2026" data-fetched-at="2026-10-15T22:34:51.000Z" data-feed-state="snapshot" aria-labelledby="fs-uefa-champions-title">
+    <header class="fs-card-heading"><div><p class="fs-kicker">مرحلة الدوري الموحّدة</p><h3 id="fs-uefa-champions-title">دوري أبطال أوروبا</h3></div><span class="fs-season" data-standing-season="">موسم <bdi dir="ltr">2026/27</bdi></span></header>
+    <div class="fs-positions" data-standing-summary=""><div class="fs-position" data-summary-team="1068"><span class="fs-position-team">أتلتيكو مدريد</span><span class="fs-position-rank">المركز <bdi dir="ltr" data-summary-rank="">15</bdi></span><span class="fs-position-detail"><bdi dir="ltr" data-summary-points="">3</bdi> نقطة · <bdi dir="ltr">2</bdi> مباراة</span></div><div class="fs-position" data-summary-team="360"><span class="fs-position-team">مانشستر يونايتد</span><span class="fs-position-rank">المركز <bdi dir="ltr" data-summary-rank="">13</bdi></span><span class="fs-position-detail"><bdi dir="ltr" data-summary-points="">3</bdi> نقطة · <bdi dir="ltr">2</bdi> مباراة</span></div></div>
+    <p class="fs-reading" data-standing-status="" role="status" aria-live="polite">لقطة مراجعة · آخر قراءة: ١٦ أكتوبر ٢٠٢٦، ٠١:٣٤ بتوقيت القاهرة.</p>
+    <p class="fs-scroll-hint" id="fs-uefa-champions-hint">جدول كامل من 36 فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة؛ يمكن تركيزه بلوحة المفاتيح.</p>
+    <div class="fs-table-scroll" role="region" tabindex="0" aria-label="جدول دوري أبطال أوروبا، قابل للتمرير" aria-describedby="fs-uefa-champions-hint">
+      <table class="fs-table"><caption>دوري أبطال أوروبا · موسم 2026/27 · جدول الترتيب</caption><thead><tr><th scope="col" class="fs-rank">المركز</th><th scope="col" class="fs-team">الفريق</th><th scope="col" class="fs-points">النقاط</th><th scope="col">لعب</th><th scope="col">فاز</th><th scope="col">تعادل</th><th scope="col">خسر</th><th scope="col">له</th><th scope="col">عليه</th><th scope="col">الفارق</th></tr></thead><tbody data-standing-rows=""><tr data-standing-team="160" data-rank="1" data-team-name="Paris Saint-Germain">
+    <td class="fs-rank"><bdi dir="ltr">1</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Paris Saint-Germain</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="10"><bdi dir="ltr">10</bdi></td><td data-standing-field="goalsAgainst" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalDifference" data-value="7"><bdi dir="ltr">+7</bdi></td>
+  </tr>
+<tr data-standing-team="83" data-rank="2" data-team-name="Barcelona">
+    <td class="fs-rank"><bdi dir="ltr">2</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Barcelona</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalsAgainst" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalDifference" data-value="7"><bdi dir="ltr">+7</bdi></td>
+  </tr>
+<tr data-standing-team="362" data-rank="3" data-team-name="Aston Villa">
+    <td class="fs-rank"><bdi dir="ltr">3</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Aston Villa</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalsAgainst" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalDifference" data-value="7"><bdi dir="ltr">+7</bdi></td>
+  </tr>
+<tr data-standing-team="134" data-rank="4" data-team-name="VfB Stuttgart">
+    <td class="fs-rank"><bdi dir="ltr">4</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">VfB Stuttgart</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalDifference" data-value="5"><bdi dir="ltr">+5</bdi></td>
+  </tr>
+<tr data-standing-team="364" data-rank="5" data-team-name="Liverpool">
+    <td class="fs-rank"><bdi dir="ltr">5</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Liverpool</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="4"><bdi dir="ltr">+4</bdi></td>
+  </tr>
+<tr data-standing-team="2250" data-rank="6" data-team-name="Sporting CP">
+    <td class="fs-rank"><bdi dir="ltr">6</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Sporting CP</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalsAgainst" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalDifference" data-value="4"><bdi dir="ltr">+4</bdi></td>
+  </tr>
+<tr data-standing-team="359" data-rank="7" data-team-name="Arsenal">
+    <td class="fs-rank"><bdi dir="ltr">7</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Arsenal</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalDifference" data-value="4"><bdi dir="ltr">+4</bdi></td>
+  </tr>
+<tr data-standing-team="86" data-rank="8" data-team-name="Real Madrid">
+    <td class="fs-rank"><bdi dir="ltr">8</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Real Madrid</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="244" data-rank="9" data-team-name="Real Betis">
+    <td class="fs-rank"><bdi dir="ltr">9</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Real Betis</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="132" data-rank="10" data-team-name="Bayern Munich">
+    <td class="fs-rank"><bdi dir="ltr">10</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Bayern Munich</bdi></th>
+    <td data-standing-field="points" data-value="4" class="fs-points"><bdi dir="ltr">4</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalDifference" data-value="5"><bdi dir="ltr">+5</bdi></td>
+  </tr>
+<tr data-standing-team="493" data-rank="11" data-team-name="Shakhtar Donetsk">
+    <td class="fs-rank"><bdi dir="ltr">11</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Shakhtar Donetsk</bdi></th>
+    <td data-standing-field="points" data-value="4" class="fs-points"><bdi dir="ltr">4</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="2572" data-rank="12" data-team-name="Como">
+    <td class="fs-rank"><bdi dir="ltr">12</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Como</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="360" data-rank="13" data-team-name="Manchester United" data-focus-team="360">
+    <td class="fs-rank"><bdi dir="ltr">13</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">مانشستر يونايتد</bdi><span class="fs-team-marker">فريق المواجهة</span></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="102" data-rank="14" data-team-name="Villarreal">
+    <td class="fs-rank"><bdi dir="ltr">14</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Villarreal</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="1"><bdi dir="ltr">+1</bdi></td>
+  </tr>
+<tr data-standing-team="1068" data-rank="15" data-team-name="Atlético Madrid" data-focus-team="1068">
+    <td class="fs-rank"><bdi dir="ltr">15</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">أتلتيكو مدريد</bdi><span class="fs-team-marker">فريق المواجهة</span></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsAgainst" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalDifference" data-value="1"><bdi dir="ltr">+1</bdi></td>
+  </tr>
+<tr data-standing-team="570" data-rank="16" data-team-name="Club Brugge">
+    <td class="fs-rank"><bdi dir="ltr">16</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Club Brugge</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="382" data-rank="17" data-team-name="Manchester City">
+    <td class="fs-rank"><bdi dir="ltr">17</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Manchester City</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="124" data-rank="18" data-team-name="Borussia Dortmund">
+    <td class="fs-rank"><bdi dir="ltr">18</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Borussia Dortmund</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsAgainst" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="175" data-rank="19" data-team-name="Lens">
+    <td class="fs-rank"><bdi dir="ltr">19</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Lens</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="-1"><bdi dir="ltr">-1</bdi></td>
+  </tr>
+<tr data-standing-team="887" data-rank="20" data-team-name="AEK Athens">
+    <td class="fs-rank"><bdi dir="ltr">20</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">AEK Athens</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalDifference" data-value="-1"><bdi dir="ltr">-1</bdi></td>
+  </tr>
+<tr data-standing-team="11420" data-rank="21" data-team-name="RB Leipzig">
+    <td class="fs-rank"><bdi dir="ltr">21</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">RB Leipzig</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="-2"><bdi dir="ltr">-2</bdi></td>
+  </tr>
+<tr data-standing-team="21922" data-rank="22" data-team-name="Sabah FK">
+    <td class="fs-rank"><bdi dir="ltr">22</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Sabah FK</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="-2"><bdi dir="ltr">-2</bdi></td>
+  </tr>
+<tr data-standing-team="142" data-rank="23" data-team-name="Feyenoord Rotterdam">
+    <td class="fs-rank"><bdi dir="ltr">23</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Feyenoord Rotterdam</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="2980" data-rank="24" data-team-name="Bodo/Glimt">
+    <td class="fs-rank"><bdi dir="ltr">24</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Bodo/Glimt</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="-4"><bdi dir="ltr">-4</bdi></td>
+  </tr>
+<tr data-standing-team="104" data-rank="25" data-team-name="AS Roma">
+    <td class="fs-rank"><bdi dir="ltr">25</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">AS Roma</bdi></th>
+    <td data-standing-field="points" data-value="1" class="fs-points"><bdi dir="ltr">1</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="-1"><bdi dir="ltr">-1</bdi></td>
+  </tr>
+<tr data-standing-team="148" data-rank="26" data-team-name="PSV Eindhoven">
+    <td class="fs-rank"><bdi dir="ltr">26</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">PSV Eindhoven</bdi></th>
+    <td data-standing-field="points" data-value="1" class="fs-points"><bdi dir="ltr">1</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsAgainst" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalDifference" data-value="-1"><bdi dir="ltr">-1</bdi></td>
+  </tr>
+<tr data-standing-team="510" data-rank="27" data-team-name="VIKING FK">
+    <td class="fs-rank"><bdi dir="ltr">27</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">VIKING FK</bdi></th>
+    <td data-standing-field="points" data-value="1" class="fs-points"><bdi dir="ltr">1</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="-2"><bdi dir="ltr">-2</bdi></td>
+  </tr>
+<tr data-standing-team="436" data-rank="28" data-team-name="Fenerbahce">
+    <td class="fs-rank"><bdi dir="ltr">28</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Fenerbahce</bdi></th>
+    <td data-standing-field="points" data-value="1" class="fs-points"><bdi dir="ltr">1</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsAgainst" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="110" data-rank="29" data-team-name="Internazionale">
+    <td class="fs-rank"><bdi dir="ltr">29</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Internazionale</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="-2"><bdi dir="ltr">-2</bdi></td>
+  </tr>
+<tr data-standing-team="437" data-rank="30" data-team-name="FC Porto">
+    <td class="fs-rank"><bdi dir="ltr">30</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">FC Porto</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="494" data-rank="31" data-team-name="Slavia Prague">
+    <td class="fs-rank"><bdi dir="ltr">31</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Slavia Prague</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="114" data-rank="32" data-team-name="Napoli">
+    <td class="fs-rank"><bdi dir="ltr">32</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Napoli</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsAgainst" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="4411" data-rank="33" data-team-name="LASK Linz">
+    <td class="fs-rank"><bdi dir="ltr">33</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">LASK Linz</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsAgainst" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalDifference" data-value="-4"><bdi dir="ltr">-4</bdi></td>
+  </tr>
+<tr data-standing-team="166" data-rank="34" data-team-name="Lille">
+    <td class="fs-rank"><bdi dir="ltr">34</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Lille</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="-4"><bdi dir="ltr">-4</bdi></td>
+  </tr>
+<tr data-standing-team="432" data-rank="35" data-team-name="Galatasaray">
+    <td class="fs-rank"><bdi dir="ltr">35</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Galatasaray</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsAgainst" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalDifference" data-value="-5"><bdi dir="ltr">-5</bdi></td>
+  </tr>
+<tr data-standing-team="521" data-rank="36" data-team-name="Slovan Bratislava">
+    <td class="fs-rank"><bdi dir="ltr">36</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Slovan Bratislava</bdi></th>
+    <td data-standing-field="points" data-value="0" class="fs-points"><bdi dir="ltr">0</bdi></td><td data-standing-field="played" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsAgainst" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalDifference" data-value="-8"><bdi dir="ltr">-8</bdi></td>
+  </tr></tbody></table>
+    </div>
+    <p class="fs-source">الأرقام الناقصة «غير متاح»؛ لا يُستنتج الترتيب من نتيجة مباراة واحدة.</p>
+  </article>
+<article class="fs-card" data-standing-league="eng.1" data-season="2026" data-fetched-at="2026-10-15T22:34:51.000Z" data-feed-state="snapshot" aria-labelledby="fs-eng-1-title">
+    <header class="fs-card-heading"><div><p class="fs-kicker">ترتيب الدوري المحلي لمانشستر يونايتد</p><h3 id="fs-eng-1-title">الدوري الإنجليزي الممتاز</h3></div><span class="fs-season" data-standing-season="">موسم <bdi dir="ltr">2026/27</bdi></span></header>
+    <div class="fs-positions" data-standing-summary=""><div class="fs-position" data-summary-team="360"><span class="fs-position-team">مانشستر يونايتد</span><span class="fs-position-rank">المركز <bdi dir="ltr" data-summary-rank="">13</bdi></span><span class="fs-position-detail"><bdi dir="ltr" data-summary-points="">6</bdi> نقطة · <bdi dir="ltr">6</bdi> مباراة</span></div></div>
+    <p class="fs-reading" data-standing-status="" role="status" aria-live="polite">لقطة مراجعة · آخر قراءة: ١٦ أكتوبر ٢٠٢٦، ٠١:٣٤ بتوقيت القاهرة.</p>
+    <p class="fs-scroll-hint" id="fs-eng-1-hint">جدول كامل من 20 فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة؛ يمكن تركيزه بلوحة المفاتيح.</p>
+    <div class="fs-table-scroll" role="region" tabindex="0" aria-label="جدول الدوري الإنجليزي الممتاز، قابل للتمرير" aria-describedby="fs-eng-1-hint">
+      <table class="fs-table"><caption>الدوري الإنجليزي الممتاز · موسم 2026/27 · جدول الترتيب</caption><thead><tr><th scope="col" class="fs-rank">المركز</th><th scope="col" class="fs-team">الفريق</th><th scope="col" class="fs-points">النقاط</th><th scope="col">لعب</th><th scope="col">فاز</th><th scope="col">تعادل</th><th scope="col">خسر</th><th scope="col">له</th><th scope="col">عليه</th><th scope="col">الفارق</th></tr></thead><tbody data-standing-rows=""><tr data-standing-team="382" data-rank="1" data-team-name="Manchester City">
+    <td class="fs-rank"><bdi dir="ltr">1</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Manchester City</bdi></th>
+    <td data-standing-field="points" data-value="18" class="fs-points"><bdi dir="ltr">18</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="16"><bdi dir="ltr">16</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="11"><bdi dir="ltr">+11</bdi></td>
+  </tr>
+<tr data-standing-team="359" data-rank="2" data-team-name="Arsenal">
+    <td class="fs-rank"><bdi dir="ltr">2</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Arsenal</bdi></th>
+    <td data-standing-field="points" data-value="15" class="fs-points"><bdi dir="ltr">15</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="10"><bdi dir="ltr">10</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="5"><bdi dir="ltr">+5</bdi></td>
+  </tr>
+<tr data-standing-team="331" data-rank="3" data-team-name="Brighton &amp; Hove Albion">
+    <td class="fs-rank"><bdi dir="ltr">3</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Brighton &amp; Hove Albion</bdi></th>
+    <td data-standing-field="points" data-value="13" class="fs-points"><bdi dir="ltr">13</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="18"><bdi dir="ltr">18</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="13"><bdi dir="ltr">+13</bdi></td>
+  </tr>
+<tr data-standing-team="337" data-rank="4" data-team-name="Brentford">
+    <td class="fs-rank"><bdi dir="ltr">4</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Brentford</bdi></th>
+    <td data-standing-field="points" data-value="10" class="fs-points"><bdi dir="ltr">10</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="6"><bdi dir="ltr">+6</bdi></td>
+  </tr>
+<tr data-standing-team="368" data-rank="5" data-team-name="Everton">
+    <td class="fs-rank"><bdi dir="ltr">5</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Everton</bdi></th>
+    <td data-standing-field="points" data-value="10" class="fs-points"><bdi dir="ltr">10</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="3"><bdi dir="ltr">+3</bdi></td>
+  </tr>
+<tr data-standing-team="363" data-rank="6" data-team-name="Chelsea">
+    <td class="fs-rank"><bdi dir="ltr">6</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Chelsea</bdi></th>
+    <td data-standing-field="points" data-value="10" class="fs-points"><bdi dir="ltr">10</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="15"><bdi dir="ltr">15</bdi></td><td data-standing-field="goalsAgainst" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="357" data-rank="7" data-team-name="Leeds United">
+    <td class="fs-rank"><bdi dir="ltr">7</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Leeds United</bdi></th>
+    <td data-standing-field="points" data-value="9" class="fs-points"><bdi dir="ltr">9</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalDifference" data-value="3"><bdi dir="ltr">+3</bdi></td>
+  </tr>
+<tr data-standing-team="306" data-rank="8" data-team-name="Hull City">
+    <td class="fs-rank"><bdi dir="ltr">8</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Hull City</bdi></th>
+    <td data-standing-field="points" data-value="9" class="fs-points"><bdi dir="ltr">9</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="364" data-rank="9" data-team-name="Liverpool">
+    <td class="fs-rank"><bdi dir="ltr">9</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Liverpool</bdi></th>
+    <td data-standing-field="points" data-value="9" class="fs-points"><bdi dir="ltr">9</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalsAgainst" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="373" data-rank="10" data-team-name="Ipswich Town">
+    <td class="fs-rank"><bdi dir="ltr">10</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Ipswich Town</bdi></th>
+    <td data-standing-field="points" data-value="9" class="fs-points"><bdi dir="ltr">9</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalsAgainst" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="361" data-rank="11" data-team-name="Newcastle United">
+    <td class="fs-rank"><bdi dir="ltr">11</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Newcastle United</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="10"><bdi dir="ltr">10</bdi></td><td data-standing-field="goalsAgainst" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="384" data-rank="12" data-team-name="Crystal Palace">
+    <td class="fs-rank"><bdi dir="ltr">12</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Crystal Palace</bdi></th>
+    <td data-standing-field="points" data-value="7" class="fs-points"><bdi dir="ltr">7</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalsAgainst" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="360" data-rank="13" data-team-name="Manchester United" data-focus-team="360">
+    <td class="fs-rank"><bdi dir="ltr">13</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">مانشستر يونايتد</bdi><span class="fs-team-marker">فريق المواجهة</span></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalsAgainst" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="388" data-rank="14" data-team-name="Coventry City">
+    <td class="fs-rank"><bdi dir="ltr">14</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Coventry City</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalsAgainst" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="393" data-rank="15" data-team-name="Nottingham Forest">
+    <td class="fs-rank"><bdi dir="ltr">15</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Nottingham Forest</bdi></th>
+    <td data-standing-field="points" data-value="5" class="fs-points"><bdi dir="ltr">5</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalsAgainst" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="362" data-rank="16" data-team-name="Aston Villa">
+    <td class="fs-rank"><bdi dir="ltr">16</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Aston Villa</bdi></th>
+    <td data-standing-field="points" data-value="5" class="fs-points"><bdi dir="ltr">5</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalDifference" data-value="-5"><bdi dir="ltr">-5</bdi></td>
+  </tr>
+<tr data-standing-team="366" data-rank="17" data-team-name="Sunderland">
+    <td class="fs-rank"><bdi dir="ltr">17</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Sunderland</bdi></th>
+    <td data-standing-field="points" data-value="4" class="fs-points"><bdi dir="ltr">4</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="349" data-rank="18" data-team-name="AFC Bournemouth">
+    <td class="fs-rank"><bdi dir="ltr">18</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">AFC Bournemouth</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalsAgainst" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="367" data-rank="19" data-team-name="Tottenham Hotspur">
+    <td class="fs-rank"><bdi dir="ltr">19</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Tottenham Hotspur</bdi></th>
+    <td data-standing-field="points" data-value="3" class="fs-points"><bdi dir="ltr">3</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsAgainst" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="370" data-rank="20" data-team-name="Fulham">
+    <td class="fs-rank"><bdi dir="ltr">20</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Fulham</bdi></th>
+    <td data-standing-field="points" data-value="2" class="fs-points"><bdi dir="ltr">2</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="10"><bdi dir="ltr">10</bdi></td><td data-standing-field="goalDifference" data-value="-4"><bdi dir="ltr">-4</bdi></td>
+  </tr></tbody></table>
+    </div>
+    <p class="fs-source">الأرقام الناقصة «غير متاح»؛ لا يُستنتج الترتيب من نتيجة مباراة واحدة.</p>
+  </article>
+<article class="fs-card" data-standing-league="esp.1" data-season="2026" data-fetched-at="2026-10-15T22:34:51.000Z" data-feed-state="snapshot" aria-labelledby="fs-esp-1-title">
+    <header class="fs-card-heading"><div><p class="fs-kicker">ترتيب الدوري المحلي لأتلتيكو مدريد</p><h3 id="fs-esp-1-title">الدوري الإسباني</h3></div><span class="fs-season" data-standing-season="">موسم <bdi dir="ltr">2026/27</bdi></span></header>
+    <div class="fs-positions" data-standing-summary=""><div class="fs-position" data-summary-team="1068"><span class="fs-position-team">أتلتيكو مدريد</span><span class="fs-position-rank">المركز <bdi dir="ltr" data-summary-rank="">2</bdi></span><span class="fs-position-detail"><bdi dir="ltr" data-summary-points="">19</bdi> نقطة · <bdi dir="ltr">8</bdi> مباراة</span></div></div>
+    <p class="fs-reading" data-standing-status="" role="status" aria-live="polite">لقطة مراجعة · آخر قراءة: ١٦ أكتوبر ٢٠٢٦، ٠١:٣٤ بتوقيت القاهرة.</p>
+    <p class="fs-scroll-hint" id="fs-esp-1-hint">جدول كامل من 20 فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة؛ يمكن تركيزه بلوحة المفاتيح.</p>
+    <div class="fs-table-scroll" role="region" tabindex="0" aria-label="جدول الدوري الإسباني، قابل للتمرير" aria-describedby="fs-esp-1-hint">
+      <table class="fs-table"><caption>الدوري الإسباني · موسم 2026/27 · جدول الترتيب</caption><thead><tr><th scope="col" class="fs-rank">المركز</th><th scope="col" class="fs-team">الفريق</th><th scope="col" class="fs-points">النقاط</th><th scope="col">لعب</th><th scope="col">فاز</th><th scope="col">تعادل</th><th scope="col">خسر</th><th scope="col">له</th><th scope="col">عليه</th><th scope="col">الفارق</th></tr></thead><tbody data-standing-rows=""><tr data-standing-team="83" data-rank="1" data-team-name="Barcelona">
+    <td class="fs-rank"><bdi dir="ltr">1</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Barcelona</bdi></th>
+    <td data-standing-field="points" data-value="24" class="fs-points"><bdi dir="ltr">24</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="goalsFor" data-value="34"><bdi dir="ltr">34</bdi></td><td data-standing-field="goalsAgainst" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalDifference" data-value="27"><bdi dir="ltr">+27</bdi></td>
+  </tr>
+<tr data-standing-team="1068" data-rank="2" data-team-name="Atlético Madrid" data-focus-team="1068">
+    <td class="fs-rank"><bdi dir="ltr">2</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">أتلتيكو مدريد</bdi><span class="fs-team-marker">فريق المواجهة</span></th>
+    <td data-standing-field="points" data-value="19" class="fs-points"><bdi dir="ltr">19</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="18"><bdi dir="ltr">18</bdi></td><td data-standing-field="goalsAgainst" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalDifference" data-value="10"><bdi dir="ltr">+10</bdi></td>
+  </tr>
+<tr data-standing-team="244" data-rank="3" data-team-name="Real Betis">
+    <td class="fs-rank"><bdi dir="ltr">3</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Real Betis</bdi></th>
+    <td data-standing-field="points" data-value="19" class="fs-points"><bdi dir="ltr">19</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="goalsFor" data-value="14"><bdi dir="ltr">14</bdi></td><td data-standing-field="goalsAgainst" data-value="9"><bdi dir="ltr">9</bdi></td><td data-standing-field="goalDifference" data-value="5"><bdi dir="ltr">+5</bdi></td>
+  </tr>
+<tr data-standing-team="86" data-rank="4" data-team-name="Real Madrid">
+    <td class="fs-rank"><bdi dir="ltr">4</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Real Madrid</bdi></th>
+    <td data-standing-field="points" data-value="18" class="fs-points"><bdi dir="ltr">18</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="draws" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="19"><bdi dir="ltr">19</bdi></td><td data-standing-field="goalsAgainst" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalDifference" data-value="11"><bdi dir="ltr">+11</bdi></td>
+  </tr>
+<tr data-standing-team="243" data-rank="5" data-team-name="Sevilla">
+    <td class="fs-rank"><bdi dir="ltr">5</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Sevilla</bdi></th>
+    <td data-standing-field="points" data-value="14" class="fs-points"><bdi dir="ltr">14</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalsAgainst" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalDifference" data-value="1"><bdi dir="ltr">+1</bdi></td>
+  </tr>
+<tr data-standing-team="89" data-rank="6" data-team-name="Real Sociedad">
+    <td class="fs-rank"><bdi dir="ltr">6</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Real Sociedad</bdi></th>
+    <td data-standing-field="points" data-value="13" class="fs-points"><bdi dir="ltr">13</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="draws" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalsAgainst" data-value="15"><bdi dir="ltr">15</bdi></td><td data-standing-field="goalDifference" data-value="-3"><bdi dir="ltr">-3</bdi></td>
+  </tr>
+<tr data-standing-team="96" data-rank="7" data-team-name="Alavés">
+    <td class="fs-rank"><bdi dir="ltr">7</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Alavés</bdi></th>
+    <td data-standing-field="points" data-value="11" class="fs-points"><bdi dir="ltr">11</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalsAgainst" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalDifference" data-value="4"><bdi dir="ltr">+4</bdi></td>
+  </tr>
+<tr data-standing-team="90" data-rank="8" data-team-name="Deportivo">
+    <td class="fs-rank"><bdi dir="ltr">8</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Deportivo</bdi></th>
+    <td data-standing-field="points" data-value="10" class="fs-points"><bdi dir="ltr">10</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="12"><bdi dir="ltr">12</bdi></td><td data-standing-field="goalsAgainst" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalDifference" data-value="1"><bdi dir="ltr">+1</bdi></td>
+  </tr>
+<tr data-standing-team="85" data-rank="9" data-team-name="Celta Vigo">
+    <td class="fs-rank"><bdi dir="ltr">9</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Celta Vigo</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="2"><bdi dir="ltr">+2</bdi></td>
+  </tr>
+<tr data-standing-team="93" data-rank="10" data-team-name="Athletic Club">
+    <td class="fs-rank"><bdi dir="ltr">10</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Athletic Club</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="goalsFor" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="goalsAgainst" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalDifference" data-value="1"><bdi dir="ltr">+1</bdi></td>
+  </tr>
+<tr data-standing-team="102" data-rank="11" data-team-name="Villarreal">
+    <td class="fs-rank"><bdi dir="ltr">11</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Villarreal</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalsAgainst" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="88" data-rank="12" data-team-name="Espanyol">
+    <td class="fs-rank"><bdi dir="ltr">12</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Espanyol</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalsAgainst" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalDifference" data-value="0"><bdi dir="ltr">0</bdi></td>
+  </tr>
+<tr data-standing-team="101" data-rank="13" data-team-name="Rayo Vallecano">
+    <td class="fs-rank"><bdi dir="ltr">13</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Rayo Vallecano</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalsAgainst" data-value="16"><bdi dir="ltr">16</bdi></td><td data-standing-field="goalDifference" data-value="-5"><bdi dir="ltr">-5</bdi></td>
+  </tr>
+<tr data-standing-team="2922" data-rank="14" data-team-name="Getafe">
+    <td class="fs-rank"><bdi dir="ltr">14</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Getafe</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="10"><bdi dir="ltr">10</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="87" data-rank="15" data-team-name="Racing Santander">
+    <td class="fs-rank"><bdi dir="ltr">15</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Racing Santander</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalsAgainst" data-value="23"><bdi dir="ltr">23</bdi></td><td data-standing-field="goalDifference" data-value="-10"><bdi dir="ltr">-10</bdi></td>
+  </tr>
+<tr data-standing-team="97" data-rank="16" data-team-name="Osasuna">
+    <td class="fs-rank"><bdi dir="ltr">16</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Osasuna</bdi></th>
+    <td data-standing-field="points" data-value="8" class="fs-points"><bdi dir="ltr">8</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="goalsAgainst" data-value="18"><bdi dir="ltr">18</bdi></td><td data-standing-field="goalDifference" data-value="-10"><bdi dir="ltr">-10</bdi></td>
+  </tr>
+<tr data-standing-team="1538" data-rank="17" data-team-name="Levante">
+    <td class="fs-rank"><bdi dir="ltr">17</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Levante</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="7"><bdi dir="ltr">7</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="goalsFor" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalsAgainst" data-value="15"><bdi dir="ltr">15</bdi></td><td data-standing-field="goalDifference" data-value="-4"><bdi dir="ltr">-4</bdi></td>
+  </tr>
+<tr data-standing-team="3751" data-rank="18" data-team-name="Elche">
+    <td class="fs-rank"><bdi dir="ltr">18</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Elche</bdi></th>
+    <td data-standing-field="points" data-value="6" class="fs-points"><bdi dir="ltr">6</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="3"><bdi dir="ltr">3</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="11"><bdi dir="ltr">11</bdi></td><td data-standing-field="goalsAgainst" data-value="17"><bdi dir="ltr">17</bdi></td><td data-standing-field="goalDifference" data-value="-6"><bdi dir="ltr">-6</bdi></td>
+  </tr>
+<tr data-standing-team="94" data-rank="19" data-team-name="Valencia">
+    <td class="fs-rank"><bdi dir="ltr">19</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Valencia</bdi></th>
+    <td data-standing-field="points" data-value="5" class="fs-points"><bdi dir="ltr">5</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="1"><bdi dir="ltr">1</bdi></td><td data-standing-field="draws" data-value="2"><bdi dir="ltr">2</bdi></td><td data-standing-field="losses" data-value="5"><bdi dir="ltr">5</bdi></td><td data-standing-field="goalsFor" data-value="6"><bdi dir="ltr">6</bdi></td><td data-standing-field="goalsAgainst" data-value="15"><bdi dir="ltr">15</bdi></td><td data-standing-field="goalDifference" data-value="-9"><bdi dir="ltr">-9</bdi></td>
+  </tr>
+<tr data-standing-team="99" data-rank="20" data-team-name="Málaga">
+    <td class="fs-rank"><bdi dir="ltr">20</bdi></td><th class="fs-team" scope="row"><bdi dir="auto">Málaga</bdi></th>
+    <td data-standing-field="points" data-value="4" class="fs-points"><bdi dir="ltr">4</bdi></td><td data-standing-field="played" data-value="8"><bdi dir="ltr">8</bdi></td><td data-standing-field="wins" data-value="0"><bdi dir="ltr">0</bdi></td><td data-standing-field="draws" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="losses" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsFor" data-value="4"><bdi dir="ltr">4</bdi></td><td data-standing-field="goalsAgainst" data-value="13"><bdi dir="ltr">13</bdi></td><td data-standing-field="goalDifference" data-value="-9"><bdi dir="ltr">-9</bdi></td>
+  </tr></tbody></table>
+    </div>
+    <p class="fs-source">الأرقام الناقصة «غير متاح»؛ لا يُستنتج الترتيب من نتيجة مباراة واحدة.</p>
+  </article></div>
+    <p class="fs-context" data-standings-static-note="">الجداول والأرقام موجودة في HTML حتى دون JavaScript. التحديث الآلي يحتاج JavaScript وخادماً يشغّل وسيط PHP؛ عند تعذّره تبقى آخر قراءة مع تاريخها وتحذير واضح.</p></section>
+
+      <section class="fixture-section fixture-shell" id="official-highlights" aria-labelledby="official-highlights-title">
+        <div class="report-highlight">
+          <span class="report-play-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg></span>
+          <div>
+            <span class="section-kicker">ملخص اللقاء · <bdi dir="ltr">01:59</bdi></span>
+            <h2 id="official-highlights-title">ملخص المباراة بالفيديو</h2>
+            <p>ملخص مرئي لأبرز لقطات المباراة. تفاصيل الفيديو وطريقة الوصول إليه موجودة في قسم التوثيق والمراجعة.</p>
+            <a class="official-highlight-link" href="#source-uefa-highlights">تفاصيل الملخص والفيديو <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="fixture-section fixture-shell fixture-documentation" id="report-sources" aria-labelledby="report-sources-title">
+        <header class="section-heading">
+          <span class="section-kicker">توثيق ومراجعة</span>
+          <h2 class="section-title" id="report-sources-title">التوثيق والمراجعة</h2>
+          <p>مراجع الوقائع والإحصائيات والتشكيل والتقييمات والفيديوهات مجمّعة هنا. يوضح كل بند ما يغطيه، حتى لا تختلط الأرقام النهائية بالقراءات المتجددة أو الآراء التحليلية.</p>
+        </header>
+        <div class="report-sources-grid">
+          <article class="report-source" id="source-uefa-stats">
+            <h3 class="report-source-title">UEFA · الإحصائيات</h3>
+            <a href="https://www.uefa.com/uefachampionsleague/match/2049573--atleti-vs-man-utd/statistics/" target="_blank" rel="noopener noreferrer">إحصائيات أتلتيكو مدريد ومانشستر يونايتد</a>
+            <p>مرجع الإحصائيات النهائية الـ24: التسديد والتمرير والدفاع والانضباط، وللرسوم عند اختيار «أرقام نهائية». هذه لقطة ثابتة لا تُستبدل بقراءات اللوحات المتجددة.</p>
+          </article>
+          <article class="report-source" id="source-uefa-report">
+            <h3 class="report-source-title">UEFA · تقرير الجولة</h3>
+            <a href="https://www.uefa.com/uefachampionsleague/news/02aa-21d1f3303cf3-f0d4f4701545-1000--champions-league-matchday-2-tuesday-highlights-and-round-u/" target="_blank" rel="noopener noreferrer">التقرير الرسمي للجولة الثانية من دوري الأبطال</a>
+            <p>توثيق النتيجة وأبرز المحاولات واختيار أليكس باينا للجائزة الرسمية لرجل المباراة، المستقلة عن التقييمات الرقمية.</p>
+          </article>
+          <article class="report-source" id="source-united-report">
+            <h3 class="report-source-title">مانشستر يونايتد · تقرير النادي</h3>
+            <a href="https://www.manutd.com/en/news/atletico-de-madrid-2-united-0-13-oct-2026" target="_blank" rel="noopener noreferrer">تقرير يونايتد عن مواجهة 13 أكتوبر 2026</a>
+            <p>مرجع لتسلسل الشوطين، وهدف كاردوسو الملغى، والتبديلات، وبناء الهدف الثاني.</p>
+          </article>
+          <article class="report-source" id="source-atleti-report">
+            <h3 class="report-source-title">أتلتيكو مدريد · أحداث اللقاء</h3>
+            <a href="https://www.atleticodemadrid.com/postpartidos/atletico-de-madrid-manchester-united-13-10-2026-21-00" target="_blank" rel="noopener noreferrer">سجل أحداث أتلتيكو مدريد الرسمي</a>
+            <p>مرجع إضافي للنتيجة النهائية ودقائق الأهداف والبطاقة الحمراء.</p>
+          </article>
+          <article class="report-source" id="source-uefa-lineups">
+            <h3 class="report-source-title">UEFA · التشكيل والتبديلات</h3>
+            <a href="https://www.uefa.com/uefachampionsleague/match/2049573--atleti-vs-man-utd/lineups/" target="_blank" rel="noopener noreferrer">قائمة UEFA الرسمية للمباراة</a>
+            <p>أسماء الأساسيين والبدلاء وأرقام القمصان والقائدان والمدربان ودقائق التبديلات. تتضمن القائمة 22 أساسياً و10 بدلاء شاركوا و14 بديلاً لم يشاركوا.</p>
+          </article>
+          <article class="report-source" id="source-fotmob-lineups">
+            <h3 class="report-source-title">FotMob · الخطط وتقييمات اللاعبين</h3>
+            <a href="https://www.fotmob.com/matches/atletico-madrid-vs-manchester-united/3d2krr#6106267" target="_blank" rel="noopener noreferrer">تشكيل وتقييمات مواجهة 13 أكتوبر على FotMob</a>
+            <p>مصدر خطتي البداية والتقييمات على 10 بعد المباراة. تتضمن اللقطة 31 تقييماً رقمياً؛ لم يُنشر تقييم لروبن لو نورمان رغم دخوله في الدقيقة 88، فتظهر «غير متاح» لا صفر.</p>
+            <p>اختار FotMob بابلو باريوس بتقييم 8.3، أعلى تقييم في اللقطة؛ وهذا مستقل عن جائزة UEFA الرسمية التي حصل عليها أليكس باينا. التقييمات ليست لحظية ولا تُحدَّث آلياً، ولا تُدمج بدرجات مواقع أخرى أو بمتوسط محسوب محلياً.</p>
+          </article>
+          <article class="report-source" id="source-head-to-head">
+            <h3 class="report-source-title">المواجهات المباشرة · النتائج والتصنيف</h3>
+            <a href="https://www.bbc.com/sport/football/live/cm0j013q35dqt#previous-scores" target="_blank" rel="noopener noreferrer">سجل BBC للمواجهات السابقة بين الفريقين</a>
+            <p>يثبت سجل النتائج ودية 1 أغسطس 2026، التي فاز فيها يونايتد 2–1، وودية 30 يوليو 2022، التي فاز فيها أتلتيكو 1–0. يشمل قسم المواجهات مباراة 13 أكتوبر 2026 أيضاً، بنتيجة أتلتيكو 2–0، الموثّقة في <a href="#source-uefa-report">تقرير الجولة الرسمي أعلاه</a>.</p>
+            <a href="https://www.manutd.com/en/news/report-united-2-1-atleti" target="_blank" rel="noopener noreferrer">تقرير يونايتد عن الفوز 2–1 في كأس سنابدراجون 2026</a>
+            <p>يؤكد تقرير النادي نتيجة لقاء أغسطس واسمه الودي. استخدام هذين المرجعين يقتصر على سجل المواجهات والبطولات والتواريخ؛ لا تُؤخذ منهما أرقام بديلة لإحصائيات المباراة النهائية.</p>
+          </article>
+          <article class="report-source" id="source-espn-data">
+            <h3 class="report-source-title">ESPN · البيانات المتجددة والترتيب</h3>
+            <p>مصدر لوحتي النتيجة والإحصائيات والرسوم عند اختيار «تحديث تلقائي»، عبر طلب جدول المباريات القائم كل دقيقة. مستقل عن إحصائيات UEFA النهائية؛ قد تختلف تعريفات المؤشرات ولا تُستكمل القيم الناقصة من مرجع آخر.</p>
+            <p><cite>جداول البطولات لدى ESPN</cite> تغذّي ترتيب البطولات الثلاث كل خمس دقائق أثناء ظهور الصفحة واتصالها. الموسم ووقت القراءة والحالة ظاهرة مع كل جدول؛ الترتيب للموسم المعروض، لا ترتيب تاريخي عند صافرة نهاية اللقاء.</p>
+            <ul class="fd-leagues"><li data-documented-league="uefa.champions">دوري أبطال أوروبا · 36 فريقاً</li><li data-documented-league="eng.1">الدوري الإنجليزي الممتاز · 20 فريقاً</li><li data-documented-league="esp.1">الدوري الإسباني · 20 فريقاً</li></ul>
+          </article>
+          <article class="report-source" id="source-uefa-highlights">
+            <h3 class="report-source-title">UEFA · الملخص الرسمي</h3>
+            <a class="official-highlight-link" href="https://www.uefa.com/uefachampionsleague/video/highlights/02aa-21d21e719e06-4c1d128f25d6-1000--champions-league-highlights-atleti-2-0-man-utd/" target="_blank" rel="noopener noreferrer" aria-label="فتح ملخص أتلتيكو مدريد ومانشستر يونايتد الرسمي على UEFA في تبويب جديد">افتح الملخص الرسمي على UEFA <span aria-hidden="true">↗</span></a>
+            <p>المدة <bdi dir="ltr">01:59</bdi>. تعرض صفحة UEFA تنبيه «تسجيل الدخول للمشاهدة». الرابط يفتح صفحة الجهة الأصلية، لا مشغّلاً داخل هذه الصفحة.</p>
+          </article>
+          <article class="report-source" id="source-awaad-review" data-review-source="yibbAkJUu78">
+            <h3 class="report-source-title">محمد عواد · المراجعة الأولى</h3>
+            <p class="fd-original-label">عنوان الفيديو الأصلي</p>
+            <p class="fd-original-title"><cite>برشلونة يسحق غلطة سراي - مفاجأة فايكنغ وكلوب بروج - خسارة مانشستر يونايتد</cite></p>
+            <p class="fd-video-date">تاريخ الفيديو لدى المصدر: <time datetime="2026-10-13">13 أكتوبر 2026</time></p>
+            <p>مراجعة جولة تتضمن اللقاء، وليست حلقة مخصّصة له بالكامل. الخلاصة صياغة تحريرية من النص المتاح للفيديو، وليست اقتباساً حرفياً.</p>
+            <div class="fd-links"><a data-doc-channel="" class="fd-channel" href="https://www.youtube.com/@selfiesport" target="_blank" rel="noopener noreferrer" aria-label="قناة سيلفي سبورت على يوتيوب (تبويب جديد)">قناة سيلفي سبورت <span aria-hidden="true">↗</span></a><a data-doc-video="" class="fd-video-link" href="https://www.youtube.com/watch?v=yibbAkJUu78" target="_blank" rel="noopener noreferrer" aria-label="مراجعة محمد عواد على يوتيوب (تبويب جديد)"><span>مراجعة محمد عواد على يوتيوب</span><span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="report-source" id="source-nasrallah-review" data-review-source="MYbD3-0BvoA">
+            <h3 class="report-source-title">ممدوح نصرالله · المراجعة الثانية</h3>
+            <p class="fd-original-label">عنوان الفيديو الأصلي</p>
+            <p class="fd-original-title"><cite>ليساندرو مارتينيز يفضح إدارة مانشستر يونايتد و الإدارة بتلم الدنيا</cite></p>
+            <p class="fd-video-date">تاريخ الفيديو لدى المصدر: <time datetime="2026-10-15">15 أكتوبر 2026</time></p>
+            <p>نقاش السياق الإداري والفني بعد الخسارة، وليس تحليلاً لقطة بلقطة. العنوان هو عنوان الفيديو الأصلي، لا إقراراً بالادعاءات الواردة فيه. الخلاصة صياغة تحريرية من النص المتاح للفيديو، وليست اقتباساً حرفياً.</p>
+            <div class="fd-links"><a data-doc-channel="" class="fd-channel" href="https://www.youtube.com/@MamdouhNasrAllah" target="_blank" rel="noopener noreferrer" aria-label="قناة Mamdouh NasrAllah على يوتيوب (تبويب جديد)">قناة <bdi lang="en" dir="ltr">Mamdouh NasrAllah</bdi> <span aria-hidden="true">↗</span></a><a data-doc-video="" class="fd-video-link" href="https://www.youtube.com/watch?v=MYbD3-0BvoA" target="_blank" rel="noopener noreferrer" aria-label="مراجعة ممدوح نصرالله على يوتيوب (تبويب جديد)"><span>مراجعة ممدوح نصرالله على يوتيوب</span><span aria-hidden="true">↗</span></a></div>
+          </article>
+        </div>
+        <p class="report-note fd-reviewed">مراجعة المحتوى والمصادر وروابط الفيديوهات: <time datetime="2026-10-16">16 أكتوبر 2026</time>. التقرير والملخص والتحليل نصوص ثابتة؛ التحديث التلقائي في لوحتي ESPN منفصل عنها.</p>
+      </section>
+
+      <section class="fixture-section fixture-shell" id="source-scoreboard" aria-labelledby="source-scoreboard-title">
+        <header class="section-heading">
+          <span class="section-kicker">متابعة مستقلة · تحديث تلقائي</span>
+          <h2 class="section-title" id="source-scoreboard-title">لوحة جدول المباريات</h2>
+          <p>لوحتان متجددتان للنتيجة والإحصائيات، منفصلتان عن التقرير النهائي أعلاه. قد تختلف الأرقام عن الجداول النهائية؛ لا تغيّر هذه اللوحات نص الملخص أو التحليل.</p>
+        </header>
+        <div class="report-live-grid">
+          <section class="fixture-scoreboard" id="fixture-scoreboard" data-state="loading" data-stale="false" data-league="uefa.champions" data-match-day="2026-10-13" aria-labelledby="scoreboard-title">
+                        <div class="scoreboard-header">
+                          <h3 class="scoreboard-title" id="scoreboard-title">النتيجة من جدول المباريات</h3>
+                          <span class="scoreboard-status" id="scoreboard-status" role="status" aria-live="polite">جارٍ التحقق من النتيجة…</span>
+                        </div>
+                        <div class="scoreboard-line" dir="rtl" aria-label="نتيجة أتلتيكو مدريد ومانشستر يونايتد" aria-live="polite">
+                          <span class="scoreboard-team">أتلتيكو مدريد</span>
+                          <strong class="scoreboard-value" id="score-atletico">—</strong>
+                          <span class="scoreboard-divider" aria-hidden="true">:</span>
+                          <strong class="scoreboard-value" id="score-manchester-united">—</strong>
+                          <span class="scoreboard-team">مانشستر يونايتد</span>
+                        </div>
+                      <p class="scoreboard-updated"><span id="scoreboard-updated-text">تُحدّث البيانات تلقائياً كل دقيقة.</span> · <a href="/matches/">مواعيد المباريات القادمة</a>.</p>
+                    </section>
+
+          <section class="fixture-stats" id="fixture-stats" data-state="loading" data-stale="false" data-league="uefa.champions" data-match-day="2026-10-13" aria-labelledby="fixture-stats-title">
+                      <div class="stats-header">
+                        <h3 class="stats-title" id="fixture-stats-title">إحصائيات المباراة</h3>
+                        <span class="stats-status" id="stats-status" role="status" aria-live="polite">في انتظار بيانات المباراة…</span>
+                      </div>
+                      <div class="stats-legend">
+                        <span class="stats-legend-home"><i aria-hidden="true"></i>أتلتيكو مدريد</span>
+                        <span class="stats-legend-away"><i aria-hidden="true"></i>مانشستر يونايتد</span>
+                      </div>
+                      <div class="stats-body" id="stats-body">
+                        <p class="stats-empty" id="stats-empty">تُعرض الإحصائيات المتجددة بعد انطلاق اللقاء: الاستحواذ والتسديدات والركنيات والأخطاء — بلا أرقام تقديرية.</p>
+                      </div>
+                      <p class="stats-updated">قراءة إحصائية متجددة مستقلة عن الأرقام النهائية؛ لا تُدمج القراءتان ولا تُستكمل القيم الناقصة.</p>
+                    </section>
         </div>
       </section>
 
@@ -1063,6 +2022,15 @@
         let busy = false;
         let hasMatchData = false;
         let controller;
+        // The chart module subscribes to this request's result; it never fetches.
+        // Cache the last snapshot too: module scripts may initialize after this IIFE.
+        let chartSnapshot = { source: 'espn', state: 'loading', phase: null, stale: false, checkedAt: null, home: {}, away: {}, message: 'في انتظار استجابة جدول المباريات' };
+        const publishChartSnapshot = patch => {
+          chartSnapshot = { ...chartSnapshot, ...patch };
+          window.__smFixtureChartSnapshot = chartSnapshot;
+          document.dispatchEvent(new CustomEvent('sm:fixture-statistics', { detail: chartSnapshot }));
+        };
+        publishChartSnapshot({});
 
         const statsPanel = document.getElementById('fixture-stats');
         const statsStatusNode = document.getElementById('stats-status');
@@ -1094,9 +2062,36 @@
           }
           return index;
         };
+        const chartStats = competitor => Object.fromEntries([...statIndex(competitor)].map(([name, entry]) => {
+          // Reject compound strings (11/20), negative counts and invalid percentages;
+          // do not reinterpret a changed upstream format as a new confirmed number.
+          const percent = name.endsWith('Pct');
+          const value = entry.value;
+          const valid = /^\d+(?:\.\d+)?%?$/.test(entry.text) && Number.isFinite(value) && value >= 0
+            && (percent ? value <= 100 : Number.isSafeInteger(value) && !entry.text.endsWith('%'));
+          return [name, { value: valid ? value : null }];
+        }));
+        const publishChartStats = (atletico, united, matchState, stale, checkedAt) => {
+          if (matchState.state === 'scheduled') {
+            publishChartSnapshot({ state: 'scheduled', phase: 'scheduled', home: {}, away: {}, checkedAt: null, stale, message: 'لم تنطلق المباراة بعد؛ لا تُعرض أرقام قبل البداية' });
+            return;
+          }
+          const home = chartStats(atletico);
+          const away = chartStats(united);
+          const hasNumbers = [...Object.values(home), ...Object.values(away)].some(entry => Number.isFinite(entry.value));
+          if (!hasNumbers) {
+            publishChartSnapshot({ state: 'missing-stats', phase: matchState.state, stale: true, message: `${matchState.label} · لم ترد أرقام إحصائية أحدث` });
+            return;
+          }
+          if (chartSnapshot.checkedAt && checkedAt.getTime() < new Date(chartSnapshot.checkedAt).getTime()) {
+            publishChartSnapshot({ state: 'error', stale: true, message: 'وردت نسخة أقدم من ذاكرة المصدر؛ احتُفظ بآخر قراءة إحصائية مؤكدة' });
+            return;
+          }
+          publishChartSnapshot({ home, away, state: matchState.state, phase: matchState.state, stale, checkedAt: checkedAt.toISOString(), message: `${matchState.label}${stale ? ' · بيانات مخزنة قد تتأخر' : ' · قراءة محدثة'}` });
+        };
         const statValueText = (entry, percent) => {
-          if (!entry) return '0';
-          const text = entry.text !== '' ? entry.text : entry.value !== null ? String(entry.value) : '0';
+          if (!entry || entry.value === null) return 'غير متاح';
+          const text = entry.text !== '' ? entry.text : String(entry.value);
           return percent && !text.includes('%') ? `${text}%` : text;
         };
         const setStatsState = (state, message, stale = false) => {
@@ -1132,24 +2127,26 @@
           awayValue.textContent = statValueText(awayEntry, percent);
           line.append(homeValue, name, awayValue);
 
-          const homeNumber = homeEntry?.value ?? 0;
-          const awayNumber = awayEntry?.value ?? 0;
-          const total = homeNumber + awayNumber;
-          const homeShare = total > 0 ? Math.round((homeNumber / total) * 100) : 50;
-
-          const bar = document.createElement('div');
-          bar.className = 'stat-bar';
-          bar.setAttribute('role', 'img');
-          bar.setAttribute('aria-label', `${label}: أتلتيكو مدريد ${statValueText(homeEntry, percent)} مقابل مانشستر يونايتد ${statValueText(awayEntry, percent)}`);
-          const homePart = document.createElement('span');
-          homePart.className = 'stat-bar-part stat-bar-part--home';
-          homePart.style.width = `${homeShare}%`;
-          const awayPart = document.createElement('span');
-          awayPart.className = 'stat-bar-part stat-bar-part--away';
-          awayPart.style.width = `${100 - homeShare}%`;
-          bar.append(homePart, awayPart);
-
-          row.append(line, bar);
+          row.append(line);
+          // لا تتحول القيمة الغائبة إلى صفر، ولا يُرسم شريط مقارنة ببيانات ناقصة.
+          const homeNumber = homeEntry?.value;
+          const awayNumber = awayEntry?.value;
+          if (Number.isFinite(homeNumber) && Number.isFinite(awayNumber) && homeNumber >= 0 && awayNumber >= 0) {
+            const total = homeNumber + awayNumber;
+            const homeShare = total > 0 ? Math.round((homeNumber / total) * 100) : 50;
+            const bar = document.createElement('div');
+            bar.className = 'stat-bar';
+            bar.setAttribute('role', 'img');
+            bar.setAttribute('aria-label', `${label}: أتلتيكو مدريد ${statValueText(homeEntry, percent)} مقابل مانشستر يونايتد ${statValueText(awayEntry, percent)}`);
+            const homePart = document.createElement('span');
+            homePart.className = 'stat-bar-part stat-bar-part--home';
+            homePart.style.width = `${homeShare}%`;
+            const awayPart = document.createElement('span');
+            awayPart.className = 'stat-bar-part stat-bar-part--away';
+            awayPart.style.width = `${100 - homeShare}%`;
+            bar.append(homePart, awayPart);
+            row.append(bar);
+          }
           return row;
         };
         const renderStats = (atleticoCompetitor, unitedCompetitor, matchState, stale, checkedAt) => {
@@ -1169,8 +2166,8 @@
             const homeEntry = atleticoIndex.get(definition.name);
             const awayEntry = unitedIndex.get(definition.name);
             if (!homeEntry && !awayEntry) continue;
-            const homeNumber = homeEntry?.value ?? 0;
-            const awayNumber = awayEntry?.value ?? 0;
+            const homeNumber = homeEntry?.value;
+            const awayNumber = awayEntry?.value;
             if (!definition.percent && homeNumber === 0 && awayNumber === 0) continue;
             rows.push(statsRow(definition.label, homeEntry, awayEntry, definition.percent));
           }
@@ -1242,6 +2239,7 @@
           if (busy || document.hidden) return;
           if (!navigator.onLine) {
             setStatus('error', hasMatchData ? 'لا يوجد اتصال؛ النتيجة المعروضة آخر نتيجة مؤكدة' : 'لا يوجد اتصال بمصدر النتائج');
+            publishChartSnapshot({ state: 'offline', stale: true, message: 'لا يوجد اتصال لتحديث الأرقام' });
             return;
           }
           busy = true;
@@ -1265,6 +2263,7 @@
             if (!event) {
               if (!hasMatchData) setScores('—', '—');
               setStatus('not-found', hasMatchData ? 'لم يرد تحديث أحدث؛ النتيجة الظاهرة آخر نتيجة مؤكدة' : 'لا توجد نتيجة مؤكدة للمباراة في مصدر المواعيد بعد', stale);
+              publishChartSnapshot({ state: 'not-found', stale: true, message: 'لم يرد تحديث لهذه المباراة' });
               renderStatsUnavailable('تظهر الإحصائيات بعد أن يرسل المصدر بيانات هذه المباراة.', 'لا تتوفر إحصائيات بعد', stale ? 'stale' : 'pending', stale);
               return;
             }
@@ -1283,6 +2282,7 @@
             setStatus(matchState.state, `${matchState.label}${staleSuffix}`, stale);
             // تُبلَّغ حالة المصدر لزر المشاهدة الذكي (مباشر / انتهت / متغيّرة).
             window.__smFixtureWatch?.(matchState.state);
+            publishChartStats(homeIsAtletico ? home : away, homeIsAtletico ? away : home, matchState, stale, checkedAt);
             renderStats(
               homeIsAtletico ? home : away,
               homeIsAtletico ? away : home,
@@ -1291,6 +2291,7 @@
               checkedAt,
             );
           } catch {
+            publishChartSnapshot({ state: 'error', stale: true, message: 'تعذر تحديث الأرقام من مصدر النتائج' });
             setStatus('error', hasMatchData ? 'تعذر التحديث؛ النتيجة المعروضة آخر نتيجة مؤكدة' : 'تعذر تحميل النتيجة من مصدر المواعيد');
             if (updatedNode && !hasMatchData) updatedNode.textContent = 'سيُعاد التحقق تلقائياً بعد قليل.';
             if (statsBodyNode && statsBodyNode.querySelector('.stat-row')) {
@@ -1308,5 +2309,8 @@
         window.setInterval(() => { void refresh(); }, 60_000);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) void refresh(); });
         window.addEventListener('online', () => { void refresh(); });
+        window.addEventListener('offline', () => {
+          publishChartSnapshot({ state: 'offline', stale: true, message: 'لا يوجد اتصال لتحديث الأرقام' });
+        });
       })();
-    </script></body></html>
+    </script><script type="module" src="/_assets/fixture-charts.js?v=20261016b"></script><script type="module" src="/_assets/fixture-standings.js?v=20261016b"></script></body></html>

@@ -1,0 +1,25 @@
+/* Scoped, build-time match history. No browser code, media or network imports. */
+.fixture-history{--fh-line:rgba(184,199,226,.22);--fh-muted:#bac5d9;color:#f4f7ff}
+.fixture-history .fh-heading p{max-width:900px;color:var(--fh-muted);line-height:1.95}
+.fixture-history .fh-grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.fixture-history .fh-item{min-width:0}
+.fixture-history .fh-card{height:100%;min-width:0;padding:1.2rem;border:1px solid var(--fh-line);border-block-start:3px solid #c4b2ff;border-radius:16px;background:linear-gradient(150deg,#172039,#101827);display:flex;flex-direction:column}
+.fixture-history .fh-card-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-block-end:.9rem}
+.fixture-history .fh-kind{display:inline-block;border:1px solid #69865a;border-radius:999px;padding:.2rem .55rem;color:#d4edbf;background:#22332a;font-size:.69rem;line-height:1.85}
+.fixture-history .fh-kind--friendly{color:#e0d6f7;border-color:#6e6088;background:#2d2942}
+.fixture-history .fh-current{font-size:.66rem;line-height:1.8;color:#c7d2e6}
+.fixture-history .fh-card h3{font-size:1.05rem;line-height:1.85;color:#f4f7ff;margin:0;overflow-wrap:anywhere}
+.fixture-history .fh-date{font-size:.78rem;line-height:1.9;color:var(--fh-muted);margin:.25rem 0 1rem}
+.fixture-history .fh-scoreboard{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:.4rem;align-items:center;direction:rtl;padding:1rem .3rem;border-block:1px solid var(--fh-line);background:#111d30}
+.fixture-history .fh-team{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.55rem;min-width:0}
+.fixture-history .fh-team-name{font-size:.77rem;font-weight:600;line-height:1.8;min-height:2.8rem;display:flex;align-items:center;color:#dce5f7;overflow-wrap:anywhere;max-width:100%}
+.fixture-history .fh-goals{display:block;color:#f4f7ff;font:800 2.1rem/1.25 Arial,sans-serif;font-variant-numeric:tabular-nums}
+.fixture-history .fh-separator{color:#97a9c4;text-align:center;font:500 1.2rem/1 Arial,sans-serif;margin-block-start:2.7rem}
+.fixture-history .fh-details{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin:1rem 0 0;padding:0}
+.fixture-history .fh-details div{min-width:0}
+.fixture-history .fh-details dt{font-size:.68rem;line-height:1.9;color:var(--fh-muted)}
+.fixture-history .fh-details dd{font-size:.78rem;line-height:1.9;font-weight:700;color:#edf3ff;margin:0;font-variant-numeric:tabular-nums}
+.fixture-history .fh-note{font-size:.74rem;line-height:1.95;color:var(--fh-muted);margin:1rem 0 0}
+@media(max-width:900px){.fixture-history .fh-grid{grid-template-columns:minmax(0,1fr)}.fixture-history .fh-scoreboard{padding-inline:1rem}}
+@media(max-width:620px){.fixture-history .fh-card{padding:1rem .8rem}.fixture-history .fh-card h3{font-size:1rem}.fixture-history .fh-scoreboard{padding-inline:.25rem}.fixture-history .fh-team-name{font-size:.76rem}.fixture-history .fh-goals{font-size:2rem}.fixture-history .fh-card-top{gap:.4rem}}
+@media(prefers-reduced-motion:reduce){.fixture-history *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

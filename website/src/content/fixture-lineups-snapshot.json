@@ -1,0 +1,577 @@
+{
+  "version": 1,
+  "matchId": "2049573",
+  "matchDate": "2026-10-13",
+  "status": "confirmed-final",
+  "reviewedAt": "2026-10-15T23:30:24.459Z",
+  "sources": {
+    "lineups": {
+      "provider": "UEFA",
+      "url": "https://www.uefa.com/uefachampionsleague/match/2049573--atleti-vs-man-utd/lineups/"
+    },
+    "ratings": {
+      "provider": "FotMob",
+      "url": "https://www.fotmob.com/matches/atletico-madrid-vs-manchester-united/3d2krr#6106267",
+      "scale": 10
+    },
+    "formation": {
+      "provider": "FotMob"
+    }
+  },
+  "recognition": {
+    "uefaPlayerOfMatchId": "250106963",
+    "fotmobPlayerOfMatchId": "250139036"
+  },
+  "provenance": {
+    "note": "Starting XIs, captains, unused bench and official substitution minutes are transcribed from UEFA. Formation lines and ratings are transcribed from the direct FotMob match page; no editorial/other-provider scores are merged. Unused UEFA players are never joined to another provider by shirt number.",
+    "ratingException": "FotMob publishes no rating for Robin Le Normand, who entered at 88 minutes. His rating is null, not zero.",
+    "providerDifferences": "Direct FotMob reading: Lammens 7.1, Heaven 6.5, Maguire 6.1. Earlier SI copies and other providers differ; the direct FotMob reading alone is used."
+  },
+  "teams": [
+    {
+      "id": "50124",
+      "slug": "atletico",
+      "name": "أتلتيكو مدريد",
+      "coach": "دييغو سيميوني",
+      "formation": "4-4-2",
+      "starters": [
+        {
+          "id": "250012069",
+          "number": 13,
+          "name": "يان أوبلاك",
+          "sourceName": "Jan Oblak",
+          "fotmobId": "177126",
+          "rating": 8.2,
+          "captain": true
+        },
+        {
+          "id": "250079670",
+          "number": 14,
+          "name": "ماركوس يورينتي",
+          "sourceName": "Marcos Llorente",
+          "fotmobId": "602563",
+          "rating": 7.7,
+          "captain": false
+        },
+        {
+          "id": "250144325",
+          "number": 21,
+          "name": "كريستيان روميرو",
+          "sourceName": "Cristian Romero",
+          "fotmobId": "789066",
+          "rating": 7.4,
+          "captain": false
+        },
+        {
+          "id": "250092668",
+          "number": 17,
+          "name": "دافيد هانكو",
+          "sourceName": "Dávid Hancko",
+          "fotmobId": "727897",
+          "rating": 7.2,
+          "captain": false
+        },
+        {
+          "id": "250042422",
+          "number": 22,
+          "name": "أليخاندرو غريمالدو",
+          "sourceName": "Alejandro Grimaldo",
+          "fotmobId": "288406",
+          "rating": 7.4,
+          "captain": false
+        },
+        {
+          "id": "250153634",
+          "number": 20,
+          "name": "جوليانو سيميوني",
+          "sourceName": "Giuliano Simeone",
+          "fotmobId": "1226147",
+          "rating": 6.6,
+          "captain": false
+        },
+        {
+          "id": "250139036",
+          "number": 8,
+          "name": "بابلو باريوس",
+          "sourceName": "Pablo Barrios",
+          "fotmobId": "1338192",
+          "rating": 8.3,
+          "captain": false
+        },
+        {
+          "id": "250150915",
+          "number": 5,
+          "name": "جوني كاردوسو",
+          "sourceName": "Johnny Cardoso",
+          "fotmobId": "1173678",
+          "rating": 7.1,
+          "captain": false
+        },
+        {
+          "id": "250106963",
+          "number": 10,
+          "name": "أليكس باينا",
+          "sourceName": "Álex Baena",
+          "fotmobId": "942372",
+          "rating": 7.8,
+          "captain": false
+        },
+        {
+          "id": "250121584",
+          "number": 7,
+          "name": "لي كانغ إن",
+          "sourceName": "Kang-in Lee",
+          "fotmobId": "940976",
+          "rating": 6.7,
+          "captain": false
+        },
+        {
+          "id": "250172668",
+          "number": 19,
+          "name": "خوليان ألفاريز",
+          "sourceName": "Julián Alvarez",
+          "fotmobId": "974753",
+          "rating": 6.5,
+          "captain": false
+        }
+      ],
+      "substitutes": [
+        {
+          "id": "250194472",
+          "number": 18,
+          "name": "مارك بوبيل",
+          "sourceName": "Marc Pubill",
+          "fotmobId": "1323897",
+          "rating": 6.3,
+          "captain": false
+        },
+        {
+          "id": "250102035",
+          "number": 15,
+          "name": "جوناثان ديفيد",
+          "sourceName": "Jonathan David",
+          "fotmobId": "939569",
+          "rating": 5.6,
+          "captain": false
+        },
+        {
+          "id": "250101557",
+          "number": 23,
+          "name": "مورتن هيولماند",
+          "sourceName": "Morten Hjulmand",
+          "fotmobId": "950199",
+          "rating": 6.1,
+          "captain": false
+        },
+        {
+          "id": "250099258",
+          "number": 11,
+          "name": "أديمولا لوكمان",
+          "sourceName": "Ademola Lookman",
+          "fotmobId": "690516",
+          "rating": 7.2,
+          "captain": false
+        },
+        {
+          "id": "250112513",
+          "number": 24,
+          "name": "روبن لو نورمان",
+          "sourceName": "Robin Le Normand",
+          "fotmobId": "609516",
+          "rating": null,
+          "captain": false
+        }
+      ],
+      "unused": [
+        {
+          "id": "250137521",
+          "number": 1,
+          "name": "خوان موسو",
+          "sourceName": "Juan Musso",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250172343",
+          "number": 4,
+          "name": "رودريغو ميندوزا",
+          "sourceName": "Rodrigo Mendoza",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250061361",
+          "number": 9,
+          "name": "ألكسندر سورلوث",
+          "sourceName": "Alexander Sørloth",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250197651",
+          "number": 16,
+          "name": "أرناو أورتيز",
+          "sourceName": "Arnau Ortiz",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250212698",
+          "number": 27,
+          "name": "ليتوبا",
+          "sourceName": "Lituba",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250176826",
+          "number": 30,
+          "name": "داني مارتينيز",
+          "sourceName": "Dani Martínez",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250176947",
+          "number": 46,
+          "name": "خورخي كاستيو",
+          "sourceName": "Jorge Castillo",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        }
+      ],
+      "lines": [
+        [
+          "250012069"
+        ],
+        [
+          "250079670",
+          "250144325",
+          "250092668",
+          "250042422"
+        ],
+        [
+          "250153634",
+          "250139036",
+          "250150915",
+          "250106963"
+        ],
+        [
+          "250121584",
+          "250172668"
+        ]
+      ],
+      "substitutions": [
+        {
+          "minute": 61,
+          "off": "250139036",
+          "on": "250194472"
+        },
+        {
+          "minute": 61,
+          "off": "250121584",
+          "on": "250102035"
+        },
+        {
+          "minute": 71,
+          "off": "250172668",
+          "on": "250101557"
+        },
+        {
+          "minute": 71,
+          "off": "250106963",
+          "on": "250099258"
+        },
+        {
+          "minute": 88,
+          "off": "250153634",
+          "on": "250112513"
+        }
+      ],
+      "dismissals": []
+    },
+    {
+      "id": "52682",
+      "slug": "united",
+      "name": "مانشستر يونايتد",
+      "coach": "مايكل كاريك",
+      "formation": "4-2-3-1",
+      "starters": [
+        {
+          "id": "250118908",
+          "number": 1,
+          "name": "سيني لامينس",
+          "sourceName": "Senne Lammens",
+          "fotmobId": "1178602",
+          "rating": 7.1,
+          "captain": false
+        },
+        {
+          "id": "250081628",
+          "number": 2,
+          "name": "ديوغو دالوت",
+          "sourceName": "Diogo Dalot",
+          "fotmobId": "751550",
+          "rating": 6.8,
+          "captain": false
+        },
+        {
+          "id": "250165232",
+          "number": 15,
+          "name": "ليني يورو",
+          "sourceName": "Leny Yoro",
+          "fotmobId": "1358581",
+          "rating": 6.4,
+          "captain": false
+        },
+        {
+          "id": "250132803",
+          "number": 6,
+          "name": "ليساندرو مارتينيز",
+          "sourceName": "Lisandro Martínez",
+          "fotmobId": "847983",
+          "rating": 7.2,
+          "captain": false
+        },
+        {
+          "id": "250189295",
+          "number": 26,
+          "name": "آيدن هيفن",
+          "sourceName": "Ayden Heaven",
+          "fotmobId": "1559639",
+          "rating": 6.5,
+          "captain": false
+        },
+        {
+          "id": "250182090",
+          "number": 17,
+          "name": "أندري سانتوس",
+          "sourceName": "Andrey Santos",
+          "fotmobId": "1372921",
+          "rating": 7,
+          "captain": false
+        },
+        {
+          "id": "250188249",
+          "number": 20,
+          "name": "كارلوس باليبا",
+          "sourceName": "Carlos Baleba",
+          "fotmobId": "1352713",
+          "rating": 6.8,
+          "captain": false
+        },
+        {
+          "id": "250078886",
+          "number": 8,
+          "name": "برونو فيرنانديز",
+          "sourceName": "Bruno Fernandes",
+          "fotmobId": "422685",
+          "rating": 7.2,
+          "captain": true
+        },
+        {
+          "id": "250064006",
+          "number": 18,
+          "name": "يوري تيليمانس",
+          "sourceName": "Youri Tielemans",
+          "fotmobId": "465960",
+          "rating": 6.5,
+          "captain": false
+        },
+        {
+          "id": "250088246",
+          "number": 9,
+          "name": "ماركوس راشفورد",
+          "sourceName": "Marcus Rashford",
+          "fotmobId": "696365",
+          "rating": 6,
+          "captain": false
+        },
+        {
+          "id": "250137260",
+          "number": 19,
+          "name": "بريان مبيومو",
+          "sourceName": "Bryan Mbeumo",
+          "fotmobId": "923312",
+          "rating": 6.6,
+          "captain": false
+        }
+      ],
+      "substitutes": [
+        {
+          "id": "250106762",
+          "number": 11,
+          "name": "جوشوا زيركزي",
+          "sourceName": "Joshua Zirkzee",
+          "fotmobId": "950830",
+          "rating": 6.1,
+          "captain": false
+        },
+        {
+          "id": "250076240",
+          "number": 7,
+          "name": "ماسون ماونت",
+          "sourceName": "Mason Mount",
+          "fotmobId": "750032",
+          "rating": 6.9,
+          "captain": false
+        },
+        {
+          "id": "250121405",
+          "number": 16,
+          "name": "أماد ديالو",
+          "sourceName": "Amad Diallo",
+          "fotmobId": "1070052",
+          "rating": 6.8,
+          "captain": false
+        },
+        {
+          "id": "250110943",
+          "number": 10,
+          "name": "ماتيوس كونيا",
+          "sourceName": "Matheus Cunha",
+          "fotmobId": "863098",
+          "rating": 6.6,
+          "captain": false
+        },
+        {
+          "id": "250075007",
+          "number": 5,
+          "name": "هاري ماغواير",
+          "sourceName": "Harry Maguire",
+          "fotmobId": "255610",
+          "rating": 6.1,
+          "captain": false
+        }
+      ],
+      "unused": [
+        {
+          "id": "250021790",
+          "number": 12,
+          "name": "كارل دارلو",
+          "sourceName": "Karl Darlow",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250128702",
+          "number": 45,
+          "name": "ديرموت مي",
+          "sourceName": "Dermot Mee",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "50327424",
+          "number": 4,
+          "name": "ماتيس دي ليخت",
+          "sourceName": "Matthijs de Ligt",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250182699",
+          "number": 31,
+          "name": "شيا لاسي",
+          "sourceName": "Shea Lacey",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250182726",
+          "number": 39,
+          "name": "تايلر فليتشر",
+          "sourceName": "Tyler Fletcher",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250190140",
+          "number": 41,
+          "name": "هاري أماس",
+          "sourceName": "Harry Amass",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        },
+        {
+          "id": "250190131",
+          "number": 57,
+          "name": "دانيال أرمر",
+          "sourceName": "Daniel Armer",
+          "fotmobId": null,
+          "rating": null,
+          "captain": false
+        }
+      ],
+      "lines": [
+        [
+          "250118908"
+        ],
+        [
+          "250081628",
+          "250165232",
+          "250132803",
+          "250189295"
+        ],
+        [
+          "250182090",
+          "250188249"
+        ],
+        [
+          "250078886",
+          "250064006",
+          "250088246"
+        ],
+        [
+          "250137260"
+        ]
+      ],
+      "substitutions": [
+        {
+          "minute": 66,
+          "off": "250064006",
+          "on": "250106762"
+        },
+        {
+          "minute": 66,
+          "off": "250188249",
+          "on": "250076240"
+        },
+        {
+          "minute": 66,
+          "off": "250088246",
+          "on": "250121405"
+        },
+        {
+          "minute": 80,
+          "off": "250078886",
+          "on": "250110943"
+        },
+        {
+          "minute": 80,
+          "off": "250189295",
+          "on": "250075007"
+        }
+      ],
+      "dismissals": [
+        {
+          "playerId": "250165232",
+          "minute": 74
+        }
+      ]
+    }
+  ]
+}

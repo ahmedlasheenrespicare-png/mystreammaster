@@ -11,7 +11,7 @@
     "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist-ssr",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --test scripts/test-playlist.mjs scripts/test-xtream.mjs scripts/test-worker.mjs scripts/test-matches.mjs scripts/test-proxy-php.mjs scripts/test-embed-php.mjs scripts/test-event-jsonld.mjs scripts/test-seo.mjs scripts/test-standings.mjs scripts/test-fixture-lineups.mjs scripts/test-fixture-reviews.mjs scripts/test-fixture-sources.mjs scripts/test-fixture-history.mjs",
+    "test": "node --test scripts/test-playlist.mjs scripts/test-xtream.mjs scripts/test-worker.mjs scripts/test-matches.mjs scripts/test-match-center.mjs scripts/test-match-center-transport.mjs scripts/test-match-center-php.mjs scripts/test-proxy-php.mjs scripts/test-embed-php.mjs scripts/test-event-jsonld.mjs scripts/test-seo.mjs scripts/test-standings.mjs scripts/test-fixture-lineups.mjs scripts/test-fixture-reviews.mjs scripts/test-fixture-sources.mjs scripts/test-fixture-history.mjs",
     "check:proxy": "node scripts/check-proxy.mjs",
     "test:ui": "playwright test"
   },

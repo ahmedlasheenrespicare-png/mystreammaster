@@ -6,6 +6,7 @@ import { BLOG_POSTS } from "./content/posts";
 import { landingRoutes } from "./content/competitions";
 import { PRICING_PLANS } from "./data";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
+import { matchCenterRouteIds } from "./content/match-center.mjs";
 
 /* كل مسارات الموقع — يستخدمها سكربت البناء المسبق ليعرف ما الذي يجب رسمه */
 export function getAllRoutes(): string[] {
@@ -19,6 +20,7 @@ export function getAllRoutes(): string[] {
     ...BLOG_POSTS.map((p) => `/blog/${p.slug}`),
     ...PRICING_PLANS.map((p) => `/${p.serverCode}`),
     ...landingRoutes(),
+    ...matchCenterRouteIds(),
   ];
 }
 

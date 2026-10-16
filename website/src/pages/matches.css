@@ -145,3 +145,8 @@
   outline-offset: 3px;
   border-radius: 6px;
 }
+
+/* رابط مركز المباراة داخل بطاقة المواعيد — البند 3: رابط في الصفحة القائمة
+   بلا صفحة مكررة. يظهر فقط للمباريات المطابقة بمعرّف المصدر. */
+.match-center-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 9px 15px; min-height: 42px; border-radius: 999px; background: #0b0b0f; color: #d8ff3e; font-size: .78rem; font-weight: 800; text-decoration: none; border: 1px solid #0b0b0f; transition: transform .18s ease, background .18s ease; }
+.match-center-link:hover { transform: translateY(-1px); background: #171b28; }

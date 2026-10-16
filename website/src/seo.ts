@@ -597,6 +597,11 @@ export function getSeo(path: string): SeoMeta {
       canonical,
       robots: verified ? INDEX_ROBOTS : "noindex, follow",
       ogType: "website",
+      /* صورة مشاركة خاصة بالمباراة (مرحلة 3): مولّدة محلياً من بيانات
+         التعريف الموثقة فقط، بلا أي نتيجة قبل البداية. النهائية
+         (`match-<slug>-final.png`) لا تُربط هنا إلا بعد توليدها من
+         قراءة مؤكدة — توليدها سابقاً كان سيعرض نتيجة غير موجودة. */
+      ogImage: ogImageFor(`match-${centerMatch.slug}`),
       ogImageAlt: `${centerMatch.home.name} ضد ${centerMatch.away.name} — ${BRAND_NAME}`,
       themeColor: MATCH_CENTER_NIGHT,
       jsonLd,

@@ -20,6 +20,7 @@ import {
   isResultOfficial,
   isStaleRead,
   isTrustworthyReadAt,
+  isVerified,
   kickoffLabel,
   matchByFixtureId,
   matchPath,
@@ -40,6 +41,7 @@ import {
 import {
   MATCH_CENTER_COMPETITION,
   MATCH_CENTER_MATCHES,
+  MATCH_CENTER_VERIFICATION,
   allMatchesVerified,
   matchByExternalId,
   matchBySlug,
@@ -1035,28 +1037,75 @@ test('three independent stable routes sit under the existing league page, with n
   assert.equal(matchBySlug('no-such-match'), null);
 });
 
-test('unverified fixtures stay honestly unverified: no guessed ids, no invented source names, no indexing', () => {
-  // Rule 13 forbids incomplete event entities; the gate is `verification`.
-  assert.equal(allMatchesVerified(), false);
+test('every stored value traces to the received source payload, and nothing beyond it was filled in', () => {
+  // Rule 2: the fixture id and team ids come from the source itself. Each match
+  // must be found verbatim in the payload that was actually received.
+  assert.equal(allMatchesVerified(), true);
+  assert.equal(MATCH_CENTER_VERIFICATION.provider, 'espn');
+  assert.match(MATCH_CENTER_VERIFICATION.endpoint, /eng\.1\/scoreboard\?dates=20261017/);
+  assert.equal(MATCH_CENTER_VERIFICATION.receivedEvents.length, 5);
+
   for (const match of MATCH_CENTER_MATCHES) {
-    assert.equal(match.verification, 'pending');
-    assert.equal(match.externalIds.espn, null, `${match.slug}: no guessed ESPN id`);
-    assert.equal(match.externalIds.apifootball, null, `${match.slug}: no guessed API-Football id`);
-    assert.equal(match.home.sourceName, null, `${match.slug}: source name not invented`);
-    assert.equal(match.away.sourceName, null);
-    assert.equal(match.home.logo, null, 'no logo is downloaded or self-hosted');
-    assert.equal(match.away.logo, null);
-    assert.equal(match.round, null, 'matchday comes from the source');
+    assert.equal(match.verification, 'confirmed');
     assert.equal(match.leagueId, 'eng.1');
     assert.match(match.kickoffUtc, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/, `${match.slug}: stored as UTC`);
+
+    const received = MATCH_CENTER_VERIFICATION.receivedEvents.find(event => event.id === match.externalIds.espn);
+    assert.ok(received, `${match.slug}: id ${match.externalIds.espn} exists in the received payload`);
+    assert.equal(received.inTrial, true, `${match.slug} is one of the trial fixtures`);
+    // Same instant, even though ESPN sends "T14:00Z" and we store "T14:00:00Z".
+    assert.equal(Date.parse(received.date), Date.parse(match.kickoffUtc), `${match.slug}: kickoff instant`);
+    // Venue verbatim, including the ASCII apostrophe in St. James' Park.
+    assert.equal(match.venue, received.venue, `${match.slug}: venue verbatim`);
+    assert.equal(match.sourceEventName, received.name, `${match.slug}: event name verbatim`);
+    // The documented derivation rule: "{away} at {home}".
+    const [awayName, homeName] = received.name.split(' at ');
+    assert.equal(match.home.sourceName, homeName, `${match.slug}: home sourceName from the source string`);
+    assert.equal(match.away.sourceName, awayName, `${match.slug}: away sourceName from the source string`);
+    // Looking the match up by its confirmed id resolves, and only to itself.
+    assert.equal(matchByExternalId('espn', match.externalIds.espn), match);
+    assert.equal(matchByFixtureId(MATCH_CENTER_MATCHES, 'espn', match.externalIds.espn), match);
+
+    // What the source did NOT tell us stays empty -- no rounding out the record.
+    assert.equal(match.externalIds.apifootball, null, `${match.slug}: no guessed API-Football id`);
+    assert.equal(match.home.logo, null, 'no logo is downloaded or self-hosted');
+    assert.equal(match.away.logo, null);
+    assert.equal(match.round, null, 'matchday was not in the payload');
+    assert.equal(match.home.externalIds.espn, null, 'team ids were not in the payload either');
   }
-  // Looking up by an id we do not have must return nothing, never fall back to
-  // a team-name or kickoff-time guess (rule 3).
-  assert.equal(matchByExternalId('espn', '704123'), null);
-  assert.equal(matchByExternalId('espn', ''), null);
-  assert.equal(matchByExternalId('espn', null), null);
-  assert.equal(matchByFixtureId(MATCH_CENTER_MATCHES, 'espn', '704123'), null);
-  assert.equal(matchByFixtureId(MATCH_CENTER_MATCHES, 'espn', ''), null);
+
+  // Ids that are not ours still resolve to nothing: no fallback to team name or
+  // kickoff time (rule 3).
+  for (const foreign of ['401878770', '401878771', '704123', '', null, undefined]) {
+    assert.equal(matchByExternalId('espn', foreign), null, `id ${JSON.stringify(foreign)} is not a trial fixture`);
+  }
+  // The two same-day events outside the trial must not resolve to any of ours.
+  const outside = MATCH_CENTER_VERIFICATION.receivedEvents.filter(event => !event.inTrial);
+  assert.equal(outside.length, 2);
+  for (const event of outside) assert.equal(matchByExternalId('espn', event.id), null, `${event.name} is not in the trial`);
+});
+
+test('binding by league and kickoff time alone collides, which is why the fixture id is the only acceptable key', () => {
+  // The brief assumed two simultaneous kickoffs; the source shows three at
+  // 14:00Z in eng.1 that day, one of them outside the trial. A time-based key
+  // would therefore be ambiguous three ways, not two.
+  const events = MATCH_CENTER_VERIFICATION.receivedEvents;
+  const at1400 = events.filter(event => Date.parse(event.date) === Date.parse('2026-10-17T14:00:00Z'));
+  assert.equal(at1400.length, 3, 'Chelsea/Everton is at 11:30Z, so exactly three share 14:00Z');
+  assert.deepEqual(at1400.map(event => event.id).sort(), ['401878770', '401879259', '401879262']);
+  assert.ok(at1400.some(event => !event.inTrial), 'one of the three is not ours');
+
+  // Every one of the five ids is distinct, so the id key is unambiguous.
+  assert.equal(new Set(events.map(event => event.id)).size, events.length);
+  // And each of our three resolves to exactly one match, never two.
+  for (const match of MATCH_CENTER_MATCHES) {
+    const hits = MATCH_CENTER_MATCHES.filter(other => String(other.externalIds.espn) === String(match.externalIds.espn));
+    assert.equal(hits.length, 1, `${match.slug}: unique id`);
+  }
+  // Venue is also unique here, but it is a display field, not a key: the same
+  // ground can host many fixtures, so binding on it would break later.
+  const byVenue = venue => MATCH_CENTER_VERIFICATION.receivedEvents.filter(event => event.venue === venue);
+  for (const match of MATCH_CENTER_MATCHES) assert.equal(byVenue(match.venue).length, 1, `${match.venue} on this day`);
 });
 
 test('the trial kickoffs render as briefed in Cairo and Mecca on the exact trial day', () => {
@@ -1068,21 +1117,35 @@ test('the trial kickoffs render as briefed in Cairo and Mecca on the exact trial
   assert.equal(formatInZone(byId('manchester-city-ipswich-town').kickoffUtc, 'Europe/London', { weekday: 'long' }), 'السبت');
 });
 
-test('once ids are confirmed the gate flips, and the lookup starts resolving by fixture id', () => {
-  // Proves the pending state is a gate, not a dead end: the same definitions
-  // with real ids become verifiable and addressable.
-  const confirmed = MATCH_CENTER_MATCHES.map((match, index) => ({
-    ...match,
-    verification: 'confirmed',
-    externalIds: { ...match.externalIds, espn: `70000${index}` },
-  }));
-  assert.equal(confirmed.every(match => match.verification === 'confirmed'), true);
-  assert.equal(matchByFixtureId(confirmed, 'espn', '700001').slug, 'brentford-liverpool');
-  // A confirmation without any id is not a confirmation.
-  const empty = MATCH_CENTER_MATCHES.map(match => ({ ...match, verification: 'confirmed' }));
-  const allConfirmed = matches => matches.every(match =>
-    match.verification === 'confirmed'
-    && Object.values(match.externalIds || {}).some(id => id !== null && String(id).trim() !== ''));
-  assert.equal(allConfirmed(empty), false);
-  assert.equal(allConfirmed(confirmed), true);
+test('the verification gate still bites: a fixture without a source id is not verified, whatever its flag says', () => {
+  // The trial fixtures are confirmed now, so the gate is exercised on synthetic
+  // ones to prove it remains a gate rather than a formality. This is what keeps
+  // a future fixture from being published on a guessed id (rules 2, 13).
+  const confirmed = MATCH_CENTER_MATCHES[0];
+  assert.equal(isVerified(confirmed), true);
+
+  const flaggedButEmpty = { ...confirmed, externalIds: { espn: null, apifootball: null } };
+  assert.equal(isVerified(flaggedButEmpty), false, 'a "confirmed" flag with no id is not confirmation');
+
+  const blank = { ...confirmed, externalIds: { espn: '   ', apifootball: null } };
+  assert.equal(isVerified(blank), false, 'whitespace is not an id');
+
+  const pending = { ...confirmed, verification: 'pending' };
+  assert.equal(isVerified(pending), false, 'an id without confirmation is not enough either');
+
+  assert.equal(isVerified(null), false);
+  assert.equal(isVerified(undefined), false);
+  assert.equal(isVerified({}), false);
+
+  // allMatchesVerified is a conjunction: one unconfirmed fixture closes the gate
+  // for the whole trial, so noindex and the JSON-LD omission apply together.
+  assert.equal(allMatchesVerified(), true);
+  const mixed = [...MATCH_CENTER_MATCHES.slice(0, 2), pending];
+  assert.equal(mixed.every(match => isVerified(match)), false);
+  // A numeric id from another provider is accepted and stringified consistently.
+  const numeric = { ...confirmed, externalIds: { espn: null, apifootball: 1215492 } };
+  assert.equal(isVerified(numeric), true);
+  assert.equal(matchByFixtureId([numeric], 'apifootball', 1215492), numeric);
+  assert.equal(matchByFixtureId([numeric], 'apifootball', '1215492'), numeric, 'number and string resolve alike');
+  assert.equal(matchByFixtureId([numeric], 'espn', 1215492), null, 'but not across providers');
 });

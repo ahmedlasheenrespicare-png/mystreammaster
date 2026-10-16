@@ -11,6 +11,26 @@ export interface MatchCenterCompetition {
   season: string;
 }
 
+/** حدث كما ورد من المصدر حرفياً — يُستخدم في الاختبارات كحالة ربط واقعية. */
+export interface ReceivedEvent {
+  id: string;
+  date: string;
+  name: string;
+  venue: string;
+  inTrial: boolean;
+}
+
+/** البند 2: أصل كل رقم في هذا الملف، وما لم يتحقق بعد. */
+export interface MatchCenterVerification {
+  verifiedAt: string;
+  provider: ProviderId | string;
+  endpoint: string;
+  method: string;
+  receivedEvents: ReceivedEvent[];
+  sourceNameRule: string;
+  unverified: string[];
+}
+
 export interface MatchCenterDocumentationProvider {
   id: string;
   /** البند 12: هذا النص يُعرض داخل «التوثيق والمراجعة» وحده. */
@@ -29,6 +49,7 @@ export type MatchCenterFixture = MatchDefinition;
 export const MATCH_CENTER_COMPETITION: MatchCenterCompetition;
 export const MATCH_CENTER_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_DOCUMENTATION: MatchCenterDocumentation;
+export const MATCH_CENTER_VERIFICATION: MatchCenterVerification;
 
 export function matchCenterPath(match: MatchCenterFixture): string;
 export function matchCenterRoutes(): string[];

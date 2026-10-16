@@ -249,6 +249,8 @@ export interface MatchDefinition {
   /** البند 1: UTC فقط، والعرض عبر Intl بمناطق IANA. */
   kickoffUtc: string;
   venue: string | null;
+  /** نص الحدث كما ورد من المصدر حرفياً — أصل اشتقاق `sourceName`. */
+  sourceEventName?: string | null;
   home: TeamDefinition;
   away: TeamDefinition;
   /** البند 13 و8.5: `pending` ⇒ noindex وبلا JSON-LD حتى مطابقة المصدر. */

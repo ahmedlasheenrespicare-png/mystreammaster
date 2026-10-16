@@ -4,6 +4,8 @@ import fs from 'node:fs/promises';
 import {
   MATCH_CODES,
   MATCH_CENTER_DIAGNOSTICS,
+  MAX_AXES,
+  MIN_AXES,
   PHASES,
   POLL_INTERVALS,
   POST_MATCH_WINDOW_MS,
@@ -41,11 +43,14 @@ import {
 import {
   MATCH_CENTER_COMPETITION,
   MATCH_CENTER_MATCHES,
+  MATCH_CENTER_SUMMARY_PROBE,
   MATCH_CENTER_VERIFICATION,
   allMatchesVerified,
+  forbiddenSummaryKeys,
   matchByExternalId,
   matchBySlug,
   matchCenterRoutes,
+  summaryKeyVerdict,
 } from '../src/content/match-center.mjs';
 
 /* ── Factories ────────────────────────────────────────────────────── */
@@ -1148,4 +1153,107 @@ test('the verification gate still bites: a fixture without a source id is not ve
   assert.equal(matchByFixtureId([numeric], 'apifootball', 1215492), numeric);
   assert.equal(matchByFixtureId([numeric], 'apifootball', '1215492'), numeric, 'number and string resolve alike');
   assert.equal(matchByFixtureId([numeric], 'espn', 1215492), null, 'but not across providers');
+});
+
+/* ── The `summary?event=` probe (2026-10-16) ─────────────────────────
+   These tests are the gate between "the source provides it" and "the site
+   shows it". Most of the seventeen keys are excluded by the brief rather
+   than by technology, and an exclusion that lives only in a comment will
+   not survive the first rendering pass. */
+
+test('every key the summary response actually carries has a recorded verdict, and no verdict is orphaned', () => {
+  // Forward direction: a key that appears in the response can never be
+  // rendered by default, because it has no verdict to justify it.
+  for (const key of MATCH_CENTER_SUMMARY_PROBE.topLevelKeys) {
+    assert.notEqual(summaryKeyVerdict(key), null, `${key} arrives in the response but has no verdict`);
+  }
+  // Reverse direction: a verdict for a key that does not exist is a stale
+  // record, and a stale record is how a forbidden key gets re-admitted later.
+  for (const entry of MATCH_CENTER_SUMMARY_PROBE.usage) {
+    assert.ok(
+      MATCH_CENTER_SUMMARY_PROBE.topLevelKeys.includes(entry.key),
+      `${entry.key} has a verdict but was not in the probed response`,
+    );
+  }
+  // An unprobed key resolves to null rather than to a permissive default.
+  assert.equal(summaryKeyVerdict('lineups'), null);
+  assert.equal(summaryKeyVerdict('oddsProvider'), null);
+  assert.equal(summaryKeyVerdict(''), null);
+});
+
+test('the keys the brief forbids are recorded forbidden, whatever the source offers', () => {
+  const forbidden = forbiddenSummaryKeys();
+  // Rule 9: provider predictions and win probabilities are not statistics.
+  for (const key of ['odds', 'hasOdds', 'pickcenter']) {
+    assert.ok(forbidden.includes(key), `${key} must stay forbidden`);
+    assert.equal(summaryKeyVerdict(key), 'forbidden');
+  }
+  // Rule 13: no ticket offers that do not exist; the site sells nothing.
+  assert.equal(summaryKeyVerdict('ticketsInfo'), 'forbidden');
+  // Rule 12: no copied articles.
+  assert.equal(summaryKeyVerdict('news'), 'forbidden');
+  // Rule 12: channel names live in the documentation section only, so
+  // `broadcasts` is confined rather than forbidden — it is used, in one place.
+  assert.equal(summaryKeyVerdict('broadcasts'), 'confined');
+  // Rule 6: a squad list is not an announced lineup. Presenting `rosters` as
+  // a formation would be guessing player names.
+  assert.equal(summaryKeyVerdict('rosters'), 'confined');
+  // Rule 11: standings exist here, but production already serves eng.1 from
+  // one shared cached source; reading it per match would triple the calls.
+  assert.equal(summaryKeyVerdict('standings'), 'available-not-used');
+});
+
+test('the four aggregate metrics stay unusable until their containing key and sample period are known', () => {
+  const { observed } = MATCH_CENTER_SUMMARY_PROBE;
+  // The probe output did not name the key that carries them, so it is null —
+  // and rule 9 forbids drawing a radar without declaring the sample.
+  assert.equal(observed.metricNamesContainingKey, null);
+  assert.equal(summaryKeyVerdict('lastFiveGames'), 'unresolved');
+  assert.equal(summaryKeyVerdict('leaders'), 'unresolved');
+
+  // What *is* established: two sides, identical metric names, same order.
+  assert.equal(observed.metricNamesBySide.length, 2);
+  assert.deepEqual(observed.metricNamesBySide[0], observed.metricNamesBySide[1]);
+  // Homogeneity across sides is necessary but not sufficient: same names from
+  // two different periods would still be a forbidden comparison.
+  assert.ok(observed.metricNamesBySide[0].length <= MAX_AXES, 'if it resolves, it fits the six-axis ceiling');
+  assert.ok(observed.metricNamesBySide[0].length >= MIN_AXES, 'and it would clear the three-axis floor');
+  // No metric name may be silently reused as an in-match statistic.
+  for (const name of observed.metricNamesBySide[0]) {
+    assert.match(name, /^(goalDifference|totalGoals|goalAssists|goalsConceded)$/);
+  }
+});
+
+test('lineups, head-to-head and player ratings are confirmed absent, not merely unfetched', () => {
+  const { observed, topLevelKeys } = MATCH_CENTER_SUMMARY_PROBE;
+  // Lineups: the key is not in the response at all, and the probe returned [].
+  assert.ok(!topLevelKeys.includes('lineups'));
+  assert.deepEqual(observed.lineups, []);
+  // Head-to-head: empty, with `seasonseries` still unexamined — so the tab
+  // reads «غير متاح» rather than promising a record it cannot source.
+  assert.deepEqual(observed.headToHead, []);
+  assert.equal(summaryKeyVerdict('seasonseries'), 'unresolved');
+  // Ratings: ESPN has no such key at any nesting the probe reached. This is a
+  // permanent limit, so it is asserted as absence rather than as pending.
+  for (const key of ['ratings', 'playerRatings', 'playerStatistics', 'playerStats']) {
+    assert.ok(!topLevelKeys.includes(key), `${key} would contradict the recorded limit`);
+  }
+  // And the odds that *do* arrive are present in the record, so the exclusion
+  // is a decision rather than an oversight.
+  assert.equal(observed.oddsCount, 2);
+});
+
+test('the boxscore cannot be judged from a pre-match probe', () => {
+  // Empty before kickoff is the expected state, not evidence of absence, so
+  // the verdict is `unresolved` and the live tab keeps showing «غير متاح»
+  // until a probe runs against a match in progress (rule 7).
+  assert.equal(MATCH_CENTER_SUMMARY_PROBE.matchStateAtProbe, 'pre-match');
+  assert.equal(summaryKeyVerdict('boxscore'), 'unresolved');
+  assert.ok(
+    MATCH_CENTER_SUMMARY_PROBE.unresolved.some(item => item.includes('boxscore')),
+    'the follow-up probe must be recorded as outstanding',
+  );
+  // The probe subject is one of the three trial fixtures, bound by id.
+  const subject = matchByExternalId('espn', MATCH_CENTER_SUMMARY_PROBE.subjectEventId);
+  assert.equal(subject?.slug, MATCH_CENTER_SUMMARY_PROBE.subjectSlug);
 });

@@ -296,6 +296,10 @@ export function stampCompletion(previousStatus: MatchStatus | null, nextStatus: 
 export function pollIntervalFor(status: MatchStatus | null, dataType: string): number | null;
 export function shouldStopPolling(status: MatchStatus | null, data: MatchSnapshot | null, now: number): boolean;
 export function pollingAllowed(input: { hidden: boolean; online: boolean }): boolean;
+/** البند 9: «حتى ستة محاور»، ومضلع يحتاج ثلاثة رؤوس على الأقل. */
+export const MAX_AXES: number;
+export const MIN_AXES: number;
+
 export function buildComparison(metrics: ComparisonMetric[], options?: { mode?: 'match' | 'season'; sample?: ComparisonSample | null; provider?: ProviderId | string | null }): Comparison;
 export function radarPoints(axes: ComparisonAxis[], options?: { cx?: number; cy?: number; r?: number; side?: 'home' | 'away' }): string;
 export function radarAxisLabels(axes: ComparisonAxis[], options?: { cx?: number; cy?: number; r?: number }): { key: string; label: string; x: number; y: number }[];

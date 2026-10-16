@@ -31,6 +31,45 @@ export interface MatchCenterVerification {
   unverified: string[];
 }
 
+/** حكم مفتاح في استجابة `summary` — يفرّق «المصدر يوفّره» عن «الموقع يعرضه». */
+export type SummaryKeyVerdict =
+  | 'available'
+  | 'available-not-used'
+  | 'confined'
+  | 'forbidden'
+  | 'unresolved';
+
+export interface SummaryKeyUsage {
+  key: string;
+  verdict: SummaryKeyVerdict;
+  /** إحالة إلى البند الحاكم من موجز صاحب المشروع. */
+  rule: string;
+  note: string;
+}
+
+/** البند 2: ما رصدته نقطة `summary?event=` حرفياً، وحكم كل مفتاح فيها. */
+export interface MatchCenterSummaryProbe {
+  probedAt: string;
+  provider: ProviderId | string;
+  endpoint: string;
+  subjectEventId: string;
+  subjectSlug: string;
+  method: string;
+  matchStateAtProbe: string;
+  topLevelKeys: string[];
+  observed: {
+    lineups: unknown[];
+    metricNamesBySide: string[][];
+    /** `null` لأن مخرجات الفحص لم تُسمِّ المفتاح الحاوي — لا يجوز تخمينه. */
+    metricNamesContainingKey: string | null;
+    headToHead: unknown[];
+    standingsKeys: string[];
+    oddsCount: number;
+  };
+  usage: SummaryKeyUsage[];
+  unresolved: string[];
+}
+
 export interface MatchCenterDocumentationProvider {
   id: string;
   /** البند 12: هذا النص يُعرض داخل «التوثيق والمراجعة» وحده. */
@@ -50,6 +89,10 @@ export const MATCH_CENTER_COMPETITION: MatchCenterCompetition;
 export const MATCH_CENTER_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_DOCUMENTATION: MatchCenterDocumentation;
 export const MATCH_CENTER_VERIFICATION: MatchCenterVerification;
+export const MATCH_CENTER_SUMMARY_PROBE: MatchCenterSummaryProbe;
+
+export function summaryKeyVerdict(key: string): SummaryKeyVerdict | null;
+export function forbiddenSummaryKeys(): string[];
 
 export function matchCenterPath(match: MatchCenterFixture): string;
 export function matchCenterRoutes(): string[];

@@ -229,3 +229,12 @@
   .mc-team--flash { background-color: rgba(216, 255, 62, .12); }
   .mc-state[data-code="live"] .mc-pulse { animation: none; opacity: 1; transform: none; }
 }
+
+/* أشرطة مقارنة الإحصائيات: نصفا مسار من منتصف مشترك — المضيف يميناً
+   والضيف يساراً كما يجلسان في الجدول — ونسبيان لأعلى قيمة في الصف (معلن
+   في تسمية الجدول). بلا حركة، فلا ينتهكان reduced-motion عند التحديث. */
+.mc-statbar-row td { padding-top: 0 !important; border-top: none !important; }
+.mc-statbar { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; direction: ltr; }
+.mc-statbar-home, .mc-statbar-away { display: block; height: 5px; border-radius: 3px; min-width: 0; max-width: 100%; }
+.mc-statbar-home { grid-column: 2; justify-self: start; background: var(--mc-violet, #7c5cff); }
+.mc-statbar-away { grid-column: 1; justify-self: end; background: var(--mc-lime); }

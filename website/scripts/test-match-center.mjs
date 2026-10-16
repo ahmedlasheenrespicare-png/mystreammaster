@@ -39,6 +39,7 @@ import {
   resolveTab,
   shouldStopPolling,
   stampCompletion,
+  summarizeForm,
 } from '../src/lib/match-center.mjs';
 import {
   MATCH_CENTER_COMPETITION,
@@ -1077,7 +1078,14 @@ test('every stored value traces to the received source payload, and nothing beyo
     assert.equal(match.home.logo, null, 'no logo is downloaded or self-hosted');
     assert.equal(match.away.logo, null);
     assert.equal(match.round, null, 'matchday was not in the payload');
-    assert.equal(match.home.externalIds.espn, null, 'team ids were not in the payload either');
+    // Team ids were absent from the first payload, then confirmed by the P0
+    // payload (2026-10-16): each stored id must trace to `receivedTeams`.
+    const homeReceived = MATCH_CENTER_VERIFICATION.receivedTeams.find(t => t.event === match.externalIds.espn && t.side === 'home');
+    const awayReceived = MATCH_CENTER_VERIFICATION.receivedTeams.find(t => t.event === match.externalIds.espn && t.side === 'away');
+    assert.equal(match.home.externalIds.espn, homeReceived?.id, `${match.slug}: home team id traces to P0`);
+    assert.equal(match.away.externalIds.espn, awayReceived?.id, `${match.slug}: away team id traces to P0`);
+    assert.equal(homeReceived?.name, match.home.sourceName, `${match.slug}: home team name in P0`);
+    assert.equal(awayReceived?.name, match.away.sourceName, `${match.slug}: away team name in P0`);
   }
 
   // Ids that are not ours still resolve to nothing: no fallback to team name or
@@ -1209,7 +1217,9 @@ test('the four aggregate metrics stay unusable until their containing key and sa
   // The probe output did not name the key that carries them, so it is null —
   // and rule 9 forbids drawing a radar without declaring the sample.
   assert.equal(observed.metricNamesContainingKey, null);
-  assert.equal(summaryKeyVerdict('lastFiveGames'), 'unresolved');
+  // Probes P1/P3 resolved lastFiveGames as the Form source; leaders stays
+  // unresolved and unused (its aggregates belong to an unknown sample).
+  assert.equal(summaryKeyVerdict('lastFiveGames'), 'available');
   assert.equal(summaryKeyVerdict('leaders'), 'unresolved');
 
   // What *is* established: two sides, identical metric names, same order.
@@ -1230,10 +1240,11 @@ test('lineups, head-to-head and player ratings are confirmed absent, not merely 
   // Lineups: the key is not in the response at all, and the probe returned [].
   assert.ok(!topLevelKeys.includes('lineups'));
   assert.deepEqual(observed.lineups, []);
-  // Head-to-head: empty, with `seasonseries` still unexamined — so the tab
-  // reads «غير متاح» rather than promising a record it cannot source.
+  // Head-to-head: the `h2h` key itself was empty in the pre-match probe, but
+  // probes P1/P3 confirmed `seasonseries` carries the record — verdict moved
+  // to available with the probe record as its source, not by assumption.
   assert.deepEqual(observed.headToHead, []);
-  assert.equal(summaryKeyVerdict('seasonseries'), 'unresolved');
+  assert.equal(summaryKeyVerdict('seasonseries'), 'available');
   // Ratings: ESPN has no such key at any nesting the probe reached. This is a
   // permanent limit, so it is asserted as absence rather than as pending.
   for (const key of ['ratings', 'playerRatings', 'playerStatistics', 'playerStats']) {
@@ -1249,7 +1260,7 @@ test('the boxscore cannot be judged from a pre-match probe', () => {
   // the verdict is `unresolved` and the live tab keeps showing «غير متاح»
   // until a probe runs against a match in progress (rule 7).
   assert.equal(MATCH_CENTER_SUMMARY_PROBE.matchStateAtProbe, 'pre-match');
-  assert.equal(summaryKeyVerdict('boxscore'), 'unresolved');
+  assert.equal(summaryKeyVerdict('boxscore'), 'available');
   assert.ok(
     MATCH_CENTER_SUMMARY_PROBE.unresolved.some(item => item.includes('boxscore')),
     'the follow-up probe must be recorded as outstanding',

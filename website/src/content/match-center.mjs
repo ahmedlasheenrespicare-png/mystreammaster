@@ -45,6 +45,17 @@ export const MATCH_CENTER_VERIFICATION = {
     { id: '401879259', date: '2026-10-17T14:00Z', name: 'Ipswich Town at Manchester City', venue: 'Etihad Stadium', inTrial: true },
     { id: '401879258', date: '2026-10-17T16:30Z', name: "Aston Villa at Newcastle United", venue: "St. James' Park", inTrial: true },
   ],
+  /* مخرجات P0 (2026-10-16، ثاني إرسال من صاحب المشروع لنفس نقطة النهاية):
+     `competitors[].team.id` لكل فريق — أصل معرّفات الفرق الستة المخزّنة في
+     `externalIds.espn` لكل فريق، وبها يُربط Form بالفريق لا باسمه. */
+  receivedTeams: [
+    { event: '401879259', side: 'home', id: '382', name: 'Manchester City' },
+    { event: '401879259', side: 'away', id: '373', name: 'Ipswich Town' },
+    { event: '401879262', side: 'home', id: '337', name: 'Brentford' },
+    { event: '401879262', side: 'away', id: '364', name: 'Liverpool' },
+    { event: '401879258', side: 'home', id: '361', name: 'Newcastle United' },
+    { event: '401879258', side: 'away', id: '362', name: 'Aston Villa' },
+  ],
   /* قاعدة اشتقاق `sourceName`: اسم الحدث لدى ESPN بصيغة «{الضيف} at {المضيف}».
      الاسم الحاسم وقت التشغيل هو `competitors[].team.displayName` الذي تقرأه
      `parseScoreboard` في `lib/matches.mjs` فعلاً؛ أما `sourceName` هنا فللقطة
@@ -118,10 +129,10 @@ export const MATCH_CENTER_SUMMARY_PROBE = {
     { key: 'format', verdict: 'available', rule: 'البند 4', note: 'بيانات وصفية عن نظام المسابقة؛ قيمة تحريرية منخفضة.' },
     { key: 'meta', verdict: 'available', rule: 'البند 11', note: 'بيانات وصفية للاستجابة نفسها، تصلح لوقت القراءة.' },
     { key: 'standings', verdict: 'available-not-used', rule: 'البند 11', note: 'الترتيب متاح هنا، لكن `standings.php` القائمة تخدم `eng.1` بمخبأ مشترك؛ أخذ نسخة لكل مباراة يضاعف القراءات ثلاثاً ويخرق «ترتيب مشترك بين المباريات الثلاث».' },
-    { key: 'boxscore', verdict: 'unresolved', rule: 'البند 7', note: 'حاوي أرقام المباراة والأحداث. فارغ قبل البداية بطبيعته، فلا يُستنتج شيء عن وقت المباراة إلا بفحص أثناء مباراة حيّة.' },
-    { key: 'lastFiveGames', verdict: 'unresolved', rule: 'البند 9', note: 'مرشّح لحمل المقاييس الأربعة؛ لم يُحسم، وفترة العينة شرطٌ لرسم الرادار.' },
+    { key: 'boxscore', verdict: 'available', rule: 'البند 7', note: 'مسبار P1 (مباراة منتهية): `teams` فقط، 29 إحصائية باسمها لكل فريق. تُستهلك في مباشر/بعد المباراة بمرحلتها المعتمدة.' },
+    { key: 'lastFiveGames', verdict: 'available', rule: 'البند 9', note: 'مسبارا P1/P3: خمس مباريات لكل فريق بحدث كامل (تاريخ/خصم/نتيجة/W-D-L) — مصدر مستوى الفريقين. ليست حاملة «المقاييس الأربعة» المجهولة الحاوي.' },
     { key: 'leaders', verdict: 'unresolved', rule: 'البند 9', note: 'مرشّح ثانٍ لحمل المقاييس الأربعة؛ الخلط بين المرشّحين يعني مقارنة أرقام فترتين مختلفتين.' },
-    { key: 'seasonseries', verdict: 'unresolved', rule: 'البند 6 و8', note: 'المرشّح الوحيد للمواجهات السابقة بعد فراغ `h2h`؛ لم يُفحص محتواه ولا إمكانية تمييز الوديات.' },
+    { key: 'seasonseries', verdict: 'available', rule: 'البند 6 و8', note: 'مسبارا P1/P3: آخر خمس مواجهات بنتائج وبطولات مسماة؛ الودية تُشتق من اسم البطولة وحده، ولا ملعب في عناصرها.' },
     { key: 'rosters', verdict: 'confined', rule: 'البند 6', note: 'قوائم اللاعبين **ليست** تشكيلاً معلناً. عرضها على أنها تشكيل تخمينٌ لأسماء اللاعبين، وهو ممنوع؛ تبقى التشكيلات «لم يُعلن بعد».' },
     { key: 'broadcasts', verdict: 'confined', rule: 'البند 12', note: 'أسماء القنوات تُعرض في «التوثيق والمراجعة» وحده.' },
     { key: 'news', verdict: 'forbidden', rule: 'البند 12', note: 'لا نسخ مقالات كاملة ولا صور ولا وجوه؛ الروابط في «التوثيق والمراجعة» وحده.' },
@@ -132,11 +143,67 @@ export const MATCH_CENTER_SUMMARY_PROBE = {
   ],
   /* ما يبقى معلّقاً ويحتاج فحصاً واحداً إضافياً قبل استعمال أيٍّ منه. */
   unresolved: [
-    'أي مفتاح يحمل المقاييس الأربعة، وما قيمها، وما فترة العينة (موسم حتى الآن؟ آخر خمس مباريات؟)',
-    'هل المقاييس الأربعة متجانسة الفترة بين الفريقين — شرط البند 9 لمقارنة ما قبل المباراة',
-    'هل `seasonseries` يحمل مواجهات سابقة فعلاً، وهل يمكن تمييز الوديات فيها لاستبعادها',
-    'ماذا يحمل `boxscore` أثناء المباراة: أحداث، `keyEvents`، إحصائيات، وهل يُتميَّز الهدف الملغى بقرار VAR',
-    'هل تظهر `lineups` لاحقاً وبأي مهلة قبل البداية',
+    'أي مفتاح يحمل المقاييس الأربعة المجمّعة، وما قيمها، وما فترة العينة — مقارنة ما قبل اللقاء تفضل بلا رادار حتى تُحسم',
+    'حدث ملغى/مؤكد بعد VAR وجزاء وطرد في `keyEvents` — تصنيفها وشكلها بلا عينة بعد',
+    'تواتر تغيّر `boxscore`/`keyEvents` أثناء اللعب وتوقيت امتلاء `rosters` قبل البداية (مسبار P2)',
+  ],
+};
+
+/* ==========================================================================
+   فحص P1 — `summary` لمباراة منتهية (Fulham at Ipswich Town, 401879265)
+   --------------------------------------------------------------------------
+   أرسل صاحب المشروع المخرجات في 2026-10-16 (وصلت مقصوصة الرأس). المؤكد منها
+   حرفياً أدناه؛ وما كان في الجزء المقصوص يبقى «غير مفحوص» ولا يُستنتج.
+========================================================================== */
+export const MATCH_CENTER_FINISHED_PROBE = {
+  probedAt: '2026-10-16T00:00:00Z',
+  provider: 'espn',
+  endpoint: 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879265',
+  subjectEventId: '401879265',
+  matchStateAtProbe: 'finished (STATUS_FULL_TIME, 2026-10-10)',
+  confirmed: {
+    /* `seasonseries` مصفوفة بسلسلة «head-to-head» واحدة: عنوان، «Last 5
+       Matchups»، وأحداث بكلٍّ من: id وتاريخ وحالة post مكتملة، ومتنافسان
+       بمعرّف فريق ونتيجة، و`competitionName` (دوري/كأس رابطة/تشامبيونشيب).
+       لا وسم وديات صريح ولا ملعب ولا وقت إضافي/ترجيح في العينة المرصودة. */
+    seasonseries: 'present-head-to-head-last-5-all-competitions',
+    /* `boxscore` مفتاحه الوحيد `teams`، ولكل فريق نفس 29 إحصائية ترتيباً
+       وتسميةً (استحواذ، تسديدات كلية/على المرمى، ركنيات، أخطاء، تسلل،
+       بطاقات، تمريرات ودقتها، تصديات، اعتراضات...). لا إحصائية خارج
+       المرمى باسمها — لا تُشتق إلا بتعريف موثق. */
+    teamStatistics: 'boxscore.teams-29-stats-identical-both-sides',
+    /* أحداث ببنية كاملة: id، type{id,text,type} (Goal 70 وGoal - Header
+       وبطاقة صفراء 94 وتبديل 76 وانطلاقة/استراحة/نهاية كأحداث إطارية)،
+       period، clock{value بالثواني، displayValue «55'»}، scoringPlay،
+       team{id}، participants[athlete] (مسجّل/مبدَّل/مُنذر)، wallclock.
+       عينة هذه المباراة بلا جزاء ولا طرد ولا VAR — فئتا «ملغى/مؤكد بعد
+       VAR» لم تُرصدا بعد وتبقيان غير معايرتين حتى عينة تحملها. */
+    keyEvents: 'present-full-shape-goal-sub-card-confirmed-var-unseen',
+    /* ⚠️ اكتشاف لا يُبنى عليه بعد: أحداث الأهداف تحمل `fieldPositionX/Y`
+       و`fieldPosition2X/Y` و`goalPositionY` (نسب مئوية ظاهرياً). هذه
+       مواقع **أهداف فقط** من `keyEvents`، لا كل التسديدات، ودلالة
+       المحاور/الاتجاه غير موثقة — فلا تفتح باب Shot map (انظر التقرير). */
+    goalCoordinates: 'present-on-goals-only-semantics-undocumented',
+    /* حدث Form كامل: gameDate، home/awayTeamId ونتيجتاهما، gameResult
+       (W/D/L من منظور الفريق صاحب القائمة)، competitionName، opponent.
+       آخر 5 هنا كلها دوري — والنطاق يُقرأ من كل حدث لا يُفترض. */
+    lastFiveGames: 'present-5-per-team-full-event-shape',
+    /* `rosters` (لا `lineups`): لكل فريق formation («4-2-3-1» هنا) وقائمة
+       20 وwinner. حقول العنصر الواحد (أساسي/بديل) لم تُرصد بعد، وتوقيت
+       الظهور قبل البداية مجهول — فالتشكيل المؤكد مشروط لا مفتوح. */
+    rosters: 'present-formation-and-20-per-team-entry-shape-unprobed',
+    /* حتى بعد النهاية: مفتاح `lineups` غير موجود أصلاً. */
+    lineupsKey: 'absent-even-after-full-time',
+    /* `gameInfo` = ملعب (id واسم ومدينة/دولة فقط) + حضور. لا حكم في العينة. */
+    gameInfo: 'venue+attendance-only-no-referee-in-sample',
+    /* قادة إحصائيات لاعبين (تمريرات دقيقة، تدخلات دفاعية...) بلا أي تقييم. */
+    leaders: 'player-stat-leaders-no-ratings',
+  },
+  stillUnprobed: [
+    'حدث ملغى/مؤكد بعد VAR أو جزاء أو طرد — تصنيفها وشكلها (لا عينة بعد)',
+    'محتوى ما قبل البداية لمبارياتنا: lastFiveGames/seasonseries/rosters (P3)',
+    'سلوك أثناء اللعب وتوقيت إعلان التشكيلات قبل البداية (P2 يوم مباراة حية)',
+    'دلالة محاور إحداثيات الأهداف واتجاه اللعب — توثيق لا عينة',
   ],
 };
 
@@ -188,14 +255,17 @@ export const MATCH_CENTER_MATCHES = [
          يُستضاف محلياً (البند 12)؛ طبقة البيانات الحية تملؤه من
          `team.logo` الذي ترسله ESPN، كما تفعل `MatchesPage` اليوم. */
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      /* معرّف فريق ESPN مؤكد من مخرجات P0 (2026-10-16، أرسلها صاحب المشروع):
+         `competitors[].team.id` لحدث 401879259. به تُربط نتائج Form بالفريق لا باسمه. */
+      externalIds: { espn: '382', apifootball: null },
     },
     away: {
       name: 'إيبسويتش تاون',
       shortName: 'إيبسويتش',
       sourceName: 'Ipswich Town',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      /* معرّف فريق ESPN من P0 — انظر `MATCH_CENTER_VERIFICATION.receivedTeams`. */
+      externalIds: { espn: '373', apifootball: null },
     },
   },
   {
@@ -216,14 +286,14 @@ export const MATCH_CENTER_MATCHES = [
       shortName: 'برينتفورد',
       sourceName: 'Brentford',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '337', apifootball: null },
     },
     away: {
       name: 'ليفربول',
       shortName: 'ليفربول',
       sourceName: 'Liverpool',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '364', apifootball: null },
     },
   },
   {
@@ -245,14 +315,14 @@ export const MATCH_CENTER_MATCHES = [
       shortName: 'نيوكاسل',
       sourceName: 'Newcastle United',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '361', apifootball: null },
     },
     away: {
       name: 'أستون فيلا',
       shortName: 'فيلا',
       sourceName: 'Aston Villa',
       logo: null,
-      externalIds: { espn: null, apifootball: null },
+      externalIds: { espn: '362', apifootball: null },
     },
   },
 ];
@@ -278,6 +348,23 @@ export const MATCH_CENTER_DOCUMENTATION = {
       note: 'جدول واحد مشترك بين المباريات الثلاث، لا يُطلب لكل مباراة على حدة.',
     },
   ],
+};
+
+/* فحص P3 — `summary?event=401879262` قبل البداية (أرسله صاحب المشروع
+   2026-10-16): `lastFiveGames` بخمس مباريات لكل فريق و`seasonseries`
+   بخمسة أحداث — متاحان قبل البداية فعلاً. `rosters` موجودة لكن فارغة
+   (0 لاعب، بلا خطة) و`keyEvents` صفر — أي «لم يُعلن بعد» هو الوصف الصادق
+   للتشكيلات الآن. وبذلك اكتملت مسابير P0/P1/P3؛ يبقى P2 الحي وحده. */
+export const MATCH_CENTER_PREMATCH_PROBE = {
+  probedAt: '2026-10-16T00:00:00Z',
+  provider: 'espn',
+  endpoint: 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879262',
+  confirmed: {
+    lastFiveGamesPreMatch: 'present-5-per-team',
+    seasonseriesPreMatch: 'present-5-events',
+    rostersPreMatch: 'present-but-empty-0-players-no-formation',
+    keyEventsPreMatch: '0',
+  },
 };
 
 /* ───────────────── مسارات ومساعدات ───────────────── */

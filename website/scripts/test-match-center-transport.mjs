@@ -712,3 +712,70 @@ test('the mock fabricates no assets, so a simulated page never loads an outside 
   });
   assert.deepEqual(withLogos.logos, { home: 'https://cdn.example/h.png', away: 'https://cdn.example/a.png' });
 });
+
+test('form and head-to-head from the provider reach the snapshot aggregated by team id', () => {
+  const entry = (id, date, home, away, hg, ag) => ({
+    fixtureId: id, date, competition: '2026-27 English Premier League',
+    opponent: 'خصم', homeTeamId: home, awayTeamId: away, homeGoals: hg, awayGoals: ag,
+  });
+  const snapshot = adaptSnapshot(payload(HOME, {
+    form: {
+      home: [entry('f1', '2026-10-03T14:00:00Z', '382', '360', 3, 0)],
+      away: [entry('f2', '2026-10-03T14:00:00Z', '370', '373', 2, 2)],
+    },
+    h2h: [{
+      fixtureId: 'h1', date: '2025-01-05T14:00:00Z', competition: '2024-25 English Premier League',
+      year: null, friendly: false, completed: true,
+      home: 'Manchester City', away: 'Ipswich Town', homeGoals: 2, awayGoals: 2,
+    }],
+  }), HOME);
+
+  // Manchester City (382) bound by team id: one home win. Ipswich (373): away draw.
+  assert.equal(snapshot.form.home.played, 1);
+  assert.equal(snapshot.form.home.wins, 1);
+  assert.equal(snapshot.form.away.draws, 1);
+  assert.deepEqual([snapshot.form.away.goalsFor, snapshot.form.away.goalsAgainst], [2, 2]);
+  assert.equal(snapshot.h2h.length, 1);
+  assert.equal(snapshot.h2h[0].completed, true);
+
+  // No form in the payload stays null — the panel shows «غير متاح», not a
+  // zeroed record invented by the adapter.
+  const absent = adaptSnapshot(payload(HOME, {}), HOME);
+  assert.equal(absent.form, null);
+});
+
+// ── مرحلة 2: أحداث الخط الزمني وإحصائيات البوكس سكور (شكل P1 المؤكد) ──
+test('مرحلة 2: التبديل يضع المبدَّل لاعباً مرتبطاً، والهدف لا يدّعي مساعدة', () => {
+  const live = { status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } } };
+  const snap = adaptSnapshot(payload(HOME, {
+    ...live,
+    events: [
+      { id: 's1', type: 'Substitution', minute: 60, extraMinute: null, period: 2, side: 'home',
+        player: { id: 'p1', name: 'الوافد الجديد' }, assist: { id: 'p2', name: 'المستبدَل القديم' },
+        team: { name: HOME.name, homeAway: 'home' }, detail: 'Substitution' },
+      { id: 'g1', type: 'Goal - Volley', minute: 45, extraMinute: 2, period: 1, side: 'home',
+        player: { id: 'p3', name: 'المسجّل' }, assist: null, // مشارك ثانٍ بدور غير مؤكد لا يُسمّى مساعدة
+        team: { name: HOME.name, homeAway: 'home' }, detail: 'هدف من تسديدة قوية' },
+    ],
+  }), HOME);
+  assert.equal(snap.events[0].type, 'substitution');
+  assert.equal(snap.events[0].relatedPlayer.name, 'المستبدَل القديم');
+  assert.equal(snap.events[1].type, 'goal');
+  assert.deepEqual([snap.events[1].minute, snap.events[1].extraMinute], [45, 2]);
+  assert.equal(snap.events[1].relatedPlayer, null);
+  assert.equal(snap.events[1].player.name, 'المسجّل');
+  assert.equal(snap.events[1].id, 'g1', 'معرّف المصدر محفوظ لبصمة الإعلان');
+});
+
+test('مرحلة 2: الإحصائيات تمر كما أرسلها الخادم — صفر حقيقي يبقى وغياب يبقى غياباً', () => {
+  const live = { status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } } };
+  const rows = [
+    { key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 58, away: 42 },
+    { key: 'totalShots', label: 'التسديدات', unit: '', home: 0, away: 0 },
+    { key: 'foulsCommitted', label: 'الأخطاء', unit: '', home: 7, away: null },
+  ];
+  const snap = adaptSnapshot(payload(HOME, { ...live, statistics: rows }), HOME);
+  assert.deepEqual(snap.statistics, rows); // لا إعادة تسمية ولا تحويل صفر↔null
+  const absent = adaptSnapshot(payload(HOME, { ...live }), HOME);
+  assert.equal(absent.statistics, null, 'قبل تأكيد المصدر تبقى «غير متاح» لا أصفار');
+});

@@ -591,6 +591,71 @@ export function mergeH2h(existing = [], self = null, limit = 3) {
     .slice(0, Math.max(0, limit));
 }
 
+/* ─────────── مستوى الفريق Form: تجميع صادق على العدد الفعلي ─────────── */
+
+/* بند الرسالة التكميلية 1ب: آخر خمس مباريات W/D/L وأهداف له وعليه، على
+   **العدد الفعلي المتاح** — لا قسمة على 5 إن توفرت 3، ولا تحويل نتيجة
+   أو هدف مفقود إلى صفر. المدخل أحداث مطبّعة بشكل واحد (من `lastFiveGames`
+   لدى المزوّد أو مشتقة من جدول نتائج مؤكد)، والمخرج تجميع بلا أي رقم
+   من خارجها. النتيجة تُحسب من الهدفين وطرف الفريق، لا من وسم مزوّد وحده.
+
+   كل حدث: { fixtureId, date, competition, opponent, homeTeamId,
+   awayTeamId, homeGoals, awayGoals } — حدث بلا هدفين أو بلا تاريخ صالح
+   أو لا يخص الفريق **يُستبعد من العدّ** ولا يصير تعادلاً صفرياً. */
+export function summarizeForm(entries, teamId, limit = 5) {
+  const wanted = teamId === null || teamId === undefined ? '' : String(teamId).trim();
+  if (wanted === '' || !Array.isArray(entries)) return null;
+
+  const countable = entries.filter(entry => {
+    if (!entry || typeof entry !== 'object') return false;
+    if (typeof entry.date !== 'string' || !Number.isFinite(Date.parse(entry.date))) return false;
+    if (firstNumber(entry.homeGoals) === null || firstNumber(entry.awayGoals) === null) return false;
+    return String(entry.homeTeamId ?? '') === wanted || String(entry.awayTeamId ?? '') === wanted;
+  });
+  if (countable.length === 0) return null;
+
+  const matches = countable
+    .slice()
+    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+    .slice(0, Math.max(0, limit))
+    .map(entry => {
+      const isHome = String(entry.homeTeamId ?? '') === wanted;
+      const goalsFor = firstNumber(isHome ? entry.homeGoals : entry.awayGoals);
+      const goalsAgainst = firstNumber(isHome ? entry.awayGoals : entry.homeGoals);
+      return {
+        fixtureId: entry.fixtureId ?? null,
+        date: entry.date,
+        competition: typeof entry.competition === 'string' && entry.competition.trim() !== '' ? entry.competition.trim() : null,
+        opponent: typeof entry.opponent === 'string' && entry.opponent.trim() !== '' ? entry.opponent.trim() : null,
+        venue: isHome ? 'home' : 'away',
+        goalsFor,
+        goalsAgainst,
+        result: goalsFor > goalsAgainst ? 'W' : goalsFor < goalsAgainst ? 'L' : 'D',
+      };
+    });
+
+  const played = matches.length;
+  const sum = key => matches.reduce((total, match) => total + match[key], 0);
+  const goalsFor = sum('goalsFor');
+  const goalsAgainst = sum('goalsAgainst');
+  const round2 = value => Math.round(value * 100) / 100;
+
+  return {
+    matches,
+    played,
+    wins: matches.filter(match => match.result === 'W').length,
+    draws: matches.filter(match => match.result === 'D').length,
+    losses: matches.filter(match => match.result === 'L').length,
+    goalsFor,
+    goalsAgainst,
+    /* المتوسطان مسمّيان بذاتهما ومقسومان على العدد الفعلي — لا «متوسط» مبهم. */
+    avgGoalsFor: round2(goalsFor / played),
+    avgGoalsAgainst: round2(goalsAgainst / played),
+    /* نطاق العينة كما ورد في كل حدث، لا كما نتمنى: بطولة واحدة تظهر باسمها. */
+    competitions: [...new Set(matches.map(match => match.competition).filter(Boolean))],
+  };
+}
+
 /* ───────── ختم لحظة النهاية: شرط توقف التحديث (البند 8 و11) ───────── */
 
 /* لماذا هذه الدالة ضرورية؟

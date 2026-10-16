@@ -1,4 +1,5 @@
 import LiveMatchesBoard from '../components/LiveMatchesBoard';
+import LeagueStandings, { LeagueStandingsUnavailable } from '../components/LeagueStandings';
 import { BroadcastersSection, FaqSection, LandingBreadcrumb, ServiceStrip } from '../components/LandingSections';
 import { type LeagueLanding } from '../content/competitions';
 import './matches.css';
@@ -35,6 +36,14 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
           heading="جدول المباريات والنتائج"
           note="تغطّي هذه الصفحة مباريات هذه البطولة فقط ضمن التواريخ المختارة من التقويم."
         />
+
+        {/* قسم جدول الترتيب — مباشرة بعد لوحة المباريات كما اتُّفق. بطولة لم
+            يثبت مصدر ترتيبها بعد تعرض «غير متاح» بصراحة بدل جدول مخمَّن. */}
+        {landing.standings ? (
+          <LeagueStandings league={landing.standings.leagueId} title={landing.shortName} />
+        ) : landing.standingsUnavailable ? (
+          <LeagueStandingsUnavailable title={landing.shortName} text={landing.standingsUnavailable} />
+        ) : null}
 
         <BroadcastersSection broadcasters={landing.broadcasters} subject={landing.shortName} />
         <FaqSection faq={landing.faq} />

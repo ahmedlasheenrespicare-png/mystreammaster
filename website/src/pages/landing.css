@@ -192,3 +192,189 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   قسم «جدول الترتيب» — بطولة واحدة لكل صفحة
+   --------------------------------------------------------------------------
+   • الجدول داخل منطقة تمرير أفقية خاصة به، فلا يسبب تمريراً أفقياً للصفحة
+     عند 320px (نفس مبدأ جداول التوثيق القائمة).
+   • RTL بخصائص منطقية (padding-inline / text-align: start) لا بيسار/يمين.
+   ========================================================================== */
+
+.ls-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.ls-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.ls-phase,
+.ls-season {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #52525c;
+  background: #fff;
+  border: 1px solid #e4e1d8;
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+
+.ls-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #7a3d00;
+  background: #fff4d6;
+  border: 1px solid #e8cfa0;
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+
+/* الوسم مخفي حتى تتعذّر قراءة أحدث — وجوده في HTML جزء من العقد */
+.ls-badge[hidden] {
+  display: none;
+}
+
+.ls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 14px;
+}
+
+.ls-status {
+  margin: 0;
+  color: #3f3f46;
+  font-size: 0.84rem;
+  line-height: 1.9;
+}
+
+.ls-refresh {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #0b0b0f;
+  color: #d8ff3e;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.ls-refresh:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.ls-refresh:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ls-refresh:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+}
+
+.ls-scroll {
+  margin-top: 12px;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e4e1d8;
+  border-radius: 16px;
+}
+
+.ls-scroll:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+}
+
+.ls-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.ls-table caption {
+  caption-side: top;
+  text-align: start;
+  padding: 14px 16px 6px;
+  color: #52525c;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.ls-table th,
+.ls-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #efede6;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ls-table thead th {
+  background: #f7f6f1;
+  color: #3f3f46;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.ls-table tbody th,
+.ls-table thead th.ls-team {
+  text-align: start;
+}
+
+.ls-table tbody th {
+  font-weight: 700;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ls-table tbody tr:last-child th,
+.ls-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.ls-table .ls-points {
+  font-weight: 900;
+  color: #17206b;
+}
+
+.ls-hint {
+  margin-top: 10px;
+  color: #71717a;
+  font-size: 0.78rem;
+  line-height: 1.9;
+}
+
+.ls-source {
+  margin-top: 6px;
+  color: #71717a;
+  font-size: 0.76rem;
+  line-height: 1.95;
+}
+
+.ls-source code {
+  font-size: 0.74rem;
+  background: #f2f1ec;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.league-standings--unavailable h2 {
+  margin-bottom: 10px;
+}

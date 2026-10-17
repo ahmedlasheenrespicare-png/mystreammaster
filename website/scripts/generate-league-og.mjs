@@ -33,6 +33,9 @@ const OG_FILES = {
   'دوري-أبطال-أوروبا': 'league-uefa-champions',
   'الدوري-الإنجليزي': 'league-premier-league',
   'الدوري-الإسباني': 'league-la-liga',
+  'الدوري-الفرنسي': 'league-ligue-1',
+  'الدوري-الألماني': 'league-bundesliga',
+  'الدوري-الإيطالي': 'league-serie-a',
   'الدوري-السعودي': 'league-saudi-pro-league',
 };
 

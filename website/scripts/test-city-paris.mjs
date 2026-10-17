@@ -32,12 +32,16 @@ test('three full standings tables validate; missing/zero and signed differences 
     const bad=structuredClone(data);bad.entries[1].rank=bad.entries[0].rank;assert.throws(()=>cityParisStandings(bad,table.league));
   }
 });
-test('French table is a complete dated snapshot without extending the PHP boundary',async()=>{
-  const php=await fs.readFile(new URL('../public/standings.php',import.meta.url),'utf8');
-  assert.doesNotMatch(php,/'fra\.1'\s*=>/);
+test('French table is a complete dated snapshot and stays un-wired from the live standings service',async()=>{
+  /* كان الفحص يمنع 'fra.1' في قائمة الوسيط؛ وبعد توسيع قائمة الوسيط المعتمد
+     صار الحرص على الحدّ نفسه في موضعه الصحيح: بطاقة التقرير تبقى لقطة مجمّدة
+     غير موصولة بخطّاف التحديث الحيّ (data-standing-league)، ويؤكد الباقي ثبات
+     الحالة والنص وعدد الصفوف. القائمة المسموحة في الوسيط تخصّ صفحات البطولات
+     وحدها، فلا تُسحب بياناتها الحيّة إلى تقارير المواجهات المراجَعة. */
   const $=load('<main data-city-paris-report><div data-city-report-sections></div></main>');
   renderCityParisReport($,report);
   const card=$('[data-city-standing="fra.1"]');
+  assert.equal(card.attr('data-standing-league'),undefined);
   assert.equal(card.attr('data-feed-state'),'snapshot');
   assert.equal(card.find('tbody tr').length,18);
   assert.match(card.find('[data-city-standing-status]').text(),/لقطة ثابتة مؤرخة/);

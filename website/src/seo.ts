@@ -102,6 +102,9 @@ const OG_BY_ROUTE: Record<string, string> = {
   "matches/الدوري-السعودي": "league-saudi-pro-league",
   "matches/دوري-أبطال-أوروبا": "league-uefa-champions",
   "matches/الدوري-الإسباني": "league-la-liga",
+  "matches/الدوري-الفرنسي": "league-ligue-1",
+  "matches/الدوري-الألماني": "league-bundesliga",
+  "matches/الدوري-الإيطالي": "league-serie-a",
   /* صفحات المنتخبات — /world-cup-2026/{slug} */
   "world-cup-2026/المغرب": "wc-morocco",
   "world-cup-2026/مصر": "wc-egypt",

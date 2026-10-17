@@ -22,6 +22,7 @@ on:
     paths:
       - 'website/scripts/fetch-standings-snapshot.mjs'
       - 'website/scripts/probe-standings.mjs'
+      - 'website/public/standings.php'
       - '.github/workflows/standings-snapshot.yml'
 
 permissions:
@@ -43,6 +44,17 @@ jobs:
         with:
           node-version: 22
           # لا حاجة لـ npm install: السكربتات المعنية بلا أي اعتماد خارجي
+      - name: Lint the standings proxy (PHP syntax)
+        # الوسيط هو نقطة الوصل مع المصدر، وخطأ صياغة فيه يعطّل التحديث الحيّ
+        # بصمت. الفحص هنا يمنع وصوله؛ وإن غاب مفسّر PHP يُسجَّل تنبيه ظاهر
+        # بدل تمرير صامت يوهم بأن الملف سليم.
+        run: |
+          if command -v php >/dev/null 2>&1; then
+            php -l website/public/standings.php
+            echo "✅ صياغة الوسيط سليمة (php -l)"
+          else
+            echo "::warning::PHP غير متاح في هذه الصورة — لم يُفحص نحو الوسيط"
+          fi
       - name: Fetch + validate from the trusted source
         env:
           SNAPSHOT_LEAGUES: ${{ inputs.snapshot_leagues || 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1' }}

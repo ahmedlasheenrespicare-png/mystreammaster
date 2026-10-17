@@ -66,10 +66,12 @@ test('Italian and Spanish full standings retain ranks, real zeros and missing va
  assert.equal(report.standings[1].entries.find(e=>e.teamId==='104').rank,3);
  assert.equal(report.standings[2].entries.find(e=>e.teamId==='86').rank,4);
 });
-test('Italian snapshot stays outside PHP scope; templates and sitemap use the new route',async()=>{
- const php=await fs.readFile(new URL('../public/standings.php',import.meta.url),'utf8');
- assert.doesNotMatch(php,/'ita\.1'\s*=>/);
+test('Italian snapshot stays un-wired from the live standings service; templates and sitemap use the new route',async()=>{
+ /* كان الفحص يمنع 'ita.1' في قائمة الوسيط؛ وبعد توسيع القائمة المعتمد صار
+    الحرص على الحدّ نفسه: بطاقة التقرير لقطة مجمّدة غير موصولة بخطّاف التحديث
+    الحيّ، والقائمة المسموحة في الوسيط تخصّ صفحات البطولات وحدها. */
  const card=render()('[data-roma-standing="ita.1"]');
+ assert.equal(card.attr('data-standing-league'),undefined);
  assert.equal(card.attr('data-feed-state'),'snapshot');
  assert.equal(card.find('tbody tr').length,20);
  assert.match(card.find('[data-roma-standing-status]').text(),/لقطة ثابتة مؤرخة/);

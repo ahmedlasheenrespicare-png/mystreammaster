@@ -2,22 +2,36 @@
 /**
  * Isolated, read-only standings endpoint, approved separately from the existing
  * PHP services. No arbitrary URLs, API secrets, visitor cookies or account data.
- * The only upstream is ESPN's public standings API, and every league below was
+ * The only upstream is ESPN's public standings API, and every served league was
  * admitted only after a documented probe proved its upstream uid and team count.
  * Requires PHP 7.4+ with cURL. Cache files contain public football data only.
  */
 declare(strict_types=1);
 
+/* البطولات الثلاث التي بُنيت عليها لقطة صفحات التوثيق — وهي عينها المجموعة
+   التي يبني عليها اختبار التشغيل القائم عيّناته، فتبقى كما هي بلا توسيع. */
 const SM_ST_LEAGUES = [
     'uefa.champions' => ['uid' => 's:600~l:775', 'count' => 36],
     'eng.1' => ['uid' => 's:600~l:700', 'count' => 20],
     'esp.1' => ['uid' => 's:600~l:740', 'count' => 20],
-    // أُضيفت بعد مسبار موثّق (2026-10-16) يثبت المعرّف وعدد الفرق لدى المصدر
+];
+
+/* بطولات أُضيفت بعد مسبار موثّق (تقرير المسبار في website/docs/standings-probe-report.json):
+   المعرّف وعدد الفرق مأخوذان من المصدر نفسه، ولا تُضاف بطولة قبل إثباتهما.
+   الدمج في خريطة واحدة يعني معاملة واحدة: نفس التحقق ونفس القواعد ونفس العدد
+   المطلوب لكل بطولة، بلا استثناء ولا مسار مختصر. */
+const SM_ST_LEAGUES_PROVEN = [
     'fra.1' => ['uid' => 's:600~l:710', 'count' => 18],
     'ger.1' => ['uid' => 's:600~l:720', 'count' => 18],
     'ita.1' => ['uid' => 's:600~l:730', 'count' => 20],
     'ksa.1' => ['uid' => 's:600~l:21231', 'count' => 18],
 ];
+
+/** القائمة الفعلية التي يخدمها الوسيط = الموثّقة + المثبتة بالمسبار */
+function sm_st_leagues(): array
+{
+    return SM_ST_LEAGUES + SM_ST_LEAGUES_PROVEN;
+}
 const SM_ST_TTL = 120;
 const SM_ST_STALE_TTL = 86400;
 const SM_ST_MAX_BYTES = 524288;
@@ -59,7 +73,7 @@ function sm_st_groups(array $node, string $league, int $depth = 0): array
 
 function sm_st_normalize(array $raw, string $league, int $readAt): array
 {
-    if (!isset(SM_ST_LEAGUES[$league]) || ($raw['uid'] ?? '') !== SM_ST_LEAGUES[$league]['uid']) {
+    if (!isset(sm_st_leagues()[$league]) || ($raw['uid'] ?? '') !== sm_st_leagues()[$league]['uid']) {
         throw new RuntimeException('UPSTREAM_SCHEMA_CHANGED');
     }
     $groups = sm_st_groups($raw, $league);
@@ -68,7 +82,7 @@ function sm_st_normalize(array $raw, string $league, int $readAt): array
     $season = sm_st_number($table['season'] ?? null);
     if ($season === null || $season < 2000 || $season > 2100
         || !isset($table['entries']) || !is_array($table['entries'])
-        || count($table['entries']) !== SM_ST_LEAGUES[$league]['count']) {
+        || count($table['entries']) !== sm_st_leagues()[$league]['count']) {
         throw new RuntimeException('UPSTREAM_SCHEMA_CHANGED');
     }
     $entries = []; $ranks = []; $ids = []; $hasNumbers = false;
@@ -112,7 +126,7 @@ function sm_st_normalize(array $raw, string $league, int $readAt): array
 
 function sm_st_upstream(string $league): array
 {
-    if (!isset(SM_ST_LEAGUES[$league])) throw new RuntimeException('INVALID_LEAGUE');
+    if (!isset(sm_st_leagues()[$league])) throw new RuntimeException('INVALID_LEAGUE');
     if (!function_exists('curl_init')) throw new RuntimeException('CURL_UNAVAILABLE');
     $url = 'https://site.web.api.espn.com/apis/v2/sports/soccer/' . $league . '/standings';
     $handle = curl_init($url);
@@ -181,7 +195,7 @@ function sm_st_result(?array $cached, string $code): array
 /** Injectable transport/cache path are PHP-only test seams, never request inputs. */
 function sm_st_service(string $league, int $now, string $directory, ?callable $transport = null): array
 {
-    if (!isset(SM_ST_LEAGUES[$league])) return ['status' => 400, 'body' => ['ok' => false, 'code' => 'INVALID_LEAGUE']];
+    if (!isset(sm_st_leagues()[$league])) return ['status' => 400, 'body' => ['ok' => false, 'code' => 'INVALID_LEAGUE']];
     $canCache = (is_dir($directory) || @mkdir($directory, 0700, true)) && is_writable($directory);
     $file = $directory . '/' . $league . '.json';
     $cached = $canCache ? sm_st_cache_read($file, $league, $now) : null;
@@ -228,7 +242,7 @@ function sm_st_http(): void
     if ($method !== 'GET' && $method !== 'HEAD') {
         header('Allow: GET, HEAD');
         $result = ['status' => 405, 'body' => ['ok' => false, 'code' => 'METHOD_NOT_ALLOWED']];
-    } elseif (count($_GET) !== 1 || !isset($_GET['league']) || !is_string($_GET['league']) || !isset(SM_ST_LEAGUES[$_GET['league']])) {
+    } elseif (count($_GET) !== 1 || !isset($_GET['league']) || !is_string($_GET['league']) || !isset(sm_st_leagues()[$_GET['league']])) {
         $result = ['status' => 400, 'body' => ['ok' => false, 'code' => 'INVALID_LEAGUE']];
     } else {
         $result = sm_st_service($_GET['league'], time(), sys_get_temp_dir() . '/sm-standings-v1');

@@ -146,6 +146,10 @@ test('HTML المنشور: الجدول كامل بلا JavaScript، والحا�
     ['matches/الدوري-الإسباني/index.html', 'esp.1', 20],
     ['matches/الدوري-الإنجليزي/index.html', 'eng.1', 20],
     ['matches/دوري-أبطال-أوروبا/index.html', 'uefa.champions', 36],
+    ['matches/الدوري-الفرنسي/index.html', 'fra.1', 18],
+    ['matches/الدوري-الألماني/index.html', 'ger.1', 18],
+    ['matches/الدوري-الإيطالي/index.html', 'ita.1', 20],
+    ['matches/الدوري-السعودي/index.html', 'ksa.1', 18],
   ];
   for (const [file, league, count] of cases) {
     const html = await readRoot(file);
@@ -160,12 +164,54 @@ test('HTML المنشور: الجدول كامل بلا JavaScript، والحا�
     /* لا نصوص تشخيص داخلية ولا أسماء مزوّدين خارج المصدر المعلن في الصفحة */
     assert.equal(/UPSTREAM_|SchemaChanged/.test(section.text()), false, `${file}: نص تشخيص داخلي ظاهر`);
   }
-  const saudi = await readRoot('matches/الدوري-السعودي/index.html');
-  const $saudi = load(saudi);
-  assert.equal($saudi('[data-league-standings]').length, 0, 'الدوري السعودي: ظهر جدول ترتيب قبل إثبات المصدر');
-  const saudiUnavailable = $saudi('.league-standings--unavailable').text();
-  assert.ok(saudiUnavailable.includes('غير متاح') && saudiUnavailable.includes('مصدر موثّق'), 'الدوري السعودي: نص «غير متاح» غير صريح');
-  assert.ok(saudiUnavailable.includes('لا يُستكمل من موقع آخر'), 'الدوري السعودي: ينقصه إعلان عدم التخمين');
+  /* البطولة التي رفض المصدر فحصها (المصري) لم تُؤهَّل ولم تُخمَّن — والحقل الذي
+     يعرض «غير متاح» يبقى قائماً في المصدر لأي بطولة يفشل مسبارها لاحقاً. */
+  assert.equal(
+    standings.standingsConfig('egy.1'),
+    undefined,
+    'بطولة رفض المصدر فحصها (HTTP 400) أُدرجت في المؤهَّلة',
+  );
+  assert.ok(
+    /standingsUnavailable/.test(await fs.readFile(path.join(website, 'src/content/competitions.ts'), 'utf8'))
+      && /standingsUnavailable/.test(await fs.readFile(path.join(website, 'src/pages/LeagueLandingPage.tsx'), 'utf8')),
+    'مسار «غير متاح» أُزيل من المصدر — لا بديل صريح لبطولة يفشل مسبارها',
+  );
+  for (const landing of landings) {
+    const html = await readRoot(`matches/${landing.slug}/index.html`);
+    const $ = load(html);
+    if (landing.standings) {
+      assert.equal($('.league-standings--unavailable').length, 0, `${landing.slug}: نص «غير متاح» مع جدول معروض`);
+    } else {
+      const text = $('.league-standings--unavailable').text();
+      assert.ok(text.includes('غير متاح'), `${landing.slug}: بلا جدول وبلا نص «غير متاح»`);
+    }
+  }
+});
+
+test('قائمة الوسيط وخريطة الواجهة وتقرير المسبار: ثلاثتها متطابقة على نفس المعرّفات والأعداد', async () => {
+  const php = await fs.readFile(path.join(root, 'standings.php'), 'utf8');
+  /* ملاحظة مهمة: معرّفات ESPN تحتوي أرقاماً («eng.1»)، فالنمط يجب أن يقبلها */
+  const phpLeagues = [...php.matchAll(/'([a-z0-9.]+)'\s*=>\s*\['uid'\s*=>\s*'([^']+)',\s*'count'\s*=>\s*(\d+)\]/g)]
+    .map((match) => ({ id: match[1], uid: match[2], count: Number(match[3]) }));
+  assert.equal(phpLeagues.length, standings.STANDINGS_LEAGUES.length, 'عدد بطولات الوسيط لا يطابق الواجهة');
+  const report = await readJson('docs/standings-probe-report.json');
+  const evidence = new Map([...report.snapshot, ...report.probe]
+    .filter((entry) => entry.ok !== false)
+    .map((entry) => [entry.league, entry]));
+  for (const entry of standings.STANDINGS_LEAGUES) {
+    const allowed = phpLeagues.find((row) => row.id === entry.id);
+    assert.ok(allowed, `${entry.id}: في الواجهة وغير مسموح في الوسيط`);
+    assert.equal(allowed.count, entry.count, `${entry.id}: عدد الفرق لا يطابق الوسيط`);
+    const proof = evidence.get(entry.id);
+    assert.ok(proof, `${entry.id}: بلا سند مسبار في تقرير المصدر`);
+    assert.equal(proof.uid, allowed.uid, `${entry.id}: معرّف الوسيط لا يطابق ما أثبته المسبار`);
+    assert.equal(proof.teams ?? proof.count, entry.count, `${entry.id}: عدد المسبار لا يطابق إعلان البطولة`);
+  }
+  for (const row of phpLeagues) {
+    assert.ok(standings.standingsConfig(row.id), `${row.id}: مسموح في الوسيط وغير مؤهَّل في الواجهة`);
+  }
+  /* البطولة غير المثبتة تبقى موثّقة كفشل صريح لا كنقص صامت */
+  assert.ok(report.probe.some((entry) => entry.ok === false), 'تقرير المسبار بلا أي سجل فشل موثّق');
 });
 
 /* ==========================================================================

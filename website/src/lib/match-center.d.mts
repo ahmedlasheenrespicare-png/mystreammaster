@@ -8,7 +8,7 @@ export type MatchCode =
 
 export type MatchPhase = 'pre' | 'live' | 'post' | 'terminal';
 
-export type TabId = 'preview' | 'history' | 'lineups' | 'live' | 'report';
+export type TabId = 'preview' | 'history' | 'lineups' | 'live' | 'analysis' | 'report' | 'notes';
 
 export type ProviderId = 'espn' | 'apifootball' | 'snapshot' | 'unknown';
 
@@ -257,6 +257,129 @@ export type FreshnessLevel = 'fresh' | 'aging' | 'stale' | 'failed' | 'invalid';
 export interface Freshness { text: string; level: FreshnessLevel }
 
 export interface Tab { id: TabId; label: string }
+
+/* ==========================================================================
+   تحليل المباراة — أنواع العقد (المنطق في match-center.mjs)
+   --------------------------------------------------------------------------
+   لا نوع هنا يحمل استنتاجاً: `StatComparisonRow` قيمتان وفارق ونسب إليهما،
+   و`SourceEventSummary`عدادات لوقائع وصلت. «من يسيطر» و«جودة الفرص» ليسا
+   حقلين لأنهما ليسا بيانات عندنا.
+========================================================================== */
+
+/** وصف الحدث كما يُقرأ على الملعب وفي التحليل — صيغة واحدة لا صيغتان. */
+export function describeEvent(event: MatchEvent | Partial<MatchEvent> | null | undefined): string | null;
+/** «55′» أو «45+2′»، أو `null` إن لم يرسل المصدر دقيقة. */
+export function eventMinuteLabel(event: MatchEvent | Partial<MatchEvent> | null | undefined): string | null;
+export const EVENT_TYPE_LABELS: Partial<Record<MatchEventType, string>>;
+export const EVENT_TYPE_UNCLASSIFIED_LABEL: string;
+/** تسمية النوع: المعرَّب أولاً، فنصّ المصدر، ثم `fallback`. */
+export function eventTypeName(
+  event: MatchEvent | Partial<MatchEvent> | null | undefined,
+  fallback?: string | null,
+): string | null;
+/** مفتاح تجميع الفلتر — غير المصنَّف يُجمَع عند تسمية المصدر لا عند `other`. */
+export function eventTypeFacet(event: MatchEvent | Partial<MatchEvent> | null | undefined): string;
+export function eventTypeFacetLabel(facet: string, events?: (MatchEvent | null | undefined)[]): string;
+export const EVENT_SIDE_LABELS: Record<'home' | 'away' | 'unassigned', string>;
+export interface EventPeriodInfo { value: string; label: string; classified: boolean }
+export function eventPeriodInfo(period: string | number | null | undefined): EventPeriodInfo | null;
+export function eventPeriodLabel(event: MatchEvent | Partial<MatchEvent> | null | undefined): string | null;
+/** له موضع على الشريط؟ (بلا دقيقة ⇒ لا موضع، ولا يُخترع واحد) */
+export function eventOnTimeline(event: MatchEvent | Partial<MatchEvent> | null | undefined): boolean;
+export function isRenderableEvent(event: unknown): boolean;
+export function renderableEvents(events: MatchEvent[] | null | undefined): MatchEvent[];
+
+/* ── فحص التوافر: ما يُعرض فعلاً في كل قسم ── */
+export function displayablePlayers(players: unknown): ScoredPlayer[];
+export function displayableStatistics(statistics: StatPair[] | null | undefined): StatPair[];
+export function displayableRatings(ratings: ScoredPlayer[] | null | undefined): ScoredPlayer[];
+export function confirmedLineupSides(lineups: MatchLineups | null | undefined): { side: 'home' | 'away'; data: LineupSide }[];
+export function displayableHeadToHead(entries: H2hEntry[] | null | undefined): H2hEntry[];
+export function hasDisplayableForm(form: TeamForm | null | undefined): boolean;
+export function displayableComparisonAxes(comparison: Comparison | null | undefined): ComparisonAxis[];
+export function headToHeadFor(
+  match: MatchDefinition | null | undefined,
+  snapshot: MatchSnapshot | null,
+  status: MatchStatus | null,
+): H2hEntry[];
+export function comparisonFor(snapshot: MatchSnapshot | null): Comparison;
+export function analysisIsAvailable(snapshot: MatchSnapshot | null): boolean;
+export function hasPreviewFacts(
+  match: MatchDefinition | null | undefined,
+  snapshot: MatchSnapshot | null,
+  status: MatchStatus | null,
+): boolean;
+export function computeAvailableTabs(input: {
+  match: MatchDefinition;
+  snapshot: MatchSnapshot | null;
+  status: MatchStatus | null;
+}): TabId[];
+
+/* ── مجموعات الأرقام ── */
+export interface StatComparisonRow {
+  key: string;
+  label: string;
+  /** الوحدة كما وردت من المصدر، أو `null`. */
+  unit: string | null;
+  unitIsPercent: boolean;
+  home: number | null;
+  away: number | null;
+  /** الطرفان رقم حقيقي عندهما فقط — يُقال «مقابل» عندئذٍ وحده. */
+  both: boolean;
+  difference: number | null;
+  /** الأوفر رقماً؛ وصف للكمية لا للأفضلية. */
+  leadingSide: 'home' | 'away' | null;
+  comparable: boolean;
+  /** نسبة كل طرف إلى الأعلى بينهما (0–1) — للتمثيل البصري فقط. */
+  bar: { home: number | null; away: number | null };
+}
+
+export interface StatGroup { id: string; label: string; rows: StatComparisonRow[] }
+
+export const STAT_GROUPS: { id: string; label: string; keys: string[] }[];
+export const STAT_GROUP_FALLBACK: { id: string; label: string };
+
+export function compareStatRow(stat: StatPair | null | undefined): StatComparisonRow;
+export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
+export function analysisFacts(statistics: StatPair[] | null | undefined): StatComparisonRow[];
+
+/* ── الوقائع المعدودة والفلاتر ── */
+export interface EventFilterOption { value: string; label: string; count: number }
+export interface SourceEventSummary {
+  total: number;
+  onTimeline: number;
+  untimed: number;
+  cancelled: number;
+  bySide: { home: number; away: number; unassigned: number };
+  types: EventFilterOption[];
+  periods: EventFilterOption[];
+  firstMinute: number | null;
+  lastMinute: number | null;
+}
+export interface EventFilterValues { team?: string; period?: string; type?: string }
+export interface EventFilterChoices {
+  total: number;
+  team: EventFilterOption[];
+  period: EventFilterOption[];
+  type: EventFilterOption[];
+}
+
+export const EVENT_FILTER_ALL: 'all';
+export const EVENT_FILTER_NO_PERIOD: 'none';
+export const EVENT_FILTER_NO_SIDE: 'unassigned';
+export const EVENT_FILTER_DEFAULTS: Required<EventFilterValues>;
+
+export function summarizeSourceEvents(events: MatchEvent[] | null | undefined): SourceEventSummary;
+export function eventMatchesFilters(event: MatchEvent | null | undefined, filters?: EventFilterValues): boolean;
+export function filterEvents(events: MatchEvent[] | null | undefined, filters?: EventFilterValues): MatchEvent[];
+export function eventFilterOptions(
+  events: MatchEvent[] | null | undefined,
+  names?: { homeName?: string | null; awayName?: string | null },
+): EventFilterChoices;
+export function activeEventFilterCount(filters?: EventFilterValues): number;
+
+/** غياب موصوف لا صف: ما لا يصل من المصدر يُقال ولا يُمثَّل. */
+export function unavailableDataNotes(snapshot: MatchSnapshot | null): { id: string; text: string }[];
 
 /* `MOCK` حالة قائمة لا بديل عن `MISS`: قراءة المحاكاة لم تمر بمخبأ الخادم،
    ووسمها `MISS` يوحي بأن طلباً حقيقياً جرى. */

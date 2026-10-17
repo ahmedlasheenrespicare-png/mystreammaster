@@ -332,12 +332,16 @@ export function mergeReads(current, results, now) {
 
 /* ──────────────────── التبويبات: الافتراضي وثبات الاختيار ──────────────────── */
 
+/* `analysis` و`notes` في هذا الترتيب عمداً: التحليل يقرأ من نفس أرقام
+   «مباشر» فيليه مباشرة، ودفتر المحلل أداة شخصية تأتي بعد كل ما هو بيانات. */
 export const TABS = [
   { id: 'preview', label: 'معاينة' },
   { id: 'history', label: 'المواجهات' },
   { id: 'lineups', label: 'التشكيلات' },
   { id: 'live', label: 'مباشر' },
+  { id: 'analysis', label: 'تحليل' },
   { id: 'report', label: 'بعد المباراة' },
+  { id: 'notes', label: 'دفتر المحلل' },
 ];
 
 /* البند 5: «عند الدخول نفتح التبويب المناسب للحالة». */
@@ -1001,6 +1005,518 @@ export function isVerified(match) {
   );
 }
 
+/* ==========================================================================
+   تحليل المباراة: فحص التوافر، والمقارنة بلا حكم قِيم، والفلاتر النقية
+   --------------------------------------------------------------------------
+   ثلاث قواعد تحكم هذا القسم كله:
+
+   1) **قرار «يُعرض أم لا» قرار بيانات لا قرار ذوق**. لذلك `displayable*` و
+      `analysisIsAvailable` و`computeAvailableTabs` هنا، ولا تُترك داخل مكوّن:
+      ما يُخفى القسم الفارغ هو نفسه ما يختبره Node، لا نسخة ثانية مكتوبة
+      في JSX تتباعد عن الاختبار مع أول تعديل.
+
+   2) **الرقم الأعلى ليس الأفضل**. `compareStatRow` تُعطي الطرفين قيمتيهما
+      ونسبتيهما إلى الأعلى بينهما، وتُخرج الفارق مطلقاً بلا جهة «رابحة».
+      زيادة الأخطاء والبطاقات والتسلل ليست ميزة، ومن يقرر ذلك ليس طبقة
+      البيانات — فلو خرجت من هنا بكلمة «أفضل» لتكررت في كل لوحة وتعذّر نفيها.
+
+   3) **ما لا يملكه المصدر لا يُرسم**. التشكيلات والتقييمات ومقارنة الموسم
+      وxG والإحداثيات المكانية لا تصل في ربط وسيط الموقع الحالي؛ تُعرض
+      كغياب موصوف (`unavailableDataNotes`)، ولا تتحول أصفاراً ولا واجهات
+      فارغة ولا رسوماً تزيينية.
+========================================================================== */
+
+/* ────────────── نصوص الأحداث: مصدر واحد للملعب والتحليل والفلترات ────────────── */
+
+/* المعروف يُعرَّب، والمجهول يُعرض بنص المصدر كما هو — اختلاق اسم عربي لحدث
+   لا نعرفه هو وصفٌ لم يقله المصدر، وهو ما يمنع نفس البند الذي يمنع تخمين
+   حالة المباراة من الساعة. */
+export const EVENT_TYPE_LABELS = {
+  goal: 'هدف',
+  penalty: 'هدف من ركلة جزاء',
+  own_goal: 'هدف عكسي',
+  missed_penalty: 'ركلة جزاء مهدرة',
+  yellow_card: 'بطاقة صفراء',
+  red_card: 'بطاقة حمراء',
+  substitution: 'تبديل',
+  var_cancelled: 'مراجعة فيديو — إلغاء',
+  var_confirmed: 'مراجعة فيديو — تأكيد',
+};
+
+export const EVENT_TYPE_UNCLASSIFIED_LABEL = 'نوع وارد من المصدر بلا تسمية معروفة';
+
+/** اسم نوع الحدث، أو `fallback` إن جهلناه ولم يرسل المصدر تسمية. */
+export function eventTypeName(event, fallback = null) {
+  const known = EVENT_TYPE_LABELS[event?.type];
+  if (typeof known === 'string') return known;
+  return filledText(event?.sourceType) ?? fallback;
+}
+
+/* facet = مفتاح التجميع في الفلاتر. الأحداث غير المصنَّفة تُجمَع عند تسمية
+   المصدر لا عند كلمة `other` وحدها، وإلا صار «Possession sequence» و«Injury»
+   خياراً واحداً في الفلتر — وهذا يخالف «الفلاتر تطابق أحداث المصدر». */
+export function eventTypeFacet(event) {
+  if (event?.type !== 'other') return event?.type ?? 'other';
+  const source = filledText(event?.sourceType);
+  return source ? `other:${source}` : 'other';
+}
+
+export function eventTypeFacetLabel(facet, events = []) {
+  const known = EVENT_TYPE_LABELS[facet];
+  if (typeof known === 'string') return known;
+  const sample = events.find(event => eventTypeFacet(event) === facet);
+  return eventTypeName(sample, EVENT_TYPE_UNCLASSIFIED_LABEL);
+}
+
+/** الدقيقة كما تصل: «55′» أو «45+2′» للبدل الضائع. وبلا دقيقة لا رقم عندنا. */
+export function eventMinuteLabel(event) {
+  const minute = event?.minute;
+  if (typeof minute !== 'number' || !Number.isFinite(minute) || minute < 0) return null;
+  const extra = typeof event?.extraMinute === 'number' && Number.isFinite(event.extraMinute) && event.extraMinute >= 0
+    ? `+${event.extraMinute}`
+    : '';
+  return `${minute}${extra}′`;
+}
+
+/* صف الفريق كما يُسمّى في الفلاتر. الأسماء الحقيقية تُمرَّر من المكوّن؛ هذه
+   التسميات العامة هي الوصف البنيوي (مضيف/ضيف/غير منسوب) وليست بديلاً عنها. */
+export const EVENT_SIDE_LABELS = {
+  home: 'المضيف',
+  away: 'الضيف',
+  unassigned: 'غير منسوب إلى طرف',
+};
+
+/** الشوط كما ورد: رقم معروف له اسم، وغير المعروف نصُّه، والغياب `null`. */
+const PERIOD_LABELS = {
+  1: 'الشوط الأول',
+  2: 'الشوط الثاني',
+  3: 'الشوط الإضافي الأول',
+  4: 'الشوط الإضافي الثاني',
+  5: 'ركلات الترجيح',
+};
+
+export function eventPeriodInfo(period) {
+  const raw = typeof period === 'number' && Number.isFinite(period) ? String(period) : filledText(period);
+  if (raw === null) return null;
+  const asNumber = /^-?\d+$/.test(raw) ? Number(raw) : null;
+  const label = asNumber !== null && PERIOD_LABELS[asNumber] ? PERIOD_LABELS[asNumber] : raw;
+  return { value: raw, label, classified: asNumber !== null && Boolean(PERIOD_LABELS[asNumber]) };
+}
+
+export function eventPeriodLabel(event) {
+  const info = eventPeriodInfo(event?.period);
+  return info ? info.label : null;
+}
+
+/* الوصف الكامل للحدث: يُقرأ في `aria-label` على الملعب، ويُعرض في بطاقة
+   التفاصيل في التحليل. صيغة واحدة لا صيغتان — وإلا اختلف وصف الحدث الواحد
+   بين موضعين في الصفحة نفسها. */
+export function describeEvent(event) {
+  if (!event || typeof event !== 'object') return null;
+  const team = event.teamSide === 'home' || event.teamSide === 'away' ? filledText(event.team) : null;
+  const side = event.teamSide === 'home' ? 'المضيف' : event.teamSide === 'away' ? 'الضيف' : null;
+  const related = event.type === 'substitution' && event.relatedPlayer?.name
+    ? `لاعب مرتبط: ${event.relatedPlayer.name}`
+    : null;
+  const detail = event.type === 'other' ? filledText(event.detail) : null;
+  return [
+    eventMinuteLabel(event),
+    eventTypeName(event),
+    side,
+    team,
+    filledText(event.player?.name),
+    related,
+    event.cancelled ? 'ملغى من المصدر' : null,
+    detail,
+  ].filter(part => typeof part === 'string' && part.trim() !== '').join(' · ') || null;
+}
+
+/** هل للحدث موضع على الشريط الزمني؟ (لا دقيقة ⇒ لا موضع، ولا نُخترع واحداً) */
+export function eventOnTimeline(event) {
+  return isRenderableEvent(event)
+    && typeof event.minute === 'number'
+    && Number.isFinite(event.minute)
+    && event.minute >= 0;
+}
+
+/** حدث قابل للعرض: كائن صحيح وليس توقفَ مصدر (`Start Delay`/`End Delay`). */
+export function isRenderableEvent(event) {
+  return Boolean(event && typeof event === 'object' && event.silent !== true);
+}
+
+export function renderableEvents(events) {
+  return (Array.isArray(events) ? events : []).filter(isRenderableEvent);
+}
+
+/* ──────────────────── ما يُعرض فعلاً: فحص توافر كل قسم ──────────────────── */
+
+function filledText(value) {
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
+}
+
+function finiteNumber(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && /^-?\d+(\.\d+)?$/.test(value.trim())) {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+export function displayablePlayers(players) {
+  if (!Array.isArray(players)) return [];
+  return players.filter(player => Boolean(player && filledText(player.name)));
+}
+
+export function displayableStatistics(statistics) {
+  if (!Array.isArray(statistics)) return [];
+  return statistics.filter(stat => Boolean(stat && filledText(stat.label))
+    && (finiteNumber(stat.home) !== null || finiteNumber(stat.away) !== null));
+}
+
+export function displayableRatings(ratings) {
+  if (!Array.isArray(ratings)) return [];
+  return ratings.filter(player => Boolean(player && filledText(player.name) && finiteNumber(player.rating) !== null));
+}
+
+export function confirmedLineupSides(lineups) {
+  if (!lineups || typeof lineups !== 'object') return [];
+  return ['home', 'away'].flatMap(side => {
+    const data = lineups[side];
+    if (!data || data.confirmed !== true) return [];
+    const starters = displayablePlayers(data.starters);
+    const substitutes = displayablePlayers(data.substitutes);
+    const hasVisibleContent = Boolean(filledText(data.formation) || filledText(data.coach) || starters.length || substitutes.length);
+    return hasVisibleContent ? [{ side, data }] : [];
+  });
+}
+
+export function displayableHeadToHead(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.filter(entry => Boolean(entry
+    && filledText(entry.home)
+    && filledText(entry.away)
+    && typeof entry.date === 'string'
+    && Number.isFinite(Date.parse(entry.date))
+    && isValidScore({ home: entry.homeGoals, away: entry.awayGoals }),
+  ));
+}
+
+export function hasDisplayableForm(form) {
+  return Boolean(form && Array.isArray(form.matches) && form.matches.some(item => item
+    && finiteNumber(item.goalsFor) !== null
+    && finiteNumber(item.goalsAgainst) !== null
+    && (item.result === 'W' || item.result === 'D' || item.result === 'L'),
+  ));
+}
+
+export function displayableComparisonAxes(comparison) {
+  if (!comparison || !Array.isArray(comparison.axes)) return [];
+  return comparison.axes.filter(axis => Boolean(axis && filledText(axis.label))
+    && (finiteNumber(axis.home) !== null || finiteNumber(axis.away) !== null));
+}
+
+/** المواجهات المكتملة + هذه المباراة عند تأكيد نتيجتها — منطق واحد يستهلكه
+    التبويبُ والتوافرُ معاً، فلا يُعدّ القسم «ملياناً» بشيء لا يعرضه. */
+export function headToHeadFor(match, snapshot, status) {
+  const official = isResultOfficial(status, snapshot?.score ?? null);
+  const score = snapshot?.score ?? null;
+  const self = official && score
+    ? {
+      fixtureId: match?.externalIds?.espn ?? null,
+      date: match?.kickoffUtc ?? null,
+      competition: filledText(match?.competitionName),
+      year: filledText(match?.season),
+      friendly: false,
+      completed: true,
+      home: filledText(match?.home?.name) ?? filledText(match?.home?.sourceName) ?? '',
+      away: filledText(match?.away?.name) ?? filledText(match?.away?.sourceName) ?? '',
+      homeGoals: score.home,
+      awayGoals: score.away,
+    }
+    : null;
+  return displayableHeadToHead(mergeH2h(snapshot?.h2h ?? [], self, 3));
+}
+
+/** معطيات المقارنة الموسمية كما تصل، محصنة ضد صف المقارنة الناقصة. */
+export function comparisonFor(snapshot) {
+  return buildComparison(
+    (snapshot?.seasonComparison ?? []).map(metric => ({ ...metric, mode: 'season' })),
+    { mode: 'season', sample: snapshot?.seasonSample ?? null, provider: snapshot?.provider ?? null },
+  );
+}
+
+/* ─────────────────────── مجموعات الأرقام وسهولة المسح ─────────────────────── */
+
+/* التجميع بـ`key` الذي يرسله وسيط الموقع، لا بالتسمية العربية: التسمية قد
+   تتغيّر في الطبقة التالية، والمفتاح هو ما يربط الرقم بمصدره. */
+export const STAT_GROUPS = [
+  { id: 'possession-passing', label: 'الاستحواذ والتمرير', keys: ['possessionPct', 'passPct'] },
+  { id: 'shots', label: 'التسديد', keys: ['totalShots', 'shotsOnTarget', 'blockedShots'] },
+  {
+    id: 'defense-discipline',
+    label: 'الدفاع والانضباط',
+    keys: ['saves', 'wonCorners', 'foulsCommitted', 'offsides', 'yellowCards', 'redCards'],
+  },
+];
+
+/* كل مفتاح تعرفه الطبقة مُجمَّع؛ ما يرسله مصدر لاحقاً بلا تعريف عندنا لا
+   يُرمى ولا يُجمَع قسراً مع جيران لا علاقة له بهم. */
+export const STAT_GROUP_FALLBACK = { id: 'source-other', label: 'أرقام أخرى من المصدر' };
+
+/**
+ * صف مقارنة واحد: القيمتان كما وردتا، الفارق، ونسبة كل طرف إلى الأعلى بينهما.
+ *
+ * • `home`/`away` رقم أو `null` — الغياب يبقى غياباً ولا يُستكمل صفراً.
+ * • `bar` نسب 0–1 من الأكبر بين الطرفين، للتمثيل البصري فقط؛ لا تُجمع ولا
+ *   تُقرأ منها «أفضلية»، صفران حقيقيان يعطيان نصفين متساويين.
+ * • `difference` عدد مطلق بلا حكم: من يقرأ «الأخطاء: ٩ مقابل ١٤» لا يحتاج من
+ *   يقول له إن ٩ أفضل — بل قد يعكسه.
+ */
+export function compareStatRow(stat) {
+  const home = finiteNumber(stat?.home);
+  const away = finiteNumber(stat?.away);
+  const both = home !== null && away !== null;
+  const peak = both ? Math.max(Math.abs(home), Math.abs(away)) : 0;
+  const unit = filledText(stat?.unit);
+  return {
+    key: filledText(stat?.key) ?? filledText(stat?.label) ?? '',
+    label: filledText(stat?.label) ?? '',
+    unit,
+    /** هل الوحدة نسبة مئوية؟ تُلاحق الرقم مباشرة («58%») لا في التسمية. */
+    unitIsPercent: unit === '%',
+    home,
+    away,
+    both,
+    difference: both ? Math.abs(home - away) : null,
+    /** الطرف الأوفر رقماً — وصفٌ للكمية لا للأفضلية. */
+    leadingSide: both && home !== away ? (home > away ? 'home' : 'away') : null,
+    comparable: both,
+    /* طرف بلا رقم ⇒ لا مقارنة، فلا يُرسم شريطٌ لصفّ نصفُه اختلاق. */
+    bar: {
+      home: both ? (peak > 0 ? Math.abs(home) / peak : 0.5) : null,
+      away: both ? (peak > 0 ? Math.abs(away) / peak : 0.5) : null,
+    },
+  };
+}
+
+/** الأرقام المتاحة مجمَّعة في مجموعات يسهل مسحها؛ والمجموعة الفارغة لا تُنشأ. */
+export function groupStatistics(statistics) {
+  const rows = displayableStatistics(statistics);
+  if (rows.length === 0) return [];
+  const groupOf = new Map();
+  STAT_GROUPS.forEach((def, index) => def.keys.forEach(key => groupOf.set(key, index)));
+  const buckets = STAT_GROUPS.map(() => new Map());
+  const extra = [];
+  for (const row of rows) {
+    const index = groupOf.get(row.key);
+    if (index === undefined) { extra.push(row); continue; }
+    const bucket = buckets[index];
+    /* ترتيب المجموعة ثابت كما عُرّفت، لا كما جاءت في الاستجابة: «مجموعات سهلة
+       المسح» تعني أن يقرأ المحلل الصفوف بالترتيب نفسه في كل مباراة وفي كل
+       قراءة. ومفتاح مكرر من المصدر يُدمج في أول صف له بدل صفّين متجاورين. */
+    if (!bucket.has(row.key)) bucket.set(row.key, row);
+  }
+  const groups = [];
+  STAT_GROUPS.forEach((def, index) => {
+    const bucket = buckets[index];
+    const ordered = def.keys.map(key => bucket.get(key)).filter(Boolean);
+    if (ordered.length > 0) {
+      groups.push({ id: def.id, label: def.label, rows: ordered.map(compareStatRow) });
+    }
+  });
+  if (extra.length > 0) {
+    groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows: extra.map(compareStatRow) });
+  }
+  return groups;
+}
+
+/**
+ * ملخص رقمي موجز: صفّان حاضران فقط. لا «سيطرة»، ولا «أفضلية»، ولا جودة
+ * فرص — هذه أرقام Source لا تُثبت شيئاً منها، والبند 6 يمنع استنتاجاً من
+ * أرقام لا تحتمله.
+ */
+export function analysisFacts(statistics) {
+  return displayableStatistics(statistics)
+    .map(compareStatRow)
+    .filter(row => row.both);
+}
+
+/* ───────────────────────── عدد أحداث المصدر كما وردت ───────────────────────── */
+
+/** وقائع معدودة لا استنتاجات: كم حدثاً وصل، وكيف توزّع، وكم ملغى. */
+export function summarizeSourceEvents(events) {
+  const list = renderableEvents(events);
+  const counted = {
+    total: list.length,
+    onTimeline: 0,
+    untimed: 0,
+    cancelled: 0,
+    bySide: { home: 0, away: 0, unassigned: 0 },
+    types: [],
+    periods: [],
+    firstMinute: null,
+    lastMinute: null,
+  };
+
+  const typeCounts = new Map();
+  const periodCounts = new Map();
+  for (const event of list) {
+    if (eventOnTimeline(event)) {
+      counted.onTimeline += 1;
+      const minute = event.minute;
+      counted.firstMinute = counted.firstMinute === null ? minute : Math.min(counted.firstMinute, minute);
+      counted.lastMinute = counted.lastMinute === null ? minute : Math.max(counted.lastMinute, minute);
+    } else {
+      counted.untimed += 1;
+    }
+    if (event.cancelled === true) counted.cancelled += 1;
+    const side = event.teamSide === 'home' || event.teamSide === 'away' ? event.teamSide : 'unassigned';
+    counted.bySide[side] += 1;
+
+    const facet = eventTypeFacet(event);
+    const seen = typeCounts.get(facet) || { value: facet, label: eventTypeFacetLabel(facet, list), count: 0 };
+    seen.count += 1;
+    typeCounts.set(facet, seen);
+
+    const info = eventPeriodInfo(event.period);
+    const periodValue = info ? info.value : 'none';
+    const periodLabel = info ? info.label : 'شوط غير مبيَّن من المصدر';
+    const periodSeen = periodCounts.get(periodValue) || { value: periodValue, label: periodLabel, count: 0 };
+    periodSeen.count += 1;
+    periodCounts.set(periodValue, periodSeen);
+  }
+
+  counted.types = [...typeCounts.values()];
+  counted.periods = [...periodCounts.values()];
+  return counted;
+}
+
+/* ───────────────────────── فلاتر أحداث التحليل ───────────────────────── */
+
+export const EVENT_FILTER_ALL = 'all';
+export const EVENT_FILTER_NO_PERIOD = 'none';
+export const EVENT_FILTER_NO_SIDE = 'unassigned';
+
+export const EVENT_FILTER_DEFAULTS = { team: EVENT_FILTER_ALL, period: EVENT_FILTER_ALL, type: EVENT_FILTER_ALL };
+
+function eventSideValue(event) {
+  return event?.teamSide === 'home' || event?.teamSide === 'away' ? event.teamSide : EVENT_FILTER_NO_SIDE;
+}
+
+function eventPeriodValue(event) {
+  const info = eventPeriodInfo(event?.period);
+  return info ? info.value : EVENT_FILTER_NO_PERIOD;
+}
+
+export function eventMatchesFilters(event, filters = {}) {
+  if (!isRenderableEvent(event)) return false;
+  const team = filters?.team ?? EVENT_FILTER_ALL;
+  const period = filters?.period ?? EVENT_FILTER_ALL;
+  const type = filters?.type ?? EVENT_FILTER_ALL;
+  if (team !== EVENT_FILTER_ALL && eventSideValue(event) !== team) return false;
+  if (period !== EVENT_FILTER_ALL && eventPeriodValue(event) !== period) return false;
+  if (type !== EVENT_FILTER_ALL && eventTypeFacet(event) !== type) return false;
+  return true;
+}
+
+/** الفلترة على أحداث المصدر المطبَّعة نفسها — لا نسخة ثانية من القائمة. */
+export function filterEvents(events, filters = {}) {
+  return renderableEvents(events).filter(event => eventMatchesFilters(event, filters));
+}
+
+/**
+ * خيارات الفلاتر مشتقة من الأحداث الموجودة وحدها: خيارٌ بلا حدث يطابقه لا
+ * معنى له، و«عرض الكل» يبقى الخيار الافتراضي الذي لا يحذف شيئاً.
+ */
+export function eventFilterOptions(events, { homeName = null, awayName = null } = {}) {
+  const list = renderableEvents(events);
+  const summary = summarizeSourceEvents(list);
+  const sideLabels = { home: homeName || EVENT_SIDE_LABELS.home, away: awayName || EVENT_SIDE_LABELS.away, [EVENT_FILTER_NO_SIDE]: EVENT_SIDE_LABELS.unassigned };
+  const team = Object.entries(summary.bySide)
+    .filter(([, count]) => count > 0)
+    .map(([value, count]) => ({ value, label: sideLabels[value] || value, count }));
+  return {
+    total: list.length,
+    team,
+    period: summary.periods.map(entry => ({ ...entry })),
+    type: summary.types.map(entry => ({ ...entry })),
+  };
+}
+
+/** كم فلترًا نشطاً؟ — لتسمية زر «عرض الكل» وحالته بلا خلل. */
+export function activeEventFilterCount(filters = {}) {
+  return Object.entries(EVENT_FILTER_DEFAULTS).reduce((total, [key, defaultValue]) => {
+    const value = filters?.[key];
+    return total + (typeof value === 'string' && value !== '' && value !== defaultValue ? 1 : 0);
+  }, 0);
+}
+
+/* ─────────────────── الغياب الموصوف: ما لا يصل من المصدر ─────────────────── */
+
+/**
+ * أقسام لا تُعرض لأن بياناتها لا تصل. تُقال بصريح العبارة بدل مصفوفة
+ * فارغة أو أصفار — «لا يتوفر» جواب، وليس فشلاً يُخفى.
+ */
+export function unavailableDataNotes(snapshot) {
+  const notes = [];
+  if (confirmedLineupSides(snapshot?.lineups ?? null).length === 0) {
+    notes.push({ id: 'lineups', text: 'التشكيلات: لا تصل في الربط الحالي للمصدر، فلا تُعرض قائمة أساسيين ولا بدلاء ولا تُخمَّن.' });
+  }
+  if (displayableRatings(snapshot?.ratings ?? null).length === 0) {
+    notes.push({ id: 'ratings', text: 'تقييمات اللاعبين: لا يوردها المصدر؛ لا تُعرض ولا تُستبدل بأرقام تُحسب محلياً.' });
+  }
+  if (displayableComparisonAxes(comparisonFor(snapshot)).length === 0) {
+    notes.push({ id: 'comparison', text: 'مقارنة الموسم: لا تصل أرقامها ولا حجم عينتها، فلا يُرسم مضلع ولا تُعرض متوسطات.' });
+  }
+  notes.push({ id: 'spatial', text: 'الأحداث لا تحمل إحداثيات مكانية، ولا يرسل المصدر نموذج أهداف متوقعة (xG)؛ فلا خرائط تسديد ولا تمرير ولا مناطق ضغط.' });
+  return notes;
+}
+
+/** هل يوجد ما يُحلَّل؟ أحداث فعلية أو أرقام فعلية — لا عنوان فارغ لتبويب. */
+export function analysisIsAvailable(snapshot) {
+  return renderableEvents(snapshot?.events).length > 0
+    || displayableStatistics(snapshot?.statistics).length > 0;
+}
+
+/* ───────────────────────── ترتيب التبويبات وآليته ───────────────────────── */
+
+export function hasPreviewFacts(match, snapshot, status) {
+  const competition = filledText(match?.competitionName);
+  const venue = snapshot ? filledText(snapshot.venue) : filledText(match?.venue);
+  const kickoffVisible = canShowKickoff(status)
+    && typeof match?.kickoffUtc === 'string'
+    && Number.isFinite(Date.parse(match.kickoffUtc));
+  return Boolean(
+    competition
+      || venue
+      || kickoffVisible
+      || filledText(match?.season)
+      || (typeof match?.round === 'number' && Number.isFinite(match.round))
+      || filledText(match?.round),
+  );
+}
+
+/**
+ * التبويبات التي لها ما يعرضها، بترتيب ثابت.
+ *
+ * • `analysis` لا يظهر بلا أحداث أو أرقام — لا تبويب يتيم ولا لوحة فارغة.
+ * • `notes` أداة للمحلل لا لوحة بيانات: يظهر متى وُجد تبويب واحد يعرضه،
+ *   ولا يخترع رقماً ولا يصف فريقاً. عدده صفر في البداية، وهذا صحيح.
+ */
+export function computeAvailableTabs({ match, snapshot, status }) {
+  const tabs = [];
+  if (hasPreviewFacts(match, snapshot, status)) tabs.push('preview');
+  if (headToHeadFor(match, snapshot, status).length > 0) tabs.push('history');
+  if (confirmedLineupSides(snapshot?.lineups ?? null).length > 0) tabs.push('lineups');
+  if (displayableStatistics(snapshot?.statistics ?? null).length > 0) tabs.push('live');
+  if (analysisIsAvailable(snapshot)) tabs.push('analysis');
+  const official = isResultOfficial(status, snapshot?.score ?? null);
+  if (official && (displayableStatistics(snapshot?.statistics ?? null).length > 0
+    || displayableRatings(snapshot?.ratings ?? null).length > 0)) tabs.push('report');
+  if (tabs.length > 0) tabs.push('notes');
+  return tabs;
+}
 /* ─────────────────────── أدوات داخلية ─────────────────────── */
 
 function firstString(...values) {

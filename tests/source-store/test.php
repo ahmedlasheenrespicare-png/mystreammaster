@@ -2,8 +2,8 @@
 declare(strict_types=1);
 putenv('SM_DATA_DIR=/private');
 putenv('SM_SPORTSDB_KEY=qaOnlyNotARealCredential');
-require '/app/lib/sportsdb_source.php';
-require '/app/lib/event_summary.php';
+require '/app/php-lib/sportsdb_source.php';
+require '/app/php-lib/event_summary.php';
 require '/app/standings.php';
 require '/app/before-standings.php';
 
@@ -30,7 +30,7 @@ foreach ([['empty', [], 3600, false], ['scheduled', [$pre], 900, false], ['live'
 }
 
 require '/app/curl-double.php';
-require '/app/lib/espn-curl-double.php';
+require '/app/php-lib/espn-curl-double.php';
 $GLOBALS['curl_batches']=0;$GLOBALS['curl_batch_sizes']=[];$GLOBALS['curl_fixture']=['events'=>[$pre]];
 $parallel=SMCurlQA\sm_espn_days('eng.1',['20261101','20261102'],null,$now);
 check($GLOBALS['curl_batches']===1 && $GLOBALS['curl_batch_sizes']===[2] && $parallel['20261101']['ok'],'real curl_multi branch batches two due days');

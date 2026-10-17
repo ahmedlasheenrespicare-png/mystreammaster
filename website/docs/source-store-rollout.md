@@ -44,14 +44,16 @@
 4. Highlightly لم يتغير: `SM_HIGHLIGHTLY_KEY` أو `<المجلد الأب لـ DOCUMENT_ROOT>/SM_HIGHLIGHTLY_KEY/key.txt`.
 5. لا تطبع البيئة أو المفاتيح ولا تضعها في رابط فحص أو سجل. لا تُشغّل curl بوضع verbose يتضمن الترويسات السرية.
 
-### نشر `lib/` وصلاحياتها
+### نشر `php-lib/` وصلاحياتها
 
-`scoreboard.php` و`match-center.php` و`standings.php` تستدعي `require_once __DIR__ . '/lib/…'`، فالمكتبة **كود إنتاج لا أداة بناء**؛ استثناؤها من رفع FTP يجمّدها على الخادم بينما تتحرك بقية الجذر، ويُفشل أي خادم نظيف.
+المكتبة كانت في `lib/`، ثم ثبت من آخر نشر أن المجلد على الاستضافة **لا يقبل الكتابة عبر FTP**: `FTPError: 550 lib/.htaccess: Permission denied`، بينما تُرفع ملفات الجذر عادةً (`.htaccess` في الجذر وصل وبصمة hash مطابقة). لذلك انتقلت المكتبة إلى `php-lib/`: اسم جديد لم يُستخدم فينشئه إجراء FTP بمُلكية صحيحة، ولا يصادم `FilesMatch` في `.htaccess` الجذر ولا أي `RewriteRule`. المجلد القديم `public_html/lib` يبقى كما هو على الخادم احتياطاً ولا يُحذف آلياً.
 
-- لا تُضاف `lib/**` إلى `exclude` في `.github/workflows/deploy.yml`؛ فحص آلي في `tests/source-store` يمنع رجوعها.
-- على الخادم: المجلد `755` والملفات `644`، والمالك هو مستخدم الاستضافة نفسه المستخدم في FTP. سبب شائع لـ `550 Permission denied` هو اختلاف المالك أو `lib` كـ symlink لا مجلد حقيقي.
+- `scoreboard.php` و`match-center.php` و`standings.php` (ونسخة `website/public/standings.php`) تستدعي المحمّل `sm_lib('…')` بأسماء ملفات ثابتة في الكود، لا من `$_GET`/`$_POST`. المحمّل يجرّب `php-lib/` أولاً، ويرجع `500` برمز `PHP_LIBRARY_MISSING` بدل fatal صامت.
+- `lib/**` **مستثنى** في `.github/workflows/deploy.yml` مع تعليق يشرح السبب: الرفع إلى المسار العالق يفشل بـ`550`. لا يُرفع `php-lib` من جهة العميل بـ`dangerous-clean-slate` ولا يُحذف `public_html/lib` آلياً.
+- `website/public/lib/` أُزيل من المستودع: `publicDir` في Vite كان ينسخ `source_store.php` إلى `dist/lib/` ثم إلى الجذر مع كل بناء، فيعيد إنشاء المسار العالق. المصدر الوحيد الآن `website/public/php-lib/source_store.php`، والفحص الآلي في `tests/source-store` يمنع رجوع `website/public/lib`.
+- على الخادم: المجلد `755` والملفات `644`، والمالك هو مستخدم الاستضافة نفسه المستخدم في FTP.
 - إعادة تشغيل نشر فاشل (Re-run) تستخدم نسخة الـ workflow من الـ commit الأصلي، فلا تعكس تعديل `deploy.yml`؛ استخدم push جديداً.
-- `lib/.htaccess` يحجب الطلب المباشر لملفات المكتبة عبر HTTP دون التأثير على `require_once` من نظام الملفات. لا تحذفه.
+- `php-lib/.htaccess` يحجب الطلب المباشر لملفات المكتبة عبر HTTP دون التأثير على `require_once` من نظام الملفات. لا تحذفه.
 
 ### المجلدات والانتقال
 
@@ -88,6 +90,16 @@ npm run build:client --prefix website
 الفحوص البنيوية القديمة عُدّلت لتعقب المكتبات المشتركة بدلاً من اشتراط أن تكون كل الدوال داخل ملف واحد؛ لم تُحذف حالات الاختبار. ملفات الترتيب في الجذر وwebsite/public وكذلك source_store متطابقة بفحص صريح حتى لا يلغي البناء التغيير. verify CI يشغّل مجموعة PHP الجديدة، والنشر يستبعد tests/**.
 
 الاختبارات ليست فحص تزامن PHP-FPM متعدد العمال على Hostinger، ولا إثبات سلوك شبكة المصادر الحقيقية. تلك تبقى ضمن تحقق الاستضافة.
+
+### التحقق من مسار المكتبة بعد النشر
+
+1. افتح `/.ftp-deploy-sync-state.json` على الخادم وابحث عن مدخلات `php-lib`؛ غيابها يعني أن المكتبة لم تُرفع.
+2. `/php-lib/source_store.php` يجب أن يرجع `403` من `php-lib/.htaccess`.
+3. `/scoreboard.php?league=eng.1&dates=20261017` و`league=sau.1` و`league=egy.1` ترجع `200` مع `events` فعلية.
+4. `/standings.php?league=eng.1` و`league=egy.1` ترجع `200` مع 20 فريقاً.
+5. `/match-center.php?match=<سلاج مسجل>` يرجع `200` مع النتيجة والأحداث.
+
+لا يُعتبر نجاح الاختبارات محلياً إثباتاً للنشر؛ الإثبات هو ظهور `php-lib/` في ملف الحالة و`403` على المسار المباشر.
 
 ## تحقق Hostinger بعد النشر — مطلوب وغير منفذ بعد
 

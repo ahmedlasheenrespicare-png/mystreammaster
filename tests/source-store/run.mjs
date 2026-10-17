@@ -11,8 +11,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const php = new PHP(await loadNodeRuntime('8.3', { emscriptenOptions: { processId: process.pid } }));
 // An isolated VFS, no network or production data. GLOB_BRACE is the only compatibility
 // substitution in production source; the real code keeps native PHP's GLOB_BRACE.
-php.mkdir('/app/lib'); php.mkdir('/private');
-for (const filename of ['scoreboard.php', 'match-center.php', 'standings.php', 'lib/source_store.php', 'lib/espn_source.php', 'lib/sportsdb_source.php', 'lib/event_summary.php']) {
+php.mkdir('/app/php-lib'); php.mkdir('/private');
+for (const filename of ['scoreboard.php', 'match-center.php', 'standings.php', 'php-lib/source_store.php', 'php-lib/espn_source.php', 'php-lib/sportsdb_source.php', 'php-lib/event_summary.php']) {
   const code = await fs.readFile(path.join(root, filename), 'utf8');
   php.writeFile('/app/' + filename, code.replaceAll('GLOB_BRACE', '0'));
 }
@@ -31,7 +31,7 @@ for (const table of snapshot.tables) {
 }
 php.writeFile('/app/fixtures.json', JSON.stringify(fixtures));
 // Namespace only for extension doubles: transport and cache logic are otherwise unchanged.
-php.writeFile('/app/lib/espn-curl-double.php', (await fs.readFile(path.join(root, 'lib/espn_source.php'), 'utf8')).replace('declare(strict_types=1);', 'declare(strict_types=1); namespace SMCurlQA;'));
+php.writeFile('/app/php-lib/espn-curl-double.php', (await fs.readFile(path.join(root, 'php-lib/espn_source.php'), 'utf8')).replace('declare(strict_types=1);', 'declare(strict_types=1); namespace SMCurlQA;'));
 php.writeFile('/app/curl-double.php', await fs.readFile(new URL('./curl-double.php', import.meta.url), 'utf8'));
 php.writeFile('/app/test.php', await fs.readFile(new URL('./test.php', import.meta.url), 'utf8'));
 try {
@@ -99,22 +99,29 @@ try {
   console.log('ok HTTP - shared STALE diagnostics, no fresh writes, negative-cache 429 responses');
 
   for (const [setting, diagnostic] of [['', 'SM_DATA_DIR_UNSET'], ['/app/public_html/cache', 'SM_DATA_DIR_UNSAFE']]) {
-    const response = await php.run({ code: `<?php require '/app/lib/source_store.php'; echo sm_source_dir('probe');`, env: { SM_DATA_DIR: setting }, $_SERVER: { DOCUMENT_ROOT: '/app' } });
+    const response = await php.run({ code: `<?php require '/app/php-lib/source_store.php'; echo sm_source_dir('probe');`, env: { SM_DATA_DIR: setting }, $_SERVER: { DOCUMENT_ROOT: '/app' } });
     assert.ok(response.errors.includes(diagnostic));
     assert.ok(!response.text.startsWith('/app/'));
   }
   assert.equal(await fs.readFile(path.join(root, 'standings.php'), 'utf8'), await fs.readFile(path.join(root, 'website/public/standings.php'), 'utf8'));
-  assert.equal(await fs.readFile(path.join(root, 'lib/source_store.php'), 'utf8'), await fs.readFile(path.join(root, 'website/public/lib/source_store.php'), 'utf8'));
+  assert.equal(await fs.readFile(path.join(root, 'php-lib/source_store.php'), 'utf8'), await fs.readFile(path.join(root, 'website/public/php-lib/source_store.php'), 'utf8'));
+  // The Vite publicDir is the only way a build can copy PHP into the root, so
+  // its removal is what stops `npm run build` from recreating lib/.
+  assert.equal(await fs.stat(path.join(root, 'website/public/lib')).then(() => true, () => false), false,
+    'website/public/lib must stay deleted, otherwise every build recreates the frozen lib/');
 
-  // Regression: excluding lib/** from the FTP upload froze the library on the
-  // server while the root controllers kept updating, and left a clean server
-  // without its required includes.
+  // Regression: lib/ cannot be written over FTP (550 lib/.htaccess: Permission
+  // denied), so the library moved to php-lib/. lib/** stays excluded: the old
+  // folder remains on the server as a rollback, but the repo must never try to
+  // upload it again.
   const deploy = await fs.readFile(path.join(root, '.github/workflows/deploy.yml'), 'utf8');
-  assert.ok(!/^\s*lib\/\*\*\s*$/m.test(deploy), 'deploy.yml must ship lib/**');
-  const libGuard = await fs.readFile(path.join(root, 'lib/.htaccess'), 'utf8');
-  assert.match(libGuard, /Require all denied/, 'lib/.htaccess must deny direct web access');
-  assert.match(libGuard, /\(php\|inc\|json\|md\)/, 'lib/.htaccess must cover PHP files');
-  console.log('ok DEPLOY - PHP library shipped, and blocked from direct HTTP access');
+  assert.match(deploy, /^\s*lib\/\*\*\s*$/m, 'deploy.yml must exclude the frozen lib/** path');
+  assert.match(deploy, /مسار عالق غير قابل للكتابة عبر FTP/, 'the exclusion must state why it exists');
+  assert.ok(!/^\s*php-lib\/\*\*\s*$/m.test(deploy), 'deploy.yml must ship php-lib/**');
+  const libGuard = await fs.readFile(path.join(root, 'php-lib/.htaccess'), 'utf8');
+  assert.match(libGuard, /Require all denied/, 'php-lib/.htaccess must deny direct web access');
+  assert.match(libGuard, /\(php\|inc\|json\|md\)/, 'php-lib/.htaccess must cover PHP files');
+  console.log('ok DEPLOY - PHP library shipped from php-lib, frozen lib/ excluded, and blocked from direct HTTP access');
   console.log('ALL HTTP AND DEPLOYMENT COPY TESTS PASSED');
 } catch (error) {
   console.error(error.response?.errors || error);

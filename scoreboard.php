@@ -19,8 +19,26 @@
  */
 
 declare(strict_types=1);
-require_once __DIR__ . '/lib/espn_source.php';
-require_once __DIR__ . '/lib/sportsdb_source.php';
+/* مكتبة PHP المشتركة انتقلت من lib/ (مسار عالق لا يقبل الكتابة عبر FTP —
+   الخطأ 550 lib/.htaccess: Permission denied) إلى php-lib/. المحمّل يجرّب
+   php-lib أولاً ثم lib كاحتياط أثناء فترة الانتقال (أسبوع)، ويعلن رمزاً واضحاً
+   بدل fatal صامت. اسم الملف ثابت في الكود ولا يأتي من $_GET/$_POST. */
+function sm_lib(string $file): void {
+  static $base = null;
+  if ($base === null) {
+    foreach ([__DIR__.'/php-lib', __DIR__.'/lib'] as $c) {
+      if (is_file($c.'/'.$file)) { $base = $c; break; }
+    }
+  }
+  if ($base === null) {
+    http_response_code(500);
+    echo json_encode(['ok'=>false,'code'=>'PHP_LIBRARY_MISSING']);
+    exit;
+  }
+  require_once $base.'/'.$file;
+}
+sm_lib('espn_source.php');
+sm_lib('sportsdb_source.php');
 
 const SITE_ORIGIN        = 'https://streammasterstore.com';
 

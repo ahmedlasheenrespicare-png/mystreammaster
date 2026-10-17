@@ -35,10 +35,10 @@ test('النهائية ترفض غير المنتهية والنتيجة الن�
   assert.match(generator, /timeZone: "Africa\/Cairo"/);
 });
 
-test('كل مباراة تجريبية لها صورتها التمهيدية على القرص بأبعاد PNG صحيحة', async () => {
-  const { MATCH_CENTER_MATCHES } = await import('../src/content/match-center.mjs');
-  assert.equal(MATCH_CENTER_MATCHES.length, 3);
-  for (const match of MATCH_CENTER_MATCHES) {
+test('كل مباراة مسجلة لها صورتها التمهيدية على القرص بأبعاد PNG صحيحة', async () => {
+  const { MATCH_CENTER_ALL_MATCHES } = await import('../src/content/match-center.mjs');
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 620);
+  for (const match of MATCH_CENTER_ALL_MATCHES) {
     const file = path.join(website, `public/images/og/match-${match.slug}.png`);
     const buf = fs.readFileSync(file);
     assert.equal(buf.subarray(1, 4).toString('ascii'), 'PNG', `${match.slug}: ملف PNG فعلي`);

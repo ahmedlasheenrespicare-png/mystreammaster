@@ -19,7 +19,7 @@ import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
-import { MATCH_CENTER_COMPETITION, allMatchesVerified, matchByRoute } from "./content/match-center.mjs";
+import { allMatchesVerified, matchByRoute } from "./content/match-center.mjs";
 import { dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
 
 export interface SeoMeta {
@@ -131,7 +131,7 @@ const STANDINGS_DATE = "2026-10-16";
 /* تاريخ صفحات مركز المباراة. **ثابت عمداً**: البند 13 يمنع تغيير
    `dateModified` مع كل تحديث، وإلا أعاد الموقع إعلان الصفحة جديدة كل 60 ثانية
    مع كل دورة قراءة — وهذا إساءة استخدام واضحة لبيانات منظّمة. */
-const MATCH_CENTER_DATE = "2026-10-16";
+const MATCH_CENTER_DATE = "2026-10-17";
 /* البند 4: الصفحة داكنة، فـ`theme-color` العامة الكريمية `#faf9f6` ترسم شريط
    متصفح فاتحاً فوق صفحة كحلية. تُضبط لكل مسار بدل تغيير القيمة العامة التي
    تخص 47 صفحة أخرى ليست من هذه المهمة. */
@@ -575,13 +575,16 @@ export function getSeo(path: string): SeoMeta {
     const verified = allMatchesVerified();
     const day = dayLabelInZone(centerMatch.kickoffUtc, "Africa/Cairo");
     const time = kickoffLabel(centerMatch.kickoffUtc, "Africa/Cairo");
+    const competitionCrumb = centerMatch.leagueId === 'eng.1'
+      ? [{ name: centerMatch.competitionName, path: `matches/${centerMatch.competitionSlug}` }]
+      : [];
     const title = `${centerMatch.home.name} ضد ${centerMatch.away.name} — مركز المباراة | ${BRAND_NAME}`;
     /* الوصف داخل نافذة الفحص القائم (70–175 حرفاً) وفريد لكل مباراة: أسماء
        الفريقين والملعب تكفي للتمييز، فلا يتكرر النص حرفياً بين الصفحات. */
     /* الوصف داخل نافذة الفحص القائم (70–175 حرفاً) وفريد لكل مباراة: أسماء
        الفريقين والملعب والموعد تكفي للتمييز، فلا يتكرر النص بين الصفحات.
        ولا يُقتطع بـ`slice` — الاقتطاع الصامت ينتج وصفاً مبتور النهاية. */
-    const description = `مركز مباراة ${centerMatch.home.name} و${centerMatch.away.name} في ${MATCH_CENTER_COMPETITION.name}، ${day} ${time} بتوقيت القاهرة، ملعب ${centerMatch.venue ?? "غير متاح"}. النتيجة من المصدر.`;
+    const description = `مركز مباراة ${centerMatch.home.name} و${centerMatch.away.name} في ${centerMatch.competitionName}، ${day} ${time} بتوقيت القاهرة، ملعب ${centerMatch.venue ?? "غير متاح"}. النتيجة من المصدر.`;
     const jsonLd: Record<string, unknown>[] = [
       webPageLd({
         canonical,
@@ -594,7 +597,7 @@ export function getSeo(path: string): SeoMeta {
         [
           { name: "الرئيسية", path: "" },
           { name: "مواعيد المباريات", path: "matches" },
-          { name: MATCH_CENTER_COMPETITION.name, path: `matches/${MATCH_CENTER_COMPETITION.slug}` },
+          ...competitionCrumb,
           { name: `${centerMatch.home.shortName} × ${centerMatch.away.shortName}`, path: `matches/${centerMatch.competitionSlug}/${centerMatch.slug}` },
         ],
         canonical

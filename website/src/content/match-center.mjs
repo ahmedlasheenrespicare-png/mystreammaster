@@ -1,5 +1,5 @@
 /* ==========================================================================
-   مركز المباراة — تعريف مباريات التجربة الثلاث (الدوري الإنجليزي)
+   مركز المباراة — تعريفات المباريات الإنجليزية والإسبانية المؤكدة
    --------------------------------------------------------------------------
    لماذا .mjs وليس .ts أو .json؟
    لأن هذا الملف يستهلكه أربعة أطراف مختلفة: تطبيق React، و`seo.ts`، و
@@ -8,22 +8,244 @@
    الغرض بالضبط — انظر `lib/matches.mjs` و`navigation.mjs` و`site.mjs`.
 
    عرفا التسمية المتّبعان هنا (وليسا اختراعي):
-   • `name` عربي + `sourceName` كما يرسله المصدر — نفس بنية
-     `content/fixture-lineups-snapshot.json` التي تحمل
-     `"name":"يان أوبلاك","sourceName":"Jan Oblak"` للاعب نفسه.
+   • الاسم المعروض + `sourceName` كما يرسله المصدر. الإنجليزية لها أسماء
+     عرض عربية؛ الإسبانية تحتفظ بالإنجليزية حرفياً كما وردت من المصدر.
+     تبقى بيانات المصدر الخام لكل دفعة منفصلة عن أسماء العرض.
    • الـslug لاتيني باسمي الفريقين — نفس نمط صفحة المباراة الوحيدة القائمة
      في المشروع: `legacy/manchester-united-atletico/`.
 
    ✅ حالة التحقق: `verification: 'confirmed'`
-   المعرّفات والمواعيد والملاعب أدناه **مطابَقة مع مصدر البيانات** في
-   2026-10-16، والأصول في `MATCH_CENTER_VERIFICATION`. طابقتْ ما كان مخزّناً
-   من موجز صاحب المشروع تطابقاً تاماً: نفس اللحظة الزمنية، ونفس نص الملعب
-   حرفياً، ونفس اتجاه المضيف/الضيف.
+   المعرّفات والمواعيد والملاعب الإنجليزية الأساسية أدناه **مطابَقة مع المصدر**
+   في 2026-10-16، وأصلها في `MATCH_CENTER_VERIFICATION`. دفعات الدوري الإنجليزي
+   اللاحقة محفوظة في `match-center-english-followup.mjs`، وخرج `esp.1` الخام في
+   `match-center-spanish.mjs`؛ لا يدّعي الملف فحصاً مستقلاً لمخرجات المستخدم.
 ========================================================================== */
 
 /* منطق الربط والتحقق يعيش في طبقة العقد وحدها، وهذا الملف يستهلكه ولا يعيد
    كتابته — فلا ينشأ تعريفان للتحقق يتباعدان لاحقاً. */
 import { isVerified, matchByFixtureId } from '../lib/match-center.mjs';
+import {
+  MATCH_CENTER_ENGLISH_20261018_20261023_RANGES,
+  MATCH_CENTER_ENGLISH_20261018_20261023_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261024_20261030_RANGES,
+  MATCH_CENTER_ENGLISH_20261024_20261030_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261031_20261106_RANGES,
+  MATCH_CENTER_ENGLISH_20261031_20261106_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261107_20261113_RANGES,
+  MATCH_CENTER_ENGLISH_20261107_20261113_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261114_20261120_RANGES,
+  MATCH_CENTER_ENGLISH_20261114_20261120_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261121_20261127_RANGES,
+  MATCH_CENTER_ENGLISH_20261121_20261127_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261128_20261204_RANGES,
+  MATCH_CENTER_ENGLISH_20261128_20261204_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261205_20261211_RANGES,
+  MATCH_CENTER_ENGLISH_20261205_20261211_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261212_20261218_RANGES,
+  MATCH_CENTER_ENGLISH_20261212_20261218_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261219_20261225_RANGES,
+  MATCH_CENTER_ENGLISH_20261219_20261225_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261226_20270101_RANGES,
+  MATCH_CENTER_ENGLISH_20261226_20270101_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270102_20270108_RANGES,
+  MATCH_CENTER_ENGLISH_20270102_20270108_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270109_20270115_RANGES,
+  MATCH_CENTER_ENGLISH_20270109_20270115_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270116_20270122_RANGES,
+  MATCH_CENTER_ENGLISH_20270116_20270122_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270123_20270129_RANGES,
+  MATCH_CENTER_ENGLISH_20270123_20270129_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270130_20270205_RANGES,
+  MATCH_CENTER_ENGLISH_20270130_20270205_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270206_20270212_RANGES,
+  MATCH_CENTER_ENGLISH_20270206_20270212_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270213_20270219_RANGES,
+  MATCH_CENTER_ENGLISH_20270213_20270219_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270220_20270226_RANGES,
+  MATCH_CENTER_ENGLISH_20270220_20270226_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270227_20270305_RANGES,
+  MATCH_CENTER_ENGLISH_20270227_20270305_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270306_20270312_RANGES,
+  MATCH_CENTER_ENGLISH_20270306_20270312_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270313_20270319_RANGES,
+  MATCH_CENTER_ENGLISH_20270313_20270319_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270320_20270326_RANGES,
+  MATCH_CENTER_ENGLISH_20270320_20270326_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270327_20270402_RANGES,
+  MATCH_CENTER_ENGLISH_20270327_20270402_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270403_20270409_RANGES,
+  MATCH_CENTER_ENGLISH_20270403_20270409_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270410_20270416_RANGES,
+  MATCH_CENTER_ENGLISH_20270410_20270416_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270417_20270423_RANGES,
+  MATCH_CENTER_ENGLISH_20270417_20270423_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270424_20270430_RANGES,
+  MATCH_CENTER_ENGLISH_20270424_20270430_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270501_20270507_RANGES,
+  MATCH_CENTER_ENGLISH_20270501_20270507_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270508_20270514_RANGES,
+  MATCH_CENTER_ENGLISH_20270508_20270514_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270515_20270521_RANGES,
+  MATCH_CENTER_ENGLISH_20270515_20270521_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270522_20270528_RANGES,
+  MATCH_CENTER_ENGLISH_20270522_20270528_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270529_20270604_RANGES,
+  MATCH_CENTER_ENGLISH_20270529_20270604_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270605_20270611_RANGES,
+  MATCH_CENTER_ENGLISH_20270605_20270611_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCED_EVENTS,
+  MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCE_VERIFICATION,
+} from './match-center-english-followup.mjs';
+import {
+  MATCH_CENTER_SPANISH_COMPETITION,
+  MATCH_CENTER_SPANISH_MATCHES,
+  MATCH_CENTER_SPANISH_20261017_20261211_MATCHES,
+  MATCH_CENTER_SPANISH_20261212_20270205_MATCHES,
+  MATCH_CENTER_SPANISH_20270206_20270212_MATCHES,
+  MATCH_CENTER_SPANISH_20270213_20270219_MATCHES,
+  MATCH_CENTER_SPANISH_20270220_20270226_MATCHES,
+  MATCH_CENTER_SPANISH_20270227_20270305_MATCHES,
+  MATCH_CENTER_SPANISH_20270306_20270312_MATCHES,
+  MATCH_CENTER_SPANISH_20270313_20270319_MATCHES,
+  MATCH_CENTER_SPANISH_20270320_20270326_MATCHES,
+  MATCH_CENTER_SPANISH_20270403_20270409_MATCHES,
+  MATCH_CENTER_SPANISH_20270410_20270416_MATCHES,
+  MATCH_CENTER_SPANISH_20270417_20270423_MATCHES,
+  MATCH_CENTER_SPANISH_20270501_20270507_MATCHES,
+  MATCH_CENTER_SPANISH_20270508_20270514_MATCHES,
+  MATCH_CENTER_SPANISH_20270515_20270521_MATCHES,
+  MATCH_CENTER_SPANISH_20270522_20270528_MATCHES,
+  MATCH_CENTER_SPANISH_20270529_20270604_MATCHES,
+  MATCH_CENTER_SPANISH_20261017_20261211_VERIFICATION,
+  MATCH_CENTER_SPANISH_20261212_20270205_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270206_20270212_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270213_20270219_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270220_20270226_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270227_20270305_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270306_20270312_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270313_20270319_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270320_20270326_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270403_20270409_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270410_20270416_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270417_20270423_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270501_20270507_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270508_20270514_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270515_20270521_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270522_20270528_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270529_20270604_VERIFICATION,
+} from './match-center-spanish.mjs';
+
+export {
+  MATCH_CENTER_ENGLISH_20261018_20261023_RANGES,
+  MATCH_CENTER_ENGLISH_20261018_20261023_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261024_20261030_RANGES,
+  MATCH_CENTER_ENGLISH_20261024_20261030_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261031_20261106_RANGES,
+  MATCH_CENTER_ENGLISH_20261031_20261106_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261107_20261113_RANGES,
+  MATCH_CENTER_ENGLISH_20261107_20261113_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261114_20261120_RANGES,
+  MATCH_CENTER_ENGLISH_20261114_20261120_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261121_20261127_RANGES,
+  MATCH_CENTER_ENGLISH_20261121_20261127_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261128_20261204_RANGES,
+  MATCH_CENTER_ENGLISH_20261128_20261204_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261205_20261211_RANGES,
+  MATCH_CENTER_ENGLISH_20261205_20261211_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261212_20261218_RANGES,
+  MATCH_CENTER_ENGLISH_20261212_20261218_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261219_20261225_RANGES,
+  MATCH_CENTER_ENGLISH_20261219_20261225_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261226_20270101_RANGES,
+  MATCH_CENTER_ENGLISH_20261226_20270101_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270102_20270108_RANGES,
+  MATCH_CENTER_ENGLISH_20270102_20270108_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270109_20270115_RANGES,
+  MATCH_CENTER_ENGLISH_20270109_20270115_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270116_20270122_RANGES,
+  MATCH_CENTER_ENGLISH_20270116_20270122_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270123_20270129_RANGES,
+  MATCH_CENTER_ENGLISH_20270123_20270129_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270130_20270205_RANGES,
+  MATCH_CENTER_ENGLISH_20270130_20270205_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270206_20270212_RANGES,
+  MATCH_CENTER_ENGLISH_20270206_20270212_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270213_20270219_RANGES,
+  MATCH_CENTER_ENGLISH_20270213_20270219_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270220_20270226_RANGES,
+  MATCH_CENTER_ENGLISH_20270220_20270226_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270227_20270305_RANGES,
+  MATCH_CENTER_ENGLISH_20270227_20270305_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270306_20270312_RANGES,
+  MATCH_CENTER_ENGLISH_20270306_20270312_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270313_20270319_RANGES,
+  MATCH_CENTER_ENGLISH_20270313_20270319_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270320_20270326_RANGES,
+  MATCH_CENTER_ENGLISH_20270320_20270326_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270327_20270402_RANGES,
+  MATCH_CENTER_ENGLISH_20270327_20270402_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270403_20270409_RANGES,
+  MATCH_CENTER_ENGLISH_20270403_20270409_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270410_20270416_RANGES,
+  MATCH_CENTER_ENGLISH_20270410_20270416_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270417_20270423_RANGES,
+  MATCH_CENTER_ENGLISH_20270417_20270423_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270424_20270430_RANGES,
+  MATCH_CENTER_ENGLISH_20270424_20270430_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270501_20270507_RANGES,
+  MATCH_CENTER_ENGLISH_20270501_20270507_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270508_20270514_RANGES,
+  MATCH_CENTER_ENGLISH_20270508_20270514_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270515_20270521_RANGES,
+  MATCH_CENTER_ENGLISH_20270515_20270521_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270522_20270528_RANGES,
+  MATCH_CENTER_ENGLISH_20270522_20270528_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270529_20270604_RANGES,
+  MATCH_CENTER_ENGLISH_20270529_20270604_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20270605_20270611_RANGES,
+  MATCH_CENTER_ENGLISH_20270605_20270611_VERIFICATION,
+  MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCED_EVENTS,
+  MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCE_VERIFICATION,
+} from './match-center-english-followup.mjs';
+
+export {
+  MATCH_CENTER_SPANISH_COMPETITION,
+  MATCH_CENTER_SPANISH_MATCHES,
+  MATCH_CENTER_SPANISH_20261017_20261211_MATCHES,
+  MATCH_CENTER_SPANISH_20261212_20270205_MATCHES,
+  MATCH_CENTER_SPANISH_20270206_20270212_MATCHES,
+  MATCH_CENTER_SPANISH_20270213_20270219_MATCHES,
+  MATCH_CENTER_SPANISH_20270220_20270226_MATCHES,
+  MATCH_CENTER_SPANISH_20270227_20270305_MATCHES,
+  MATCH_CENTER_SPANISH_20270306_20270312_MATCHES,
+  MATCH_CENTER_SPANISH_20270313_20270319_MATCHES,
+  MATCH_CENTER_SPANISH_20270320_20270326_MATCHES,
+  MATCH_CENTER_SPANISH_20270403_20270409_MATCHES,
+  MATCH_CENTER_SPANISH_20270410_20270416_MATCHES,
+  MATCH_CENTER_SPANISH_20270417_20270423_MATCHES,
+  MATCH_CENTER_SPANISH_20270501_20270507_MATCHES,
+  MATCH_CENTER_SPANISH_20270508_20270514_MATCHES,
+  MATCH_CENTER_SPANISH_20270515_20270521_MATCHES,
+  MATCH_CENTER_SPANISH_20270522_20270528_MATCHES,
+  MATCH_CENTER_SPANISH_20270529_20270604_MATCHES,
+  MATCH_CENTER_SPANISH_20261017_20261211_VERIFICATION,
+  MATCH_CENTER_SPANISH_20261212_20270205_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270206_20270212_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270213_20270219_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270220_20270226_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270227_20270305_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270306_20270312_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270313_20270319_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270320_20270326_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270403_20270409_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270410_20270416_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270417_20270423_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270501_20270507_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270508_20270514_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270515_20270521_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270522_20270528_VERIFICATION,
+  MATCH_CENTER_SPANISH_20270529_20270604_VERIFICATION,
+};
 
 /* ───────────── أصل التحقق — من أين جاءت هذه الأرقام ───────────── */
 
@@ -89,6 +311,236 @@ export const MATCH_CENTER_VERIFICATION = {
    القنوات في «التوثيق والمراجعة» وحده). لذلك يُسجَّل هنا حكم لكل مفتاح،
    فلا يتحول «المصدر يوفّره» إلى «الموقع يعرضه» بغير قرار.
 ========================================================================== */
+/** نافذة أسبوعية فارغة كما أرسلها المستخدم؛ لا تُستنتج منها نهاية الموسم. */
+const MATCH_CENTER_SPANISH_20270327_20270402_RANGES = [
+  { dates: "20270327-20270402", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20270327_20270402_VERIFICATION = {
+  receivedOn: '2026-10-17',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم مخرجات scoreboard.php للنافذة 20270327-20270402 وكانت events فارغة. لا تُستنتج نهاية الموسم من ذلك؛ لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً من المصدر.',
+  receivedRanges: MATCH_CENTER_SPANISH_20270327_20270402_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20270327_20270402_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20270327_20270402_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** نافذة أسبوعية فارغة كما أرسلها المستخدم؛ لا تُستنتج منها نهاية الموسم. */
+const MATCH_CENTER_SPANISH_20270424_20270430_RANGES = [
+  { dates: "20270424-20270430", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20270424_20270430_VERIFICATION = {
+  receivedOn: '2026-10-17',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم مخرجات scoreboard.php للنافذة 20270424-20270430 وكانت events فارغة. لا تُستنتج نهاية الموسم من ذلك؛ لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً من المصدر.',
+  receivedRanges: MATCH_CENTER_SPANISH_20270424_20270430_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20270424_20270430_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20270424_20270430_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** نطاق استدراكي فارغ أرسله المستخدم؛ لا يُستنتج منه انتهاء الموسم. */
+const MATCH_CENTER_SPANISH_20270605_20270607_RANGES = [
+  { dates: "20270605-20270607", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20270605_20270607_VERIFICATION = {
+  receivedOn: '2026-10-17',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم مخرجات scoreboard.php للنافذة القصيرة 20270605-20270607 وكانت events فارغة؛ لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً. لا تُستنتج نهاية الموسم.',
+  receivedRanges: MATCH_CENTER_SPANISH_20270605_20270607_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20270605_20270607_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20270605_20270607_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** ثماني نوافذ أسبوعية فارغة كما أرسلها المستخدم؛ لا تُستنتج منها نهاية الموسم. */
+const MATCH_CENTER_SPANISH_20270608_20270802_RANGES = [
+  { dates: "20270608-20270614", events: [] },
+  { dates: "20270615-20270621", events: [] },
+  { dates: "20270622-20270628", events: [] },
+  { dates: "20270629-20270705", events: [] },
+  { dates: "20270706-20270712", events: [] },
+  { dates: "20270713-20270719", events: [] },
+  { dates: "20270720-20270726", events: [] },
+  { dates: "20270727-20270802", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20270608_20270802_VERIFICATION = {
+  receivedOn: '2026-10-16',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم نتائج scoreboard.php لثماني نوافذ أسبوعية متصلة، وكانت events فارغة في كل منها؛ لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً.',
+  receivedRanges: MATCH_CENTER_SPANISH_20270608_20270802_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20270608_20270802_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20270608_20270802_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** متابعة متصلة بلا أحداث في النوافذ الثماني كلها؛ لا تُستنتج نهاية الموسم. */
+const MATCH_CENTER_SPANISH_20270803_20270927_RANGES = [
+  { dates: "20270803-20270809", events: [] },
+  { dates: "20270810-20270816", events: [] },
+  { dates: "20270817-20270823", events: [] },
+  { dates: "20270824-20270830", events: [] },
+  { dates: "20270831-20270906", events: [] },
+  { dates: "20270907-20270913", events: [] },
+  { dates: "20270914-20270920", events: [] },
+  { dates: "20270921-20270927", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20270803_20270927_VERIFICATION = {
+  receivedOn: '2026-10-16',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم نتائج scoreboard.php لثماني نوافذ أسبوعية متصلة، وكانت events فارغة في كل منها؛ لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً.',
+  receivedRanges: MATCH_CENTER_SPANISH_20270803_20270927_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20270803_20270927_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20270803_20270927_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** متابعة متصلة أخرى؛ أرسل المستخدم ثماني نوافذ فارغة حتى 22 نوفمبر 2027. */
+const MATCH_CENTER_SPANISH_20270928_20271122_RANGES = [
+  { dates: "20270928-20271004", events: [] },
+  { dates: "20271005-20271011", events: [] },
+  { dates: "20271012-20271018", events: [] },
+  { dates: "20271019-20271025", events: [] },
+  { dates: "20271026-20271101", events: [] },
+  { dates: "20271102-20271108", events: [] },
+  { dates: "20271109-20271115", events: [] },
+  { dates: "20271116-20271122", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20270928_20271122_VERIFICATION = {
+  receivedOn: '2026-10-17',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم مخرجات scoreboard.php لثماني نوافذ أسبوعية متصلة؛ لم تظهر أحداث في أي نافذة. لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً من النتائج.',
+  receivedRanges: MATCH_CENTER_SPANISH_20270928_20271122_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20270928_20271122_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20270928_20271122_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** دفعة رابعة متصلة؛ النوافذ كلها فارغة كما أرسلها المستخدم. */
+const MATCH_CENTER_SPANISH_20271123_20280117_RANGES = [
+  { dates: "20271123-20271129", events: [] },
+  { dates: "20271130-20271206", events: [] },
+  { dates: "20271207-20271213", events: [] },
+  { dates: "20271214-20271220", events: [] },
+  { dates: "20271221-20271227", events: [] },
+  { dates: "20271228-20280103", events: [] },
+  { dates: "20280104-20280110", events: [] },
+  { dates: "20280111-20280117", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20271123_20280117_VERIFICATION = {
+  receivedOn: '2026-10-17',
+  scopeNote: 'أكد المستخدم أن الموسم ينتهي خلال 2027؛ النطاق 20271228-20280103 يعبر حدّ العام، والنافذتان التاليتان محفوظتان كمخرجات مستلمة لا كامتداد لنطاق الموسم.',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم مخرجات scoreboard.php لثماني نوافذ أسبوعية متصلة؛ لم تظهر أحداث في أي نافذة. لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً من النتائج.',
+  receivedRanges: MATCH_CENTER_SPANISH_20271123_20280117_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20271123_20280117_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20271123_20280117_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
+/** مخرجات مستلمة بعد حد الموسم الذي أكده المستخدم (2027)؛ تُحفظ للتدقيق فقط ولا تُحسب ضمن التغطية الموسمية. */
+const MATCH_CENTER_SPANISH_20280118_20280313_RANGES = [
+  { dates: "20280118-20280124", events: [] },
+  { dates: "20280125-20280131", events: [] },
+  { dates: "20280201-20280207", events: [] },
+  { dates: "20280208-20280214", events: [] },
+  { dates: "20280215-20280221", events: [] },
+  { dates: "20280222-20280228", events: [] },
+  { dates: "20280229-20280306", events: [] },
+  { dates: "20280307-20280313", events: [] },
+];
+
+export const MATCH_CENTER_SPANISH_20280118_20280313_VERIFICATION = {
+  receivedOn: '2026-10-17',
+  outOfSeason: true,
+  scopeNote: 'أبقى المستخدم هذه المخرجات في سجل الاستعلامات؛ لكنها تخص 2028، خارج نطاق الموسم الذي أكد أن نهايته في 2027.',
+  provider: 'espn',
+  leagueId: 'esp.1',
+  method: 'أرسل المستخدم مخرجات scoreboard.php لثماني نوافذ أسبوعية متصلة؛ لم تظهر أحداث في أي نافذة. لم ينفّذ المساعد طلب API ولم يتحقق استقلالياً من النتائج.',
+  receivedRanges: MATCH_CENTER_SPANISH_20280118_20280313_RANGES.map(({ dates, events }) => ({
+    dates,
+    scoreboardEndpoint: `https://streammasterstore.com/scoreboard.php?league=esp.1&dates=${dates}`,
+    eventCount: events.length,
+  })),
+  receivedEvents: MATCH_CENTER_SPANISH_20280118_20280313_RANGES.flatMap(({ events }) => events.map(([id, date, name, venue]) => ({
+    id, date, name, venue, status: 'STATUS_SCHEDULED',
+  }))),
+  receivedTeams: MATCH_CENTER_SPANISH_20280118_20280313_RANGES.flatMap(({ events }) => events.flatMap(([event, , , , homeId, homeName, awayId, awayName]) => [
+    { event, side: 'home', id: homeId, name: homeName },
+    { event, side: 'away', id: awayId, name: awayName },
+  ])),
+};
+
 export const MATCH_CENTER_SUMMARY_PROBE = {
   probedAt: '2026-10-16T00:00:00Z',
   provider: 'espn',
@@ -327,6 +779,211 @@ export const MATCH_CENTER_MATCHES = [
   },
 ];
 
+/* أسماء العرض العربية والـslugs تقابل أسماء المصدر حرفياً؛ لا تُستعمل
+   هذه التسميات بديلاً عن هوية النادي من معرّف ESPN. */
+const ENGLISH_TEAM_PRESENTATION = {
+  'AFC Bournemouth': { slug: 'afc-bournemouth', name: 'بورنموث', shortName: 'بورنموث' },
+  'Sunderland': { slug: 'sunderland', name: 'سندرلاند', shortName: 'سندرلاند' },
+  'Brighton & Hove Albion': { slug: 'brighton-hove-albion', name: 'برايتون', shortName: 'برايتون' },
+  'Crystal Palace': { slug: 'crystal-palace', name: 'كريستال بالاس', shortName: 'بالاس' },
+  'Leeds United': { slug: 'leeds-united', name: 'ليدز يونايتد', shortName: 'ليدز' },
+  'Manchester United': { slug: 'manchester-united', name: 'مانشستر يونايتد', shortName: 'مانشستر' },
+  'Nottingham Forest': { slug: 'nottingham-forest', name: 'نوتنغهام فورست', shortName: 'نوتنغهام' },
+  'Arsenal': { slug: 'arsenal', name: 'أرسنال', shortName: 'أرسنال' },
+  'Tottenham Hotspur': { slug: 'tottenham-hotspur', name: 'توتنهام', shortName: 'توتنهام' },
+  'Coventry City': { slug: 'coventry-city', name: 'كوفنتري سيتي', shortName: 'كوفنتري' },
+  'Ipswich Town': { slug: 'ipswich-town', name: 'إيبسويتش تاون', shortName: 'إيبسويتش' },
+  'Aston Villa': { slug: 'aston-villa', name: 'أستون فيلا', shortName: 'فيلا' },
+  'Manchester City': { slug: 'manchester-city', name: 'مانشستر سيتي', shortName: 'سيتي' },
+  'Everton': { slug: 'everton', name: 'إيفرتون', shortName: 'إيفرتون' },
+  'Fulham': { slug: 'fulham', name: 'فولهام', shortName: 'فولهام' },
+  'Chelsea': { slug: 'chelsea', name: 'تشيلسي', shortName: 'تشيلسي' },
+  'Newcastle United': { slug: 'newcastle-united', name: 'نيوكاسل يونايتد', shortName: 'نيوكاسل' },
+  'Hull City': { slug: 'hull-city', name: 'هال سيتي', shortName: 'هال' },
+  'Liverpool': { slug: 'liverpool', name: 'ليفربول', shortName: 'ليفربول' },
+  'Brentford': { slug: 'brentford', name: 'برينتفورد', shortName: 'برينتفورد' },
+};
+
+function englishTeamDefinition(sourceName, sourceId) {
+  const presentation = ENGLISH_TEAM_PRESENTATION[sourceName];
+  if (!presentation) throw new Error(`Missing reviewed English team presentation: ${sourceName}`);
+  return {
+    name: presentation.name,
+    shortName: presentation.shortName,
+    sourceName,
+    logo: null,
+    externalIds: { espn: String(sourceId), apifootball: null },
+  };
+}
+
+function fixtureFromEnglishEvent([
+  eventId, sourceDate, sourceEventName, venue, homeId, homeName, awayId, awayName,
+]) {
+  const home = englishTeamDefinition(homeName, homeId);
+  const away = englishTeamDefinition(awayName, awayId);
+  const slug = `epl-${ENGLISH_TEAM_PRESENTATION[homeName].slug}-vs-${ENGLISH_TEAM_PRESENTATION[awayName].slug}`;
+  return {
+    id: slug,
+    slug,
+    competitionSlug: MATCH_CENTER_COMPETITION.slug,
+    competitionName: MATCH_CENTER_COMPETITION.name,
+    leagueId: MATCH_CENTER_COMPETITION.leagueId,
+    season: MATCH_CENTER_COMPETITION.season,
+    round: null,
+    kickoffUtc: `${sourceDate.slice(0, -1)}:00Z`,
+    venue,
+    sourceEventName,
+    verification: 'confirmed',
+    externalIds: { espn: String(eventId), apifootball: null },
+    home,
+    away,
+  };
+}
+
+function fixturesFromEnglishRanges(ranges) {
+  return ranges.flatMap(({ events }) => events.map(fixtureFromEnglishEvent));
+}
+
+export const MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261018_20261023_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261024_20261030_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261024_20261030_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261031_20261106_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261031_20261106_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261107_20261113_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261107_20261113_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261121_20261127_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261121_20261127_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261128_20261204_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261128_20261204_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261205_20261211_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261205_20261211_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261212_20261218_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261212_20261218_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261219_20261225_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261219_20261225_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20261226_20270101_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20261226_20270101_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270102_20270108_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270102_20270108_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270116_20270122_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270116_20270122_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270123_20270129_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270123_20270129_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270130_20270205_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270130_20270205_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270206_20270212_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270206_20270212_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270220_20270226_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270220_20270226_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270227_20270305_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270227_20270305_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270313_20270319_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270313_20270319_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270320_20270326_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270320_20270326_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270410_20270416_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270410_20270416_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270417_20270423_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270417_20270423_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270424_20270430_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270424_20270430_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270501_20270507_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270501_20270507_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270508_20270514_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270508_20270514_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270515_20270521_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270515_20270521_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270522_20270528_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270522_20270528_RANGES,
+);
+export const MATCH_CENTER_ENGLISH_20270529_20270604_MATCHES = fixturesFromEnglishRanges(
+  MATCH_CENTER_ENGLISH_20270529_20270604_RANGES,
+);
+
+/* These two Oct 17 source events had IDs/names/venues in the original output,
+   but no competitor IDs. The later user output supplies exact team-ID witnesses;
+   do not turn a team name alone into an identity. */
+export const MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCED_MATCHES =
+  MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCED_EVENTS.map(event => fixtureFromEnglishEvent([
+    event.id,
+    event.date,
+    event.name,
+    event.venue,
+    event.home.id,
+    event.home.name,
+    event.away.id,
+    event.away.name,
+  ]));
+
+export const MATCH_CENTER_ENGLISH_MATCHES = [
+  ...MATCH_CENTER_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261017_CROSS_REFERENCED_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261024_20261030_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261031_20261106_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261107_20261113_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261121_20261127_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261128_20261204_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261205_20261211_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261212_20261218_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261219_20261225_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20261226_20270101_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270102_20270108_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270116_20270122_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270123_20270129_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270130_20270205_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270206_20270212_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270220_20270226_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270227_20270305_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270313_20270319_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270320_20270326_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270410_20270416_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270417_20270423_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270424_20270430_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270501_20270507_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270508_20270514_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270515_20270521_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270522_20270528_MATCHES,
+  ...MATCH_CENTER_ENGLISH_20270529_20270604_MATCHES,
+];
+
+/** كل المباريات المسجلة للصفحات والفهرسة، مع إبقاء الثلاث الأولى مرجعاً لاختبارات النقل القديمة. */
+export const MATCH_CENTER_ALL_MATCHES = [
+  ...MATCH_CENTER_ENGLISH_MATCHES,
+  ...MATCH_CENTER_SPANISH_MATCHES,
+];
+
+export const MATCH_CENTER_COMPETITIONS = [
+  MATCH_CENTER_COMPETITION,
+  MATCH_CENTER_SPANISH_COMPETITION,
+];
+
 /* البند 12: أسماء المزوّدين وروابط الاستشهاد تظهر في «التوثيق والمراجعة»
    فقط. هذه هي المادة الوحيدة المسموح لها بذلك، وتستثنيها الاختبارات من حظر
    أسماء المصادر — تماماً كما يفعل `test-fixture-sources.mjs` مع
@@ -345,7 +1002,7 @@ export const MATCH_CENTER_DOCUMENTATION = {
     {
       id: 'standings',
       label: 'ترتيب الدوري',
-      note: 'جدول واحد مشترك بين المباريات الثلاث، لا يُطلب لكل مباراة على حدة.',
+      note: 'جدول واحد مشترك بحسب البطولة، لا يُطلب لكل مباراة على حدة.',
     },
   ],
 };
@@ -376,7 +1033,7 @@ export function matchCenterPath(match) {
 
 /** تُستخدم في `getAllRoutes()` و`APP_PATHS` — فلا تُكتب المسارات يدوياً في مكانين. */
 export function matchCenterRoutes() {
-  return MATCH_CENTER_MATCHES.map(matchCenterPath);
+  return MATCH_CENTER_ALL_MATCHES.map(matchCenterPath);
 }
 
 /* `matchCenterPath` تنتهي بشرطة مائلة لأنها شكل الرابط المنشور (canonical
@@ -392,17 +1049,17 @@ function stripTrailingSlash(route) {
 
 /** المسارات مطبَّعة للموجّه والبناء المسبق. */
 export function matchCenterRouteIds() {
-  return MATCH_CENTER_MATCHES.map(match => stripTrailingSlash(matchCenterPath(match)));
+  return MATCH_CENTER_ALL_MATCHES.map(match => stripTrailingSlash(matchCenterPath(match)));
 }
 
 /** مطابقة مسار مُطبَّع بتعريف المباراة — يستخدمها `App.tsx` و`seo.ts`. */
 export function matchByRoute(path) {
   const normalized = stripTrailingSlash(String(path ?? ''));
-  return MATCH_CENTER_MATCHES.find(match => stripTrailingSlash(matchCenterPath(match)) === normalized) || null;
+  return MATCH_CENTER_ALL_MATCHES.find(match => stripTrailingSlash(matchCenterPath(match)) === normalized) || null;
 }
 
 export function matchBySlug(slug) {
-  return MATCH_CENTER_MATCHES.find(match => match.slug === slug) || null;
+  return MATCH_CENTER_ALL_MATCHES.find(match => match.slug === slug) || null;
 }
 
 /**
@@ -417,7 +1074,7 @@ export function matchBySlug(slug) {
  * مشترك لا نسخ متكررة من الشفرة).
  */
 export function matchByExternalId(provider, externalId) {
-  return matchByFixtureId(MATCH_CENTER_MATCHES, provider, externalId);
+  return matchByFixtureId(MATCH_CENTER_ALL_MATCHES, provider, externalId);
 }
 
 /**
@@ -426,5 +1083,5 @@ export function matchByExternalId(provider, externalId) {
  * والملعب والفريقان — **بلا** عروض تذاكر غير موجودة وبلا تقييمات وهمية.
  */
 export function allMatchesVerified() {
-  return MATCH_CENTER_MATCHES.every(match => isVerified(match));
+  return MATCH_CENTER_ALL_MATCHES.every(match => isVerified(match));
 }

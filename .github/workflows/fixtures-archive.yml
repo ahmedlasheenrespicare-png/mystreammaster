@@ -1,0 +1,116 @@
+name: Daily fixtures archive
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.github/workflows/fixtures-archive.yml'
+      - 'website/scripts/probe-saudi-fixtures.mjs'
+permissions:
+  contents: read
+concurrency:
+  group: fixtures-archive-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  probe-saudi:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node website/scripts/probe-saudi-fixtures.mjs
+      - run: |
+          echo '### Read-only Saudi fixture identity probe (not production approval)' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat website/.fixtures-out/saudi-probe.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saudi-fixture-identity
+          path: website/.fixtures-out/saudi-probe.json
+          include-hidden-files: true
+          retention-days: 7
+  collect:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      ready: ${{ steps.artifact.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test website/scripts/test-fixtures-archive.mjs
+      - name: Collect sequentially (failures preserve last success)
+        id: fetch
+        continue-on-error: true
+        env:
+          FIXTURES_SOURCES_APPROVED: ${{ vars.FIXTURES_SOURCES_APPROVED }}
+          HIGHLIGHTLY_PLAN_APPROVED: ${{ vars.HIGHLIGHTLY_PLAN_APPROVED }}
+          FIXTURES_STATISTICS: ${{ vars.FIXTURES_STATISTICS }}
+          HIGHLIGHTLY_API_KEY: ${{ secrets.HIGHLIGHTLY_API_KEY }}
+        run: node website/scripts/fetch-fixtures-archive.mjs
+      - name: Report source failures
+        if: always()
+        run: |
+          if [ -f website/.fixtures-out/report.json ]; then
+            echo '### Fixtures archive: failed leagues retain their previous files' >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat website/.fixtures-out/report.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        id: artifact
+        with:
+          name: fixtures-candidate
+          path: website/.fixtures-out/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+      - name: Mark partial failures visibly
+        if: steps.fetch.outcome == 'failure'
+        run: echo '::warning::One or more leagues failed; see report.json. Successful leagues may still publish.'
+  publish:
+    needs: collect
+    if: needs.collect.outputs.ready != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: fixtures-candidate
+          path: website/.fixtures-out/
+      - name: Reject stale checkout
+        env:
+          COLLECTED_SHA: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$COLLECTED_SHA"
+      - name: Revalidate and publish only archive files
+        run: |
+          set -euo pipefail
+          node website/scripts/publish-fixtures-archive.mjs
+          git add -- website/src/content/fixtures-archive
+          if git diff --cached --quiet; then
+            echo 'No semantic changes; no commit.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update verified fixtures archive [skip ci]'
+          git push origin "HEAD:${GITHUB_REF_NAME}"

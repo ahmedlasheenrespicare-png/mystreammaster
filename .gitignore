@@ -11,3 +11,6 @@ website/playwright-report/
 # لقطات مركز المباراة — ناتج `scripts/capture-match-center.mjs` القابل لإعادة
 # الإنتاج. تُسلَّم في مساحة العمل للمراجعة ولا تدخل المستودع (30 ميغابايت).
 website/docs/match-center-shots/
+
+# Staged archive candidates/reports are Actions artifacts, never tracked.
+website/.fixtures-out/

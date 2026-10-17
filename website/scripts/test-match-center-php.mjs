@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MATCH_CENTER_MATCHES } from '../src/content/match-center.mjs';
+import { MATCH_CENTER_ALL_MATCHES, MATCH_CENTER_MATCHES } from '../src/content/match-center.mjs';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -35,9 +35,9 @@ function phpBindings() {
 
 test('the PHP binding table matches the JS fixtures exactly — slug, event id, league and day', () => {
   const bindings = phpBindings();
-  assert.equal(bindings.size, MATCH_CENTER_MATCHES.length, 'every fixture must be bound in the server table');
+  assert.equal(bindings.size, MATCH_CENTER_ALL_MATCHES.length, 'every fixture must be bound in the server table');
 
-  for (const fixture of MATCH_CENTER_MATCHES) {
+  for (const fixture of MATCH_CENTER_ALL_MATCHES) {
     const bound = bindings.get(fixture.slug);
     assert.ok(bound, `${fixture.slug} is missing from the PHP table`);
     // Rule 3: bound by fixture id, not by team name or kickoff.
@@ -50,9 +50,9 @@ test('the PHP binding table matches the JS fixtures exactly — slug, event id, 
 
   // And nothing extra: an unbound slug in the table would be a page nobody
   // verified, served because the allowlist grew quietly.
-  const slugs = new Set(MATCH_CENTER_MATCHES.map(fixture => fixture.slug));
+  const slugs = new Set(MATCH_CENTER_ALL_MATCHES.map(fixture => fixture.slug));
   for (const slug of bindings.keys()) {
-    assert.ok(slugs.has(slug), `${slug} is in the PHP table but is not a trial fixture`);
+    assert.ok(slugs.has(slug), `${slug} is in the PHP table but has no verified fixture definition`);
   }
 });
 
@@ -171,9 +171,9 @@ test('the detail read is gated on the source state, not on elapsed time', () => 
   assert.ok(!/time\(\)\s*-\s*\$kickoff/.test(source), 'no elapsed-time reasoning');
 });
 
-test('the scoreboard read is shared across the three matches, not per match', () => {
-  // Rule 11: one shared server cache. Keying by league+day means one upstream
-  // request serves all three fixtures; keying by match would triple it.
+test('the scoreboard read is shared by competition and day, not per match', () => {
+  // Rule 11: one shared server cache. Keying by league+day reuses one upstream
+  // response for every registered fixture on that slate; keying by match repeats it.
   assert.match(source, /\$scoreboardKey = 'sb_' \. \$binding\['league'\] \. '_' \. \$binding\['day'\]/);
   assert.match(source, /\$summaryKey\s*= 'sm_' \. \$binding\['event'\]/);
   assert.ok(!/'sb_' \. \$slug/.test(source), 'the scoreboard cache must not be keyed per match');

@@ -3,7 +3,6 @@ import { useMatchCenter } from '../components/useMatchCenter';
 import MatchCenterTabs from '../components/MatchCenterTabs';
 import { PANELS } from '../components/MatchCenterPanels';
 import {
-  MATCH_CENTER_COMPETITION,
   MATCH_CENTER_DOCUMENTATION,
   type MatchCenterFixture,
 } from '../content/match-center.mjs';
@@ -12,7 +11,7 @@ import { to } from '../config';
 import './match-center.css';
 
 /* ==========================================================================
-   مركز المباراة — قالب واحد مشترك للمباريات الثلاث (البند 3)
+   مركز المباراة — قالب واحد مشترك لكل تعريف موثّق (البند 3)
    --------------------------------------------------------------------------
    لا نسخة لكل مباراة: نفس المكوّن يستقبل تعريفاً مختلفاً، والرابط هو ما
    يختلف. فلو كُرّر الكود ثلاث مرات لتباعدت النسخ عند أول تعديل.
@@ -123,7 +122,9 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
           <span aria-hidden="true">/</span>
           <a href={to('matches/')}>مواعيد المباريات</a>
           <span aria-hidden="true">/</span>
-          <a href={to(`matches/${MATCH_CENTER_COMPETITION.slug}/`)}>{MATCH_CENTER_COMPETITION.name}</a>
+          {match.leagueId === 'eng.1'
+            ? <a href={to(`matches/${match.competitionSlug}/`)}>{match.competitionName}</a>
+            : <span>{match.competitionName}</span>}
           <span aria-hidden="true">/</span>
           <span aria-current="page">{match.home.shortName} × {match.away.shortName}</span>
         </nav>

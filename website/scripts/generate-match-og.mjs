@@ -4,7 +4,8 @@
  * المباراة الداكنة نفسها (#080b12 / بنفسجي / ليمي).
  *
  * الاستخدام:
- *   node scripts/generate-match-og.mjs                 → الصور التمهيدية للمباريات الثلاث
+ *   node scripts/generate-match-og.mjs                 → الصور التمهيدية لكل مباراة مسجلة
+ *   node scripts/generate-match-og.mjs --missing-only  → إنشاء الصور التمهيدية غير الموجودة فقط
  *   node scripts/generate-match-og.mjs --final <read.json> → صورة نهائية من قراءة مؤكدة
  *
  * القاعدة الحاكمة (تقرير التغطية §3.3): لا تُرسم نتيجة إلا من قراءة
@@ -18,7 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium as playwrightChromium } from "@playwright/test";
 import sparticuzChromium, { inflate } from "@sparticuz/chromium";
-import { MATCH_CENTER_COMPETITION, MATCH_CENTER_MATCHES } from "../src/content/match-center.mjs";
+import { MATCH_CENTER_ALL_MATCHES } from "../src/content/match-center.mjs";
 import { dayLabelInZone, kickoffLabel } from "../src/lib/match-center.mjs";
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -63,7 +64,7 @@ function previewHtml(match) {
   const time = kickoffLabel(match.kickoffUtc, "Africa/Cairo");
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>${baseCss}</style></head>
 <body><main class="cover"><div class="grid"></div>
-<div class="kicker">مركز المباراة · ${escapeHtml(MATCH_CENTER_COMPETITION.name)} ${escapeHtml(MATCH_CENTER_COMPETITION.season)}</div>
+<div class="kicker">مركز المباراة · ${escapeHtml(match.competitionName)} ${escapeHtml(match.season)}</div>
 <div class="teams">${escapeHtml(match.home.name)}<span class="vs">ضد</span>${escapeHtml(match.away.name)}</div>
 <div class="facts">${escapeHtml(day)} · ${escapeHtml(time)} بتوقيت القاهرة<br>الملعب: ${escapeHtml(match.venue ?? "غير متاح")}</div>
 <div class="foot"><span>النتيجة والأحداث من المصدر وقت حدوثها — لا تُعرض نتيجة قبل البداية</span><span>ستريم ماستر برو</span></div>
@@ -89,7 +90,7 @@ function finalHtml(match, read) {
     <div class="stat"><div class="v">${s.home ?? "—"}<i>:</i>${s.away ?? "—"}${s.unit ? ` <i>${escapeHtml(s.unit)}</i>` : ""}</div><div class="l">${escapeHtml(s.label)}</div></div>`).join("");
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>${baseCss}.teams{font-size:56px;margin-top:26px}</style></head>
 <body><main class="cover"><div class="grid"></div>
-<div class="kicker">نتيجة نهائية مؤكدة · ${escapeHtml(MATCH_CENTER_COMPETITION.name)}</div>
+<div class="kicker">نتيجة نهائية مؤكدة · ${escapeHtml(match.competitionName)}</div>
 <div class="teams">${escapeHtml(match.home.name)}<span class="vs">×</span>${escapeHtml(match.away.name)}</div>
 <div class="score"><b class="home">${score.home}</b><span>–</span><b class="away">${score.away}</b></div>
 ${stats.length ? `<div class="stats">${statCards}</div>` : ""}
@@ -117,11 +118,26 @@ try {
   const finalArg = process.argv.indexOf("--final");
   if (finalArg !== -1) {
     const read = JSON.parse(await fs.readFile(process.argv[finalArg + 1], "utf8"));
-    const match = MATCH_CENTER_MATCHES.find((m) => m.slug === read?.match || m.id === read?.match);
+    const match = MATCH_CENTER_ALL_MATCHES.find((m) => m.slug === read?.match || m.id === read?.match);
     if (!match) throw new Error(`refused: unknown match (${read?.match ?? "absent"})`);
     await render(finalHtml(match, read), `match-${match.slug}-final.png`);
   } else {
-    for (const match of MATCH_CENTER_MATCHES) {
+    const missingOnly = process.argv.includes("--missing-only");
+    const matchesToRender = [];
+    for (const match of MATCH_CENTER_ALL_MATCHES) {
+      if (missingOnly) {
+        const file = path.join(website, "public/images/og", `match-${match.slug}.png`);
+        try {
+          await fs.access(file);
+          continue;
+        } catch (error) {
+          if (error?.code !== "ENOENT") throw error;
+        }
+      }
+      matchesToRender.push(match);
+    }
+    if (missingOnly) console.log(`Generating ${matchesToRender.length} missing preview image(s).`);
+    for (const match of matchesToRender) {
       await render(previewHtml(match), `match-${match.slug}.png`);
     }
   }

@@ -105,6 +105,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "matches/الدوري-الفرنسي": "league-ligue-1",
   "matches/الدوري-الألماني": "league-bundesliga",
   "matches/الدوري-الإيطالي": "league-serie-a",
+  "matches/الدوري-المصري": "league-egyptian-premier",
   /* صفحات المنتخبات — /world-cup-2026/{slug} */
   "world-cup-2026/المغرب": "wc-morocco",
   "world-cup-2026/مصر": "wc-egypt",
@@ -634,7 +635,7 @@ export function getSeo(path: string): SeoMeta {
           name: leagueLanding.title,
           description: leagueLanding.description,
           published: leagueLanding.date ?? LANDING_DATE,
-          modified: leagueLanding.date ?? STANDINGS_DATE,
+          modified: leagueLanding.modified ?? leagueLanding.date ?? STANDINGS_DATE,
           mainEntityId: `${canonical}#faq`,
         }),
         breadcrumbs(

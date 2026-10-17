@@ -70,7 +70,7 @@ test('لقطة صفحات البطولات: إمّا النسخة المراجَ
     } else {
       /* الحالة الثانية: نسخة مجلوبة آلياً من نقطة المصدر — تُشترط وثيقة الأصل */
       assert.equal(table.stale, false, `${table.league}: قراءة حديثة يجب ألا تكون موسومة قديمة`);
-      assert.match(table.sourceUrl, /^https:\/\/site\.web\.api\.espn\.com\/apis\/v2\/sports\/soccer\/[a-z0-9.]+\/standings$/, `${table.league}: رابط الأصل ليس نقطة المصدر المعتمدة`);
+      assert.match(table.sourceUrl, /^https:\/\/(site\.web\.api\.espn\.com\/apis\/v2\/sports\/soccer\/[a-z0-9.]+\/standings|soccer\.highlightly\.net\/standings)(\?.*)?$/, `${table.league}: رابط الأصل ليس نقطة المصدر المعتمدة`);
       assert.ok(Number.isFinite(Date.parse(table.fetchedAt)), `${table.league}: وقت قراءة غير سليم`);
       assert.match(snapshot.provenance, /ESPN/, 'أصل اللقطة غير موثّق');
       assert.match(snapshot.provenance, /probe-standings\.mjs/, 'المحكّم المستخدم غير موثّق في الأصل');
@@ -80,7 +80,9 @@ test('لقطة صفحات البطولات: إمّا النسخة المراجَ
 
 test('لا تُعرض بطولة بترتيب إلا إن كانت في قائمة الوسيط المسموحة وفي اللقطة', async () => {
   const php = await fs.readFile(path.join(root, 'standings.php'), 'utf8');
-  const allowed = new Set([...php.matchAll(/^\s*'([a-z0-9.]+)'\s*=>\s*\['uid'/gim)].map((match) => match[1]));
+  const espnShape = [...php.matchAll(/^\s*'([a-z0-9.]+)'\s*=>\s*\['uid'/gim)].map((match) => match[1]);
+  const highlightlyShape = [...php.matchAll(/^\s*'([a-z0-9.]+)'\s*=>\s*\['leagueId'/gim)].map((match) => match[1]);
+  const allowed = new Set([...espnShape, ...highlightlyShape]);
   assert.ok(allowed.size >= 3, 'قائمة الوسيط المسموحة غير مقروءة');
   const inSnapshot = new Set(snapshot.tables.map((table) => table.league));
 
@@ -150,6 +152,7 @@ test('HTML المنشور: الجدول كامل بلا JavaScript، والحا�
     ['matches/الدوري-الألماني/index.html', 'ger.1', 18],
     ['matches/الدوري-الإيطالي/index.html', 'ita.1', 20],
     ['matches/الدوري-السعودي/index.html', 'ksa.1', 18],
+    ['matches/الدوري-المصري/index.html', 'egy.1', 20],
   ];
   for (const [file, league, count] of cases) {
     const html = await readRoot(file);
@@ -164,12 +167,13 @@ test('HTML المنشور: الجدول كامل بلا JavaScript، والحا�
     /* لا نصوص تشخيص داخلية ولا أسماء مزوّدين خارج المصدر المعلن في الصفحة */
     assert.equal(/UPSTREAM_|SchemaChanged/.test(section.text()), false, `${file}: نص تشخيص داخلي ظاهر`);
   }
-  /* البطولة التي رفض المصدر فحصها (المصري) لم تُؤهَّل ولم تُخمَّن — والحقل الذي
-     يعرض «غير متاح» يبقى قائماً في المصدر لأي بطولة يفشل مسبارها لاحقاً. */
-  assert.equal(
-    standings.standingsConfig('egy.1'),
-    undefined,
-    'بطولة رفض المصدر فحصها (HTTP 400) أُدرجت في المؤهَّلة',
+  /* المصري أُهِّل بمسبار 2026-10-17 لدى Highlightly (leagueId=199067،
+     عشرون فريقاً) — والحقل الذي يعرض «غير متاح» يبقى قائماً في المصدر
+     لأي بطولة يفشل مسبارها لاحقاً. */
+  const egyptConfig = standings.standingsConfig('egy.1');
+  assert.ok(
+    egyptConfig && egyptConfig.count === 20 && egyptConfig.provider === 'Highlightly',
+    'المصري: أُثبت بمسبار Highlightly ويجب أن يكون مؤهَّلاً بعشرين فريقاً',
   );
   assert.ok(
     /standingsUnavailable/.test(await fs.readFile(path.join(website, 'src/content/competitions.ts'), 'utf8'))
@@ -191,8 +195,12 @@ test('HTML المنشور: الجدول كامل بلا JavaScript، والحا�
 test('قائمة الوسيط وخريطة الواجهة وتقرير المسبار: ثلاثتها متطابقة على نفس المعرّفات والأعداد', async () => {
   const php = await fs.readFile(path.join(root, 'standings.php'), 'utf8');
   /* ملاحظة مهمة: معرّفات ESPN تحتوي أرقاماً («eng.1»)، فالنمط يجب أن يقبلها */
-  const phpLeagues = [...php.matchAll(/'([a-z0-9.]+)'\s*=>\s*\['uid'\s*=>\s*'([^']+)',\s*'count'\s*=>\s*(\d+)\]/g)]
-    .map((match) => ({ id: match[1], uid: match[2], count: Number(match[3]) }));
+  const phpLeagues = [
+    ...[...php.matchAll(/'([a-z0-9.]+)'\s*=>\s*\['uid'\s*=>\s*'([^']+)',\s*'count'\s*=>\s*(\d+)\]/g)]
+      .map((match) => ({ id: match[1], uid: match[2], count: Number(match[3]) })),
+    ...[...php.matchAll(/'([a-z0-9.]+)'\s*=>\s*\['leagueId'\s*=>\s*(\d+),\s*'season'\s*=>\s*(\d+),\s*'count'\s*=>\s*(\d+)\]/g)]
+      .map((match) => ({ id: match[1], leagueId: Number(match[2]), season: Number(match[3]), count: Number(match[4]) })),
+  ];
   assert.equal(phpLeagues.length, standings.STANDINGS_LEAGUES.length, 'عدد بطولات الوسيط لا يطابق الواجهة');
   const report = await readJson('docs/standings-probe-report.json');
   const evidence = new Map([...report.snapshot, ...report.probe]
@@ -204,7 +212,7 @@ test('قائمة الوسيط وخريطة الواجهة وتقرير المس�
     assert.equal(allowed.count, entry.count, `${entry.id}: عدد الفرق لا يطابق الوسيط`);
     const proof = evidence.get(entry.id);
     assert.ok(proof, `${entry.id}: بلا سند مسبار في تقرير المصدر`);
-    assert.equal(proof.uid, allowed.uid, `${entry.id}: معرّف الوسيط لا يطابق ما أثبته المسبار`);
+    assert.equal(proof.uid ?? proof.leagueId, allowed.uid ?? allowed.leagueId, `${entry.id}: معرّف الوسيط لا يطابق ما أثبته المسبار`);
     assert.equal(proof.teams ?? proof.count, entry.count, `${entry.id}: عدد المسبار لا يطابق إعلان البطولة`);
   }
   for (const row of phpLeagues) {

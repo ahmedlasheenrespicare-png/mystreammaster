@@ -23,17 +23,18 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROBE_BASE, judgeStandings, probeStandings } from './probe-standings.mjs';
-import { validateStandings } from '../src/lib/standings.mjs';
+import { PROBE_BASE, HIGHLIGHTLY_BASE, judgeStandings, probeStandings, providerOf } from './probe-standings.mjs';
+import { STANDINGS_LEAGUES, validateStandings } from '../src/lib/standings.mjs';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = process.env.STANDINGS_OUT || path.join(website, '.standings-out');
 
 const list = (value, fallback) => (value ?? fallback).trim().split(/\s+/).filter(Boolean);
-/* البطولات المؤهَّلة بعد مسبار 2026-10-16 — تُحدَّث القائمة عند فتح بوابة بطولة
-   جديدة، ولا تُضاف بطولة قبل أن يثبت مسبارها معرّفها وعدد فرقها. */
-const snapshotLeagues = list(process.env.SNAPSHOT_LEAGUES, 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1');
-const probeLeagues = list(process.env.PROBE_LEAGUES, 'egy.1');
+/* البطولات المؤهَّلة بعد مسبار موثّق — تُحدَّث القائمة عند فتح بوابة
+   بطولة جديدة، ولا تُضاف بطولة قبل أن يثبت مسبارها معرّفها وعدد فرقها.
+   المصري أُضيف بعد مسبار 2026-10-17 لدى Highlightly (leagueId=199067). */
+const snapshotLeagues = list(process.env.SNAPSHOT_LEAGUES, 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1 egy.1');
+const probeLeagues = list(process.env.PROBE_LEAGUES, '');
 
 const FIELDS = ['points', 'played', 'wins', 'draws', 'losses', 'goalsFor', 'goalsAgainst', 'goalDifference'];
 
@@ -46,22 +47,33 @@ let failures = 0;
 for (const league of snapshotLeagues) {
   try {
     /* الاستجابة الخام تُحفظ أولاً: هي أصل كل رقم لاحق، وتحفظ إمكانية إعادة الحكم */
-    const url = `${PROBE_BASE}/apis/v2/sports/soccer/${league}/standings`;
-    const response = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': 'StreamMaster-Standings/1.0' } });
+    const viaHighlightly = providerOf(league) === 'Highlightly';
+    const config = STANDINGS_LEAGUES.find((entry) => entry.id === league);
+    let url;
+    let response;
+    if (viaHighlightly) {
+      const key = process.env.HIGHLIGHTLY_API_KEY;
+      if (!key) throw new Error('UPSTREAM_KEY_MISSING');
+      url = `${HIGHLIGHTLY_BASE}/standings?leagueId=${config.leagueId}&season=${config.season}`;
+      response = await fetch(url, { headers: { Accept: 'application/json', 'x-rapidapi-key': key } });
+    } else {
+      url = `${PROBE_BASE}/apis/v2/sports/soccer/${league}/standings`;
+      response = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': 'StreamMaster-Standings/1.0' } });
+    }
     if (!response.ok) throw new Error(`UPSTREAM_HTTP_${response.status}`);
     const raw = await response.json();
     await fs.writeFile(path.join(outDir, 'raw', `${league}.json`), JSON.stringify(raw));
     const judged = judgeStandings(raw, league);
     const table = {
       ok: true,
-      provider: 'ESPN',
+      provider: viaHighlightly ? 'Highlightly' : 'ESPN',
       league,
       phase: 'league',
       season: judged.season,
       fetchedAt: new Date().toISOString(),
       stale: false,
       sourceUrl: url,
-      uid: judged.uid,
+      ...(viaHighlightly ? { leagueId: judged.leagueId } : { uid: judged.uid }),
       entries: judged.rows.map((row) => {
         const entry = { teamId: row.teamId, name: row.name, rank: row.rank };
         for (const field of FIELDS) entry[field] = row[field] ?? null;
@@ -71,7 +83,7 @@ for (const league of snapshotLeagues) {
     /* بوّابة أخيرة قبل الكتابة: نفس تحقق الواجهة، فما يُكتب يُعرض بلا مفاجآت */
     validateStandings(table, league);
     tables.push(table);
-    console.log(`✅ ${league.padEnd(16)} uid=${judged.uid}  season=${judged.season}  teams=${judged.teams}`);
+    console.log(`✅ ${league.padEnd(16)} ${viaHighlightly ? `leagueId=${judged.leagueId}` : `uid=${judged.uid}`}  provider=${table.provider}  season=${judged.season}  teams=${judged.teams}`);
   } catch (error) {
     failures++;
     console.log(`❌ ${league.padEnd(16)} فشل: ${error?.message || error}`);
@@ -91,7 +103,7 @@ for (const league of probeLeagues) {
 
 const snapshot = {
   version: 1,
-  provenance: `ESPN public standings API (${PROBE_BASE}), fetched ${new Date().toISOString()} by .github/workflows/standings-snapshot.yml and validated with scripts/probe-standings.mjs — the same rules the runtime proxy standings.php applies. Ranks and GP/W/D/L/F/A/GD/P come from the source as-is; nothing is recomputed, and missing values are written as null ("غير متاح"). This file serves the league landing pages only; fixture-standings-snapshot.json is a separate reviewed snapshot for documentation pages and is not touched here.`,
+  provenance: `ESPN public standings API (${PROBE_BASE}) and Highlightly Football API (${HIGHLIGHTLY_BASE}), fetched ${new Date().toISOString()} by .github/workflows/standings-snapshot.yml and validated with scripts/probe-standings.mjs — the same rules the runtime proxy standings.php applies. Each table names its own sourceUrl and provider. Ranks and GP/W/D/L/F/A/GD/P come from the source as-is; nothing is recomputed (goalDifference is the source's own scored/received fields where the provider omits it), and missing values are written as null ("غير متاح"). This file serves the league landing pages only; fixture-standings-snapshot.json is a separate reviewed snapshot for documentation pages and is not touched here.`,
   tables,
 };
 await fs.writeFile(path.join(outDir, 'standings-snapshot.json'), `${JSON.stringify(snapshot, null, 2)}\n`);

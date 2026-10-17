@@ -26,16 +26,20 @@
    • الفرنسي والألماني والإيطالي والسعودي أُضيفت بعد مسبار 2026-10-16:
      fra.1 → s:600~l:710 (18)، ger.1 → s:600~l:720 (18)،
      ita.1 → s:600~l:730 (20)، ksa.1 → s:600~l:21231 (18).
-   • المصري `egy.1` رفض المصدر طلبه (HTTP 400) في المسبار نفسه، فيبقى
-     «غير متاح» ولا يُخمَّن ولا يُستكمل من موقع آخر. */
+   • المصري `egy.1` أُثبت بمسبار 2026-10-17 لدى Highlightly — المصدر
+     المجاني الوحيد الذي أرسل جدول الموسم الحالي كاملاً (leagueId=199067،
+     موسم 2026، عشرون فريقاً) بعد أن رفضت ESPN الدوري أصلاً وحجبت
+     API-Football المجانية مواسمه الحالية — أدلة المسبار في
+     docs/standings-probe-report.json. */
 export const STANDINGS_LEAGUES = [
-  { id: 'uefa.champions', count: 36, phase: 'مرحلة الدوري الموحّدة' },
-  { id: 'eng.1', count: 20, phase: 'ترتيب الدوري المحلي' },
-  { id: 'fra.1', count: 18, phase: 'ترتيب الدوري المحلي' },
-  { id: 'esp.1', count: 20, phase: 'ترتيب الدوري المحلي' },
-  { id: 'ger.1', count: 18, phase: 'ترتيب الدوري المحلي' },
-  { id: 'ita.1', count: 20, phase: 'ترتيب الدوري المحلي' },
-  { id: 'ksa.1', count: 18, phase: 'ترتيب الدوري المحلي' },
+  { id: 'uefa.champions', count: 36, phase: 'مرحلة الدوري الموحّدة', provider: 'ESPN' },
+  { id: 'eng.1', count: 20, phase: 'ترتيب الدوري المحلي', provider: 'ESPN' },
+  { id: 'fra.1', count: 18, phase: 'ترتيب الدوري المحلي', provider: 'ESPN' },
+  { id: 'esp.1', count: 20, phase: 'ترتيب الدوري المحلي', provider: 'ESPN' },
+  { id: 'ger.1', count: 18, phase: 'ترتيب الدوري المحلي', provider: 'ESPN' },
+  { id: 'ita.1', count: 20, phase: 'ترتيب الدوري المحلي', provider: 'ESPN' },
+  { id: 'ksa.1', count: 18, phase: 'ترتيب الدوري المحلي', provider: 'ESPN' },
+  { id: 'egy.1', count: 20, phase: 'ترتيب الدوري المحلي', provider: 'Highlightly', leagueId: 199067, season: 2026 },
 ];
 
 export const STANDINGS_FIELDS = ['points', 'played', 'wins', 'draws', 'losses', 'goalsFor', 'goalsAgainst', 'goalDifference'];
@@ -65,7 +69,7 @@ export function seasonText(season) {
 export function validateStandings(data, league) {
   const config = standingsConfig(league);
   const raw = /** @type {any} */ (data);
-  if (!config || !raw || raw.ok !== true || raw.provider !== 'ESPN' || raw.league !== league || raw.phase !== 'league'
+  if (!config || !raw || raw.ok !== true || !['ESPN', 'Highlightly'].includes(raw.provider) || raw.provider !== config.provider || raw.league !== league || raw.phase !== 'league'
     || !Number.isInteger(raw.season) || raw.season < 2000 || raw.season > 2100
     || typeof raw.fetchedAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T/.test(raw.fetchedAt) || !Number.isFinite(Date.parse(raw.fetchedAt))
     || typeof raw.stale !== 'boolean' || !Array.isArray(raw.entries) || raw.entries.length !== config.count) {
@@ -94,7 +98,7 @@ export function validateStandings(data, league) {
   if (!entries.some((row) => STANDINGS_FIELDS.some((field) => row[field] !== null))) throw new Error('INVALID_STANDINGS');
   entries.sort((a, b) => a.rank - b.rank);
   return {
-    ok: true, provider: 'ESPN', league, phase: 'league',
+    ok: true, provider: raw.provider, league, phase: 'league',
     season: raw.season, fetchedAt: new Date(raw.fetchedAt).toISOString(), stale: raw.stale, entries,
   };
 }

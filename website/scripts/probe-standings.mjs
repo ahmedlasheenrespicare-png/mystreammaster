@@ -3,8 +3,9 @@
  * مسبار بوابة الترتيب — الأداة التي تنفّذ «بوابة لكل دوري قبل إدخاله»
  * ------------------------------------------------------------------------
  * هذا السكربت لا يعدّل أي ملف ولا ينشر شيئاً. وظيفته الوحيدة: يسأل مصدر
- * الترتيب (ESPN) عن بطولة معيّنة ويحكم على الاستجابة **بنفس قواعد**
- * `standings.php` حرفياً، ثم يطبع تقريراً جاهزاً للنسخ.
+ * الترتيب (ESPN — أو Highlightly للبطولات المسجَّلة لديه) عن بطولة
+ * معيّنة ويحكم على الاستجابة **بنفس قواعد** `standings.php` حرفياً،
+ * ثم يطبع تقريراً جاهزاً للنسخ.
  *
  * لماذا يعمل خارج بيئة الوكيل؟ لأن بيئة العمل قد تحجب ESPN (مسجَّل في
  * `match-center.mjs`)، فتشغّله أنت من جهازك وترسل المخرجات.
@@ -23,8 +24,10 @@
  */
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
+import { STANDINGS_LEAGUES } from '../src/lib/standings.mjs';
 
 export const PROBE_BASE = process.env.STANDINGS_PROBE_BASE || 'https://site.web.api.espn.com';
+export const HIGHLIGHTLY_BASE = 'https://soccer.highlightly.net';
 
 const FIELDS = {
   played: 'gamesPlayed', wins: 'wins', draws: 'ties',
@@ -32,6 +35,11 @@ const FIELDS = {
   goalsAgainst: 'pointsAgainst', goalDifference: 'pointDifferential',
   points: 'points',
 };
+
+/** مزوّد البطولة ومعرّفها لدى المزوّد — من السجل المركزي وحده */
+export function providerOf(league) {
+  return STANDINGS_LEAGUES.find((entry) => entry.id === league)?.provider ?? 'ESPN';
+}
 
 /** حاويات «overall» — نفس شرط `sm_st_groups` في الوسيط */
 export function standingsGroups(node, league, depth = 0) {
@@ -57,11 +65,63 @@ export function probeNumber(raw, signed = false) {
   return value;
 }
 
+/** يحكم على استجابة Highlightly الخام — نفس قواعد محوّل الوسيط. */
+export function judgeHighlightlyStandings(raw, league) {
+  const config = STANDINGS_LEAGUES.find((entry) => entry.id === league);
+  if (!config || config.provider !== 'Highlightly') throw new Error('SCHEMA: league not registered with Highlightly');
+  const upstream = raw?.league ?? null;
+  if (!upstream || upstream.id !== config.leagueId || upstream.season !== config.season) {
+    throw new Error('SCHEMA: league/season mismatch');
+  }
+  const groups = raw?.groups;
+  if (!Array.isArray(groups) || groups.length !== 1) throw new Error('SCHEMA: expected exactly one group');
+  const group = groups[0];
+  if (!group || group.name !== 'Premier League') throw new Error('SCHEMA: unexpected group name');
+  const rows = group.standings;
+  if (!Array.isArray(rows) || rows.length !== config.count) throw new Error('SCHEMA: row count mismatch');
+
+  const ids = new Set();
+  const ranks = new Set();
+  let numbers = 0;
+  const judged = rows.map((row) => {
+    const team = row?.team ?? {};
+    const id = team.id;
+    const idString = typeof id === 'number' ? String(id) : (typeof id === 'string' ? id : null);
+    const name = team.name;
+    if (!/^[1-9]\d{0,11}$/.test(String(idString)) || ids.has(idString)) throw new Error(`SCHEMA: bad team id ${idString}`);
+    if (typeof name !== 'string' || !name.trim() || name.length > 240) throw new Error(`SCHEMA: bad team name for ${idString}`);
+    ids.add(idString);
+    const position = probeNumber(row?.position);
+    if (!Number.isInteger(position) || position < 1 || position > rows.length || ranks.has(position)) throw new Error(`SCHEMA: bad rank ${position}`);
+    ranks.add(position);
+    const total = row?.total ?? {};
+    const out = { teamId: String(idString), name: name.trim(), rank: position };
+    out.played = probeNumber(total.games);
+    out.wins = probeNumber(total.wins);
+    out.draws = probeNumber(total.draws);
+    out.losses = probeNumber(total.loses);
+    out.goalsFor = probeNumber(total.scoredGoals);
+    out.goalsAgainst = probeNumber(total.receivedGoals);
+    out.points = probeNumber(row?.points);
+    out.goalDifference = (out.goalsFor !== null && out.goalsAgainst !== null) ? out.goalsFor - out.goalsAgainst : null;
+    for (const field of ['points', 'played', 'wins', 'draws', 'losses', 'goalsFor', 'goalsAgainst', 'goalDifference']) if (out[field] !== null) numbers++;
+    return out;
+  });
+  if (!numbers) throw new Error('SCHEMA: no numeric columns at all');
+  judged.sort((a, b) => a.rank - b.rank);
+  return { league, leagueId: config.leagueId, season: config.season, teams: judged.length, suggestedCount: judged.length, sample: judged.slice(0, 3), rows: judged };
+}
+
 /**
  * يحكم على استجابة المصدر الخام بلا شبكة — قابل للاختبار مباشرة.
  * يرمي عند أي انحراف، ويعيد الملخّص عند النجاح.
  */
 export function judgeStandings(raw, league) {
+  return providerOf(league) === 'Highlightly' ? judgeHighlightlyStandings(raw, league) : judgeEspnStandings(raw, league);
+}
+
+/** يحكم على استجابة ESPN الخام — القواعد الأصلية بلا تغيير. */
+function judgeEspnStandings(raw, league) {
   const uid = raw?.uid ?? null;
   const found = standingsGroups(raw, league);
   if (found.length !== 1) throw new Error(`SCHEMA: expected exactly one overall group, got ${found.length}`);
@@ -103,6 +163,21 @@ export function judgeStandings(raw, league) {
 
 /** يستدعي المصدر ثم يحكم — يُستخدم من سطر الأوامر ومن الاختبارات */
 export async function probeStandings(league, base = PROBE_BASE) {
+  if (providerOf(league) === 'Highlightly') {
+    const config = STANDINGS_LEAGUES.find((entry) => entry.id === league);
+    const key = process.env.HIGHLIGHTLY_API_KEY;
+    if (!key) throw new Error('UPSTREAM_KEY_MISSING');
+    const url = `${HIGHLIGHTLY_BASE}/standings?leagueId=${config.leagueId}&season=${config.season}`;
+    const response = await fetch(url, { headers: { Accept: 'application/json', 'x-rapidapi-key': key } });
+    if (!response.ok) throw new Error(`UPSTREAM_HTTP_${response.status}`);
+    let raw;
+    try {
+      raw = await response.json();
+    } catch {
+      throw new Error('UPSTREAM_INVALID_JSON');
+    }
+    return { url, ...judgeHighlightlyStandings(raw, league) };
+  }
   const url = `${base}/apis/v2/sports/soccer/${league}/standings`;
   const response = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': 'StreamMaster-Standings/1.0' } });
   if (!response.ok) throw new Error(`UPSTREAM_HTTP_${response.status}`);

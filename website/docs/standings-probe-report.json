@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-10-17T00:44:34.572Z",
+  "probedAt": "2026-10-17T03:57:21.336Z",
   "base": "https://site.web.api.espn.com",
   "snapshot": [
     {
@@ -48,6 +48,107 @@
   "probe": [
     {
       "league": "egy.1",
+      "ok": false,
+      "provider": "ESPN",
+      "error": "UPSTREAM_HTTP_400",
+      "detail": "نقطة نهاية الترتيب ترد صراحة: {\"code\":400,\"message\":\"Unable to retrieve any standings information for egy.1\"} — ESPN تنفي امتلاكها جداول لهذا الدوري أصلاً."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "TheSportsDB",
+      "error": "TRUNCATED_TABLE",
+      "detail": "المفتاح المجاني 123 يرد 200 لكن بخمسة صفوف فقط من أصل عشرين — وأُثبت أن الاقتطاع قيدٌ في المفتاح لا في بنية البيانات: الدوري الإنجليزي (20 فريقاً) عاد هو الآخر بخمسة صفوف. مفتاح 3 أُبطل نهائياً برسالة المزوّد نفسها."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "football-data.org",
+      "error": "NOT_COVERED",
+      "detail": "مصر خارج تغطية الخطة المجانية (المصدر يغطي الدوريات الأوروبية الكبرى والبرازيل فقط)."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "azharimm/football-standings-api",
+      "error": "NOT_COVERED",
+      "detail": "قائمة البطولات ثابتة في الكود المصدري (src/data/leagues.js — عشرون بطولة) ولا تشمل مصر، وسيطها مبني على ESPN نفسه الذي يرد 400 على egy.1 — فحتى إضافة المعرّف لن تُنتج جدولاً. الواجهة العامة (api-football-standings.azharimm.site) كانت غير مستجيبة وقت السبر أيضاً."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "worldcup26.ir",
+      "error": "NOT_COVERED",
+      "detail": "واجهة /get/soccer/leagues تعلن 35 مسابقة مغطاة، وصفحة المشروع تعلن نطاقها «إنجلترا وإسبانيا» فقط، وكل معرّفاتها بصيغة ESPN (s:600~l:*) — الدوري المصري ليس بينها، ونقطة الترتيب تتبع المصدر نفسه الذي ينفي الدوري."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "api-sports.io (API-Football)",
+      "error": "FREE_PLAN_SEASON_GATED",
+      "detail": "سبره المالك من طرفيته بمفتاح مجاني صالح (اختبار إنجلترا league=39 season=2024 أرجع الجدول كاملاً بالحقول المطلوبة: rank/points/goalsDiff/all/home/away). الدوري المصري مؤكد league=233 «Premier League — Egypt» وموسم 2026 موجود ومُعلَّم current بتغطية standings:true. لكن طلب أي موسم حديث يعود صريحاً: {\"errors\":{\"plan\":\"Free plans do not have access to this season, try from 2022 to 2024.\"}} — أي الخطة المجانية تحجب موسمي 2025 و2026 (الموسم الحالي) وتقتصر على 2022–2024. الخطة المجانية موجودة فعلاً ($0، 100 طلب/يوم، بلا بطاقة) لكنها لا تفي بمعيار «بيانات الموسم الحالي». الخطط المدفوعة تبدأ $19/شهر — قرار مالك."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "openfootball/football.json",
+      "error": "EXCLUDED_BY_RULE",
+      "detail": "بيانات مفتوحة CC0 لكنها نتائج خام لا ترتيباً جاهزاً — حساب الترتيب محلياً ممنوع بعقد الترتيب (الترتيب يُعرض كما يرسله المصدر)."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "egyptianproleague.com (المصدر الرسمي)",
+      "error": "NO_PUBLIC_API",
+      "detail": "الموقع الرسمي للدوري (الاسم المعتمد «دوري ORA») لا يعرض واجهة JSON عامة: /api/standings و /robots.txt يحوّلان إلى الصفحة الرئيسية. البيانات الوحيدة الموثوقة للموسم (20 نادياً، انطلاق 2026-08-21، دور كامل ثم مجموعتا لقب وهبوط) موجودة بالنص لا بآلة."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "statorium.com",
+      "error": "PAID_QUOTE_MODEL",
+      "detail": "مصدر مصرّي مخصص يغطي الدوري الممتاز والقسم الثاني والكأس — لكن الوصول عبر «Get a quote» ونموذج اتصال مبيعات (Cloudflare Turnstile) — نموذج مؤسسي مدفوع لا يستوفي معيار المجانية."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "live-score-api.com",
+      "error": "TRIAL_ONLY",
+      "detail": "يغطي مصر فعلاً (Premier League competition ID 36، الكأس 272، كأس الرابطة 453) لكن «المجانية» هي تجربة 14 يوماً فقط تنتهي لاشتراك مدفوع — لا تستوفي معيار الخطة المجانية الدائمة."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "thestatsapi.com",
+      "error": "PAID_ONLY",
+      "detail": "أدنى خطة $50/شهر (تجربة 7 أيام) — مدفوعة."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "sportmonks",
+      "error": "NOT_COVERED_FREE",
+      "detail": "خطته المجانية تغطي الدوري الدنماركي والسوبرليغا الإسكتلندية فقط."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "5dollarfootballapi",
+      "error": "NOT_COVERED_FREE",
+      "detail": "الخطة المجانية مقتصرة على الدوريات الخمسة الكبرى."
+    },
+    {
+      "league": "egy.1",
+      "ok": true,
+      "provider": "highlightly.net (Football API)",
+      "error": null,
+      "leagueId": 199067,
+      "season": 2026,
+      "count": 20,
+      "detail": "مصدر ناجح بكل المعايير: خطة Basic مجانية $0 (100 طلب/يوم، بلا بطاقة ائتمان) — تغطية مصر مؤكدة (countries?name=Egypt → EG) — الدوري الممتاز leagueId=199067 وموسم 2026 مدرج — نقطة الجداول GET soccer.highlightly.net/standings?leagueId=199067&season=2026 بهيدر x-rapidapi-key أرجعت الجدول الحالي حياً (6 جولات): الأسيوطي 18 نقطة من 6، الأهلي 16، الزمالك 13... ورسالة الخطة الصريحة «All data available with current plan» — الجداول غير مقيدة على المجانية (القيود تطال المقاطع والاحتمالات فقط). شكل الاستجابة: groups[].standings[] بـ position/points/team{id,name,logo}/total{games,wins,draws,loses,scoredGoals,receivedGoals}/home/away — يطابق العقد (goalsDiff تُحسب في المحوّل من فرق المسجل/المستقبل). زمن التحديث: حتى ساعة بعد انتهاء مباريات الجولة. سبر العدد: 20 فريقاً بمراكز 1..20 بلا تكرار، آخرهم غزل المحلة نقطة واحدة."
+    },
+    {
+      "league": "egy.2",
       "ok": false,
       "error": "UPSTREAM_HTTP_400"
     }

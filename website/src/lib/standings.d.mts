@@ -26,7 +26,7 @@ export interface StandingsEntry {
 
 export interface StandingsTable {
   ok: true;
-  provider: 'ESPN';
+  provider: 'ESPN' | 'Highlightly';
   league: string;
   phase: 'league';
   season: number;
@@ -39,6 +39,11 @@ export interface StandingsLeagueConfig {
   id: string;
   count: number;
   phase: string;
+  provider: 'ESPN' | 'Highlightly';
+  /** معرّف الدوري لدى Highlightly — للبطولات المسجَّلة لديه فقط */
+  leagueId?: number;
+  /** الموسم لدى Highlightly — للبطولات المسجَّلة لديه فقط */
+  season?: number;
 }
 
 export const STANDINGS_LEAGUES: StandingsLeagueConfig[];

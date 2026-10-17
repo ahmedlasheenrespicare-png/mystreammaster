@@ -1,7 +1,8 @@
 name: Fetch trusted standings snapshot
 
 # جسر الشبكة الموثوق: بيئات التطوير المحلية (ومنها بيئة الوكيل) قد تحجب ESPN،
-# فهذا التشغيل يجلب الاستجابة الخام من المصدر ويمرّرها على مُحكِّم المسبار نفسه
+# فهذا التشغيل يجلب الاستجابة الخام من المصدر (ESPN — وHighlightly للبطولات
+# المسجَّلة لديه، بمفتاح من سرّ العمل) ويمرّرها على مُحكِّم المسبار نفسه
 # (scripts/probe-standings.mjs) — نفس القواعد التي يحكم بها الوسيط standings.php —
 # ثم يرفع المخرجات كمصنوع (artifact) للتنزيل والمراجعة قبل أي التزام.
 #
@@ -12,11 +13,11 @@ on:
       snapshot_leagues:
         description: 'بطولات اللقطة (مسافة بين كل معرّف) — تُكتب في standings-snapshot.json'
         required: false
-        default: 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1'
+        default: 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1 egy.1'
       probe_leagues:
         description: 'بطولات المسبار (مسافة بين كل معرّف) — تُجرد في probe.json بلا كتابة لقطة'
         required: false
-        default: 'egy.1'
+        default: 'egy.2'
   push:
     branches: ['arena/**']
     paths:
@@ -57,8 +58,9 @@ jobs:
           fi
       - name: Fetch + validate from the trusted source
         env:
-          SNAPSHOT_LEAGUES: ${{ inputs.snapshot_leagues || 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1' }}
-          PROBE_LEAGUES: ${{ inputs.probe_leagues || 'egy.1' }}
+          SNAPSHOT_LEAGUES: ${{ inputs.snapshot_leagues || 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1 egy.1' }}
+          PROBE_LEAGUES: ${{ inputs.probe_leagues || 'egy.2' }}
+          HIGHLIGHTLY_API_KEY: ${{ secrets.HIGHLIGHTLY_API_KEY }}
         run: node website/scripts/fetch-standings-snapshot.mjs
       - name: Publish fetched data into the repository
         # البوابة الإنتاجية: main لا يُكتب فيه من هذا التشغيل أبداً.
@@ -69,7 +71,20 @@ jobs:
             cp website/.standings-out/standings-snapshot.json website/src/content/standings-snapshot.json
           fi
           if [ -f website/.standings-out/probe.json ]; then
-            cp website/.standings-out/probe.json website/docs/standings-probe-report.json
+            # دمج سجلات هذا التشغيل في التقرير التاريخي لا محوه:
+            # سجلات الفشل الموثّقة (بوابات رُفضت) جزء من الدليل ولا تُمحى.
+            node -e '
+            const fs = require("fs");
+            const reportPath = "website/docs/standings-probe-report.json";
+            const run = JSON.parse(fs.readFileSync("website/.standings-out/probe.json", "utf8"));
+            const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+            const key = (entry) => `${entry.league}|${entry.provider ?? ""}`;
+            const fresh = new Map([...run.snapshot, ...run.probe].map((entry) => [key(entry), entry]));
+            report.snapshot = [...report.snapshot.filter((entry) => !fresh.has(key(entry))), ...run.snapshot];
+            report.probe = [...report.probe.filter((entry) => !fresh.has(key(entry))), ...run.probe];
+            report.probedAt = run.probedAt;
+            fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + "\n");
+            '
           fi
           if git diff --quiet -- website/src/content/standings-snapshot.json website/docs/standings-probe-report.json; then
             echo "لا تغيير في البيانات المجلوبة — لا التزام."
@@ -79,7 +94,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add website/src/content/standings-snapshot.json website/docs/standings-probe-report.json
           # [skip ci]: بيانات فقط بلا كود، فلا داعي لإعادة تشغيل البوابات ولا خطر حلقة.
-          git commit -m "تحديث بيانات الترتيب من المصدر الموثوق (ESPN) — تشغيل آلي [skip ci]"
+          git commit -m "تحديث بيانات الترتيب من المصدرين الموثوقين (ESPN + Highlightly) — تشغيل آلي [skip ci]"
           git push
       - name: Summarize
         if: always()

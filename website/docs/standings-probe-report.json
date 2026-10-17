@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-10-17T01:50:00.000Z",
+  "probedAt": "2026-10-17T12:30:00.000Z",
   "base": "https://site.web.api.espn.com",
   "snapshot": [
     {
@@ -85,8 +85,8 @@
       "league": "egy.1",
       "ok": false,
       "provider": "api-sports.io (API-Football)",
-      "error": "REGISTRATION_REQUIRED",
-      "detail": "المصدر يغطي مصر (league=233) والخطة المجانية $0 تشمل Standings صراحةً بحد 100 طلب/يوم، لكن إصدار مفتاح x-apisports-key يتطلب تسجيلاً مجانياً بتحقق بريدي لا يمكن إتمامه من بيئة الوكيل. المفتاح لا يُدخل المستودع ويُخزَّن في سرّ Actions أو ملف على الخادم — بانتظار إصدار المالك للمفتاح (تسجيل مجاني بلا بطاقة) لسبره ثم قرار الإدخال."
+      "error": "FREE_PLAN_SEASON_GATED",
+      "detail": "سبره المالك من طرفيته بمفتاح مجاني صالح (اختبار إنجلترا league=39 season=2024 أرجع الجدول كاملاً بالحقول المطلوبة: rank/points/goalsDiff/all/home/away). الدوري المصري مؤكد league=233 «Premier League — Egypt» وموسم 2026 موجود ومُعلَّم current بتغطية standings:true. لكن طلب أي موسم حديث يعود صريحاً: {\"errors\":{\"plan\":\"Free plans do not have access to this season, try from 2022 to 2024.\"}} — أي الخطة المجانية تحجب موسمي 2025 و2026 (الموسم الحالي) وتقتصر على 2022–2024. الخطة المجانية موجودة فعلاً ($0، 100 طلب/يوم، بلا بطاقة) لكنها لا تفي بمعيار «بيانات الموسم الحالي». الخطط المدفوعة تبدأ $19/شهر — قرار مالك."
     },
     {
       "league": "egy.1",
@@ -94,6 +94,58 @@
       "provider": "openfootball/football.json",
       "error": "EXCLUDED_BY_RULE",
       "detail": "بيانات مفتوحة CC0 لكنها نتائج خام لا ترتيباً جاهزاً — حساب الترتيب محلياً ممنوع بعقد الترتيب (الترتيب يُعرض كما يرسله المصدر)."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "egyptianproleague.com (المصدر الرسمي)",
+      "error": "NO_PUBLIC_API",
+      "detail": "الموقع الرسمي للدوري (الاسم المعتمد «دوري ORA») لا يعرض واجهة JSON عامة: /api/standings و /robots.txt يحوّلان إلى الصفحة الرئيسية. البيانات الوحيدة الموثوقة للموسم (20 نادياً، انطلاق 2026-08-21، دور كامل ثم مجموعتا لقب وهبوط) موجودة بالنص لا بآلة."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "statorium.com",
+      "error": "PAID_QUOTE_MODEL",
+      "detail": "مصدر مصرّي مخصص يغطي الدوري الممتاز والقسم الثاني والكأس — لكن الوصول عبر «Get a quote» ونموذج اتصال مبيعات (Cloudflare Turnstile) — نموذج مؤسسي مدفوع لا يستوفي معيار المجانية."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "live-score-api.com",
+      "error": "TRIAL_ONLY",
+      "detail": "يغطي مصر فعلاً (Premier League competition ID 36، الكأس 272، كأس الرابطة 453) لكن «المجانية» هي تجربة 14 يوماً فقط تنتهي لاشتراك مدفوع — لا تستوفي معيار الخطة المجانية الدائمة."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "thestatsapi.com",
+      "error": "PAID_ONLY",
+      "detail": "أدنى خطة $50/شهر (تجربة 7 أيام) — مدفوعة."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "sportmonks",
+      "error": "NOT_COVERED_FREE",
+      "detail": "خطته المجانية تغطي الدوري الدنماركي والسوبرليغا الإسكتلندية فقط."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "5dollarfootballapi",
+      "error": "NOT_COVERED_FREE",
+      "detail": "الخطة المجانية مقتصرة على الدوريات الخمسة الكبرى."
+    },
+    {
+      "league": "egy.1",
+      "ok": true,
+      "provider": "highlightly.net (Football API)",
+      "error": null,
+      "leagueId": 199067,
+      "season": 2026,
+      "count": 20,
+      "detail": "مصدر ناجح بكل المعايير: خطة Basic مجانية $0 (100 طلب/يوم، بلا بطاقة ائتمان) — تغطية مصر مؤكدة (countries?name=Egypt → EG) — الدوري الممتاز leagueId=199067 وموسم 2026 مدرج — نقطة الجداول GET soccer.highlightly.net/standings?leagueId=199067&season=2026 بهيدر x-rapidapi-key أرجعت الجدول الحالي حياً (6 جولات): الأسيوطي 18 نقطة من 6، الأهلي 16، الزمالك 13... ورسالة الخطة الصريحة «All data available with current plan» — الجداول غير مقيدة على المجانية (القيود تطال المقاطع والاحتمالات فقط). شكل الاستجابة: groups[].standings[] بـ position/points/team{id,name,logo}/total{games,wins,draws,loses,scoredGoals,receivedGoals}/home/away — يطابق العقد (goalsDiff تُحسب في المحوّل من فرق المسجل/المستقبل). زمن التحديث: حتى ساعة بعد انتهاء مباريات الجولة. سبر العدد: 20 فريقاً بمراكز 1..20 بلا تكرار، آخرهم غزل المحلة نقطة واحدة."
     }
   ]
 }

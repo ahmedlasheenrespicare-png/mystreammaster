@@ -1,37 +1,17 @@
-/* ==========================================================================
-   مركز المباراة — الهوية الداكنة (البند 4)
-   --------------------------------------------------------------------------
-   كحلي داكن + بنفسجي + ليموني، بلا وضع فاتح في المرحلة الأولى. الرموز مأخوذة
-   من الصفحة المرجعية `legacy/manchester-united-atletico/` ومن `index.css`
-   القائم، لا مخترعة:
-     --night #080b12 · --lime #d8ff3e · --stat-home #7c5cff · --stat-away #d8ff3e
-     --text #f5f7fb · --muted #a7b0bf · --red #ef3340
-
-   غلاف `App.tsx` كريمي `#faf9f6`، فالصفحة الداكنة ترسم خلفيتها هي بعرض
-   كامل بدل تعديل الغلاف المشترك.
-
-   البند 4: من 320 إلى 1440 بلا تمرير أفقي للصفحة وبلا نص مبتور. لذلك كل
-   عرض مرن (`clamp`, `minmax`, `min-width: 0`) ولا `overflow-x` على الصفحة.
-========================================================================== */
-
+/* Match Center — responsive, data-first match view */
 .mc-page {
   --mc-night: #080b12;
   --mc-panel: #10131b;
   --mc-panel-2: #171b28;
-  --mc-line: rgba(255, 255, 255, .09);
+  --mc-line: rgba(255, 255, 255, .10);
   --mc-text: #f5f7fb;
   --mc-muted: #a7b0bf;
   --mc-lime: #d8ff3e;
   --mc-violet: #7c5cff;
-  --mc-royal: #2b4eff;
   --mc-red: #ef3340;
   --mc-radius: 18px;
-
-  /* بلا `min-height: 100vh`: الارتفاع يتبع المحتوى. القيمة كانت تجعل القسم
-     يتمدّد إلى ارتفاع النافذة نفسها — وهو ما يكسر أي لقطة بنافذة طويلة
-     (منطقة فارغة ضخمة)، ولا يضيف شيئاً في الصفحة الحقيقية لأن المحتوى أطول
-     من النافذة دائماً، والخلفية ترسم على صندوق القسم لا على النافذة. */
-  padding: 132px 16px 96px;
+  box-sizing: border-box;
+  padding: 128px 16px 96px;
   color: var(--mc-text);
   background:
     radial-gradient(ellipse at 88% -6%, rgba(124, 92, 255, .20), transparent 52%),
@@ -40,201 +20,207 @@
   font-size: 15px;
   line-height: 1.7;
 }
-
-.mc-container { max-width: 1080px; margin: auto; min-width: 0; }
+.mc-page *, .mc-page *::before, .mc-page *::after { box-sizing: border-box; }
+.mc-container { width: min(100%, 1080px); margin-inline: auto; min-width: 0; }
 .mc-page :is(button, a, [tabindex]):focus-visible { outline: 3px solid var(--mc-lime); outline-offset: 3px; border-radius: 8px; }
 .mc-page button { cursor: pointer; font: inherit; }
 .mc-page button:disabled { opacity: .5; cursor: wait; }
+.mc-page :is(h1, h2, h3, h4, p, dd, dt, li, span, small, b, strong) { overflow-wrap: anywhere; }
 
-/* ── مسار التصفح ─────────────────────────────────────────────────── */
-.mc-crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .74rem; color: var(--mc-muted); margin-bottom: 14px; }
+/* Breadcrumbs */
+.mc-crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; margin-bottom: 14px; color: var(--mc-muted); font-size: .74rem; }
 .mc-crumbs a { color: var(--mc-muted); text-decoration: none; border-bottom: 1px dashed rgba(255, 255, 255, .22); }
 .mc-crumbs a:hover { color: var(--mc-lime); border-bottom-color: var(--mc-lime); }
-.mc-crumbs span[aria-hidden] { opacity: .5; }
+.mc-crumbs span[aria-hidden] { flex: 0 0 auto; opacity: .5; }
 
-/* ── ترويسة المباراة (البند 4) ────────────────────────────────────── */
-.mc-hero {
+/* Shared match visual: illustrative pitch, with no player/event coordinates. */
+.mc-match-visual { min-width: 0; }
+.mc-match-title { margin: 0 0 12px; text-align: center; font-size: clamp(1rem, 3.2vw, 1.35rem); font-weight: 900; line-height: 1.5; }
+.mc-pitch-frame {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 1.15fr) minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
-  padding: 20px 18px;
-  border: 1px solid var(--mc-line);
+  min-height: 270px;
+  padding: 22px 18px;
+  overflow: hidden;
+  border: 1px solid rgba(218, 255, 221, .38);
   border-radius: var(--mc-radius);
-  background: linear-gradient(112deg, var(--mc-panel), var(--mc-panel-2));
-  box-shadow: 0 22px 48px -30px rgba(0, 0, 0, .8);
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 8.333%, transparent 8.333% 16.666%),
+    linear-gradient(135deg, #155b3b, #0d482f 48%, #176342);
+  box-shadow: 0 22px 48px -30px rgba(0, 0, 0, .85), inset 0 0 54px rgba(0, 0, 0, .18);
 }
-.mc-team { display: flex; flex-direction: column; align-items: center; gap: 9px; min-width: 0; text-align: center; }
-.mc-crest {
-  display: grid; place-items: center;
-  inline-size: clamp(52px, 13vw, 78px); block-size: clamp(52px, 13vw, 78px);
-  border-radius: 50%; border: 1px solid var(--mc-line);
-  font-family: var(--font-latin, ui-sans-serif); font-weight: 800; font-size: clamp(1rem, 3.4vw, 1.5rem);
-  letter-spacing: .02em;
-}
-.mc-team--home .mc-crest { background: radial-gradient(circle at 32% 26%, rgba(124, 92, 255, .5), rgba(124, 92, 255, .12)); color: #efeaff; }
-.mc-team--away .mc-crest { background: radial-gradient(circle at 32% 26%, rgba(216, 255, 62, .34), rgba(216, 255, 62, .07)); color: var(--mc-lime); }
-/* الشعار من المصدر: نفس مقاس دائرة الأحرف الأولى حتى لا تتحرك الترويسة عند
-   وصوله أو عند فشل تحميله. */
-.mc-logo { inline-size: clamp(52px, 13vw, 78px); block-size: clamp(52px, 13vw, 78px); object-fit: contain; border-radius: 50%; background: rgba(255, 255, 255, .04); border: 1px solid var(--mc-line); padding: 5px; }
-.mc-team-name { font-weight: 800; font-size: clamp(.9rem, 3.4vw, 1.16rem); line-height: 1.4; overflow-wrap: anywhere; }
-.mc-team-tag { font-size: .68rem; color: var(--mc-muted); font-weight: 700; }
-
-/* البند 4: وميض الهدف على بطاقة الفريق وحدها، مرة واحدة، بلا وميض سريع. */
-.mc-team--flash { animation: mc-flash 1500ms ease-out 1; }
+.mc-pitch-markings { position: absolute; z-index: 0; inset: 12px; border: 1px solid rgba(239, 255, 241, .52); border-radius: 10px; pointer-events: none; }
+.mc-pitch-halfway { position: absolute; inset-block: 0; inset-inline-start: 50%; width: 1px; background: rgba(239, 255, 241, .46); transform: translateX(50%); }
+.mc-pitch-center-circle { position: absolute; inset-block-start: 50%; inset-inline-start: 50%; width: clamp(70px, 14vw, 110px); aspect-ratio: 1; border: 1px solid rgba(239, 255, 241, .48); border-radius: 50%; transform: translate(50%, -50%); }
+.mc-pitch-center-spot { position: absolute; inset-block-start: 50%; inset-inline-start: 50%; width: 5px; height: 5px; border-radius: 50%; background: rgba(239, 255, 241, .75); transform: translate(50%, -50%); }
+.mc-pitch-box { position: absolute; inset-block-start: 25%; width: 11%; height: 50%; border: 1px solid rgba(239, 255, 241, .42); }
+.mc-pitch-box--home { inset-inline-start: 0; border-inline-start: 0; }
+.mc-pitch-box--away { inset-inline-end: 0; border-inline-end: 0; }
+.mc-pitch-goal { position: absolute; inset-block-start: 39%; width: 3%; height: 22%; border: 1px solid rgba(239, 255, 241, .48); }
+.mc-pitch-goal--home { inset-inline-start: -1px; border-inline-start: 0; }
+.mc-pitch-goal--away { inset-inline-end: -1px; border-inline-end: 0; }
+.mc-pitch-team, .mc-pitch-scoreboard { min-width: 0; text-align: center; }
+.mc-pitch-team { z-index: 1; display: flex; min-height: 150px; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 12px 7px; border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px; background: rgba(5, 16, 13, .42); backdrop-filter: blur(4px); }
+.mc-pitch-team--home .mc-pitch-crest { color: #efeaff; background: radial-gradient(circle at 32% 26%, rgba(124, 92, 255, .5), rgba(124, 92, 255, .12)); }
+.mc-pitch-team--away .mc-pitch-crest { color: var(--mc-lime); background: radial-gradient(circle at 32% 26%, rgba(216, 255, 62, .34), rgba(216, 255, 62, .07)); }
+.mc-pitch-crest { display: grid; place-items: center; flex: 0 0 auto; width: clamp(42px, 7vw, 62px); height: clamp(42px, 7vw, 62px); border: 1px solid rgba(255, 255, 255, .25); border-radius: 50%; object-fit: contain; padding: 4px; font-family: var(--font-latin, ui-sans-serif); font-size: clamp(.9rem, 2.7vw, 1.2rem); font-weight: 900; }
+.mc-pitch-team-name { max-width: 100%; color: #fff; font-size: clamp(.72rem, 2.8vw, 1.05rem); font-weight: 900; line-height: 1.35; }
+.mc-pitch-team-short { color: rgba(255, 255, 255, .84); font-size: .72rem; line-height: 1.3; }
+.mc-pitch-team-role { color: rgba(255, 255, 255, .78); font-size: .65rem; font-weight: 700; }
+.mc-pitch-team--flash { animation: mc-flash 1500ms ease-out 1; }
 @keyframes mc-flash {
   0% { box-shadow: 0 0 0 0 rgba(216, 255, 62, 0); }
-  22% { box-shadow: 0 0 0 3px rgba(216, 255, 62, .55); background-color: rgba(216, 255, 62, .10); }
+  22% { box-shadow: 0 0 0 3px rgba(216, 255, 62, .55); background-color: rgba(216, 255, 62, .12); }
   100% { box-shadow: 0 0 0 0 rgba(216, 255, 62, 0); }
 }
-.mc-team { border-radius: 14px; padding: 8px 6px; transition: background-color .3s ease; }
-
-.mc-mid { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: min(46vw, 210px); }
-.mc-score { font-family: var(--font-latin, ui-sans-serif); font-weight: 900; font-size: clamp(1.9rem, 8vw, 2.9rem); line-height: 1; letter-spacing: .02em; }
-.mc-score-sep { color: var(--mc-muted); margin: 0 .18em; font-weight: 400; }
-.mc-clock { font-family: var(--font-latin, ui-sans-serif); font-size: .82rem; color: var(--mc-lime); font-weight: 800; }
-.mc-countdown { display: flex; gap: 8px; align-items: baseline; justify-content: center; }
-.mc-count-unit { display: flex; flex-direction: column; align-items: center; min-width: 40px; }
-.mc-count-unit b { font-family: var(--font-latin, ui-sans-serif); font-size: clamp(1.15rem, 4.6vw, 1.6rem); font-weight: 900; color: var(--mc-lime); }
-.mc-count-unit small { font-size: .62rem; color: var(--mc-muted); }
-.mc-kickoff { font-size: .78rem; color: var(--mc-muted); text-align: center; }
-
-.mc-state { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; font-size: .74rem; font-weight: 800; border: 1px solid var(--mc-line); background: rgba(255, 255, 255, .04); }
-.mc-state[data-code="live"] { color: var(--mc-lime); border-color: rgba(216, 255, 62, .4); background: rgba(216, 255, 62, .09); }
-.mc-state[data-code="halftime"], .mc-state[data-code="suspended"], .mc-state[data-code="delayed"] { color: #ffd479; border-color: rgba(255, 212, 121, .35); background: rgba(255, 212, 121, .08); }
-.mc-state[data-code="finished"] { color: #cfd6e4; }
-.mc-state[data-code="postponed"], .mc-state[data-code="canceled"], .mc-state[data-code="abandoned"] { color: #ff9aa2; border-color: rgba(239, 51, 64, .4); background: rgba(239, 51, 64, .10); }
-
-/* البند 10: نبض «مباشر» هادئ، وربطه بحالة حيّة مؤكدة من المصدر لا بمرور الوقت. */
-.mc-pulse { inline-size: 8px; block-size: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
-/* النبض مربوط بحالة حيّة **وحديثة فعلاً** (`data-fresh`) لا بمجرد أن المصدر
-   قال «جارية»: قراءة قديمة عن مباراة جارية لا تستحق نبضاً يوحي بالحيوية. */
-.mc-state[data-code="live"][data-fresh="true"] .mc-pulse { animation: mc-pulse 2600ms ease-in-out infinite; }
+.mc-pitch-scoreboard { z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; max-width: 270px; justify-self: center; padding: 14px 10px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 15px; background: rgba(7, 10, 17, .76); box-shadow: 0 12px 32px rgba(0, 0, 0, .24); backdrop-filter: blur(8px); }
+.mc-pitch-competition { color: #f2f7e7; font-size: clamp(.62rem, 2.1vw, .78rem); font-weight: 800; line-height: 1.4; }
+.mc-pitch-status { display: inline-flex; align-items: center; justify-content: center; min-height: 25px; padding: 3px 10px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255, 255, 255, .05); color: #eff3f7; font-size: .7rem; font-weight: 900; }
+.mc-pitch-status[data-code="live"] { color: var(--mc-lime); border-color: rgba(216, 255, 62, .42); background: rgba(216, 255, 62, .10); }
+.mc-pitch-status[data-code="halftime"], .mc-pitch-status[data-code="suspended"], .mc-pitch-status[data-code="delayed"] { color: #ffd479; }
+.mc-pitch-status[data-code="finished"] { color: #dce2ed; }
+.mc-pitch-status[data-code="postponed"], .mc-pitch-status[data-code="canceled"], .mc-pitch-status[data-code="abandoned"] { color: #ffb1b7; border-color: rgba(239, 51, 64, .45); }
+.mc-pitch-status[data-code="live"][data-fresh="true"]::before { content: ""; width: 7px; height: 7px; margin-inline-end: 6px; border-radius: 50%; background: currentColor; animation: mc-pulse 2600ms ease-in-out infinite; }
 @keyframes mc-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
+.mc-pitch-score { margin: 0; font-family: var(--font-latin, ui-sans-serif); color: #fff; font-size: clamp(1.85rem, 7vw, 3.2rem); font-weight: 950; line-height: 1; letter-spacing: .02em; }
+.mc-pitch-score span[dir="ltr"] { display: inline-flex; align-items: center; gap: .18em; }
+.mc-pitch-score span[aria-hidden] { color: var(--mc-muted); font-weight: 400; }
+.mc-pitch-vs { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; letter-spacing: .06em; }
+.mc-pitch-clock { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: .82rem; font-weight: 800; }
+.mc-pitch-kickoff { color: #dce9df; text-align: center; font-size: .66rem; line-height: 1.5; }
+.mc-match-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr)); gap: 9px; margin: 12px 0 0; padding: 0; }
+.mc-match-facts > div { min-width: 0; padding: 9px 12px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(16, 19, 27, .72); }
+.mc-match-facts dt { color: var(--mc-muted); font-size: .68rem; }
+.mc-match-facts dd { margin: 2px 0 0; color: var(--mc-text); font-size: .78rem; font-weight: 800; }
+.mc-pitch-disclaimer { margin: 7px 2px 0; color: var(--mc-muted); font-size: .66rem; text-align: center; }
 
-/* شريط الحالة: آخر قراءة + الاتصال + تحديث الآن */
-.mc-meta { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; margin: 12px 2px 0; font-size: .76rem; color: var(--mc-muted); }
-.mc-meta-facts { display: flex; flex-wrap: wrap; gap: 6px 16px; min-width: 0; }
-.mc-meta-facts span { display: inline-flex; gap: 5px; align-items: baseline; }
-.mc-meta-facts b { color: var(--mc-text); font-weight: 700; }
-.mc-read { display: inline-flex; align-items: center; gap: 7px; }
+/* Service state / refresh */
+.mc-meta { display: flex; justify-content: flex-end; min-width: 0; margin: 12px 2px 0; color: var(--mc-muted); font-size: .76rem; }
+.mc-meta-service { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; min-width: 0; }
+.mc-read { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 7px; min-width: 0; }
 .mc-read[data-level="fresh"] { color: var(--mc-lime); }
 .mc-read[data-level="aging"] { color: #ffd479; }
 .mc-read[data-level="stale"], .mc-read[data-level="failed"], .mc-read[data-level="invalid"] { color: #ff9aa2; }
-.mc-refresh { padding: 8px 15px; min-height: 42px; border-radius: 999px; border: 1px solid rgba(216, 255, 62, .4); background: rgba(216, 255, 62, .1); color: var(--mc-lime); font-weight: 800; font-size: .78rem; }
+.mc-refresh { min-height: 42px; padding: 8px 15px; border: 1px solid rgba(216, 255, 62, .4); border-radius: 999px; background: rgba(216, 255, 62, .1); color: var(--mc-lime); font-size: .78rem; font-weight: 800; }
 .mc-refresh:hover:not(:disabled) { background: rgba(216, 255, 62, .18); }
+.mc-warning, .mc-simulated { margin: 12px 0 0; padding: 11px 14px; border-radius: 12px; font-size: .78rem; }
+.mc-warning { border: 1px solid rgba(239, 51, 64, .35); background: rgba(239, 51, 64, .09); color: #ffd7da; }
+.mc-simulated { border: 1px dashed rgba(216, 255, 62, .45); background: rgba(216, 255, 62, .07); color: #eaf7b6; }
 
-.mc-warning { margin-top: 12px; padding: 11px 14px; border-radius: 12px; border: 1px solid rgba(239, 51, 64, .35); background: rgba(239, 51, 64, .09); color: #ffd7da; font-size: .78rem; }
-.mc-simulated { margin-top: 12px; padding: 11px 14px; border-radius: 12px; border: 1px dashed rgba(216, 255, 62, .45); background: rgba(216, 255, 62, .07); color: #eaf7b6; font-size: .78rem; }
-
-/* ── التبويبات (البندان 5 و10) ───────────────────────────────────── */
-.mc-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; margin: 22px 0 0; padding: 6px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255, 255, 255, .03); }
-.mc-tab { flex: 1 0 auto; padding: 10px 14px; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: var(--mc-muted); font-weight: 800; font-size: .82rem; white-space: nowrap; transition: color .18s ease, background .18s ease; }
+/* Tabs — only available data panels are mounted. */
+.mc-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 22px 0 0; padding: 6px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255, 255, 255, .03); }
+.mc-tab { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 9px 13px; border: 0; border-radius: 999px; background: transparent; color: var(--mc-muted); font-size: .82rem; font-weight: 800; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; transition: color .18s ease, background .18s ease; }
 .mc-tab:hover { color: var(--mc-text); }
-.mc-tab[aria-selected="true"] { color: #0b0b0f; background: var(--mc-lime); }
-/* `hidden` صريح: صنف `.mc-panel` يضبط حشواً وحدوداً، والتأكيد هنا يمنع أي قاعدة
-   لاحقة من إظهار لوحة غير نشطة بلا قصد. ورقة `noscript` تتجاوزه حين لا يعمل
-   JavaScript، وهو التجاوز المقصود الوحيد. */
-.mc-panel[hidden] { display: none; }
-.mc-panel { margin-top: 16px; padding: 18px 16px; border: 1px solid var(--mc-line); border-radius: var(--mc-radius); background: rgba(16, 19, 27, .72); }
-.mc-panel h2 { margin: 0 0 4px; font-size: clamp(1.05rem, 3.6vw, 1.3rem); font-weight: 900; }
-.mc-panel h3 { margin: 22px 0 8px; font-size: .95rem; font-weight: 800; color: var(--mc-lime); }
+.mc-tab[aria-selected="true"] { background: var(--mc-lime); color: #0b0b0f; }
+.mc-panel[hidden] { display: none !important; }
+.mc-panel { min-width: 0; margin-top: 16px; padding: 18px 16px; border: 1px solid var(--mc-line); border-radius: var(--mc-radius); background: rgba(16, 19, 27, .72); }
+.mc-panel h2 { margin: 0 0 5px; font-size: clamp(1.05rem, 3.6vw, 1.3rem); font-weight: 900; }
+.mc-panel h3 { margin: 19px 0 8px; color: var(--mc-lime); font-size: .95rem; font-weight: 800; }
+.mc-panel h4 { margin: 15px 0 7px; color: var(--mc-text); font-size: .84rem; }
 .mc-panel > p:first-of-type { margin: 0 0 14px; color: var(--mc-muted); font-size: .82rem; }
+.mc-panel section + section { margin-top: 18px; }
+.mc-preview-facts, .mc-form-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr)); gap: 9px; margin: 12px 0 18px; padding: 0; }
+.mc-preview-facts > div, .mc-form-summary > div { min-width: 0; padding: 9px 12px; border: 1px solid var(--mc-line); border-radius: 11px; background: rgba(255,255,255,.025); }
+.mc-preview-facts dt, .mc-form-summary dt { color: var(--mc-muted); font-size: .68rem; }
+.mc-preview-facts dd, .mc-form-summary dd { margin: 2px 0 0; color: var(--mc-text); font-size: .78rem; font-weight: 800; }
+.mc-form-grid, .mc-lineup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 16px; }
+.mc-form-side, .mc-confirmed-lineup { min-width: 0; }
+.mc-form-side > h3, .mc-confirmed-lineup > h3 { margin-top: 7px; }
+.mc-form-summary { margin-bottom: 0; }
+.mc-team-tag { color: var(--mc-muted); font-size: .68rem; font-weight: 700; }
 
-/* «غير متاح» و«لم يُعلن بعد» — البندان 6 و8: لا صفر بدل القيمة الناقصة. */
-.mc-unavailable { padding: 18px 16px; border-radius: 14px; border: 1px dashed var(--mc-line); background: rgba(255, 255, 255, .02); color: var(--mc-muted); font-size: .84rem; text-align: center; }
-.mc-unavailable strong { display: block; color: var(--mc-text); font-size: .92rem; margin-bottom: 4px; }
-
-/* قوائم الأحداث */
-.mc-events { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.mc-event { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 9px 12px; border-radius: 12px; background: rgba(255, 255, 255, .03); border: 1px solid var(--mc-line); }
-.mc-event-minute { font-family: var(--font-latin, ui-sans-serif); font-weight: 800; font-size: .82rem; color: var(--mc-lime); }
-.mc-event-body { min-width: 0; font-size: .84rem; }
-.mc-event-body small { display: block; color: var(--mc-muted); font-size: .72rem; }
-.mc-event[data-kind="goal"] { border-inline-start: 3px solid var(--mc-lime); }
-.mc-event[data-kind="card"] { border-inline-start: 3px solid var(--mc-red); }
-.mc-event[data-kind="cancelled"] { opacity: .62; text-decoration: line-through; text-decoration-color: rgba(239, 51, 64, .8); border-inline-start: 3px solid var(--mc-red); }
-
-/* الجداول: أرقام خام بوحداتها بجانب الرادار (البند 9) */
-.mc-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--mc-line); }
-.mc-table { width: 100%; border-collapse: collapse; font-size: .8rem; min-width: 340px; }
-.mc-table caption { text-align: start; padding: 10px 12px; color: var(--mc-muted); font-size: .74rem; caption-side: top; }
-.mc-table th, .mc-table td { padding: 9px 12px; border-bottom: 1px solid var(--mc-line); text-align: start; }
-.mc-table thead th { background: rgba(255, 255, 255, .04); font-weight: 800; color: var(--mc-text); }
-.mc-table tbody tr:last-child td { border-bottom: 0; }
-.mc-table td[data-side="home"] { color: #cfc4ff; font-family: var(--font-latin, ui-sans-serif); }
-.mc-table td[data-side="away"] { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); }
+/* Lists */
+.mc-events { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.mc-event { display: flex; min-width: 0; align-items: flex-start; gap: 10px; padding: 9px 11px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255, 255, 255, .03); }
+.mc-event-minute { flex: 0 0 auto; min-width: 38px; color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: .8rem; font-weight: 800; }
+.mc-event-body { display: block; flex: 1 1 auto; min-width: 0; font-size: .82rem; }
+.mc-event-body small { display: block; margin-top: 2px; color: var(--mc-muted); font-size: .72rem; line-height: 1.6; }
+.mc-event[data-kind="goal"], .mc-event[data-kind="penalty"], .mc-event[data-kind="own_goal"] { border-inline-start: 3px solid var(--mc-lime); }
+.mc-event[data-kind="yellow_card"], .mc-event[data-kind="red_card"] { border-inline-start: 3px solid var(--mc-red); }
+.mc-event[data-kind="cancelled"] { border-inline-start: 3px solid var(--mc-red); opacity: .8; }
 .mc-num { font-family: var(--font-latin, ui-sans-serif); }
 
-/* ── الرادار: SVG أصلي بلا مكتبة جديدة (البند 9) ─────────────────── */
-.mc-radar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: center; }
-.mc-radar svg { inline-size: 100%; block-size: auto; max-inline-size: 380px; margin-inline: auto; display: block; overflow: visible; }
+/* Values: a side with no source value creates no empty cell or placeholder. */
+.mc-stat-list, .mc-comparison-values { display: grid; gap: 8px; margin: 0; padding: 0; }
+.mc-stat-row, .mc-comparison-row { display: grid; grid-template-columns: minmax(110px, .75fr) minmax(0, 1.5fr); gap: 10px; align-items: center; min-width: 0; padding: 9px 11px; border: 1px solid var(--mc-line); border-radius: 11px; background: rgba(255,255,255,.025); }
+.mc-stat-row > dt, .mc-comparison-row > dt { color: var(--mc-muted); font-size: .77rem; font-weight: 800; }
+.mc-stat-row > dd, .mc-comparison-row > dd { display: flex; flex-wrap: wrap; gap: 7px 14px; min-width: 0; margin: 0; }
+.mc-stat-row > dd > span, .mc-comparison-row > dd > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; min-width: 0; font-size: .76rem; }
+.mc-stat-row [data-side="home"], .mc-comparison-row [data-side="home"] { color: #cfc4ff; }
+.mc-stat-row [data-side="away"], .mc-comparison-row [data-side="away"] { color: var(--mc-lime); }
+.mc-stat-row .mc-num, .mc-comparison-row .mc-num { color: var(--mc-text); font-weight: 900; }
+.mc-history-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.mc-history-item { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 12px; border: 1px solid var(--mc-line); border-radius: 13px; background: rgba(255,255,255,.03); }
+.mc-history-date { color: var(--mc-muted); font-size: .7rem; }
+.mc-history-scoreline { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; font-size: .82rem; }
+.mc-history-scoreline .mc-num { flex: 0 0 auto; color: var(--mc-lime); font-size: .9rem; }
+.mc-history-item small { color: var(--mc-muted); font-size: .7rem; }
+.mc-note { margin: 10px 0 0; color: var(--mc-muted); font-size: .74rem; line-height: 1.8; }
+
+/* Radar and real comparison values. */
+.mc-radar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: center; }
+.mc-radar-figure { min-width: 0; margin: 0; }
+.mc-radar svg { display: block; width: min(100%, 380px); height: auto; margin-inline: auto; overflow: visible; }
 .mc-radar-grid { fill: none; stroke: rgba(255, 255, 255, .13); stroke-width: 1; }
 .mc-radar-axis { stroke: rgba(255, 255, 255, .10); stroke-width: 1; }
 .mc-radar-label { fill: var(--mc-muted); font-size: 8.5px; font-weight: 700; }
 .mc-radar-home { fill: rgba(124, 92, 255, .26); stroke: var(--mc-violet); stroke-width: 2; }
 .mc-radar-away { fill: rgba(216, 255, 62, .16); stroke: var(--mc-lime); stroke-width: 2; }
-.mc-radar-legend { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; font-size: .76rem; color: var(--mc-muted); }
-.mc-radar-legend i { display: inline-block; inline-size: 11px; block-size: 11px; border-radius: 3px; margin-inline-end: 6px; }
-.mc-note { margin-top: 12px; font-size: .74rem; color: var(--mc-muted); line-height: 1.8; }
+.mc-radar-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; color: var(--mc-muted); font-size: .74rem; }
+.mc-radar-key { display: inline-block; width: 11px; height: 11px; margin-inline-end: 6px; border-radius: 3px; }
+.mc-radar-key--home { border: 1px solid var(--mc-violet); background: rgba(124,92,255,.55); }
+.mc-radar-key--away { border: 1px solid var(--mc-lime); background: rgba(216,255,62,.4); }
+.mc-comparison-values { margin-top: 12px; }
 
-/* ── بطاقة النتيجة المصغّرة على الجوال (البند 4) ───────────────────
-   ثابتة أسفل الشاشة، ولا تحجب المحتوى: للصفحة حشو سفلي يعادل ارتفاعها. */
-.mc-mini { position: fixed; inset-block-end: 0; inset-inline: 0; z-index: 45; display: none; gap: 10px; align-items: center; padding: 9px 14px; border-block-start: 1px solid var(--mc-line); background: rgba(8, 11, 18, .96); backdrop-filter: blur(10px); }
-.mc-mini-teams { flex: 1 1 auto; min-width: 0; font-size: .76rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mc-mini-score { flex: 0 0 auto; font-family: var(--font-latin, ui-sans-serif); font-weight: 900; font-size: .95rem; color: var(--mc-lime); }
-.mc-mini-link { flex: 0 0 auto; font-size: .72rem; font-weight: 800; color: var(--mc-text); text-decoration: none; border: 1px solid var(--mc-line); border-radius: 999px; padding: 6px 11px; }
-
-/* ── التوثيق والمراجعة (البند 12): أسماء المصادر هنا وحدها ───────── */
+/* Documentation and live announcements. */
 .mc-docs { margin-top: 26px; padding: 18px 16px; border: 1px solid var(--mc-line); border-radius: var(--mc-radius); background: rgba(255, 255, 255, .02); }
 .mc-docs h2 { margin: 0 0 8px; font-size: 1rem; font-weight: 900; }
-.mc-docs p, .mc-docs li { font-size: .78rem; color: var(--mc-muted); line-height: 1.9; }
+.mc-docs p, .mc-docs li { color: var(--mc-muted); font-size: .78rem; line-height: 1.9; }
 .mc-docs ul { margin: 8px 0 0; padding-inline-start: 18px; }
 .mc-docs a { color: var(--mc-lime); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.mc-live-region { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
-/* منطقة الإعلان الحيّ — البند 10: `aria-live="polite"`، وتُخفى بصرياً فقط. */
-.mc-live-region { position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* Mobile summary follows the same validated score/status as the pitch. */
+.mc-mini { position: fixed; z-index: 45; inset-block-end: 0; inset-inline: 0; display: none; align-items: center; gap: 9px; min-width: 0; padding: 9px 12px; border-block-start: 1px solid var(--mc-line); background: rgba(8, 11, 18, .96); backdrop-filter: blur(10px); }
+.mc-mini-teams { flex: 1 1 auto; min-width: 0; font-size: .74rem; font-weight: 800; }
+.mc-mini-score { flex: 0 0 auto; color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: .95rem; font-weight: 900; }
+.mc-mini-status { flex: 0 1 auto; min-width: 0; color: var(--mc-muted); font-size: .7rem; }
+.mc-mini-link { flex: 0 0 auto; padding: 6px 10px; border: 1px solid var(--mc-line); border-radius: 999px; color: var(--mc-text); font-size: .72rem; font-weight: 800; text-decoration: none; }
 
-/* ── الاستجابية: 320 → 1440 ─────────────────────────────────────── */
-/* على 320–420px الشريط الأفقي القابل للتمرير كان يُخرج التبويب الخامس
-   («بعد المباراة») عن الشاشة، فلا يصل إليه الزائر إلا بتمرير لا يوحي به شيء.
-   لذلك تتحول القائمة إلى شبكة خمسة أعمدة متساوية ويلتف النص داخل العمود:
-   الخمسة ظاهرة كلها، ومقاس اللمس يبقى 44px، ولا تمرير أفقياً ولا نص مبتور. */
-@media (max-width: 420px) {
-  .mc-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; overflow-x: visible; padding: 5px; border-radius: 16px; }
-  .mc-tab { min-width: 0; padding: 8px 3px; font-size: .68rem; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
-}
 @media (max-width: 720px) {
   .mc-page { padding: 112px 12px 104px; }
-  .mc-hero { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px 12px; }
-  /* الترتيب البصري في RTL: المضيف، ثم الوسط، ثم الضيف — بلا إعادة ترتيب
-     تخالف ترتيب DOM الذي تقرأه قارئ الشاشة. */
-  .mc-mid { order: 0; min-width: 0; }
+  .mc-pitch-frame { grid-template-columns: minmax(0, 1fr) minmax(102px, 1.15fr) minmax(0, 1fr); gap: 6px; min-height: 238px; padding: 15px 8px; }
+  .mc-pitch-team { min-height: 140px; padding: 9px 4px; }
+  .mc-pitch-scoreboard { padding: 11px 7px; }
+  .mc-match-facts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); }
   .mc-mini { display: flex; }
-  /* بين 421 و720px يبقى الشريط أفقياً قابلاً للتمرير — والاتساع يكفي هنا. */
-  .mc-tab { flex: 0 0 auto; }
+}
+@media (max-width: 420px) {
+  .mc-page { padding-inline: 10px; }
+  .mc-pitch-frame { grid-template-columns: minmax(0, .95fr) minmax(90px, 1.1fr) minmax(0, .95fr); gap: 4px; min-height: 218px; padding: 12px 5px; }
+  .mc-pitch-markings { inset: 8px; }
+  .mc-pitch-team { min-height: 132px; padding: 8px 3px; }
+  .mc-pitch-team-name { font-size: clamp(.62rem, 2.7vw, .78rem); }
+  .mc-pitch-team-short, .mc-pitch-team-role { font-size: .6rem; }
+  .mc-pitch-scoreboard { gap: 5px; padding: 9px 5px; }
+  .mc-pitch-competition { font-size: .58rem; }
+  .mc-pitch-status { min-height: 22px; padding: 2px 7px; font-size: .62rem; }
+  .mc-pitch-kickoff { font-size: .59rem; }
+  .mc-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; padding: 5px; border-radius: 15px; }
+  .mc-tab { padding: 8px 2px; font-size: .65rem; }
+  .mc-panel { padding: 15px 11px; }
+  .mc-stat-row, .mc-comparison-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
 }
 @media (min-width: 900px) {
   .mc-radar { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }
+  .mc-comparison-values { margin-top: 0; }
 }
-
-/* البند 10: `prefers-reduced-motion` يلغي الحركة والنبض ويُبقي النص. */
 @media (prefers-reduced-motion: reduce) {
-  .mc-page *, .mc-page *::before, .mc-page *::after {
-    animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important;
-    scroll-behavior: auto !important;
-  }
-  .mc-team--flash { background-color: rgba(216, 255, 62, .12); }
-  .mc-state[data-code="live"] .mc-pulse { animation: none; opacity: 1; transform: none; }
+  .mc-page *, .mc-page *::before, .mc-page *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  .mc-pitch-team--flash { background-color: rgba(216, 255, 62, .12); }
+  .mc-pitch-status[data-code="live"]::before { animation: none; opacity: 1; transform: none; }
 }
-
-/* أشرطة مقارنة الإحصائيات: نصفا مسار من منتصف مشترك — المضيف يميناً
-   والضيف يساراً كما يجلسان في الجدول — ونسبيان لأعلى قيمة في الصف (معلن
-   في تسمية الجدول). بلا حركة، فلا ينتهكان reduced-motion عند التحديث. */
-.mc-statbar-row td { padding-top: 0 !important; border-top: none !important; }
-.mc-statbar { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; direction: ltr; }
-.mc-statbar-home, .mc-statbar-away { display: block; height: 5px; border-radius: 3px; min-width: 0; max-width: 100%; }
-.mc-statbar-home { grid-column: 2; justify-self: start; background: var(--mc-violet, #7c5cff); }
-.mc-statbar-away { grid-column: 1; justify-self: end; background: var(--mc-lime); }

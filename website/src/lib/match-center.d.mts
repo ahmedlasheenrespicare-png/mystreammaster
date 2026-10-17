@@ -167,6 +167,8 @@ export interface MatchSnapshot {
    * في HTML ثابت، بل يصل مع القراءة الحية.
    */
   logos: { home: string | null; away: string | null };
+  /** الملعب الوارد في اللقطة نفسها، أو null إن غاب عن قراءة المصدر. */
+  venue: string | null;
   /** البند 9: أرقام المقارنة قبل اللقاء تحتاج عينة معلنة. */
   seasonComparison: ComparisonMetric[] | null;
   seasonSample: ComparisonSample | null;
@@ -348,6 +350,12 @@ export function scoreFromEvents(events: unknown): {
 };
 
 export function detectScoreCorrection(previousScore: MatchScore | null, nextScore: MatchScore | null, announcedGoals: Announcement[]): ScoreCorrection | null;
+/** true only when both scores are non-negative safe integers; 0 remains valid. */
+export function isValidScore(score: MatchScore | null | undefined): boolean;
+/** A score requires an allowed source status and two complete numeric values. */
+export function canShowScore(status: MatchStatus | null, score: MatchScore | null): boolean;
+/** A scheduled kickoff is hidden after an authoritative delay, postponement, or cancellation. */
+export function canShowKickoff(status: MatchStatus | null): boolean;
 export function isResultOfficial(status: MatchStatus | null, score: MatchScore | null): boolean;
 export function mergeH2h(existing: H2hEntry[], self?: (H2hEntry & { completed: boolean }) | null, limit?: number): H2hEntry[];
 export function summarizeForm(entries: unknown, teamId: string | number | null | undefined, limit?: number): TeamForm | null;

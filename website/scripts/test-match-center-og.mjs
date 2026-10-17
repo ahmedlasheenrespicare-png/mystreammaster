@@ -18,18 +18,27 @@ test('الصور 1200×630 وبالهوية الداكنة نفسها، والخ
   assert.doesNotMatch(generator, /https?:\/\//, 'لا أصل خارجي يُجلب وقت التوليد');
 });
 
-test('التمهيدية بلا أي نتيجة: الفريقان والمسابقة والموعد والملعب فقط', () => {
+test('التمهيدية وبيانات المشاركة لا تعرضان حقلاً اختيارياً فارغاً أو نتيجة', () => {
   const preview = generator.slice(generator.indexOf('function previewHtml'), generator.indexOf('const COMPLETED'));
   assert.match(preview, /match\.home\.name/);
-  assert.match(preview, /match\.venue \?\? "غير متاح"/);
+  assert.match(preview, /const venue = cleanText\(match\.venue\)/);
+  assert.match(preview, /venue \? `الملعب:/);
+  assert.doesNotMatch(preview, /غير متاح|لم يُعلن بعد/);
   assert.doesNotMatch(preview, /score/i, 'لا حقل نتيجة في القالب التمهيدي أصلاً');
+
+  const matchSeo = seo.slice(seo.indexOf('const centerMatch = matchByRoute(clean)'), seo.indexOf('/* ===== صفحات هبوط البطولات'));
+  assert.match(matchSeo, /venue \? `ملعب/);
+  assert.doesNotMatch(matchSeo, /غير متاح|لم يُعلن بعد/, 'الوصف الاجتماعي لا يملأ البيانات الغائبة بنص بديل');
 });
 
-test('النهائية ترفض غير المنتهية والنتيجة الناقصة وغياب readAt الحقيقي', () => {
+test('النهائية ترفض غير المنتهية والنتيجة الناقصة والحقول الجزئية وغياب readAt الحقيقي', () => {
   assert.match(generator, /COMPLETED\.has\(status\)/);
+  assert.match(generator, /isValidScore\(score\)/, 'الأهداف أعداد صحيحة غير سالبة وكاملة فقط');
   assert.match(generator, /refused: confirmed score missing/);
   assert.match(generator, /refused: real readAt missing/);
   assert.match(generator, /refused: unknown match/);
+  assert.match(generator, /stat\.home !== null && stat\.away !== null/, 'الإحصاء الجزئي يُخفى بدل شرطة بديلة');
+  assert.doesNotMatch(generator, /s\.home \?\? "—"|s\.away \?\? "—"/);
   // تسمية القراءة المؤكدة بتوقيت القاهرة على الصورة نفسها — ليست ضمنية.
   assert.match(generator, /قراءة مؤكدة:/);
   assert.match(generator, /timeZone: "Africa\/Cairo"/);

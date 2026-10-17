@@ -130,9 +130,8 @@ test('unverified fields are declared absent rather than guessed', () => {
     assert.match(source, new RegExp(`'${field}'\\s*=>\\s*null`), `${field} must be sent as null`);
   }
   assert.ok(source.includes('ESPN لا يوفّر تقييمات لاعبين إطلاقاً'), 'the permanent ratings limit is documented in the file');
-  // Events default to an empty list outside detail states, which the UI
-  // renders as «غير متاح»; Statistics the same (pre-match boxscore values
-  // were never verified by a probe, so they stay null before kickoff).
+  // Events default to an empty list outside detail states; the UI suppresses
+  // an empty tab. Statistics likewise stay null until the source returns values.
   assert.match(source, /if \(\$isDetail\) \{\s*\$events\s+= mc_read_events\(\$summaryRaw, \$header\['competitors'\]\);/);
   assert.match(source, /\$statistics\s+= mc_read_statistics\(\$summaryRaw, \$header\['competitors'\]\);/);
   // Default outside detail states stays empty/null — never a pre-match guess.

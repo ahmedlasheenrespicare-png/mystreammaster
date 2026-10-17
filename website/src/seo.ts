@@ -573,18 +573,32 @@ export function getSeo(path: string): SeoMeta {
     /* البوابة: كيان الحدث والفهرسة معاً معلقان على تأكيد المعرّفات من المصدر.
        مباراة غير مطابَقة لا تُفهرس ولا تُنشر بكيان حدث ناقص (البندان 2 و13). */
     const verified = allMatchesVerified();
-    const day = dayLabelInZone(centerMatch.kickoffUtc, "Africa/Cairo");
-    const time = kickoffLabel(centerMatch.kickoffUtc, "Africa/Cairo");
-    const competitionCrumb = centerMatch.leagueId === 'eng.1'
-      ? [{ name: centerMatch.competitionName, path: `matches/${centerMatch.competitionSlug}` }]
+    const cleanMeta = (value: unknown): string | null => typeof value === 'string' && value.trim() ? value.trim() : null;
+    const homeName = cleanMeta(centerMatch.home?.name);
+    const awayName = cleanMeta(centerMatch.away?.name);
+    const competitionName = cleanMeta(centerMatch.competitionName);
+    const venue = cleanMeta(centerMatch.venue);
+    let kickoff: string | null = null;
+    if (cleanMeta(centerMatch.kickoffUtc)) {
+      try {
+        kickoff = `${dayLabelInZone(centerMatch.kickoffUtc, "Africa/Cairo")} ${kickoffLabel(centerMatch.kickoffUtc, "Africa/Cairo")} بتوقيت القاهرة`;
+      } catch { kickoff = null; }
+    }
+    const competitionCrumb = centerMatch.leagueId === 'eng.1' && competitionName
+      ? [{ name: competitionName, path: `matches/${centerMatch.competitionSlug}` }]
       : [];
-    const title = `${centerMatch.home.name} ضد ${centerMatch.away.name} — مركز المباراة | ${BRAND_NAME}`;
-    /* الوصف داخل نافذة الفحص القائم (70–175 حرفاً) وفريد لكل مباراة: أسماء
-       الفريقين والملعب تكفي للتمييز، فلا يتكرر النص حرفياً بين الصفحات. */
-    /* الوصف داخل نافذة الفحص القائم (70–175 حرفاً) وفريد لكل مباراة: أسماء
-       الفريقين والملعب والموعد تكفي للتمييز، فلا يتكرر النص بين الصفحات.
-       ولا يُقتطع بـ`slice` — الاقتطاع الصامت ينتج وصفاً مبتور النهاية. */
-    const description = `مركز مباراة ${centerMatch.home.name} و${centerMatch.away.name} في ${centerMatch.competitionName}، ${day} ${time} بتوقيت القاهرة، ملعب ${centerMatch.venue ?? "غير متاح"}. النتيجة من المصدر.`;
+    const matchName = [homeName, awayName].filter((name): name is string => Boolean(name)).join(' ضد ') || 'مركز المباراة';
+    const title = `${matchName} — مركز المباراة | ${BRAND_NAME}`;
+    /* تبقى meta description وog:description وtwitter:description من الحقول
+       الموجودة فعلاً فقط؛ غياب الموعد أو المسابقة أو الملعب لا ينتج بديلاً. */
+    const descriptionParts = [
+      homeName && awayName ? `مركز مباراة ${homeName} و${awayName}` : matchName,
+      competitionName ? `في ${competitionName}` : null,
+      kickoff,
+      venue ? `ملعب ${venue}` : null,
+      'النتيجة من المصدر.',
+    ].filter((part): part is string => Boolean(part));
+    const description = descriptionParts.join('، ');
     const jsonLd: Record<string, unknown>[] = [
       webPageLd({
         canonical,
@@ -598,7 +612,7 @@ export function getSeo(path: string): SeoMeta {
           { name: "الرئيسية", path: "" },
           { name: "مواعيد المباريات", path: "matches" },
           ...competitionCrumb,
-          { name: `${centerMatch.home.shortName} × ${centerMatch.away.shortName}`, path: `matches/${centerMatch.competitionSlug}/${centerMatch.slug}` },
+          ...(matchName !== 'مركز المباراة' ? [{ name: [cleanMeta(centerMatch.home.shortName) ?? homeName, cleanMeta(centerMatch.away.shortName) ?? awayName].filter((name): name is string => Boolean(name)).join(' × '), path: `matches/${centerMatch.competitionSlug}/${centerMatch.slug}` }] : []),
         ],
         canonical
       ),
@@ -616,7 +630,7 @@ export function getSeo(path: string): SeoMeta {
          (`match-<slug>-final.png`) لا تُربط هنا إلا بعد توليدها من
          قراءة مؤكدة — توليدها سابقاً كان سيعرض نتيجة غير موجودة. */
       ogImage: ogImageFor(`match-${centerMatch.slug}`),
-      ogImageAlt: `${centerMatch.home.name} ضد ${centerMatch.away.name} — ${BRAND_NAME}`,
+      ogImageAlt: `${matchName} — ${BRAND_NAME}`,
       themeColor: MATCH_CENTER_NIGHT,
       jsonLd,
     };

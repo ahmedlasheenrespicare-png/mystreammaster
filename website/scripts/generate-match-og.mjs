@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import { chromium as playwrightChromium } from "@playwright/test";
 import sparticuzChromium, { inflate } from "@sparticuz/chromium";
 import { MATCH_CENTER_ALL_MATCHES } from "../src/content/match-center.mjs";
-import { dayLabelInZone, kickoffLabel } from "../src/lib/match-center.mjs";
+import { dayLabelInZone, isValidScore, kickoffLabel } from "../src/lib/match-center.mjs";
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fontRegular = await fs.readFile(path.join(website, "public/fonts/tajawal-arabic-400-normal.woff2"));
@@ -58,15 +58,36 @@ body { font-family: Tajawal, sans-serif; color: #f5f7fb; background: #080b12; }
 .ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
 `;
 
+const cleanText = (value) => typeof value === "string" && value.trim() ? value.trim() : null;
+const sourceNumber = (value) => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+};
+
 /** الصورة التمهيدية: هوية المباراة فقط — لا نتيجة فيها بحال. */
 function previewHtml(match) {
-  const day = dayLabelInZone(match.kickoffUtc, "Africa/Cairo");
-  const time = kickoffLabel(match.kickoffUtc, "Africa/Cairo");
+  let kickoff = null;
+  if (cleanText(match.kickoffUtc)) {
+    try {
+      const day = dayLabelInZone(match.kickoffUtc, "Africa/Cairo");
+      const time = kickoffLabel(match.kickoffUtc, "Africa/Cairo");
+      kickoff = `${day} · ${time} بتوقيت القاهرة`;
+    } catch { kickoff = null; }
+  }
+  const competition = cleanText(match.competitionName);
+  const season = cleanText(match.season);
+  const venue = cleanText(match.venue);
+  const kicker = ["مركز المباراة", competition, season].filter(Boolean).join(" · ");
+  const facts = [kickoff, venue ? `الملعب: ${venue}` : null].filter(Boolean);
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>${baseCss}</style></head>
 <body><main class="cover"><div class="grid"></div>
-<div class="kicker">مركز المباراة · ${escapeHtml(match.competitionName)} ${escapeHtml(match.season)}</div>
+<div class="kicker">${escapeHtml(kicker)}</div>
 <div class="teams">${escapeHtml(match.home.name)}<span class="vs">ضد</span>${escapeHtml(match.away.name)}</div>
-<div class="facts">${escapeHtml(day)} · ${escapeHtml(time)} بتوقيت القاهرة<br>الملعب: ${escapeHtml(match.venue ?? "غير متاح")}</div>
+${facts.length ? `<div class="facts">${facts.map(escapeHtml).join("<br>")}</div>` : ""}
 <div class="foot"><span>النتيجة والأحداث من المصدر وقت حدوثها — لا تُعرض نتيجة قبل البداية</span><span>ستريم ماستر برو</span></div>
 </main></body></html>`;
 }
@@ -80,17 +101,24 @@ const COMPLETED = new Set(["full_time", "finished", "final", "post", "completed"
 function finalHtml(match, read) {
   const status = String(read?.status?.code ?? read?.status ?? "").toLowerCase();
   if (!COMPLETED.has(status)) throw new Error(`refused: status is not completed (${status || "absent"})`);
+  const competition = cleanText(match.competitionName);
   const score = read?.score;
-  if (!Number.isFinite(score?.home) || !Number.isFinite(score?.away)) throw new Error("refused: confirmed score missing");
+  if (!isValidScore(score)) throw new Error("refused: confirmed score missing");
   if (typeof read?.readAt !== "string" || Number.isNaN(Date.parse(read.readAt))) throw new Error("refused: real readAt missing");
   const stats = (Array.isArray(read.statistics) ? read.statistics : [])
-    .filter((s) => s && s.label && (s.home !== null || s.away !== null))
+    .map((stat) => ({
+      label: cleanText(stat?.label),
+      home: sourceNumber(stat?.home),
+      away: sourceNumber(stat?.away),
+      unit: cleanText(stat?.unit),
+    }))
+    .filter((stat) => stat.label && stat.home !== null && stat.away !== null)
     .slice(0, 6);
-  const statCards = stats.map((s) => `
-    <div class="stat"><div class="v">${s.home ?? "—"}<i>:</i>${s.away ?? "—"}${s.unit ? ` <i>${escapeHtml(s.unit)}</i>` : ""}</div><div class="l">${escapeHtml(s.label)}</div></div>`).join("");
+  const statCards = stats.map((stat) => `
+    <div class="stat"><div class="v">${stat.home}<i>:</i>${stat.away}${stat.unit ? ` <i>${escapeHtml(stat.unit)}</i>` : ""}</div><div class="l">${escapeHtml(stat.label)}</div></div>`).join("");
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>${baseCss}.teams{font-size:56px;margin-top:26px}</style></head>
 <body><main class="cover"><div class="grid"></div>
-<div class="kicker">نتيجة نهائية مؤكدة · ${escapeHtml(match.competitionName)}</div>
+<div class="kicker">نتيجة نهائية مؤكدة${competition ? ` · ${escapeHtml(competition)}` : ""}</div>
 <div class="teams">${escapeHtml(match.home.name)}<span class="vs">×</span>${escapeHtml(match.away.name)}</div>
 <div class="score"><b class="home">${score.home}</b><span>–</span><b class="away">${score.away}</b></div>
 ${stats.length ? `<div class="stats">${statCards}</div>` : ""}

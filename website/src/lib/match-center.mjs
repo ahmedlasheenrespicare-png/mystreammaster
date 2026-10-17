@@ -550,6 +550,26 @@ export function planAnnouncements({ matchId, previousEvents = [], nextEvents = [
   return { announce, knownKeys: Array.from(known) };
 }
 
+/* النتيجة قابلة للعرض فقط إذا أرسل المصدر عددين صحيحين غير سالبين؛ الصفر
+   الحقيقي صالح، أما الطرف الناقص أو الكسري أو غير الرقمي فيُخفي النتيجة كاملة. */
+export function isValidScore(score) {
+  const validGoal = value => typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+  return Boolean(score && validGoal(score.home) && validGoal(score.away));
+}
+
+const SCORE_STATUSES = new Set(['live', 'halftime', 'finished', 'suspended']);
+
+/** أهلية عرض النتيجة: حالة تسمح بها + هدفان صالحان. */
+export function canShowScore(status, score) {
+  return SCORE_STATUSES.has(status?.code) && isValidScore(score);
+}
+
+/* الموعد الثابت ليس موعداً جديداً بعد تأخير أو تأجيل/إلغاء موثّقين. */
+const KICKOFF_STATUSES_WITHOUT_CURRENT_TIME = new Set(['delayed', 'postponed', 'canceled']);
+export function canShowKickoff(status) {
+  return !KICKOFF_STATUSES_WITHOUT_CURRENT_TIME.has(status?.code);
+}
+
 /* ────────── سجل المواجهات: آخر ثلاث مكتملة بلا تكرار (البند 5، 6، 8) ────────── */
 
 function h2hKey(entry) {
@@ -563,16 +583,14 @@ function h2hKey(entry) {
    بلا هدفين يعرض مواجهة بلا نتيجة أو يدفع بمواجهة صحيحة خارج الثلاث. لذلك
    يشترط هذا الفحص نتيجة رسمية من المصدر: حالة `finished` وهدفان حاضران. */
 export function isResultOfficial(status, score) {
-  if (status?.code !== 'finished') return false;
-  return !!score && score.home !== null && score.away !== null;
+  return status?.code === 'finished' && isValidScore(score);
 }
 
 function isCountableH2h(entry) {
   return entry?.completed === true
-    && typeof entry?.date === 'string' && entry.date !== ''
+    && typeof entry?.date === 'string' && entry.date.trim() !== ''
     && Number.isFinite(Date.parse(entry.date))
-    && entry.homeGoals !== null && entry.homeGoals !== undefined
-    && entry.awayGoals !== null && entry.awayGoals !== undefined;
+    && isValidScore({ home: entry.homeGoals, away: entry.awayGoals });
 }
 
 /* البند 6: «سجل المواجهات لا يتضمن المباراة المقبلة قبل اكتمالها».
@@ -872,7 +890,13 @@ export function matchByFixtureId(matches, provider, fixtureId) {
 }
 
 export function isVerified(match) {
-  return match?.verification === 'confirmed' && Object.values(match?.externalIds || {}).some(id => id !== null && id !== undefined && String(id).trim() !== '');
+  if (match?.verification !== 'confirmed') return false;
+  const hasId = value => value !== null && value !== undefined && String(value).trim() !== '';
+  return Object.entries(match.externalIds || {}).some(([provider, eventId]) =>
+    hasId(eventId)
+      && hasId(match.home?.externalIds?.[provider])
+      && hasId(match.away?.externalIds?.[provider]),
+  );
 }
 
 /* ─────────────────────── أدوات داخلية ─────────────────────── */

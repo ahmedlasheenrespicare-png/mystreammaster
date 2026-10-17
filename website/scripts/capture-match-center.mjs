@@ -2,7 +2,7 @@
    لقطات مركز المباراة — البند 14: «معاينة + لقطات هاتف وسطح مكتب»
    --------------------------------------------------------------------------
    تُلتقط من خادم التطوير (vite) لأن المزوّد المحاكي لا يعمل إلا هناك، فتظهر
-   الحالات الثلاث على الرابط نفسه. **ليست لقطات من الإنتاج**: في البناء
+   حالات ما قبل المباراة والمباشرة والنهائية والمؤجلة على الرابط نفسه. **ليست لقطات من الإنتاج**: في البناء
    المنشور تُقرأ البيانات من `match-center.php` ولا تظهر شارة المحاكاة.
 
    العرض 320 → 1440 كما يشترط البند 4، ويُفحص ألا يكون هناك تمرير أفقي للصفحة
@@ -28,7 +28,7 @@ const route = '/matches/الدوري-الإنجليزي/brentford-liverpool/';
 
 /* الحالات التي يطلب البند 14 رؤيتها على **الرابط نفسه**. */
 const states = [
-  { id: 'pre', query: '', label: 'قبل البداية — معاينة' },
+  { id: 'pre', query: '?mockScenario=scheduled', label: 'قبل البداية — معاينة' },
   { id: 'live', query: '?mockScenario=secondHalf', label: 'أثناء المباراة — مباشر' },
   { id: 'finished', query: '?mockScenario=finished', label: 'بعد النهاية — تقرير' },
   { id: 'postponed', query: '?mockScenario=postponed', label: 'مؤجلة — حالة مستقلة' },
@@ -66,7 +66,7 @@ try {
       const url = `${baseUrl}${encodeURI(route)}${state.query}`;
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       /* تنتظر أول قراءة حتى لا تُلتقط صفحة قبل وصول البيانات. */
-      await page.waitForSelector('.mc-state', { timeout: 15_000 });
+      await page.waitForSelector('.mc-pitch-status', { timeout: 15_000 });
       await page.waitForTimeout(1_200);
 
       /* لقطة بارتفاع الصفحة كاملة عبر **نافذة عرض طويلة** لا عبر `fullPage`.
@@ -97,15 +97,22 @@ try {
             clipped.push((el.textContent || '').trim().slice(0, 40));
           }
         }
+        const visiblePanel = [...document.querySelectorAll('[role="tabpanel"]')].find(panel => !panel.hidden);
         return {
           pageScroll: de.scrollWidth - de.clientWidth,
           overflowing: overflowing.slice(0, 8),
           clipped: clipped.slice(0, 8),
           h1: document.querySelectorAll('h1').length,
+          pitch: Boolean(document.querySelector('.mc-pitch-frame')),
+          kickoff: Boolean(document.querySelector('.mc-pitch-kickoff'))
+            || [...(visiblePanel?.querySelectorAll('dt') ?? [])].some(label => /موعد/.test(label.textContent || '')),
           tabs: document.querySelectorAll('[role="tab"]').length,
           selectedTabs: document.querySelectorAll('[role="tab"][aria-selected="true"]').length,
-          visiblePanels: [...document.querySelectorAll('[role="tabpanel"]')].filter(p => !p.hidden).length,
-          state: document.querySelector('.mc-state')?.textContent?.trim() ?? '',
+          visiblePanels: [...document.querySelectorAll('[role="tabpanel"]')].filter(panel => !panel.hidden).length,
+          state: document.querySelector('.mc-pitch-status')?.textContent?.trim() ?? '',
+          score: Boolean(document.querySelector('.mc-pitch-score')),
+          unavailable: Boolean(visiblePanel?.querySelector('.mc-unavailable')),
+          visibleText: visiblePanel?.textContent ?? '',
           simulated: Boolean(document.querySelector('.mc-simulated')),
         };
       });
@@ -115,14 +122,27 @@ try {
       if (metrics.overflowing.length) problems.push(`${tag}: عناصر خارج العرض: ${metrics.overflowing.join(', ')}`);
       if (metrics.clipped.length) problems.push(`${tag}: نص مبتور: ${metrics.clipped.join(' | ')}`);
       if (metrics.h1 !== 1) problems.push(`${tag}: عدد H1 = ${metrics.h1}`);
-      if (metrics.tabs !== 5) problems.push(`${tag}: عدد التبويبات = ${metrics.tabs}`);
+      if (!metrics.pitch) problems.push(`${tag}: تصميم الملعب غائب`);
+      if (metrics.tabs < 1 || metrics.tabs > 5) problems.push(`${tag}: عدد التبويبات غير صالح = ${metrics.tabs}`);
       if (metrics.selectedTabs !== 1) problems.push(`${tag}: تبويبات مختارة = ${metrics.selectedTabs}`);
       if (metrics.visiblePanels !== 1) problems.push(`${tag}: لوحات ظاهرة = ${metrics.visiblePanels}`);
+      if (metrics.unavailable || /غير متاح|لم يُعلن بعد/.test(metrics.visibleText)) problems.push(`${tag}: يظهر قسم أو نص بديل لبيانات غائبة`);
+      const expectedScore = state.id === 'live' || state.id === 'finished';
+      if (metrics.score !== expectedScore) problems.push(`${tag}: ظهور النتيجة لا يطابق حالة المصدر`);
+      if (state.id === 'postponed' && metrics.kickoff) problems.push(`${tag}: الموعد الأصلي يُعرض رغم أن المباراة مؤجلة`);
       /* في التطوير يجب أن تظهر شارة المحاكاة — غيابها يعني أن أرقاماً محاكاة
          تُعرض بلا وسم، وهو أخطر ما يمكن أن يحدث في معاينة. */
       if (!metrics.simulated) problems.push(`${tag}: شارة المحاكاة غائبة`);
 
-      console.log(`${tag.padEnd(16)} ${String(metrics.state).padEnd(22)} scroll=${metrics.pageScroll} h1=${metrics.h1} tabs=${metrics.tabs} panels=${metrics.visiblePanels} sim=${metrics.simulated}`);
+      if (metrics.tabs > 1) {
+        const before = await page.locator('[role="tab"][aria-selected="true"]').getAttribute('data-tab');
+        await page.locator('[role="tab"][aria-selected="true"]').focus();
+        await page.keyboard.press('ArrowLeft');
+        const after = await page.locator('[role="tab"][aria-selected="true"]').getAttribute('data-tab');
+        if (before === after) problems.push(`${tag}: السهم الأيسر لم ينقل الاختيار إلى تبويب متاح`);
+      }
+
+      console.log(`${tag.padEnd(16)} ${String(metrics.state).padEnd(22)} scroll=${metrics.pageScroll} h1=${metrics.h1} tabs=${metrics.tabs} panels=${metrics.visiblePanels} score=${metrics.score} sim=${metrics.simulated}`);
     }
     await context.close();
   }
@@ -136,5 +156,5 @@ if (problems.length) {
   for (const problem of problems) console.error('  - ' + problem);
   process.exitCode = 1;
 } else {
-  console.log('✅ لا تمرير أفقي، ولا نص مبتور، وH1 واحد، وخمسة تبويبات بواحد مختار، وشارة المحاكاة ظاهرة.');
+  console.log('✅ ملعب موحّد، نتيجة مرتبطة بالحالة، تبويبات بيانات فقط، تنقّل بلوحة المفاتيح، بلا تمرير أفقي أو نص مبتور.');
 }

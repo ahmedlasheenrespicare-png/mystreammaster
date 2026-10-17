@@ -232,19 +232,70 @@ function readSideLogo(payload, side) {
   return null;
 }
 
-/** البند 3: لا تنتقل بيانات مباراة إلى صفحة أخرى. */
-function assertSameMatch(payload, match) {
+/* البند 3: لا تنتقل بيانات مباراة إلى صفحة أخرى.
+   معرّف الحدث من المصدر إلزامي حتى لو وصل السلاج، ومعرّفا الفريقين يُفحَصان
+   أيضاً متى احتوت الحمولة عليهما. وسيط PHP الحالي يربط داخلياً بالحدث ثم
+   يستخدم IDs الفريقين لإسناد الأحداث والإحصاءات ومستوى الفريقين؛ لا يرسل
+   هذه الـIDs في غلافه الحالي، لذلك لا نخترع حقلاً جديداً ولا نرفض عقده القائم. */
+function readSourceTeamIds(payload) {
+  const teamIds = payload?.teamIds;
+  if (teamIds && typeof teamIds === 'object' && !Array.isArray(teamIds)) {
+    return {
+      home: firstIdentity(teamIds.home?.id, teamIds.home),
+      away: firstIdentity(teamIds.away?.id, teamIds.away),
+    };
+  }
+
+  if (payload?.homeTeamId !== undefined || payload?.awayTeamId !== undefined) {
+    return {
+      home: firstIdentity(payload.homeTeamId),
+      away: firstIdentity(payload.awayTeamId),
+    };
+  }
+
+  const teams = payload?.teams;
+  if (teams && typeof teams === 'object' && !Array.isArray(teams)) {
+    const home = firstIdentity(teams.home?.id, teams.home?.teamId);
+    const away = firstIdentity(teams.away?.id, teams.away?.teamId);
+    if (home || away) return { home, away };
+  }
+
+  if (Array.isArray(payload?.competitors)) {
+    const ids = { home: null, away: null };
+    let hasIdentity = false;
+    for (const competitor of payload.competitors) {
+      const side = competitor?.homeAway ?? competitor?.team?.homeAway;
+      if (side !== 'home' && side !== 'away') continue;
+      const id = firstIdentity(competitor?.team?.id, competitor?.id);
+      if (id) hasIdentity = true;
+      ids[side] = id;
+    }
+    if (hasIdentity) return ids;
+  }
+  return null;
+}
+
+function assertSameMatch(payload, match, provider) {
   const gotSlug = firstString(payload?.match, payload?.slug, payload?.matchId);
   const gotEvent = firstIdentity(payload?.event, payload?.eventId, payload?.fixtureId);
-  if (!gotSlug && !gotEvent) throw new TransportError('MISSING_MATCH_BINDING');
+  if (!gotEvent) throw new TransportError('MISSING_MATCH_BINDING', 'معرّف الحدث من المصدر غير موجود');
 
   const wantedSlug = firstString(match?.slug);
-  const wantedEvent = firstIdentity(match?.externalIds?.espn);
+  const wantedEvent = firstIdentity(match?.externalIds?.[provider]);
+  if (!wantedEvent || gotEvent !== wantedEvent) {
+    throw new TransportError('MISMATCHED_MATCH', `معرّف الحدث الوارد ${gotEvent} لا يطابق المباراة المطلوبة`);
+  }
   if (gotSlug && wantedSlug && gotSlug !== wantedSlug) {
     throw new TransportError('MISMATCHED_MATCH', `الوارد ${gotSlug} والمطلوب ${wantedSlug}`);
   }
-  if (gotEvent && wantedEvent && gotEvent !== wantedEvent) {
-    throw new TransportError('MISMATCHED_MATCH', `الوارد ${gotEvent} والمطلوب ${wantedEvent}`);
+
+  const actualTeams = readSourceTeamIds(payload);
+  if (actualTeams) {
+    const wantedHome = firstIdentity(match?.home?.externalIds?.[provider]);
+    const wantedAway = firstIdentity(match?.away?.externalIds?.[provider]);
+    if (!wantedHome || !wantedAway || actualTeams.home !== wantedHome || actualTeams.away !== wantedAway) {
+      throw new TransportError('MISMATCHED_MATCH', 'معرّفات المضيف والضيف من المصدر لا تطابق تعريف المباراة');
+    }
   }
 }
 
@@ -266,7 +317,7 @@ export function adaptSnapshot(payload, match) {
   const provider = firstString(payload.provider);
   if (!provider) throw new TransportError('UNDECLARED_PROVIDER');
 
-  assertSameMatch(payload, match);
+  assertSameMatch(payload, match, provider);
 
   const status = normalizeStatus(payload.status ?? null, provider);
   const events = Array.isArray(payload.events) ? payload.events.map(normalizeEvent) : [];
@@ -297,6 +348,7 @@ export function adaptSnapshot(payload, match) {
     /* البند 4: الشعار من المصدر بشرط `https://` نفسه الذي تشترطه صفحة
        المواعيد القائمة. شكلنا المطبَّع أولاً ثم شكل ESPN الخام. */
     logos: { home: readSideLogo(payload, 'home'), away: readSideLogo(payload, 'away') },
+    venue: firstString(payload.venue),
     seasonComparison: absentToNull(payload.seasonComparison),
     seasonSample: absentToNull(payload.seasonSample),
   };
@@ -461,7 +513,7 @@ export function mockSnapshot(match, options = {}) {
     events,
     /* البند 2 وتقرير §12.5: هذه الخانات **غير مؤكدة من المصدر**، فمحاكاتها
        بلا طلب صريح تعني أن الواجهة تُختبر على بيانات لا وجود لها. تُترك فارغة
-       لتظهر «غير متاح» كما ستظهر فعلاً، وتُحقن في الاختبارات عند الحاجة. */
+       لتبقى اللوحات المخفية مخفية، وتُحقن في الاختبارات عند الحاجة. */
     statistics: null,
     lineups: null,
     ratings: null,

@@ -119,14 +119,43 @@ test('a payload that does not declare its provider is rejected rather than guess
   assert.throws(() => adaptSnapshot([], HOME), (e) => e.code === 'EMPTY_PAYLOAD');
 });
 
-test('a payload that does not say which match it belongs to cannot be bound', () => {
+test('the source event ID is required even when a matching page slug is present', () => {
   const anonymous = payload(HOME);
   delete anonymous.match;
   delete anonymous.event;
   assert.throws(() => adaptSnapshot(anonymous, HOME), (error) => error.code === 'MISSING_MATCH_BINDING');
-  // Either identity alone is enough, and they must agree with the request.
-  assert.equal(adaptSnapshot(payload(HOME, { event: null }), HOME).matchId, HOME.id);
+  assert.throws(() => adaptSnapshot(payload(HOME, { event: null }), HOME), (error) => error.code === 'MISSING_MATCH_BINDING');
+  // The current mediator may omit its redundant slug; its event ID must still match.
   assert.equal(adaptSnapshot(payload(HOME, { match: null }), HOME).matchId, HOME.id);
+});
+
+test('source team IDs, when present in a response shape, must match the requested sides exactly', () => {
+  const correct = payload(HOME, {
+    match: null,
+    teamIds: { home: HOME.home.externalIds.espn, away: HOME.away.externalIds.espn },
+  });
+  assert.doesNotThrow(() => adaptSnapshot(correct, HOME));
+
+  const wrongHome = payload(HOME, {
+    teamIds: { home: AWAY.home.externalIds.espn, away: HOME.away.externalIds.espn },
+  });
+  assert.throws(() => adaptSnapshot(wrongHome, HOME), error => error.code === 'MISMATCHED_MATCH');
+
+  const reversed = payload(HOME, {
+    competitors: [
+      { homeAway: 'home', team: { id: HOME.away.externalIds.espn, displayName: HOME.away.sourceName } },
+      { homeAway: 'away', team: { id: HOME.home.externalIds.espn, displayName: HOME.home.sourceName } },
+    ],
+  });
+  assert.throws(() => adaptSnapshot(reversed, HOME), error => error.code === 'MISMATCHED_MATCH');
+
+  const namesDifferButIdsMatch = payload(HOME, {
+    competitors: [
+      { homeAway: 'home', team: { id: HOME.home.externalIds.espn, displayName: 'اسم مختلف لا يُستخدم كمفتاح' } },
+      { homeAway: 'away', team: { id: HOME.away.externalIds.espn, displayName: 'اسم آخر' } },
+    ],
+  });
+  assert.doesNotThrow(() => adaptSnapshot(namesDifferButIdsMatch, HOME));
 });
 
 test('three matches share a kickoff instant, and none of their payloads resolves to another', () => {
@@ -175,8 +204,8 @@ test('the event id binds the fixture even when the slug is absent from the respo
 /* ── Absence stays absence ────────────────────────────────────────── */
 
 test('missing values become null, never a zero-shaped default', () => {
-  // Rule 8: "missing values stay «غير متاح», never zero". A {} or 0 default
-  // renders as a real value and is indistinguishable from data.
+  // Missing values stay null and their field/panel is hidden; a {} or 0 default
+  // would render as a real value and be indistinguishable from source data.
   const bare = adaptSnapshot(payload(HOME), HOME);
   for (const key of ['statistics', 'lineups', 'ratings', 'seasonComparison', 'seasonSample']) {
     assert.equal(bare[key], null, `${key} should be null when absent`);
@@ -738,8 +767,8 @@ test('form and head-to-head from the provider reach the snapshot aggregated by t
   assert.equal(snapshot.h2h.length, 1);
   assert.equal(snapshot.h2h[0].completed, true);
 
-  // No form in the payload stays null — the panel shows «غير متاح», not a
-  // zeroed record invented by the adapter.
+  // No form in the payload stays null — the dynamic tab/panel is hidden, not
+  // replaced by a zeroed record invented by the adapter.
   const absent = adaptSnapshot(payload(HOME, {}), HOME);
   assert.equal(absent.form, null);
 });

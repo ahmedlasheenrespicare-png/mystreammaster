@@ -361,18 +361,26 @@
   line-height: 1.9;
 }
 
-.ls-source {
-  margin-top: 6px;
-  color: #71717a;
-  font-size: 0.76rem;
-  line-height: 1.95;
+/* قسم «البيانات والمصادر» — نص صغير هادئ بخط علوي فاصل،
+   من متغيّرات الألوان القائمة بلا خطوط جديدة */
+.ls-data-sources {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e0d8;
 }
 
-.ls-source code {
-  font-size: 0.74rem;
-  background: #f2f1ec;
-  border-radius: 6px;
-  padding: 2px 6px;
+.ls-data-sources h2 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #17206b;
+  margin-bottom: 8px;
+}
+
+.ls-data-sources p {
+  color: #71717a;
+  font-size: 0.78rem;
+  line-height: 2;
+  max-width: 72ch;
 }
 
 .league-standings--unavailable h2 {

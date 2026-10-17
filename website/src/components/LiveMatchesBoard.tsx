@@ -64,9 +64,13 @@ export interface LiveMatchesBoardProps {
   teamFilter?: string[];
   heading: string;
   note: string;
+  /** بلوك «عن البيانات والتوقيت» — تُخفيه صفحات البطولات (نُقل
+      نصه إلى قسم «البيانات والمصادر» أسفل الصفحة) وتُبقيه
+      صفحات المنتخبات على القيمة الافتراضية */
+  dataNote?: boolean;
 }
 
-export default function LiveMatchesBoard({ leagues, teamFilter, heading, note }: LiveMatchesBoardProps) {
+export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, dataNote = true }: LiveMatchesBoardProps) {
   // SSR ثابت: التواريخ والتفضيلات تُملأ بعد الترطيب.
   const [zone, setZone] = useState('Asia/Riyadh');
   const [today, setToday] = useState('');
@@ -290,10 +294,12 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note }:
         ))}
       </div>
 
+      {dataNote && (
       <aside className="matches-note">
         <strong>عن البيانات والتوقيت</strong>
         <p>{note} المصدر: <a href="https://www.espn.com/soccer/scoreboard" target="_blank" rel="noopener noreferrer">ESPN</a> عبر وسيط الخادم (<code>/scoreboard.php</code>) مع تخزين مؤقت قصير، وتُعرض أسماء الفرق كما يرسلها المصدر. التحديث كل دقيقة أثناء ظهور الصفحة؛ قد تتأخر النتائج أو تتغير المواعيد حسب المصدر.</p>
       </aside>
+      )}
       <noscript><p>يرجى تفعيل JavaScript لتحميل مواعيد المباريات وتحديث النتائج تلقائياً.</p></noscript>
     </section>
   );

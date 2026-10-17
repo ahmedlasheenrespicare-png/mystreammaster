@@ -635,7 +635,7 @@ export function getSeo(path: string): SeoMeta {
           name: leagueLanding.title,
           description: leagueLanding.description,
           published: leagueLanding.date ?? LANDING_DATE,
-          modified: leagueLanding.date ?? STANDINGS_DATE,
+          modified: leagueLanding.modified ?? leagueLanding.date ?? STANDINGS_DATE,
           mainEntityId: `${canonical}#faq`,
         }),
         breadcrumbs(

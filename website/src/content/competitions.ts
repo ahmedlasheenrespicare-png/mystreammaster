@@ -64,6 +64,48 @@ export interface LeagueLanding {
    * قائمة بلا تغيّر جوهري في محتواها.
    */
   date?: string;
+  /**
+   * تاريخ آخر تعديل فعلي في المحتوى (YYYY-MM-DD) — يُستخدم في
+   * dateModified للبيانات المنظّمة دون مسّ datePublished. يُوضع
+   * فقط حين يتغيّر محتوى الصفحة فعلاً (نص أو قسم)، لا دفعاً
+   * آلياً بلا تغيير.
+   */
+  modified?: string;
+}
+
+/* ==========================================================================
+   قسم «البيانات والمصادر» — نص واحد لكل صفحات البطولات
+   --------------------------------------------------------------------------
+   تُجمع تنبيهات المصدر والتوقيت في قسم واحد أسفل الصفحة بدل بلوكين
+   يقطعان المحتوى. اسم المصدر حقيقي لكل بطولة: مباريات السعودي والمصري
+   تجلبها scoreboard.php من TheSportsDB (لا توفّرها ESPN)، وترتيب
+   المصري يأتي من Highlightly — فلا يُذكر مصدر غير حقيقي في صفحة.
+   ========================================================================== */
+const THE_SPORTSDB_MATCHES_LEAGUES = ['sau.1', 'egy.1'];
+
+export const DATA_SOURCES_NOTES = {
+  matchesESPN:
+    'تُجلب المباريات من ESPN عبر وسيط الخادم (/scoreboard.php) بتخزين مؤقت قصير، وتُعرض أسماء الفرق كما يرسلها المصدر.',
+  matchesTheSportsDB:
+    'تُجلب مباريات هذه البطولة من TheSportsDB عبر وسيط الخادم (/scoreboard.php) بتخزين مؤقت قصير — تُطبَّع استجابته على بنية ESPN — وتُعرض أسماء الفرق كما يرسلها المصدر.',
+  matchesTail:
+    'يتحدّث جدول المباريات كل دقيقة أثناء ظهور الصفحة، وقد تتأخر النتائج أو تتغيّر المواعيد. وتغطّي الصفحة مباريات هذه البطولة فقط ضمن التواريخ المختارة من التقويم.',
+  standings: {
+    ESPN:
+      'جدول الترتيب يأتي من ESPN عبر الوسيط (/standings.php) بالأرقام والأسماء كما يرسلها المصدر، بلا إعادة حساب للنقاط أو معايير التعادل؛ والقيم الناقصة «غير متاح»، وقد يتأخر المصدر فيُعرض ذلك بوسم «بيانات قديمة» مع وقت آخر قراءة مؤكدة.',
+    Highlightly:
+      'جدول الترتيب يأتي من Highlightly عبر الوسيط (/standings.php) بالأرقام والأسماء كما يرسلها المصدر، بلا إعادة حساب للنقاط أو معايير التعادل؛ والقيم الناقصة «غير متاح»، وقد يتأخر المصدر فيُعرض ذلك بوسم «بيانات قديمة» مع وقت آخر قراءة مؤكدة.',
+  },
+} as const;
+
+/** فقرة «البيانات والمصادر» — جملة المباريات دائماً، وجملة الترتيب فقط إن وُجد جدول */
+export function dataSourcesNote(leagueId: string, standingsProvider?: 'ESPN' | 'Highlightly'): string {
+  const parts: string[] = [
+    THE_SPORTSDB_MATCHES_LEAGUES.includes(leagueId) ? DATA_SOURCES_NOTES.matchesTheSportsDB : DATA_SOURCES_NOTES.matchesESPN,
+    DATA_SOURCES_NOTES.matchesTail,
+  ];
+  if (standingsProvider) parts.push(DATA_SOURCES_NOTES.standings[standingsProvider]);
+  return parts.join(' ');
 }
 
 export interface TeamLanding {
@@ -170,6 +212,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
     leagueId: "eng.1",
     /* الترتيب من ESPN عبر standings.php — البطولة مؤهَّلة أصلاً هناك (20 فريقاً) */
     standings: { leagueId: "eng.1", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     shortName: "الدوري الإنجليزي",
     h1: "مباريات الدوري الإنجليزي",
     title: "مباريات الدوري الإنجليزي: الجدول والقنوات الناقلة | ستريم ماستر برو",
@@ -198,6 +242,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
     leagueId: "uefa.champions",
     /* جدول مرحلة الدوري الموحّدة (36 فريقاً) — من ESPN عبر standings.php */
     standings: { leagueId: "uefa.champions", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     shortName: "دوري أبطال أوروبا",
     h1: "مباريات دوري أبطال أوروبا",
     title: "دوري أبطال أوروبا: مواعيد المباريات والقنوات الناقلة | ستريم ماستر برو",
@@ -228,6 +274,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
        معرّف المباريات (sau.1 لدى المصدر الحالي) — لا يُدمجان ولا يُخمَّنان.
        فُتحت البوابة بعد مسبار 2026-10-16: ksa.1 → s:600~l:21231 (18 فريقاً). */
     standings: { leagueId: "ksa.1", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     /* تغيّر جوهري في محتوى الصفحة (إضافة جدول الترتيب) يستحق تاريخ تعديل جديداً */
     date: "2026-10-17",
     shortName: "الدوري السعودي",
@@ -265,6 +313,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
     leagueId: "esp.1",
     /* الترتيب من ESPN عبر standings.php — البطولة مؤهَّلة أصلاً هناك (20 فريقاً) */
     standings: { leagueId: "esp.1", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     /* صفحة جديدة — تاريخها الخاص حتى لا يتغيّر تاريخ صفحات قائمة بلا تغيّر محتواها */
     date: "2026-10-16",
     shortName: "الدوري الإسباني",
@@ -295,6 +345,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
     slug: "الدوري-الفرنسي",
     leagueId: "fra.1",
     standings: { leagueId: "fra.1", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     date: "2026-10-17",
     shortName: "الدوري الفرنسي",
     h1: "مباريات الدوري الفرنسي",
@@ -324,6 +376,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
     slug: "الدوري-الألماني",
     leagueId: "ger.1",
     standings: { leagueId: "ger.1", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     date: "2026-10-17",
     shortName: "الدوري الألماني",
     h1: "مباريات الدوري الألماني",
@@ -353,6 +407,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
     slug: "الدوري-الإيطالي",
     leagueId: "ita.1",
     standings: { leagueId: "ita.1", provider: "ESPN" },
+    /* المحتوى تغيّر فعلاً (قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     date: "2026-10-17",
     shortName: "الدوري الإيطالي",
     h1: "مباريات الدوري الإيطالي",
@@ -387,6 +443,8 @@ export const LEAGUE_LANDINGS: LeagueLanding[] = [
        المجانية مواسمه الحالية. الأدلة كلها في
        docs/standings-probe-report.json. */
     standings: { leagueId: "egy.1", provider: "Highlightly" },
+    /* المحتوى تغيّر فعلاً (إضافة جدول الترتيب + قسم «البيانات والمصادر») — تاريخ التعديل حقيقي */
+    modified: "2026-10-17",
     /* الناقل الرسمي مؤجَّل لغياب المصدر الأولي — لا يُختَرع اسم
        جهة، والحالة مذكورة بصراحة حتى يرد البيان الرسمي
        (بطاقات الناقلين تُملأ فور التوثيق وتُحذف هذه الملاحظة). */

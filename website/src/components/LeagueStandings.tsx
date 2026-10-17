@@ -229,10 +229,6 @@ export default function LeagueStandings({ league, title }: { league: string; tit
       <p className="ls-hint" id={`${id}-hint`}>
         جدول كامل من <bdi dir="ltr">{config.count}</bdi> فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة، ويمكن تركيزه بلوحة المفاتيح.
       </p>
-      <p className="ls-source">
-        المصدر: {config.provider === 'Highlightly' ? 'Highlightly' : 'ESPN'} عبر وسيط الترتيب (<code>/standings.php</code>) بتخزين مؤقت قصير على الخادم · أسماء الفرق والأرقام كما يرسلها المصدر،
-        ولا يُعاد حساب النقاط أو معايير التعادل · الأرقام الناقصة «غير متاح» · قد يتأخر المصدر، ويُعرض ذلك بوسم «{STALE_BADGE_TEXT}» مع وقت آخر قراءة مؤكدة.
-      </p>
     </section>
   );
 }

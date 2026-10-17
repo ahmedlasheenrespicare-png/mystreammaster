@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-10-17T03:57:21.336Z",
+  "probedAt": "2026-10-17T10:11:26.870Z",
   "base": "https://site.web.api.espn.com",
   "snapshot": [
     {
@@ -43,6 +43,11 @@
       "uid": "s:600~l:21231",
       "season": 2026,
       "teams": 18
+    },
+    {
+      "league": "egy.1",
+      "season": 2026,
+      "teams": 20
     }
   ],
   "probe": [
@@ -146,11 +151,6 @@
       "season": 2026,
       "count": 20,
       "detail": "مصدر ناجح بكل المعايير: خطة Basic مجانية $0 (100 طلب/يوم، بلا بطاقة ائتمان) — تغطية مصر مؤكدة (countries?name=Egypt → EG) — الدوري الممتاز leagueId=199067 وموسم 2026 مدرج — نقطة الجداول GET soccer.highlightly.net/standings?leagueId=199067&season=2026 بهيدر x-rapidapi-key أرجعت الجدول الحالي حياً (6 جولات): الأسيوطي 18 نقطة من 6، الأهلي 16، الزمالك 13... ورسالة الخطة الصريحة «All data available with current plan» — الجداول غير مقيدة على المجانية (القيود تطال المقاطع والاحتمالات فقط). شكل الاستجابة: groups[].standings[] بـ position/points/team{id,name,logo}/total{games,wins,draws,loses,scoredGoals,receivedGoals}/home/away — يطابق العقد (goalsDiff تُحسب في المحوّل من فرق المسجل/المستقبل). زمن التحديث: حتى ساعة بعد انتهاء مباريات الجولة. سبر العدد: 20 فريقاً بمراكز 1..20 بلا تكرار، آخرهم غزل المحلة نقطة واحدة."
-    },
-    {
-      "league": "egy.2",
-      "ok": false,
-      "error": "UPSTREAM_HTTP_400"
     }
   ]
 }

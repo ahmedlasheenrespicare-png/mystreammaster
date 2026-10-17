@@ -50,6 +50,7 @@ jobs:
             .github/**
             website/**
             tests/**
+            lib/**
             node_modules/**
             package*.json
             README.md

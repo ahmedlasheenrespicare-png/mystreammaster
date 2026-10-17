@@ -18,4 +18,5 @@ export function diagnosticError(code: string, message?: string): Error & { code:
 export function classifyFetchError(error: unknown): string;
 export function readScoreboardResponse(response: Response, league: League, now?: number): Promise<ScoreboardResult>;
 export function parseScoreboard(data: unknown, league: League): Match[];
+export function hasCompleteScore(home: unknown, away: unknown): boolean;
 export function matchesForDay(matches: Match[], day: string, zone: string): Match[];

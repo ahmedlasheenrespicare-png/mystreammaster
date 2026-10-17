@@ -7,6 +7,7 @@ import {
   kickoffLabel,
   safeLogoUrl,
   type MatchDefinition,
+  type MatchEvent,
   type MatchSnapshot,
   type MatchStatus,
 } from '../lib/match-center.mjs';
@@ -46,6 +47,73 @@ function Crest({ logo, name, side }: { logo: string | null; name: string; side: 
   }
 
   return <span className={`mc-pitch-crest mc-pitch-crest--${side}`} aria-hidden="true">{monogram(name)}</span>;
+}
+
+const EVENT_LABELS: Partial<Record<MatchEvent['type'], string>> = {
+  goal: 'هدف', penalty: 'هدف من ركلة جزاء', own_goal: 'هدف عكسي', missed_penalty: 'ركلة جزاء مهدرة',
+  yellow_card: 'بطاقة صفراء', red_card: 'بطاقة حمراء', substitution: 'تبديل',
+  var_cancelled: 'مراجعة فيديو — إلغاء', var_confirmed: 'مراجعة فيديو — تأكيد',
+};
+const EVENT_SYMBOLS: Partial<Record<MatchEvent['type'], string>> = {
+  goal: '⚽', penalty: '⚽', own_goal: '↩', missed_penalty: '×',
+  yellow_card: 'ص', red_card: 'ح', substitution: '⇄', var_cancelled: 'VAR', var_confirmed: 'VAR',
+};
+
+function orderedEvents(events: MatchEvent[]): MatchEvent[] {
+  return events.map((event, index) => ({ event, index }))
+    .sort((a, b) => {
+      const aMinute = a.event.minute;
+      const bMinute = b.event.minute;
+      if (aMinute === null && bMinute !== null) return 1;
+      if (aMinute !== null && bMinute === null) return -1;
+      if (aMinute !== null && bMinute !== null && aMinute !== bMinute) return aMinute - bMinute;
+      const aExtra = a.event.extraMinute ?? 0;
+      const bExtra = b.event.extraMinute ?? 0;
+      if (aExtra !== bExtra) return aExtra - bExtra;
+      return a.index - b.index;
+    })
+    .map(({ event }) => event);
+}
+
+function eventDescription(event: MatchEvent): string | null {
+  const kind = EVENT_LABELS[event.type] ?? event.sourceType;
+  const minute = typeof event.minute === 'number' && Number.isFinite(event.minute) && event.minute >= 0
+    ? `${event.minute}${typeof event.extraMinute === 'number' && Number.isFinite(event.extraMinute) && event.extraMinute >= 0 ? `+${event.extraMinute}` : ''}′`
+    : null;
+  const team = event.teamSide === 'home' || event.teamSide === 'away' ? event.team : null;
+  const side = event.teamSide === 'home' ? 'المضيف' : event.teamSide === 'away' ? 'الضيف' : null;
+  const player = event.player?.name ?? null;
+  const related = event.type === 'substitution' && event.relatedPlayer?.name
+    ? `لاعب مرتبط: ${event.relatedPlayer.name}`
+    : null;
+  return [minute, kind, side, team, player, related, event.cancelled ? 'ملغى من المصدر' : null, event.type === 'other' ? event.detail : null]
+    .filter((part): part is string => Boolean(part && part.trim()))
+    .join(' · ') || null;
+}
+
+function PitchEventRail({ snapshot }: { snapshot: MatchSnapshot | null }) {
+  const events = orderedEvents(Array.isArray(snapshot?.events) ? snapshot.events : [])
+    .filter(event => eventDescription(event) !== null);
+  if (events.length === 0) return null;
+  return (
+    <section className="mc-event-rail" aria-labelledby="mc-event-rail-title">
+      <h2 id="mc-event-rail-title">أحداث المباراة</h2>
+      <p>مسار زمني مرتبط بجهة الفريق؛ مواضع الأحداث داخل الملعب غير محددة.</p>
+      <ol className="mc-event-rail-list">
+        {events.map((event, index) => {
+          const side = event.teamSide === 'home' || event.teamSide === 'away' ? event.teamSide : 'unknown';
+          const label = eventDescription(event);
+          if (!label) return null;
+          return (
+            <li key={`${event.id ?? 'event'}-${index}`} className="mc-pitch-event" data-kind={event.cancelled ? 'cancelled' : event.type} data-side={side}>
+              <span className="mc-pitch-event-symbol" aria-hidden="true">{EVENT_SYMBOLS[event.type] ?? '•'}</span>
+              <span className="mc-pitch-event-text" aria-label={label}>{label}</span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
 }
 
 function Team({ match, snapshot, side, flash }: {
@@ -131,8 +199,8 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
           {competition && <span className="mc-pitch-competition">{competition}</span>}
           {statusLabel && <span className="mc-pitch-status" data-code={status?.code ?? 'unknown'} data-fresh={fresh ? 'true' : 'false'}>{statusLabel}</span>}
           {showScore && score ? (
-            <p className="mc-pitch-score" aria-label={`النتيجة ${score.home} مقابل ${score.away}`}>
-              <span dir="ltr">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
+            <p className="mc-pitch-score" aria-label={`نتيجة المضيف ${score.home}، ثم الضيف ${score.away}`}>
+              <span dir="ltr" className="mc-score-order">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
             </p>
           ) : (
             <span className="mc-pitch-vs" aria-label="مواجهة بين الفريقين">VS</span>
@@ -147,6 +215,8 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
 
         <Team match={match} snapshot={snapshot} side="away" flash={flash === 'away'} />
       </div>
+
+      <PitchEventRail snapshot={snapshot} />
 
       {(competition || venue || cairoKickoff || meccaKickoff) && (
         <dl className="mc-match-facts">

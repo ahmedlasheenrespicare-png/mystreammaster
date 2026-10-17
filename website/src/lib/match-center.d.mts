@@ -38,6 +38,10 @@ export type MatchEventType =
 export interface MatchEvent {
   /** معرّف الحدث من المصدر — أساس بصمة الإعلان؛ `null` إن لم يرسل المصدر واحداً. */
   id: string | null;
+  /** Source wording/IDs when passed through by the current mediator contract. */
+  sourceType: string | null;
+  sourceTypeId: string | null;
+  sourceTeamId: string | null;
   type: MatchEventType;
   /** حقيقة من المصدر (VAR)، لا استنتاج محلي — البند 7. */
   cancelled: boolean;

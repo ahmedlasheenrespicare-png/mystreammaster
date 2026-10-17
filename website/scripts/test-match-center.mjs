@@ -366,10 +366,13 @@ test('before kickoff there is no score at all, not a confirmed-looking 0–0', (
 test('a genuine zero stays zero while a missing value stays null — the two are never confused', () => {
   // Rule 14 explicitly tests "بيانات ناقصة وصفر حقيقي".
   const live = normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn');
-  assert.deepEqual(deriveScore(live, { score: '2' }, { score: '0' }), { home: 2, away: 0 });
-  assert.deepEqual(deriveScore(live, { score: '0' }, { score: '0' }), { home: 0, away: 0 });
+  assert.deepEqual(deriveScore(live, { score: '2' }, { score: '0' }), { home: 2, away: 0 }, 'home win stays home-away');
+  assert.deepEqual(deriveScore(live, { score: '0' }, { score: '3' }), { home: 0, away: 3 }, 'away win stays home-away');
+  assert.deepEqual(deriveScore(live, { score: '2' }, { score: '2' }), { home: 2, away: 2 }, 'draw stays home-away');
+  assert.deepEqual(deriveScore(live, { score: '0' }, { score: '0' }), { home: 0, away: 0 }, 'zero is a real score');
   assert.equal(deriveScore(live, {}, {}), null, 'absent score is null');
-  assert.deepEqual(deriveScore(live, { score: '1' }, {}), { home: 1, away: null }, 'one side absent');
+  assert.equal(deriveScore(live, { score: '1' }, {}), null, 'a partial score is never exposed');
+  assert.equal(deriveScore(live, { score: '1' }, { score: 'bad' }), null, 'both sides must be valid');
   // Non-numeric junk never becomes a number.
   assert.deepEqual(deriveScore(live, { score: '—' }, { score: 'N/A' }), null);
 });
@@ -737,6 +740,19 @@ test('only goals and corrections are announceable — cards and substitutions do
   assert.equal(normalizeEvent({ type: 'Penalty Missed' }).type, 'missed_penalty');
   assert.equal(normalizeEvent({ type: 'Penalty' }).type, 'penalty');
   assert.equal(normalizeEvent({ type: 'Own Goal' }).type, 'own_goal');
+  const sourceEvent = normalizeEvent({
+    id: 'event-47', type: 'Yellow Card', typeId: 4, minute: 0, extraMinute: 2, period: 1,
+    team: { id: 'team-away-id', name: 'Away FC', homeAway: 'away' },
+    player: { id: 'player-1', name: 'Player One' },
+  });
+  assert.deepEqual(
+    [sourceEvent.id, sourceEvent.sourceType, sourceEvent.sourceTypeId, sourceEvent.sourceTeamId, sourceEvent.teamSide, sourceEvent.minute, sourceEvent.extraMinute, sourceEvent.period],
+    ['event-47', 'Yellow Card', '4', 'team-away-id', 'away', 0, 2, '1'],
+    'source identifiers, team direction and a real zero minute survive normalization',
+  );
+  assert.equal(normalizeEvent({ type: 'Urgent attacking sequence' }).type, 'other', 'free text is not guessed to be an attack');
+  assert.equal(normalizeEvent({ type: 'New Source Code', detail: 'Source wording' }).sourceType, 'New Source Code');
+  assert.equal(normalizeEvent({ type: 'New Source Code', detail: 'Source wording' }).detail, 'Source wording');
 });
 
 test('event identity survives a source that sends no ids, without inventing one', () => {

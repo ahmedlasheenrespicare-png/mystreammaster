@@ -200,7 +200,7 @@ function readSideScore(payload, side) {
   const competitors = Array.isArray(payload?.competitors) ? payload.competitors : null;
   if (competitors) {
     const found = competitors.find(item => item?.homeAway === side || item?.team?.homeAway === side);
-    if (found) return found.team ?? found;
+    if (found) return { score: found.score ?? found.team?.score ?? null };
   }
   return null;
 }

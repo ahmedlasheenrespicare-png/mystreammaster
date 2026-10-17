@@ -2,7 +2,8 @@
 /**
  * Isolated, read-only standings endpoint, approved separately from the existing
  * PHP services. No arbitrary URLs, API secrets, visitor cookies or account data.
- * The only upstream is ESPN's public standings API for these three leagues.
+ * The only upstream is ESPN's public standings API, and every league below was
+ * admitted only after a documented probe proved its upstream uid and team count.
  * Requires PHP 7.4+ with cURL. Cache files contain public football data only.
  */
 declare(strict_types=1);
@@ -11,6 +12,11 @@ const SM_ST_LEAGUES = [
     'uefa.champions' => ['uid' => 's:600~l:775', 'count' => 36],
     'eng.1' => ['uid' => 's:600~l:700', 'count' => 20],
     'esp.1' => ['uid' => 's:600~l:740', 'count' => 20],
+    // أُضيفت بعد مسبار موثّق (2026-10-16) يثبت المعرّف وعدد الفرق لدى المصدر
+    'fra.1' => ['uid' => 's:600~l:710', 'count' => 18],
+    'ger.1' => ['uid' => 's:600~l:720', 'count' => 18],
+    'ita.1' => ['uid' => 's:600~l:730', 'count' => 20],
+    'ksa.1' => ['uid' => 's:600~l:21231', 'count' => 18],
 ];
 const SM_ST_TTL = 120;
 const SM_ST_STALE_TTL = 86400;

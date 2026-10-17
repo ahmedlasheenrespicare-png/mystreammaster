@@ -22,11 +22,20 @@
 /* البطولات المؤهَّلة لعرض الترتيب — تُضاف بطولة هنا **فقط** بعد:
    1) إثبات مسبار موثّق (معرّف الدوري + عدد الفرق) لدى المصدر.
    2) وجود البطولة في قائمة `standings.php` المسموحة.
-   وهذا الترتيب نفسه مضبوط في اختبار `test-league-standings.mjs`. */
+   وهذا الترتيب نفسه مضبوط في اختبار `test-league-standings.mjs`.
+   • الفرنسي والألماني والإيطالي والسعودي أُضيفت بعد مسبار 2026-10-16:
+     fra.1 → s:600~l:710 (18)، ger.1 → s:600~l:720 (18)،
+     ita.1 → s:600~l:730 (20)، ksa.1 → s:600~l:21231 (18).
+   • المصري `egy.1` رفض المصدر طلبه (HTTP 400) في المسبار نفسه، فيبقى
+     «غير متاح» ولا يُخمَّن ولا يُستكمل من موقع آخر. */
 export const STANDINGS_LEAGUES = [
   { id: 'uefa.champions', count: 36, phase: 'مرحلة الدوري الموحّدة' },
   { id: 'eng.1', count: 20, phase: 'ترتيب الدوري المحلي' },
+  { id: 'fra.1', count: 18, phase: 'ترتيب الدوري المحلي' },
   { id: 'esp.1', count: 20, phase: 'ترتيب الدوري المحلي' },
+  { id: 'ger.1', count: 18, phase: 'ترتيب الدوري المحلي' },
+  { id: 'ita.1', count: 20, phase: 'ترتيب الدوري المحلي' },
+  { id: 'ksa.1', count: 18, phase: 'ترتيب الدوري المحلي' },
 ];
 
 export const STANDINGS_FIELDS = ['points', 'played', 'wins', 'draws', 'losses', 'goalsFor', 'goalsAgainst', 'goalDifference'];

@@ -15,7 +15,7 @@
  *
  * الاستخدام:
  *   node scripts/fetch-standings-snapshot.mjs
- *   SNAPSHOT_LEAGUES="uefa.champions eng.1 esp.1" PROBE_LEAGUES="fra.1 ger.1" \
+ *   SNAPSHOT_LEAGUES="uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1" PROBE_LEAGUES="egy.1" \
  *     node scripts/fetch-standings-snapshot.mjs
  *
  * لا يعدّل السكربت أي ملف داخل المستودع — يكتب في مجلد المخرجات فقط.
@@ -30,8 +30,10 @@ const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = process.env.STANDINGS_OUT || path.join(website, '.standings-out');
 
 const list = (value, fallback) => (value ?? fallback).trim().split(/\s+/).filter(Boolean);
-const snapshotLeagues = list(process.env.SNAPSHOT_LEAGUES, 'uefa.champions eng.1 esp.1');
-const probeLeagues = list(process.env.PROBE_LEAGUES, 'fra.1 ger.1 ita.1 egy.1 ksa.1');
+/* البطولات المؤهَّلة بعد مسبار 2026-10-16 — تُحدَّث القائمة عند فتح بوابة بطولة
+   جديدة، ولا تُضاف بطولة قبل أن يثبت مسبارها معرّفها وعدد فرقها. */
+const snapshotLeagues = list(process.env.SNAPSHOT_LEAGUES, 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1');
+const probeLeagues = list(process.env.PROBE_LEAGUES, 'egy.1');
 
 const FIELDS = ['points', 'played', 'wins', 'draws', 'losses', 'goalsFor', 'goalsAgainst', 'goalDifference'];
 

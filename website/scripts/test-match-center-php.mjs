@@ -174,15 +174,17 @@ test('the detail read is gated on the source state, not on elapsed time', () => 
 test('the scoreboard read is shared by competition and day, not per match', () => {
   // Rule 11: one shared server cache. Keying by league+day reuses one upstream
   // response for every registered fixture on that slate; keying by match repeats it.
-  assert.match(source, /\$scoreboardKey = 'sb_' \. \$binding\['league'\] \. '_' \. \$binding\['day'\]/);
-  assert.match(source, /\$summaryKey\s*= 'sm_' \. \$binding\['event'\]/);
+  assert.match(source, /sm_espn_days\(\$binding\['league'\], \[\$binding\['day'\]\]\)/);
+  assert.match(source, /sm_summary_load\(\$binding\['league'\], \$binding\['event'\]/);
   assert.ok(!/'sb_' \. \$slug/.test(source), 'the scoreboard cache must not be keyed per match');
 });
 
 test('a stale copy is served with a diagnostic and never presented as fresh', () => {
   // Rule 11: do not write «محدث الآن» because of a retry or a stale cached copy.
-  assert.match(source, /\$cacheHit = \$age <= MC_CACHE_TTL \? 'HIT' : 'STALE'/);
-  assert.match(source, /\$diagnostic = \$result\['status'\] > 0 \? 'UPSTREAM_HTTP_' \. \$result\['status'\] : 'UPSTREAM_UNREACHABLE'/);
+  assert.match(source, /\$cacheHit = \$unit\['cache'\]/);
+  assert.match(source, /if \(\$cacheHit !== 'STALE'\) \{/);
+  assert.match(source, /mc_diagnostic\(\$unit\['stale_code'\]\)/);
+  assert.ok(source.includes("return 'UPSTREAM_HTTP_429'"));
   assert.match(source, /header\('X-Match-Center-Cache: ' \. \$cacheState\)/);
   // A max-age of zero for anything not a HIT, so a browser cannot re-serve it.
   assert.match(source, /\$maxAge = \$cacheHit === 'HIT' \? max\(0, MC_CACHE_TTL - \$age\) : 0/);
@@ -203,7 +205,7 @@ test('the endpoint keeps the same rate limiting and header discipline as scorebo
   assert.match(source, /X-Robots-Tag: noindex/);
 });
 
-test('the file is self-contained and does not touch the existing endpoints', () => {
+test('the endpoint uses shared source libraries without executing other HTTP controllers', () => {
   // Rule 13: no changes to existing PHP. The check is on code, not on prose:
   // the file names scoreboard.php in comments precisely to say it does not
   // modify it, and a comment mention is not a dependency.
@@ -211,7 +213,7 @@ test('the file is self-contained and does not touch the existing endpoints', () 
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/^\s*\/\/.*$/gm, ' ')
     .replace(/^\s*#(?!\[).*/gm, ' ');
-  assert.ok(!/\b(require|include)(_once)?\b/.test(code), 'no includes at all');
+  assert.deepEqual([...code.matchAll(/require_once __DIR__ \. '([^']+)'/g)].map(m => m[1]), ['/lib/espn_source.php', '/lib/event_summary.php']);
   assert.ok(!code.includes('scoreboard.php'), 'no code reference to scoreboard.php');
   assert.ok(!code.includes('standings.php'), 'no code reference to standings.php');
   assert.ok(!code.includes('proxy.php'), 'no code reference to proxy.php');

@@ -2,9 +2,8 @@
 /**
  * match-center.php — وسيط «مركز المباراة» عبر خادم الموقع
  * ---------------------------------------------------------------------------------
- * وسيط مستقل أُنشئ بموافقة صاحب المشروع (2026-10-16). لا يغيّر `scoreboard.php`
- * ولا `standings.php` — التوسعة هنا محصورة بجدول الربط المغلق `MC_MATCHES`،
- * وأي تعديل لمنطقهما يبقى محتاجاً موافقة منفصلة. وهما يخدمان 12 مسابقة و138 اختبار متصفح.
+ * وسيط أُنشئ بموافقة صاحب المشروع (2026-10-16)، ويشارك مخزن أيام ESPN
+ * مع scoreboard.php عبر المكتبة المشتركة. جدول الربط MC_MATCHES يبقى مغلقاً.
  *
  * لماذا وسيط ولا اتصال مباشر من المتصفح؟
  *  • البند 11: «المتصفح يكلّم خادمنا وحده بروابط نسبية»، ومخبأ الخادم مشترك بين
@@ -38,6 +37,8 @@
  */
 
 declare(strict_types=1);
+require_once __DIR__ . '/lib/espn_source.php';
+require_once __DIR__ . '/lib/event_summary.php';
 
 const MC_SITE_ORIGIN     = 'https://streammasterstore.com';
 const MC_UPSTREAM_BASE   = 'https://site.api.espn.com/apis/site/v2/sports/soccer';
@@ -723,6 +724,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 /** فشل معلن برمز — تستهلكه طبقة النقل في الواجهة فتسمّي السبب بدل تخمينه. */
 function mc_fail(int $status, string $code, string $message): void {
+    mc_release_response_lock();
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -736,6 +738,7 @@ function mc_fail(int $status, string $code, string $message): void {
 }
 
 function mc_send(array $payload, string $cacheState, int $age, int $maxAge, string $diagnostic = 'OK'): void {
+    mc_release_response_lock();
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: public, max-age=' . max(0, $maxAge) . ', stale-while-revalidate=30');
     header('X-Match-Center-Cache: ' . $cacheState);
@@ -746,11 +749,23 @@ function mc_send(array $payload, string $cacheState, int $age, int $maxAge, stri
 }
 
 // ───────────────────────── المخبأ المشترك ─────────────────────────
-/* البند 11: «مخبأ خادم مشترك بين الزوار». ومجلد المخبأ منفصل عن مخبأ
-   scoreboard.php حتى لا يتداخل ملفاهما، ونفس قواعد التنظيف. */
+/* البند 11: «مخبأ خادم مشترك بين الزوار». مصادر الأيام مشتركة مع scoreboard.php،
+   وكاش الاستجابة مستقل مدته 45 ثانية. */
+
+function mc_release_response_lock(): void {
+    global $mcResponseLock;
+    if (is_resource($mcResponseLock)) { flock($mcResponseLock, LOCK_UN); fclose($mcResponseLock); }
+    $mcResponseLock = null;
+}
+
+function mc_diagnostic(string $code): string {
+    if ($code === 'UPSTREAM_RATE_LIMITED') return 'UPSTREAM_HTTP_429';
+    if (in_array($code, ['DNS_LOOKUP_FAILED', 'UPSTREAM_CONNECT_FAILED', 'UPSTREAM_NETWORK_ERROR', 'HTTP_CLIENT_UNAVAILABLE'], true)) return 'UPSTREAM_UNREACHABLE';
+    return $code;
+}
 
 function mc_cache_dir(): string {
-    $dir = rtrim(sys_get_temp_dir(), '/\\') . '/smp_match_center_cache';
+    $dir = sm_source_dir('match-center-responses');
     if (!is_dir($dir)) {
         @mkdir($dir, 0775, true);
     }
@@ -776,7 +791,7 @@ function mc_read_cache(string $key): ?array {
 
 function mc_write_cache(string $key, string $payload): void {
     $file = mc_cache_dir() . '/' . $key . '.json';
-    @file_put_contents($file, json_encode(['at' => time(), 'payload' => $payload], JSON_UNESCAPED_UNICODE), LOCK_EX);
+    sm_source_write($file, ['at' => time(), 'payload' => $payload]);
 }
 
 function mc_prune_cache(): void {
@@ -813,7 +828,7 @@ function mc_rate_limit(): void {
 /**
  * @return array{body:?string,status:int,errno:int}
  */
-function mc_fetch(string $url): array {
+function mc_fetch(string $url, ?string $unit = null): array {
     if (!function_exists('curl_init')) {
         return ['body' => null, 'status' => 0, 'errno' => -1];
     }
@@ -821,6 +836,7 @@ function mc_fetch(string $url): array {
     if ($ch === false) {
         return ['body' => null, 'status' => 0, 'errno' => -1];
     }
+    if ($unit !== null) sm_source_note_request($unit);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         /* حدود SSRF نفسها التي في `proxy.php` و`scoreboard.php`: https فقط، بلا
@@ -1298,49 +1314,29 @@ if ($slug === null || !isset(MC_MATCHES[$slug])) {
 $binding = MC_MATCHES[$slug];
 mc_rate_limit();
 
-$scoreboardKey = 'sb_' . $binding['league'] . '_' . $binding['day'];
-$now           = time();
-
-/* ── 1) الحالة والنتيجة: قراءة واحدة لكل المسابقة في اليوم ── */
-$cached   = mc_read_cache($scoreboardKey);
-$cacheHit = 'MISS';
-$age      = 0;
-$raw      = null;
-
-if ($cached !== null) {
-    $age = $now - $cached['at'];
-    $decoded = json_decode($cached['payload'], true);
-    if (is_array($decoded)) {
-        $raw = $decoded;
-        $cacheHit = $age <= MC_CACHE_TTL ? 'HIT' : 'STALE';
+$responseKey = 'response_' . $slug;
+$now = time();
+$mcResponseLock = @fopen(mc_cache_dir() . '/' . $responseKey . '.lock', 'c');
+if (!is_resource($mcResponseLock) || !flock($mcResponseLock, LOCK_EX)) {
+    mc_fail(503, 'SOURCE_STORE_UNAVAILABLE', 'تعذر قفل مخزن البيانات.');
+}
+$response = mc_read_cache($responseKey);
+if ($response !== null && ($now - $response['at']) < MC_CACHE_TTL) {
+    $payload = json_decode($response['payload'], true);
+    if (is_array($payload)) {
+        $payload['cache'] = 'HIT';
+        mc_send($payload, 'HIT', $now - $response['at'], MC_CACHE_TTL - ($now - $response['at']));
     }
 }
 
-$diagnostic = 'OK';
-if ($raw === null || $cacheHit === 'STALE') {
-    $result = mc_fetch(mc_upstream_scoreboard($binding['league'], $binding['day']));
-    $fresh  = $result['body'] !== null && $result['status'] === 200
-        ? json_decode($result['body'], true)
-        : null;
-    if (is_array($fresh)) {
-        $raw = $fresh;
-        mc_write_cache($scoreboardKey, (string) $result['body']);
-        $cacheHit = 'MISS';
-        $age      = 0;
-        mc_prune_cache();
-    } elseif ($raw !== null) {
-        /* المصدر تعطل ولدينا نسخة احتياطية: تُخدم مع تشخيص صريح، ولا تُعرض
-           على أنها طازجة (البند 11: لا «محدث الآن» بسبب نسخة مخزنة قديمة). */
-        $cacheHit   = 'STALE';
-        $diagnostic = $result['status'] > 0 ? 'UPSTREAM_HTTP_' . $result['status'] : 'UPSTREAM_UNREACHABLE';
-    } else {
-        mc_fail(
-            502,
-            $result['status'] > 0 ? 'UPSTREAM_HTTP_' . $result['status'] : 'UPSTREAM_UNREACHABLE',
-            'تعذّرت قراءة المصدر، ولا توجد نسخة احتياطية صالحة.'
-        );
-    }
-}
+/* Same persistent UTC-day unit used by scoreboard.php; no second upstream fetch. */
+$units = sm_espn_days($binding['league'], [$binding['day']]);
+$unit = $units[$binding['day']];
+if (!$unit['ok']) mc_fail((int) $unit['http'], mc_diagnostic($unit['code']), 'تعذّرت قراءة المصدر، ولا توجد نسخة احتياطية صالحة.');
+$raw = $unit['payload'];
+$cacheHit = $unit['cache'];
+$age = $unit['age'];
+$diagnostic = $unit['stale_code'] === null ? 'OK' : mc_diagnostic($unit['stale_code']);
 
 $event = mc_pick_event($raw, $binding['event']);
 if ($event === null) {
@@ -1371,28 +1367,17 @@ $form       = null;
 $h2h        = [];
 $statistics = null;
 {
-    $summaryKey   = 'sm_' . $binding['event'];
-    $summaryCache = mc_read_cache($summaryKey);
-    $summaryRaw   = null;
-    if ($summaryCache !== null && ($now - $summaryCache['at']) <= MC_CACHE_TTL) {
-        $decoded = json_decode($summaryCache['payload'], true);
-        if (is_array($decoded)) {
-            $summaryRaw = $decoded;
-            $cacheHit   = $cacheHit === 'MISS' ? 'MISS' : $cacheHit;
-        }
-    }
-    if ($summaryRaw === null) {
-        $summaryResult = mc_fetch(mc_upstream_summary($binding['league'], $binding['event']));
-        if ($summaryResult['body'] !== null && $summaryResult['status'] === 200) {
-            $decoded = json_decode($summaryResult['body'], true);
-            if (is_array($decoded)) {
-                $summaryRaw = $decoded;
-                mc_write_cache($summaryKey, (string) $summaryResult['body']);
-            }
-        }
-        /* فشل `summary` لا يُسقط الصفحة: النتيجة والحالة وصلتا من `scoreboard`.
-           البند 11: «فشل مباراة واحدة لا يمحو بيانات الأخرى» — وكذلك فشل
-           نقطة تفصيلية لا يمحو قراءة أساسية ناجحة. */
+    $summaryResult = sm_summary_load($binding['league'], $binding['event'], static function () use ($binding): array {
+        return mc_fetch(mc_upstream_summary($binding['league'], $binding['event']), 'espn-summaries/' . $binding['league'] . '-' . $binding['event'] . '.json');
+    }, $now);
+    $summaryRaw = $summaryResult['ok'] ? $summaryResult['payload'] : null;
+    if (!$summaryResult['ok'] || !empty($summaryResult['stale_code'])) {
+        // Partial summary failure does not erase a valid score, but is never labelled fresh.
+        $cacheHit = 'STALE';
+        $diagnostic = mc_diagnostic($summaryResult['stale_code'] ?? $summaryResult['code']);
+        $age = max($age, $summaryResult['age'] ?? 0);
+    } elseif ($summaryResult['cache'] === 'MISS' && $cacheHit !== 'STALE') {
+        $cacheHit = 'MISS';
     }
     if (is_array($summaryRaw)) {
         $form = mc_read_form($summaryRaw, $header['competitors']);
@@ -1436,6 +1421,10 @@ $payload = [
     'seasonComparison' => null,
     'seasonSample'     => null,
 ];
+
+if ($cacheHit !== 'STALE') {
+    mc_write_cache($responseKey, (string) json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+}
 
 $maxAge = $cacheHit === 'HIT' ? max(0, MC_CACHE_TTL - $age) : 0;
 mc_send($payload, $cacheHit, $age, $maxAge, $diagnostic);

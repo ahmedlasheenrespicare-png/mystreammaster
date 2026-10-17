@@ -8,6 +8,9 @@ import { PRICING_PLANS } from "./data";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { matchCenterRouteIds } from "./content/match-center.mjs";
 
+const ssrArchiveModules = import.meta.glob("./content/fixtures-archive/*/*.json", { eager: true, import: "default" });
+(globalThis as { __SM_SSR_ARCHIVES__?: unknown[] }).__SM_SSR_ARCHIVES__ = Object.values(ssrArchiveModules);
+
 /* كل مسارات الموقع — يستخدمها سكربت البناء المسبق ليعرف ما الذي يجب رسمه */
 export function getAllRoutes(): string[] {
   return [

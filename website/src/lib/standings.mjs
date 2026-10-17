@@ -83,7 +83,13 @@ export function validateStandings(data, league) {
       || !Number.isInteger(row.rank) || row.rank < 1 || row.rank > config.count || ranks.has(row.rank)) {
       throw new Error('INVALID_STANDINGS');
     }
-    const result = { teamId: row.teamId, name: row.name.trim(), rank: row.rank };
+    let cleanName = row.name.trim();
+    let prevName;
+    do {
+      prevName = cleanName;
+      cleanName = cleanName.replace(/&(?:amp|#0*38|#x0*26);/gi, '&');
+    } while (cleanName !== prevName);
+    const result = { teamId: row.teamId, name: cleanName, rank: row.rank };
     for (const field of STANDINGS_FIELDS) {
       const value = row[field] ?? null;
       if (value !== null && (!Number.isSafeInteger(value) || (!['points', 'goalDifference'].includes(field) && value < 0))) {

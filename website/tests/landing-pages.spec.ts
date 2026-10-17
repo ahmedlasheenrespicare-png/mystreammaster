@@ -172,3 +172,121 @@ test('hub pages link to their cluster pages', async ({ page }) => {
     await expect(page.locator(`main a[href="/world-cup-2026/${slug}/"]`), slug).toHaveCount(1);
   }
 });
+
+test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and collapsible table', async ({ page }) => {
+  const unexpectedExternalRequests: string[] = [];
+
+  await page.clock.install({ time: NOW });
+  await page.route('**/*', route => {
+    const url = new URL(route.request().url());
+    if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
+      if (!/googletagmanager\.com|googlesyndication\.com/.test(url.hostname)) {
+        unexpectedExternalRequests.push(url.href);
+      }
+      return route.abort();
+    }
+    if (url.pathname === '/scoreboard.php') {
+      return route.fulfill({
+        status: 200,
+        headers: { 'X-Matches-Cache': 'HIT', 'X-Cache-Age': '5', 'X-Diagnostic-Code': 'OK' },
+        json: { events: [] },
+      });
+    }
+    return route.continue();
+  });
+
+  // 1) Desktop 1440px: 4 cards in one row
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/matches/الدوري-الإنجليزي/');
+  const ratesCard = page.locator('[data-standings-rates="eng.1"]');
+  await expect(ratesCard).toBeVisible();
+  await expect(ratesCard.locator('h3')).toHaveText('الهجوم والدفاع — معدلات أهداف الموسم');
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team]')).toHaveText(['Brighton & Hove Albion']);
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-value]')).toHaveText('3.00');
+  await expect(ratesCard.locator('[data-rate-card="best-defence"] [data-rate-team]')).toHaveCount(4);
+
+  const desktopTops = await ratesCard.locator('[data-rate-card]').evaluateAll(els =>
+    els.map(el => Math.round(el.getBoundingClientRect().top)),
+  );
+  expect(new Set(desktopTops).size).toBe(1);
+
+  // 2) Tablet 768px: 2 cards per row (2 rows)
+  await page.setViewportSize({ width: 768, height: 1000 });
+  const tabletTops = await ratesCard.locator('[data-rate-card]').evaluateAll(els =>
+    els.map(el => Math.round(el.getBoundingClientRect().top)),
+  );
+  expect(new Set(tabletTops).size).toBe(2);
+
+  // 3) Mobile 390px: 1 card per row (4 rows) and no badge truncation
+  await page.setViewportSize({ width: 390, height: 1000 });
+  const mobileTops = await ratesCard.locator('[data-rate-card]').evaluateAll(els =>
+    els.map(el => Math.round(el.getBoundingClientRect().top)),
+  );
+  expect(new Set(mobileTops).size).toBe(4);
+  const badgeTruncated = await ratesCard.locator('[data-rate-team]').evaluateAll(els =>
+    els.some(el => el.scrollWidth > el.clientWidth + 1),
+  );
+  expect(badgeTruncated).toBe(false);
+
+  // 4) Collapsible <details> section («عرض معدلات جميع الفرق»)
+  const details = ratesCard.locator('details[data-rates-details]');
+  await expect(details).not.toHaveAttribute('open', '');
+  await details.locator('summary').click();
+  await expect(details).toHaveAttribute('open', '');
+  await expect(details.locator('tbody tr')).toHaveCount(20);
+  expect(unexpectedExternalRequests).toEqual([]);
+});
+
+test('attack & defence rates card updates reactively when /standings.php returns fresh standings', async ({ page }) => {
+  const entries = Array.from({ length: 20 }, (_, idx) => ({
+    rank: idx + 1,
+    teamId: idx === 0 ? '359' : String(1000 + idx),
+    name: idx === 0 ? 'Arsenal' : `Club ${idx + 1}`,
+    played: 5,
+    wins: idx === 0 ? 5 : 2,
+    draws: 0,
+    losses: idx === 0 ? 0 : 3,
+    goalsFor: idx === 0 ? 20 : 5,
+    goalsAgainst: idx === 0 ? 1 : 6,
+    goalDifference: idx === 0 ? 19 : -1,
+    points: idx === 0 ? 15 : 6,
+  }));
+
+  await page.clock.install({ time: NOW });
+  await page.route('**/*', route => {
+    const url = new URL(route.request().url());
+    if (!['localhost', '127.0.0.1'].includes(url.hostname)) return route.abort();
+    if (url.pathname === '/scoreboard.php') {
+      return route.fulfill({
+        status: 200,
+        headers: { 'X-Matches-Cache': 'HIT', 'X-Cache-Age': '5', 'X-Diagnostic-Code': 'OK' },
+        json: { events: [] },
+      });
+    }
+    if (url.pathname === '/standings.php') {
+      return route.fulfill({
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+        json: {
+          ok: true,
+          provider: 'ESPN',
+          league: 'eng.1',
+          phase: 'league',
+          season: 2026,
+          seasonDisplay: '2026-27',
+          fetchedAt: '2026-10-17T15:00:00Z',
+          stale: false,
+          entries,
+        },
+      });
+    }
+    return route.continue();
+  });
+
+  await page.goto('/matches/الدوري-الإنجليزي/');
+  const ratesCard = page.locator('[data-standings-rates="eng.1"]');
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-value]')).toHaveText('4.00');
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team]')).toHaveText(['Arsenal']);
+  await expect(ratesCard.locator('[data-rate-card="best-defence"] [data-rate-value]')).toHaveText('0.20');
+  await expect(ratesCard.locator('[data-rates-stale-badge]')).toBeHidden();
+});

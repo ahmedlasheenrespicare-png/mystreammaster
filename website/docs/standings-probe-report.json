@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-10-17T00:44:34.572Z",
+  "probedAt": "2026-10-17T01:50:00.000Z",
   "base": "https://site.web.api.espn.com",
   "snapshot": [
     {
@@ -49,7 +49,51 @@
     {
       "league": "egy.1",
       "ok": false,
-      "error": "UPSTREAM_HTTP_400"
+      "provider": "ESPN",
+      "error": "UPSTREAM_HTTP_400",
+      "detail": "نقطة نهاية الترتيب ترد صراحة: {\"code\":400,\"message\":\"Unable to retrieve any standings information for egy.1\"} — ESPN تنفي امتلاكها جداول لهذا الدوري أصلاً."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "TheSportsDB",
+      "error": "TRUNCATED_TABLE",
+      "detail": "المفتاح المجاني 123 يرد 200 لكن بخمسة صفوف فقط من أصل عشرين — وأُثبت أن الاقتطاع قيدٌ في المفتاح لا في بنية البيانات: الدوري الإنجليزي (20 فريقاً) عاد هو الآخر بخمسة صفوف. مفتاح 3 أُبطل نهائياً برسالة المزوّد نفسها."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "football-data.org",
+      "error": "NOT_COVERED",
+      "detail": "مصر خارج تغطية الخطة المجانية (المصدر يغطي الدوريات الأوروبية الكبرى والبرازيل فقط)."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "azharimm/football-standings-api",
+      "error": "NOT_COVERED",
+      "detail": "قائمة البطولات ثابتة في الكود المصدري (src/data/leagues.js — عشرون بطولة) ولا تشمل مصر، وسيطها مبني على ESPN نفسه الذي يرد 400 على egy.1 — فحتى إضافة المعرّف لن تُنتج جدولاً. الواجهة العامة (api-football-standings.azharimm.site) كانت غير مستجيبة وقت السبر أيضاً."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "worldcup26.ir",
+      "error": "NOT_COVERED",
+      "detail": "واجهة /get/soccer/leagues تعلن 35 مسابقة مغطاة، وصفحة المشروع تعلن نطاقها «إنجلترا وإسبانيا» فقط، وكل معرّفاتها بصيغة ESPN (s:600~l:*) — الدوري المصري ليس بينها، ونقطة الترتيب تتبع المصدر نفسه الذي ينفي الدوري."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "api-sports.io (API-Football)",
+      "error": "REGISTRATION_REQUIRED",
+      "detail": "المصدر يغطي مصر (league=233) والخطة المجانية $0 تشمل Standings صراحةً بحد 100 طلب/يوم، لكن إصدار مفتاح x-apisports-key يتطلب تسجيلاً مجانياً بتحقق بريدي لا يمكن إتمامه من بيئة الوكيل. المفتاح لا يُدخل المستودع ويُخزَّن في سرّ Actions أو ملف على الخادم — بانتظار إصدار المالك للمفتاح (تسجيل مجاني بلا بطاقة) لسبره ثم قرار الإدخال."
+    },
+    {
+      "league": "egy.1",
+      "ok": false,
+      "provider": "openfootball/football.json",
+      "error": "EXCLUDED_BY_RULE",
+      "detail": "بيانات مفتوحة CC0 لكنها نتائج خام لا ترتيباً جاهزاً — حساب الترتيب محلياً ممنوع بعقد الترتيب (الترتيب يُعرض كما يرسله المصدر)."
     }
   ]
 }

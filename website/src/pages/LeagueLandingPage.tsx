@@ -1,7 +1,7 @@
 import LiveMatchesBoard from '../components/LiveMatchesBoard';
 import LeagueStandings, { LeagueStandingsUnavailable } from '../components/LeagueStandings';
 import { BroadcastersSection, FaqSection, LandingBreadcrumb, ServiceStrip } from '../components/LandingSections';
-import { type LeagueLanding } from '../content/competitions';
+import { RIGHTS_NOTICE, type LeagueLanding } from '../content/competitions';
 import './matches.css';
 import './landing.css';
 
@@ -45,7 +45,18 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
           <LeagueStandingsUnavailable title={landing.shortName} text={landing.standingsUnavailable} />
         ) : null}
 
-        <BroadcastersSection broadcasters={landing.broadcasters} subject={landing.shortName} />
+        {/* قسم الناقلين — مؤجَّل لبطولة لم يُوثَّق ناقلها من مصدر
+            أوّلي رسمي بعد: يظهر نص الحالة بصراحة بدل بطاقات جهات
+            لم تُثبت، ولا يُختَرع ناقل من الذاكرة. */}
+        {landing.broadcasterNotice ? (
+          <section className="landing-section" aria-labelledby="broadcasters-title">
+            <h2 id="broadcasters-title">القنوات الناقلة رسمياً — {landing.shortName}</h2>
+            <p className="landing-notice">{landing.broadcasterNotice}</p>
+            <p className="landing-notice">{RIGHTS_NOTICE}</p>
+          </section>
+        ) : (
+          <BroadcastersSection broadcasters={landing.broadcasters} subject={landing.shortName} />
+        )}
         <FaqSection faq={landing.faq} />
         <ServiceStrip />
       </div>

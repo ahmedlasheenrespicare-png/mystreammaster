@@ -37,6 +37,7 @@ const OG_FILES = {
   'الدوري-الألماني': 'league-bundesliga',
   'الدوري-الإيطالي': 'league-serie-a',
   'الدوري-السعودي': 'league-saudi-pro-league',
+  'الدوري-المصري': 'league-egyptian-premier',
 };
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({

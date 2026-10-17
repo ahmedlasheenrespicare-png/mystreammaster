@@ -101,6 +101,10 @@ const OG_BY_ROUTE: Record<string, string> = {
   "matches/الدوري-الإنجليزي": "league-premier-league",
   "matches/الدوري-السعودي": "league-saudi-pro-league",
   "matches/دوري-أبطال-أوروبا": "league-uefa-champions",
+  "matches/الدوري-الإسباني": "league-la-liga",
+  "matches/الدوري-الفرنسي": "league-ligue-1",
+  "matches/الدوري-الألماني": "league-bundesliga",
+  "matches/الدوري-الإيطالي": "league-serie-a",
   /* صفحات المنتخبات — /world-cup-2026/{slug} */
   "world-cup-2026/المغرب": "wc-morocco",
   "world-cup-2026/مصر": "wc-egypt",
@@ -118,6 +122,11 @@ const WEBSITE_ID = `${SITE_URL}/#website`;
 const PAGES_DATE = "2026-10-14";
 /* تاريخ نشر صفحات هبوط البطولات والمنتخبات */
 const LANDING_DATE = "2026-10-15";
+/* تاريخ إدخال قسم «جدول الترتيب» في صفحات البطولات — تغيّر جوهري في محتوى
+   الصفحات نفسها، فيتقدّم dateModified مرة واحدة هنا، لا مع كل دورة تحديث
+   بيانات (منعاً لتغيير التاريخ بلا تغيير محتوى). صفحة جديدة لها تاريخها
+   الخاص في `landing.date` ويتقدّم عليها. */
+const STANDINGS_DATE = "2026-10-16";
 /* تاريخ صفحات مركز المباراة. **ثابت عمداً**: البند 13 يمنع تغيير
    `dateModified` مع كل تحديث، وإلا أعاد الموقع إعلان الصفحة جديدة كل 60 ثانية
    مع كل دورة قراءة — وهذا إساءة استخدام واضحة لبيانات منظّمة. */
@@ -624,8 +633,8 @@ export function getSeo(path: string): SeoMeta {
           canonical,
           name: leagueLanding.title,
           description: leagueLanding.description,
-          published: LANDING_DATE,
-          modified: LANDING_DATE,
+          published: leagueLanding.date ?? LANDING_DATE,
+          modified: leagueLanding.date ?? STANDINGS_DATE,
           mainEntityId: `${canonical}#faq`,
         }),
         breadcrumbs(

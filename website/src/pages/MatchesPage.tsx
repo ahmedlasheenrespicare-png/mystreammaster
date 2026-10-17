@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
 import { matchByExternalId, matchCenterPath } from '../content/match-center.mjs';
+import { leagueLandingsInPageOrder } from '../content/competitions';
 import { to } from '../config';
 import './matches.css';
 
@@ -148,11 +149,13 @@ export default function MatchesPage() {
         <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>
 
+      {/* القائمة تُبنى من مصدر واحد (LEAGUE_PAGE_ORDER) فلا تنشأ قائمة ثانية
+          تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا. */}
       <nav className="matches-league-links" aria-label="صفحات البطولات">
         <strong>صفحات البطولات:</strong>
-        <a href="/matches/الدوري-الإنجليزي/">مباريات الدوري الإنجليزي</a>
-        <a href="/matches/دوري-أبطال-أوروبا/">دوري أبطال أوروبا</a>
-        <a href="/matches/الدوري-السعودي/">مباريات الدوري السعودي</a>
+        {leagueLandingsInPageOrder().map((landing) => (
+          <a key={landing.slug} href={`/matches/${landing.slug}/`}>{landing.h1}</a>
+        ))}
       </nav>
 
       <section className="matches-featured" aria-labelledby="featured-match-title">

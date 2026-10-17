@@ -1,0 +1,55 @@
+{
+  "probedAt": "2026-10-17T00:44:34.572Z",
+  "base": "https://site.web.api.espn.com",
+  "snapshot": [
+    {
+      "league": "uefa.champions",
+      "uid": "s:600~l:775",
+      "season": 2026,
+      "teams": 36
+    },
+    {
+      "league": "eng.1",
+      "uid": "s:600~l:700",
+      "season": 2026,
+      "teams": 20
+    },
+    {
+      "league": "fra.1",
+      "uid": "s:600~l:710",
+      "season": 2026,
+      "teams": 18
+    },
+    {
+      "league": "esp.1",
+      "uid": "s:600~l:740",
+      "season": 2026,
+      "teams": 20
+    },
+    {
+      "league": "ger.1",
+      "uid": "s:600~l:720",
+      "season": 2026,
+      "teams": 18
+    },
+    {
+      "league": "ita.1",
+      "uid": "s:600~l:730",
+      "season": 2026,
+      "teams": 20
+    },
+    {
+      "league": "ksa.1",
+      "uid": "s:600~l:21231",
+      "season": 2026,
+      "teams": 18
+    }
+  ],
+  "probe": [
+    {
+      "league": "egy.1",
+      "ok": false,
+      "error": "UPSTREAM_HTTP_400"
+    }
+  ]
+}

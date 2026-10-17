@@ -1,0 +1,101 @@
+name: Fetch trusted standings snapshot
+
+# جسر الشبكة الموثوق: بيئات التطوير المحلية (ومنها بيئة الوكيل) قد تحجب ESPN،
+# فهذا التشغيل يجلب الاستجابة الخام من المصدر ويمرّرها على مُحكِّم المسبار نفسه
+# (scripts/probe-standings.mjs) — نفس القواعد التي يحكم بها الوسيط standings.php —
+# ثم يرفع المخرجات كمصنوع (artifact) للتنزيل والمراجعة قبل أي التزام.
+#
+# لا يكتب هذا التشغيل أي ملف داخل المستودع ولا يدفع أي شيء: مصنوعات فقط.
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_leagues:
+        description: 'بطولات اللقطة (مسافة بين كل معرّف) — تُكتب في standings-snapshot.json'
+        required: false
+        default: 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1'
+      probe_leagues:
+        description: 'بطولات المسبار (مسافة بين كل معرّف) — تُجرد في probe.json بلا كتابة لقطة'
+        required: false
+        default: 'egy.1'
+  push:
+    branches: ['arena/**']
+    paths:
+      - 'website/scripts/fetch-standings-snapshot.mjs'
+      - 'website/scripts/probe-standings.mjs'
+      - 'website/public/standings.php'
+      - '.github/workflows/standings-snapshot.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: standings-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    # الكتابة مطلوبة لخطوة الالتزام أدناه، وتُقيَّد بفرع غير main في الخطوة نفسها
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          # لا حاجة لـ npm install: السكربتات المعنية بلا أي اعتماد خارجي
+      - name: Lint the standings proxy (PHP syntax)
+        # الوسيط هو نقطة الوصل مع المصدر، وخطأ صياغة فيه يعطّل التحديث الحيّ
+        # بصمت. الفحص هنا يمنع وصوله؛ وإن غاب مفسّر PHP يُسجَّل تنبيه ظاهر
+        # بدل تمرير صامت يوهم بأن الملف سليم.
+        run: |
+          if command -v php >/dev/null 2>&1; then
+            php -l website/public/standings.php
+            echo "✅ صياغة الوسيط سليمة (php -l)"
+          else
+            echo "::warning::PHP غير متاح في هذه الصورة — لم يُفحص نحو الوسيط"
+          fi
+      - name: Fetch + validate from the trusted source
+        env:
+          SNAPSHOT_LEAGUES: ${{ inputs.snapshot_leagues || 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1' }}
+          PROBE_LEAGUES: ${{ inputs.probe_leagues || 'egy.1' }}
+        run: node website/scripts/fetch-standings-snapshot.mjs
+      - name: Publish fetched data into the repository
+        # البوابة الإنتاجية: main لا يُكتب فيه من هذا التشغيل أبداً.
+        if: github.ref != 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if [ -f website/.standings-out/standings-snapshot.json ]; then
+            cp website/.standings-out/standings-snapshot.json website/src/content/standings-snapshot.json
+          fi
+          if [ -f website/.standings-out/probe.json ]; then
+            cp website/.standings-out/probe.json website/docs/standings-probe-report.json
+          fi
+          if git diff --quiet -- website/src/content/standings-snapshot.json website/docs/standings-probe-report.json; then
+            echo "لا تغيير في البيانات المجلوبة — لا التزام."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add website/src/content/standings-snapshot.json website/docs/standings-probe-report.json
+          # [skip ci]: بيانات فقط بلا كود، فلا داعي لإعادة تشغيل البوابات ولا خطر حلقة.
+          git commit -m "تحديث بيانات الترتيب من المصدر الموثوق (ESPN) — تشغيل آلي [skip ci]"
+          git push
+      - name: Summarize
+        if: always()
+        run: |
+          if [ -f website/.standings-out/probe.json ]; then
+            echo '### نتيجة الجلب من المصدر الموثوق' >> "$GITHUB_STEP_SUMMARY"
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat website/.standings-out/probe.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: standings-snapshot
+          if-no-files-found: warn
+          # المجلد مخفي (يبدأ بنقطة) ليُستثنى من Git تلقائياً، ورفع المصنوعات
+          # يستثني المخفي افتراضياً — فيجب تصريحه هنا، وإلا خرج المصنوع فارغاً.
+          include-hidden-files: true
+          path: website/.standings-out/

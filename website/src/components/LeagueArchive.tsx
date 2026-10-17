@@ -23,7 +23,7 @@ export default function LeagueArchive({ league }: { league: string }) {
       <div className="ls-scroll" role="region" aria-label="إحصائيات النتائج المخزنة" tabIndex={0}>
         <table className="ls-table"><caption>أداء الفرق ضمن الأرشيف فقط — ف/ت/خ: فوز، تعادل، خسارة</caption>
           <thead><tr>{['الفريق', 'لعب', 'داخل الملعب: لعب · ف/ت/خ · له/عليه', 'خارج الملعب: لعب · ف/ت/خ · له/عليه', 'شباك نظيفة', 'سلسلة الفوز الحالية', 'سلسلة اللاهزيمة الحالية'].map(h => <th scope="col" key={h}>{h}</th>)}</tr></thead>
-          <tbody>{stats.map(t => <tr key={t.id}><th scope="row">{t.name}</th><td>{t.played}</td>{(['home', 'away'] as const).map(side => <td key={side}>{t[side].played ? `${t[side].played} · ${t[side].wins}/${t[side].draws}/${t[side].losses} · ${t[side].goalsFor}/${t[side].goalsAgainst}` : 'غير متاح'}</td>)}<td>{t.cleanSheets}</td><td>{t.winningStreak}</td><td>{t.unbeatenStreak}</td></tr>)}</tbody>
+          <tbody>{stats.map(t => <tr key={t.id}><th scope="row">{t.name}</th><td>{t.played}</td>{(['home', 'away'] as const).map(side => <td key={side}>{t[side].played ? `${t[side].played} · ${t[side].wins}/${t[side].draws}/${t[side].losses} · ${t[side].goalsFor}/${t[side].goalsAgainst}` : 'غير متاح'}</td>)}<td>{t.cleanSheets}</td><td>{display(t.winningStreak)}</td><td>{display(t.unbeatenStreak)}</td></tr>)}</tbody>
         </table>
       </div>
       {!stats.length && <p>إحصائيات النتائج: غير متاح.</p>}

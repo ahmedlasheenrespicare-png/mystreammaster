@@ -18,5 +18,6 @@ try {
 await fs.mkdir('website/.fixtures-out', { recursive: true });
 await fs.writeFile('website/.fixtures-out/saudi-probe.json', JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));
+console.log('::notice title=Saudi fixture source probe::' + JSON.stringify(report).replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A'));
 // A failed probe is an explicit warning, not permission to use another slug.
 if (!report.verified) console.log('::warning::Saudi replacement not verified; retain source blocker in PR.');

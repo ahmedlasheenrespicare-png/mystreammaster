@@ -14,6 +14,6 @@ export const BIG_FIVE: string[];
 export function validateArchive(data: unknown, league?: string, season?: string): FixturesArchive;
 export function mergeArchive(previous: FixturesArchive | null, incoming: FixturesArchive): FixturesArchive;
 interface VenueStats { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number }
-export function archiveTeamStats(matches: ArchiveMatch[]): { id: string; name: string; played: number; cleanSheets: number; winningStreak: number; unbeatenStreak: number; home: VenueStats; away: VenueStats }[];
+export function archiveTeamStats(matches: ArchiveMatch[]): { id: string; name: string; played: number; cleanSheets: number; winningStreak: number | null; unbeatenStreak: number | null; home: VenueStats; away: VenueStats }[];
 type RatedEntry = StandingsEntry & { attack: number | null; defence: number | null };
 export function standingsRates(entries: StandingsEntry[]): { rows: RatedEntry[]; bestAttack: RatedEntry[]; worstAttack: RatedEntry[]; bestDefence: RatedEntry[]; worstDefence: RatedEntry[] };

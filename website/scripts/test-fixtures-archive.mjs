@@ -49,7 +49,7 @@ test('merge retains history, updates semantic values, ignores timestamp-only chu
 test('home/away results, clean sheets and current chronological streaks; incomplete scores excluded', () => {
   const games = [match({ id: '3', date: '2026-10-19T12:00:00Z', score: { home: 0, away: 0 } }), match({ id: '2', date: '2026-10-18T12:00:00Z', score: { home: 1, away: 0 } }), match(), match({ id: '4', status: 'scheduled' }), match({ id: '5', score: { home: null, away: null } })];
   const h = archiveTeamStats(games).find(t => t.id === 'h');
-  assert.equal(h.played, 3); assert.equal(h.home.wins, 2); assert.equal(h.cleanSheets, 3); assert.equal(h.winningStreak, 0); assert.equal(h.unbeatenStreak, 3); assert.equal(h.away.played, 0);
+  assert.equal(h.played, 3); assert.equal(h.home.wins, 2); assert.equal(h.cleanSheets, 3); assert.equal(h.winningStreak, 0); assert.equal(h.unbeatenStreak, null); assert.equal(h.away.played, 0);
 });
 test('standings rates include ties, do not invent zero for null or zero played', () => {
   const rows = [{ name: 'A', goalsFor: 4, goalsAgainst: 2, played: 2 }, { name: 'B', goalsFor: 2, goalsAgainst: 1, played: 1 }];
@@ -86,4 +86,10 @@ test('collector uses source season, merges history; publisher revalidates and pr
   await fs.writeFile(path.join(out, 'archive/eng.1/2026.json'), JSON.stringify(archive([match()])));
   await assert.rejects(publish(out, target), /SHRINK/);
   assert.equal(await fs.readFile(path.join(target, 'eng.1/2026.json'), 'utf8'), content);
+});
+
+test('known breaks restore a streak after a missing archived result', () => {
+  const games = [match({ id: '1', score: { home: null, away: null } }), match({ id: '2', date: '2026-10-18T12:00:00Z', score: { home: 0, away: 1 } }), match({ id: '3', date: '2026-10-19T12:00:00Z' })];
+  const h = archiveTeamStats(games).find(t => t.id === 'h');
+  assert.equal(h.winningStreak, 1); assert.equal(h.unbeatenStreak, 1);
 });

@@ -57,6 +57,20 @@ export function archiveTeamStats(matches) {
     t.winningStreak = gf > ga ? t.winningStreak + 1 : 0;
     t.unbeatenStreak = gf >= ga ? t.unbeatenStreak + 1 : 0;
   }
+  // A stored finished match with a missing result is a real gap, not permission
+  // to join two winning runs. Keep the streak unknown until a known break.
+  const finished = matches.filter(m => m.status === 'finished').sort((a,b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  for (const t of teams.values()) {
+    t.winningStreak = 0; t.unbeatenStreak = 0;
+    for (const m of finished) {
+      const side = m.home.id === t.id ? 'home' : m.away.id === t.id ? 'away' : null;
+      if (!side) continue;
+      const gf = m.score[side], ga = m.score[side === 'home' ? 'away' : 'home'];
+      if (!integer(gf) || !integer(ga)) { t.winningStreak = null; t.unbeatenStreak = null; continue; }
+      t.winningStreak = gf > ga ? (t.winningStreak === null ? null : t.winningStreak + 1) : 0;
+      t.unbeatenStreak = gf >= ga ? (t.unbeatenStreak === null ? null : t.unbeatenStreak + 1) : 0;
+    }
+  }
   return [...teams.values()];
 }
 export function standingsRates(entries) {

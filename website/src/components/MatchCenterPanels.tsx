@@ -1,174 +1,299 @@
-import { Fragment } from 'react';
 import {
-  MATCH_ZONES,
   buildComparison,
+  canShowKickoff,
   dayLabelInZone,
   formatInZone,
   isResultOfficial,
+  isValidScore,
   kickoffLabel,
   mergeH2h,
   type Comparison,
+  type ComparisonAxis,
+  type H2hEntry,
+  type LineupSide as LineupSideData,
   type MatchDefinition,
   type MatchEvent,
   type MatchLineups,
   type MatchSnapshot,
   type MatchStatus,
   type ScoredPlayer,
+  type StatPair,
   type TeamForm,
+  type TabId,
 } from '../lib/match-center.mjs';
 import MatchCenterRadar from './MatchCenterRadar';
-
-/* ==========================================================================
-   تبويبات مركز المباراة الخمسة — البنود 6 و7 و8 و9 و12
-   --------------------------------------------------------------------------
-   قاعدة واحدة تحكم الخمسة: **لا تُملأ خانة لم يرسل المصدر محتواها**. الناقص
-   «غير متاح»، وغير المعلن «لم يُعلن بعد»، والصفر الحقيقي وحده هو الذي يُعرض
-   صفراً. والتفريق بينهما مسؤولية كل تبويب، لا مسؤولية تنسيق عام.
-
-   البند 12: لا يُنشأ تحليل تحريري آلياً، ولا تُنسب آراء إلى أشخاص بلا مادة
-   منشورة موثقة. لذلك «بعد المباراة» يعرض حقائق مبنية على أحداث موثقة فقط.
-========================================================================== */
 
 export interface PanelProps {
   match: MatchDefinition;
   snapshot: MatchSnapshot | null;
   status: MatchStatus | null;
-  /** `0` قبل التركيب — فلا يُرسم ما يحتاج ساعة في HTML الثابت. */
+  /** محفوظ للتوافق مع مستهلكي اللوحات؛ لا تُشتق حالة المباراة من الساعة. */
   now: number;
 }
 
-/** خانة ناقصة — البندان 6 و8. */
-function Unavailable({ title, note }: { title: string; note?: string }) {
-  return (
-    <p className="mc-unavailable">
-      <strong>{title}</strong>
-      {note}
-    </p>
+function text(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function numeric(value: unknown): number | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && /^-?\d+(\.\d+)?$/.test(value.trim())) {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function validDate(value: unknown): value is string {
+  return typeof value === 'string' && value.trim() !== '' && Number.isFinite(Date.parse(value));
+}
+
+function numberLabel(value: number): string {
+  return new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 2 }).format(value);
+}
+
+function matchVenue(match: MatchDefinition, snapshot: MatchSnapshot | null): string | null {
+  return snapshot ? text(snapshot.venue) : text(match.venue);
+}
+
+function displayableStatistics(value: MatchSnapshot['statistics']): StatPair[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(stat => Boolean(text(stat?.label))
+    && (numeric(stat?.home) !== null || numeric(stat?.away) !== null));
+}
+
+function displayableEvents(value: MatchSnapshot['events']): MatchEvent[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(event => Boolean(event && (
+    (event.type && event.type !== 'other')
+    || event.cancelled
+    || text(event.team)
+    || text(event.player?.name)
+    || text(event.relatedPlayer?.name)
+    || text(event.detail)
+    || (typeof event.minute === 'number' && Number.isFinite(event.minute))
+  )));
+}
+
+function displayablePlayers(value: unknown): ScoredPlayer[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((player): player is ScoredPlayer => Boolean(player && text(player.name)));
+}
+
+function confirmedSides(lineups: MatchLineups | null): { side: 'home' | 'away'; data: LineupSideData }[] {
+  if (!lineups || typeof lineups !== 'object') return [];
+  return (['home', 'away'] as const).flatMap(side => {
+    const data = lineups[side];
+    if (!data || data.confirmed !== true) return [];
+    const starters = displayablePlayers(data.starters);
+    const substitutes = displayablePlayers(data.substitutes);
+    const hasVisibleContent = Boolean(text(data.formation) || text(data.coach) || starters.length || substitutes.length);
+    return hasVisibleContent ? [{ side, data }] : [];
+  });
+}
+
+function displayableHeadToHead(entries: H2hEntry[]): H2hEntry[] {
+  return entries.filter(entry => Boolean(
+    entry
+      && text(entry.home)
+      && text(entry.away)
+      && validDate(entry.date)
+      && isValidScore({ home: entry.homeGoals, away: entry.awayGoals }),
+  ));
+}
+
+function displayableRatings(value: MatchSnapshot['ratings']): ScoredPlayer[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(player => Boolean(text(player?.name) && numeric(player?.rating) !== null));
+}
+
+function hasFormData(form: TeamForm | null | undefined): form is TeamForm {
+  return Boolean(form && Array.isArray(form.matches) && form.matches.some(item =>
+    item
+      && numeric(item.goalsFor) !== null
+      && numeric(item.goalsAgainst) !== null
+      && (item.result === 'W' || item.result === 'D' || item.result === 'L'),
+  ));
+}
+
+function comparisonFor(snapshot: MatchSnapshot | null): Comparison {
+  return buildComparison(
+    (snapshot?.seasonComparison ?? []).map(metric => ({ ...metric, mode: 'season' as const })),
+    { mode: 'season', sample: snapshot?.seasonSample ?? null, provider: snapshot?.provider ?? null },
   );
+}
+
+function displayableAxes(comparison: Comparison): ComparisonAxis[] {
+  return comparison.axes.filter(axis => text(axis.label)
+    && (numeric(axis.home) !== null || numeric(axis.away) !== null));
+}
+
+function hasPreviewData(match: MatchDefinition, snapshot: MatchSnapshot | null, status: MatchStatus | null): boolean {
+  const comparison = displayableAxes(comparisonFor(snapshot));
+  const hasFixtureFacts = Boolean(
+    text(match.competitionName)
+      || text(matchVenue(match, snapshot))
+      || (canShowKickoff(status) && validDate(match.kickoffUtc) && kickoffLabel(match.kickoffUtc, 'Africa/Cairo'))
+      || text(match.season)
+      || text(match.round),
+  );
+  return hasFixtureFacts
+    || hasFormData(snapshot?.form?.home)
+    || hasFormData(snapshot?.form?.away)
+    || comparison.length > 0;
+}
+
+/** تبويبات تُشتق من اللقطة ذاتها التي تغذي الملعب؛ لا طلب مستقل لكل قسم. */
+export function availableMatchCenterTabs(
+  match: MatchDefinition,
+  snapshot: MatchSnapshot | null,
+  status: MatchStatus | null,
+): TabId[] {
+  const tabs: TabId[] = [];
+  if (hasPreviewData(match, snapshot, status)) tabs.push('preview');
+
+  const official = isResultOfficial(status, snapshot?.score ?? null);
+  const h2h = displayableHeadToHead(mergeH2h(snapshot?.h2h ?? [], official && snapshot?.score
+    ? {
+      fixtureId: match.externalIds.espn ?? null,
+      date: match.kickoffUtc,
+      competition: text(match.competitionName),
+      year: text(match.season),
+      friendly: false,
+      completed: true,
+      home: text(match.home.name) ?? text(match.home.sourceName) ?? '',
+      away: text(match.away.name) ?? text(match.away.sourceName) ?? '',
+      homeGoals: snapshot.score.home,
+      awayGoals: snapshot.score.away,
+    }
+    : null, 3));
+  if (h2h.length > 0) tabs.push('history');
+
+  if (confirmedSides(snapshot?.lineups ?? null).length > 0) tabs.push('lineups');
+
+  const events = displayableEvents(snapshot?.events ?? []);
+  const statistics = displayableStatistics(snapshot?.statistics ?? null);
+  if (events.length > 0 || statistics.length > 0) tabs.push('live');
+
+  const ratings = displayableRatings(snapshot?.ratings ?? null);
+  if (official && (reportEvents(events).length > 0 || statistics.length > 0 || ratings.length > 0)) tabs.push('report');
+  return tabs;
 }
 
 /* ─────────────────────────── 1) معاينة ─────────────────────────── */
 
-/* بند الرسالة التكميلية 1ب: W/D/L بنصٍّ لا بلون وحده، والمتوسطان مسمّيان،
-   والقسمة على العدد الفعلي المعروض بجانبهما. */
 const RESULT_WORD: Record<TeamForm['matches'][number]['result'], string> = { W: 'فوز', D: 'تعادل', L: 'خسارة' };
 
 function FormSide({ name, form }: { name: string; form: TeamForm | null }) {
-  if (!form) {
-    return (
-      <section>
-        <h4>{name}</h4>
-        <Unavailable title="غير متاح" note="لم يرسل المصدر سجل مباريات قابلاً للعدّ لهذا الفريق." />
-      </section>
-    );
-  }
-  const num = (value: number) => new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 2 }).format(value);
+  if (!hasFormData(form)) return null;
+  const matches = form.matches.filter(item => item
+    && numeric(item.goalsFor) !== null
+    && numeric(item.goalsAgainst) !== null
+    && (item.result === 'W' || item.result === 'D' || item.result === 'L'));
+  const totals = [
+    ['مباريات موثقة', numeric(form.played)],
+    ['فوز', numeric(form.wins)],
+    ['تعادل', numeric(form.draws)],
+    ['خسارة', numeric(form.losses)],
+    ['أهداف مسجلة', numeric(form.goalsFor)],
+    ['أهداف مستقبلة', numeric(form.goalsAgainst)],
+    ['متوسط التسجيل', numeric(form.avgGoalsFor)],
+    ['متوسط الاستقبال', numeric(form.avgGoalsAgainst)],
+  ].filter((entry): entry is [string, number] => entry[1] !== null);
+  const competitions = Array.isArray(form.competitions) ? form.competitions.map(text).filter((item): item is string => Boolean(item)) : [];
+
   return (
-    <section>
-      <h4>{name}</h4>
-      <ol className="mc-events" aria-label={`آخر ${form.played} مباريات ${name}`}>
-        {form.matches.map((item, index) => (
-          <li className="mc-event" key={item.fixtureId ?? `${item.date}-${index}`}>
-            <span className="mc-event-minute">{RESULT_WORD[item.result]}</span>
-            <span className="mc-event-body">
-              {item.venue === 'home' ? 'ضد' : 'لدى'} {item.opponent ?? 'خصم غير مسمّى من المصدر'}
-              <small>
-                <span className="mc-num">{item.goalsFor}–{item.goalsAgainst}</span>
-                {' · '}
-                {formatInZone(item.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })}
-                {item.competition ? ` · ${item.competition}` : ''}
-              </small>
-            </span>
-          </li>
-        ))}
-      </ol>
-      <p className="mc-note">
-        آخر <span className="mc-num">{num(form.played)}</span> مباريات موثقة: فوز <span className="mc-num">{num(form.wins)}</span> ·
-        تعادل <span className="mc-num">{num(form.draws)}</span> · خسارة <span className="mc-num">{num(form.losses)}</span> ·
-        سجّل <span className="mc-num">{num(form.goalsFor)}</span> واستقبل <span className="mc-num">{num(form.goalsAgainst)}</span>.
-        متوسط أهداف مسجّلة <span className="mc-num">{num(form.avgGoalsFor)}</span> ومتوسط أهداف مستقبَلة{' '}
-        <span className="mc-num">{num(form.avgGoalsAgainst)}</span> — كلاهما مقسوم على العدد الفعلي أعلاه.
-        {form.competitions.length > 0 && <> النطاق: {form.competitions.join('، ')}.</>}
-      </p>
+    <section className="mc-form-side">
+      <h3>{name}</h3>
+      {matches.length > 0 && (
+        <ol className="mc-events" aria-label={`مباريات موثقة لـ ${name}`}>
+          {matches.map((item, index) => {
+            const opponent = text(item.opponent);
+            const date = validDate(item.date)
+              ? formatInZone(item.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })
+              : null;
+            const competition = text(item.competition);
+            return (
+              <li className="mc-event" key={item.fixtureId ?? `${item.date}-${index}`}>
+                <span className="mc-event-minute">{RESULT_WORD[item.result]}</span>
+                <span className="mc-event-body">
+                  {opponent && <span>{item.venue === 'home' ? 'ضد' : 'لدى'} {opponent}</span>}
+                  <small>
+                    <span className="mc-num">{numberLabel(item.goalsFor)}–{numberLabel(item.goalsAgainst)}</span>
+                    {date && <> · {date}</>}
+                    {competition && <> · {competition}</>}
+                  </small>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+      {totals.length > 0 && (
+        <dl className="mc-form-summary">
+          {totals.map(([label, value]) => <div key={label}><dt>{label}</dt><dd className="mc-num">{numberLabel(value)}</dd></div>)}
+        </dl>
+      )}
+      {competitions.length > 0 && <p className="mc-note">نطاق السجل: {competitions.join('، ')}.</p>}
     </section>
   );
 }
 
-export function PreviewPanel({ match, snapshot, status, now }: PanelProps) {
-  const code = status?.code ?? 'scheduled';
-  const started = code !== 'scheduled' && code !== 'postponed' && code !== 'delayed' && code !== 'canceled';
+export function PreviewPanel({ match, snapshot, status }: PanelProps) {
+  const comparison = comparisonFor(snapshot);
+  const axes = displayableAxes(comparison);
+  const homeForm = hasFormData(snapshot?.form?.home) ? snapshot.form.home : null;
+  const awayForm = hasFormData(snapshot?.form?.away) ? snapshot.form.away : null;
+  const competition = text(match.competitionName);
+  const venue = matchVenue(match, snapshot);
+  const season = text(match.season);
+  const round = typeof match.round === 'number' && Number.isFinite(match.round)
+    ? String(match.round)
+    : text(match.round);
 
-  /* البند 9: قبل اللقاء تُستخدم بيانات متجانسة لنفس المسابقة والفترة مع ذكر
-     حجم العينة. وحتى يؤكد الفحص مفتاح المقاييس الأربعة وفترة عينتها
-     (التقرير §12.5) لا تُرسم مقارنة، فتُعرض الرسالة بدل مضلع مضلِّل. */
-  const comparison: Comparison = buildComparison(
-    (snapshot?.seasonComparison ?? []).map(metric => ({ ...metric, mode: 'season' as const })),
-    { mode: 'season', sample: snapshot?.seasonSample ?? null, provider: snapshot?.provider ?? null },
-  );
+  let cairoTime: string | null = null;
+  let cairoDay: string | null = null;
+  let meccaTime: string | null = null;
+  if (canShowKickoff(status) && validDate(match.kickoffUtc)) {
+    try {
+      cairoTime = kickoffLabel(match.kickoffUtc, 'Africa/Cairo');
+      cairoDay = dayLabelInZone(match.kickoffUtc, 'Africa/Cairo');
+      meccaTime = kickoffLabel(match.kickoffUtc, 'Asia/Riyadh');
+    } catch {
+      /* حذف الموعد التالف بدلاً من تخمين قيمة. */
+    }
+  }
+
+  const facts = [
+    ...(competition ? [{ label: 'المسابقة', value: competition }] : []),
+    ...(season ? [{ label: 'الموسم', value: season }] : []),
+    ...(round ? [{ label: 'الجولة', value: round }] : []),
+    ...(venue ? [{ label: 'الملعب', value: venue }] : []),
+    ...(cairoTime ? [{ label: 'موعد القاهرة', value: `${cairoTime}${cairoDay ? ` · ${cairoDay}` : ''}` }] : []),
+    ...(meccaTime ? [{ label: 'موعد مكة', value: meccaTime }] : []),
+  ];
 
   return (
     <div>
       <h2>معاينة المباراة</h2>
-      <p>
-        {match.competitionName}
-        {match.season ? ` · موسم ${match.season}` : ''}
-        {match.round ? ` · الجولة ${match.round}` : ''}
-      </p>
-
-      <dl className="mc-meta-facts" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '10px 18px', margin: '0 0 16px', padding: 0 }}>
-        <div>
-          <dt style={{ color: 'var(--mc-muted)', fontSize: '.72rem' }}>الموعد بتوقيت القاهرة</dt>
-          <dd style={{ margin: 0, fontWeight: 800 }}>
-            {kickoffLabel(match.kickoffUtc, 'Africa/Cairo')} — {dayLabelInZone(match.kickoffUtc, 'Africa/Cairo')}
-          </dd>
-        </div>
-        <div>
-          <dt style={{ color: 'var(--mc-muted)', fontSize: '.72rem' }}>الموعد بتوقيت مكة</dt>
-          <dd style={{ margin: 0, fontWeight: 800 }}>{kickoffLabel(match.kickoffUtc, 'Asia/Riyadh')}</dd>
-        </div>
-        <div>
-          <dt style={{ color: 'var(--mc-muted)', fontSize: '.72rem' }}>الملعب</dt>
-          <dd style={{ margin: 0, fontWeight: 800 }} dir="auto">{match.venue ?? 'غير متاح'}</dd>
-        </div>
-        <div>
-          <dt style={{ color: 'var(--mc-muted)', fontSize: '.72rem' }}>موعد المصدر (UTC)</dt>
-          <dd style={{ margin: 0 }} className="mc-num" dir="ltr">{match.kickoffUtc}</dd>
-        </div>
-      </dl>
-
-      {/* البند 6: «لم تبدأ» ولا تُعرض 0–0 نتيجةً مؤكدة قبل البداية. */}
-      {!started && (
-        <Unavailable
-          title="لم تبدأ"
-          note={`تبدأ الساعة ${kickoffLabel(match.kickoffUtc, 'Africa/Cairo')} بتوقيت القاهرة. لا تُعرض نتيجة قبل تأكيد المصدر بداية المباراة، ولا يقلبها العدّاد إلى «مباشر» من نفسه.`}
-        />
+      {facts.length > 0 && (
+        <dl className="mc-preview-facts">
+          {facts.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd dir="auto">{value}</dd></div>)}
+        </dl>
       )}
 
-      {(code === 'postponed' || code === 'delayed' || code === 'canceled') && (
-        <Unavailable title={status?.label ?? 'الحالة غير محددة من المصدر'} note="الحالة من المصدر كما هي؛ لا يُستنتج موعد جديد ولا نتيجة." />
+      {(homeForm || awayForm) && (
+        <section aria-labelledby="mc-form-title">
+          <h3 id="mc-form-title">مستوى الفريقين — مباريات موثقة</h3>
+          <div className="mc-form-grid">
+            {homeForm && <FormSide name={text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف'} form={homeForm} />}
+            {awayForm && <FormSide name={text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف'} form={awayForm} />}
+          </div>
+        </section>
       )}
 
-      <h3>مقارنة قبل اللقاء</h3>
-      <MatchCenterRadar comparison={comparison} homeName={match.home.name} awayName={match.away.name} />
-
-      <h3>مستوى الفريقين — آخر مباريات موثقة</h3>
-      <div style={{ display: 'grid', gap: 18, gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))' }}>
-        <FormSide name={match.home.name} form={snapshot?.form?.home ?? null} />
-        <FormSide name={match.away.name} form={snapshot?.form?.away ?? null} />
-      </div>
-
-      <h3>الترتيب</h3>
-      <p className="mc-note">
-        يُعرض ترتيب {match.competitionName} من مصدر مشترك للمباريات الثلاث، ويُحدَّث بمعدل أقل من
-        نتيجة المباراة حتى لا يتضاعف الطلب. إن تعذّرت قراءته تبقى الخانة «غير متاح» ولا يُعرض ترتيب قديم
-        على أنه الحالي.
-      </p>
-
-      {now > 0 && (
-        <p className="mc-note">
-          المناطق الزمنية المعروضة: {MATCH_ZONES.join('، ')}. تُحسب عبر `Intl` بمناطق IANA، فلا تُضاف
-          إزاحة ثابتة — القاهرة نفسها +03:00 في أكتوبر و+02:00 في نوفمبر.
-        </p>
+      {axes.length > 0 && (
+        <MatchCenterRadar comparison={comparison} homeName={text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف'} awayName={text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف'} />
       )}
     </div>
   );
@@ -177,386 +302,229 @@ export function PreviewPanel({ match, snapshot, status, now }: PanelProps) {
 /* ─────────────────────────── 2) المواجهات ─────────────────────────── */
 
 export function HistoryPanel({ match, snapshot, status }: PanelProps) {
-  /* البند 8: بعد تأكيد النهاية تُدخل هذه المباراة في آخر ثلاث مواجهات بلا
-     تكرار. والبند 6: قبل اكتمالها لا تُدرج. `mergeH2h` تفعل الاثنين، وتشترط
-     نتيجة رسمية — فمباراة أُلغيت بعد بدايتها «مكتملة» لكنها بلا نتيجة رسمية. */
   const official = isResultOfficial(status, snapshot?.score ?? null);
   const self = official && snapshot?.score
     ? {
       fixtureId: match.externalIds.espn ?? null,
       date: match.kickoffUtc,
-      competition: match.competitionName,
-      year: match.season ?? null,
+      competition: text(match.competitionName),
+      year: text(match.season),
       friendly: false,
       completed: true,
-      home: match.home.name,
-      away: match.away.name,
+      home: text(match.home.name) ?? text(match.home.sourceName) ?? '',
+      away: text(match.away.name) ?? text(match.away.sourceName) ?? '',
       homeGoals: snapshot.score.home,
       awayGoals: snapshot.score.away,
     }
     : null;
+  const entries = displayableHeadToHead(mergeH2h(snapshot?.h2h ?? [], self, 3));
 
-  const entries = mergeH2h(snapshot?.h2h ?? [], self, 3);
+  if (entries.length === 0) return null;
 
   return (
     <div>
       <h2>المواجهات السابقة</h2>
-      <p>آخر ثلاث مواجهات مكتملة بين الفريقين، بنتيجة رسمية من المصدر.</p>
-
-      {entries.length === 0 ? (
-        <Unavailable
-          title="غير متاح"
-          note="لم يرسل المصدر مواجهات سابقة لهذه المباراة حتى لحظة القراءة، فلا يُختلق سجل ولا تُستنتج نتائج من أسماء الفرق."
-        />
-      ) : (
-        <div className="mc-table-wrap">
-          <table className="mc-table">
-            <caption>المواجهات المكتملة — الوديات مستبعدة إن ميّزها المصدر</caption>
-            <thead>
-              <tr>
-                <th scope="col">التاريخ</th>
-                <th scope="col">المسابقة</th>
-                <th scope="col">المواجهة</th>
-                <th scope="col">النتيجة</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry, index) => (
-                <tr key={entry.fixtureId ? `id-${entry.fixtureId}` : `${entry.date}-${index}`}>
-                  <td className="mc-num">{formatInZone(entry.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
-                  <td>{entry.competition ?? 'غير متاح'}{entry.friendly ? ' (ودية)' : ''}</td>
-                  <td>{entry.home} × {entry.away}</td>
-                  <td className="mc-num">
-                    {entry.homeGoals ?? '—'} – {entry.awayGoals ?? '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {!official && (
-        <p className="mc-note">
-          هذه المباراة غير مُدرجة أعلاه: لا تُضاف إلى السجل قبل أن يؤكد المصدر نهايتها بنتيجة رسمية،
-          فتظهر مواجهة بلا نتيجة أو تُخرج مواجهة صحيحة من الثلاث.
-        </p>
-      )}
+      <p>المواجهات المكتملة التي أرسلها المصدر فقط.</p>
+      <ol className="mc-history-list">
+        {entries.map((entry, index) => {
+          const date = validDate(entry.date)
+            ? formatInZone(entry.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            : null;
+          const competition = text(entry.competition);
+          return (
+            <li className="mc-history-item" key={entry.fixtureId ? `id-${entry.fixtureId}` : `${entry.date}-${index}`}>
+              {date && <time className="mc-history-date" dateTime={entry.date}>{date}</time>}
+              <strong className="mc-history-scoreline">
+                {text(entry.home)}
+                <span className="mc-num">{numberLabel(entry.homeGoals as number)}–{numberLabel(entry.awayGoals as number)}</span>
+                {text(entry.away)}
+              </strong>
+              {(competition || entry.friendly === true) && (
+                <small>{competition}{competition && entry.friendly === true ? ' · ' : ''}{entry.friendly === true ? 'ودية' : ''}</small>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
 
 /* ─────────────────────────── 3) التشكيلات ─────────────────────────── */
 
-function LineupSide({ name, side, provisionalNote }: { name: string; side: MatchLineups['home']; provisionalNote?: string }) {
-  const list: ScoredPlayer[] = side.starters?.length ? side.starters : [];
+function ConfirmedLineupSide({ name, data }: { name: string; data: LineupSideData }) {
+  const starters = displayablePlayers(data.starters);
+  const substitutes = displayablePlayers(data.substitutes);
+  const formation = text(data.formation);
+  const coach = text(data.coach);
   return (
-    <section aria-labelledby={`mc-lineup-${name}`}>
-      <h3 id={`mc-lineup-${name}`}>
-        {name}
-        {side.formation ? <span className="mc-team-tag"> · {side.formation}</span> : null}
-      </h3>
-      {/* البند 6: التشكيل المتوقع يجب أن يُوصف صراحةً بأنه متوقع. */}
-      {!side.confirmed && <p className="mc-warning">تشكيل متوقع — لم يؤكده المصدر. الأسماء المتوقعة لا تُعرض كأنها مؤكدة.</p>}
-      {side.coach && <p className="mc-note">المدرب: {side.coach}</p>}
-      {provisionalNote && <p className="mc-note">{provisionalNote}</p>}
-      {list.length === 0 ? (
-        <Unavailable title="لم يُعلن بعد" />
-      ) : (
-        <ol className="mc-events">
-          {list.map((player, index) => (
-            <li className="mc-event" key={player.id ?? `${player.name}-${index}`}>
-              <span className="mc-event-minute">{index + 1}</span>
-              <span className="mc-event-body">
-                {player.name}
-                {player.rating !== null && player.rating !== undefined && (
-                  <small>التقييم: <span className="mc-num">{new Intl.NumberFormat('ar-EG', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(player.rating)}</span>{player.provisional ? ' (قابل للتغير)' : ''}</small>
-                )}
-              </span>
-            </li>
-          ))}
-        </ol>
+    <section className="mc-confirmed-lineup">
+      <h3>{name}{formation && <span className="mc-team-tag"> · {formation}</span>}</h3>
+      {coach && <p className="mc-note">المدرب: {coach}</p>}
+      {starters.length > 0 && (
+        <div>
+          <h4>التشكيلة الأساسية المؤكدة</h4>
+          <ol className="mc-events">
+            {starters.map((player, index) => <li className="mc-event" key={player.id ?? `${player.name}-${index}`}><span className="mc-event-body">{text(player.name)}</span></li>)}
+          </ol>
+        </div>
+      )}
+      {substitutes.length > 0 && (
+        <div>
+          <h4>البدلاء</h4>
+          <ul className="mc-events">
+            {substitutes.map((player, index) => <li className="mc-event" key={player.id ?? `${player.name}-${index}`}><span className="mc-event-body">{text(player.name)}</span></li>)}
+          </ul>
+        </div>
       )}
     </section>
   );
 }
 
 export function LineupsPanel({ match, snapshot }: PanelProps) {
-  const lineups = snapshot?.lineups ?? null;
+  const sides = confirmedSides(snapshot?.lineups ?? null);
+  if (sides.length === 0) return null;
 
   return (
     <div>
-      <h2>التشكيلات</h2>
-      <p>تُعرض التشكيلات حين يؤكدها المصدر فقط، ولا يُخمَّن اسم لاعب.</p>
-
-      {lineups?.announcedAt && (
-        <p className="mc-note">
-          أعلنها المصدر: <span className="mc-num">{formatInZone(lineups.announcedAt, 'Africa/Cairo', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}</span> بتوقيت القاهرة.
-        </p>
-      )}
-
-      {!lineups ? (
-        <>
-          <Unavailable
-            title="لم يُعلن بعد"
-            note="لم يرسل المصدر تشكيلاً معلناً لهذه المباراة. لا تُعرض قائمة الفريق بديلاً عن التشكيل، ولا تُخمَّن أسماء."
-          />
-          <Unavailable
-            title="تقييمات اللاعبين: غير متاح"
-            note="المصدر المرتبط حالياً (ESPN) لا يوفّر تقييمات اللاعبين إطلاقاً، فهذه الخانة تبقى «غير متاح» بصفة نهائية لا معلّقة — ولا يُستعاض عنها بأرقام من مصدر آخر في نفس المقارنة."
-          />
-        </>
-      ) : (
-        <div style={{ display: 'grid', gap: 18 }}>
-          <LineupSide name={match.home.name} side={lineups.home} />
-          <LineupSide name={match.away.name} side={lineups.away} />
-        </div>
-      )}
+      <h2>التشكيلات المؤكدة</h2>
+      <div className="mc-lineup-grid">
+        {sides.map(({ side, data }) => {
+          const team = match[side];
+          const name = text(team.name) ?? text(team.sourceName) ?? text(team.shortName);
+          return name ? <ConfirmedLineupSide key={side} name={name} data={data} /> : null;
+        })}
+      </div>
     </div>
   );
 }
 
 /* ─────────────────────────── 4) مباشر ─────────────────────────── */
 
-const EVENT_KIND: Record<string, string> = {
-  goal: 'goal', penalty: 'goal', own_goal: 'goal',
-  yellow_card: 'card', red_card: 'card',
+const EVENT_TITLES: Record<string, string> = {
+  goal: 'هدف', penalty: 'هدف من ركلة جزاء', own_goal: 'هدف عكسي', missed_penalty: 'ركلة جزاء مهدرة',
+  yellow_card: 'بطاقة صفراء', red_card: 'بطاقة حمراء', substitution: 'تبديل',
+  var_cancelled: 'مراجعة فيديو — إلغاء', var_confirmed: 'مراجعة فيديو — تأكيد',
 };
 
-function eventKind(event: MatchEvent): string {
-  if (event.cancelled) return 'cancelled';
-  return EVENT_KIND[event.type] ?? 'other';
+function EventItem({ event }: { event: MatchEvent }) {
+  const minute = typeof event.minute === 'number' && Number.isFinite(event.minute) && event.minute >= 0
+    ? `${event.minute}${typeof event.extraMinute === 'number' && Number.isFinite(event.extraMinute) && event.extraMinute >= 0 ? `+${event.extraMinute}` : ''}`
+    : null;
+  const title = EVENT_TITLES[event.type] ?? null;
+  const details = [
+    text(event.team),
+    text(event.player?.name),
+    text(event.relatedPlayer?.name) ? `بدلاً من ${text(event.relatedPlayer?.name)}` : null,
+    text(event.detail),
+  ].filter((item): item is string => Boolean(item));
+  return (
+    <li className="mc-event" data-kind={event.cancelled ? 'cancelled' : event.type}>
+      {minute && <span className="mc-event-minute">{minute}</span>}
+      <span className="mc-event-body">
+        {title && <b>{title}</b>}
+        {event.cancelled && <b> — أُلغي بعد مراجعة المصدر</b>}
+        {details.length > 0 && <small>{details.join(' · ')}</small>}
+      </span>
+    </li>
+  );
 }
 
-function eventTitle(event: MatchEvent): string {
-  const labels: Record<string, string> = {
-    goal: 'هدف', penalty: 'هدف من ركلة جزاء', own_goal: 'هدف عكسي', missed_penalty: 'ركلة جزاء مهدرة',
-    yellow_card: 'بطاقة صفراء', red_card: 'بطاقة حمراء', substitution: 'تبديل',
-    var_cancelled: 'مراجعة فيديو — إلغاء', var_confirmed: 'مراجعة فيديو — تأكيد', other: 'حدث',
-  };
-  return labels[event.type] ?? event.type;
+function StatisticList({ statistics, match }: { statistics: StatPair[]; match: MatchDefinition }) {
+  if (statistics.length === 0) return null;
+  const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
+  const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
+  return (
+    <section className="mc-statistics">
+      <h3>إحصائيات المباراة</h3>
+      <dl className="mc-stat-list">
+        {statistics.map(stat => {
+          const home = numeric(stat.home);
+          const away = numeric(stat.away);
+          const unit = text(stat.unit);
+          return (
+            <div className="mc-stat-row" key={stat.key}>
+              <dt>{text(stat.label)}{unit ? ` (${unit})` : ''}</dt>
+              <dd>
+                {home !== null && <span data-side="home"><b>{homeName}</b><span className="mc-num">{numberLabel(home)}</span></span>}
+                {away !== null && <span data-side="away"><b>{awayName}</b><span className="mc-num">{numberLabel(away)}</span></span>}
+              </dd>
+            </div>
+          );
+        })}
+      </dl>
+    </section>
+  );
 }
 
 export function LivePanel({ match, snapshot, status }: PanelProps) {
-  const events = snapshot?.events ?? [];
-  const statistics = snapshot?.statistics ?? null;
-  const code = status?.code ?? 'scheduled';
+  const events = displayableEvents(snapshot?.events ?? []);
+  const statistics = displayableStatistics(snapshot?.statistics ?? null);
+  if (events.length === 0 && statistics.length === 0) return null;
 
+  const statusLabel = text(status?.label);
+  const clock = text(status?.clock);
   return (
     <div>
-      <h2>مباشر</h2>
-      <p>
-        {status ? status.label : 'في انتظار أول قراءة من المصدر'}
-        {/* البند 7: الوقت المعروض من المصدر، لا محسوباً محلياً من موعد البداية. */}
-        {status?.clock ? <> · <span className="mc-num" dir="ltr">{status.clock}</span></> : null}
-        {status?.period ? <> · الشوط <span className="mc-num">{new Intl.NumberFormat('ar-EG').format(status.period)}</span></> : null}
-      </p>
-
-      {code === 'scheduled' && (
-        <Unavailable
-          title="لم تبدأ"
-          note="لا أحداث ولا إحصائيات قبل بداية المباراة. النتيجة لا تُعرض 0–0 لأن المصدر لم يؤكدها بعد."
-        />
+      <h2>بيانات المباراة</h2>
+      {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
+      {events.length > 0 && (
+        <section>
+          <h3>أحداث المباراة</h3>
+          <ol className="mc-events">{events.map((event, index) => <EventItem key={event.id ?? `${event.type}-${event.minute}-${index}`} event={event} />)}</ol>
+        </section>
       )}
-
-      {code === 'halftime' && <p className="mc-warning">استراحة بين الشوطين — الوقت متوقف عند {status?.clock ?? '—'}.</p>}
-      {code === 'suspended' && <p className="mc-warning">المباراة متوقفة مؤقتاً. هذه حالة مستقلة عن النهاية، ولا تُعلن نتيجة نهائية.</p>}
-      {code === 'delayed' && <p className="mc-warning">بداية متأخرة. الحالة من المصدر كما هي.</p>}
-
-      <h3>أحداث المباراة</h3>
-      {events.length === 0 ? (
-        <Unavailable
-          title="غير متاح"
-          note="لم يرسل المصدر أحداثاً لهذه المباراة بعد. لا تُختلق أهداف ولا بطاقات، ولا يُستنتج حدث من تغيّر النتيجة وحده."
-        />
-      ) : (
-        <ol className="mc-events">
-          {events.map((event, index) => (
-            <li className="mc-event" data-kind={eventKind(event)} key={event.id ?? `${event.type}-${event.minute}-${index}`}>
-              <span className="mc-event-minute">
-                {event.minute ?? '—'}{event.extraMinute !== null && event.extraMinute !== undefined ? `+${event.extraMinute}` : ''}
-              </span>
-              <span className="mc-event-body">
-                {eventTitle(event)}
-                {event.cancelled ? ' — أُلغي بعد مراجعة الفيديو' : ''}
-                <small>
-                  {[event.team, event.player?.name, event.relatedPlayer ? `بدلاً من ${event.relatedPlayer.name}` : null, event.detail]
-                    .filter(Boolean).join(' · ') || 'تفاصيل غير متاحة'}
-                </small>
-              </span>
-            </li>
-          ))}
-        </ol>
-      )}
-
-      <h3>إحصائيات المباراة</h3>
-      {!statistics || statistics.length === 0 ? (
-        <Unavailable
-          title="غير متاح"
-          note="لم يؤكد المصدر إحصائيات لهذه المباراة، فلا تُعرض أصفار بدلها ولا تُشتق من الأحداث."
-        />
-      ) : (
-        <div className="mc-table-wrap">
-          <table className="mc-table">
-            <caption>أرقام المباراة كما أرسلها المصدر — الأشرطة نسبية لأعلى قيمة في كل صف</caption>
-            <thead>
-              <tr><th scope="col">{match.home.name}</th><th scope="col">الإحصائية</th><th scope="col">{match.away.name}</th></tr>
-            </thead>
-            <tbody>
-              {statistics.map(stat => {
-                /* أشرطة نسبية لأعلى قيمة في الصف (معلنة في التسمية أعلاه)،
-                   والرقم الأصلي ووحدته ظاهران — الشريط لا يحل محل الرقم. */
-                const peak = Math.max(Math.abs(stat.home ?? 0), Math.abs(stat.away ?? 0));
-                const width = (value: number | null) => (value === null || peak === 0 ? 0 : Math.round((Math.abs(value) / peak) * 100));
-                return (
-                  <Fragment key={stat.key}>
-                    <tr>
-                      <td data-side="home">{stat.home ?? 'غير متاح'}</td>
-                      <th scope="row">{stat.label}{stat.unit ? ` (${stat.unit})` : ''}</th>
-                      <td data-side="away">{stat.away ?? 'غير متاح'}</td>
-                    </tr>
-                    <tr key={`${stat.key}-bar`} className="mc-statbar-row" aria-hidden="true">
-                      <td colSpan={3}>
-                        <span className="mc-statbar">
-                          <span className="mc-statbar-home" style={{ width: `${width(stat.home)}%` }} />
-                          <span className="mc-statbar-away" style={{ width: `${width(stat.away)}%` }} />
-                        </span>
-                      </td>
-                    </tr>
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <StatisticList statistics={statistics} match={match} />
     </div>
   );
 }
 
 /* ───────────────────────── 5) بعد المباراة ───────────────────────── */
 
+function reportEvents(events: MatchEvent[]): MatchEvent[] {
+  return events.filter(event => ['goal', 'penalty', 'own_goal', 'yellow_card', 'red_card'].includes(event.type) || event.cancelled);
+}
+
+function RatingList({ ratings }: { ratings: ScoredPlayer[] }) {
+  if (ratings.length === 0) return null;
+  return (
+    <section>
+      <h3>تقييمات المصدر</h3>
+      <ul className="mc-events">
+        {ratings.map((player, index) => (
+          <li className="mc-event" key={player.id ?? `${player.name}-${index}`}>
+            <span className="mc-event-body">
+              {text(player.name)}
+              <small>تقييم وارد من المصدر: <span className="mc-num">{numberLabel(player.rating as number)}</span>{player.provisional ? ' · أولي وقابل للتغير' : ''}</small>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function ReportPanel({ match, snapshot, status }: PanelProps) {
-  /* البند 8: لا يُعرض تقرير نهائي إلا بعد أن يؤكد المصدر النهاية. */
   const official = isResultOfficial(status, snapshot?.score ?? null);
-  const events = snapshot?.events ?? [];
-  const statistics = snapshot?.statistics ?? null;
-  const ratings = snapshot?.ratings ?? null;
-  const readAt = snapshot?.readAt ?? null;
-
-  if (!official) {
-    return (
-      <div>
-        <h2>بعد المباراة</h2>
-        <Unavailable
-          title={status?.code === 'abandoned' ? 'أُلغيت بعد بدايتها' : 'لم تنتهِ المباراة بعد'}
-          note="لا يُعرض تقرير نهائي قبل أن يؤكد المصدر انتهاء المباراة بنتيجة رسمية. مرور 90 دقيقة على الساعة لا يعني النهاية."
-        />
-      </div>
-    );
-  }
-
-  const goals = events.filter(event => ['goal', 'penalty', 'own_goal'].includes(event.type));
-  const cancelled = events.filter(event => event.cancelled);
-  const cards = events.filter(event => event.type === 'yellow_card' || event.type === 'red_card');
+  const events = reportEvents(displayableEvents(snapshot?.events ?? []));
+  const statistics = displayableStatistics(snapshot?.statistics ?? null);
+  const ratings = displayableRatings(snapshot?.ratings ?? null);
+  const finalScore = snapshot?.score ?? null;
+  if (!official || !finalScore || !isValidScore(finalScore)
+    || (events.length === 0 && statistics.length === 0 && ratings.length === 0)) return null;
 
   return (
     <div>
       <h2>بعد المباراة</h2>
-      <p>
-        النتيجة النهائية: <b className="mc-num">{snapshot?.score?.home ?? '—'} – {snapshot?.score?.away ?? '—'}</b>
-        {readAt && <> · قُرئت <span className="mc-num">{formatInZone(readAt, 'Africa/Cairo', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}</span> بتوقيت القاهرة</>}
-      </p>
-
-      {/* البند 8: «الحقائق» تُبنى من أحداث موثقة. لا تحليل تحريري آلي ولا
-          آراء منسوبة لأشخاص — البند 12 يمنع ذلك صراحة. */}
-      <h3>حقائق من أحداث المباراة</h3>
-      {goals.length === 0 && cancelled.length === 0 && cards.length === 0 ? (
-        <Unavailable title="غير متاح" note="لم يرسل المصدر أحداثاً موثقة تُبنى عليها الحقائق." />
-      ) : (
-        <ul className="mc-events">
-          {goals.map((event, index) => (
-            <li className="mc-event" data-kind="goal" key={event.id ?? `g-${index}`}>
-              <span className="mc-event-minute">{event.minute ?? '—'}</span>
-              <span className="mc-event-body">
-                {eventTitle(event)} — {event.team ?? 'فريق غير محدد من المصدر'}
-                {event.player?.name ? <small>{event.player.name}</small> : null}
-              </span>
-            </li>
-          ))}
-          {cancelled.map((event, index) => (
-            <li className="mc-event" data-kind="cancelled" key={`c-${event.id ?? index}`}>
-              <span className="mc-event-minute">{event.minute ?? '—'}</span>
-              <span className="mc-event-body">هدف أُلغي بعد مراجعة الفيديو<small>{event.team ?? ''} {event.player?.name ?? ''}</small></span>
-            </li>
-          ))}
-          {cards.length > 0 && (
-            <li className="mc-event" data-kind="card">
-              <span className="mc-event-minute">—</span>
-              <span className="mc-event-body">
-                بطاقات: <span className="mc-num">{new Intl.NumberFormat('ar-EG').format(cards.filter(c => c.type === 'yellow_card').length)}</span> صفراء،
-                {' '}<span className="mc-num">{new Intl.NumberFormat('ar-EG').format(cards.filter(c => c.type === 'red_card').length)}</span> حمراء
-              </span>
-            </li>
-          )}
-        </ul>
+      <p>النتيجة النهائية: <b className="mc-num">{numberLabel(finalScore.home as number)}–{numberLabel(finalScore.away as number)}</b></p>
+      {events.length > 0 && (
+        <section>
+          <h3>أحداث موثقة</h3>
+          <ol className="mc-events">{events.map((event, index) => <EventItem key={event.id ?? `report-${event.type}-${event.minute}-${index}`} event={event} />)}</ol>
+        </section>
       )}
-
-      <h3>الإحصائيات النهائية</h3>
-      {!statistics || statistics.length === 0 ? (
-        <Unavailable title="غير متاح" note="لم يرسل المصدر إحصائيات. القيمة الناقصة تبقى «غير متاح» ولا تُعرض صفراً." />
-      ) : (
-        <div className="mc-table-wrap">
-          <table className="mc-table">
-            <caption>إحصائيات المباراة النهائية — الأشرطة نسبية لأعلى قيمة في كل صف</caption>
-            <thead>
-              <tr><th scope="col">{match.home.name}</th><th scope="col">الإحصائية</th><th scope="col">{match.away.name}</th></tr>
-            </thead>
-            <tbody>
-              {statistics.map(stat => {
-                /* أشرطة نسبية لأعلى قيمة في الصف (معلنة في التسمية أعلاه)،
-                   والرقم الأصلي ووحدته ظاهران — الشريط لا يحل محل الرقم. */
-                const peak = Math.max(Math.abs(stat.home ?? 0), Math.abs(stat.away ?? 0));
-                const width = (value: number | null) => (value === null || peak === 0 ? 0 : Math.round((Math.abs(value) / peak) * 100));
-                return (
-                  <Fragment key={stat.key}>
-                    <tr>
-                      <td data-side="home">{stat.home ?? 'غير متاح'}</td>
-                      <th scope="row">{stat.label}{stat.unit ? ` (${stat.unit})` : ''}</th>
-                      <td data-side="away">{stat.away ?? 'غير متاح'}</td>
-                    </tr>
-                    <tr key={`${stat.key}-bar`} className="mc-statbar-row" aria-hidden="true">
-                      <td colSpan={3}>
-                        <span className="mc-statbar">
-                          <span className="mc-statbar-home" style={{ width: `${width(stat.home)}%` }} />
-                          <span className="mc-statbar-away" style={{ width: `${width(stat.away)}%` }} />
-                        </span>
-                      </td>
-                    </tr>
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <h3>تقييمات اللاعبين</h3>
-      {!ratings || ratings.length === 0 ? (
-        <Unavailable
-          title="غير متاح"
-          note="المصدر المرتبط حالياً لا يوفّر تقييمات لاعبين. لا تُحسب تقييمات بديلة من الأحداث، ولا تُخلط بأرقام من مصدر آخر."
-        />
-      ) : (
-        <ul className="mc-events">
-          {ratings.map((player, index) => (
-            <li className="mc-event" key={player.id ?? `${player.name}-${index}`}>
-              <span className="mc-event-minute">{player.rating !== null ? new Intl.NumberFormat('ar-EG', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(player.rating) : '—'}</span>
-              <span className="mc-event-body">{player.name}{player.rating === null && <small>التقييم غير متاح</small>}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <StatisticList statistics={statistics} match={match} />
+      <RatingList ratings={ratings} />
     </div>
   );
 }

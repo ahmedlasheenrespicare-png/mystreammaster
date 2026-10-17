@@ -12,6 +12,8 @@ import {
   STATUS_LABELS,
   TABS,
   buildComparison,
+  canShowKickoff,
+  canShowScore,
   countdownParts,
   defaultTab,
   deriveScore,
@@ -22,6 +24,7 @@ import {
   isResultOfficial,
   isStaleRead,
   isTrustworthyReadAt,
+  isValidScore,
   isVerified,
   kickoffLabel,
   matchByFixtureId,
@@ -369,6 +372,27 @@ test('a genuine zero stays zero while a missing value stays null — the two are
   assert.deepEqual(deriveScore(live, { score: '1' }, {}), { home: 1, away: null }, 'one side absent');
   // Non-numeric junk never becomes a number.
   assert.deepEqual(deriveScore(live, { score: '—' }, { score: 'N/A' }), null);
+});
+
+test('a visible result needs a result-capable source status and two complete non-negative integer scores', () => {
+  const live = normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn');
+  const scheduled = normalizeStatus(espnStatus('STATUS_SCHEDULED'), 'espn');
+  const finished = normalizeStatus(espnStatus('STATUS_FULL_TIME', { completed: true }), 'espn');
+  const abandoned = normalizeStatus(espnStatus('STATUS_ABANDONED', { completed: true }), 'espn');
+  const postponed = normalizeStatus(espnStatus('STATUS_POSTPONED'), 'espn');
+  const delayed = normalizeStatus(espnStatus('STATUS_DELAYED'), 'espn');
+  assert.equal(isValidScore({ home: 0, away: 0 }), true, 'a real zero is valid');
+  assert.equal(canShowScore(live, { home: 0, away: 0 }), true);
+  assert.equal(canShowScore(scheduled, { home: 0, away: 0 }), false, 'not before play');
+  assert.equal(canShowScore(live, { home: 2, away: null }), false, 'never show a partial result');
+  assert.equal(canShowScore(live, { home: 2, away: Number.NaN }), false);
+  assert.equal(canShowScore(finished, { home: 2.5, away: 1 }), false, 'goal counts must be integers');
+  assert.equal(canShowScore(finished, { home: -1, away: 0 }), false, 'negative values are invalid');
+  assert.equal(canShowScore(abandoned, { home: 1, away: 0 }), false, 'an abandoned match score is not a final result');
+  assert.equal(canShowScore(null, { home: 2, away: 1 }), false, 'no source status means no score');
+  assert.equal(canShowKickoff(scheduled), true);
+  assert.equal(canShowKickoff(postponed), false, 'the former kickoff is not presented as the new date');
+  assert.equal(canShowKickoff(delayed), false, 'a delay does not invent a revised kickoff');
 });
 
 /* ── 3. Time zones: IANA rules, never a fixed offset ──────────────── */
@@ -3676,37 +3700,39 @@ test('the trial kickoffs render as briefed in Cairo and Mecca on the exact trial
   assert.equal(formatInZone(byId('manchester-city-ipswich-town').kickoffUtc, 'Europe/London', { weekday: 'long' }), 'السبت');
 });
 
-test('the verification gate still bites: a fixture without a source id is not verified, whatever its flag says', () => {
-  // The trial fixtures are confirmed now, so the gate is exercised on synthetic
-  // ones to prove it remains a gate rather than a formality. This is what keeps
-  // a future fixture from being published on a guessed id (rules 2, 13).
+test('a fixture is requestable only with a confirmed event ID and both source team IDs from the same provider', () => {
   const confirmed = MATCH_CENTER_MATCHES[0];
   assert.equal(isVerified(confirmed), true);
 
   const flaggedButEmpty = { ...confirmed, externalIds: { espn: null, apifootball: null } };
-  assert.equal(isVerified(flaggedButEmpty), false, 'a "confirmed" flag with no id is not confirmation');
-
+  assert.equal(isVerified(flaggedButEmpty), false, 'a confirmed flag and no event ID are insufficient');
   const blank = { ...confirmed, externalIds: { espn: '   ', apifootball: null } };
-  assert.equal(isVerified(blank), false, 'whitespace is not an id');
+  assert.equal(isVerified(blank), false, 'whitespace is not an event ID');
+  assert.equal(isVerified({ ...confirmed, home: { ...confirmed.home, externalIds: { espn: null } } }), false, 'a missing source home-team ID is not inferred from its name');
+  assert.equal(isVerified({ ...confirmed, away: { ...confirmed.away, externalIds: { espn: ' ' } } }), false, 'a blank source away-team ID is not accepted');
 
   const pending = { ...confirmed, verification: 'pending' };
-  assert.equal(isVerified(pending), false, 'an id without confirmation is not enough either');
-
+  assert.equal(isVerified(pending), false, 'IDs without source confirmation are not enough');
   assert.equal(isVerified(null), false);
   assert.equal(isVerified(undefined), false);
   assert.equal(isVerified({}), false);
 
-  // allMatchesVerified is a conjunction: one unconfirmed fixture closes the gate
-  // for the whole trial, so noindex and the JSON-LD omission apply together.
+  assert.ok(MATCH_CENTER_ALL_MATCHES.length >= 620, 'the full current registry and future additions are included');
+  assert.equal(MATCH_CENTER_ALL_MATCHES.every(match => isVerified(match)), true, 'all current pages have source event + home/away IDs');
   assert.equal(allMatchesVerified(), true);
-  const mixed = [...MATCH_CENTER_MATCHES.slice(0, 2), pending];
-  assert.equal(mixed.every(match => isVerified(match)), false);
-  // A numeric id from another provider is accepted and stringified consistently.
-  const numeric = { ...confirmed, externalIds: { espn: null, apifootball: 1215492 } };
+
+  // All identities are provider-scoped: an event from one provider cannot be
+  // paired with team IDs from another provider.
+  const numeric = {
+    ...confirmed,
+    externalIds: { espn: null, apifootball: 1215492 },
+    home: { ...confirmed.home, externalIds: { espn: null, apifootball: 101 } },
+    away: { ...confirmed.away, externalIds: { espn: null, apifootball: 202 } },
+  };
   assert.equal(isVerified(numeric), true);
   assert.equal(matchByFixtureId([numeric], 'apifootball', 1215492), numeric);
   assert.equal(matchByFixtureId([numeric], 'apifootball', '1215492'), numeric, 'number and string resolve alike');
-  assert.equal(matchByFixtureId([numeric], 'espn', 1215492), null, 'but not across providers');
+  assert.equal(matchByFixtureId([numeric], 'espn', 1215492), null, 'IDs do not cross providers');
 });
 
 /* ── The `summary?event=` probe (2026-10-16) ─────────────────────────
@@ -3802,8 +3828,8 @@ test('lineups, head-to-head and player ratings are confirmed absent, not merely 
 
 test('the boxscore cannot be judged from a pre-match probe', () => {
   // Empty before kickoff is the expected state, not evidence of absence, so
-  // the verdict is `unresolved` and the live tab keeps showing «غير متاح»
-  // until a probe runs against a match in progress (rule 7).
+  // the verdict is `unresolved`; no live tab is exposed until an in-progress
+  // source read provides renderable events/statistics (rule 7).
   assert.equal(MATCH_CENTER_SUMMARY_PROBE.matchStateAtProbe, 'pre-match');
   assert.equal(summaryKeyVerdict('boxscore'), 'available');
   assert.ok(

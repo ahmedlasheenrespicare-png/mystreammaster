@@ -4,6 +4,14 @@ on:
     branches: [main]
   # "Run workflow" button in the Actions tab: redeploys the current tip of main.
   workflow_dispatch:
+  # Triggered by fixtures-archive.yml when verified archive JSON files actually change on main.
+  workflow_call:
+    inputs:
+      archive_fetched_at:
+        description: 'Latest archive fetchedAt UTC timestamp when triggered by fixtures-archive.yml'
+        required: false
+        default: ''
+        type: string
 
 # Production must never move backwards. GitHub can deliver a push event late or
 # twice: on 2026-10-14 a duplicate event for an older merge (481990a) started
@@ -23,6 +31,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
       - name: Report deployed commit
         run: |
           deployed="$(git rev-parse HEAD)"
@@ -60,3 +69,38 @@ jobs:
             README.md
             .nojekyll
             clicks.json
+      - name: Report archive-to-deploy freshness
+        env:
+          ARCHIVE_FETCHED_AT: ${{ inputs.archive_fetched_at }}
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs/promises";
+            import path from "node:path";
+            import { buildArchiveDeployReport } from "./website/scripts/publish-fixtures-archive.mjs";
+
+            let lastFetchedAt = process.env.ARCHIVE_FETCHED_AT || "";
+            if (!lastFetchedAt) {
+              const root = "website/src/content/fixtures-archive";
+              const entries = await fs.readdir(root, { withFileTypes: true }).catch(() => []);
+              for (const d of entries) {
+                if (!d.isDirectory()) continue;
+                const files = await fs.readdir(path.join(root, d.name)).catch(() => []);
+                for (const f of files) {
+                  if (!f.endsWith(".json")) continue;
+                  const data = JSON.parse(await fs.readFile(path.join(root, d.name, f), "utf8"));
+                  for (const m of data.matches || []) {
+                    if (!lastFetchedAt || Date.parse(m.fetchedAt) > Date.parse(lastFetchedAt)) {
+                      lastFetchedAt = m.fetchedAt;
+                    }
+                  }
+                }
+              }
+            }
+            const report = buildArchiveDeployReport({
+              lastFetchedAt: lastFetchedAt || null,
+              deployedAt: new Date().toISOString(),
+              changedFiles: lastFetchedAt ? 1 : 0,
+              commitSha: process.env.GITHUB_SHA || null,
+            });
+            console.log("::notice title=Archive deploy freshness::" + JSON.stringify(report));
+          '

@@ -326,3 +326,146 @@ test('أسماء الفرق في الصفحة هي أسماء المصدر نف�
   assert.equal(first.find('td').first().text().trim(), String(table.entries[0].rank), 'المركز الأول لا يطابق المصدر');
   assert.equal(first.find('th').first().text().trim(), table.entries[0].name, 'اسم الفريق الأول لا يطابق المصدر');
 });
+
+test('بطاقة «الهجوم والدفاع — معدلات أهداف الموسم» مرسومة مسبقاً في كل صفحات البطولات الثماني وتستبدل الفقرة النصية القديمة', async () => {
+  const { standingsRates } = await import('../src/lib/fixtures-archive.mjs');
+  const cases = [
+    ['matches/الدوري-الإسباني/index.html', 'esp.1', 20],
+    ['matches/الدوري-الإنجليزي/index.html', 'eng.1', 20],
+    ['matches/دوري-أبطال-أوروبا/index.html', 'uefa.champions', 36],
+    ['matches/الدوري-الفرنسي/index.html', 'fra.1', 18],
+    ['matches/الدوري-الألماني/index.html', 'ger.1', 18],
+    ['matches/الدوري-الإيطالي/index.html', 'ita.1', 20],
+    ['matches/الدوري-السعودي/index.html', 'ksa.1', 18],
+    ['matches/الدوري-المصري/index.html', 'egy.1', 20],
+  ];
+
+  for (const [file, league, count] of cases) {
+    const html = await readRoot(file);
+    const $ = load(html);
+    assert.equal(html.includes('أهداف لكل مباراة من جدول الموسم'), false, `${file}: الفقرة القديمة لم تُستبدل`);
+
+    const card = $(`[data-standings-rates="${league}"]`);
+    assert.equal(card.length, 1, `${file}: بطاقة معدلات الهجوم والدفاع غير موجودة`);
+    assert.equal(card.find('h3').text().trim(), 'الهجوم والدفاع — معدلات أهداف الموسم');
+    assert.ok(
+      card.find('.ls-rates-subtitle').text().includes('محسوبة من جدول الترتيب الحالي: الأهداف المسجلة أو المستقبلة ÷ المباريات الملعوبة.'),
+      `${file}: الوصف الفرعي غير مطابق`,
+    );
+    assert.ok(
+      card.find('[data-rates-note]').text().includes('يشمل التصنيف جميع الفرق المتعادلة. لا يُحسم التصنيف إذا كانت البيانات اللازمة لأي فريق غير مكتملة.'),
+      `${file}: ملاحظة التذييل مفقودة`,
+    );
+
+    const subCards = card.find('[data-rate-card]');
+    assert.equal(subCards.length, 4, `${file}: يجب أن تحوي البطاقة 4 بطاقات فرعية`);
+    const titles = subCards.map((_, el) => $(el).find('h4').text().trim()).get();
+    assert.deepEqual(titles, ['أقوى هجوم', 'أضعف هجوم', 'أقوى دفاع', 'أضعف دفاع']);
+
+    assert.equal(card.find('[data-rate-card="best-attack"] [data-rate-unit]').text().trim(), 'هدف مسجل/مباراة');
+    assert.equal(card.find('[data-rate-card="worst-attack"] [data-rate-unit]').text().trim(), 'هدف مسجل/مباراة');
+    assert.equal(card.find('[data-rate-card="best-defence"] [data-rate-unit]').text().trim(), 'هدف مستقبَل/مباراة');
+    assert.equal(card.find('[data-rate-card="worst-defence"] [data-rate-unit]').text().trim(), 'هدف مستقبَل/مباراة');
+
+    const tableData = standings.leagueStandingsByLeague(snapshot, league);
+    const expected = standingsRates(tableData.entries);
+    assert.equal(
+      card.find('[data-rate-card="best-attack"] [data-rate-value]').text().trim(),
+      expected.bestAttack[0].attack.toFixed(2),
+    );
+    assert.equal(
+      card.find('[data-rate-card="best-defence"] [data-rate-value]').text().trim(),
+      expected.bestDefence[0].defence.toFixed(2),
+    );
+    assert.deepEqual(
+      card.find('[data-rate-card="best-defence"] [data-rate-team] bdi').map((_, el) => $(el).text().trim()).get(),
+      expected.bestDefence.map((t) => t.name),
+    );
+
+    const details = card.find('details[data-rates-details]');
+    assert.equal(details.length, 1, `${file}: قسم التفاصيل القابل للطي مفقود`);
+    assert.equal(details.attr('open'), undefined, `${file}: قسم التفاصيل يجب أن يكون مطوياً افتراضياً`);
+    assert.equal(details.find('summary').text().trim(), 'عرض معدلات جميع الفرق');
+    assert.equal(details.find('tbody tr').length, count, `${file}: صفوف جدول المعدلات لا تطابق عدد فرق البطولة`);
+
+    // الشعارات المعتمدة محلياً فقط، ولا أي طلب خارجي لصورة شعار
+    card.find('img').each((_, img) => {
+      const src = $(img).attr('src') || '';
+      assert.match(src, /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/, `${file}: مسار شعار غير محلي: ${src}`);
+    });
+  }
+
+  // التحقق من Brighton & Hove Albion وعدم ظهور &amp; للمستخدم أو استخدام dangerouslySetInnerHTML
+  const engHtml = await readRoot('matches/الدوري-الإنجليزي/index.html');
+  const $eng = load(engHtml);
+  const engCardText = $eng('[data-standings-rates="eng.1"]').text();
+  assert.ok(engCardText.includes('Brighton & Hove Albion'), 'اسم Brighton & Hove Albion غير ظاهر بشكل سليم');
+  assert.equal(engCardText.includes('&amp;'), false, 'ظهر ترميز &amp; خام للمستخدم');
+  assert.equal(
+    $eng('[data-standings-rates="eng.1"] [data-rate-card="best-defence"] img[src="/images/teams/manchester-city-club-badge.webp"]').length,
+    1,
+    'شعار Manchester City المحلي المعتمد غير معروض في البطاقة الفرعية',
+  );
+
+  for (const rel of ['src/components/StandingsRatesCard.tsx', 'src/components/LeagueStandings.tsx']) {
+    const src = await fs.readFile(path.join(website, rel), 'utf8');
+    assert.equal(src.includes('dangerouslySetInnerHTML'), false, `${rel}: يُمنع استخدام dangerouslySetInnerHTML`);
+  }
+});
+
+test('StandingsRatesCard: استقلالية صلاحية الهجوم عن الدفاع، عرض «غير متاح»، وتحديث حالة البيانات القديمة', async () => {
+  const React = await import('react');
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { build } = await import('esbuild');
+  const bundled = await build({
+    entryPoints: [path.join(website, 'src/components/StandingsRatesCard.tsx')],
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+    write: false,
+  });
+  const modUrl = `data:text/javascript;base64,${Buffer.from(bundled.outputFiles[0].text).toString('base64')}`;
+  const { default: StandingsRatesCard } = await import(modUrl);
+
+  // 1) غياب goalsAgainst لفريق واحد يوقف تصنيف الدفاع فقط ويبقي الهجوم متاحاً
+  const htmlAttackOnly = renderToStaticMarkup(
+    React.createElement(StandingsRatesCard, {
+      league: 'eng.1',
+      seasonLabel: '2026/27',
+      provider: 'ESPN',
+      updatedText: '17 أكتوبر 2026',
+      stale: false,
+      entries: [
+        { teamId: '382', name: 'Manchester City', goalsFor: 9, goalsAgainst: null, played: 3 },
+        { teamId: '359', name: 'Arsenal', goalsFor: 3, goalsAgainst: 1, played: 3 },
+      ],
+    }),
+  );
+  const $a = load(htmlAttackOnly);
+  assert.equal($a('[data-rate-card="best-attack"] [data-rate-value]').text().trim(), '3.00');
+  assert.equal($a('[data-rate-card="worst-attack"] [data-rate-value]').text().trim(), '1.00');
+  assert.equal($a('[data-rate-card="best-defence"] [data-rate-unavailable]').text().trim(), 'غير متاح');
+  assert.equal($a('[data-rate-card="worst-defence"] [data-rate-unavailable]').text().trim(), 'غير متاح');
+  assert.equal($a('[data-rates-stale-badge]').attr('hidden') !== undefined, true);
+
+  // 2) غياب goalsFor لفريق واحد يوقف تصنيف الهجوم فقط ويبقي الدفاع متاحاً، مع إظهار شارة البيانات القديمة
+  const htmlDefenceOnly = renderToStaticMarkup(
+    React.createElement(StandingsRatesCard, {
+      league: 'eng.1',
+      seasonLabel: '2026/27',
+      provider: 'ESPN',
+      updatedText: '17 أكتوبر 2026',
+      stale: true,
+      entries: [
+        { teamId: '331', name: 'Brighton &amp; Hove Albion', goalsFor: null, goalsAgainst: 2, played: 4 },
+        { teamId: '359', name: 'Arsenal', goalsFor: 8, goalsAgainst: 6, played: 4 },
+      ],
+    }),
+  );
+  const $d = load(htmlDefenceOnly);
+  assert.equal($d('[data-rate-card="best-attack"] [data-rate-unavailable]').text().trim(), 'غير متاح');
+  assert.equal($d('[data-rate-card="worst-attack"] [data-rate-unavailable]').text().trim(), 'غير متاح');
+  assert.equal($d('[data-rate-card="best-defence"] [data-rate-value]').text().trim(), '0.50');
+  assert.equal($d('[data-rate-card="best-defence"] [data-rate-team] bdi').text().trim(), 'Brighton & Hove Albion');
+  assert.equal($d('[data-rates-stale-badge]').attr('hidden'), undefined);
+});

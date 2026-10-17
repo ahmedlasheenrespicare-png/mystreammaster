@@ -1,6 +1,7 @@
-import { standingsRates } from '../lib/fixtures-archive.mjs';
+import { cleanTeamName } from '../lib/fixtures-archive.mjs';
 import { useEffect, useRef, useState } from 'react';
 import snapshot from '../content/standings-snapshot.json';
+import StandingsRatesCard from './StandingsRatesCard';
 import {
   STALE_BADGE_TEXT,
   STANDINGS_HEADINGS,
@@ -168,9 +169,8 @@ export default function LeagueStandings({ league, title }: { league: string; tit
     );
   }
 
-  const rates = standingsRates(data.entries);
-  const names = (rows: typeof rates.bestAttack) => rows.length ? rows.map(row => row.name).join("، ") : "غير متاح";
   const season = seasonText(data.season);
+  const isStale = state === 'stale' || data.stale;
   const statusText = state === 'updated'
     ? standingsUpdatedStatus(data.fetchedAt)
     : state === 'stale'
@@ -178,69 +178,73 @@ export default function LeagueStandings({ league, title }: { league: string; tit
       : standingsInitialStatus(data.fetchedAt);
 
   return (
-    <section className="landing-section league-standings" aria-labelledby={`${id}-title`} data-league-standings={league}>
-      <div className="ls-heading">
-        <h2 id={`${id}-title`}>جدول الترتيب — {title}</h2>
-        <p className="ls-meta">
-          <span className="ls-phase">{config.phase}</span>
-          <span className="ls-season">موسم <bdi dir="ltr">{season}</bdi></span>
-          <span className="ls-badge" data-standings-badge hidden={state !== 'stale'}>{STALE_BADGE_TEXT}</span>
-        </p>
-      </div>
+    <div className="landing-section league-standings-wrapper">
+      <section className="league-standings" aria-labelledby={`${id}-title`} data-league-standings={league}>
+        <div className="ls-heading">
+          <h2 id={`${id}-title`}>جدول الترتيب — {title}</h2>
+          <p className="ls-meta">
+            <span className="ls-phase">{config.phase}</span>
+            <span className="ls-season">موسم <bdi dir="ltr">{season}</bdi></span>
+            <span className="ls-badge" data-standings-badge hidden={!isStale}>{STALE_BADGE_TEXT}</span>
+          </p>
+        </div>
 
-      <div className="ls-bar">
-        <p className="ls-status" role="status" aria-live="polite" data-standings-status>{statusText}</p>
-        <button type="button" className="ls-refresh" disabled={busy || !online} onClick={() => refreshNow.current()}>
-          {busy ? 'جارٍ التحقق…' : '↻ تحديث الآن'}
-        </button>
-      </div>
+        <div className="ls-bar">
+          <p className="ls-status" role="status" aria-live="polite" data-standings-status>{statusText}</p>
+          <button type="button" className="ls-refresh" disabled={busy || !online} onClick={() => refreshNow.current()}>
+            {busy ? 'جارٍ التحقق…' : '↻ تحديث الآن'}
+          </button>
+        </div>
 
-      <div
-        className="ls-scroll"
-        role="region"
-        tabIndex={0}
-        aria-label={`جدول ${title}، قابل للتمرير`}
-        aria-describedby={`${id}-hint`}
-      >
-        <table className="ls-table">
-          <caption>{title} · موسم <bdi dir="ltr">{season}</bdi> · جدول الترتيب</caption>
-          <thead>
-            <tr>
-              <th scope="col" className="ls-rank">المركز</th>
-              <th scope="col" className="ls-team">الفريق</th>
-              {STANDINGS_HEADINGS.map((heading, index) => (
-                <th key={heading} scope="col" className={index === 0 ? 'ls-points' : undefined}>{heading}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody data-standings-rows>
-            {data.entries.map((row) => (
-              <tr key={row.teamId}>
-                <td className="ls-rank"><bdi dir="ltr">{row.rank}</bdi></td>
-                <th scope="row" className="ls-team"><bdi dir="auto">{row.name}</bdi></th>
-                {STANDINGS_FIELDS.map((field) => (
-                  <td key={field} className={field === 'points' ? 'ls-points' : undefined}>
-                    <bdi dir="ltr">{standingsNumber(row[field], field)}</bdi>
-                  </td>
+        <div
+          className="ls-scroll"
+          role="region"
+          tabIndex={0}
+          aria-label={`جدول ${title}، قابل للتمرير`}
+          aria-describedby={`${id}-hint`}
+        >
+          <table className="ls-table">
+            <caption>{title} · موسم <bdi dir="ltr">{season}</bdi> · جدول الترتيب</caption>
+            <thead>
+              <tr>
+                <th scope="col" className="ls-rank">المركز</th>
+                <th scope="col" className="ls-team">الفريق</th>
+                {STANDINGS_HEADINGS.map((heading, index) => (
+                  <th key={heading} scope="col" className={index === 0 ? 'ls-points' : undefined}>{heading}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody data-standings-rows>
+              {data.entries.map((row) => (
+                <tr key={row.teamId}>
+                  <td className="ls-rank"><bdi dir="ltr">{row.rank}</bdi></td>
+                  <th scope="row" className="ls-team"><bdi dir="auto">{cleanTeamName(row.name)}</bdi></th>
+                  {STANDINGS_FIELDS.map((field) => (
+                    <td key={field} className={field === 'points' ? 'ls-points' : undefined}>
+                      <bdi dir="ltr">{standingsNumber(row[field], field)}</bdi>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      <h3>الهجوم والدفاع — أهداف لكل مباراة من جدول الموسم</h3>
-      <p>أقوى هجوم: {names(rates.bestAttack)} · أضعف هجوم: {names(rates.worstAttack)} · أقوى دفاع (الأقل استقبالاً): {names(rates.bestDefence)} · أضعف دفاع: {names(rates.worstDefence)}. يشمل التصنيف جميع المتعادلين؛ لا يُحسم إذا كانت بيانات أي فريق ناقصة.</p>
-      <div className="ls-scroll" role="region" aria-label="معدلات الهجوم والدفاع" tabIndex={0}>
-        <table className="ls-table"><caption>الأهداف المسجلة والمستقبلة ÷ المباريات الملعوبة</caption>
-          <thead><tr><th scope="col">الفريق</th><th scope="col">أهداف مسجلة / مباراة</th><th scope="col">أهداف مستقبلة / مباراة</th></tr></thead>
-          <tbody>{rates.rows.map(row => <tr key={row.teamId}><th scope="row">{row.name}</th><td>{row.attack === null ? 'غير متاح' : row.attack.toFixed(2)}</td><td>{row.defence === null ? 'غير متاح' : row.defence.toFixed(2)}</td></tr>)}</tbody>
-        </table>
-      </div>
-      <p className="ls-hint" id={`${id}-hint`}>
-        جدول كامل من <bdi dir="ltr">{config.count}</bdi> فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة، ويمكن تركيزه بلوحة المفاتيح.
-      </p>
-    </section>
+        <p className="ls-hint" id={`${id}-hint`}>
+          جدول كامل من <bdi dir="ltr">{config.count}</bdi> فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة، ويمكن تركيزه بلوحة المفاتيح.
+        </p>
+      </section>
+
+      <StandingsRatesCard
+        entries={data.entries}
+        league={league}
+        season={data.season}
+        provider={data.provider}
+        fetchedAt={data.fetchedAt}
+        stale={isStale}
+        idPrefix={`${id}-rates`}
+      />
+    </div>
   );
 }
 

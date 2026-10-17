@@ -73,14 +73,55 @@ export function archiveTeamStats(matches) {
   }
   return [...teams.values()];
 }
+const gcd = (a, b) => {
+  let x = Math.abs(a), y = Math.abs(b);
+  while (y) { const t = y; y = x % y; x = t; }
+  return x || 1;
+};
+export function cleanTeamName(name) {
+  if (typeof name !== 'string') return '';
+  let out = name.trim();
+  let prev;
+  do {
+    prev = out;
+    out = out.replace(/&(?:amp|#0*38|#x0*26);/gi, '&');
+  } while (out !== prev);
+  return out;
+}
 export function standingsRates(entries) {
-  const rate = (goals, played) => typeof goals === 'number' && goals >= 0 && typeof played === 'number' && played > 0 ? goals / played : null;
-  const rows = entries.map(t => ({ ...t, attack: rate(t.goalsFor, t.played), defence: rate(t.goalsAgainst, t.played) }));
+  const validGoals = v => typeof v === 'number' && Number.isFinite(v) && v >= 0;
+  const validPlayed = v => typeof v === 'number' && Number.isFinite(v) && v > 0;
+  const rate = (goals, played) => {
+    if (!validGoals(goals) || !validPlayed(played)) return null;
+    if (Number.isInteger(goals) && Number.isInteger(played)) {
+      const g = gcd(goals, played);
+      return (goals / g) / (played / g);
+    }
+    return goals / played;
+  };
+  const rows = (Array.isArray(entries) ? entries : []).map(t => ({
+    ...t,
+    name: typeof t?.name === 'string' ? cleanTeamName(t.name) : '',
+    attack: rate(t?.goalsFor, t?.played),
+    defence: rate(t?.goalsAgainst, t?.played),
+  }));
   const extreme = (field, direction) => {
     // A partial table cannot establish league-wide strongest/weakest.
     if (!rows.length || rows.some(t => t[field] === null)) return [];
     const value = Math[direction](...rows.map(t => t[field]));
     return rows.filter(t => t[field] === value);
   };
-  return { rows, bestAttack: extreme('attack', 'max'), worstAttack: extreme('attack', 'min'), bestDefence: extreme('defence', 'min'), worstDefence: extreme('defence', 'max') };
+  const bestAttack = extreme('attack', 'max');
+  const worstAttack = extreme('attack', 'min');
+  const bestDefence = extreme('defence', 'min');
+  const worstDefence = extreme('defence', 'max');
+  return {
+    rows,
+    bestAttack,
+    worstAttack,
+    bestDefence,
+    worstDefence,
+    attackComplete: bestAttack.length > 0,
+    defenceComplete: bestDefence.length > 0,
+  };
 }

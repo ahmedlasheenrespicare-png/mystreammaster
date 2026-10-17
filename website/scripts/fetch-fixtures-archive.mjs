@@ -34,23 +34,31 @@ export function normalizeHighlightly(raw, sourceUrl, fetchedAt) {
   });
 }
 export function summaryStatistics(raw, match) {
-  const sides = raw?.boxscore?.players;
-  // ESPN soccer summaries expose team totals in boxscore.players[].statistics.
-  assert(Array.isArray(sides), 'STATISTICS_UNAVAILABLE');
+  // ESPN soccer summaries may place team totals in boxscore.teams[].statistics or boxscore.players[].statistics.
+  const pools = [raw?.boxscore?.teams, raw?.boxscore?.players].filter(Array.isArray);
+  assert(pools.length > 0, 'STATISTICS_UNAVAILABLE');
   const read = id => {
-    const side = sides.find(t => String(t.team?.id) === id);
-    const stats = side?.statistics;
-    assert(Array.isArray(stats), 'STATISTICS_UNAVAILABLE');
+    const sides = pools.flat().filter(t => String(t?.team?.id) === id && Array.isArray(t?.statistics));
+    assert(sides.length > 0, 'STATISTICS_UNAVAILABLE');
+    const stats = sides.flatMap(t => t.statistics);
     const get = names => {
-      const v = stats.find(s => names.includes(s.name));
+      const v = stats.find(s => names.includes(s?.name));
       return number(typeof v?.displayValue === 'string' ? v.displayValue.replace(/%$/, '') : v?.value);
     };
-    return { possession: get(['possessionPct', 'possession']), shots: get(['totalShots', 'shots']), passAccuracy: get(['passPct', 'passAccuracy']) };
+    const possession = get(['possessionPct', 'possession']);
+    const shots = get(['totalShots', 'shots']);
+    // Pass accuracy is taken strictly as reported by the source; never calculated or guessed from pass counts.
+    const passAccuracy = get(['passPct', 'passAccuracy', 'passingAccuracy', 'accuratePassesPct']);
+    return {
+      possession: possession !== null && possession <= 100 ? possession : null,
+      shots: shots !== null && Number.isInteger(shots) ? shots : null,
+      passAccuracy: passAccuracy !== null && passAccuracy <= 100 ? passAccuracy : null,
+    };
   };
   return { home: read(match.home.id), away: read(match.away.id) };
 }
-export async function collect({ now = new Date(), outDir = path.join(website, '.fixtures-out'), archiveDir = path.join(website, 'src/content/fixtures-archive'), request = fetch, delayMs = 1100, approved = process.env.FIXTURES_SOURCES_APPROVED === 'true', highlightlyApproved = process.env.HIGHLIGHTLY_PLAN_APPROVED === 'true', statistics = process.env.FIXTURES_STATISTICS === 'true' } = {}) {
-  const report = { fetchedAt: now.toISOString(), leagues: [], statisticsFailures: 0, requests: 0 };
+export async function collect({ now = new Date(), outDir = path.join(website, '.fixtures-out'), archiveDir = path.join(website, 'src/content/fixtures-archive'), request = fetch, delayMs = 1100, approved = process.env.FIXTURES_SOURCES_APPROVED === 'true', highlightlyApproved = process.env.HIGHLIGHTLY_PLAN_APPROVED === 'true', statistics = process.env.FIXTURES_STATISTICS === 'true', maxHighlightlyRequests = 60 } = {}) {
+  const report = { fetchedAt: now.toISOString(), leagues: [], statisticsFailures: 0, requests: 0, highlightlyRequests: 0 };
   const days = Array.from({ length: 45 }, (_, i) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + i - 30)).toISOString().slice(0,10));
   report.window = { from: days[0], to: days.at(-1) };
   const get = async (url, headers = {}) => {
@@ -73,6 +81,8 @@ export async function collect({ now = new Date(), outDir = path.join(website, '.
           assert(process.env.HIGHLIGHTLY_API_KEY, 'UPSTREAM_KEY_MISSING');
           let offset = 0, total;
           do {
+            assert(report.highlightlyRequests < maxHighlightlyRequests, 'HIGHLIGHTLY_QUOTA_GUARD');
+            report.highlightlyRequests++;
             const url = `https://soccer.highlightly.net/matches?leagueId=199067&date=${day}&limit=100&offset=${offset}`;
             const raw = await get(url, { 'x-rapidapi-key': process.env.HIGHLIGHTLY_API_KEY });
             const rows = normalizeHighlightly(raw, url, report.fetchedAt);
@@ -91,8 +101,20 @@ export async function collect({ now = new Date(), outDir = path.join(website, '.
       for (const row of all) { assert(!ids.has(row.match.id), 'DUPLICATE_ID'); ids.add(row.match.id); }
       assert(all.length > 0, 'EMPTY_WINDOW_PRESERVED');
       assert(all.length <= 3000, 'EXCESSIVE_WINDOW_COUNT');
+      const previousBySeason = new Map();
+      for (const season of new Set(all.map(r => r.season))) {
+        let previous = null;
+        try { previous = JSON.parse(await fs.readFile(path.join(archiveDir, league, `${season}.json`), 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        previousBySeason.set(season, previous);
+      }
       if (statistics && BIG_FIVE.includes(league)) for (const row of all) {
         if (row.match.status !== 'finished') continue;
+        const prevArchive = previousBySeason.get(row.season);
+        const prevMatch = prevArchive?.matches?.find(m => m.id === row.match.id);
+        if (prevMatch?.status === 'finished' && prevMatch?.statistics) {
+          row.match.statistics = prevMatch.statistics;
+          continue;
+        }
         try {
           const raw = await get(`https://site.api.espn.com/apis/site/v2/sports/soccer/${league}/summary?event=${encodeURIComponent(row.match.id)}`);
           assert(String(raw.header?.id) === row.match.id && raw.header?.league?.slug === league, 'SUMMARY_ID_MISMATCH');
@@ -102,8 +124,7 @@ export async function collect({ now = new Date(), outDir = path.join(website, '.
       const candidates = [];
       for (const season of new Set(all.map(r => r.season))) {
         const incoming = validateArchive({ schemaVersion: 1, league, season, matches: all.filter(r => r.season === season).map(r => r.match) });
-        let previous = null;
-        try { previous = JSON.parse(await fs.readFile(path.join(archiveDir, league, `${season}.json`), 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        const previous = previousBySeason.get(season) ?? null;
         const data = mergeArchive(previous, incoming);
         candidates.push({ season, data });
       }
@@ -124,5 +145,12 @@ export async function collect({ now = new Date(), outDir = path.join(website, '.
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const report = await collect(); console.log(JSON.stringify(report, null, 2));
-  if (report.leagues.some(l => !l.ok)) process.exitCode = 1;
+  const okLeagues = report.leagues.filter(l => l.ok);
+  const failedLeagues = report.leagues.filter(l => !l.ok);
+  for (const failed of failedLeagues) {
+    console.log(`::warning title=Archive league preserved (${failed.league})::${failed.league} failed with ${failed.code}; previous archive preserved without blocking ${okLeagues.length} working league(s).`);
+  }
+  // Do not block publishing working leagues when a single league (e.g. sau.1) fails;
+  // fail the job only when zero leagues succeeded.
+  if (okLeagues.length === 0) process.exitCode = 1;
 }

@@ -361,6 +361,326 @@
   line-height: 1.9;
 }
 
+/* ==========================================================================
+   بطاقة «الهجوم والدفاع — معدلات أهداف الموسم»
+   --------------------------------------------------------------------------
+   • أربع بطاقات فرعية: 4 في صف على سطح المكتب، 2 على اللوحي، 1 على الهاتف.
+   • تمييز الهجوم والدفاع بأيقونة ونص دلالي ولون متناسق عالي التباين.
+   • شارات الفرق المتعادلة تلتفّ تلقائياً بلا قصّ للأسماء أو تمرير أفقي.
+   ========================================================================== */
+
+.ls-rates-card {
+  margin-top: 22px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  border: 1px solid #dfd9cb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f6ef 100%);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.ls-rates-card--stale {
+  border-color: #e2c58a;
+}
+
+.ls-rates-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ece8dd;
+}
+
+.ls-rates-heading {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.ls-rates-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 2vw, 1.32rem);
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.5;
+}
+
+.ls-rates-subtitle {
+  margin: 6px 0 0;
+  color: #3f3f46;
+  font-size: 0.85rem;
+  line-height: 1.85;
+}
+
+.ls-rates-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.ls-rates-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #3f3f46;
+  background: #f4f1e8;
+  border: 1px solid #e2ddd0;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.ls-rates-stale-badge {
+  font-size: 0.75rem;
+}
+
+.ls-rates-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+@media (min-width: 600px) and (max-width: 1023.98px) {
+  .ls-rates-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ls-rates-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ls-rate-subcard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e4e1d8;
+  border-top-width: 4px;
+}
+
+.ls-rate-subcard--attack.ls-rate-subcard--best {
+  border-top-color: #14532d;
+}
+
+.ls-rate-subcard--attack.ls-rate-subcard--worst {
+  border-top-color: #7c2d12;
+}
+
+.ls-rate-subcard--defence.ls-rate-subcard--best {
+  border-top-color: #17206b;
+}
+
+.ls-rate-subcard--defence.ls-rate-subcard--worst {
+  border-top-color: #9a3412;
+}
+
+.ls-rate-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ls-rate-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.73rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.ls-rate-kind--attack {
+  background: #eef6f0;
+  color: #14532d;
+  border: 1px solid #cce3d2;
+}
+
+.ls-rate-subcard--attack.ls-rate-subcard--worst .ls-rate-kind--attack {
+  background: #fdf2ee;
+  color: #7c2d12;
+  border-color: #f2d3c7;
+}
+
+.ls-rate-kind--defence {
+  background: #eef0fb;
+  color: #17206b;
+  border: 1px solid #d2d7f5;
+}
+
+.ls-rate-subcard--defence.ls-rate-subcard--worst .ls-rate-kind--defence {
+  background: #fff3eb;
+  color: #9a3412;
+  border-color: #f3d4bf;
+}
+
+.ls-rate-icon {
+  flex-shrink: 0;
+}
+
+.ls-rate-tie-count {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #52525c;
+  background: #f4f3ee;
+  border: 1px solid #e4e1d8;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.ls-rate-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ls-rate-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.4;
+}
+
+.ls-rate-metric {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #f8f7f2;
+  border: 1px solid #edeae0;
+}
+
+.ls-rate-value {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #17206b;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.ls-rate-value--na {
+  font-size: 1.05rem;
+  color: #52525c;
+}
+
+.ls-rate-unit {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #52525c;
+}
+
+.ls-rate-teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 2px 0 0;
+  min-width: 0;
+}
+
+.ls-rate-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: #f4f3ee;
+  border: 1px solid #e2dfd5;
+  color: #0b0b0f;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.ls-rate-team-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.ls-rate-team-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.ls-rate-empty {
+  margin: 2px 0 0;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #f4f3ee;
+  color: #52525c;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ls-rates-note {
+  margin: 14px 0 0;
+  color: #52525c;
+  font-size: 0.8rem;
+  line-height: 1.85;
+}
+
+.ls-rates-details {
+  margin-top: 14px;
+  background: #ffffff;
+  border: 1px solid #e4e1d8;
+  border-radius: 14px;
+  padding: 4px 16px;
+}
+
+.ls-rates-Details[open],
+.ls-rates-details[open] {
+  padding-bottom: 14px;
+}
+
+.ls-rates-summary {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: #17206b;
+  padding: 10px 0;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ls-rates-summary:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+@media (max-width: 560px) {
+  .ls-rates-card {
+    padding: 16px;
+  }
+}
+
 /* قسم «البيانات والمصادر» — نص صغير هادئ بخط علوي فاصل،
    من متغيّرات الألوان القائمة بلا خطوط جديدة */
 .ls-data-sources {

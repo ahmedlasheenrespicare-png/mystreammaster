@@ -85,3 +85,6 @@
 - تشغيل مسبار السعودية: https://github.com/ahmedlasheenrespicare-png/mystreammaster/actions/runs/39043955590
 - اكتملت مهمة المسبار وأصدرت تحذيراً فعلياً: `Saudi replacement not verified; retain source blocker in PR.`؛ نجاح مهمة التشخيص لا يعني نجاح المصدر.
 - تنزيل المصنوع والسجلات من بيئة الوكيل تعذّر لأن GitHub يحوّلهما إلى نطاقات تخزين خارج قائمة الشبكة المسموحة. يمكن للمالك فتح Summary/المصنوع مباشرة من صفحة التشغيل.
+
+- المسبار الثاني: https://github.com/ahmedlasheenrespicare-png/mystreammaster/actions/runs/39044064273 ، بتاريخ `2026-10-17T15:13:12.164Z`، أعاد طلب `sau.1/scoreboard` **HTTP 400** (`UPSTREAM_HTTP_400`، `verified=false`). استُخرجت النتيجة من GitHub Checks annotations عبر API؛ النسخة الموثقة بجوار هذا التقرير في `saudi-fixtures-probe.json`. **مرشح ESPN sau.1 مرفوض بهذا الدليل، وليس إصلاحاً للسعودي.**
+- فحوص GitHub Verify ما زالت قيد التنفيذ وقت تحديث هذا التقرير؛ نتائج الاختبارات المذكورة أعلاه محلية وليست ادعاءً باكتمال CI.

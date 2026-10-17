@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { load } from 'cheerio';
 
 /* ==========================================================================
@@ -349,13 +349,12 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(card.length, 1, `${file}: بطاقة معدلات الهجوم والدفاع غير موجودة`);
     assert.equal(card.find('h3').text().trim(), 'الهجوم والدفاع — معدلات أهداف الموسم');
     assert.ok(
-      card.find('.ls-rates-subtitle').text().includes('محسوبة من جدول الترتيب الحالي: الأهداف المسجلة أو المستقبلة ÷ المباريات الملعوبة.'),
+      card.find('.ls-rates-subtitle').text().includes('محسوبة من جدول الترتيب الحالي فقط، بلا أي بيانات خارجية'),
       `${file}: الوصف الفرعي غير مطابق`,
     );
-    assert.ok(
-      card.find('[data-rates-note]').text().includes('يشمل التصنيف جميع الفرق المتعادلة. لا يُحسم التصنيف إذا كانت البيانات اللازمة لأي فريق غير مكتملة.'),
-      `${file}: ملاحظة التذييل مفقودة`,
-    );
+    const note = card.find('.ls-rates-note').text();
+    assert.ok(note.includes('يشمل التصنيف جميع الفرق المتعادلة'), `${file}: ملاحظة التذييل مفقودة`);
+    assert.ok(note.includes('غير مكتملة'), `${file}: ملاحظة اكتمال البيانات مفقودة`);
 
     const subCards = card.find('[data-rate-card]');
     assert.equal(subCards.length, 4, `${file}: يجب أن تحوي البطاقة 4 بطاقات فرعية`);
@@ -366,6 +365,19 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(card.find('[data-rate-card="worst-attack"] [data-rate-unit]').text().trim(), 'هدف مسجل/مباراة');
     assert.equal(card.find('[data-rate-card="best-defence"] [data-rate-unit]').text().trim(), 'هدف مستقبَل/مباراة');
     assert.equal(card.find('[data-rate-card="worst-defence"] [data-rate-unit]').text().trim(), 'هدف مستقبَل/مباراة');
+
+    /* الإصدار التحليلي: شريط مؤشرات المسابقة + مقارنة بمعدل المتوسط في كل بطاقة فرعية
+       (يُرسم مسبقاً بلا أي طلب خارجي) */
+    assert.equal(card.find('[data-rates-kpis] [data-rates-kpi]').length, 4, `${file}: شريط مؤشرات المسابقة ناقص`);
+    assert.equal(card.find('[data-rate-delta]').length, 4, `${file}: شارات المقارنة بمتوسط الدوري ناقصة`);
+    assert.equal(card.find('[data-rate-bench]').length, 4, `${file}: أشرطة المعيار المرجعي ناقصة`);
+    assert.equal(card.find('[data-rate-bench-avg]').length, 4, `${file}: علامات متوسط الدوري ناقصة`);
+    assert.equal(card.find('[data-rate-sample]').length, 4, `${file}: مقاييس العينة (الأهداف/المباريات) ناقصة`);
+    assert.equal(card.find('[data-rate-sort]').length, 9, `${file}: أزرار فرز أعمدة الجدول التحليلي ناقصة`);
+    assert.equal(card.find('[data-rate-crest]').length > 0, true, `${file}: شعارات الفرق/المونوغرامات مفقودة`);
+    assert.equal(card.find('[data-rate-team-rank]').length > 0, true, `${file}: مراكز الفرق داخل الشارات مفقودة`);
+    assert.equal(card.find('[data-rate-team-goals]').length > 0, true, `${file}: إجمالي الأهداف داخل الشارات مفقودة`);
+    assert.equal(card.find('[data-rate-team-mp]').length > 0, true, `${file}: عدد المباريات داخل الشارات مفقودة`);
 
     const tableData = standings.leagueStandingsByLeague(snapshot, league);
     const expected = standingsRates(tableData.entries);
@@ -378,15 +390,17 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
       expected.bestDefence[0].defence.toFixed(2),
     );
     assert.deepEqual(
-      card.find('[data-rate-card="best-defence"] [data-rate-team] bdi').map((_, el) => $(el).text().trim()).get(),
+      card.find('[data-rate-card="best-defence"] [data-rate-team-name]').map((_, el) => $(el).text().trim()).get(),
       expected.bestDefence.map((t) => t.name),
+      `${file}: أسماء المتعادلين في أقوى دفاع غير مطابقة`,
     );
 
     const details = card.find('details[data-rates-details]');
     assert.equal(details.length, 1, `${file}: قسم التفاصيل القابل للطي مفقود`);
     assert.equal(details.attr('open'), undefined, `${file}: قسم التفاصيل يجب أن يكون مطوياً افتراضياً`);
-    assert.equal(details.find('summary').text().trim(), 'عرض معدلات جميع الفرق');
-    assert.equal(details.find('tbody tr').length, count, `${file}: صفوف جدول المعدلات لا تطابق عدد فرق البطولة`);
+    assert.equal(details.find('summary').text().trim(), 'عرض معدلات جميع الفرق — جدول تحليلي قابل للفرز');
+    assert.equal(details.find('tr[data-rate-row]').length, count, `${file}: صفوف جدول المعدلات لا تطابق عدد فرق البطولة`);
+    assert.equal(details.find('[data-rate-tactic]').length, count, `${file}: التصنيف التكتيكي لكل فريق مفقود`);
 
     // الشعارات المعتمدة محلياً فقط، ولا أي طلب خارجي لصورة شعار
     card.find('img').each((_, img) => {
@@ -414,18 +428,34 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
 });
 
 test('StandingsRatesCard: استقلالية صلاحية الهجوم عن الدفاع، عرض «غير متاح»، وتحديث حالة البيانات القديمة', async () => {
-  const React = await import('react');
-  const { renderToStaticMarkup } = await import('react-dom/server');
   const { build } = await import('esbuild');
+  /* import.meta.glob خاص بـ Vite — في هذا الاختبار (esbuild + Node) نستبدله
+     بدالة فارغة كي تُحزم المكوّن كما هو، وبدون أرشيف محلي محمَّل. */
+  globalThis.__SM_GLOB_STUB__ = () => ({});
   const bundled = await build({
     entryPoints: [path.join(website, 'src/components/StandingsRatesCard.tsx')],
     bundle: true,
     format: 'esm',
     platform: 'node',
     write: false,
+    /* نُبقي React خارج الحزمة كي تشترك مع مُصيِّر الاختبار في نسخة React واحدة
+       (لكن نسختين مستقلتين تطلّان خطأ "Invalid hook call"). */
+    external: ['react', 'react/jsx-runtime'],
+    define: { 'import.meta.glob': 'globalThis.__SM_GLOB_STUB__' },
   });
-  const modUrl = `data:text/javascript;base64,${Buffer.from(bundled.outputFiles[0].text).toString('base64')}`;
-  const { default: StandingsRatesCard } = await import(modUrl);
+  /* URL البيانات لا يحلّ المقاولات المطلقة مثل "react" — نكتب الحزمة في ملف
+     مؤقت داخل website/ (مُتجاهَل من git) حتى تُحلّ react من node_modules نفسها. */
+  const tempFile = path.join(website, 'playwright-report', `rates-card-bundle-${process.pid}-${Date.now()}.mjs`);
+  await fs.mkdir(path.dirname(tempFile), { recursive: true });
+  await fs.writeFile(tempFile, bundled.outputFiles[0].text, 'utf8');
+  const React = await import('react');
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  let StandingsRatesCard;
+  try {
+    ({ default: StandingsRatesCard } = await import(pathToFileURL(tempFile).href));
+  } finally {
+    await fs.rm(tempFile, { force: true });
+  }
 
   // 1) غياب goalsAgainst لفريق واحد يوقف تصنيف الدفاع فقط ويبقي الهجوم متاحاً
   const htmlAttackOnly = renderToStaticMarkup(
@@ -466,6 +496,9 @@ test('StandingsRatesCard: استقلالية صلاحية الهجوم عن ال
   assert.equal($d('[data-rate-card="best-attack"] [data-rate-unavailable]').text().trim(), 'غير متاح');
   assert.equal($d('[data-rate-card="worst-attack"] [data-rate-unavailable]').text().trim(), 'غير متاح');
   assert.equal($d('[data-rate-card="best-defence"] [data-rate-value]').text().trim(), '0.50');
-  assert.equal($d('[data-rate-card="best-defence"] [data-rate-team] bdi').text().trim(), 'Brighton & Hove Albion');
+  assert.equal($d('[data-rate-card="best-defence"] [data-rate-team-name]').text().trim(), 'Brighton & Hove Albion');
+  /* الحصيلة الخام (حجم العينة) تظهر بجانب المعدل: هدفان مستقبلان في 4 مباريات */
+  assert.ok($d('[data-rate-card="best-defence"] [data-rate-sample]').text().includes('4'));
+  assert.ok($d('[data-rate-card="best-defence"] [data-rate-delta]').length === 1);
   assert.equal($d('[data-rates-stale-badge]').attr('hidden'), undefined);
 });

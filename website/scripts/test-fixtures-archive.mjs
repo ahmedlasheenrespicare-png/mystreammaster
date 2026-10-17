@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { ARCHIVE_LEAGUES, validateArchive, mergeArchive, archiveTeamStats, cleanTeamName, standingsRates } from '../src/lib/fixtures-archive.mjs';
+import { ARCHIVE_LEAGUES, validateArchive, mergeArchive, archiveTeamStats, cleanTeamName, standingsRates, TACTIC_LABELS } from '../src/lib/fixtures-archive.mjs';
 import { normalizeEspn, normalizeHighlightly, summaryStatistics, collect } from './fetch-fixtures-archive.mjs';
 import { publish, buildArchiveDeployReport } from './publish-fixtures-archive.mjs';
 import { judgeEspnSummary, probeEspnSummary } from './probe-espn-summary.mjs';
@@ -151,6 +151,130 @@ test('standingsRates: zero goals is valid 0.00; attack and defence validity are 
   assert.equal(rDefenceOnly.worstAttack.length, 0);
   assert.deepEqual(rDefenceOnly.bestDefence.map(t => t.name), ['Defence Valid A']);
   assert.deepEqual(rDefenceOnly.worstDefence.map(t => t.name), ['Defence Valid B']);
+});
+
+test('standingsRates: derived analyst metrics use exact fractions and never treat null as zero', () => {
+  // 10/4 = 2.50 (يسوَّى إلى 5/2) مقابل 5/2 = 2.50 — تعادل تام رغم اختلاف العينة
+  const rows = [
+    { teamId: '1', name: 'Alpha', rank: 1, points: 9, played: 4, wins: 3, draws: 0, losses: 1, goalsFor: 10, goalsAgainst: 4, goalDifference: 6 },
+    { teamId: '2', name: 'Beta', rank: 2, points: 6, played: 2, wins: 2, draws: 0, losses: 0, goalsFor: 5, goalsAgainst: 2, goalDifference: 3 },
+    { teamId: '3', name: 'Gamma', rank: 3, points: 0, played: 3, wins: 0, draws: 0, losses: 3, goalsFor: 1, goalsAgainst: 9, goalDifference: -8 },
+  ];
+  const res = standingsRates(rows);
+  assert.equal(res.rows[0].attack, 2.5);
+  assert.equal(res.rows[1].attack, 2.5, 'التعادل الكسري الدقيق 10/4 === 5/2');
+  assert.deepEqual(res.bestAttack.map(t => t.name), ['Alpha', 'Beta'], 'أولوية المتعادلة: المركز ثم الاسم');
+  /* PPM: 9/4 = 2.25 و 6/2 = 3.00 و 0/3 = 0 */
+  assert.equal(res.rows[0].ppm, 2.25);
+  assert.equal(res.rows[1].ppm, 3);
+  assert.equal(res.rows[2].ppm, 0);
+  /* نسبة الفوز: 3/4 = 75%، 2/2 = 100%، 0/3 = 0% */
+  assert.equal(res.rows[0].winPct, 75);
+  assert.equal(res.rows[1].winPct, 100);
+  assert.equal(res.rows[2].winPct, 0);
+  /* الصافي/م من القيم الخام (له − عليه) ÷ لعب — لا من فارق المصدر */
+  assert.equal(res.rows[0].gdPerMatch, 1.5);
+  assert.equal(res.rows[1].gdPerMatch, 1.5);
+  assert.equal(res.rows[2].gdPerMatch, -8 / 3);
+  /* ملخص المسابقة: 16 هدفاً ÷ 9 مباريات جماعية */
+  assert.equal(res.league.totalGoals, 16);
+  assert.equal(res.league.totalTeamMatches, 9);
+  assert.ok(Math.abs(res.league.averagePerTeam - 16 / 9) < 1e-12);
+  assert.equal(res.league.maxAttack, 2.5);
+  assert.equal(res.league.maxDefence, 3);
+  assert.equal(res.league.bestGdPerMatch.value, 1.5);
+  assert.deepEqual(res.league.bestGdPerMatch.teams.map(t => t.name), ['Alpha', 'Beta']);
+  assert.equal(res.league.bestPpm.value, 3);
+  assert.deepEqual(res.league.bestPpm.teams.map(t => t.name), ['Beta']);
+});
+
+test('standingsRates: missing goalsFor stops only the attack-side metrics of that team', () => {
+  const res = standingsRates([
+    { teamId: '1', name: 'Whole', rank: 1, points: 3, played: 1, wins: 1, draws: 0, losses: 0, goalsFor: 3, goalsAgainst: 1, goalDifference: 2 },
+    { teamId: '2', name: 'Gap', rank: 2, points: 0, played: 2, wins: 0, draws: 0, losses: 2, goalsFor: null, goalsAgainst: 2, goalDifference: null },
+  ]);
+  assert.equal(res.rows[1].attack, null, 'غياب «له» يوقف معدل الهجوم وحده');
+  assert.equal(res.rows[1].defence, 1, 'الدفاع يبقى صالحاً');
+  assert.equal(res.rows[1].gdPerMatch, null, 'الصافي/م يتطلب «له» و«عليه» معاً');
+  assert.equal(res.rows[1].ppm, 0);
+  assert.equal(res.bestAttack.length, 0, 'جدول جزئي لا يثبت أقوى هجوم في المسابقة');
+});
+
+test('standingsRates: negative points and deductions stay valid in PPM; missing wins leave Win% unavailable', () => {
+  const res = standingsRates([
+    { teamId: '1', name: 'Deducted', rank: 1, points: -3, played: 5, wins: null, draws: 1, losses: 4, goalsFor: 4, goalsAgainst: 8, goalDifference: -4 },
+  ]);
+  assert.equal(res.rows[0].ppm, -3 / 5, 'النقاط السالبة تظل معدلًا صالحًا');
+  assert.equal(res.rows[0].winPct, null, 'غياب «فاز» لا يُعدّ صفراً');
+  assert.equal(res.rows[0].gdPerMatch, -0.8);
+  assert.equal(res.league.bestPpm.value, -3 / 5, 'أعلى نقاط/م قد يكون سالباً في جدول كامل بالخصوم');
+});
+
+test('standingsRates: tactics classify by exact comparison against the league average', () => {
+  // متوسط المسابقة = (12 + 8 + 4 + 2) / (4 + 4 + 4 + 4) = 26/16 = 1.625
+  const res = standingsRates([
+    { teamId: '1', name: 'Elite', rank: 1, points: 12, played: 4, wins: 4, draws: 0, losses: 0, goalsFor: 12, goalsAgainst: 4, goalDifference: 8 },
+    { teamId: '2', name: 'Attacker', rank: 2, points: 7, played: 4, wins: 2, draws: 1, losses: 1, goalsFor: 8, goalsAgainst: 7, goalDifference: 1 },
+    { teamId: '3', name: 'Park', rank: 3, points: 7, played: 4, wins: 2, draws: 1, losses: 1, goalsFor: 4, goalsAgainst: 2, goalDifference: 2 },
+    { teamId: '4', name: 'Weak', rank: 4, points: 2, played: 4, wins: 0, draws: 2, losses: 2, goalsFor: 2, goalsAgainst: 7, goalDifference: -5 },
+  ]);
+  assert.equal(res.league.averagePerTeam, 26 / 16);
+  assert.equal(res.rows[0].tactic, 'elite-balanced');
+  assert.equal(res.rows[1].tactic, 'offensive');
+  assert.equal(res.rows[2].tactic, 'defensive');
+  assert.equal(res.rows[3].tactic, 'struggling');
+  assert.equal(res.rows[0].attackDelta, 3 - 26 / 16);
+  assert.equal(res.rows[0].defenceDelta, 1 - 26 / 16);
+  assert.equal(TACTIC_LABELS[res.rows[0].tactic], 'متوازن النخبة');
+});
+
+test('standingsRates: a team exactly at the league average is not classified as above it', () => {
+  // الفريقان 3/1 = 3.00 بالضبط = متوسط المسابقة (6 ÷ 2) — المساواة ليست «أقوى من المتوسط»
+  const res = standingsRates([
+    { teamId: '1', name: 'Exact A', rank: 1, points: 3, played: 1, wins: 1, draws: 0, losses: 0, goalsFor: 3, goalsAgainst: 0, goalDifference: 3 },
+    { teamId: '2', name: 'Exact B', rank: 2, points: 0, played: 1, wins: 0, draws: 0, losses: 1, goalsFor: 3, goalsAgainst: 6, goalDifference: -3 },
+  ]);
+  assert.equal(res.league.averagePerTeam, 3);
+  assert.equal(res.rows[0].attackDelta, 0);
+  /* هجوم = المتوسط بالضبط (ليست فوقه) + دفاع 0 < 3 → تكتل دفاعي لا متوازن نخبة */
+  assert.equal(res.rows[0].tactic, 'defensive');
+  /* هجوم = المتوسط + دفاع 6 > 3 → يعاني هجومياً ودفاعياً */
+  assert.equal(res.rows[1].tactic, 'struggling');
+});
+
+test('standingsRates: partial tables keep per-team analytics but mark unavailable league-wide claims', () => {
+  const res = standingsRates([
+    { teamId: '1', name: 'Complete', rank: 1, points: 6, played: 2, wins: 2, draws: 0, losses: 0, goalsFor: 4, goalsAgainst: 1, goalDifference: 3 },
+    { teamId: '2', name: 'Gap', rank: 2, points: 0, played: null, wins: null, draws: null, losses: null, goalsFor: null, goalsAgainst: null, goalDifference: null },
+  ]);
+  assert.equal(res.bestAttack.length, 0, 'جدول جزئي لا يثبت أقوى هجوم في المسابقة');
+  assert.equal(res.rows[0].attack, 2);
+  assert.equal(res.rows[1].attack, null);
+  assert.equal(res.rows[1].ppm, null);
+  assert.equal(res.rows[1].gdPerMatch, null);
+  assert.equal(res.league.totalGoals, 4, 'المتوسط يُحسب من الصفوف المتكاملة فقط');
+  assert.equal(res.league.totalTeamMatches, 2);
+  assert.equal(res.league.averagePerTeam, 2);
+  assert.equal(res.rows[1].attackDelta, null);
+  assert.equal(res.rows[1].tactic, null, 'لا تصنيف تكتيكي لصف ناقص');
+});
+
+test('archiveTeamStats: scoreless counts finished matches with zero goals, alongside clean sheets', () => {
+  const games = [
+    match(), // 2-0: h سجل وشباكه نظيفة؛ a لم يسجل
+    match({ id: '2', score: { home: 0, away: 0 } }), // 0-0: كلاهما لم يسجل وكلاهما نظيف
+    match({ id: '3', score: { home: 0, away: 3 } }), // h لم يسجل؛ a سجل
+    match({ id: '4', status: 'scheduled' }),
+    match({ id: '5', score: { home: null, away: null } }),
+  ];
+  const h = archiveTeamStats(games).find(t => t.id === 'h');
+  const a = archiveTeamStats(games).find(t => t.id === 'a');
+  assert.equal(h.played, 3);
+  assert.equal(h.cleanSheets, 2);
+  assert.equal(h.scoreless, 2, 'صفران: التعادل السلبي ومباراة 0-3');
+  assert.equal(a.played, 3);
+  assert.equal(a.cleanSheets, 2);
+  assert.equal(a.scoreless, 2);
 });
 
 test('cleanTeamName normalizes HTML ampersand entities without altering Arabic or Latin names', () => {

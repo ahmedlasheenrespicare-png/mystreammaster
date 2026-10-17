@@ -5,9 +5,13 @@
  * المصادر المعتمدة:
  *  1. ESPN Site API v2: للبطولات الأوروبية والدولية (مع تفكيك النطاق الزمني إلى أيام مفردة
  *     dates=YYYYMMDD&limit=500 لأن ESPN أوقفت قبول النطاقات dates=YYYYMMDD-YYYYMMDD).
- *  2. TheSportsDB API v1: للدوري السعودي (sau.1 -> 4668) والدوري المصري (egy.1 -> 4829)
- *     لأن نقطة نهاية ESPN لا توفّر هاتين البطولتين وتردّ عليهما بـ HTTP 400. تُطبّع
- *     استجابة TheSportsDB إلى نفس بنية events المعتمدة في الواجهة.
+ *  2. TheSportsDB API v1: للدوري السعودي (sau.1 -> 4668) لأن نقطة نهاية ESPN لا توفّره
+ *     وتردّ عليه بـ HTTP 400. تُطبّع استجابة TheSportsDB إلى نفس بنية events المعتمدة في الواجهة.
+ *  3. Highlightly Football API (soccer.highlightly.net/matches) للدوري المصري (egy.1 -> leagueId 199067).
+ *     حلّ TheSportsDB محله لأن مفتاحه المجاني "3" أُوقف من المصدر. تُطبَّع استجابته
+ *     إلى نفس بنية events (ESPN) دون تخمين: أي قيمة غائبة تصير null.
+ *     المفتاح يُقرأ من الخادم فقط: متغير البيئة SM_HIGHLIGHTLY_KEY ثم
+ *     <المجلد الأب لـ public_html>/SM_HIGHLIGHTLY_KEY/key.txt، ويُرسل في ترويسة x-rapidapi-key.
  */
 
 declare(strict_types=1);
@@ -42,8 +46,19 @@ const ALLOWED_LEAGUES = [
 /** البطولات التي تُجلب من TheSportsDB لعدم توفرها في ESPN */
 const SPORTSDB_LEAGUES = [
     'sau.1' => '4668', // Saudi-Arabian Pro League (دوري روشن السعودي)
-    'egy.1' => '4829', // Egyptian Premier League (الدوري المصري الممتاز)
 ];
+
+/**
+ * البطولات التي تُجلب من Highlightly (soccer.highlightly.net/matches).
+ * المعرّف ومنطقة التوقيت مأخوذان من مسبار 2026-10-17 (standings-probe-report.json)
+ * ومن توثيق المصدر؛ الخطة المجانية Basic = 100 طلب/يوم، والمفتاح يُقرأ من الخادم فقط.
+ */
+const HIGHLIGHTLY_MATCHES_URL = 'https://soccer.highlightly.net/matches';
+const HIGHLIGHTLY_LEAGUES = [
+    'egy.1' => ['leagueId' => 199067, 'timezone' => 'Africa/Cairo'], // الدوري المصري الممتاز
+];
+const HIGHLIGHTLY_PAGE_LIMIT = 100; // الحد الافتراضي للمصدر عند غياب limit
+const HIGHLIGHTLY_MAX_PAGES  = 3;   // سقف صفحات لكل يوم، لحماية زمن التنفيذ وحصة الطلبات
 
 // ───────────────────────── الترويسات الأساسية و CORS ─────────────────────────
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -378,6 +393,269 @@ function normalize_sportsdb_event(array $item): ?array {
     ];
 }
 
+/**
+ * مفتاح Highlightly: متغير البيئة أولاً، ثم ملف على الخادم خارج جذر الموقع.
+ * الملف: <المجلد الأب لـ public_html>/SM_HIGHLIGHTLY_KEY/key.txt (سطر واحد: المفتاح).
+ * مطابق لطريقة standings.php؛ لا يُقرأ من المستودع ولا يُعاد في أي استجابة أو سجل.
+ */
+function highlightly_key(): ?string {
+    $env = getenv('SM_HIGHLIGHTLY_KEY');
+    if (is_string($env) && trim($env) !== '') {
+        return trim($env);
+    }
+    $root = isset($_SERVER['DOCUMENT_ROOT']) ? rtrim((string) $_SERVER['DOCUMENT_ROOT'], '/\\') : '';
+    if ($root === '') {
+        return null;
+    }
+    $file = dirname($root) . '/SM_HIGHLIGHTLY_KEY/key.txt';
+    if (!is_file($file) || !is_readable($file)) {
+        return null;
+    }
+    $value = trim((string) @file_get_contents($file));
+    return $value !== '' ? $value : null;
+}
+
+/** نص غير فارغ من قيمة مصدر، أو null إن لم تكن نصاً صالحاً. */
+function highlightly_text($value): ?string {
+    if (!is_string($value)) {
+        return null;
+    }
+    $text = trim($value);
+    return $text !== '' ? $text : null;
+}
+
+/** معرّف رقمي/نصي من المصدر كنص، أو null. */
+function highlightly_id($value): ?string {
+    if (is_int($value) && $value > 0) {
+        return (string) $value;
+    }
+    if (is_string($value) && preg_match('/^[1-9]\d{0,17}$/', trim($value))) {
+        return trim($value);
+    }
+    return null;
+}
+
+/**
+ * يحوّل حالة Highlightly (state.description) إلى حالة ESPN التي تفهمها الواجهة.
+ * الجدول مأخوذ من توثيق المصدر؛ أي حالة غير معروفة تصير STATUS_UNKNOWN ولا تُخمَّن.
+ *
+ * @return array{state: string, completed: bool, name: string, label: string, minuteBased: bool}
+ */
+function highlightly_status(?string $description): array {
+    $map = [
+        'Not started'               => ['pre',  false, 'STATUS_SCHEDULED',   '',                  false],
+        'To be announced'           => ['pre',  false, 'STATUS_SCHEDULED',   '',                  false],
+        'First half'                => ['in',   false, 'STATUS_IN_PROGRESS', 'الشوط الأول',       true],
+        'Second half'               => ['in',   false, 'STATUS_IN_PROGRESS', 'الشوط الثاني',      true],
+        'Half time'                 => ['in',   false, 'STATUS_IN_PROGRESS', 'بين الشوطين',       false],
+        'Break time'                => ['in',   false, 'STATUS_IN_PROGRESS', 'استراحة',           false],
+        'Extra time'                => ['in',   false, 'STATUS_IN_PROGRESS', 'وقت إضافي',         true],
+        'Penalties'                 => ['in',   false, 'STATUS_IN_PROGRESS', 'ركلات ترجيح',       false],
+        'In progress'               => ['in',   false, 'STATUS_IN_PROGRESS', 'مباشر',             false],
+        'Finished'                  => ['post', true,  'STATUS_FULL_TIME',   '',                  false],
+        'Finished after extra time' => ['post', true,  'STATUS_FULL_TIME',   '',                  false],
+        'Finished after penalties'  => ['post', true,  'STATUS_FULL_TIME',   '',                  false],
+        'Awarded'                   => ['post', true,  'STATUS_FORFEIT',     '',                  false],
+        'Postponed'                 => ['pre',  false, 'STATUS_POSTPONED',   '',                  false],
+        'Cancelled'                 => ['pre',  false, 'STATUS_CANCELED',    '',                  false],
+        'Suspended'                 => ['pre',  false, 'STATUS_SUSPENDED',   '',                  false],
+        'Interrupted'               => ['pre',  false, 'STATUS_SUSPENDED',   '',                  false],
+        'Abandoned'                 => ['pre',  false, 'STATUS_ABANDONED',   '',                  false],
+    ];
+    if ($description !== null && isset($map[$description])) {
+        [$state, $completed, $name, $label, $minuteBased] = $map[$description];
+        return ['state' => $state, 'completed' => $completed, 'name' => $name, 'label' => $label, 'minuteBased' => $minuteBased];
+    }
+    return ['state' => 'pre', 'completed' => false, 'name' => 'STATUS_UNKNOWN', 'label' => '', 'minuteBased' => false];
+}
+
+/**
+ * يحوّل مباراة واحدة من Highlightly إلى بنية حدث ESPN القياسية (events ← competitions ← competitors).
+ * لا يُصلح ولا يُخمّن: القيمة الغائبة تصير null، والمباراة التي يغيب معرّفها أو اسم أحد فريقيها
+ * أو تاريخها تُستبعد. الحقول المأخوذة من التوثيق فقط؛ المصدر لا يرسل ملعباً فيُرجَّع venue.fullName = null.
+ */
+function highlightly_normalize_match(array $item, int $leagueId): ?array {
+    $league = $item['league'] ?? null;
+    if (!is_array($league) || (int) ($league['id'] ?? 0) !== $leagueId) {
+        return null;
+    }
+    $id       = highlightly_id($item['id'] ?? null);
+    $homeRaw  = is_array($item['homeTeam'] ?? null) ? $item['homeTeam'] : null;
+    $awayRaw  = is_array($item['awayTeam'] ?? null) ? $item['awayTeam'] : null;
+    $homeName = $homeRaw !== null ? highlightly_text($homeRaw['name'] ?? null) : null;
+    $awayName = $awayRaw !== null ? highlightly_text($awayRaw['name'] ?? null) : null;
+    $rawDate  = highlightly_text($item['date'] ?? null);
+    if ($id === null || $homeName === null || $awayName === null || $rawDate === null) {
+        return null;
+    }
+    if (!preg_match('/(Z|[+-]\d{2}:\d{2})$/i', $rawDate)) {
+        $rawDate .= 'Z';
+    }
+    if (strtotime($rawDate) === false) {
+        return null;
+    }
+
+    $state      = is_array($item['state'] ?? null) ? $item['state'] : [];
+    $description = highlightly_text($state['description'] ?? null);
+    $status     = highlightly_status($description);
+    $clockRaw   = $state['clock'] ?? null;
+    $minute     = is_int($clockRaw) && $clockRaw >= 0 ? $clockRaw : null;
+
+    $homeScore = null;
+    $awayScore = null;
+    $current   = highlightly_text(is_array($state['score'] ?? null) ? ($state['score']['current'] ?? null) : null);
+    if ($current !== null && preg_match('/^(\d{1,3})\s*-\s*(\d{1,3})$/', $current, $m)) {
+        $homeScore = $m[1];
+        $awayScore = $m[2];
+    }
+
+    $statusObj = [
+        'type' => [
+            'state'       => $status['state'],
+            'completed'   => $status['completed'],
+            'name'        => $status['name'],
+            'shortDetail' => $status['label'] !== '' ? $status['label'] : ($description ?? $status['name']),
+        ],
+    ];
+    if ($status['state'] === 'in') {
+        if ($status['minuteBased'] && $minute !== null) {
+            $statusObj['displayClock'] = $minute . '′';
+        } elseif ($status['label'] !== '') {
+            $statusObj['displayClock'] = $status['label'];
+        }
+    }
+
+    $teamFor = static function (array $raw, string $name): array {
+        $team = ['displayName' => $name];
+        $teamId = highlightly_id($raw['id'] ?? null);
+        if ($teamId !== null) {
+            $team['id'] = $teamId;
+        }
+        $logo = highlightly_text($raw['logo'] ?? null);
+        if ($logo !== null && strncmp($logo, 'https://', 8) === 0) {
+            $team['logo'] = $logo;
+        }
+        return $team;
+    };
+
+    return [
+        'id'           => $id,
+        'date'         => $rawDate,
+        'competitions' => [[
+            'id'          => $id,
+            'date'        => $rawDate,
+            'venue'       => ['fullName' => null],
+            'status'      => $statusObj,
+            'competitors' => [
+                ['homeAway' => 'home', 'score' => $homeScore, 'team' => $teamFor($homeRaw, $homeName)],
+                ['homeAway' => 'away', 'score' => $awayScore, 'team' => $teamFor($awayRaw, $awayName)],
+            ],
+        ]],
+    ];
+}
+
+/**
+ * يحلّل جسم استجابة يوم واحد من Highlightly ({data: [...], pagination: {totalCount}}).
+ * يُرجع events بالبنية الموحدة مع عدد العناصر المستلمة وإجماليها لدعم الصفحات.
+ */
+function highlightly_parse_day_body(string $league, string $body): array {
+    $decoded = json_decode($body, true, 64);
+    if (!is_array($decoded) || !isset($decoded['data']) || !is_array($decoded['data'])) {
+        return ['ok' => false, 'http' => 502, 'code' => 'UPSTREAM_INVALID_JSON', 'message' => 'استجابة المصدر لا تحتوي على قائمة مباريات صالحة.'];
+    }
+    $leagueId = (int) HIGHLIGHTLY_LEAGUES[$league]['leagueId'];
+    $rows     = $decoded['data'];
+    $events   = [];
+    foreach ($rows as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $event = highlightly_normalize_match($item, $leagueId);
+        if ($event !== null) {
+            $events[] = $event;
+        }
+    }
+    if (count($rows) > 0 && count($events) === 0) {
+        // كل الصفوف غير قابلة للقراءة بالعقد الموثّق: الشكل تغيّر، لا نعرض شيئاً مختلقاً
+        return ['ok' => false, 'http' => 502, 'code' => 'UPSTREAM_SCHEMA_CHANGED', 'message' => 'تغيّر شكل استجابة المصدر ولم تُقرأ أي مباراة منه.'];
+    }
+    $total = null;
+    $pagination = $decoded['pagination'] ?? null;
+    if (is_array($pagination) && isset($pagination['totalCount']) && is_int($pagination['totalCount'])) {
+        $total = $pagination['totalCount'];
+    }
+    return ['ok' => true, 'events' => $events, 'received' => count($rows), 'total' => $total];
+}
+
+/**
+ * يجلب مباريات يوم واحد من Highlightly (مع الصفحات عند الحاجة) ويُرجع نفس شكل نتيجة classify_upstream_response.
+ */
+function highlightly_fetch_day(string $league, string $ymd): array {
+    $key = highlightly_key();
+    if ($key === null) {
+        return ['ok' => false, 'http' => 503, 'code' => 'UPSTREAM_KEY_MISSING', 'message' => 'مفتاح مصدر المواعيد غير مُهيّأ على الخادم.'];
+    }
+    if (!function_exists('curl_init')) {
+        return ['ok' => false, 'http' => 500, 'code' => 'HTTP_CLIENT_UNAVAILABLE', 'message' => 'وسائل الاتصال الخارجي (cURL) غير مفعلة على الخادم.'];
+    }
+    $config   = HIGHLIGHTLY_LEAGUES[$league];
+    $isoDay   = substr($ymd, 0, 4) . '-' . substr($ymd, 4, 2) . '-' . substr($ymd, 6, 2);
+    $events   = [];
+    $offset   = 0;
+    $seen     = [];
+
+    for ($page = 0; $page < HIGHLIGHTLY_MAX_PAGES; $page++) {
+        $url = HIGHLIGHTLY_MATCHES_URL
+            . '?leagueId=' . (int) $config['leagueId']
+            . '&date=' . rawurlencode($isoDay)
+            . '&timezone=' . rawurlencode($config['timezone'])
+            . '&limit=' . HIGHLIGHTLY_PAGE_LIMIT
+            . '&offset=' . $offset;
+        $ch = curl_init($url);
+        if ($ch === false) {
+            return ['ok' => false, 'http' => 502, 'code' => 'UPSTREAM_NETWORK_ERROR', 'message' => 'تعذر تهيئة الاتصال بالمصدر.'];
+        }
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_PROTOCOLS      => CURLPROTO_HTTPS,
+            CURLOPT_CONNECTTIMEOUT => CONNECT_TIMEOUT,
+            CURLOPT_TIMEOUT        => REQUEST_TIMEOUT,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_USERAGENT      => 'StreamMaster-Scoreboard/1.0',
+            CURLOPT_HTTPHEADER     => ['Accept: application/json', 'x-rapidapi-key: ' . $key],
+        ]);
+        $body   = curl_exec($ch);
+        $errno  = curl_errno($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        // لا تُمرَّر أي معلومة عن المفتاح إلى الاستجابة أو السجل: الرسائل ثابتة من الكود
+        $res = classify_upstream_response($league, $errno, $status, is_string($body) ? $body : null);
+        if (($res['ok'] ?? false) !== true) {
+            return $res;
+        }
+        foreach ($res['events'] as $event) {
+            $id = (string) $event['id'];
+            if (!isset($seen[$id])) {
+                $seen[$id] = true;
+                $events[]  = $event;
+            }
+        }
+        $received = (int) $res['received'];
+        $total    = $res['total'];
+        $offset  += $received;
+        // إن أعلن المصدر الإجمالي نتابع حتى نبلغه؛ وإن غاب الإجمالي نتابع فقط إذا امتلأت الصفحة
+        $more = $total !== null ? ($offset < $total) : ($received >= HIGHLIGHTLY_PAGE_LIMIT);
+        if ($received === 0 || !$more) {
+            return ['ok' => true, 'events' => $events];
+        }
+    }
+    // تجاوزنا سقف الصفحات والمصدر ما زال يعلن المزيد: لا نُكمل صامتاً بنتيجة ناقصة
+    return ['ok' => false, 'http' => 502, 'code' => 'UPSTREAM_PAGE_LIMIT', 'message' => 'عدد المباريات في هذا اليوم يتجاوز ما يمكن جلبه من المصدر.'];
+}
+
 function classify_upstream_response(string $league, int $errno, int $status, ?string $body): array {
     $isSportsDb = isset(SPORTSDB_LEAGUES[$league]);
 
@@ -415,6 +693,10 @@ function classify_upstream_response(string $league, int $errno, int $status, ?st
             'upstream_status' => $status,
             'message'         => 'استجاب المصدر برمز خطأ HTTP ' . $status . '.',
         ];
+    }
+
+    if (isset(HIGHLIGHTLY_LEAGUES[$league])) {
+        return highlightly_parse_day_body($league, $body);
     }
 
     $decoded = @json_decode($body, true);
@@ -468,6 +750,15 @@ function classify_upstream_response(string $league, int $errno, int $status, ?st
  * @param list<string> $days
  */
 function fetch_upstream_days(string $league, array $days): array {
+    if (isset(HIGHLIGHTLY_LEAGUES[$league])) {
+        // Highlightly: طلبات متسلسلة لكل يوم (الصفحات تحتاج تتابعاً)، ثم الدمج المشترك
+        $results = [];
+        foreach ($days as $ymd) {
+            $results[$ymd] = highlightly_fetch_day($league, $ymd);
+        }
+        return merge_day_results($days, $results);
+    }
+
     $headers = [
         'Accept: application/json',
         'Accept-Language: en-US,en;q=0.9',
@@ -566,6 +857,15 @@ function fetch_upstream_days(string $league, array $days): array {
         return ['ok' => false, 'http' => 500, 'code' => 'HTTP_CLIENT_UNAVAILABLE', 'message' => 'وسائل الاتصال الخارجي (cURL / allow_url_fopen) غير مفعلة على الخادم.'];
     }
 
+    return merge_day_results($days, $results);
+}
+
+/**
+ * يدمج نتائج الأيام المفردة في مصفوفة events واحدة دون تكرار، ويُرجع أول خطأ إن وُجد.
+ *
+ * @param list<string> $days
+ */
+function merge_day_results(array $days, array $results): array {
     $events     = [];
     $seenIds    = [];
     $firstError = null;
@@ -607,7 +907,7 @@ function fetch_upstream_days(string $league, array $days): array {
 // ───────────────────────── التنفيذ الرئيسي ─────────────────────────
 $dir       = cache_dir();
 prune_old_cache($dir);
-$cacheKey  = hash('sha256', 'v3|' . $league . '|' . $datesKey);
+$cacheKey  = hash('sha256', 'v4|' . $league . '|' . $datesKey);
 $cacheFile = $dir . '/' . $cacheKey . '.json';
 $lockFile  = $dir . '/' . $cacheKey . '.lock';
 

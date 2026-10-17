@@ -12,6 +12,7 @@
  * Requires PHP 7.4+ with cURL. Cache files contain public football data only.
  */
 declare(strict_types=1);
+require_once __DIR__ . '/lib/source_store.php';
 
 /* البطولات الثلاث التي بُنيت عليها لقطة صفحات التوثيق — وهي عينها المجموعة
    التي يبني عليها اختبار التشغيل القائم عيّناته، فتبقى كما هي بلا توسيع. */
@@ -98,6 +99,9 @@ function sm_st_normalize(array $raw, string $league, int $readAt): array
     $groups = sm_st_groups($raw, $league);
     if (count($groups) !== 1) throw new RuntimeException('UPSTREAM_SCHEMA_CHANGED');
     $table = $groups[0];
+    if (is_array($table['entries'] ?? null) && count($table['entries']) < sm_st_leagues()[$league]['count']) {
+        throw new RuntimeException('UPSTREAM_INCOMPLETE');
+    }
     $season = sm_st_number($table['season'] ?? null);
     if ($season === null || $season < 2000 || $season > 2100
         || !isset($table['entries']) || !is_array($table['entries'])
@@ -166,6 +170,7 @@ function sm_st_highlightly_normalize(array $raw, string $league, int $readAt): a
         throw new RuntimeException('UPSTREAM_SCHEMA_CHANGED');
     }
     $rows = $group['standings'] ?? null;
+    if (is_array($rows) && count($rows) < $config['count']) throw new RuntimeException('UPSTREAM_INCOMPLETE');
     if (!is_array($rows) || count($rows) !== $config['count']) {
         throw new RuntimeException('UPSTREAM_SCHEMA_CHANGED');
     }
@@ -224,16 +229,29 @@ function sm_st_highlightly_key(): ?string
     return $value !== '' ? $value : null;
 }
 
-/** نقل Highlightly — المفتاح من بيئة التشغيل أو الملف الخاص فقط، ولا يُرسَل في أي مخرج. */
+/** Pure HTTP/JSON classifier shared by both unchanged standings transports. */
+function sm_st_decode(int $status, int $errno, bool $tooLarge, bool $success, string $body): array {
+    if ($tooLarge) throw new RuntimeException('UPSTREAM_TOO_LARGE');
+    if (!$success) throw new RuntimeException($errno === 28 ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_NETWORK');
+    if ($status === 429) throw new RuntimeException('UPSTREAM_RATE_LIMITED');
+    if ($status !== 200) throw new RuntimeException('UPSTREAM_HTTP_' . $status);
+    $json = json_decode($body, true, 64);
+    if (!is_array($json) || json_last_error() !== JSON_ERROR_NONE) throw new RuntimeException('UPSTREAM_INVALID_JSON');
+    return $json;
+}
+
+/** Highlightly transport: secrets remain server-side only. */
 function sm_st_highlightly_upstream(string $league): array
 {
     if (!isset(SM_ST_HIGHLIGHTLY_LEAGUES[$league])) throw new RuntimeException('INVALID_LEAGUE');
     $key = sm_st_highlightly_key();
     if (!is_string($key) || $key === '') throw new RuntimeException('UPSTREAM_KEY_MISSING');
+    if (!function_exists('curl_init')) throw new RuntimeException('CURL_UNAVAILABLE');
     $config = SM_ST_HIGHLIGHTLY_LEAGUES[$league];
     $url = 'https://soccer.highlightly.net/standings?leagueId=' . $config['leagueId'] . '&season=' . $config['season'];
     $handle = curl_init($url);
     if ($handle === false) throw new RuntimeException('UPSTREAM_UNAVAILABLE');
+    sm_source_note_request('standings/' . $league . '.json');
     $body = ''; $tooLarge = false;
     curl_setopt_array($handle, [
         CURLOPT_RETURNTRANSFER => false, CURLOPT_FOLLOWLOCATION => false,
@@ -252,12 +270,7 @@ function sm_st_highlightly_upstream(string $league): array
     $errno = curl_errno($handle);
     $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
     curl_close($handle);
-    if ($tooLarge) throw new RuntimeException('UPSTREAM_TOO_LARGE');
-    if ($ok === false) throw new RuntimeException($errno === 28 ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_NETWORK');
-    if ($status !== 200) throw new RuntimeException('UPSTREAM_HTTP_' . $status);
-    $json = json_decode($body, true, 64);
-    if (!is_array($json) || json_last_error() !== JSON_ERROR_NONE) throw new RuntimeException('UPSTREAM_INVALID_JSON');
-    return $json;
+    return sm_st_decode($status, $errno, $tooLarge, $ok !== false, $body);
 }
 
 function sm_st_upstream(string $league): array
@@ -267,6 +280,7 @@ function sm_st_upstream(string $league): array
     $url = 'https://site.web.api.espn.com/apis/v2/sports/soccer/' . $league . '/standings';
     $handle = curl_init($url);
     if ($handle === false) throw new RuntimeException('UPSTREAM_UNAVAILABLE');
+    sm_source_note_request('standings/' . $league . '.json');
     $body = ''; $tooLarge = false;
     curl_setopt_array($handle, [
         CURLOPT_RETURNTRANSFER => false, CURLOPT_FOLLOWLOCATION => false,
@@ -285,27 +299,7 @@ function sm_st_upstream(string $league): array
     $errno = curl_errno($handle);
     $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
     curl_close($handle);
-    if ($tooLarge) throw new RuntimeException('UPSTREAM_TOO_LARGE');
-    if ($ok === false) throw new RuntimeException($errno === 28 ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_NETWORK');
-    if ($status !== 200) throw new RuntimeException('UPSTREAM_HTTP_' . $status);
-    $json = json_decode($body, true, 64);
-    if (!is_array($json) || json_last_error() !== JSON_ERROR_NONE) throw new RuntimeException('UPSTREAM_INVALID_JSON');
-    return $json;
-}
-
-function sm_st_cache_read(string $file, string $league, int $now): ?array
-{
-    if (!is_file($file) || @filesize($file) > SM_ST_MAX_BYTES + 4096) return null;
-    $text = @file_get_contents($file);
-    if (!is_string($text)) return null;
-    $stored = json_decode($text, true, 64);
-    if (!is_array($stored) || !isset($stored['storedAt'], $stored['raw'])
-        || !is_int($stored['storedAt']) || !is_array($stored['raw'])
-        || $stored['storedAt'] <= 0 || $stored['storedAt'] > $now
-        || $now - $stored['storedAt'] > SM_ST_STALE_TTL) return null;
-    try { $data = sm_st_normalize_for($league, $stored['raw'], $stored['storedAt']); }
-    catch (Throwable $error) { return null; }
-    return ['data' => $data, 'age' => $now - $stored['storedAt']];
+    return sm_st_decode($status, $errno, $tooLarge, $ok !== false, $body);
 }
 
 /** التحقق بمحوّل المزوّد صاحب البطولة — بلا مسار مختصر لكل مصدر. */
@@ -315,16 +309,6 @@ function sm_st_normalize_for(string $league, array $raw, int $readAt): array
         return sm_st_highlightly_normalize($raw, $league, $readAt);
     }
     return sm_st_normalize($raw, $league, $readAt);
-}
-
-function sm_st_cache_write(string $file, array $raw, int $now): void
-{
-    $json = json_encode(['storedAt' => $now, 'raw' => $raw], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    if (!is_string($json) || strlen($json) > SM_ST_MAX_BYTES + 4096) return;
-    $temporary = @tempnam(dirname($file), 'write-');
-    if ($temporary === false) return;
-    @chmod($temporary, 0600);
-    if (@file_put_contents($temporary, $json, LOCK_EX) === false || !@rename($temporary, $file)) @unlink($temporary);
 }
 
 function sm_st_result(?array $cached, string $code): array
@@ -337,44 +321,52 @@ function sm_st_result(?array $cached, string $code): array
     return ['status' => 503, 'body' => ['ok' => false, 'code' => $code]];
 }
 
-/** Injectable transport/cache path are PHP-only test seams, never request inputs. */
+/** Read existing match units only. No extra upstream request and no league aliases. */
+function sm_st_match_ttl(string $league, int $now): int {
+    $day = gmdate('Ymd', $now);
+    $files = [];
+    if ($league === 'egy.1') {
+        // Saudi standings ksa.1 is deliberately NOT mapped to sau.1.
+        $files = (array) glob(sm_source_dir('smp_sportsdb_rounds') . '/4829-*.json');
+    } elseif (isset(sm_st_leagues()[$league]) && $league !== 'ksa.1') {
+        $files = [sm_source_dir('espn-days') . '/' . $league . '-' . $day . '.json'];
+    }
+    foreach ($files as $file) {
+        $rec = sm_source_read($file);
+        if ($rec === null || $rec['payload'] === null || $rec['fetched_at'] === null) continue;
+        // A stale live flag is not proof that a game is still in progress.
+        if ($rec['fetched_at'] > $now || $now - $rec['fetched_at'] >= 600) continue;
+        foreach ($rec['payload']['events'] ?? [] as $event) {
+            $date = isset($event['date']) && is_string($event['date']) ? strtotime($event['date']) : false;
+            if ($date !== false && gmdate('Ymd', $date) === $day
+                && ($event['competitions'][0]['status']['type']['state'] ?? $event['status']['type']['state'] ?? '') === 'in') return SM_ST_TTL;
+        }
+    }
+    return 900;
+}
+
+/** Injectable transport/cache path/clock are PHP-only seams, never request inputs. */
 function sm_st_service(string $league, int $now, string $directory, ?callable $transport = null): array
 {
     if (!isset(sm_st_known_leagues()[$league])) return ['status' => 400, 'body' => ['ok' => false, 'code' => 'INVALID_LEAGUE']];
-    $canCache = (is_dir($directory) || @mkdir($directory, 0700, true)) && is_writable($directory);
-    $file = $directory . '/' . $league . '.json';
-    $cached = $canCache ? sm_st_cache_read($file, $league, $now) : null;
-    if ($cached !== null && $cached['age'] < SM_ST_TTL) {
-        $body = $cached['data']; $body['cache'] = 'HIT'; $body['ageSeconds'] = $cached['age'];
-        return ['status' => 200, 'body' => $body];
-    }
-    $lock = $canCache ? @fopen($directory . '/' . $league . '.lock', 'c') : false;
-    if (is_resource($lock) && !flock($lock, LOCK_EX | LOCK_NB)) {
-        fclose($lock);
-        return sm_st_result($cached, 'REFRESH_IN_PROGRESS');
-    }
-    try {
-        // A worker might have refreshed the cache before this lock was acquired.
-        $latest = $canCache ? sm_st_cache_read($file, $league, $now) : null;
-        if ($latest !== null && $latest['age'] < SM_ST_TTL) {
-            $body = $latest['data']; $body['cache'] = 'HIT'; $body['ageSeconds'] = $latest['age'];
-            return ['status' => 200, 'body' => $body];
-        }
+    if (!is_dir($directory)) @mkdir($directory, 0700, true);
+    $ttl = sm_st_match_ttl($league, $now);
+    $res = sm_source_load($directory . '/' . $league . '.json', static function () use ($league, $now, $transport): array {
         $upstream = $transport ?? (isset(SM_ST_HIGHLIGHTLY_LEAGUES[$league]) ? 'sm_st_highlightly_upstream' : 'sm_st_upstream');
         $raw = $upstream($league);
         if (!is_array($raw)) throw new RuntimeException('UPSTREAM_INVALID_JSON');
-        $data = sm_st_normalize_for($league, $raw, $now);
-        if ($canCache) sm_st_cache_write($file, $raw, $now);
-        $data['cache'] = 'MISS'; $data['ageSeconds'] = 0;
-        return ['status' => 200, 'body' => $data];
-    } catch (Throwable $error) {
-        $code = $error->getMessage();
-        // Never expose transport messages, filesystem paths or stack traces.
-        if (!preg_match('/^(UPSTREAM_[A-Z_]+|UPSTREAM_HTTP_\d{1,3}|CURL_UNAVAILABLE)$/D', $code)) $code = 'UPSTREAM_UNAVAILABLE';
-        return sm_st_result($cached, $code);
-    } finally {
-        if (is_resource($lock)) { flock($lock, LOCK_UN); fclose($lock); }
-    }
+        sm_st_normalize_for($league, $raw, $now); // Reject incomplete tables before storing.
+        return ['ok' => true, 'payload' => $raw];
+    }, static function () use ($ttl): array {
+        // A completed day is not evidence that the season/table is final. Never guess a freeze.
+        return ['ttl' => $ttl, 'frozen' => false, 'retry_ttl' => 60, 'stale_ttl' => SM_ST_STALE_TTL];
+    }, $now, $ttl);
+    if (!$res['ok']) return sm_st_result(null, $res['code']);
+    try { $data = sm_st_normalize_for($league, $res['payload'], $now - $res['age']); }
+    catch (Throwable $error) { return sm_st_result(null, sm_source_error($error->getMessage())['code']); }
+    if ($res['cache'] === 'STALE') return sm_st_result(['data' => $data, 'age' => $res['age']], $res['stale_code']);
+    $data['cache'] = $res['cache']; $data['ageSeconds'] = $res['age'];
+    return ['status' => 200, 'body' => $data];
 }
 
 function sm_st_http(): void
@@ -391,7 +383,7 @@ function sm_st_http(): void
     } elseif (count($_GET) !== 1 || !isset($_GET['league']) || !is_string($_GET['league']) || !isset(sm_st_known_leagues()[$_GET['league']])) {
         $result = ['status' => 400, 'body' => ['ok' => false, 'code' => 'INVALID_LEAGUE']];
     } else {
-        $result = sm_st_service($_GET['league'], time(), sys_get_temp_dir() . '/sm-standings-v1');
+        $result = sm_st_service($_GET['league'], time(), sm_source_dir('standings'));
     }
     http_response_code($result['status']);
     header('X-Standings-Cache: ' . ($result['body']['cache'] ?? 'BYPASS'));

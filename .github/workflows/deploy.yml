@@ -49,6 +49,7 @@ jobs:
             **/.git*/**
             .github/**
             website/**
+            tests/**
             node_modules/**
             package*.json
             README.md

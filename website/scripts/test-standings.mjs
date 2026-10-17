@@ -81,19 +81,19 @@ test('standings: provider strings cannot inject HTML', () => {
 });
 
 test('standings PHP: closed upstream, timeout/size/redirect controls, private atomic cache', async () => {
-  const php = await fs.readFile(path.join(website,'public/standings.php'),'utf8');
+  const php = (await Promise.all(['standings.php','lib/source_store.php'].map(file => fs.readFile(path.join(website,'public',file),'utf8')))).join('\n');
   for (const needle of ['SM_ST_LEAGUES', 'https://site.web.api.espn.com/apis/v2/sports/soccer/',
     'CURLOPT_FOLLOWLOCATION => false', 'CURLOPT_SSL_VERIFYPEER => true', 'CURLOPT_SSL_VERIFYHOST => 2',
     'CURLOPT_CONNECTTIMEOUT => 4', 'CURLOPT_TIMEOUT => 10', 'SM_ST_MAX_BYTES = 524288',
-    'SM_ST_TTL = 120', 'SM_ST_STALE_TTL = 86400', 'LOCK_EX | LOCK_NB',
+    'SM_ST_TTL = 120', 'SM_ST_STALE_TTL = 86400', 'LOCK_EX',
     'tempnam(dirname($file)', '@rename($temporary, $file)', 'Cache-Control: no-store', 'X-Robots-Tag: noindex, nofollow',
-    "count($_GET) !== 1", "sys_get_temp_dir() . '/sm-standings-v1'"]) assert.ok(php.includes(needle), needle);
+    "count($_GET) !== 1", "sm_source_dir('standings')"]) assert.ok(php.includes(needle), needle);
   assert.ok(!php.includes("$_GET['url']") && !php.includes('HTTP_COOKIE') && !php.includes('Access-Control-Allow-Origin: *'));
 });
 
 const native = spawnSync('php',['-v'],{ encoding:'utf8' });
-const wasmCli = path.join(website,'node_modules/.standings-qa/node_modules/@php-wasm/cli/php-wasm.js');
-let hasWasm = false; try { await fs.access(wasmCli); hasWasm = true; } catch {}
+const wasmCli = path.join(website,'../tests/source-store/php.mjs');
+let hasWasm = false; try { await fs.access(path.join(website,'../tests/source-store/node_modules/@php-wasm/node/package.json')); hasWasm = true; } catch {}
 
 test('standings PHP runtime: normalization, cache lifecycle, failure preservation and HTTP validation', { skip: native.status !== 0 && !hasWasm ? 'PHP runtime not installed; run with native PHP or the isolated QA runtime documented in README.' : false }, async () => {
   const base = path.join(website,'playwright-report'); await fs.mkdir(base,{ recursive:true });
@@ -107,7 +107,7 @@ test('standings PHP runtime: normalization, cache lifecycle, failure preservatio
 require ${phpString(path.join(website,'public/standings.php'))};
 $fixtures=json_decode(file_get_contents(__DIR__.'/raw.json'),true);
 $assert=function($ok,$why){if(!$ok)throw new RuntimeException($why);};
-$reject=function($raw,$league)use($assert){try{sm_st_normalize($raw,$league,1792100000);}catch(RuntimeException $e){$assert($e->getMessage()==='UPSTREAM_SCHEMA_CHANGED','schema diagnostic');return;}throw new RuntimeException('invalid schema accepted');};
+$reject=function($raw,$league)use($assert){try{sm_st_normalize($raw,$league,1792100000);}catch(RuntimeException $e){$assert(in_array($e->getMessage(),['UPSTREAM_SCHEMA_CHANGED','UPSTREAM_INCOMPLETE'],true),'schema diagnostic');return;}throw new RuntimeException('invalid schema accepted');};
 foreach(SM_ST_LEAGUES as $league=>$config){$data=sm_st_normalize($fixtures[$league],$league,1792100000);$assert(count($data['entries'])===$config['count'],'complete table');$assert($data['season']===2026,'season');}
 $league='uefa.champions';$raw=$fixtures[$league];$now=1792100000;
 $assert(sm_st_number(0)===0 && sm_st_number('0')===0,'real zero');
@@ -128,13 +128,13 @@ $transport=function($requested)use($raw,&$calls,$assert,$league){$assert($reques
 $first=sm_st_service($league,$now,$dir,$transport);$assert($first['status']===200 && $first['body']['cache']==='MISS' && $calls===1,'initial upstream read');
 $hit=sm_st_service($league,$now+50,$dir,$transport);$assert($hit['body']['cache']==='HIT' && $calls===1 && $hit['body']['ageSeconds']===50,'TTL cache hit');
 $fail=function(){throw new RuntimeException('UPSTREAM_TIMEOUT');};
-$stale=sm_st_service($league,$now+121,$dir,$fail);$assert($stale['status']===200 && $stale['body']['stale']===true && $stale['body']['cache']==='STALE','stale fallback');
-$assert($stale['body']['fetchedAt']===$first['body']['fetchedAt'] && $stale['body']['ageSeconds']===121,'no false fresh timestamp');
+$stale=sm_st_service($league,$now+901,$dir,$fail);$assert($stale['status']===200 && $stale['body']['stale']===true && $stale['body']['cache']==='STALE','stale fallback');
+$assert($stale['body']['fetchedAt']===$first['body']['fetchedAt'] && $stale['body']['ageSeconds']===901,'no false fresh timestamp');
 $cacheBefore=file_get_contents($dir.'/'.$league.'.json');
-$invalid=sm_st_service($league,$now+122,$dir,function(){return ['children'=>[]];});
-$assert($invalid['body']['code']==='UPSTREAM_SCHEMA_CHANGED' && file_get_contents($dir.'/'.$league.'.json')===$cacheBefore,'bad payload cannot poison cache');
-$next=sm_st_service($league,$now+123,$dir,$transport);$assert($next['body']['stale']===false && $next['body']['fetchedAt']!==$first['body']['fetchedAt'] && $calls===2,'recovery');
-$expired=sm_st_service($league,$now+124+SM_ST_STALE_TTL,$dir,$fail);$assert($expired['status']===503 && !isset($expired['body']['entries']),'expired backup not served');
+$invalid=sm_st_service($league,$now+902,$dir,function(){return ['children'=>[]];});
+$assert($invalid['body']['code']==='UPSTREAM_TIMEOUT' && file_get_contents($dir.'/'.$league.'.json')===$cacheBefore,'backoff preserves last failure and payload');
+$next=sm_st_service($league,$now+961,$dir,$transport);$assert($next['body']['stale']===false && $next['body']['fetchedAt']!==$first['body']['fetchedAt'] && $calls===2,'recovery');
+$expired=sm_st_service($league,$now+962+SM_ST_STALE_TTL,$dir,$fail);$assert($expired['status']===503 && !isset($expired['body']['entries']),'expired backup not served');
 $invalidLeague=sm_st_service('../../metadata',$now,$dir,$transport);$assert($invalidLeague['status']===400 && $calls===2,'reject arbitrary league without fetch');
 $other=sm_st_service('eng.1',$now,$dir,function(){throw new RuntimeException('/secret/private/path');});$assert($other['body']['code']==='UPSTREAM_UNAVAILABLE','no leaked transport paths');
 $assert(count(glob($dir.'/write-*'))===0,'no temporary write debris');

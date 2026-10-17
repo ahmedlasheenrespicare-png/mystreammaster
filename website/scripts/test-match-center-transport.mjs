@@ -227,6 +227,22 @@ test('missing values become null, never a zero-shaped default', () => {
   assert.deepEqual(odd.events, []);
 });
 
+test('source stoppages are dropped before the snapshot is built', () => {
+  // Start/End Delay are not football events: ESPN repeats each one per team.
+  // They must not survive in `events` where a later renderer could print them.
+  const snap = adaptSnapshot(payload(HOME, {
+    events: [
+      { id: 'g1', type: 'Goal', minute: 12, team: { homeAway: 'home' }, player: { name: 'Scorer' } },
+      { id: 'd1', type: 'Start Delay', minute: 49, team: { homeAway: 'home' } },
+      { id: 'd2', type: 'Start Delay', minute: 49, team: { homeAway: 'away' } },
+      { id: 'd3', type: 'End Delay', minute: 50, team: { homeAway: 'home' } },
+    ],
+  }), HOME);
+  assert.equal(snap.events.length, 1);
+  assert.equal(snap.events[0].type, 'goal');
+  assert.equal(snap.events[0].minute, 12);
+});
+
 test('a score carried by a scheduled payload is not shown before kickoff', () => {
   // Rule 6: never show 0-0 as a confirmed result before kickoff. deriveScore
   // gates on status, so a payload that pre-fills zeroes cannot leak them.

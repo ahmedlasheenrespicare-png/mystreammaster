@@ -41,6 +41,7 @@
   isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(140px, 1.15fr) minmax(0, 1fr);
+  grid-template-rows: auto auto;
   gap: 10px;
   align-items: center;
   min-height: 270px;
@@ -98,21 +99,97 @@
 .mc-match-facts dd { margin: 2px 0 0; color: var(--mc-text); font-size: .78rem; font-weight: 800; }
 .mc-pitch-disclaimer { margin: 7px 2px 0; color: var(--mc-muted); font-size: .66rem; text-align: center; }
 
-/* Source-time event rail, not invented pitch coordinates. */
-.mc-event-rail { min-width: 0; margin-top: 10px; padding: 12px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(16, 19, 27, .92); }
-.mc-event-rail h2 { margin: 0; font-size: .95rem; font-weight: 900; }
-.mc-event-rail > p { margin: 2px 0 9px; color: var(--mc-muted); font-size: .7rem; }
-.mc-event-rail-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; margin: 0; padding: 0; list-style: none; }
-.mc-pitch-event { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: start; gap: 3px 8px; min-width: 0; padding: 8px 9px; border: 1px solid rgba(255,255,255,.15); border-inline-start: 4px solid #a7b0bf; border-radius: 10px; background: rgba(255,255,255,.045); }
-.mc-pitch-event[data-side="home"] { border-inline-start-color: #cfc4ff; }
-.mc-pitch-event[data-side="away"] { border-inline-start-color: var(--mc-lime); }
-.mc-pitch-event[data-kind="goal"], .mc-pitch-event[data-kind="penalty"], .mc-pitch-event[data-kind="own_goal"] { border-block-start: 2px solid var(--mc-lime); }
-.mc-pitch-event[data-kind="yellow_card"] { border-block-start: 2px solid #ffd479; }
-.mc-pitch-event[data-kind="red_card"], .mc-pitch-event[data-kind="cancelled"], .mc-pitch-event[data-kind="var_cancelled"] { border-block-start: 2px solid #ff9aa2; }
-.mc-pitch-event-symbol { grid-row: 1 / span 2; display: grid; place-items: center; min-width: 28px; min-height: 28px; border: 1px solid rgba(255,255,255,.25); border-radius: 7px; color: var(--mc-text); background: rgba(255,255,255,.08); font-family: var(--font-latin, ui-sans-serif); font-size: .75rem; font-weight: 900; }
-.mc-pitch-event[data-kind="yellow_card"] .mc-pitch-event-symbol { color: #ffe1a3; background: #624712; }
-.mc-pitch-event[data-kind="red_card"] .mc-pitch-event-symbol, .mc-pitch-event[data-kind="cancelled"] .mc-pitch-event-symbol, .mc-pitch-event[data-kind="var_cancelled"] .mc-pitch-event-symbol { color: #ffe1e3; background: #641f29; }
-.mc-pitch-event-text { display: block; min-width: 0; color: #fff; font-size: .77rem; font-weight: 800; line-height: 1.55; overflow-wrap: anywhere; }
+/* Match events on the pitch: horizontal position is the minute, the row is the
+   team. No x/y is invented — keyEvents carries none. */
+.mc-pitch-events {
+  --mc-marker-size: clamp(20px, 2.6vw, 26px);
+  --mc-row-step: calc(var(--mc-marker-size) + 14px);
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin-top: 4px;
+  padding: 9px 12px 8px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 13px;
+  background: rgba(5, 14, 11, .74);
+  backdrop-filter: blur(6px);
+}
+.mc-pitch-events-title { margin: 0 0 5px; color: #eaf3e6; font-size: .72rem; font-weight: 900; line-height: 1.4; }
+/* حشو أفقي يترك 0′ و90′ داخل الإطار بدل قصّهما عند الحافتين. */
+.mc-pitch-timeline { position: relative; min-width: 0; padding-inline: 13px; }
+/* كل صف يحمل رمزاً وسطر دقيقة، فالارتفاع يحجز السطر معه. دقيقة المضيف تحت
+   رمزه (نحو المحور) ودقيقة الضيف فوق رمزه؛ فلا تزاحم أرقام المحور. */
+.mc-pitch-lane { position: relative; height: calc(var(--mc-lane-rows, 1) * var(--mc-row-step) + 1.25em); margin: 0; padding: 0; list-style: none; }
+.mc-pitch-lane--home { margin-block-end: 1px; }
+.mc-pitch-lane--away { margin-block-start: 1px; }
+.mc-pitch-lane--away .mc-pitch-marker-minute { top: auto; bottom: calc(100% + 1px); }
+.mc-pitch-marker-item { position: absolute; margin: 0; padding: 0; transform: translateX(50%); bottom: calc(var(--mc-marker-row, 0) * var(--mc-row-step)); }
+.mc-pitch-lane--home .mc-pitch-marker-item { bottom: calc(var(--mc-marker-row, 0) * var(--mc-row-step) + 1.25em); }
+.mc-pitch-marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--mc-marker-size);
+  height: var(--mc-marker-size);
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .42);
+  border-radius: 50%;
+  background: rgba(8, 14, 20, .9);
+  color: #eef4ff;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+/* لون الحلقة يربط الرمز ببطاقة فريقه (بنفسجي للمضيف، ليموني للضيف)، والشكل
+   نفسه يبقى الفارق الأساسي حتى بلا لون. */
+.mc-pitch-marker[data-side="home"] { border-color: rgba(207, 196, 255, .62); }
+.mc-pitch-marker[data-side="away"] { border-color: rgba(216, 255, 62, .62); }
+.mc-pitch-marker[data-side="unknown"] { border-color: rgba(255, 255, 255, .4); }
+.mc-pitch-marker:hover, .mc-pitch-marker:focus-visible, .mc-pitch-marker[data-active="true"] {
+  border-color: var(--mc-lime);
+  background: rgba(20, 32, 26, .98);
+  transform: scale(1.12);
+}
+.mc-pitch-marker[data-kind="cancelled"] { opacity: .62; }
+.mc-pitch-marker[data-kind="cancelled"]::after {
+  content: "";
+  position: absolute;
+  width: 78%;
+  height: 2px;
+  background: #ff6b75;
+  transform: rotate(-45deg);
+  border-radius: 2px;
+}
+.mc-pitch-icon { width: 76%; height: 76%; display: block; }
+.mc-pitch-marker[data-symbol="ball"] .mc-pitch-icon { width: 82%; height: 82%; }
+.mc-pitch-marker-minute {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, .82);
+  font-family: var(--font-latin, ui-sans-serif);
+  font-size: .55rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.mc-pitch-axis { position: relative; height: 19px; margin-inline: 2px; border-top: 1px solid rgba(239, 255, 241, .4); }
+.mc-pitch-tick { position: absolute; top: 0; display: grid; justify-items: center; transform: translateX(50%); }
+/* طرفا الشريط: الرقم يبقى داخل الإطار بدل قصّه عند الحافة. */
+.mc-pitch-tick--first { transform: translateX(100%); justify-items: end; }
+.mc-pitch-tick--last { transform: none; justify-items: start; }
+.mc-pitch-tick i { display: block; width: 1px; height: 5px; background: rgba(239, 255, 241, .55); }
+.mc-pitch-tick b { color: rgba(255, 255, 255, .72); font-family: var(--font-latin, ui-sans-serif); font-size: .52rem; font-weight: 700; line-height: 1.1; white-space: nowrap; }
+[dir="ltr"] .mc-pitch-tick--first { transform: none; justify-items: start; }
+[dir="ltr"] .mc-pitch-tick--last { transform: translateX(-100%); justify-items: end; }
+.mc-pitch-lane--untimed { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; height: auto; margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, .18); }
+.mc-pitch-marker-item--untimed { position: static; transform: none; }
+.mc-pitch-event-detail { min-height: 1.5em; margin: 6px 0 0; color: #dfe9dc; font-size: .68rem; font-weight: 700; line-height: 1.55; }
+.mc-pitch-events .mc-pitch-marker:focus-visible { outline: 2px solid var(--mc-lime); outline-offset: 2px; }
 
 /* Service state / refresh */
 .mc-meta { display: flex; justify-content: flex-end; min-width: 0; margin: 12px 2px 0; color: var(--mc-muted); font-size: .76rem; }
@@ -212,6 +289,7 @@
   .mc-pitch-frame { grid-template-columns: minmax(0, 1fr) minmax(102px, 1.15fr) minmax(0, 1fr); gap: 6px; min-height: 238px; padding: 15px 8px; }
   .mc-pitch-team { min-height: 140px; padding: 9px 4px; }
   .mc-pitch-scoreboard { padding: 11px 7px; }
+  .mc-pitch-events { --mc-marker-size: 22px; padding: 8px 9px 7px; }
   .mc-match-facts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); }
   .mc-mini { display: flex; }
 }
@@ -226,14 +304,20 @@
   .mc-pitch-competition { font-size: .58rem; }
   .mc-pitch-status { min-height: 22px; padding: 2px 7px; font-size: .62rem; }
   .mc-pitch-kickoff { font-size: .59rem; }
+  .mc-pitch-events { --mc-marker-size: 18px; padding: 7px 7px 6px; }
+  .mc-pitch-marker-minute { font-size: .48rem; }
+  .mc-pitch-tick b { font-size: .46rem; }
+  .mc-pitch-tick--minor { display: none; }
+  .mc-pitch-event-detail { font-size: .62rem; }
   .mc-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; padding: 5px; border-radius: 15px; }
   .mc-tab { padding: 8px 2px; font-size: .65rem; }
   .mc-panel { padding: 15px 11px; }
   .mc-stat-row, .mc-comparison-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
 }
-@media (min-width: 760px) {
-  .mc-event-rail-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
+/* LTR is not used by the page today, but the band should not sit half a marker
+   off its minute if it is ever reused without `dir="rtl"`. */
+[dir="ltr"] .mc-pitch-marker-item, [dir="ltr"] .mc-pitch-tick { transform: translateX(-50%); }
+[dir="ltr"] .mc-pitch-marker-item--untimed { transform: none; }
 @media (min-width: 900px) {
   .mc-radar { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }
   .mc-comparison-values { margin-top: 0; }

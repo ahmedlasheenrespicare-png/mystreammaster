@@ -397,6 +397,12 @@ const SOURCE_EVENT_TYPES = new Map([
   ['var confirmed', 'var_confirmed'], ['var confirmation', 'var_confirmed'],
 ]);
 
+/* توقفات المباراة (`Start Delay`/`End Delay`) يرسلها ESPN مرتين — نسخة لكل
+   فريق — ثم يرسل انتهاءها. لا تحمل معلومة تتجاوز ساعة المباراة، فتُوسم
+   `silent` بدل عرضها كنوع «آخر» بنصها الإنجليزي. الوسم في العقد نفسه (لا في
+   الواجهة وحدها) حتى يبقى الإخفاء لو وصلت حمولة قديمة من مخبأ الخادم. */
+const SILENT_SOURCE_TYPES = new Set(['start delay', 'end delay', 'delay', 'delay over']);
+
 function sourceEventType(raw) {
   const value = raw?.sourceType ?? raw?.type?.text ?? raw?.type?.name ?? raw?.type;
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -410,6 +416,7 @@ export function normalizeEvent(raw) {
     .replace(/\s+/g, ' ')
     .trim();
   const type = normalizedType ? SOURCE_EVENT_TYPES.get(normalizedType) ?? 'other' : 'other';
+  const silent = normalizedType ? SILENT_SOURCE_TYPES.has(normalizedType) : false;
 
   /* Preserve source identifiers whenever the contract provides them; do not
      derive team identity from its display name. */
@@ -429,6 +436,7 @@ export function normalizeEvent(raw) {
     sourceTeamId: sourceTeamId === undefined || sourceTeamId === null || String(sourceTeamId).trim() === '' ? null : String(sourceTeamId).trim(),
     type,
     cancelled,
+    silent,
     minute: firstNumber(raw?.minute, raw?.clock, raw?.time?.elapsed),
     extraMinute: firstNumber(raw?.extraMinute, raw?.time?.extra),
     period: periodText,
@@ -440,6 +448,75 @@ export function normalizeEvent(raw) {
       : raw?.assist?.name ? { id: raw.assist.id ?? null, name: raw.assist.name } : null,
     detail: firstString(raw?.detail, raw?.comments, raw?.text),
   };
+}
+
+/* ─────────── رموز الملعب وتخطيط الشريط الزمني ─────────── */
+
+/* الرمز شكل لا لون: البطاقة مستطيل، والهدف كرة، والتبديل سهمان. تُصدَّر
+   القائمة كي ترسمها الواجهة SVG بلا تكرار تعريف في ملفين يتباعدان. */
+const EVENT_SYMBOLS = {
+  goal: 'ball',
+  penalty: 'penalty',
+  own_goal: 'own-goal',
+  missed_penalty: 'missed-penalty',
+  yellow_card: 'yellow-card',
+  red_card: 'red-card',
+  substitution: 'substitution',
+  var_cancelled: 'var',
+  var_confirmed: 'var',
+  other: 'other',
+};
+
+export function eventSymbol(type) {
+  return EVENT_SYMBOLS[type] ?? 'other';
+}
+
+/* أرضية الملعب لا تحمل إحداثيات: `keyEvents` من ESPN لا يرسل x/y، فوضع
+   الحدث أفقياً هو **دقيقته** وحدها، وصفّه هو فريقه. هذا ما نعنيه بـ
+   «على الملعب»: زمان ومكانة فريق، لا موقع داخل المستطيل. */
+export const PITCH_MINUTES = 90;
+export const PITCH_MAX_ROWS = 3;
+const PITCH_MINUTE_GAP = 6;
+
+export function pitchLanes(events) {
+  const lanes = { totalMinutes: PITCH_MINUTES, home: [], away: [], unknown: [], untimed: [] };
+  const list = (Array.isArray(events) ? events : [])
+    .map((event, index) => ({ event, index }))
+    .filter(({ event }) => event && typeof event === 'object' && event.silent !== true)
+    .sort((a, b) => {
+      const aMinute = typeof a.event.minute === 'number' ? a.event.minute : Infinity;
+      const bMinute = typeof b.event.minute === 'number' ? b.event.minute : Infinity;
+      if (aMinute !== bMinute) return aMinute - bMinute;
+      const aExtra = typeof a.event.extraMinute === 'number' ? a.event.extraMinute : 0;
+      const bExtra = typeof b.event.extraMinute === 'number' ? b.event.extraMinute : 0;
+      if (aExtra !== bExtra) return aExtra - bExtra;
+      return a.index - b.index;
+    });
+
+  const timed = list.filter(({ event }) => typeof event.minute === 'number' && Number.isFinite(event.minute) && event.minute >= 0);
+  const longest = timed.reduce((max, { event }) => Math.max(max, event.minute), 0);
+  /* مباريات الوقت الإضافي تمتد إلى 120′؛ الشريط يتمدد بدل تكديس كل شيء عند 90. */
+  lanes.totalMinutes = Math.max(PITCH_MINUTES, Math.ceil(longest / 15) * 15);
+
+  const laneRows = { home: [], away: [], unknown: [] };
+  for (const { event, index } of list) {
+    const key = `${event.id ?? 'event'}:${index}`;
+    if (typeof event.minute !== 'number' || !Number.isFinite(event.minute) || event.minute < 0) {
+      lanes.untimed.push({ event, key });
+      continue;
+    }
+    const side = event.teamSide === 'home' || event.teamSide === 'away' ? event.teamSide : 'unknown';
+    const minute = Math.min(lanes.totalMinutes, event.minute);
+    /* الأحداث المتقاربة تُزاح إلى صف تالٍ بدل التراكب فوق بعضها. */
+    let row = 0;
+    while (row < PITCH_MAX_ROWS - 1
+      && laneRows[side].some(marker => marker.row === row && minute - marker.minute < PITCH_MINUTE_GAP)) {
+      row += 1;
+    }
+    laneRows[side].push({ row, minute });
+    lanes[side].push({ event, key, minute, position: (minute / lanes.totalMinutes) * 100, row });
+  }
+  return lanes;
 }
 
 /* البند 4: الشعارات «عند توفر أصول مسموح باستخدامها». والبند 12: لا تنزيل

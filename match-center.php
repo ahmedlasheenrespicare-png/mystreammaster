@@ -997,15 +997,23 @@ function mc_read_header(array $event): ?array {
  * `displayValue` ومشاركون `participants[].athlete` وفريق `{id,displayName}`.
  *
  * أحداث الإطار (انطلاقة/استراحة/بداية شوط/نهاية) تُستبعد: الخط الزمني
- * للأحداث الرياضية، وحالة الاستراحة تحملها حالة المباراة نفسها. المشارك
- * الثاني لا يُمرَّر إلا في التبديلات (الخارج — ترتيبه مؤكد من نص المصدر)؛
- * في الأهداف دوره غير مسمّى في الاستخراج فلا يُوسم صانعاً ولا يُعرض.
+ * للأحداث الرياضية، وحالة الاستراحة تحملها حالة المباراة نفسها. وتوقفات
+ * المصدر (`Start Delay`/`End Delay`) تُستبعد أيضاً: ESPN يسجّل التوقف نفسه
+ * مرتين — نسخة لكل فريق، إحداهما بلا نص — ثم يسجّل انتهاءه، فلا تضيف شيئاً
+ * فوق ما تحمله ساعة المباراة وتضاعف ضجيج الشريط. المشارك الثاني لا يُمرَّر
+ * إلا في التبديلات (الخارج — ترتيبه مؤكد من نص المصدر)؛ في الأهداف دوره غير
+ * مسمّى في الاستخراج فلا يُوسم صانعاً ولا يُعرض.
  *
  * @return array<int,array<string,mixed>>
  */
 
 /** أنواع أحداث إطارية لا تدخل الخط الزمني الرياضي. */
 const MC_FRAME_EVENT_TYPES = ['kickoff', 'halftime', 'start 2nd half', 'start second half', 'end regular time', 'end 2nd half', 'end second half', 'full time', 'start extra time', 'end extra time'];
+
+/* توقفات المصدر ليست أحداثاً رياضية: `Start Delay` يُكرَّر مرة لكل فريق ثم
+   يتبعه `End Delay`. تُستبعد بالنص مثل أحداث الإطار، فلا يصل إلى الواجهة
+   سطران مكرران في الدقيقة نفسها. */
+const MC_NOISE_EVENT_TYPES = ['start delay', 'end delay', 'delay', 'delay over'];
 
 function mc_read_events(array $summary, array $competitors): array {
     $keyEvents = $summary['keyEvents'] ?? ($summary['boxscore']['keyEvents'] ?? null);
@@ -1028,7 +1036,9 @@ function mc_read_events(array $summary, array $competitors): array {
             continue;
         }
         $text = mc_str($item['type']['text'] ?? ($item['type']['name'] ?? null));
-        if ($text === null || in_array(strtolower($text), MC_FRAME_EVENT_TYPES, true)) {
+        if ($text === null
+            || in_array(strtolower($text), MC_FRAME_EVENT_TYPES, true)
+            || in_array(strtolower($text), MC_NOISE_EVENT_TYPES, true)) {
             continue;
         }
         /* الدقيقة من `displayValue` («55'» أو «45+2'» للبدل الضائع)؛ وبلا

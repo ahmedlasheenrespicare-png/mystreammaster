@@ -45,6 +45,8 @@ export interface MatchEvent {
   type: MatchEventType;
   /** حقيقة من المصدر (VAR)، لا استنتاج محلي — البند 7. */
   cancelled: boolean;
+  /** توقف مصدر (`Start Delay`/`End Delay`): يُوسم ليُخفى ولا يُعدّ حدثاً رياضياً. */
+  silent: boolean;
   minute: number | null;
   extraMinute: number | null;
   period: string | null;
@@ -338,6 +340,40 @@ export function resolveTab(status: MatchStatus | null, userChoice: TabId | null)
 export function nextTabId(currentId: TabId, direction: 'next' | 'previous'): TabId;
 export function eventKey(matchId: string, event: Partial<MatchEvent>): string;
 export function normalizeEvent(raw: unknown): MatchEvent;
+
+export type EventSymbol =
+  | 'ball' | 'penalty' | 'own-goal' | 'missed-penalty'
+  | 'yellow-card' | 'red-card' | 'substitution' | 'var' | 'other';
+
+/** موضع رمز على شريط الملعب: الدقيقة أفقيًا، والفريق بالصف. */
+export interface PitchMarker {
+  event: MatchEvent;
+  key: string;
+  minute: number;
+  /** نسبة من عرض الشريط (0–100)، من جهة بداية السطر — RTL: 0 عند اليمين. */
+  position: number;
+  /** صف داخل خط الفريق، لتفادي تراكب الأحداث المتقاربة. */
+  row: number;
+}
+
+export interface PitchLanes {
+  /** 90، أو 120 لمباراة امتدت إلى الوقت الإضافي. */
+  totalMinutes: number;
+  home: PitchMarker[];
+  away: PitchMarker[];
+  /** أحداث بلا جانب فريق — لا تُنسب إلى أحد بالظن. */
+  unknown: PitchMarker[];
+  /** أحداث بلا دقيقة: تبقى خارج الشريط الزمني. */
+  untimed: { event: MatchEvent; key: string }[];
+}
+
+/** الرمز المرسوم لكل نوع حدث (شكل لا لون). */
+export function eventSymbol(type: string | null | undefined): EventSymbol;
+/** تخطيط الرموز على شريط الملعب: دقيقة أفقياً وفريق بالصف. */
+export function pitchLanes(events: MatchEvent[] | null | undefined): PitchLanes;
+export const PITCH_MINUTES: number;
+export const PITCH_MAX_ROWS: number;
+
 export function planAnnouncements(input: PlanAnnouncementsInput): PlanAnnouncementsResult;
 /** أنواع الأحداث التي تحرّك النتيجة فعلاً. */
 export const SCORING_TYPES: ReadonlySet<string>;

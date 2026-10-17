@@ -5,6 +5,11 @@ const fixtureEvents = [
   { id: 'goal-home', type: 'Goal', minute: 12, extraMinute: null, period: 1, side: 'home', player: { id: 'h1', name: 'Home Scorer' }, team: { name: 'Home FC', homeAway: 'home' }, detail: null },
   { id: 'card-yellow', type: 'Yellow Card', minute: 31, extraMinute: null, period: 1, side: 'away', player: { id: 'a1', name: 'Away Player' }, team: { name: 'Away FC', homeAway: 'away' }, detail: null },
   { id: 'own-goal', type: 'Own Goal', minute: 45, extraMinute: 2, period: 1, side: 'away', player: { id: 'a2', name: 'Away Defender' }, team: { name: 'Away FC', homeAway: 'away' }, detail: 'Own Goal' },
+  // ESPN logs each stoppage twice (one per team) and then its end. They must
+  // never reach the timeline, not even as an English «other» row.
+  { id: 'delay-start-home', type: 'Start Delay', minute: 49, extraMinute: null, period: 2, side: 'home', player: null, team: null, detail: null },
+  { id: 'delay-start-away', type: 'Start Delay', minute: 49, extraMinute: null, period: 2, side: 'away', player: null, team: null, detail: null },
+  { id: 'delay-end', type: 'End Delay', minute: 50, extraMinute: null, period: 2, side: 'home', player: null, team: null, detail: null },
   { id: 'var-review', type: 'VAR Confirmed', minute: 55, extraMinute: null, period: 2, side: 'home', player: { id: 'h2', name: 'Home Player' }, team: { name: 'Home FC', homeAway: 'home' }, detail: 'Goal confirmed' },
   { id: 'substitution', type: 'Substitution', minute: 60, extraMinute: null, period: 2, side: 'away', player: { id: 'a3', name: 'Incoming Player' }, assist: { id: 'a4', name: 'Outgoing Player' }, team: { name: 'Away FC', homeAway: 'away' }, detail: 'Substitution' },
   { id: 'card-red', type: 'Red Card', minute: 60, extraMinute: null, period: 2, side: 'home', player: { id: 'h3', name: 'Home Player Two' }, team: { name: 'Home FC', homeAway: 'home' }, detail: null },
@@ -12,8 +17,9 @@ const fixtureEvents = [
   { id: 'unknown', type: 'Possession sequence', minute: 81, extraMinute: null, period: 2, side: 'away', player: { id: 'a5', name: 'Away Player Two' }, team: { name: 'Away FC', homeAway: 'away' }, detail: 'Possession sequence' },
   { id: 'untimed', type: 'Tactical review', minute: null, extraMinute: null, period: null, side: null, player: null, team: null, detail: 'Coach review' },
 ];
+const drawnEvents = fixtureEvents.filter(event => !String(event.type).toLowerCase().includes('delay'));
 
-test('one shared snapshot renders an ordered, accessible event rail and stable home-away score at target widths', async ({ page }) => {
+test('events sit on the pitch as symbols by minute and team, with delays filtered and details on focus', async ({ page }) => {
   const requests: string[] = [];
   await page.clock.install({ time: new Date('2026-10-17T15:00:00Z') });
   await page.route('**/*', async route => {
@@ -36,41 +42,74 @@ test('one shared snapshot renders an ordered, accessible event rail and stable h
   });
 
   await page.goto(`/matches/الدوري-الإنجليزي/${MATCH}/`);
-  const rail = page.locator('.mc-event-rail');
-  await expect(rail).toBeVisible();
+  const timeline = page.locator('.mc-pitch-events');
+  await expect(timeline).toBeVisible();
+  // The band lives inside the pitch frame, not in a separate list below it.
+  await expect(page.locator('.mc-pitch-frame .mc-pitch-events')).toHaveCount(1);
+  await expect(page.locator('.mc-event-rail')).toHaveCount(0);
   await expect(page.locator('.mc-pitch-score')).toHaveAttribute('aria-label', 'نتيجة المضيف 1، ثم الضيف 2');
   await expect(page.locator('.mc-score-order')).toHaveText('1–2');
-  await expect(rail.locator('.mc-pitch-event')).toHaveCount(fixtureEvents.length);
-  await expect(rail.getByText('بطاقة صفراء')).toBeVisible();
-  await expect(rail.getByText('بطاقة حمراء')).toBeVisible();
-  await expect(rail.getByText('هدف عكسي')).toBeVisible();
-  await expect(rail.getByText(/مراجعة فيديو — تأكيد/)).toBeVisible();
-  await expect(rail.getByText(/Possession sequence/)).toBeVisible();
-  await expect(rail.getByText(/لاعب مرتبط: Outgoing Player/)).toBeVisible();
-  await expect(rail.locator('.mc-pitch-event[data-kind="cancelled"]')).toContainText('ملغى من المصدر');
-  await expect(rail.getByText(/Tactical review/)).toBeVisible();
-  await expect(rail.getByText(/Coach review/)).toBeVisible();
-  const untimed = rail.locator('.mc-pitch-event').filter({ hasText: 'Coach review' });
-  await expect(untimed).not.toContainText('′');
-  const labels = await rail.locator('.mc-pitch-event').evaluateAll(items => items.map(item => item.textContent || ''));
-  expect(labels.findIndex(text => text.includes('12′'))).toBeLessThan(labels.findIndex(text => text.includes('31′')));
-  expect(labels.findIndex(text => text.includes('45+2′'))).toBeLessThan(labels.findIndex(text => text.includes('55′')));
-  expect(labels.filter(text => text.includes('60′'))).toHaveLength(2);
+
+  // Delays are filtered before rendering: no marker, no English text anywhere.
+  await expect(timeline.locator('.mc-pitch-marker')).toHaveCount(drawnEvents.length);
+  await expect(page.locator('.mc-pitch-marker[aria-label*="Delay"]')).toHaveCount(0);
+  await expect(page.getByText('Start Delay')).toHaveCount(0);
+  await expect(page.getByText('End Delay')).toHaveCount(0);
+
+  // Symbols are shapes by meaning, not text labels or colour alone.
+  await expect(page.locator('.mc-pitch-marker[data-kind="goal"][data-symbol="ball"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-marker[data-kind="yellow_card"][data-symbol="yellow-card"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-marker[data-kind="red_card"][data-symbol="red-card"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-marker[data-kind="substitution"][data-symbol="substitution"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-marker[data-kind="var_confirmed"][data-symbol="var"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-marker[data-symbol="own-goal"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-lane--away .mc-pitch-marker[data-symbol="other"]')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-marker[data-kind="cancelled"]')).toHaveAttribute('aria-label', /ملغى من المصدر/);
+  await expect(page.locator('.mc-pitch-axis .mc-pitch-tick')).toHaveCount(7);
+
+  // Every marker carries the full sentence for screen readers.
+  for (const label of await timeline.locator('.mc-pitch-marker').evaluateAll(items => items.map(item => item.getAttribute('aria-label') || ''))) {
+    expect(label.trim().length).toBeGreaterThan(0);
+  }
+
+  // Hovering a card shows its minute, type and player in the detail line.
+  await page.locator('.mc-pitch-marker[data-kind="yellow_card"]').hover();
+  await expect(page.locator('.mc-pitch-event-detail')).toContainText('بطاقة صفراء');
+  await expect(page.locator('.mc-pitch-event-detail')).toContainText('31′');
+  await expect(page.locator('.mc-pitch-event-detail')).toContainText('Away Player');
+
+  // Keyboard focus exposes the substitution's related player.
+  await page.locator('.mc-pitch-marker[data-kind="substitution"]').focus();
+  await expect(page.locator('.mc-pitch-event-detail')).toContainText('لاعب مرتبط: Outgoing Player');
+
+  // An event with no minute stays outside the timeline, still tappable/focusable.
+  const untimed = page.locator('.mc-pitch-lane--untimed .mc-pitch-marker');
+  await expect(untimed).toHaveCount(1);
+  await untimed.focus();
+  await expect(page.locator('.mc-pitch-event-detail')).toContainText('Coach review');
+  await expect(page.locator('.mc-pitch-event-detail')).not.toContainText('′');
+
+  // RTL: minute 12 is to the right of minute 31, which is to the right of 45+2.
+  const x12 = await page.locator('.mc-pitch-marker[data-minute="12"]').boundingBox();
+  const x31 = await page.locator('.mc-pitch-marker[data-minute="31"]').boundingBox();
+  const x45 = await page.locator('.mc-pitch-marker[data-minute="45"]').boundingBox();
+  if (x12 && x31 && x45) {
+    expect(x12.x).toBeGreaterThan(x31.x);
+    expect(x31.x).toBeGreaterThan(x45.x);
+  }
   expect(requests).toHaveLength(1);
 
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await expect(rail).toBeVisible();
+    await expect(timeline).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `no horizontal overflow at ${width}px`).toBe(true);
-    const eventBox = await rail.boundingBox();
+    const eventBox = await timeline.boundingBox();
     expect(eventBox?.width).toBeLessThanOrEqual(width);
 
-    // Verify visual order aligns with RTL teams: home team is on the right, away team on the left.
-    // In RTL, the home score number renders on the right (adjacent to home) and away score on the left (adjacent to away).
-    const scoreBox = await page.locator('.mc-score-order').boundingBox();
+    // Home still sits on the right of the scoreboard (RTL), away on the left.
     const homeTeamBox = await page.locator('.mc-pitch-team--home').boundingBox();
     const awayTeamBox = await page.locator('.mc-pitch-team--away').boundingBox();
-    if (scoreBox && homeTeamBox && awayTeamBox) {
+    if (homeTeamBox && awayTeamBox) {
       expect(homeTeamBox.x).toBeGreaterThan(awayTeamBox.x);
     }
   }

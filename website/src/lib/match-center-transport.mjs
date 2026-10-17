@@ -320,7 +320,12 @@ export function adaptSnapshot(payload, match) {
   assertSameMatch(payload, match, provider);
 
   const status = normalizeStatus(payload.status ?? null, provider);
-  const events = Array.isArray(payload.events) ? payload.events.map(normalizeEvent) : [];
+  /* توقفات المصدر (`Start Delay`/`End Delay`) لا تصل إلى اللقطة إطلاقاً:
+     لا خط زمني ولا إعلان. الفلترة هنا أيضاً — لا في الخادم وحده — حتى تُغطّى
+     الاستجابات القديمة التي ما زالت في مخبأ المتصفح أو الخادم. */
+  const events = Array.isArray(payload.events)
+    ? payload.events.map(normalizeEvent).filter(event => event.silent !== true)
+    : [];
 
   return {
     matchId: match.id,

@@ -19,6 +19,7 @@ import {
   deriveScore,
   detectScoreCorrection,
   eventKey,
+  eventSymbol,
   formatInZone,
   freshnessLabel,
   isResultOfficial,
@@ -34,6 +35,7 @@ import {
   nextTabId,
   normalizeEvent,
   normalizeStatus,
+  pitchLanes,
   planAnnouncements,
   pollIntervalFor,
   pollingAllowed,
@@ -753,6 +755,73 @@ test('only goals and corrections are announceable — cards and substitutions do
   assert.equal(normalizeEvent({ type: 'Urgent attacking sequence' }).type, 'other', 'free text is not guessed to be an attack');
   assert.equal(normalizeEvent({ type: 'New Source Code', detail: 'Source wording' }).sourceType, 'New Source Code');
   assert.equal(normalizeEvent({ type: 'New Source Code', detail: 'Source wording' }).detail, 'Source wording');
+});
+
+test('source stoppages are marked silent and never reach the pitch timeline', () => {
+  // ESPN logs every stoppage twice (one copy per team) and then an End Delay.
+  // They carry nothing the clock does not, so the contract flags them silent.
+  const start = normalizeEvent({ id: 'd1', type: 'Start Delay', minute: 49, team: { homeAway: 'home' } });
+  assert.equal(start.silent, true);
+  assert.equal(start.type, 'other', 'unknown wording stays unknown instead of being guessed');
+  assert.equal(normalizeEvent({ type: 'Start Delay', minute: 49, team: { homeAway: 'away' } }).silent, true, 'the per-team twin is silent too');
+  assert.equal(normalizeEvent({ type: 'End Delay', minute: 50 }).silent, true);
+  assert.equal(normalizeEvent({ type: 'Delay over', minute: 50 }).silent, true);
+  // ESPN type ids arrive as `start-delay` too; the hyphenated spelling normalizes.
+  assert.equal(normalizeEvent({ type: 'start-delay' }).silent, true);
+  assert.equal(normalizeEvent({ type: 'Goal', minute: 12 }).silent, false, 'ordinary events are not silent');
+
+  const lanes = pitchLanes([
+    start,
+    normalizeEvent({ id: 'd2', type: 'Start Delay', minute: 49, team: { homeAway: 'away' } }),
+    normalizeEvent({ id: 'd3', type: 'End Delay', minute: 50 }),
+    normalizeEvent({ id: 'g1', type: 'Goal', minute: 12, team: { homeAway: 'home' } }),
+  ]);
+  assert.equal(lanes.home.length, 1, 'only the goal is drawn for the home side');
+  assert.equal(lanes.away.length, 0);
+  assert.equal(lanes.unknown.length, 0);
+  assert.equal(lanes.untimed.length, 0);
+  assert.equal(lanes.home[0].event.id, 'g1');
+});
+
+test('pitch symbols are shapes by meaning — card, ball, arrows, VAR', () => {
+  assert.equal(eventSymbol('goal'), 'ball');
+  assert.equal(eventSymbol('penalty'), 'penalty');
+  assert.equal(eventSymbol('own_goal'), 'own-goal');
+  assert.equal(eventSymbol('missed_penalty'), 'missed-penalty');
+  assert.equal(eventSymbol('yellow_card'), 'yellow-card');
+  assert.equal(eventSymbol('red_card'), 'red-card');
+  assert.equal(eventSymbol('substitution'), 'substitution');
+  assert.equal(eventSymbol('var_cancelled'), 'var');
+  assert.equal(eventSymbol('var_confirmed'), 'var');
+  assert.equal(eventSymbol('other'), 'other');
+  assert.equal(eventSymbol('unmapped-type'), 'other', 'never invents a symbol');
+});
+
+test('pitch lanes place markers by minute, one row per team, and separate close events', () => {
+  const events = [
+    normalizeEvent({ id: 'g12', type: 'Goal', minute: 12, team: { homeAway: 'home' } }),
+    normalizeEvent({ id: 'y14', type: 'Yellow Card', minute: 14, team: { homeAway: 'home' } }),
+    normalizeEvent({ id: 'r60', type: 'Red Card', minute: 60, team: { homeAway: 'away' } }),
+    normalizeEvent({ id: 's75', type: 'Substitution', minute: 75 }),
+    normalizeEvent({ id: 'x', type: 'Tactical review', detail: 'Coach review' }),
+  ];
+  const lanes = pitchLanes(events);
+  assert.equal(lanes.totalMinutes, 90);
+  assert.equal(lanes.home.length, 2);
+  assert.equal(lanes.away.length, 1);
+  assert.equal(lanes.unknown.length, 1, 'a side-less event is not attributed to either team');
+  assert.equal(lanes.untimed.length, 1);
+  assert.ok(Math.abs(lanes.home[0].position - (12 / 90) * 100) < 1e-9);
+  assert.equal(lanes.home[0].row, 0);
+  assert.equal(lanes.home[1].row, 1, 'a marker inside six minutes moves to the next row');
+  // Sorted by minute even if the source sends them out of order.
+  assert.deepEqual(lanes.home.map(marker => marker.minute), [12, 14]);
+});
+
+test('extra time extends the band instead of piling every marker at 90', () => {
+  const lanes = pitchLanes([normalizeEvent({ type: 'Goal', minute: 118, team: { homeAway: 'home' } })]);
+  assert.equal(lanes.totalMinutes, 120);
+  assert.ok(lanes.home[0].position > 90);
 });
 
 test('event identity survives a source that sends no ids, without inventing one', () => {

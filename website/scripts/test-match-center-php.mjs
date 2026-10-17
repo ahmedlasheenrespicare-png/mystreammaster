@@ -274,6 +274,13 @@ test('stage 2: statistics reader binds sides by team id and never derives shots 
   assert.match(source, /'statistics'\s+=> \$statistics,/);
 });
 
+test('source stoppages are excluded at the proxy, never rendered as English noise', () => {
+  // `Start Delay` / `End Delay` are logged twice (one per team) and add
+  // nothing the match clock does not already say.
+  assert.match(source, /const MC_NOISE_EVENT_TYPES = \['start delay', 'end delay', 'delay', 'delay over'\]/);
+  assert.match(source, /in_array\(strtolower\(\$text\), MC_NOISE_EVENT_TYPES, true\)/);
+});
+
 test('stage 2: mc_read_events implements the P1-confirmed keyEvents shape', () => {
   // أحداث الإطار (Kickoff/Halftime/…) ليست أحداث خط زمني — تُستبعد بالنص.
   assert.match(source, /const MC_FRAME_EVENT_TYPES = \['kickoff', 'halftime'/);

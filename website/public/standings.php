@@ -12,7 +12,25 @@
  * Requires PHP 7.4+ with cURL. Cache files contain public football data only.
  */
 declare(strict_types=1);
-require_once __DIR__ . '/lib/source_store.php';
+/* مكتبة PHP المشتركة في php-lib/. المسار القديم lib/ عالق لا يقبل الكتابة عبر
+   FTP (الخطأ 550 lib/.htaccess: Permission denied) وأُزيل من المستودع. المحمّل
+   يعلن رمزاً واضحاً بدل fatal صامت، واسم الملف ثابت في الكود ولا يأتي من
+   أي معامل طلب. */
+function sm_lib(string $file): void {
+  static $base = null;
+  if ($base === null) {
+    foreach ([__DIR__.'/php-lib'] as $c) {
+      if (is_file($c.'/'.$file)) { $base = $c; break; }
+    }
+  }
+  if ($base === null) {
+    http_response_code(500);
+    echo json_encode(['ok'=>false,'code'=>'PHP_LIBRARY_MISSING']);
+    exit;
+  }
+  require_once $base.'/'.$file;
+}
+sm_lib('source_store.php');
 
 /* البطولات الثلاث التي بُنيت عليها لقطة صفحات التوثيق — وهي عينها المجموعة
    التي يبني عليها اختبار التشغيل القائم عيّناته، فتبقى كما هي بلا توسيع. */

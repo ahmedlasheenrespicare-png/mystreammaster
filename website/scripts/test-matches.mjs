@@ -167,7 +167,7 @@ test('readScoreboardResponse surfaces clear diagnostic codes for PHP, upstream, 
 });
 test('scoreboard.php whitelist, cache headers, and diagnostic codes match frontend contract', async () => {
   const phpPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../scoreboard.php');
-  const source = (await Promise.all([phpPath, path.join(path.dirname(phpPath), 'lib/espn_source.php')].map(file => fs.readFile(file, 'utf8')))).join('\n');
+  const source = (await Promise.all([phpPath, path.join(path.dirname(phpPath), 'php-lib/espn_source.php')].map(file => fs.readFile(file, 'utf8')))).join('\n');
   const match = source.match(/const\s+ALLOWED_LEAGUES\s*=\s*\[([\s\S]*?)\];/);
   assert.ok(match, 'ALLOWED_LEAGUES must be defined in scoreboard.php');
   const phpLeagues = Array.from(match[1].matchAll(/'([^']+)'/g), m => m[1]);
@@ -192,7 +192,7 @@ test('scoreboard.php whitelist, cache headers, and diagnostic codes match fronte
 });
 test('every diagnostic code the match path can emit is translated by the frontend', async () => {
   const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-  const files = ['scoreboard.php', 'lib/source_store.php', 'lib/espn_source.php', 'lib/sportsdb_source.php', 'lib/event_summary.php'];
+  const files = ['scoreboard.php', 'php-lib/source_store.php', 'php-lib/espn_source.php', 'php-lib/sportsdb_source.php', 'php-lib/event_summary.php'];
   const source = (await Promise.all(files.map(file => fs.readFile(path.join(dir, file), 'utf8')))).join('\n');
   /* Literal codes only: 'UPSTREAM_HTTP_' . $status is built at runtime and is
      covered by the UPSTREAM_HTTP_### pattern in describeDiagnostic(). */

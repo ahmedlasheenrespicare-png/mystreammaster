@@ -53,11 +53,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./
           server-dir: ./
-          # `lib/**` must stay deployable: scoreboard.php, match-center.php and
-          # standings.php require these files at runtime. Excluding it left the
-          # library frozen on the server while the root controllers kept
-          # updating (see PR #57 deploy runs), and a clean server would fail
-          # every matches request. Only repo tooling is excluded here.
+          # Only repo tooling is excluded here, plus the one path that cannot be
+          # written over FTP.
           exclude: |
             **/.git*
             **/.git*/**
@@ -69,6 +66,8 @@ jobs:
             README.md
             .nojekyll
             clicks.json
+            # مسار عالق غير قابل للكتابة عبر FTP، نُقلت المكتبة إلى php-lib
+            lib/**
       - name: Report archive-to-deploy freshness
         env:
           ARCHIVE_FETCHED_AT: ${{ inputs.archive_fetched_at }}

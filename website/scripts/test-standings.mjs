@@ -81,7 +81,7 @@ test('standings: provider strings cannot inject HTML', () => {
 });
 
 test('standings PHP: closed upstream, timeout/size/redirect controls, private atomic cache', async () => {
-  const php = (await Promise.all(['standings.php','lib/source_store.php'].map(file => fs.readFile(path.join(website,'public',file),'utf8')))).join('\n');
+  const php = (await Promise.all(['standings.php','php-lib/source_store.php'].map(file => fs.readFile(path.join(website,'public',file),'utf8')))).join('\n');
   for (const needle of ['SM_ST_LEAGUES', 'https://site.web.api.espn.com/apis/v2/sports/soccer/',
     'CURLOPT_FOLLOWLOCATION => false', 'CURLOPT_SSL_VERIFYPEER => true', 'CURLOPT_SSL_VERIFYHOST => 2',
     'CURLOPT_CONNECTTIMEOUT => 4', 'CURLOPT_TIMEOUT => 10', 'SM_ST_MAX_BYTES = 524288',

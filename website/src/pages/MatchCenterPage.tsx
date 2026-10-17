@@ -197,7 +197,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
         <div className="mc-mini">
           {(homeLabel || awayLabel) && <span className="mc-mini-teams">{[homeLabel, awayLabel].filter(Boolean).join(' × ')}</span>}
           {showScore && score
-            ? <span className="mc-mini-score" dir="ltr">{score.home}–{score.away}</span>
+            ? <span className="mc-mini-score">{score.home}–{score.away}</span>
             : miniFallback && <span className="mc-mini-status">{miniFallback}</span>}
           <a className="mc-mini-link" href={availableTabs.length ? `#mc-panel-${activeTab}` : '#mc-title'}>أعلى</a>
         </div>

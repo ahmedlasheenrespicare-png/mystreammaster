@@ -87,8 +87,7 @@
 .mc-pitch-status[data-code="live"][data-fresh="true"]::before { content: ""; width: 7px; height: 7px; margin-inline-end: 6px; border-radius: 50%; background: currentColor; animation: mc-pulse 2600ms ease-in-out infinite; }
 @keyframes mc-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
 .mc-pitch-score { margin: 0; font-family: var(--font-latin, ui-sans-serif); color: #fff; font-size: clamp(1.85rem, 7vw, 3.2rem); font-weight: 950; line-height: 1; letter-spacing: .02em; }
-.mc-pitch-score span[dir="ltr"] { display: inline-flex; flex-direction: row; align-items: center; gap: .18em; }
-.mc-pitch-score .mc-score-order { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.mc-pitch-score .mc-score-order { white-space: nowrap; }
 .mc-pitch-score span[aria-hidden] { color: var(--mc-muted); font-weight: 400; }
 .mc-pitch-vs { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; letter-spacing: .06em; }
 .mc-pitch-clock { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: .82rem; font-weight: 800; }

@@ -200,7 +200,7 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
           {statusLabel && <span className="mc-pitch-status" data-code={status?.code ?? 'unknown'} data-fresh={fresh ? 'true' : 'false'}>{statusLabel}</span>}
           {showScore && score ? (
             <p className="mc-pitch-score" aria-label={`نتيجة المضيف ${score.home}، ثم الضيف ${score.away}`}>
-              <span dir="ltr" className="mc-score-order">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
+              <span className="mc-score-order">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
             </p>
           ) : (
             <span className="mc-pitch-vs" aria-label="مواجهة بين الفريقين">VS</span>

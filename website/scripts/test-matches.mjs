@@ -141,7 +141,7 @@ test('readScoreboardResponse surfaces clear diagnostic codes for PHP, upstream, 
 });
 test('scoreboard.php whitelist, cache headers, and diagnostic codes match frontend contract', async () => {
   const phpPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../scoreboard.php');
-  const source = await fs.readFile(phpPath, 'utf8');
+  const source = (await Promise.all([phpPath, path.join(path.dirname(phpPath), 'lib/espn_source.php')].map(file => fs.readFile(file, 'utf8')))).join('\n');
   const match = source.match(/const\s+ALLOWED_LEAGUES\s*=\s*\[([\s\S]*?)\];/);
   assert.ok(match, 'ALLOWED_LEAGUES must be defined in scoreboard.php');
   const phpLeagues = Array.from(match[1].matchAll(/'([^']+)'/g), m => m[1]);

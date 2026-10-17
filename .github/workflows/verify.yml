@@ -10,12 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: website/package-lock.json
       - run: npm ci --prefix website
+      - run: npm ci --prefix tests/source-store
+      - run: npm test --prefix tests/source-store
       - run: npm run typecheck
       - run: npm test
       - run: npm run build

@@ -105,3 +105,6 @@ Options -Indexes
 AddType application/vnd.apple.mpegurl .m3u8
 AddType video/mp2t .ts
 </IfModule>
+
+# 7) Private source data: outside public_html; verified via PHP on Hostinger.
+SetEnv SM_DATA_DIR "/home/u140303745/domains/streammasterstore.com/sm-data"

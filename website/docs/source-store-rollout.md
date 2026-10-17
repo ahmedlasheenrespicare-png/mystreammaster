@@ -44,6 +44,15 @@
 4. Highlightly لم يتغير: `SM_HIGHLIGHTLY_KEY` أو `<المجلد الأب لـ DOCUMENT_ROOT>/SM_HIGHLIGHTLY_KEY/key.txt`.
 5. لا تطبع البيئة أو المفاتيح ولا تضعها في رابط فحص أو سجل. لا تُشغّل curl بوضع verbose يتضمن الترويسات السرية.
 
+### نشر `lib/` وصلاحياتها
+
+`scoreboard.php` و`match-center.php` و`standings.php` تستدعي `require_once __DIR__ . '/lib/…'`، فالمكتبة **كود إنتاج لا أداة بناء**؛ استثناؤها من رفع FTP يجمّدها على الخادم بينما تتحرك بقية الجذر، ويُفشل أي خادم نظيف.
+
+- لا تُضاف `lib/**` إلى `exclude` في `.github/workflows/deploy.yml`؛ فحص آلي في `tests/source-store` يمنع رجوعها.
+- على الخادم: المجلد `755` والملفات `644`، والمالك هو مستخدم الاستضافة نفسه المستخدم في FTP. سبب شائع لـ `550 Permission denied` هو اختلاف المالك أو `lib` كـ symlink لا مجلد حقيقي.
+- إعادة تشغيل نشر فاشل (Re-run) تستخدم نسخة الـ workflow من الـ commit الأصلي، فلا تعكس تعديل `deploy.yml`؛ استخدم push جديداً.
+- `lib/.htaccess` يحجب الطلب المباشر لملفات المكتبة عبر HTTP دون التأثير على `require_once` من نظام الملفات. لا تحذفه.
+
 ### المجلدات والانتقال
 
 داخل `SM_DATA_DIR`: `espn-days/`، `espn-summaries/`، `smp_sportsdb_rounds/`، `standings/`، `scoreboard-responses/`، `match-center-responses/`.
@@ -70,8 +79,8 @@ npm run build:client --prefix website
 النتائج المحلية الفعلية:
 
 - PHP **8.3.30**: **242 assertions** + فحوص HTTP وترويسات الكاش ونسخ النشر؛ كلها ناجحة.
-- اختبارات المشروع: **374/374**، دون skipped، بما فيها runtime الترتيب عبر محوّل PHP 8.3.
-- المطلوب تحديداً: matches **9/9**، match-center PHP **17/17**، proxy PHP **8/8**.
+- اختبارات المشروع: **380/380**، دون skipped، بما فيها runtime الترتيب عبر محوّل PHP 8.3.
+- المطلوب تحديداً: matches **11/11**، match-center PHP **17/17**، proxy PHP **8/8**.
 - TypeScript: ناجح. build:client: ناجح مع تحذير حجم chunks الحالي.
 - تطابق before/after normalization لملفات اللقطة نفسها للبطولات الثماني بالحقول والقيم والترتيب؛ تغيير التشخيص للصفوف الناقصة فقط إلى `UPSTREAM_INCOMPLETE`.
 - الاختبارات تغطي الساعة والحالات، تجميد وانتقال انتهاء حديث إلى مجمد، المؤجلة/الملغاة، البحث الثنائي، مشاركة الأيام والنوافذ، مسار curl_multi بوحدتين مستحقتين، حدود 499/500/501 و15، HTTP/429/timeout/network/JSON، stale وحدوده والتأجيل حتى بلا نسخة، الأسرار في الأخطاء والسجلات، والبيانات الغائبة.

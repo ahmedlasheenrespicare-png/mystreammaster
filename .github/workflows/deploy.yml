@@ -44,13 +44,17 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./
           server-dir: ./
+          # `lib/**` must stay deployable: scoreboard.php, match-center.php and
+          # standings.php require these files at runtime. Excluding it left the
+          # library frozen on the server while the root controllers kept
+          # updating (see PR #57 deploy runs), and a clean server would fail
+          # every matches request. Only repo tooling is excluded here.
           exclude: |
             **/.git*
             **/.git*/**
             .github/**
             website/**
             tests/**
-            lib/**
             node_modules/**
             package*.json
             README.md

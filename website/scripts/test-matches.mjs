@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  DIAGNOSTIC_LABELS,
   LEAGUES,
   hasCompleteScore,
   classifyFetchError,
@@ -157,6 +158,12 @@ test('readScoreboardResponse surfaces clear diagnostic codes for PHP, upstream, 
   assert.equal(classifyFetchError(new TypeError('Failed to fetch')), 'NETWORK_ERROR');
   assert.match(describeDiagnostic('UPSTREAM_HTTP_503'), /503/);
   assert.match(describeDiagnostic('UPSTREAM_HTTP_403'), /403/);
+  /* Regression: every diagnostic the match path can emit must have a real
+     label, otherwise the page shows "خطأ غير محدد" instead of the cause. */
+  for (const code of ['UPSTREAM_KEY_MISSING', 'UPSTREAM_TRUNCATED', 'SOURCE_STORE_UNAVAILABLE', 'UPSTREAM_NETWORK', 'UPSTREAM_UNAVAILABLE']) {
+    assert.notEqual(describeDiagnostic(code), 'خطأ غير محدد أثناء جلب البيانات', `${code} needs an explicit label`);
+  }
+  assert.equal(describeDiagnostic('UPSTREAM_BRAND_NEW_CODE'), 'خطأ من مصدر البيانات أثناء جلب المباريات');
 });
 test('scoreboard.php whitelist, cache headers, and diagnostic codes match frontend contract', async () => {
   const phpPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../scoreboard.php');
@@ -182,4 +189,16 @@ test('scoreboard.php whitelist, cache headers, and diagnostic codes match fronte
   ]) {
     assert.ok(source.includes(token), `scoreboard.php should include ${token}`);
   }
+});
+test('every diagnostic code the match path can emit is translated by the frontend', async () => {
+  const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const files = ['scoreboard.php', 'lib/source_store.php', 'lib/espn_source.php', 'lib/sportsdb_source.php', 'lib/event_summary.php'];
+  const source = (await Promise.all(files.map(file => fs.readFile(path.join(dir, file), 'utf8')))).join('\n');
+  /* Literal codes only: 'UPSTREAM_HTTP_' . $status is built at runtime and is
+     covered by the UPSTREAM_HTTP_### pattern in describeDiagnostic(). */
+  const codes = new Set(Array.from(source.matchAll(/'((?:UPSTREAM|SOURCE_STORE)_[A-Z_]+)'/g), m => m[1])
+    .filter(code => !code.endsWith('_')));
+  assert.ok(codes.size > 5, `expected several upstream codes, found ${codes.size}`);
+  const untranslated = [...codes].filter(code => !(code in DIAGNOSTIC_LABELS));
+  assert.deepEqual(untranslated, [], `missing frontend labels: ${untranslated.join(', ')}`);
 });

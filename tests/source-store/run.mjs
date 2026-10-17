@@ -105,6 +105,16 @@ try {
   }
   assert.equal(await fs.readFile(path.join(root, 'standings.php'), 'utf8'), await fs.readFile(path.join(root, 'website/public/standings.php'), 'utf8'));
   assert.equal(await fs.readFile(path.join(root, 'lib/source_store.php'), 'utf8'), await fs.readFile(path.join(root, 'website/public/lib/source_store.php'), 'utf8'));
+
+  // Regression: excluding lib/** from the FTP upload froze the library on the
+  // server while the root controllers kept updating, and left a clean server
+  // without its required includes.
+  const deploy = await fs.readFile(path.join(root, '.github/workflows/deploy.yml'), 'utf8');
+  assert.ok(!/^\s*lib\/\*\*\s*$/m.test(deploy), 'deploy.yml must ship lib/**');
+  const libGuard = await fs.readFile(path.join(root, 'lib/.htaccess'), 'utf8');
+  assert.match(libGuard, /Require all denied/, 'lib/.htaccess must deny direct web access');
+  assert.match(libGuard, /\(php\|inc\|json\|md\)/, 'lib/.htaccess must cover PHP files');
+  console.log('ok DEPLOY - PHP library shipped, and blocked from direct HTTP access');
   console.log('ALL HTTP AND DEPLOYMENT COPY TESTS PASSED');
 } catch (error) {
   console.error(error.response?.errors || error);

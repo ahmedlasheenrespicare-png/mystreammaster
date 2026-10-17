@@ -17,7 +17,7 @@ on:
       probe_leagues:
         description: 'بطولات المسبار (مسافة بين كل معرّف) — تُجرد في probe.json بلا كتابة لقطة'
         required: false
-        default: 'egy.2'
+        default: ''
   push:
     branches: ['arena/**']
     paths:
@@ -59,7 +59,7 @@ jobs:
       - name: Fetch + validate from the trusted source
         env:
           SNAPSHOT_LEAGUES: ${{ inputs.snapshot_leagues || 'uefa.champions eng.1 fra.1 esp.1 ger.1 ita.1 ksa.1 egy.1' }}
-          PROBE_LEAGUES: ${{ inputs.probe_leagues || 'egy.2' }}
+          PROBE_LEAGUES: ${{ inputs.probe_leagues || '' }}
           HIGHLIGHTLY_API_KEY: ${{ secrets.HIGHLIGHTLY_API_KEY }}
         run: node website/scripts/fetch-standings-snapshot.mjs
       - name: Publish fetched data into the repository

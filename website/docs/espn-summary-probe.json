@@ -1,0 +1,270 @@
+{
+  "probedAt": "2026-10-17T16:36:49.763Z",
+  "results": [
+    {
+      "league": "eng.1",
+      "ok": true,
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401878771",
+      "eventId": "401878771",
+      "availableFields": {
+        "possession": true,
+        "shots": true,
+        "passAccuracy": true
+      },
+      "rawStatNames": [
+        "foulsCommitted",
+        "yellowCards",
+        "redCards",
+        "offsides",
+        "wonCorners",
+        "saves",
+        "possessionPct",
+        "totalShots",
+        "shotsOnTarget",
+        "shotPct",
+        "penaltyKickGoals",
+        "penaltyKickShots",
+        "accuratePasses",
+        "totalPasses",
+        "passPct",
+        "accurateCrosses",
+        "totalCrosses",
+        "crossPct",
+        "totalLongBalls",
+        "accurateLongBalls",
+        "longballPct",
+        "blockedShots",
+        "effectiveTackles",
+        "totalTackles",
+        "tacklePct",
+        "interceptions",
+        "effectiveClearance",
+        "totalClearance"
+      ],
+      "statistics": {
+        "home": {
+          "possession": 47.2,
+          "shots": 6,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 52.8,
+          "shots": 18,
+          "passAccuracy": 0.8
+        }
+      }
+    },
+    {
+      "league": "esp.1",
+      "ok": true,
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/summary?event=401882843",
+      "eventId": "401882843",
+      "availableFields": {
+        "possession": true,
+        "shots": true,
+        "passAccuracy": true
+      },
+      "rawStatNames": [
+        "foulsCommitted",
+        "yellowCards",
+        "redCards",
+        "offsides",
+        "wonCorners",
+        "saves",
+        "possessionPct",
+        "totalShots",
+        "shotsOnTarget",
+        "shotPct",
+        "penaltyKickGoals",
+        "penaltyKickShots",
+        "accuratePasses",
+        "totalPasses",
+        "passPct",
+        "accurateCrosses",
+        "totalCrosses",
+        "crossPct",
+        "totalLongBalls",
+        "accurateLongBalls",
+        "longballPct",
+        "blockedShots",
+        "effectiveTackles",
+        "totalTackles",
+        "tacklePct",
+        "interceptions",
+        "effectiveClearance",
+        "totalClearance"
+      ],
+      "statistics": {
+        "home": {
+          "possession": 29.4,
+          "shots": 10,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 70.6,
+          "shots": 19,
+          "passAccuracy": 0.9
+        }
+      }
+    },
+    {
+      "league": "ita.1",
+      "ok": true,
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/summary?event=401874760",
+      "eventId": "401874760",
+      "availableFields": {
+        "possession": true,
+        "shots": true,
+        "passAccuracy": true
+      },
+      "rawStatNames": [
+        "foulsCommitted",
+        "yellowCards",
+        "redCards",
+        "offsides",
+        "wonCorners",
+        "saves",
+        "possessionPct",
+        "totalShots",
+        "shotsOnTarget",
+        "shotPct",
+        "penaltyKickGoals",
+        "penaltyKickShots",
+        "accuratePasses",
+        "totalPasses",
+        "passPct",
+        "accurateCrosses",
+        "totalCrosses",
+        "crossPct",
+        "totalLongBalls",
+        "accurateLongBalls",
+        "longballPct",
+        "blockedShots",
+        "effectiveTackles",
+        "totalTackles",
+        "tacklePct",
+        "interceptions",
+        "effectiveClearance",
+        "totalClearance"
+      ],
+      "statistics": {
+        "home": {
+          "possession": 29.3,
+          "shots": 9,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 70.7,
+          "shots": 29,
+          "passAccuracy": 0.9
+        }
+      }
+    },
+    {
+      "league": "ger.1",
+      "ok": true,
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/summary?event=401884769",
+      "eventId": "401884769",
+      "availableFields": {
+        "possession": true,
+        "shots": true,
+        "passAccuracy": true
+      },
+      "rawStatNames": [
+        "foulsCommitted",
+        "yellowCards",
+        "redCards",
+        "offsides",
+        "wonCorners",
+        "saves",
+        "possessionPct",
+        "totalShots",
+        "shotsOnTarget",
+        "shotPct",
+        "penaltyKickGoals",
+        "penaltyKickShots",
+        "accuratePasses",
+        "totalPasses",
+        "passPct",
+        "accurateCrosses",
+        "totalCrosses",
+        "crossPct",
+        "totalLongBalls",
+        "accurateLongBalls",
+        "longballPct",
+        "blockedShots",
+        "effectiveTackles",
+        "totalTackles",
+        "tacklePct",
+        "interceptions",
+        "effectiveClearance",
+        "totalClearance"
+      ],
+      "statistics": {
+        "home": {
+          "possession": 37.4,
+          "shots": 11,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 62.6,
+          "shots": 12,
+          "passAccuracy": 0.9
+        }
+      }
+    },
+    {
+      "league": "fra.1",
+      "ok": true,
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/summary?event=401876437",
+      "eventId": "401876437",
+      "availableFields": {
+        "possession": true,
+        "shots": true,
+        "passAccuracy": true
+      },
+      "rawStatNames": [
+        "foulsCommitted",
+        "yellowCards",
+        "redCards",
+        "offsides",
+        "wonCorners",
+        "saves",
+        "possessionPct",
+        "totalShots",
+        "shotsOnTarget",
+        "shotPct",
+        "penaltyKickGoals",
+        "penaltyKickShots",
+        "accuratePasses",
+        "totalPasses",
+        "passPct",
+        "accurateCrosses",
+        "totalCrosses",
+        "crossPct",
+        "totalLongBalls",
+        "accurateLongBalls",
+        "longballPct",
+        "blockedShots",
+        "effectiveTackles",
+        "totalTackles",
+        "tacklePct",
+        "interceptions",
+        "effectiveClearance",
+        "totalClearance"
+      ],
+      "statistics": {
+        "home": {
+          "possession": 52.9,
+          "shots": 11,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 47.1,
+          "shots": 13,
+          "passAccuracy": 0.9
+        }
+      }
+    }
+  ]
+}

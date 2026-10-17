@@ -1,1 +1,8 @@
-{"code":"UPSTREAM_HTTP_400","http":400,"probedAt":"2026-10-17T15:13:12.164Z","requestedId":"sau.1","url":"https://site.api.espn.com/apis/site/v2/sports/soccer/sau.1/scoreboard?dates=20261017\u0026limit=500","verified":false}
+{
+  "probedAt": "2026-10-17T16:36:49.488Z",
+  "requestedId": "sau.1",
+  "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/sau.1/scoreboard?dates=20261017&limit=500",
+  "verified": false,
+  "http": 400,
+  "code": "UPSTREAM_HTTP_400"
+}

@@ -46,9 +46,9 @@
 
 ### نشر `php-lib/` وصلاحياتها
 
-المكتبة كانت في `lib/`، ثم ثبت من آخر نشر أن المجلد على الاستضافة **لا يقبل الكتابة عبر FTP**: `FTPError: 550 lib/.htaccess: Permission denied`، بينما تُرفع ملفات الجذر عادةً (`.htaccess` في الجذر وصل وبصمة hash مطابقة). لذلك انتقلت المكتبة إلى `php-lib/`: اسم جديد لم يُستخدم فينشئه إجراء FTP بمُلكية صحيحة، ولا يصادم `FilesMatch` في `.htaccess` الجذر ولا أي `RewriteRule`. المجلد القديم `public_html/lib` يبقى كما هو على الخادم احتياطاً ولا يُحذف آلياً.
+المكتبة كانت في `lib/`، ثم ثبت من آخر نشر أن المجلد على الاستضافة **لا يقبل الكتابة عبر FTP**: `FTPError: 550 lib/.htaccess: Permission denied`، بينما تُرفع ملفات الجذر عادةً (`.htaccess` في الجذر وصل وبصمة hash مطابقة). لذلك انتقلت المكتبة إلى `php-lib/`: اسم جديد لم يُستخدم فينشئه إجراء FTP بمُلكية صحيحة، ولا يصادم `FilesMatch` في `.htaccess` الجذر ولا أي `RewriteRule`. المجلد القديم `public_html/lib` يبقى كما هو على الخادم احتياطاً ولا يُحذف آلياً، و`lib/` أُزيل من المستودع فلم يبقَ للمحمّل إلا `php-lib/`.
 
-- `scoreboard.php` و`match-center.php` و`standings.php` (ونسخة `website/public/standings.php`) تستدعي المحمّل `sm_lib('…')` بأسماء ملفات ثابتة في الكود، لا من `$_GET`/`$_POST`. المحمّل يجرّب `php-lib/` أولاً، ويرجع `500` برمز `PHP_LIBRARY_MISSING` بدل fatal صامت.
+- `scoreboard.php` و`match-center.php` و`standings.php` (ونسخة `website/public/standings.php`) تستدعي المحمّل `sm_lib('…')` بأسماء ملفات ثابتة في الكود، لا من أي معامل طلب. المحمّل يقرأ من `php-lib/` وحده، ويرجع `500` برمز `PHP_LIBRARY_MISSING` بدل fatal صامت.
 - `lib/**` **مستثنى** في `.github/workflows/deploy.yml` مع تعليق يشرح السبب: الرفع إلى المسار العالق يفشل بـ`550`. لا يُرفع `php-lib` من جهة العميل بـ`dangerous-clean-slate` ولا يُحذف `public_html/lib` آلياً.
 - `website/public/lib/` أُزيل من المستودع: `publicDir` في Vite كان ينسخ `source_store.php` إلى `dist/lib/` ثم إلى الجذر مع كل بناء، فيعيد إنشاء المسار العالق. المصدر الوحيد الآن `website/public/php-lib/source_store.php`، والفحص الآلي في `tests/source-store` يمنع رجوع `website/public/lib`.
 - على الخادم: المجلد `755` والملفات `644`، والمالك هو مستخدم الاستضافة نفسه المستخدم في FTP.

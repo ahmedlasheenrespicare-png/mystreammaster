@@ -109,6 +109,8 @@ try {
   // its removal is what stops `npm run build` from recreating lib/.
   assert.equal(await fs.stat(path.join(root, 'website/public/lib')).then(() => true, () => false), false,
     'website/public/lib must stay deleted, otherwise every build recreates the frozen lib/');
+  assert.equal(await fs.stat(path.join(root, 'lib')).then(() => true, () => false), false,
+    'lib/ must stay out of the repository; the server copy is the only rollback');
 
   // Regression: lib/ cannot be written over FTP (550 lib/.htaccess: Permission
   // denied), so the library moved to php-lib/. lib/** stays excluded: the old

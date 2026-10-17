@@ -215,7 +215,8 @@ test('the endpoint uses shared source libraries without executing other HTTP con
   // The shared library moved to php-lib/ after lib/ turned out to be unwritable
   // over FTP; the loader is the only include path and takes fixed file names.
   assert.deepEqual([...code.matchAll(/sm_lib\('([^']+)'\)/g)].map(m => m[1]), ['espn_source.php', 'event_summary.php']);
-  assert.match(code, /__DIR__\.'\/php-lib'/, 'the loader must try php-lib/ first');
+  assert.match(code, /__DIR__\.'\/php-lib'/, 'the loader must read php-lib/');
+  assert.ok(!/'\/lib'/.test(code), 'the loader must not keep the frozen lib/ fallback');
   assert.ok(!code.includes('scoreboard.php'), 'no code reference to scoreboard.php');
   assert.ok(!code.includes('standings.php'), 'no code reference to standings.php');
   assert.ok(!code.includes('proxy.php'), 'no code reference to proxy.php');

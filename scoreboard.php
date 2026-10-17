@@ -19,14 +19,14 @@
  */
 
 declare(strict_types=1);
-/* مكتبة PHP المشتركة انتقلت من lib/ (مسار عالق لا يقبل الكتابة عبر FTP —
-   الخطأ 550 lib/.htaccess: Permission denied) إلى php-lib/. المحمّل يجرّب
-   php-lib أولاً ثم lib كاحتياط أثناء فترة الانتقال (أسبوع)، ويعلن رمزاً واضحاً
-   بدل fatal صامت. اسم الملف ثابت في الكود ولا يأتي من $_GET/$_POST. */
+/* مكتبة PHP المشتركة في php-lib/. المسار القديم lib/ عالق لا يقبل الكتابة عبر
+   FTP (الخطأ 550 lib/.htaccess: Permission denied) وأُزيل من المستودع. المحمّل
+   يعلن رمزاً واضحاً بدل fatal صامت، واسم الملف ثابت في الكود ولا يأتي من
+   أي معامل طلب. */
 function sm_lib(string $file): void {
   static $base = null;
   if ($base === null) {
-    foreach ([__DIR__.'/php-lib', __DIR__.'/lib'] as $c) {
+    foreach ([__DIR__.'/php-lib'] as $c) {
       if (is_file($c.'/'.$file)) { $base = $c; break; }
     }
   }

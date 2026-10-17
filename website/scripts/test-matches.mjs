@@ -26,6 +26,25 @@ test('a displayed home-away score must be complete while preserving a genuine ze
   assert.equal(hasCompleteScore(undefined, 1), false);
   assert.equal(hasCompleteScore(1.5, 1), false);
 });
+test('parseScoreboard matches home and away by homeAway property regardless of competitor array order', () => {
+  const reversedEvent = {
+    id: 'test-reversed',
+    date: '2026-10-17T15:00:00Z',
+    competitions: [{
+      competitors: [
+        { homeAway: 'away', score: '3', team: { id: 'away-1', displayName: 'Away Team' } },
+        { homeAway: 'home', score: '1', team: { id: 'home-1', displayName: 'Home Team' } },
+      ],
+      status: { type: { state: 'in', name: 'STATUS_IN_PROGRESS' }, displayClock: "55′" },
+    }],
+  };
+  const parsed = parseScoreboard({ events: [reversedEvent] }, league);
+  assert.equal(parsed.length, 1);
+  assert.equal(parsed[0].home.name, 'Home Team');
+  assert.equal(parsed[0].home.score, 1);
+  assert.equal(parsed[0].away.name, 'Away Team');
+  assert.equal(parsed[0].away.score, 3);
+});
 function event(overrides = {}) {
   return { id: '1', date: '2026-10-13T22:30:00Z', competitions: [{ competitors: [
     { homeAway: 'away', score: '0', team: { displayName: 'Away' } },

@@ -270,7 +270,7 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
                     <Team team={match.home} />
                     <div className="match-score">
                       {match.state === 'live' || match.state === 'finished' ? (
-                        <strong dir={hasCompleteScore(match.home.score, match.away.score) ? 'ltr' : undefined} aria-label={hasCompleteScore(match.home.score, match.away.score) ? `نتيجة المضيف ${match.home.score}، ثم الضيف ${match.away.score}` : 'النتيجة غير مكتملة'}>
+                        <strong aria-label={hasCompleteScore(match.home.score, match.away.score) ? `نتيجة المضيف ${match.home.score}، ثم الضيف ${match.away.score}` : 'النتيجة غير مكتملة'}>
                           {hasCompleteScore(match.home.score, match.away.score) ? <>{match.home.score} <span>:</span> {match.away.score}</> : '—'}
                         </strong>
                       ) : (

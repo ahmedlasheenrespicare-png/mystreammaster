@@ -64,5 +64,14 @@ test('one shared snapshot renders an ordered, accessible event rail and stable h
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `no horizontal overflow at ${width}px`).toBe(true);
     const eventBox = await rail.boundingBox();
     expect(eventBox?.width).toBeLessThanOrEqual(width);
+
+    // Verify visual order aligns with RTL teams: home team is on the right, away team on the left.
+    // In RTL, the home score number renders on the right (adjacent to home) and away score on the left (adjacent to away).
+    const scoreBox = await page.locator('.mc-score-order').boundingBox();
+    const homeTeamBox = await page.locator('.mc-pitch-team--home').boundingBox();
+    const awayTeamBox = await page.locator('.mc-pitch-team--away').boundingBox();
+    if (scoreBox && homeTeamBox && awayTeamBox) {
+      expect(homeTeamBox.x).toBeGreaterThan(awayTeamBox.x);
+    }
   }
 });

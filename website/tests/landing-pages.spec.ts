@@ -201,9 +201,38 @@ test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and c
   const ratesCard = page.locator('[data-standings-rates="eng.1"]');
   await expect(ratesCard).toBeVisible();
   await expect(ratesCard.locator('h3')).toHaveText('الهجوم والدفاع — معدلات أهداف الموسم');
-  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team]')).toHaveText(['Brighton & Hove Albion']);
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team-name]')).toHaveText(['Brighton & Hove Albion']);
   await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-value]')).toHaveText('3.00');
   await expect(ratesCard.locator('[data-rate-card="best-defence"] [data-rate-team]')).toHaveCount(4);
+
+  /* الشارة الأولى لشباك المتعادل تحمل المركز وإجمالي الأهداف والمباريات —
+     والاسم كاملاً بلا قصّ (لا ellipsis ولا تمرير أفقي داخل الشارة) */
+  const bestAttackTeam = ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team]').first();
+  await expect(bestAttackTeam.locator('[data-rate-team-rank]')).toHaveText('#3');
+  await expect(bestAttackTeam.locator('[data-rate-team-goals]')).toHaveText(/18 هدفاً/);
+  await expect(bestAttackTeam.locator('[data-rate-team-mp]')).toHaveText(/6 مباريات/);
+  const nameNotClipped = await bestAttackTeam.evaluate(el => el.scrollWidth <= el.clientWidth + 1);
+  expect(nameNotClipped).toBe(true);
+
+  /* الرقم الرئيسي بمحاذاة رقمية + شارة مقارنة بمتوسط الدوري (179 ÷ 122 = 1.4672…) */
+  const heroStyle = await ratesCard.locator('[data-rate-card="best-attack"] [data-rate-value]').evaluate(el =>
+    getComputedStyle(el).fontVariantNumeric,
+  );
+  expect(heroStyle).toContain('tabular-nums');
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-delta]')).toContainText('+1.53');
+  await expect(ratesCard.locator('[data-rate-card="best-defence"] [data-rate-delta]')).toContainText('-0.63');
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-sample]')).toContainText('18 هدفاً في 6 مباريات');
+  await expect(ratesCard.locator('[data-rate-bench]')).toHaveCount(4);
+  await expect(ratesCard.locator('[data-rate-bench-avg]')).toHaveCount(4);
+
+  /* شريط الملخص التحليلي للمسابقة: 4 مؤشرات مرسومة مسبقاً */
+  await expect(ratesCard.locator('[data-rates-kpis] [data-rates-kpi]')).toHaveCount(4);
+  await expect(ratesCard.locator('[data-rates-kpi="total-goals"]')).toContainText('179');
+  await expect(ratesCard.locator('[data-rates-kpi="avg-per-team"]')).toContainText('1.47');
+  await expect(ratesCard.locator('[data-rates-kpi="top-gd-per-match"]')).toContainText('+2.17');
+  await expect(ratesCard.locator('[data-rates-kpi="top-gd-per-match"]')).toContainText('Brighton & Hove Albion');
+  await expect(ratesCard.locator('[data-rates-kpi="top-ppm"]')).toContainText('3.00');
+  await expect(ratesCard.locator('[data-rates-kpi="top-ppm"]')).toContainText('Manchester City');
 
   const desktopTops = await ratesCard.locator('[data-rate-card]').evaluateAll(els =>
     els.map(el => Math.round(el.getBoundingClientRect().top)),
@@ -233,8 +262,74 @@ test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and c
   await expect(details).not.toHaveAttribute('open', '');
   await details.locator('summary').click();
   await expect(details).toHaveAttribute('open', '');
-  await expect(details.locator('tbody tr')).toHaveCount(20);
+  const rows = details.locator('tbody tr[data-rate-row]');
+  await expect(rows).toHaveCount(20);
+
+  /* الجدول التحليلي: أعمدة MP/GF/GA/GD + معدلات مع Mini Bar + تصنيف تكتيكي */
+  await expect(details.locator('[data-rate-sort]')).toHaveCount(9);
+  await expect(details.locator('[data-rate-tactic]')).toHaveCount(20);
+  await expect(details.locator('[data-rate-tactic="elite-balanced"]')).not.toHaveCount(0);
+  await expect(details.locator('.ls-minibar')).not.toHaveCount(0);
+
+  /* الفرز: أقوى هجوماً أولاً (Brighton 3.00)، ثم عكس الاتجاه (Tottenham 0.50) */
+  const attackSort = details.locator('[data-rate-sort="attack"]');
+  await attackSort.click();
+  await expect(attackSort).toHaveText(/هجوم\/م/);
+  await expect(details.locator('th[aria-sort="descending"] [data-rate-sort="attack"]')).toHaveCount(1);
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Brighton & Hove Albion');
+  await attackSort.click();
+  await expect(details.locator('th[aria-sort="ascending"] [data-rate-sort="attack"]')).toHaveCount(1);
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Tottenham Hotspur');
+
+  /* الفرز حسب نقاط/م: Manchester City (3.00) في الصدارة */
+  await details.locator('[data-rate-sort="ppm"]').click();
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Manchester City');
   expect(unexpectedExternalRequests).toEqual([]);
+});
+
+test('attack & defence rates card: analyst summary uses league-wide totals, sample size and tactics chip semantics', async ({ page }) => {
+  await page.clock.install({ time: NOW });
+  await page.route('**/*', route => {
+    const url = new URL(route.request().url());
+    if (!['localhost', '127.0.0.1'].includes(url.hostname)) return route.abort();
+    if (url.pathname === '/scoreboard.php') {
+      return route.fulfill({ status: 200, json: { events: [] } });
+    }
+    return route.continue();
+  });
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/matches/الدوري-الإنجليزي/');
+  const ratesCard = page.locator('[data-standings-rates="eng.1"]');
+  await expect(ratesCard).toBeVisible();
+
+  /* التصنيف التكتيكي: كل شريحة من الأربعة مبنية على مقارنة بمتوسط الدوري (179÷122) */
+  const tacticCounts: Record<string, number> = {};
+  for (const code of ['elite-balanced', 'offensive', 'defensive', 'struggling', 'na']) {
+    tacticCounts[code] = await ratesCard.locator(`[data-rate-tactic="${code}"]`).count();
+  }
+  expect(tacticCounts.na).toBe(0, 'جدول كامل لا يُنتج تصنيفاً «غير متاح»');
+  expect(tacticCounts['elite-balanced'] + tacticCounts.offensive + tacticCounts.defensive + tacticCounts.struggling).toBe(20);
+
+  /* شريط المعيار المرجعي: امتداد التعبئة ≤ 100% وعلامة المتوسط ضمن المسار */
+  const benchGeometry = await ratesCard.locator('[data-rate-bench]').evaluateAll(els =>
+    els.map(el => {
+      const fill = el.querySelector('[data-rate-bench-fill]') as HTMLElement;
+      const avg = el.querySelector('[data-rate-bench-avg]') as HTMLElement;
+      const track = el.querySelector('.ls-rate-bench-track') as HTMLElement;
+      const fillWidth = parseFloat(fill.style.width);
+      const avgLeft = parseFloat(avg.style.insetInlineStart);
+      return {
+        fillValid: Number.isFinite(fillWidth) && fillWidth >= 0 && fillWidth <= 100.001,
+        avgValid: Number.isFinite(avgLeft) && avgLeft >= 0 && avgLeft <= 100.001,
+        trackVisible: track.getBoundingClientRect().width > 0,
+      };
+    }),
+  );
+  expect(benchGeometry.every(g => g.fillValid && g.avgValid && g.trackVisible)).toBe(true);
+
+  /* لا أعمدة أرشيف محلية دون أرشيف مخزَّن لهذه البطولة في حزمة البناء الحالية */
+  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(0);
 });
 
 test('attack & defence rates card updates reactively when /standings.php returns fresh standings', async ({ page }) => {
@@ -286,7 +381,24 @@ test('attack & defence rates card updates reactively when /standings.php returns
   await page.goto('/matches/الدوري-الإنجليزي/');
   const ratesCard = page.locator('[data-standings-rates="eng.1"]');
   await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-value]')).toHaveText('4.00');
-  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team]')).toHaveText(['Arsenal']);
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-team-name]')).toHaveText(['Arsenal']);
   await expect(ratesCard.locator('[data-rate-card="best-defence"] [data-rate-value]')).toHaveText('0.20');
   await expect(ratesCard.locator('[data-rates-stale-badge]')).toBeHidden();
+
+  /* المشتقات تُعاد حسابها من القراءة الجديدة:
+     متوسط الدوري = (20 + 19×5) ÷ (20×5) = 115 ÷ 100 = 1.15 */
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-delta]')).toContainText('+2.85');
+  await expect(ratesCard.locator('[data-rate-card="best-defence"] [data-rate-delta]')).toContainText('-0.95');
+  await expect(ratesCard.locator('[data-rate-card="best-attack"] [data-rate-sample]')).toContainText('20 هدفاً في 5 مباريات');
+  await expect(ratesCard.locator('[data-rates-kpi="total-goals"]')).toContainText('115');
+  await expect(ratesCard.locator('[data-rates-kpi="avg-per-team"]')).toContainText('1.15');
+  await expect(ratesCard.locator('[data-rates-kpi="top-gd-per-match"]')).toContainText('+3.80');
+  await expect(ratesCard.locator('[data-rates-kpi="top-gd-per-match"]')).toContainText('Arsenal');
+  await expect(ratesCard.locator('[data-rates-kpi="top-ppm"]')).toContainText('3.00');
+  /* Arsenal: هجوم 4.00 > 1.15 ودفاع 0.20 < 1.15 → متوازن النخبة */
+  const arsenalTactic = ratesCard
+    .locator('tr[data-rate-row="359"]')
+    .locator('[data-rate-tactic]');
+  await expect(arsenalTactic).toHaveAttribute('data-rate-tactic', 'elite-balanced');
+  await expect(arsenalTactic).toHaveText('متوازن النخبة');
 });

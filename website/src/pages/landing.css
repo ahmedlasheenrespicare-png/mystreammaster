@@ -362,11 +362,16 @@
 }
 
 /* ==========================================================================
-   بطاقة «الهجوم والدفاع — معدلات أهداف الموسم»
+   بطاقة «الهجوم والدفاع — معدلات أهداف الموسم» — الإصدار التحليلي
    --------------------------------------------------------------------------
-   • أربع بطاقات فرعية: 4 في صف على سطح المكتب، 2 على اللوحي، 1 على الهاتف.
-   • تمييز الهجوم والدفاع بأيقونة ونص دلالي ولون متناسق عالي التباين.
-   • شارات الفرق المتعادلة تلتفّ تلقائياً بلا قصّ للأسماء أو تمرير أفقي.
+   • شريط علوي متدرج (Accent Top Bar) وأيقونة دلالية لكل فئة: قوة هجومية،
+     عجز هجومي، صلابة دفاعية، هشاشة دفاعية — تمييز بالنص والأيقونة لا باللون وحده.
+   • رقم رئيسي (Rate Hero) بخط رقمي محاذٍ tabular-nums، وشارة مقارنة بمتوسط
+     الدوري، وشريط Benchmark يوضح موقع المعدل بين 0 وأعلى معدل في المسابقة
+     مع علامة لموضع المتوسط.
+   • شارات الفرق المتعادلة: درع (شعار محلي معتمد أو مونوغرام بالأحرف الأولى
+     + المركز) مع الاسم كاملاً بلا قصّ ellipsis ولا تمرير أفقي.
+   • شريط ملخص تحليلي للمسابقة (4 مؤشرات) وجدول تحليلي قابل للفرز.
    ========================================================================== */
 
 .ls-rates-card {
@@ -438,11 +443,67 @@
   font-size: 0.75rem;
 }
 
+/* شريط الملخص التحليلي للمسابقة — لقطة واحدة للمحلل (أسلوب Broadcast) */
+.ls-rates-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ls-rates-kpi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 12px 14px 12px 16px;
+  border-radius: 14px;
+  background: linear-gradient(118deg, #10131b 0%, #171b28 100%);
+  color: #fff;
+  overflow: hidden;
+}
+
+.ls-rates-kpi::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background: #d8ff3e;
+}
+
+.ls-rates-kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.ls-rates-kpi-value {
+  font-size: 1.32rem;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.ls-rates-kpi-sub {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #d8dae0;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
 .ls-rates-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 @media (min-width: 600px) and (max-width: 1023.98px) {
@@ -458,31 +519,41 @@
 }
 
 .ls-rate-subcard {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
-  padding: 16px;
+  padding: 20px 16px 16px;
   border-radius: 16px;
   background: #ffffff;
   border: 1px solid #e4e1d8;
-  border-top-width: 4px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  overflow: hidden;
 }
 
-.ls-rate-subcard--attack.ls-rate-subcard--best {
-  border-top-color: #14532d;
+/* الشريط العلوي المتدرج — هوية بصرية لكل فئة */
+.ls-rate-accent {
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: 5px;
 }
 
-.ls-rate-subcard--attack.ls-rate-subcard--worst {
-  border-top-color: #7c2d12;
+.ls-rate-subcard--atk-best .ls-rate-accent {
+  background: linear-gradient(90deg, #14532d 0%, #22c55e 55%, #86efac 100%);
 }
 
-.ls-rate-subcard--defence.ls-rate-subcard--best {
-  border-top-color: #17206b;
+.ls-rate-subcard--atk-worst .ls-rate-accent {
+  background: linear-gradient(90deg, #7c2d12 0%, #ef4444 55%, #fca5a5 100%);
 }
 
-.ls-rate-subcard--defence.ls-rate-subcard--worst {
-  border-top-color: #9a3412;
+.ls-rate-subcard--def-best .ls-rate-accent {
+  background: linear-gradient(90deg, #17206b 0%, #3b82f6 55%, #93c5fd 100%);
+}
+
+.ls-rate-subcard--def-worst .ls-rate-accent {
+  background: linear-gradient(90deg, #9a3412 0%, #f97316 55%, #fdba74 100%);
 }
 
 .ls-rate-card-top {
@@ -540,41 +611,54 @@
   border: 1px solid #e4e1d8;
   border-radius: 999px;
   padding: 2px 8px;
-}
-
-.ls-rate-title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  font-variant-numeric: tabular-nums;
 }
 
 .ls-rate-card-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 900;
   color: #0b0b0f;
   line-height: 1.4;
 }
 
+/* الرقم الرئيسي + المقارنة بمتوسط الدوري + حجم العينة */
 .ls-rate-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfaf7 0%, #f4f2ea 100%);
+  border: 1px solid #edeae0;
+}
+
+.ls-rate-hero {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px 8px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: #f8f7f2;
-  border: 1px solid #edeae0;
 }
 
 .ls-rate-value {
-  font-size: 1.55rem;
+  font-size: 2.05rem;
   font-weight: 900;
-  color: #17206b;
-  line-height: 1.15;
+  line-height: 1.08;
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #17206b;
+}
+
+.ls-rate-subcard--atk-best .ls-rate-value {
+  color: #14532d;
+}
+
+.ls-rate-subcard--atk-worst .ls-rate-value {
+  color: #7c2d12;
+}
+
+.ls-rate-subcard--def-worst .ls-rate-value {
+  color: #9a3412;
 }
 
 .ls-rate-value--na {
@@ -583,15 +667,123 @@
 }
 
 .ls-rate-unit {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: #52525c;
 }
 
-.ls-rate-teams {
+.ls-rate-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rate-delta--good {
+  background: #e7f6ec;
+  color: #14532d;
+  border: 1px solid #bfe5cb;
+}
+
+.ls-rate-delta--bad {
+  background: #fdeee8;
+  color: #7c2d12;
+  border: 1px solid #f3cfc2;
+}
+
+.ls-rate-delta--neutral {
+  background: #f4f3ee;
+  color: #52525c;
+  border: 1px solid #e4e1d8;
+}
+
+.ls-rate-delta--na {
+  background: #f4f3ee;
+  color: #71717a;
+  border: 1px dashed #d6d2c6;
+}
+
+.ls-rate-delta-glyph {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.ls-rate-sample {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #3f3f46;
+  font-variant-numeric: tabular-nums;
+}
+
+/* شريط المعيار المرجعي: موقع المعدل بين 0 وأعلى معدل، مع علامة المتوسط */
+.ls-rate-bench {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ls-rate-bench-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: #ece9df;
+}
+
+.ls-rate-bench-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 0;
+  min-width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #17206b, #3b82f6);
+}
+
+.ls-rate-subcard--atk-best .ls-rate-bench-fill {
+  background: linear-gradient(90deg, #14532d, #4ade80);
+}
+
+.ls-rate-subcard--atk-worst .ls-rate-bench-fill {
+  background: linear-gradient(90deg, #7c2d12, #ef4444);
+}
+
+.ls-rate-subcard--def-worst .ls-rate-bench-fill {
+  background: linear-gradient(90deg, #9a3412, #f97316);
+}
+
+.ls-rate-bench-avg {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  border-radius: 2px;
+  background: #0b0b0f;
+  opacity: 0.55;
+}
+
+.ls-rate-bench-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #71717a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* شارات الفرق المتعادلة — بأولوية متناسقة (المركز ثم الاسم) */
+.ls-rate-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   list-style: none;
   padding: 0;
   margin: 2px 0 0;
@@ -599,32 +791,125 @@
 }
 
 .ls-rate-team {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   max-width: 100%;
-  padding: 5px 10px;
-  border-radius: 10px;
-  background: #f4f3ee;
-  border: 1px solid #e2dfd5;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #f7f6f1;
+  border: 1px solid #e6e2d7;
   color: #0b0b0f;
-  font-size: 0.82rem;
-  font-weight: 800;
-  line-height: 1.5;
 }
 
 .ls-rate-team-logo {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
   flex-shrink: 0;
 }
 
+.ls-rate-team-logo--sm {
+  width: 18px;
+  height: 18px;
+}
+
+/* درع المونوغرام: الأحرف الأولى + المركز، يُعرض حين لا يتوفر شعار محلي معتمد */
+.ls-rate-crest {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: #52525c;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+}
+
+.ls-rate-crest--atk-best {
+  background: #14532d;
+}
+
+.ls-rate-crest--atk-worst {
+  background: #7c2d12;
+}
+
+.ls-rate-crest--def-best {
+  background: #17206b;
+}
+
+.ls-rate-crest--def-worst {
+  background: #9a3412;
+}
+
+.ls-rate-crest--neutral {
+  background: #52525c;
+}
+
+.ls-rate-crest--sm {
+  width: 20px;
+  height: 22px;
+  font-size: 0.5rem;
+}
+
+.ls-rate-crest-rank {
+  position: absolute;
+  bottom: -5px;
+  inset-inline-end: -8px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: #0b0b0f;
+  color: #d8ff3e;
+  font-size: 0.55rem;
+  font-weight: 900;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rate-crest--sm .ls-rate-crest-rank {
+  font-size: 0.5rem;
+  bottom: -4px;
+  inset-inline-end: -6px;
+  padding: 0 3px;
+}
+
+.ls-rate-team-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .ls-rate-team-name {
   min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.45;
   overflow-wrap: anywhere;
   word-break: break-word;
   white-space: normal;
+}
+
+.ls-rate-team-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #52525c;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rate-team-rank {
+  color: #17206b;
+  font-weight: 900;
 }
 
 .ls-rate-empty {
@@ -675,11 +960,214 @@
   border-radius: 8px;
 }
 
+/* الجدول التحليلي الكامل — أعمدة مشتقة من بيانات الترتيب فقط */
+.ls-rates-analyst-table {
+  min-width: 1180px;
+  font-size: 0.8rem;
+}
+
+.ls-rates-analyst-table th,
+.ls-rates-analyst-table td {
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.ls-rates-analyst-table tbody th.ls-an-team {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  min-width: 190px;
+  max-width: 250px;
+}
+
+.ls-an-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ls-an-rank {
+  min-width: 32px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: #71717a;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-an-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  font-weight: 700;
+}
+
+.ls-an-team-col {
+  text-align: start;
+}
+
+.ls-an-head-text {
+  font-size: 0.78rem;
+}
+
+.ls-an-head-gloss {
+  font-weight: 800;
+}
+
+.ls-sort {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 3px 5px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.ls-sort:hover {
+  color: #17206b;
+}
+
+.ls-sort:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 2px;
+}
+
+.ls-col-gloss {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #71717a;
+  letter-spacing: 0.05em;
+}
+
+.ls-sort-caret {
+  font-size: 0.64rem;
+  color: #a1a1aa;
+}
+
+.ls-rates-analyst-table th[aria-sort="ascending"] .ls-sort,
+.ls-rates-analyst-table th[aria-sort="descending"] .ls-sort {
+  color: #17206b;
+}
+
+.ls-rates-analyst-table th[aria-sort="ascending"] .ls-sort-caret,
+.ls-rates-analyst-table th[aria-sort="descending"] .ls-sort-caret {
+  color: #17206b;
+}
+
+.ls-an-rate {
+  font-variant-numeric: tabular-nums;
+}
+
+/* شريط نسبي صغير بجانب معدلات الهجوم والدفاع في الجدول */
+.ls-minibar {
+  display: block;
+  width: 100%;
+  max-width: 64px;
+  margin-top: 4px;
+  height: 3px;
+  border-radius: 999px;
+  background: #ece9df;
+  overflow: hidden;
+}
+
+.ls-minibar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #17206b;
+}
+
+/* التصنيف التكتيكي التلقائي — لون + نص + نقطة دلالية (لا يُعتمد على اللون وحده) */
+.ls-tactic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.ls-tactic::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.ls-tactic--elite-balanced {
+  background: #eef2ff;
+  color: #312e81;
+  border-color: #d8defa;
+}
+
+.ls-tactic--offensive {
+  background: #e7f6ec;
+  color: #14532d;
+  border-color: #bfe5cb;
+}
+
+.ls-tactic--defensive {
+  background: #e6f3fa;
+  color: #0c4a6e;
+  border-color: #c2e2f1;
+}
+
+.ls-tactic--struggling {
+  background: #fdeee8;
+  color: #7c2d12;
+  border-color: #f3cfc2;
+}
+
+.ls-tactic--na {
+  background: #f4f3ee;
+  color: #71717a;
+  border-color: #e4e1d8;
+}
+
+.ls-tactic--na::before {
+  background: #d6d2c6;
+}
+
+@media (max-width: 1023.98px) {
+  .ls-rates-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 560px) {
   .ls-rates-card {
     padding: 16px;
   }
+
+  .ls-rate-value {
+    font-size: 1.8rem;
+  }
+
+  .ls-rates-kpi {
+    padding: 10px 12px 10px 14px;
+  }
+
+  .ls-rates-kpi-value {
+    font-size: 1.15rem;
+  }
 }
+
+
 
 /* قسم «البيانات والمصادر» — نص صغير هادئ بخط علوي فاصل،
    من متغيّرات الألوان القائمة بلا خطوط جديدة */

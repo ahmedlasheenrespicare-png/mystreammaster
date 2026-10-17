@@ -14,7 +14,47 @@ export const BIG_FIVE: string[];
 export function validateArchive(data: unknown, league?: string, season?: string): FixturesArchive;
 export function mergeArchive(previous: FixturesArchive | null, incoming: FixturesArchive): FixturesArchive;
 interface VenueStats { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number }
-export function archiveTeamStats(matches: ArchiveMatch[]): { id: string; name: string; played: number; cleanSheets: number; winningStreak: number | null; unbeatenStreak: number | null; home: VenueStats; away: VenueStats }[];
-type RatedEntry = StandingsEntry & { attack: number | null; defence: number | null; logo?: string | null };
+export interface ArchiveTeamStats {
+  id: string; name: string; played: number;
+  cleanSheets: number;
+  /** مباريات انتهت دون تسجيل الفريق أي هدف (ضمن الأرشيف فقط) */
+  scoreless: number;
+  winningStreak: number | null; unbeatenStreak: number | null;
+  home: VenueStats; away: VenueStats;
+}
+export function archiveTeamStats(matches: ArchiveMatch[]): ArchiveTeamStats[];
+export type TacticCode = 'elite-balanced' | 'offensive' | 'defensive' | 'struggling';
+export const TACTIC_LABELS: Record<TacticCode, string>;
+type RatedEntry = StandingsEntry & {
+  attack: number | null; defence: number | null;
+  /** (له − عليه) ÷ لعب — من القيم الخام، لا من فارق المصدر */
+  gdPerMatch: number | null;
+  /** نقاط ÷ لعب (يسمح بخصم النقاط السالب) */
+  ppm: number | null;
+  /** فوز ÷ لعب × 100 */
+  winPct: number | null;
+  /** الفرق الدقيق عن متوسط الدوري (موجب = أعلى من المتوسط) */
+  attackDelta: number | null; defenceDelta: number | null;
+  tactic: TacticCode | null;
+  logo?: string | null;
+};
+export interface StandingsLeagueSummary {
+  /** مجموع «له» في صفوف الجدول المتكاملة — null إن غابت البيانات */
+  totalGoals: number | null;
+  /** مجموع «لعب» في صفوف الجدول المتكاملة */
+  totalTeamMatches: number | null;
+  /** متوسط أهداف الفريق لكل مباراة = إجمالي الأهداف ÷ إجمالي المباريات */
+  averagePerTeam: number | null;
+  maxAttack: number | null;
+  maxDefence: number | null;
+  bestGdPerMatch: { value: number; teams: RatedEntry[] } | null;
+  bestPpm: { value: number; teams: RatedEntry[] } | null;
+}
+export function standingsRates(entries: Partial<StandingsEntry>[]): {
+  rows: RatedEntry[];
+  bestAttack: RatedEntry[]; worstAttack: RatedEntry[];
+  bestDefence: RatedEntry[]; worstDefence: RatedEntry[];
+  attackComplete: boolean; defenceComplete: boolean;
+  league: StandingsLeagueSummary;
+};
 export function cleanTeamName(name: unknown): string;
-export function standingsRates(entries: Partial<StandingsEntry>[]): { rows: RatedEntry[]; bestAttack: RatedEntry[]; worstAttack: RatedEntry[]; bestDefence: RatedEntry[]; worstDefence: RatedEntry[]; attackComplete: boolean; defenceComplete: boolean };

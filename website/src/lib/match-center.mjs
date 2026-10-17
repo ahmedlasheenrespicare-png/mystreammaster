@@ -170,7 +170,9 @@ export function deriveScore(status, rawHome, rawAway) {
   const home = firstNumber(rawHome?.score, rawHome?.goals, rawHome);
   const away = firstNumber(rawAway?.score, rawAway?.goals, rawAway);
   /* صفر حقيقي مقبول؛ غير المتاح يبقى null ولا يتحول صفراً. */
-  if (home === null && away === null) return null;
+  /* A displayable score is an atomic home/away pair. Never leak a partial
+     number to the pitch or mobile summary; zero remains a valid value. */
+  if (!isValidScore({ home, away })) return null;
   return { home, away };
 }
 
@@ -383,36 +385,59 @@ export function eventKey(matchId, event) {
   return `${matchId}:${parts.join(':')}`;
 }
 
-export function normalizeEvent(raw) {
-  const typeRaw = String(raw?.type || raw?.detail || '').trim().toLowerCase();
-  let type = 'other';
-  if (/own\s*goal/.test(typeRaw)) type = 'own_goal';
-  else if (/penalty/.test(typeRaw) && /miss|fail/.test(typeRaw)) type = 'missed_penalty';
-  else if (/penalty/.test(typeRaw)) type = 'penalty';
-  else if (/goal/.test(typeRaw)) type = 'goal';
-  else if (/yellow/.test(typeRaw)) type = 'yellow_card';
-  else if (/red/.test(typeRaw)) type = 'red_card';
-  else if (/substitut|replacement/.test(typeRaw)) type = 'substitution';
-  else if (/var/.test(typeRaw)) type = /cancel|disallow|overturn/.test(typeRaw) ? 'var_cancelled' : 'var_confirmed';
+const SOURCE_EVENT_TYPES = new Map([
+  ['goal', 'goal'], ['goal volley', 'goal'], ['goal - volley', 'goal'],
+  ['penalty', 'penalty'], ['penalty goal', 'penalty'], ['penalty scored', 'penalty'],
+  ['own goal', 'own_goal'],
+  ['missed penalty', 'missed_penalty'], ['penalty missed', 'missed_penalty'],
+  ['yellow card', 'yellow_card'],
+  ['red card', 'red_card'],
+  ['substitution', 'substitution'],
+  ['var cancelled', 'var_cancelled'], ['var cancellation', 'var_cancelled'],
+  ['var confirmed', 'var_confirmed'], ['var confirmation', 'var_confirmed'],
+]);
 
-  /* معرّف الحدث من المصدر **يجب أن يبقى**. إسقاطه كان يجعل بصمة الحدث تُبنى
-     من النوع والدقيقة واللاعب فقط، فتتغير البصمة حين يتحول هدف إلى
-     «VAR Cancelled» — ويُعلن الحدث مرتين: مرة كهدف ملغى ومرة كهدف اختفى.
-     البند 7 يمنع تكرار الإشعار، وحفظ المعرّف هو ما يجعل المنع فعلياً. */
+function sourceEventType(raw) {
+  const value = raw?.sourceType ?? raw?.type?.text ?? raw?.type?.name ?? raw?.type;
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+export function normalizeEvent(raw) {
+  const sourceType = sourceEventType(raw);
+  const normalizedType = sourceType
+    ?.toLowerCase()
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const type = normalizedType ? SOURCE_EVENT_TYPES.get(normalizedType) ?? 'other' : 'other';
+
+  /* Preserve source identifiers whenever the contract provides them; do not
+     derive team identity from its display name. */
   const rawId = raw?.id ?? raw?.eventId ?? raw?.uuid;
+  const sourceTypeId = raw?.sourceTypeId ?? raw?.typeId ?? raw?.type?.id;
+  const sourceTeamId = raw?.sourceTeamId ?? raw?.teamId ?? raw?.team?.id;
+  const period = raw?.period?.number ?? raw?.period;
+  const periodText = typeof period === 'string' || typeof period === 'number'
+    ? String(period).trim() || null
+    : null;
+  const cancelled = raw?.cancelled === true || raw?.disallowed === true || type === 'var_cancelled';
 
   return {
     id: rawId === undefined || rawId === null || String(rawId).trim() === '' ? null : String(rawId).trim(),
+    sourceType,
+    sourceTypeId: sourceTypeId === undefined || sourceTypeId === null || String(sourceTypeId).trim() === '' ? null : String(sourceTypeId).trim(),
+    sourceTeamId: sourceTeamId === undefined || sourceTeamId === null || String(sourceTeamId).trim() === '' ? null : String(sourceTeamId).trim(),
     type,
-    /* البند 7: دعم إلغاء الهدف بعد VAR. `cancelled` حقيقة من المصدر، لا استنتاج. */
-    cancelled: raw?.cancelled === true || raw?.disallowed === true || type === 'var_cancelled',
+    cancelled,
     minute: firstNumber(raw?.minute, raw?.clock, raw?.time?.elapsed),
     extraMinute: firstNumber(raw?.extraMinute, raw?.time?.extra),
-    period: firstString(raw?.period),
-    team: firstString(raw?.team?.name, raw?.teamName, raw?.teamSide),
+    period: periodText,
+    team: firstString(raw?.team?.name, raw?.teamName),
     teamSide: raw?.team?.homeAway === 'home' || raw?.side === 'home' ? 'home' : raw?.team?.homeAway === 'away' || raw?.side === 'away' ? 'away' : null,
-    player: raw?.player?.name ? { id: raw?.player?.id ?? null, name: raw?.player.name } : null,
-    relatedPlayer: raw?.assist?.name ? { id: raw?.assist?.id ?? null, name: raw?.assist.name } : null,
+    player: raw?.player?.name ? { id: raw?.player?.id ?? null, name: raw.player.name } : null,
+    relatedPlayer: raw?.relatedPlayer?.name
+      ? { id: raw.relatedPlayer.id ?? null, name: raw.relatedPlayer.name }
+      : raw?.assist?.name ? { id: raw.assist.id ?? null, name: raw.assist.name } : null,
     detail: firstString(raw?.detail, raw?.comments, raw?.text),
   };
 }

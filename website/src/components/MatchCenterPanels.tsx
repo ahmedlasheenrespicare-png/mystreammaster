@@ -12,7 +12,6 @@ import {
   type H2hEntry,
   type LineupSide as LineupSideData,
   type MatchDefinition,
-  type MatchEvent,
   type MatchLineups,
   type MatchSnapshot,
   type MatchStatus,
@@ -62,18 +61,6 @@ function displayableStatistics(value: MatchSnapshot['statistics']): StatPair[] {
     && (numeric(stat?.home) !== null || numeric(stat?.away) !== null));
 }
 
-function displayableEvents(value: MatchSnapshot['events']): MatchEvent[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter(event => Boolean(event && (
-    (event.type && event.type !== 'other')
-    || event.cancelled
-    || text(event.team)
-    || text(event.player?.name)
-    || text(event.relatedPlayer?.name)
-    || text(event.detail)
-    || (typeof event.minute === 'number' && Number.isFinite(event.minute))
-  )));
-}
 
 function displayablePlayers(value: unknown): ScoredPlayer[] {
   if (!Array.isArray(value)) return [];
@@ -171,12 +158,11 @@ export function availableMatchCenterTabs(
 
   if (confirmedSides(snapshot?.lineups ?? null).length > 0) tabs.push('lineups');
 
-  const events = displayableEvents(snapshot?.events ?? []);
   const statistics = displayableStatistics(snapshot?.statistics ?? null);
-  if (events.length > 0 || statistics.length > 0) tabs.push('live');
+  if (statistics.length > 0) tabs.push('live');
 
   const ratings = displayableRatings(snapshot?.ratings ?? null);
-  if (official && (reportEvents(events).length > 0 || statistics.length > 0 || ratings.length > 0)) tabs.push('report');
+  if (official && (statistics.length > 0 || ratings.length > 0)) tabs.push('report');
   return tabs;
 }
 
@@ -401,34 +387,6 @@ export function LineupsPanel({ match, snapshot }: PanelProps) {
 
 /* ─────────────────────────── 4) مباشر ─────────────────────────── */
 
-const EVENT_TITLES: Record<string, string> = {
-  goal: 'هدف', penalty: 'هدف من ركلة جزاء', own_goal: 'هدف عكسي', missed_penalty: 'ركلة جزاء مهدرة',
-  yellow_card: 'بطاقة صفراء', red_card: 'بطاقة حمراء', substitution: 'تبديل',
-  var_cancelled: 'مراجعة فيديو — إلغاء', var_confirmed: 'مراجعة فيديو — تأكيد',
-};
-
-function EventItem({ event }: { event: MatchEvent }) {
-  const minute = typeof event.minute === 'number' && Number.isFinite(event.minute) && event.minute >= 0
-    ? `${event.minute}${typeof event.extraMinute === 'number' && Number.isFinite(event.extraMinute) && event.extraMinute >= 0 ? `+${event.extraMinute}` : ''}`
-    : null;
-  const title = EVENT_TITLES[event.type] ?? null;
-  const details = [
-    text(event.team),
-    text(event.player?.name),
-    text(event.relatedPlayer?.name) ? `بدلاً من ${text(event.relatedPlayer?.name)}` : null,
-    text(event.detail),
-  ].filter((item): item is string => Boolean(item));
-  return (
-    <li className="mc-event" data-kind={event.cancelled ? 'cancelled' : event.type}>
-      {minute && <span className="mc-event-minute">{minute}</span>}
-      <span className="mc-event-body">
-        {title && <b>{title}</b>}
-        {event.cancelled && <b> — أُلغي بعد مراجعة المصدر</b>}
-        {details.length > 0 && <small>{details.join(' · ')}</small>}
-      </span>
-    </li>
-  );
-}
 
 function StatisticList({ statistics, match }: { statistics: StatPair[]; match: MatchDefinition }) {
   if (statistics.length === 0) return null;
@@ -458,9 +416,8 @@ function StatisticList({ statistics, match }: { statistics: StatPair[]; match: M
 }
 
 export function LivePanel({ match, snapshot, status }: PanelProps) {
-  const events = displayableEvents(snapshot?.events ?? []);
   const statistics = displayableStatistics(snapshot?.statistics ?? null);
-  if (events.length === 0 && statistics.length === 0) return null;
+  if (statistics.length === 0) return null;
 
   const statusLabel = text(status?.label);
   const clock = text(status?.clock);
@@ -468,22 +425,12 @@ export function LivePanel({ match, snapshot, status }: PanelProps) {
     <div>
       <h2>بيانات المباراة</h2>
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
-      {events.length > 0 && (
-        <section>
-          <h3>أحداث المباراة</h3>
-          <ol className="mc-events">{events.map((event, index) => <EventItem key={event.id ?? `${event.type}-${event.minute}-${index}`} event={event} />)}</ol>
-        </section>
-      )}
       <StatisticList statistics={statistics} match={match} />
     </div>
   );
 }
 
 /* ───────────────────────── 5) بعد المباراة ───────────────────────── */
-
-function reportEvents(events: MatchEvent[]): MatchEvent[] {
-  return events.filter(event => ['goal', 'penalty', 'own_goal', 'yellow_card', 'red_card'].includes(event.type) || event.cancelled);
-}
 
 function RatingList({ ratings }: { ratings: ScoredPlayer[] }) {
   if (ratings.length === 0) return null;
@@ -506,23 +453,16 @@ function RatingList({ ratings }: { ratings: ScoredPlayer[] }) {
 
 export function ReportPanel({ match, snapshot, status }: PanelProps) {
   const official = isResultOfficial(status, snapshot?.score ?? null);
-  const events = reportEvents(displayableEvents(snapshot?.events ?? []));
   const statistics = displayableStatistics(snapshot?.statistics ?? null);
   const ratings = displayableRatings(snapshot?.ratings ?? null);
   const finalScore = snapshot?.score ?? null;
   if (!official || !finalScore || !isValidScore(finalScore)
-    || (events.length === 0 && statistics.length === 0 && ratings.length === 0)) return null;
+    || (statistics.length === 0 && ratings.length === 0)) return null;
 
   return (
     <div>
       <h2>بعد المباراة</h2>
       <p>النتيجة النهائية: <b className="mc-num">{numberLabel(finalScore.home as number)}–{numberLabel(finalScore.away as number)}</b></p>
-      {events.length > 0 && (
-        <section>
-          <h3>أحداث موثقة</h3>
-          <ol className="mc-events">{events.map((event, index) => <EventItem key={event.id ?? `report-${event.type}-${event.minute}-${index}`} event={event} />)}</ol>
-        </section>
-      )}
       <StatisticList statistics={statistics} match={match} />
       <RatingList ratings={ratings} />
     </div>

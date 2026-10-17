@@ -87,7 +87,8 @@
 .mc-pitch-status[data-code="live"][data-fresh="true"]::before { content: ""; width: 7px; height: 7px; margin-inline-end: 6px; border-radius: 50%; background: currentColor; animation: mc-pulse 2600ms ease-in-out infinite; }
 @keyframes mc-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
 .mc-pitch-score { margin: 0; font-family: var(--font-latin, ui-sans-serif); color: #fff; font-size: clamp(1.85rem, 7vw, 3.2rem); font-weight: 950; line-height: 1; letter-spacing: .02em; }
-.mc-pitch-score span[dir="ltr"] { display: inline-flex; align-items: center; gap: .18em; }
+.mc-pitch-score span[dir="ltr"] { display: inline-flex; flex-direction: row; align-items: center; gap: .18em; }
+.mc-pitch-score .mc-score-order { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
 .mc-pitch-score span[aria-hidden] { color: var(--mc-muted); font-weight: 400; }
 .mc-pitch-vs { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; letter-spacing: .06em; }
 .mc-pitch-clock { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: .82rem; font-weight: 800; }
@@ -97,6 +98,22 @@
 .mc-match-facts dt { color: var(--mc-muted); font-size: .68rem; }
 .mc-match-facts dd { margin: 2px 0 0; color: var(--mc-text); font-size: .78rem; font-weight: 800; }
 .mc-pitch-disclaimer { margin: 7px 2px 0; color: var(--mc-muted); font-size: .66rem; text-align: center; }
+
+/* Source-time event rail, not invented pitch coordinates. */
+.mc-event-rail { min-width: 0; margin-top: 10px; padding: 12px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(16, 19, 27, .92); }
+.mc-event-rail h2 { margin: 0; font-size: .95rem; font-weight: 900; }
+.mc-event-rail > p { margin: 2px 0 9px; color: var(--mc-muted); font-size: .7rem; }
+.mc-event-rail-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; margin: 0; padding: 0; list-style: none; }
+.mc-pitch-event { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: start; gap: 3px 8px; min-width: 0; padding: 8px 9px; border: 1px solid rgba(255,255,255,.15); border-inline-start: 4px solid #a7b0bf; border-radius: 10px; background: rgba(255,255,255,.045); }
+.mc-pitch-event[data-side="home"] { border-inline-start-color: #cfc4ff; }
+.mc-pitch-event[data-side="away"] { border-inline-start-color: var(--mc-lime); }
+.mc-pitch-event[data-kind="goal"], .mc-pitch-event[data-kind="penalty"], .mc-pitch-event[data-kind="own_goal"] { border-block-start: 2px solid var(--mc-lime); }
+.mc-pitch-event[data-kind="yellow_card"] { border-block-start: 2px solid #ffd479; }
+.mc-pitch-event[data-kind="red_card"], .mc-pitch-event[data-kind="cancelled"], .mc-pitch-event[data-kind="var_cancelled"] { border-block-start: 2px solid #ff9aa2; }
+.mc-pitch-event-symbol { grid-row: 1 / span 2; display: grid; place-items: center; min-width: 28px; min-height: 28px; border: 1px solid rgba(255,255,255,.25); border-radius: 7px; color: var(--mc-text); background: rgba(255,255,255,.08); font-family: var(--font-latin, ui-sans-serif); font-size: .75rem; font-weight: 900; }
+.mc-pitch-event[data-kind="yellow_card"] .mc-pitch-event-symbol { color: #ffe1a3; background: #624712; }
+.mc-pitch-event[data-kind="red_card"] .mc-pitch-event-symbol, .mc-pitch-event[data-kind="cancelled"] .mc-pitch-event-symbol, .mc-pitch-event[data-kind="var_cancelled"] .mc-pitch-event-symbol { color: #ffe1e3; background: #641f29; }
+.mc-pitch-event-text { display: block; min-width: 0; color: #fff; font-size: .77rem; font-weight: 800; line-height: 1.55; overflow-wrap: anywhere; }
 
 /* Service state / refresh */
 .mc-meta { display: flex; justify-content: flex-end; min-width: 0; margin: 12px 2px 0; color: var(--mc-muted); font-size: .76rem; }
@@ -214,6 +231,9 @@
   .mc-tab { padding: 8px 2px; font-size: .65rem; }
   .mc-panel { padding: 15px 11px; }
   .mc-stat-row, .mc-comparison-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+}
+@media (min-width: 760px) {
+  .mc-event-rail-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 900px) {
   .mc-radar { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }

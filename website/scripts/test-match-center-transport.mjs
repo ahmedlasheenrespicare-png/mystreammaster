@@ -267,9 +267,9 @@ test('the score reads from either the normalized shape or raw ESPN competitors',
   }), HOME);
   assert.deepEqual(raw.score, { home: 2, away: 1 }, 'both shapes resolve through deriveScore');
 
-  // One side missing is a partial read: null on that side, not zero.
+  // One side missing invalidates the display pair: never show a partial score.
   const partial = adaptSnapshot(payload(HOME, { ...live, score: { home: 2 } }), HOME);
-  assert.deepEqual(partial.score, { home: 2, away: null });
+  assert.equal(partial.score, null);
 });
 
 /* ── The mock ─────────────────────────────────────────────────────── */
@@ -692,7 +692,7 @@ test('a team logo is accepted only over https, from either payload shape', () =>
     score: { home: 2 },
     competitors: [{ homeAway: 'away', team: { score: '5' } }],
   }), HOME);
-  assert.deepEqual(partialScore.score, { home: 2, away: null });
+  assert.equal(partialScore.score, null);
 });
 
 test('an insecure or non-absolute logo is dropped rather than rendered', () => {
@@ -771,6 +771,18 @@ test('form and head-to-head from the provider reach the snapshot aggregated by t
   // replaced by a zeroed record invented by the adapter.
   const absent = adaptSnapshot(payload(HOME, {}), HOME);
   assert.equal(absent.form, null);
+});
+
+test('score fallback selects competitors by explicit homeAway, not array order or names', () => {
+  const reversed = payload(HOME, {
+    status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false } },
+    score: null,
+    competitors: [
+      { homeAway: 'away', score: '4', team: { id: HOME.away.externalIds.espn, displayName: 'Different Away Name' } },
+      { homeAway: 'home', score: '2', team: { id: HOME.home.externalIds.espn, displayName: 'Different Home Name' } },
+    ],
+  });
+  assert.deepEqual(adaptSnapshot(reversed, HOME).score, { home: 2, away: 4 });
 });
 
 // ── مرحلة 2: أحداث الخط الزمني وإحصائيات البوكس سكور (شكل P1 المؤكد) ──

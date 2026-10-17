@@ -24,6 +24,12 @@ export const TIME_ZONES = [
   { id: 'Asia/Tokyo', name: 'اليابان — طوكيو' },
 ];
 
+/** A score is a pair, never a single visible side; zero is valid. */
+export function hasCompleteScore(home, away) {
+  const valid = value => typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+  return valid(home) && valid(away);
+}
+
 export const DIAGNOSTIC_LABELS = {
   PHP_PREVIEW_UNAVAILABLE: 'خادم PHP غير نشط في بيئة المعاينة الثابتة',
   PHP_UNAVAILABLE: 'خادم PHP غير مفعّل أو لم يُنفّذ الملف على الاستضافة',

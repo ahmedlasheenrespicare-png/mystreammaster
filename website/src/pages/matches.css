@@ -72,6 +72,7 @@
 .team-placeholder { font-size: 1.7rem; height: 40px; }
 .match-score { text-align: center; }
 .match-score strong { font-family: var(--font-latin); font-size: 1.5rem; font-weight: 700; white-space: nowrap; }
+.match-score strong[dir="ltr"] { direction: ltr; unicode-bidi: isolate; display: inline-flex; flex-direction: row; align-items: center; }
 .match-score strong > span { color: #999; padding: 0 2px; }
 .match-score small { display: block; color: #777; font-size: .65rem; margin-top: 5px; }
 .match-times { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-top: 14px; border-top: 1px solid #eeeae2; }

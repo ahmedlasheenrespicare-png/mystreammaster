@@ -209,11 +209,26 @@ function sm_st_highlightly_normalize(array $raw, string $league, int $readAt): a
     ];
 }
 
-/** نقل Highlightly — المفتاح من بيئة التشغيل فقط، ولا يُرسَل في أي مخرج. */
+/** مفتاح Highlightly: متغير البيئة أولاً، ثم ملف على الخادم خارج جذر الموقع.
+    الملف: <المجلد الأب لـ public_html>/SM_HIGHLIGHTLY_KEY/key.txt (سطر واحد: المفتاح).
+    لا يُقرأ من المستودع، ولا يُعاد في أي استجابة أو سجل. */
+function sm_st_highlightly_key(): ?string
+{
+    $env = getenv('SM_HIGHLIGHTLY_KEY');
+    if (is_string($env) && trim($env) !== '') return trim($env);
+    $root = isset($_SERVER['DOCUMENT_ROOT']) ? rtrim((string) $_SERVER['DOCUMENT_ROOT'], '/\\') : '';
+    if ($root === '') return null;
+    $file = dirname($root) . '/SM_HIGHLIGHTLY_KEY/key.txt';
+    if (!is_file($file) || !is_readable($file)) return null;
+    $value = trim((string) @file_get_contents($file));
+    return $value !== '' ? $value : null;
+}
+
+/** نقل Highlightly — المفتاح من بيئة التشغيل أو الملف الخاص فقط، ولا يُرسَل في أي مخرج. */
 function sm_st_highlightly_upstream(string $league): array
 {
     if (!isset(SM_ST_HIGHLIGHTLY_LEAGUES[$league])) throw new RuntimeException('INVALID_LEAGUE');
-    $key = getenv('SM_HIGHLIGHTLY_KEY');
+    $key = sm_st_highlightly_key();
     if (!is_string($key) || $key === '') throw new RuntimeException('UPSTREAM_KEY_MISSING');
     $config = SM_ST_HIGHLIGHTLY_LEAGUES[$league];
     $url = 'https://soccer.highlightly.net/standings?leagueId=' . $config['leagueId'] . '&season=' . $config['season'];

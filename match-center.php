@@ -1424,6 +1424,9 @@ $payload = [
 
 if ($cacheHit !== 'STALE') {
     mc_write_cache($responseKey, (string) json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    /* كاش الردود كان يُكتب بلا تنظيف بعد نقل المصادر إلى المخزن المشترك،
+       فبقيت ملفات الردود القديمة بلا حد. التنظيف بعد الكتابة كما كان. */
+    mc_prune_cache();
 }
 
 $maxAge = $cacheHit === 'HIT' ? max(0, MC_CACHE_TTL - $age) : 0;

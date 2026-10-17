@@ -46,6 +46,14 @@ export const DIAGNOSTIC_LABELS = {
   UPSTREAM_NETWORK_ERROR: 'خطأ في اتصال الشبكة بين الخادم والمصدر',
   UPSTREAM_RATE_LIMITED: 'رفض المصدر الطلب مؤقتًا بسبب كثرة الطلبات (HTTP 429)',
   UPSTREAM_INVALID_JSON: 'أعاد المصدر استجابة غير صالحة بدل بيانات المباريات',
+  /* أكواد يصدرها الوسيط فعلًا في مسار المباريات؛ غيابها هنا كان يعرض
+     «خطأ غير محدد» للمستخدم بدل سبب المشكلة. */
+  UPSTREAM_KEY_MISSING: 'مفتاح مصدر الدوري (TheSportsDB) غير مهيأ على الخادم',
+  UPSTREAM_TRUNCATED: 'أعاد المصدر بيانات قد تكون مقتطعة فرُفضت حفاظًا على دقة الجدول',
+  UPSTREAM_NETWORK: 'تعذر إتمام الاتصال بالمصدر',
+  UPSTREAM_UNREACHABLE: 'تعذر الوصول إلى مصدر البيانات',
+  UPSTREAM_UNAVAILABLE: 'مصدر البيانات غير متاح مؤقتًا',
+  SOURCE_STORE_UNAVAILABLE: 'تعذر الوصول إلى مخزن بيانات المصدر على الخادم',
   INVALID_SCOREBOARD: 'بنية بيانات المباريات المستلمة غير صالحة',
   STALE_CACHE: 'تعذر تحديث المصدر؛ عُرضت آخر نسخة مخبأة على الخادم',
   REQUEST_TIMEOUT: 'انتهت مهلة الطلب من المتصفح (15 ثانية)',
@@ -98,6 +106,8 @@ export function describeDiagnostic(code) {
   }
   const httpMatch = /^HTTP_(\d{3})$/.exec(normalized);
   if (httpMatch) return `استجاب خادم الموقع برمز HTTP ${httpMatch[1]}`;
+  /* كود مصدر جديد لم تُضف له تسمية بعد: نسمّي العائلة صراحةً بدل «غير محدد» */
+  if (normalized.startsWith('UPSTREAM_')) return 'خطأ من مصدر البيانات أثناء جلب المباريات';
   return 'خطأ غير محدد أثناء جلب البيانات';
 }
 export function diagnosticError(code, message) {

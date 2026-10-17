@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-10-17T03:57:21.336Z",
+  "probedAt": "2026-10-17T09:54:34.098Z",
   "base": "https://site.web.api.espn.com",
   "snapshot": [
     {
@@ -43,6 +43,11 @@
       "uid": "s:600~l:21231",
       "season": 2026,
       "teams": 18
+    },
+    {
+      "league": "egy.1",
+      "season": 2026,
+      "teams": 20
     }
   ],
   "probe": [

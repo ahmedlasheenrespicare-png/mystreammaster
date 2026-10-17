@@ -1,3 +1,4 @@
+import LeagueArchive from '../components/LeagueArchive';
 import LiveMatchesBoard from '../components/LiveMatchesBoard';
 import LeagueStandings, { LeagueStandingsUnavailable } from '../components/LeagueStandings';
 import { BroadcastersSection, FaqSection, LandingBreadcrumb, ServiceStrip } from '../components/LandingSections';
@@ -45,6 +46,8 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
         ) : landing.standingsUnavailable ? (
           <LeagueStandingsUnavailable title={landing.shortName} text={landing.standingsUnavailable} />
         ) : null}
+
+        <LeagueArchive league={landing.leagueId} />
 
         {/* قسم الناقلين — مؤجَّل لبطولة لم يُوثَّق ناقلها من مصدر
             أوّلي رسمي بعد: يظهر نص الحالة بصراحة بدل بطاقات جهات

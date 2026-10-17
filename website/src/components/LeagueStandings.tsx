@@ -1,3 +1,4 @@
+import { standingsRates } from '../lib/fixtures-archive.mjs';
 import { useEffect, useRef, useState } from 'react';
 import snapshot from '../content/standings-snapshot.json';
 import {
@@ -167,6 +168,8 @@ export default function LeagueStandings({ league, title }: { league: string; tit
     );
   }
 
+  const rates = standingsRates(data.entries);
+  const names = (rows: typeof rates.bestAttack) => rows.length ? rows.map(row => row.name).join("، ") : "غير متاح";
   const season = seasonText(data.season);
   const statusText = state === 'updated'
     ? standingsUpdatedStatus(data.fetchedAt)
@@ -226,6 +229,14 @@ export default function LeagueStandings({ league, title }: { league: string; tit
         </table>
       </div>
 
+      <h3>الهجوم والدفاع — أهداف لكل مباراة من جدول الموسم</h3>
+      <p>أقوى هجوم: {names(rates.bestAttack)} · أضعف هجوم: {names(rates.worstAttack)} · أقوى دفاع (الأقل استقبالاً): {names(rates.bestDefence)} · أضعف دفاع: {names(rates.worstDefence)}. يشمل التصنيف جميع المتعادلين؛ لا يُحسم إذا كانت بيانات أي فريق ناقصة.</p>
+      <div className="ls-scroll" role="region" aria-label="معدلات الهجوم والدفاع" tabIndex={0}>
+        <table className="ls-table"><caption>الأهداف المسجلة والمستقبلة ÷ المباريات الملعوبة</caption>
+          <thead><tr><th scope="col">الفريق</th><th scope="col">أهداف مسجلة / مباراة</th><th scope="col">أهداف مستقبلة / مباراة</th></tr></thead>
+          <tbody>{rates.rows.map(row => <tr key={row.teamId}><th scope="row">{row.name}</th><td>{row.attack === null ? 'غير متاح' : row.attack.toFixed(2)}</td><td>{row.defence === null ? 'غير متاح' : row.defence.toFixed(2)}</td></tr>)}</tbody>
+        </table>
+      </div>
       <p className="ls-hint" id={`${id}-hint`}>
         جدول كامل من <bdi dir="ltr">{config.count}</bdi> فريقاً. مرّر داخل الجدول لرؤية بقية الصفوف والأعمدة، ويمكن تركيزه بلوحة المفاتيح.
       </p>

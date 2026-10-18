@@ -211,6 +211,17 @@
   .mc-h2h-list .sc { font-weight: 900; font-family: var(--font-latin); font-size: 1rem; }
   .mc-h2h-list .r { text-align: start; } .mc-h2h-list .l { text-align: end; }
 
+  /* توثيق ومراجعة */
+  .mc-docs { border-color: rgba(255,255,255,.08); background: rgba(16,19,27,.55); }
+  .mc-docs-grid { display: grid; gap: 10px; }
+  @media (min-width: 900px) { .mc-docs-grid { grid-template-columns: 1fr 1fr; } }
+  .mc-doc { min-width: 0; padding: 12px 14px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255,255,255,.02); }
+  .mc-doc h3 { margin: 0 0 4px; font-size: .84rem; font-weight: 900; color: var(--mc-text); }
+  .mc-doc p { margin: 0; color: var(--mc-muted); font-size: .76rem; line-height: 1.75; }
+  .mc-docs-review { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-top: 12px; padding: 10px 14px; border: 1px dashed rgba(255,255,255,.14); border-radius: 12px; color: var(--mc-muted); font-size: .76rem; }
+  .mc-docs-review strong { color: var(--mc-text); margin-inline-end: 8px; }
+  .mc-report { min-height: 38px; padding: 6px 14px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255,255,255,.04); color: var(--mc-text); font-size: .76rem; font-weight: 800; }
+
   @media (max-width: 767px) {
     .mc-lineup-squads { grid-template-columns: minmax(0, 1fr); gap: 14px; }
     .mc-lineup-player { flex-basis: 21%; }
@@ -230,7 +241,7 @@
 <div class="mc-container">
 
   <div class="mock-banner" role="note">
-    <div><strong>تصور تصميمي — المرحلة أ (مجانية بالكامل، من المصدر الحالي)</strong> · النتيجة والأحداث والأرقام هنا <strong>توضيحية</strong> لشرح التخطيط فقط وليست وقائع حقيقية.</div>
+    <div><strong>تصور تصميمي — المرحلة أ (مجانية بالكامل)</strong> · النتيجة والأحداث والأرقام هنا <strong>توضيحية</strong> لشرح التخطيط فقط وليست وقائع حقيقية.</div>
     <div class="legend"><span class="l-now">موجود حاليًا كما هو</span><span class="l-new">جديد — بلا تكلفة</span></div>
   </div>
 
@@ -314,7 +325,6 @@
       <!-- التشكيلة الثابتة على الملعب — كما هي + اسم المركز بالعربية (جديد) -->
       <section class="mc-pitch-lineups" aria-label="التشكيلة الأساسية المؤكدة على الملعب">
         <h2>التشكيلة الأساسية المؤكدة <span class="tag">اسم المركز بالعربية</span></h2>
-        <p class="mc-lineup-explainer">توزيع تخطيطي حسب مراكز المصدر، وليس إحداثيات أو حركة فعلية. تبقى التشكيلة الأساسية ثابتة؛ شارات التبديلات لا تغيّر مواقع اللاعبين.</p>
         <div class="mc-lineup-squads">
 
           <section class="mc-lineup-squad" data-side="home" aria-label="نوتنجهام فورست">
@@ -381,9 +391,7 @@
       <div><dt>الجولة</dt><dd class="mc-num">8</dd></div>
       <div><dt>موعد القاهرة</dt><dd>18:30 · الأحد 18 أكتوبر</dd></div>
       <div><dt>موعد مكة</dt><dd>19:30</dd></div>
-      <div><dt>وقت القراءة</dt><dd>19:38</dd></div>
     </dl>
-    <p class="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ شارات اللاعبين، إن توفرت تشكيلة مؤكدة، تربط الحدث بصاحبه لا بموقع حدوثه. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله، والنقر يثبّته.</p>
   </section>
 
   <div class="mc-meta"><div class="mc-meta-service"><span class="mc-read" data-level="fresh">آخر قراءة قبل 28 ثانية</span><button class="mc-refresh" type="button">تحديث الآن</button></div></div>
@@ -397,7 +405,6 @@
   <!-- ====== لوحة الإحصائيات — 6 مجموعات بدل 3 ====== -->
   <section class="mc-panel" aria-labelledby="stats-h">
     <h2 id="stats-h">إحصائيات المباراة <span class="tag">6 مجموعات بدل 3 · 28 رقمًا بدل 11</span></h2>
-    <p class="lead">كل الأرقام من قراءة المصدر نفسها التي تعمل اليوم؛ الغائب يُكتب «لا رقم من المصدر» ولا يُستكمل صفرًا.</p>
 
     <div class="mc-possession">
       <div class="mc-possession-head">
@@ -444,7 +451,7 @@
         <div class="mc-stat-row"><span class="mc-stat-val home">67%</span><div class="mc-stat-mid"><span class="mc-stat-label">نسبة نجاح التدخلات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:92%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">73%</span></div>
         <div class="mc-stat-row"><span class="mc-stat-val home lead">9</span><div class="mc-stat-mid"><span class="mc-stat-label">الاعتراضات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:56%"></i></span></div></div><span class="mc-stat-val away">5</span></div>
         <div class="mc-stat-row"><span class="mc-stat-val home lead">21</span><div class="mc-stat-mid"><span class="mc-stat-label">التشتيت</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:43%"></i></span></div></div><span class="mc-stat-val away">9</span></div>
-        <div class="mc-stat-row"><span class="mc-stat-val home">17</span><div class="mc-stat-mid"><span class="mc-stat-label">التشتيت الفعّال</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:0%"></i></span></div></div><span class="mc-stat-none">لا رقم من المصدر</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">17</span><div class="mc-stat-mid"><span class="mc-stat-label">التشتيت الفعّال</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:0%"></i></span></div></div><span class="mc-stat-none">غير متاح</span></div>
       </article>
 
       <article class="mc-stat-group">
@@ -461,19 +468,12 @@
       </article>
     </div>
 
-    <div class="mc-notes">
-      <strong>ما لا يرسله المصدر (يُقال ولا يُمثَّل):</strong>
-      <ul>
-        <li>تسديدات خارج المرمى — لا تُشتق بالطرح من الإجمالي.</li>
-        <li>الالتحامات الأرضية/الهوائية، المراوغات، فقدان الاستحواذ، اللمسات داخل المنطقة، الرميات الجانبية، ضربات المرمى، التقاط الكرات العالية.</li>
-      </ul>
-    </div>
   </section>
 
   <!-- ====== المواجهات السابقة — سطر المجمل جديد ====== -->
   <section class="mc-panel" aria-labelledby="h2h-h">
     <h2 id="h2h-h">المواجهات السابقة <span class="tag">سطر المجمل جديد</span></h2>
-    <p class="lead">العينة: آخر 5 مواجهات عبر البطولات كما أرسلها المصدر — ليست سجلًا تاريخيًا كاملًا (النتائج والتواريخ أدناه توضيحية).</p>
+    <p class="lead">آخر 5 مواجهات عبر البطولات.</p>
     <div class="mc-h2h-agg">
       <div class="mc-h2h-cell home"><b>1</b><small>فوز نوتنجهام فورست</small></div>
       <div class="mc-h2h-cell"><b>2</b><small>تعادل</small></div>
@@ -486,6 +486,45 @@
       <li><span class="r">أرسنال<br><span class="meta">الدوري الإنجليزي · 23/11/2024</span></span><span class="sc">3 – 0</span><span class="l">نوتنجهام فورست</span></li>
       <li><span class="r">نوتنجهام فورست<br><span class="meta">الدوري الإنجليزي · 30/01/2024</span></span><span class="sc">1 – 2</span><span class="l">أرسنال</span></li>
     </ul>
+  </section>
+
+  <!-- ====== توثيق ومراجعة — كل ما يخص المصدر وطريقة القراءة، في مكان واحد ====== -->
+  <section class="mc-panel mc-docs" aria-labelledby="docs-h">
+    <h2 id="docs-h">توثيق ومراجعة <span class="tag">قسم جديد — يجمع كل نصوص المصدر</span></h2>
+    <p class="lead">كل ما كان متناثرًا في الصفحة عن المصدر وطريقة قراءة الأرقام صار هنا؛ أعلى الصفحة للأرقام فقط.</p>
+    <div class="mc-docs-grid">
+      <article class="mc-doc">
+        <h3>المصدر وزمن القراءة</h3>
+        <p>كل الأرقام والأحداث والتشكيلات من قراءة المصدر نفسها التي تعمل في الموقع اليوم، بلا مزوّد إضافي. آخر قراءة ناجحة: <span class="num">19:38</span> بتوقيت القاهرة (قبل <span class="num">28</span> ثانية)؛ تتجدد تلقائيًا أثناء المباراة، وزر «تحديث الآن» أعلى الصفحة يطلب قراءة فورية.</p>
+      </article>
+      <article class="mc-doc">
+        <h3>معنى «غير متاح»</h3>
+        <p>تعني أن المصدر لم يرسل هذا الرقم لهذا الطرف في هذه القراءة. لا نستكمله صفرًا، ولا نشتقه من أرقام أخرى (مثلًا: خارج المرمى لا يُحسب بطرح «على المرمى» من الإجمالي). الصفر المعروض صفر حقيقي من المصدر.</p>
+      </article>
+      <article class="mc-doc">
+        <h3>ما لا يرسله المصدر أصلًا</h3>
+        <p>تسديدات خارج المرمى، داخل/خارج المنطقة، الالتحامات الأرضية والهوائية، المراوغات، فقدان الاستحواذ، اللمسات داخل المنطقة، الرميات الجانبية، ضربات المرمى، التقاط الكرات العالية، التمريرات البينية، تمريرات الثلث الأخير. هذه لا تظهر في الصفحة ولا تُمثَّل بأي شكل.</p>
+      </article>
+      <article class="mc-doc">
+        <h3>كيف يُقرأ شريط الأحداث</h3>
+        <p>الشريط الزمني يعرض الدقيقة وجهة الفريق فقط. شارات اللاعبين — إن توفرت تشكيلة مؤكدة — تربط الحدث بصاحبه لا بموقع حدوثه على أرض الملعب. تمرير المؤشر أو الضغط على أي رمز يعرض تفاصيله، والنقر يثبّته.</p>
+      </article>
+      <article class="mc-doc">
+        <h3>كيف تُقرأ التشكيلة</h3>
+        <p>توزيع تخطيطي حسب مراكز المصدر (الرمز اللاتيني تحت اسم اللاعب هو رمز المصدر، والتسمية العربية ترجمتنا له)، وليس إحداثيات أو حركة فعلية. تبقى التشكيلة الأساسية ثابتة؛ شارات التبديلات لا تغيّر مواقع اللاعبين، والبديل يظهر في صف البدلاء أسفل تشكيلة فريقه.</p>
+      </article>
+      <article class="mc-doc">
+        <h3>المواجهات السابقة</h3>
+        <p>العينة هي آخر المواجهات المكتملة كما أرسلها المصدر (<span class="num">5</span> في هذا التصور) عبر البطولات كافة، وليست سجلًا تاريخيًا كاملًا. سطر المجمل (فوز/تعادل/فوز) يُحسب من الصفوف المعروضة نفسها فقط، ويُخفى إن تعذّرت نسبة أي نتيجة لأحد الطرفين.</p>
+      </article>
+    </div>
+    <div class="mc-docs-review">
+      <div>
+        <strong>مراجعة</strong>
+        <span>تُراجع تسميات الأرقام ووحداتها مقابل المصدر عند كل تغيير في الموسم؛ آخر مراجعة: <span class="num">18</span> أكتوبر <span class="num">2026</span>.</span>
+      </div>
+      <button type="button" class="mc-report">أبلغ عن رقم غير مطابق</button>
+    </div>
   </section>
 
 </div>

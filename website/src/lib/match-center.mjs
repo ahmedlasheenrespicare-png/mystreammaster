@@ -335,6 +335,7 @@ export function mergeReads(current, results, now) {
 export const TABS = [
   { id: 'prematch', label: 'قبل المباراة' },
   { id: 'live', label: 'مباشر' },
+  { id: 'analysis', label: 'التحليل' },
   { id: 'postmatch', label: 'بعد المباراة' },
 ];
 
@@ -1471,6 +1472,11 @@ export function analysisIsAvailable(snapshot) {
     || displayableStatistics(snapshot?.statistics).length > 0;
 }
 
+/** هل للمباراة تحليل مكتوب (من match-analysis.json)؟ */
+export function hasMatchAnalysis(match) {
+  return typeof match?.analysisSlug === 'string' && match.analysisSlug.trim() !== '';
+}
+
 /* ───────────────────────── ترتيب التبويبات وآليته ───────────────────────── */
 
 export function hasPreviewFacts(match, snapshot, status) {
@@ -1498,6 +1504,7 @@ export function computeAvailableTabs({ match, snapshot, status }) {
   if ((status?.phase === 'pre' || status?.phase === 'live')
     && (canShowKickoff(status) && Number.isFinite(Date.parse(match?.kickoffUtc))
       || snapshot && (isValidScore(snapshot.score) || analysisIsAvailable(snapshot)))) tabs.push('live');
+  if (hasMatchAnalysis(match)) tabs.push('analysis');
   if (status?.phase === 'post' && (analysisIsAvailable(snapshot)
     || isResultOfficial(status, snapshot?.score ?? null))) tabs.push('postmatch');
   return tabs;

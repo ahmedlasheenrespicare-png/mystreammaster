@@ -98,8 +98,14 @@
   </url>
   <url>
     <loc>https://streammasterstore.com/matches/</loc>
-    <lastmod>2026-10-17</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://streammasterstore.com/match-center/</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>

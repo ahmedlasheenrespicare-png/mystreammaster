@@ -48,6 +48,7 @@ import MatchCenterRadar from './MatchCenterRadar';
 >>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 import MatchCenterStatGroups from './MatchCenterStatGroups';
 import MatchCenterAnalysis from './MatchCenterAnalysis';
+import MatchCenterAnalysisTab from './MatchCenterAnalysisTab';
 
 /* ==========================================================================
    لوحات مركز المباراة — عرضٌ فقط، وبلا طلبات
@@ -462,6 +463,10 @@ export function PrematchPanel(props: PanelProps) {
 >>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 }
 
+export function AnalysisPanel(props: PanelProps) {
+  return <div><MatchCenterAnalysisTab {...props} /></div>;
+}
+
 export function PostmatchPanel(props: PanelProps) {
   return <div><h2>بعد المباراة</h2><MatchCenterAnalysis {...props} /><ReportPanel {...props} /></div>;
 }
@@ -469,5 +474,6 @@ export function PostmatchPanel(props: PanelProps) {
 export const PANELS: Record<TabId, (props: PanelProps) => ReactElement | null> = {
   prematch: PrematchPanel,
   live: LivePanel,
+  analysis: AnalysisPanel,
   postmatch: PostmatchPanel,
 };

@@ -307,6 +307,7 @@ export function headToHeadFor(
 ): H2hEntry[];
 export function comparisonFor(snapshot: MatchSnapshot | null): Comparison;
 export function analysisIsAvailable(snapshot: MatchSnapshot | null): boolean;
+export function hasMatchAnalysis(match: MatchDefinition | null | undefined): boolean;
 export function hasPreviewFacts(
   match: MatchDefinition | null | undefined,
   snapshot: MatchSnapshot | null,
@@ -436,6 +437,8 @@ export interface MatchDefinition {
   externalIds: Partial<Record<ProviderId | string, string | number | null>>;
   /** أين تُعرض أسماء المصادر — البند 12 يحصرها في التوثيق والمراجعة. */
   sourcesNote?: string;
+  /** معرّف التحليل إن وُجد (slug في match-analysis.json) — يُظهر تبويب التحليل. */
+  analysisSlug?: string | null;
 }
 
 export const MATCH_CODES: MatchCode[];

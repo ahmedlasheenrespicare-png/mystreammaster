@@ -52,6 +52,10 @@ export const SERVER_PAGES = [
 /**
  * مجموعات الهيدر — كل مجموعة قائمة منسدلة واحدة.
  * المجموعة "home" تعرض HOME_SECTIONS، و"servers" تعرض بطاقات SERVER_PAGES.
+ *
+ * الهيكل الجديد (أكتوبر 2026):
+ * • «المباريات»: مواعيد المباريات + البطولات + المنتخبات
+ * • «مركز المباراة»: صفحة المباريات المغطاة + مراكز تفصيلية
  */
 export const NAV_GROUPS = [
   {
@@ -72,46 +76,20 @@ export const NAV_GROUPS = [
     ],
   },
   {
-    key: "watch",
-    label: "القنوات والبث",
-    match: ["matches", "channels", "live-free.html", "world-cup-2026", "predictions", "watch-legal.html"],
-    links: [
-      { href: "matches/", label: "مواعيد المباريات", desc: "النتائج والمواعيد بتوقيتك" },
-      { href: "channels/", label: "مكتبة القنوات", desc: "ابحث في كل القنوات" },
-      { href: "live-free.html", label: "مشغّل الويب الذكي", desc: "شغّل اشتراكك واستعرض المميزات" },
-      { href: "world-cup-2026/", label: "كأس العالم 2026", desc: "المواعيد والقنوات الناقلة" },
-      { href: "predictions/", label: "توقعات المباريات", desc: "تحليلات قبل كل مباراة" },
-      { href: "watch-legal.html", label: "المشاهدة القانونية", desc: "الاشتراكات الرسمية" },
-    ],
-  },
-  {
-    key: "analysis",
-    label: "تحليل المباريات",
-    match: ["match-analysis", "roma-real-madrid", "manchester-city-psg", "manchester-united-atletico", "galatasaray-barcelona"],
-    links: [
-      { href: "match-analysis/", label: "دوري أبطال أوروبا — موسم 2026/2027", desc: "تحليلات البطولة مرتبة حسب الجولات" },
-      { href: "roma-real-madrid/", label: "روما × ريال مدريد", desc: "عودة ريال مدريد في الجولة الثانية" },
-      { href: "manchester-city-psg/", label: "مانشستر سيتي × باريس", desc: "أفضلية باريس وثنائية هالاند" },
-      { href: "manchester-united-atletico/", label: "أتلتيكو × مانشستر يونايتد", desc: "تفاصيل فوز أتلتيكو بهدفين" },
-      { href: "galatasaray-barcelona/", label: "جالاتا سراي × برشلونة", desc: "عودة برشلونة برباعية في إسطنبول" },
-    ],
-  },
-  {
-    key: "tournaments",
-    label: "البطولات والمنتخبات",
-    /* مسارات كاملة (بادئة) — تفوز على مطابقة المقطع الأول في activeGroupKey */
-    /* ترتيب البطولات المتفق عليه: أبطال أوروبا ← الإنجليزي ← الفرنسي ← الإسباني
-       ← الألماني ← الإيطالي ← السعودي ← المصري، ثم المنتخبات. البطولة تُضاف هنا
-       في موضعها من هذا الترتيب فور نشر صفحتها (والترتيب نفسه مضبوط أيضاً في
-       LEAGUE_PAGE_ORDER داخل src/content/competitions.ts ويحرسه اختبار). */
+    key: "matches",
+    label: "المباريات",
     match: [
-      "matches/دوري-أبطال-أوروبا", "matches/الدوري-الإنجليزي", "matches/الدوري-الفرنسي", "matches/الدوري-الإسباني",
-      "matches/الدوري-الألماني", "matches/الدوري-الإيطالي", "matches/الدوري-السعودي",
-      "matches/الدوري-المصري",
+      "matches", "channels", "live-free.html", "world-cup-2026", "predictions", "watch-legal.html",
+      "matches/دوري-أبطال-أوروبا", "matches/الدوري-الإنجليزي", "matches/الدوري-الفرنسي",
+      "matches/الدوري-الإسباني", "matches/الدوري-الألماني", "matches/الدوري-الإيطالي",
+      "matches/الدوري-السعودي", "matches/الدوري-المصري",
       "world-cup-2026/المغرب", "world-cup-2026/مصر", "world-cup-2026/الجزائر", "world-cup-2026/تونس",
       "world-cup-2026/السعودية", "world-cup-2026/قطر", "world-cup-2026/العراق", "world-cup-2026/الأردن",
     ],
     links: [
+      /* مواعيد المباريات — الرئيسية */
+      { href: "matches/", label: "مواعيد المباريات", desc: "النتائج والمواعيد بتوقيتك", icon: "📅" },
+      /* البطولات — ترتيب موحّد يطابق LEAGUE_PAGE_ORDER */
       { href: "matches/دوري-أبطال-أوروبا/", label: "مباريات دوري أبطال أوروبا", desc: "المواعيد وترتيب الـ36", icon: "🏆" },
       { href: "matches/الدوري-الإنجليزي/", label: "مباريات الدوري الإنجليزي", desc: "الجدول والترتيب والقنوات", icon: "🏴" },
       { href: "matches/الدوري-الفرنسي/", label: "مباريات الدوري الفرنسي", desc: "الجدول والترتيب والقنوات", icon: "🇫🇷" },
@@ -120,6 +98,7 @@ export const NAV_GROUPS = [
       { href: "matches/الدوري-الإيطالي/", label: "مباريات الدوري الإيطالي", desc: "الجدول والترتيب والقنوات", icon: "🇮🇹" },
       { href: "matches/الدوري-السعودي/", label: "مباريات الدوري السعودي", desc: "الجدول والترتيب والقنوات", icon: "🇸🇦" },
       { href: "matches/الدوري-المصري/", label: "مباريات الدوري المصري", desc: "الجدول والقنوات الناقلة", icon: "🇪🇬" },
+      /* المنتخبات */
       { href: "world-cup-2026/المغرب/", label: "منتخب المغرب", desc: "المباريات والتوقيتات", icon: "🇲🇦" },
       { href: "world-cup-2026/مصر/", label: "منتخب مصر", desc: "المباريات والتوقيتات", icon: "🇪🇬" },
       { href: "world-cup-2026/الجزائر/", label: "منتخب الجزائر", desc: "المباريات والتوقيتات", icon: "🇩🇿" },
@@ -128,6 +107,19 @@ export const NAV_GROUPS = [
       { href: "world-cup-2026/قطر/", label: "منتخب قطر", desc: "المباريات والتوقيتات", icon: "🇶🇦" },
       { href: "world-cup-2026/العراق/", label: "منتخب العراق", desc: "المباريات والتوقيتات", icon: "🇮🇶" },
       { href: "world-cup-2026/الأردن/", label: "منتخب الأردن", desc: "المباريات والتوقيتات", icon: "🇯🇴" },
+    ],
+  },
+  {
+    key: "match-center",
+    label: "مركز المباراة",
+    match: ["match-center", "match-analysis", "roma-real-madrid", "manchester-city-psg", "manchester-united-atletico", "galatasaray-barcelona"],
+    links: [
+      { href: "match-center/", label: "المباريات المغطاة", desc: "كل المباريات التي يغطيها الموقع" },
+      { href: "match-analysis/", label: "تحليل دوري أبطال أوروبا", desc: "تقارير الجولة الثانية" },
+      { href: "roma-real-madrid/", label: "روما × ريال مدريد", desc: "عودة ريال مدريد في الجولة الثانية" },
+      { href: "manchester-city-psg/", label: "مانشستر سيتي × باريس", desc: "أفضلية باريس وثنائية هالاند" },
+      { href: "manchester-united-atletico/", label: "أتلتيكو × مانشستر يونايتد", desc: "تفاصيل فوز أتلتيكو بهدفين" },
+      { href: "galatasaray-barcelona/", label: "جالاتا سراي × برشلونة", desc: "عودة برشلونة برباعية في إسطنبول" },
     ],
   },
   {

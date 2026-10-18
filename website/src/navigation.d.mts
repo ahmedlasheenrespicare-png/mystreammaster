@@ -31,11 +31,18 @@ export interface NavLink {
 }
 
 export interface NavGroup {
-  key: "home" | "servers" | "watch" | "analysis" | "tournaments" | "blog" | "help";
+  key: "home" | "servers" | "matches" | "match-center" | "blog" | "help";
   label: string;
   match: string[];
   links: NavLink[];
   legal?: NavLink[];
+  /** أقسام فرعية اختيارية داخل المجموعة — تُستخدم في لوحة سطح المكتب */
+  sections?: NavSection[];
+}
+
+export interface NavSection {
+  label: string;
+  links: NavLink[];
 }
 
 export declare const HOME_SECTIONS: HomeSection[];

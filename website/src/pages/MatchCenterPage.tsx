@@ -33,6 +33,7 @@ function validDate(value: unknown): value is string {
 const TAB_HINTS: Partial<Record<import('../lib/match-center.mjs').TabId, string>> = {
   prematch: 'المعاينة والمواجهات والتشكيلات المؤكدة إن وصلت',
   live: 'العد التنازلي وآخر قراءة وأرقام الفريقين من المصدر',
+  analysis: 'تحليل المباراة المكتوب — الأحداث والإحصائيات والمصادر',
   postmatch: 'ملخص الوقائع وفلاتر الأحداث والإحصائيات وتقرير ما بعد المباراة',
 };
 function readTimeLabel(value: unknown): string | null {
@@ -111,7 +112,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
         <nav className="mc-crumbs" aria-label="مسار التصفح">
           <a href={to('')}>الرئيسية</a>
           <span aria-hidden="true">/</span>
-          <a href={to('matches/')}>مواعيد المباريات</a>
+          <a href={to('match-center/')}>مركز المباراة</a>
           {competition && <>
             <span aria-hidden="true">/</span>
             {match.leagueId === 'eng.1'

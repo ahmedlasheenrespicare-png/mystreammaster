@@ -80,6 +80,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "channels/music": "channels-music",
   "channels/religious": "channels-religious",
   "matches": "matches",
+  "match-center": "matches",
   "nova": "nova",
   "istar": "istar",
   "moka": "moka",
@@ -539,6 +540,33 @@ export function getSeo(path: string): SeoMeta {
     }
   }
 
+  if (clean === "/match-center") {
+    const canonical = absolute("match-center");
+    const description =
+      "مركز المباراة — كل المباريات المغطاة في مكان واحد: نتائج مباشرة، تشكيلات، أحداث وإحصائيات، مع تحليلات دوري أبطال أوروبا.";
+    return {
+      ...base,
+      title: `مركز المباراة | ${BRAND_NAME}`,
+      description,
+      canonical,
+      ogImageAlt: `مركز المباراة — ${BRAND_NAME}`,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: `مركز المباراة | ${BRAND_NAME}`,
+          description,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "" },
+            { name: "مركز المباراة", path: "match-center" },
+          ],
+          canonical
+        ),
+      ],
+    };
+  }
+
   if (clean === "/matches") {
     const canonical = absolute("matches");
     const description =
@@ -610,7 +638,7 @@ export function getSeo(path: string): SeoMeta {
       breadcrumbs(
         [
           { name: "الرئيسية", path: "" },
-          { name: "مواعيد المباريات", path: "matches" },
+          { name: "مركز المباراة", path: "match-center" },
           ...competitionCrumb,
           ...(matchName !== 'مركز المباراة' ? [{ name: [cleanMeta(centerMatch.home.shortName) ?? homeName, cleanMeta(centerMatch.away.shortName) ?? awayName].filter((name): name is string => Boolean(name)).join(' × '), path: `matches/${centerMatch.competitionSlug}/${centerMatch.slug}` }] : []),
         ],

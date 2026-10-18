@@ -375,6 +375,8 @@ export const MATCH_CENTER_SPANISH_20270508_20270514_MATCHES: MatchCenterFixture[
 export const MATCH_CENTER_SPANISH_20270515_20270521_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_SPANISH_20270522_20270528_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_SPANISH_20270529_20270604_MATCHES: MatchCenterFixture[];
+export const MATCH_CENTER_UCL_COMPETITION: MatchCenterCompetition;
+export const MATCH_CENTER_UCL_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_ALL_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_COMPETITIONS: MatchCenterCompetition[];
 export const MATCH_CENTER_DOCUMENTATION: MatchCenterDocumentation;

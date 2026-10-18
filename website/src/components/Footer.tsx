@@ -114,7 +114,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-right">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 text-right">
               {[
                 {
                   h: "روابط سريعة",
@@ -145,10 +145,19 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                   { t: "شروط الاستخدام", href: to("terms/") },
                   { t: "سياسة الاسترجاع", href: to("refund/") },
                   { t: "المشاهدة القانونية", href: to("watch-legal.html") },
-                  { t: "كأس العالم 2026", href: to("world-cup-2026/") },
                   { t: "التوقعات", href: to("predictions/") },
                   { t: "البحث", href: to("search/") },
-                  { t: "مشغّل الويب الذكي", href: to("live-free.html") },
+                ] },
+                { h: "المباريات", l: [
+                  { t: "مواعيد المباريات", href: to("matches/") },
+                  { t: "دوري أبطال أوروبا", href: to("matches/دوري-أبطال-أوروبا/") },
+                  { t: "الدوري الإنجليزي", href: to("matches/الدوري-الإنجليزي/") },
+                  { t: "الدوري الإسباني", href: to("matches/الدوري-الإسباني/") },
+                  { t: "الدوري الألماني", href: to("matches/الدوري-الألماني/") },
+                  { t: "الدوري الإيطالي", href: to("matches/الدوري-الإيطالي/") },
+                  { t: "الدوري السعودي", href: to("matches/الدوري-السعودي/") },
+                  { t: "الدوري المصري", href: to("matches/الدوري-المصري/") },
+                  { t: "كأس العالم 2026", href: to("world-cup-2026/") },
                 ] },
               ].map((col) => (
                 <div key={col.h}>

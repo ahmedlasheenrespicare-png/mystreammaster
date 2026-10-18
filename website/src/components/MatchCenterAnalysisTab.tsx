@@ -8,7 +8,6 @@
 import { useMemo } from 'react';
 import analysisCollection from '../content/match-analysis.json';
 import {
-  type MatchDefinition,
   hasMatchAnalysis,
 } from '../lib/match-center.mjs';
 import type { PanelProps } from './MatchCenterPanels';
@@ -26,10 +25,6 @@ function getReport(analysisSlug: string): Record<string, unknown> | null {
 
 function cleanText(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
-}
-
-function numberLabel(value: number): string {
-  return new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 2 }).format(value);
 }
 
 export default function MatchCenterAnalysisTab({ match }: PanelProps) {

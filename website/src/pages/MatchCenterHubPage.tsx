@@ -46,7 +46,6 @@ function hasAnalysis(slug: string): boolean {
 
 export default function MatchCenterHubPage() {
   const sorted = useMemo(() => [...MATCH_CENTER_ALL_MATCHES].sort(sortByKickoff), []);
-  const now = Date.now();
 
   /* تجميع حسب البطولة */
   const byCompetition = useMemo(() => {

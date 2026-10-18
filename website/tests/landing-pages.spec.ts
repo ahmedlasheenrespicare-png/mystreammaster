@@ -328,8 +328,16 @@ test('attack & defence rates card: analyst summary uses league-wide totals, samp
   );
   expect(benchGeometry.every(g => g.fillValid && g.avgValid && g.trackVisible)).toBe(true);
 
-  /* لا أعمدة أرشيف محلية دون أرشيف مخزَّن لهذه البطولة في حزمة البناء الحالية */
-  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(0);
+  /* الأرشيف المحلي سقْمٌ كسول (`import.meta.glob`): عموداه لا يظهران إلا بعد
+     تحميله، فالفحصُ قبله سباقٌ يعطي جوابين مختلفين على آلتين — صفرًا على آلة
+     بطيئة وعشرين على أخرى. الانتظار على أثره نفسه، لا على مهلة. */
+  await expect(ratesCard.locator('.ls-hint')).toContainText('الأرشيف المحلي', { timeout: 20_000 });
+  /* حزمة البناء تحمل أرشيف eng.1 المخزَّن: عمودان لكل فريق في الجدول. */
+  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(20);
+  await expect(ratesCard.locator('[data-rate-scoreless]')).toHaveCount(20);
+  // جدول مكتمل الأرشيف لا يُنتج «غير متاح»: كل فريق له رقمان من مبارياته المنتهية.
+  await expect(ratesCard.locator('[data-rate-clean-sheets]', { hasText: 'غير متاح' })).toHaveCount(0);
+  await expect(ratesCard.locator('[data-rate-scoreless]', { hasText: 'غير متاح' })).toHaveCount(0);
 });
 
 test('attack & defence rates card updates reactively when /standings.php returns fresh standings', async ({ page }) => {

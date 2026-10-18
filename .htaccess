@@ -72,6 +72,10 @@ RewriteBase /
 #      القاعدة قبل فحص وجود الملف حتى لا يُخدَم /player/ كمجلد.
 RewriteRule ^player/(.*)$ embed.php?u=player&p=/$1 [L,QSA]
 
+# 3.2) مكتبة قديمة عالقة على الاستضافة (لا يمكن كتابتها عبر FTP) — يُحظر
+#      الوصول المباشر إليها (403) حتى لا يُخدَم أي محتوى قديم من lib/.
+RewriteRule ^lib(/|$) - [F,L]
+
 # لا تعيد توجيه الملفات الموجودة
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

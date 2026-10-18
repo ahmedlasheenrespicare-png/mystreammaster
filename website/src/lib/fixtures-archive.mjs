@@ -49,11 +49,12 @@ export function archiveTeamStats(matches) {
   const valid = matches.filter(m => m.status === 'finished' && integer(m.score.home) && integer(m.score.away)).sort((a,b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   for (const m of valid) for (const side of ['home', 'away']) {
     const team = m[side]; const other = side === 'home' ? 'away' : 'home';
-    if (!teams.has(team.id)) teams.set(team.id, { id: team.id, name: team.name, played: 0, cleanSheets: 0, winningStreak: 0, unbeatenStreak: 0, home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 }, away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 } });
+    if (!teams.has(team.id)) teams.set(team.id, { id: team.id, name: team.name, played: 0, cleanSheets: 0, scoreless: 0, winningStreak: 0, unbeatenStreak: 0, home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 }, away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 } });
     const t = teams.get(team.id), bucket = t[side], gf = m.score[side], ga = m.score[other];
     t.played++; bucket.played++; bucket.goalsFor += gf; bucket.goalsAgainst += ga;
     bucket[gf > ga ? 'wins' : gf === ga ? 'draws' : 'losses']++;
     if (ga === 0) t.cleanSheets++;
+    if (gf === 0) t.scoreless++;
     t.winningStreak = gf > ga ? t.winningStreak + 1 : 0;
     t.unbeatenStreak = gf >= ga ? t.unbeatenStreak + 1 : 0;
   }
@@ -88,9 +89,22 @@ export function cleanTeamName(name) {
   } while (out !== prev);
   return out;
 }
+/* تصنيف تكتيكي تلقائي: مقارنة كل فريق بمتوسط الدوري **بالقيمة الدقيقة
+   غير المقربة** قبل التقريب للعرض — الضعف/القوة صارمان (المساواة لا تُحسب
+   قوةً). لا يُصنَّف فريق ناقص أي من معدلَيه أو إذا تعذّر حساب المتوسط. */
+export const TACTIC_LABELS = {
+  'elite-balanced': 'متوازن النخبة',
+  offensive: 'اندفاع هجومي',
+  defensive: 'تكتل دفاعي',
+  struggling: 'يعاني هجومياً ودفاعياً',
+};
+
 export function standingsRates(entries) {
   const validGoals = v => typeof v === 'number' && Number.isFinite(v) && v >= 0;
   const validPlayed = v => typeof v === 'number' && Number.isFinite(v) && v > 0;
+  /* الكسر الدقيق: يُبسَّط (أهداف، لعب) بقاسمهما المشترك الأكبر قبل القسمة،
+     فيبقى التقارب بين معدلات مختلفي العينة قابلاً للمقارنة بالمساواة التامة
+     قبل أي تقريب للعرض. */
   const rate = (goals, played) => {
     if (!validGoals(goals) || !validPlayed(played)) return null;
     if (Number.isInteger(goals) && Number.isInteger(played)) {
@@ -99,22 +113,71 @@ export function standingsRates(entries) {
     }
     return goals / played;
   };
-  const rows = (Array.isArray(entries) ? entries : []).map(t => ({
-    ...t,
-    name: typeof t?.name === 'string' ? cleanTeamName(t.name) : '',
-    attack: rate(t?.goalsFor, t?.played),
-    defence: rate(t?.goalsAgainst, t?.played),
-  }));
+  /* نفس الكسر الدقيق لكن بسالب مسموح (فارق الأهداف قد يكون سالباً، والنقاط
+     قد تحمل خصماً) — لا تُعدّ قيمة ناقصة، لكنها لا تُولّد معدلاً بلا لعب. */
+  const signedRate = (numerator, played) => {
+    if (typeof numerator !== 'number' || !Number.isFinite(numerator) || !validPlayed(played)) return null;
+    if (Number.isInteger(numerator) && Number.isInteger(played)) {
+      const g = gcd(numerator, played);
+      return (numerator / g) / (played / g);
+    }
+    return numerator / played;
+  };
+  const rows = (Array.isArray(entries) ? entries : []).map(t => {
+    const winRate = signedRate(t?.wins, t?.played);
+    return {
+      ...t,
+      name: typeof t?.name === 'string' ? cleanTeamName(t.name) : '',
+      attack: rate(t?.goalsFor, t?.played),
+      defence: rate(t?.goalsAgainst, t?.played),
+      gdPerMatch: validGoals(t?.goalsFor) && validGoals(t?.goalsAgainst) ? signedRate(t.goalsFor - t.goalsAgainst, t?.played) : null,
+      ppm: signedRate(t?.points, t?.played),
+      winPct: winRate === null ? null : winRate * 100,
+    };
+  });
+  /* ملخص المسابقة من القيم المتوفرة فقط — لا تخمين للقيم الناقصة: */
+  const contributing = rows.filter(t => validGoals(t.goalsFor) && validPlayed(t.played));
+  const totalGoals = contributing.length ? contributing.reduce((s, t) => s + t.goalsFor, 0) : null;
+  const totalTeamMatches = contributing.length ? contributing.reduce((s, t) => s + t.played, 0) : null;
+  const averagePerTeam = totalGoals !== null && totalTeamMatches ? totalGoals / totalTeamMatches : null;
+  const maxOf = (field) => {
+    const values = rows.map(t => t[field]).filter(v => v !== null);
+    return values.length ? Math.max(...values) : null;
+  };
+  const maxAttack = maxOf('attack');
+  const maxDefence = maxOf('defence');
+  /* الفرق المتعادلة تُعرض بأولوية متناسقة: المركز الأعلى في الجدول أولاً،
+     ثم الاسم — كي تبقى شارات التعادل مستقرة بين الرسم والفرز. */
+  const byStandingPriority = (a, b) => ((a.rank ?? Infinity) - (b.rank ?? Infinity)) || a.name.localeCompare(b.name);
   const extreme = (field, direction) => {
     // A partial table cannot establish league-wide strongest/weakest.
     if (!rows.length || rows.some(t => t[field] === null)) return [];
     const value = Math[direction](...rows.map(t => t[field]));
-    return rows.filter(t => t[field] === value);
+    return rows.filter(t => t[field] === value).sort(byStandingPriority);
   };
   const bestAttack = extreme('attack', 'max');
   const worstAttack = extreme('attack', 'min');
   const bestDefence = extreme('defence', 'min');
   const worstDefence = extreme('defence', 'max');
+  const topBy = (field, direction) => {
+    const candidates = rows.filter(t => t[field] !== null);
+    if (!candidates.length) return null;
+    const value = Math[direction](...candidates.map(t => t[field]));
+    return { value, teams: candidates.filter(t => t[field] === value).sort(byStandingPriority) };
+  };
+  for (const t of rows) {
+    t.attackDelta = t.attack !== null && averagePerTeam !== null ? t.attack - averagePerTeam : null;
+    t.defenceDelta = t.defence !== null && averagePerTeam !== null ? t.defence - averagePerTeam : null;
+    t.tactic = t.attack === null || t.defence === null || averagePerTeam === null
+      ? null
+      : (t.attack > averagePerTeam && t.defence < averagePerTeam)
+        ? 'elite-balanced'
+        : t.attack > averagePerTeam
+          ? 'offensive'
+          : t.defence < averagePerTeam
+            ? 'defensive'
+            : 'struggling';
+  }
   return {
     rows,
     bestAttack,
@@ -123,5 +186,14 @@ export function standingsRates(entries) {
     worstDefence,
     attackComplete: bestAttack.length > 0,
     defenceComplete: bestDefence.length > 0,
+    league: {
+      totalGoals,
+      totalTeamMatches,
+      averagePerTeam,
+      maxAttack,
+      maxDefence,
+      bestGdPerMatch: topBy('gdPerMatch', 'max'),
+      bestPpm: topBy('ppm', 'max'),
+    },
   };
 }

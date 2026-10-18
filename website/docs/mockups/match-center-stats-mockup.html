@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>تصور تصميمي — مركز المباراة بعد المرحلة أ (مجانية) مع الملعب الحالي</title>
+<style>
+  @font-face { font-family: "Cairo"; font-weight: 400; src: url("../../node_modules/@fontsource/cairo/files/cairo-arabic-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cairo"; font-weight: 700; src: url("../../node_modules/@fontsource/cairo/files/cairo-arabic-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cairo"; font-weight: 800; src: url("../../node_modules/@fontsource/cairo/files/cairo-arabic-800-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cairo"; font-weight: 900; src: url("../../node_modules/@fontsource/cairo/files/cairo-arabic-900-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cairo"; font-weight: 400; unicode-range: U+0000-00FF; src: url("../../node_modules/@fontsource/cairo/files/cairo-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cairo"; font-weight: 700; unicode-range: U+0000-00FF; src: url("../../node_modules/@fontsource/cairo/files/cairo-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Cairo"; font-weight: 900; unicode-range: U+0000-00FF; src: url("../../node_modules/@fontsource/cairo/files/cairo-latin-900-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Space Grotesk"; font-weight: 400; src: url("../../node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Space Grotesk"; font-weight: 700 900; src: url("../../node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2") format("woff2"); }
+
+  :root {
+    --font-latin: "Space Grotesk", "Cairo", ui-sans-serif, sans-serif;
+    --mc-night: #080b12; --mc-panel: #10131b; --mc-panel-2: #171b28;
+    --mc-line: rgba(255,255,255,.10); --mc-text: #f5f7fb; --mc-muted: #a7b0bf;
+    --mc-lime: #d8ff3e; --mc-violet: #7c5cff; --mc-home: #cfc4ff; --mc-red: #ef3340;
+    --mc-new: #3effe0; --mc-radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Cairo", "Tajawal", system-ui, sans-serif; font-size: 15px; line-height: 1.7; color: var(--mc-text);
+    background:
+      radial-gradient(ellipse at 88% -6%, rgba(124,92,255,.20), transparent 52%),
+      radial-gradient(ellipse at 4% 4%, rgba(216,255,62,.07), transparent 46%),
+      linear-gradient(180deg, #080b12, #0b0e17 62%, #080b12);
+    min-height: 100vh; padding: 28px 16px 72px;
+  }
+  .mc-container { width: min(100%, 1080px); margin-inline: auto; min-width: 0; }
+  .num, .mc-num { font-family: var(--font-latin); font-variant-numeric: tabular-nums; }
+  button { font: inherit; cursor: pointer; }
+
+  /* شريط التوضيح */
+  .mock-banner { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; margin-bottom: 18px; padding: 10px 14px; border: 1px dashed rgba(62,255,224,.45); border-radius: 12px; background: rgba(62,255,224,.06); font-size: .78rem; }
+  .mock-banner strong { color: var(--mc-new); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-inline-end: 6px; border-radius: 50%; vertical-align: middle; }
+  .legend .l-now::before { background: var(--mc-muted); }
+  .legend .l-new::before { background: var(--mc-new); }
+  .tag { display: inline-block; margin-inline-start: 6px; padding: 0 7px; border-radius: 999px; font-size: .62rem; font-weight: 800; line-height: 1.7; vertical-align: middle; background: rgba(62,255,224,.14); color: var(--mc-new); border: 1px solid rgba(62,255,224,.5); }
+
+  .mc-crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 14px; color: var(--mc-muted); font-size: .74rem; }
+  .mc-crumbs a { color: var(--mc-muted); text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,.22); }
+  .mc-crumbs span[aria-hidden] { opacity: .5; }
+  .mc-match-title { margin: 0 0 12px; text-align: center; font-size: clamp(1rem, 3.2vw, 1.35rem); font-weight: 900; line-height: 1.5; }
+
+  /* ====== الملعب الحالي — CSS منقول من src/pages/match-center.css ====== */
+  .mc-pitch-frame {
+    position: relative; isolation: isolate; display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto auto; gap: 10px; align-items: center; min-height: 270px; padding: 22px 18px; overflow: hidden;
+    border: 1px solid rgba(218,255,221,.38); border-radius: var(--mc-radius);
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 8.333%, transparent 8.333% 16.666%),
+      linear-gradient(135deg, #155b3b, #0d482f 48%, #176342);
+    box-shadow: 0 22px 48px -30px rgba(0,0,0,.85), inset 0 0 54px rgba(0,0,0,.18);
+  }
+  .mc-pitch-markings { position: absolute; z-index: 0; inset: 12px; border: 1px solid rgba(239,255,241,.52); border-radius: 10px; pointer-events: none; }
+  .mc-pitch-halfway { position: absolute; inset-block: 0; inset-inline-start: 50%; width: 1px; background: rgba(239,255,241,.46); transform: translateX(50%); }
+  .mc-pitch-center-circle { position: absolute; inset-block-start: 50%; inset-inline-start: 50%; width: clamp(70px, 14vw, 110px); aspect-ratio: 1; border: 1px solid rgba(239,255,241,.48); border-radius: 50%; transform: translate(50%, -50%); }
+  .mc-pitch-center-spot { position: absolute; inset-block-start: 50%; inset-inline-start: 50%; width: 5px; height: 5px; border-radius: 50%; background: rgba(239,255,241,.75); transform: translate(50%, -50%); }
+  .mc-pitch-box { position: absolute; inset-block-start: 25%; width: 11%; height: 50%; border: 1px solid rgba(239,255,241,.42); }
+  .mc-pitch-box--home { inset-inline-start: 0; border-inline-start: 0; }
+  .mc-pitch-box--away { inset-inline-end: 0; border-inline-end: 0; }
+  .mc-pitch-goal { position: absolute; inset-block-start: 39%; width: 3%; height: 22%; border: 1px solid rgba(239,255,241,.48); }
+  .mc-pitch-goal--home { inset-inline-start: -1px; border-inline-start: 0; }
+  .mc-pitch-goal--away { inset-inline-end: -1px; border-inline-end: 0; }
+  .mc-pitch-team, .mc-pitch-scoreboard { min-width: 0; text-align: center; }
+  .mc-pitch-team { z-index: 1; display: flex; min-height: 150px; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 12px 7px; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; background: rgba(5,16,13,.42); backdrop-filter: blur(4px); }
+  .mc-pitch-team--home .mc-pitch-crest { color: #efeaff; background: radial-gradient(circle at 32% 26%, rgba(124,92,255,.5), rgba(124,92,255,.12)); }
+  .mc-pitch-team--away .mc-pitch-crest { color: var(--mc-lime); background: radial-gradient(circle at 32% 26%, rgba(216,255,62,.34), rgba(216,255,62,.07)); }
+  .mc-pitch-crest { display: grid; place-items: center; flex: 0 0 auto; width: clamp(42px, 7vw, 62px); height: clamp(42px, 7vw, 62px); border: 1px solid rgba(255,255,255,.25); border-radius: 50%; padding: 4px; font-family: var(--font-latin); font-size: clamp(.9rem, 2.7vw, 1.2rem); font-weight: 900; }
+  .mc-pitch-team-name { max-width: 100%; color: #fff; font-size: clamp(.72rem, 2.8vw, 1.05rem); font-weight: 900; line-height: 1.35; }
+  .mc-pitch-team-role { color: rgba(255,255,255,.78); font-size: .65rem; font-weight: 700; }
+  /* جديد: عدّادات سريعة داخل بطاقة الفريق على الملعب */
+  .mc-pitch-counters { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-top: 2px; }
+  .mc-pitch-counter { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; background: rgba(5,16,13,.55); color: #fff; font-size: .66rem; font-weight: 800; }
+  .mc-pitch-counter i { display: inline-block; width: 8px; height: 11px; border-radius: 2px; background: #ffd34d; }
+  .mc-pitch-counter i.red { background: #ff4d5e; }
+  .mc-pitch-counter em { font-style: normal; color: rgba(255,255,255,.75); font-weight: 700; }
+  .mc-pitch-scoreboard { z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; max-width: 270px; justify-self: center; padding: 14px 10px; border: 1px solid rgba(255,255,255,.2); border-radius: 15px; background: rgba(7,10,17,.76); box-shadow: 0 12px 32px rgba(0,0,0,.24); backdrop-filter: blur(8px); }
+  .mc-pitch-competition { color: #f2f7e7; font-size: clamp(.62rem, 2.1vw, .78rem); font-weight: 800; line-height: 1.4; }
+  .mc-pitch-statusline { display: flex; align-items: center; gap: 8px; margin: 0; }
+  .mc-pitch-status { display: inline-flex; align-items: center; justify-content: center; min-height: 25px; padding: 3px 10px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255,255,255,.05); color: #eff3f7; font-size: .7rem; font-weight: 900; }
+  .mc-pitch-status[data-code="live"] { color: var(--mc-lime); border-color: rgba(216,255,62,.42); background: rgba(216,255,62,.10); }
+  .mc-pitch-status[data-code="live"][data-fresh="true"]::before { content: ""; width: 7px; height: 7px; margin-inline-end: 6px; border-radius: 50%; background: currentColor; }
+  .mc-pitch-score { margin: 0; font-family: var(--font-latin); color: #fff; font-size: clamp(1.85rem, 7vw, 3.2rem); font-weight: 900; line-height: 1; letter-spacing: .02em; }
+  .mc-pitch-score span[aria-hidden] { color: var(--mc-muted); font-weight: 400; }
+  .mc-pitch-clock { color: var(--mc-lime); font-family: var(--font-latin); font-size: .82rem; font-weight: 800; }
+  .mc-pitch-kickoff { color: #dce9df; text-align: center; font-size: .66rem; line-height: 1.5; }
+  .mc-match-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr)); gap: 9px; margin: 12px 0 0; padding: 0; }
+  .mc-match-facts > div { min-width: 0; padding: 9px 12px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(16,19,27,.72); }
+  .mc-match-facts dt { color: var(--mc-muted); font-size: .68rem; }
+  .mc-match-facts dd { margin: 2px 0 0; color: var(--mc-text); font-size: .78rem; font-weight: 800; }
+  .mc-pitch-disclaimer { margin: 7px 2px 0; color: var(--mc-muted); font-size: .66rem; text-align: center; }
+
+  /* شريط الأحداث على الملعب */
+  .mc-pitch-events { --mc-marker-size: clamp(20px, 2.6vw, 26px); --mc-row-step: calc(var(--mc-marker-size) + 14px); position: relative; z-index: 2; grid-column: 1 / -1; min-width: 0; margin-top: 4px; padding: 9px 12px 8px; border: 1px solid rgba(255,255,255,.18); border-radius: 13px; background: rgba(5,14,11,.74); backdrop-filter: blur(6px); }
+  .mc-pitch-events-title { margin: 0 0 5px; color: #eaf3e6; font-size: .72rem; font-weight: 900; line-height: 1.4; }
+  .mc-pitch-events-count { margin-inline-start: 6px; opacity: .75; }
+  .mc-pitch-timeline { position: relative; min-width: 0; padding-inline: 13px; }
+  .mc-pitch-lane { position: relative; height: calc(var(--mc-lane-rows, 1) * var(--mc-row-step) + 1.25em); margin: 0; padding: 0; list-style: none; }
+  .mc-pitch-lane--home { margin-block-end: 1px; }
+  .mc-pitch-lane--away { margin-block-start: 1px; }
+  .mc-pitch-lane--away .mc-pitch-marker-minute { top: auto; bottom: calc(100% + 1px); }
+  .mc-pitch-marker-item { position: absolute; margin: 0; padding: 0; transform: translateX(50%); bottom: calc(var(--mc-marker-row, 0) * var(--mc-row-step)); }
+  .mc-pitch-lane--home .mc-pitch-marker-item { bottom: calc(var(--mc-marker-row, 0) * var(--mc-row-step) + 1.25em); }
+  .mc-pitch-marker { position: relative; display: grid; place-items: center; width: var(--mc-marker-size); height: var(--mc-marker-size); padding: 0; border: 1px solid rgba(255,255,255,.42); border-radius: 50%; background: rgba(8,14,20,.9); color: #eef4ff; line-height: 1; }
+  .mc-pitch-marker[data-side="home"] { border-color: rgba(207,196,255,.62); }
+  .mc-pitch-marker[data-side="away"] { border-color: rgba(216,255,62,.62); }
+  .mc-pitch-marker[data-active="true"] { border-color: var(--mc-lime); background: rgba(20,32,26,.98); transform: scale(1.12); }
+  .mc-pitch-icon { width: 76%; height: 76%; display: block; }
+  .mc-pitch-marker[data-symbol="ball"] .mc-pitch-icon { width: 82%; height: 82%; }
+  .mc-pitch-marker-minute { position: absolute; top: calc(100% + 1px); left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.82); font-family: var(--font-latin); font-size: .55rem; font-weight: 800; line-height: 1; white-space: nowrap; pointer-events: none; }
+  .mc-pitch-axis { position: relative; height: 19px; margin-inline: 2px; border-top: 1px solid rgba(239,255,241,.4); }
+  .mc-pitch-tick { position: absolute; top: 0; display: grid; justify-items: center; transform: translateX(50%); }
+  .mc-pitch-tick--first { transform: translateX(100%); justify-items: end; }
+  .mc-pitch-tick--last { transform: none; justify-items: start; }
+  .mc-pitch-tick i { display: block; width: 1px; height: 5px; background: rgba(239,255,241,.55); }
+  .mc-pitch-tick b { color: rgba(255,255,255,.72); font-family: var(--font-latin); font-size: .52rem; font-weight: 700; line-height: 1.1; white-space: nowrap; }
+  .mc-pitch-event-detail { min-height: 1.5em; margin: 6px 0 0; color: #dfe9dc; font-size: .68rem; font-weight: 700; line-height: 1.55; }
+
+  /* التشكيلة الثابتة على الملعب */
+  .mc-pitch-lineups { grid-column: 1 / -1; z-index: 1; min-width: 0; width: 100%; padding-top: 16px; border-top: 1px solid #ffffff40; }
+  .mc-pitch-lineups h2 { margin: 0; text-align: center; font-size: 1rem; }
+  .mc-lineup-explainer { margin: 6px 0 14px; text-align: center; color: #e6f1e8; font-size: .72rem; }
+  .mc-lineup-squads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+  .mc-lineup-squad { min-width: 0; border: 1px solid #ffffff40; border-radius: 14px; padding: 12px 8px; background: #062b1d45; }
+  .mc-lineup-squad h3 { text-align: center; font-size: .9rem; margin: 0 0 12px; }
+  .mc-lineup-row h4, .mc-lineup-bench h4 { margin: 8px 0 6px; font-size: .65rem; text-align: center; color: #e6f1e8; font-weight: 500; }
+  .mc-lineup-row ul, .mc-lineup-bench ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: space-evenly; gap: 10px 4px; }
+  .mc-lineup-row { border-top: 1px dashed #ffffff25; padding-block: 4px 12px; }
+  .mc-lineup-player { flex: 0 1 82px; min-width: 0; max-width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+  .mc-player-shirt { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 auto; border: 1px solid #e9e0ff; border-radius: 8px 8px 12px 12px; background: #412777; font: 800 .8rem var(--font-latin); color: #fff; }
+  .mc-lineup-squad[data-side="away"] .mc-player-shirt { background: #d8ff3e; border-color: #f0ffaf; color: #16210a; }
+  .mc-player-name { max-width: 100%; font-size: .7rem; line-height: 1.4; }
+  .mc-lineup-player small { color: #d5e7dd; font-size: .6rem; }
+  .mc-lineup-player small .code { opacity: .6; font-family: var(--font-latin); margin-inline-start: 5px; white-space: nowrap; direction: ltr; unicode-bidi: isolate; }
+  .mc-player-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: 100%; }
+  .mc-player-badge { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; width: 100%; max-width: 100%; min-height: 40px; border: 1px solid #b7c9be; border-radius: 7px; padding: 4px 3px; color: #f8fff9; background: #0b1820; line-height: 1.2; font-size: .62rem; }
+  .mc-player-badge svg { width: 15px; height: 15px; flex: 0 0 auto; }
+  .mc-player-badge bdi { white-space: nowrap; font-weight: 800; font-family: var(--font-latin); }
+  .mc-lineup-bench { margin-top: 10px; border-top: 1px solid #ffffff60; padding-top: 4px; background: #071b15a0; border-radius: 10px; padding-bottom: 8px; }
+  .mc-lineup-event-detail { margin: 12px 0 0; padding: 10px; border-radius: 10px; background: #071b15e6; color: #f0fff1; font-size: .75rem; min-height: 46px; }
+
+  /* حالة الخدمة */
+  .mc-meta { display: flex; justify-content: flex-end; min-width: 0; margin: 12px 2px 0; color: var(--mc-muted); font-size: .76rem; }
+  .mc-meta-service { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; }
+  .mc-read[data-level="fresh"] { color: var(--mc-lime); }
+  .mc-refresh { min-height: 42px; padding: 8px 15px; border: 1px solid rgba(216,255,62,.4); border-radius: 999px; background: rgba(216,255,62,.1); color: var(--mc-lime); font-size: .78rem; font-weight: 800; }
+
+  /* التبويبات واللوحات */
+  .mc-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 22px 0 0; padding: 6px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255,255,255,.03); }
+  .mc-tab { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 9px 13px; border: 0; border-radius: 999px; background: transparent; color: var(--mc-muted); font-size: .82rem; font-weight: 800; }
+  .mc-tab[aria-selected="true"] { background: var(--mc-lime); color: #0b0b0f; }
+  .mc-panel { min-width: 0; margin-top: 16px; padding: 18px 16px; border: 1px solid var(--mc-line); border-radius: var(--mc-radius); background: rgba(16,19,27,.72); }
+  .mc-panel h2 { margin: 0 0 5px; font-size: clamp(1.05rem, 3.6vw, 1.3rem); font-weight: 900; }
+  .mc-panel > p.lead { margin: 0 0 14px; color: var(--mc-muted); font-size: .82rem; }
+
+  /* جديد: شريط الاستحواذ البارز */
+  .mc-possession { padding: 14px; border: 1px solid rgba(216,255,62,.22); border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015)); }
+  .mc-possession-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 900; }
+  .mc-possession-head .home { color: var(--mc-home); } .mc-possession-head .away { color: var(--mc-lime); }
+  .mc-possession-head .pct { font-size: 1.7rem; }
+  .mc-possession-title { color: var(--mc-muted); font-size: .8rem; font-weight: 800; }
+  .mc-possession-bar { display: flex; height: 14px; margin-top: 8px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.06); }
+  .mc-possession-bar .home { background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(124,92,255,.6)); }
+  .mc-possession-bar .away { background: linear-gradient(90deg, rgba(216,255,62,.55), rgba(216,255,62,.95)); }
+
+  /* مجموعات الأرقام (القائمة + الجديدة) */
+  .mc-stat-groups { display: grid; gap: 14px; margin-top: 14px; }
+  @media (min-width: 900px) { .mc-stat-groups { grid-template-columns: 1fr 1fr; } }
+  .mc-stat-group { min-width: 0; padding: 12px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255,255,255,.025); }
+  .mc-stat-group-head { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .mc-stat-group-title { margin: 0; color: var(--mc-lime); font-size: .86rem; font-weight: 900; text-align: center; }
+  .mini-crest { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid; font-size: .62rem; font-weight: 900; font-family: var(--font-latin); justify-self: center; }
+  .mini-crest.home { border-color: rgba(207,196,255,.7); color: var(--mc-home); background: rgba(124,92,255,.14); }
+  .mini-crest.away { border-color: rgba(216,255,62,.7); color: var(--mc-lime); background: rgba(216,255,62,.1); }
+  .mc-stat-row { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid rgba(255,255,255,.06); }
+  .mc-stat-row:first-of-type { border-top: 0; }
+  .mc-stat-val { font-weight: 900; font-size: .98rem; text-align: center; font-family: var(--font-latin); }
+  .mc-stat-val.home { color: var(--mc-home); } .mc-stat-val.away { color: var(--mc-lime); }
+  .mc-stat-val.lead { text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 4px; }
+  .mc-stat-none { font-size: .62rem; font-weight: 700; color: var(--mc-muted); line-height: 1.2; text-align: center; }
+  .mc-stat-mid { min-width: 0; text-align: center; }
+  .mc-stat-label { display: block; font-size: .78rem; font-weight: 800; }
+  .mc-stat-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 4px; }
+  .mc-stat-bar { display: block; height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .mc-stat-bar i { display: block; height: 100%; }
+  .mc-stat-bar.home i { margin-inline-start: auto; background: linear-gradient(90deg, rgba(124,92,255,.55), rgba(124,92,255,.95)); }
+  .mc-stat-bar.away i { background: linear-gradient(90deg, rgba(216,255,62,.92), rgba(216,255,62,.5)); }
+  .mc-notes { margin: 14px 0 0; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--mc-line); background: rgba(255,255,255,.02); color: var(--mc-muted); font-size: .76rem; }
+  .mc-notes ul { margin: 4px 0 0; padding-inline-start: 18px; }
+
+  /* المواجهات */
+  .mc-h2h-agg { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .mc-h2h-cell { padding: 10px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255,255,255,.025); text-align: center; }
+  .mc-h2h-cell b { display: block; font-size: 1.5rem; font-weight: 900; font-family: var(--font-latin); }
+  .mc-h2h-cell small { color: var(--mc-muted); font-size: .72rem; }
+  .mc-h2h-cell.home b { color: var(--mc-home); } .mc-h2h-cell.away b { color: var(--mc-lime); }
+  .mc-h2h-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+  .mc-h2h-list li { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 8px 12px; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; font-size: .8rem; }
+  .mc-h2h-list .meta { color: var(--mc-muted); font-size: .7rem; }
+  .mc-h2h-list .sc { font-weight: 900; font-family: var(--font-latin); font-size: 1rem; }
+  .mc-h2h-list .r { text-align: start; } .mc-h2h-list .l { text-align: end; }
+
+  @media (max-width: 767px) {
+    .mc-lineup-squads { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .mc-lineup-player { flex-basis: 21%; }
+    .mc-lineup-squad { padding-inline: 6px; }
+  }
+  @media (max-width: 480px) {
+    body { padding-inline: 10px; }
+    .mc-panel { padding: 15px 11px; }
+    .mc-pitch-frame { padding: 16px 10px; gap: 8px; }
+    .mc-pitch-team { min-height: 120px; padding: 10px 4px; }
+    .mc-pitch-tick--minor { display: none; }
+    .mc-stat-row, .mc-stat-group-head { grid-template-columns: 38px 1fr 38px; }
+  }
+</style>
+</head>
+<body>
+<div class="mc-container">
+
+  <div class="mock-banner" role="note">
+    <div><strong>تصور تصميمي — المرحلة أ (مجانية بالكامل، من المصدر الحالي)</strong> · النتيجة والأحداث والأرقام هنا <strong>توضيحية</strong> لشرح التخطيط فقط وليست وقائع حقيقية.</div>
+    <div class="legend"><span class="l-now">موجود حاليًا كما هو</span><span class="l-new">جديد — بلا تكلفة</span></div>
+  </div>
+
+  <nav class="mc-crumbs" aria-label="مسار الصفحة">
+    <a href="#">الرئيسية</a><span aria-hidden="true">›</span><a href="#">المباريات</a><span aria-hidden="true">›</span><a href="#">الدوري الإنجليزي</a><span aria-hidden="true">›</span><span>نوتنجهام فورست × أرسنال</span>
+  </nav>
+
+  <section class="mc-match-visual" aria-labelledby="mc-title">
+    <h1 id="mc-title" class="mc-match-title">نوتنجهام فورست × أرسنال — الدوري الإنجليزي</h1>
+
+    <!-- ====== الملعب الحالي (كما هو) ====== -->
+    <div class="mc-pitch-frame">
+      <div class="mc-pitch-markings" aria-hidden="true">
+        <span class="mc-pitch-halfway"></span><span class="mc-pitch-center-circle"></span><span class="mc-pitch-center-spot"></span>
+        <span class="mc-pitch-box mc-pitch-box--home"></span><span class="mc-pitch-box mc-pitch-box--away"></span>
+        <span class="mc-pitch-goal mc-pitch-goal--home"></span><span class="mc-pitch-goal mc-pitch-goal--away"></span>
+      </div>
+
+      <div class="mc-pitch-team mc-pitch-team--home">
+        <span class="mc-pitch-crest" aria-hidden="true">NFO</span>
+        <span class="mc-pitch-team-name">نوتنجهام فورست</span>
+        <span class="mc-pitch-team-role">المضيف</span>
+        <div class="mc-pitch-counters" aria-label="بطاقات وركنيات المضيف">
+          <span class="mc-pitch-counter"><i></i><span class="num">2</span></span>
+          <span class="mc-pitch-counter"><i class="red"></i><span class="num">0</span></span>
+          <span class="mc-pitch-counter"><em>ركنيات</em><span class="num">4</span></span>
+        </div>
+        <span class="tag">جديد</span>
+      </div>
+
+      <div class="mc-pitch-scoreboard">
+        <span class="mc-pitch-competition">الدوري الإنجليزي · الجولة 8</span>
+        <p class="mc-pitch-statusline">
+          <span class="mc-pitch-status" data-code="live" data-fresh="true">الشوط الثاني</span>
+          <span class="mc-pitch-clock" dir="ltr">67'</span>
+        </p>
+        <p class="mc-pitch-score" aria-label="نتيجة المضيف 1، ثم الضيف 2"><span class="mc-score-order">1<span aria-hidden="true">–</span>2</span></p>
+        <span class="mc-pitch-kickoff">18:30 بتوقيت القاهرة · الأحد 18 أكتوبر 2026</span>
+      </div>
+
+      <div class="mc-pitch-team mc-pitch-team--away">
+        <span class="mc-pitch-crest" aria-hidden="true">ARS</span>
+        <span class="mc-pitch-team-name">أرسنال</span>
+        <span class="mc-pitch-team-role">الضيف</span>
+        <div class="mc-pitch-counters" aria-label="بطاقات وركنيات الضيف">
+          <span class="mc-pitch-counter"><i></i><span class="num">1</span></span>
+          <span class="mc-pitch-counter"><i class="red"></i><span class="num">0</span></span>
+          <span class="mc-pitch-counter"><em>ركنيات</em><span class="num">7</span></span>
+        </div>
+        <span class="tag">جديد</span>
+      </div>
+
+      <!-- شريط الأحداث على الملعب — كما هو -->
+      <section class="mc-pitch-events" aria-labelledby="mc-pitch-events-title">
+        <h2 id="mc-pitch-events-title" class="mc-pitch-events-title">أحداث المباراة<span class="mc-pitch-events-count">٧</span></h2>
+        <div class="mc-pitch-timeline">
+          <ol class="mc-pitch-lane mc-pitch-lane--home" aria-label="أحداث المضيف" style="--mc-lane-rows:1">
+            <li class="mc-pitch-marker-item" style="inset-inline-start:17.8%"><span class="mc-pitch-marker" data-side="home" data-symbol="yellow-card"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><rect x="8.4" y="3.2" width="7.6" height="17.6" rx="1.4" fill="#ffd34d" stroke="rgba(0,0,0,.35)" stroke-width=".8" transform="rotate(8 12 12)"/></svg><span class="mc-pitch-marker-minute">16′</span></span></li>
+            <li class="mc-pitch-marker-item" style="inset-inline-start:57.8%"><span class="mc-pitch-marker" data-side="home" data-symbol="ball" data-active="true"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" stroke-width="1.1"/><path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16"/><circle cx="9.1" cy="6" r="1.15" fill="#0b0f16"/><circle cx="14.9" cy="6" r="1.15" fill="#0b0f16"/><circle cx="6.6" cy="15.2" r="1.35" fill="#0b0f16"/><circle cx="17.4" cy="15.2" r="1.35" fill="#0b0f16"/></svg><span class="mc-pitch-marker-minute">52′</span></span></li>
+            <li class="mc-pitch-marker-item" style="inset-inline-start:67.8%"><span class="mc-pitch-marker" data-side="home" data-symbol="substitution"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><path d="M4 8.6h12.3l-2.7-2.7M20 15.4H7.7l2.7 2.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="mc-pitch-marker-minute">61′</span></span></li>
+          </ol>
+          <div class="mc-pitch-axis" aria-hidden="true">
+            <span class="mc-pitch-tick mc-pitch-tick--first" style="inset-inline-start:0%"><i></i><b>0′</b></span>
+            <span class="mc-pitch-tick mc-pitch-tick--minor" style="inset-inline-start:16.67%"><i></i><b>15′</b></span>
+            <span class="mc-pitch-tick mc-pitch-tick--minor" style="inset-inline-start:33.33%"><i></i><b>30′</b></span>
+            <span class="mc-pitch-tick" style="inset-inline-start:50%"><i></i><b>45′</b></span>
+            <span class="mc-pitch-tick mc-pitch-tick--minor" style="inset-inline-start:66.67%"><i></i><b>60′</b></span>
+            <span class="mc-pitch-tick mc-pitch-tick--minor" style="inset-inline-start:83.33%"><i></i><b>75′</b></span>
+            <span class="mc-pitch-tick mc-pitch-tick--last" style="inset-inline-start:100%"><i></i><b>90′</b></span>
+          </div>
+          <ol class="mc-pitch-lane mc-pitch-lane--away" aria-label="أحداث الضيف" style="--mc-lane-rows:1">
+            <li class="mc-pitch-marker-item" style="inset-inline-start:42.2%"><span class="mc-pitch-marker" data-side="away" data-symbol="ball"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" stroke-width="1.1"/><path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16"/><circle cx="9.1" cy="6" r="1.15" fill="#0b0f16"/><circle cx="14.9" cy="6" r="1.15" fill="#0b0f16"/><circle cx="6.6" cy="15.2" r="1.35" fill="#0b0f16"/><circle cx="17.4" cy="15.2" r="1.35" fill="#0b0f16"/></svg><span class="mc-pitch-marker-minute">38′</span></span></li>
+            <li class="mc-pitch-marker-item" style="inset-inline-start:51.1%"><span class="mc-pitch-marker" data-side="away" data-symbol="substitution"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><path d="M4 8.6h12.3l-2.7-2.7M20 15.4H7.7l2.7 2.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="mc-pitch-marker-minute">46′</span></span></li>
+            <li class="mc-pitch-marker-item" style="inset-inline-start:64.4%"><span class="mc-pitch-marker" data-side="away" data-symbol="ball"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" stroke-width="1.1"/><path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16"/><circle cx="9.1" cy="6" r="1.15" fill="#0b0f16"/><circle cx="14.9" cy="6" r="1.15" fill="#0b0f16"/><circle cx="6.6" cy="15.2" r="1.35" fill="#0b0f16"/><circle cx="17.4" cy="15.2" r="1.35" fill="#0b0f16"/><circle cx="18.1" cy="18" r="4.2" fill="#0b0f16" stroke="currentColor" stroke-width="1"/><text x="18.1" y="20.1" text-anchor="middle" font-size="5.4" font-weight="900" fill="currentColor">P</text></svg><span class="mc-pitch-marker-minute">58′</span></span></li>
+            <li class="mc-pitch-marker-item" style="inset-inline-start:70%"><span class="mc-pitch-marker" data-side="away" data-symbol="yellow-card"><svg viewBox="0 0 24 24" class="mc-pitch-icon"><rect x="8.4" y="3.2" width="7.6" height="17.6" rx="1.4" fill="#ffd34d" stroke="rgba(0,0,0,.35)" stroke-width=".8" transform="rotate(8 12 12)"/></svg><span class="mc-pitch-marker-minute">63′</span></span></li>
+          </ol>
+        </div>
+        <p class="mc-pitch-event-detail">52′ — هدف · نوتنجهام فورست · ليام ديلاب — مثبَّت</p>
+      </section>
+
+      <!-- التشكيلة الثابتة على الملعب — كما هي + اسم المركز بالعربية (جديد) -->
+      <section class="mc-pitch-lineups" aria-label="التشكيلة الأساسية المؤكدة على الملعب">
+        <h2>التشكيلة الأساسية المؤكدة <span class="tag">اسم المركز بالعربية</span></h2>
+        <p class="mc-lineup-explainer">توزيع تخطيطي حسب مراكز المصدر، وليس إحداثيات أو حركة فعلية. تبقى التشكيلة الأساسية ثابتة؛ شارات التبديلات لا تغيّر مواقع اللاعبين.</p>
+        <div class="mc-lineup-squads">
+
+          <section class="mc-lineup-squad" data-side="home" aria-label="نوتنجهام فورست">
+            <h3>نوتنجهام فورست <bdi dir="ltr">· 3-4-2-1</bdi></h3>
+            <div class="mc-lineup-row"><h4>حارس المرمى</h4><ul>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">26</span><span class="mc-player-name">ماتز سيلس</span><small>حارس المرمى<span class="code">G</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الدفاع</h4><ul>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">5</span><span class="mc-player-name">موريليو</span><small>قلب دفاع أيسر<span class="code">CD-L</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">2</span><span class="mc-player-name">عثمان ديوماندي</span><small>قلب دفاع<span class="code">CD</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">23</span><span class="mc-player-name">جير</span><small>قلب دفاع أيمن<span class="code">CD-R</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الوسط</h4><ul>
+              <li class="mc-lineup-player"><div class="mc-player-badges"><span class="mc-player-badge"><svg viewBox="0 0 24 24"><rect x="8.4" y="3.2" width="7.6" height="17.6" rx="1.4" fill="#ffd34d" stroke="rgba(0,0,0,.35)" stroke-width=".8" transform="rotate(8 12 12)"/></svg><span>بطاقة صفراء</span><bdi dir="ltr">16′</bdi></span></div><span class="mc-player-shirt">3</span><span class="mc-player-name">نيكو ويليامز</span><small>وسط أيسر<span class="code">LM</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">24</span><span class="mc-player-name">جيمس مكاتي</span><small>وسط<span class="code">CM-L</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">21</span><span class="mc-player-name">زيفر شلاجر</span><small>وسط<span class="code">CM-R</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">27</span><span class="mc-player-name">دانييل مونوز</span><small>وسط أيمن<span class="code">RM</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الوسط الهجومي</h4><ul>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">14</span><span class="mc-player-name">دان ندويي</span><small>وسط هجومي أيسر<span class="code">AM-L</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">8</span><span class="mc-player-name">نيكولاس دومينغيز</span><small>وسط هجومي أيمن<span class="code">AM-R</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الهجوم</h4><ul>
+              <li class="mc-lineup-player"><div class="mc-player-badges"><span class="mc-player-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" stroke-width="1.1"/><path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16"/></svg><span>هدف</span><bdi dir="ltr">52′</bdi></span></div><span class="mc-player-shirt">19</span><span class="mc-player-name">ليام ديلاب</span><small>مهاجم<span class="code">CF</span></small></li>
+            </ul></div>
+          </section>
+
+          <section class="mc-lineup-squad" data-side="away" aria-label="أرسنال">
+            <h3>أرسنال <bdi dir="ltr">· 4-2-3-1</bdi></h3>
+            <div class="mc-lineup-row"><h4>حارس المرمى</h4><ul>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">1</span><span class="mc-player-name">ديفيد رايا</span><small>حارس المرمى<span class="code">G</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الدفاع</h4><ul>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">33</span><span class="mc-player-name">ريكاردو كالافيوري</span><small>ظهير أيسر<span class="code">LB</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">6</span><span class="mc-player-name">جابرييل ماجاليايش</span><small>قلب دفاع أيسر<span class="code">CD-L</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">15</span><span class="mc-player-name">إزري كونسا</span><small>قلب دفاع أيمن<span class="code">CD-R</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">4</span><span class="mc-player-name">بين وايت</span><small>ظهير أيمن<span class="code">RB</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الوسط</h4><ul>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">41</span><span class="mc-player-name">ديكلان رايس</span><small>وسط دفاعي أيسر<span class="code">DM-L</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">39</span><span class="mc-player-name">برونو جيمارايش</span><small>وسط دفاعي أيمن<span class="code">DM-R</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الوسط الهجومي</h4><ul>
+              <li class="mc-lineup-player"><div class="mc-player-badges"><span class="mc-player-badge"><svg viewBox="0 0 24 24"><path d="M4 8.6h12.3l-2.7-2.7M20 15.4H7.7l2.7 2.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span>خروج</span><bdi dir="ltr">46′</bdi></span></div><span class="mc-player-shirt">10</span><span class="mc-player-name">إبيريشي إيزي</span><small>وسط هجومي أيسر<span class="code">AM-L</span></small></li>
+              <li class="mc-lineup-player"><span class="mc-player-shirt">8</span><span class="mc-player-name">مارتن أوديجارد</span><small>وسط هجومي<span class="code">AM</span></small></li>
+              <li class="mc-lineup-player"><div class="mc-player-badges"><span class="mc-player-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" stroke-width="1.1"/><path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16"/></svg><span>هدف</span><bdi dir="ltr">38′</bdi></span></div><span class="mc-player-shirt">7</span><span class="mc-player-name">بوكايو ساكا</span><small>وسط هجومي أيمن<span class="code">AM-R</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-row"><h4>الهجوم</h4><ul>
+              <li class="mc-lineup-player"><div class="mc-player-badges"><span class="mc-player-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" stroke-width="1.1"/><path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16"/></svg><span>ركلة جزاء</span><bdi dir="ltr">58′</bdi></span></div><span class="mc-player-shirt">29</span><span class="mc-player-name">كاي هافيرتز</span><small>مهاجم<span class="code">CF</span></small></li>
+            </ul></div>
+            <div class="mc-lineup-bench"><h4>البدلاء المرتبطون بأحداث — خارج توزيع الأساسيين</h4><ul>
+              <li class="mc-lineup-player"><div class="mc-player-badges"><span class="mc-player-badge"><svg viewBox="0 0 24 24"><path d="M4 8.6h12.3l-2.7-2.7M20 15.4H7.7l2.7 2.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span>دخول</span><bdi dir="ltr">46′</bdi></span></div><span class="mc-player-shirt">20</span><span class="mc-player-name">نوني مادويكي</span><small>بديل</small></li>
+            </ul></div>
+          </section>
+        </div>
+        <p class="mc-lineup-event-detail">مرّر المؤشر أو ركّز على الشارة لقراءة تفاصيلها، واضغط لتثبيتها أو إلغاء تثبيتها.</p>
+      </section>
+    </div>
+
+    <dl class="mc-match-facts">
+      <div><dt>الملعب</dt><dd>ذا سيتي جراوند</dd></div>
+      <div><dt>المسابقة</dt><dd>الدوري الإنجليزي</dd></div>
+      <div><dt>الموسم</dt><dd dir="auto">2026/27</dd></div>
+      <div><dt>الجولة</dt><dd class="mc-num">8</dd></div>
+      <div><dt>موعد القاهرة</dt><dd>18:30 · الأحد 18 أكتوبر</dd></div>
+      <div><dt>موعد مكة</dt><dd>19:30</dd></div>
+      <div><dt>وقت القراءة</dt><dd>19:38</dd></div>
+    </dl>
+    <p class="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ شارات اللاعبين، إن توفرت تشكيلة مؤكدة، تربط الحدث بصاحبه لا بموقع حدوثه. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله، والنقر يثبّته.</p>
+  </section>
+
+  <div class="mc-meta"><div class="mc-meta-service"><span class="mc-read" data-level="fresh">آخر قراءة قبل 28 ثانية</span><button class="mc-refresh" type="button">تحديث الآن</button></div></div>
+
+  <div class="mc-tabs" role="tablist">
+    <button class="mc-tab" role="tab" aria-selected="false">معاينة</button>
+    <button class="mc-tab" role="tab" aria-selected="true">مباشر</button>
+    <button class="mc-tab" role="tab" aria-selected="false">بعد المباراة</button>
+  </div>
+
+  <!-- ====== لوحة الإحصائيات — 6 مجموعات بدل 3 ====== -->
+  <section class="mc-panel" aria-labelledby="stats-h">
+    <h2 id="stats-h">إحصائيات المباراة <span class="tag">6 مجموعات بدل 3 · 28 رقمًا بدل 11</span></h2>
+    <p class="lead">كل الأرقام من قراءة المصدر نفسها التي تعمل اليوم؛ الغائب يُكتب «لا رقم من المصدر» ولا يُستكمل صفرًا.</p>
+
+    <div class="mc-possession">
+      <div class="mc-possession-head">
+        <span class="home"><span class="pct num">34%</span> نوتنجهام فورست</span>
+        <span class="mc-possession-title">الاستحواذ <span class="tag">شريط بارز</span></span>
+        <span class="away">أرسنال <span class="pct num">66%</span></span>
+      </div>
+      <div class="mc-possession-bar" aria-hidden="true"><span class="home" style="width:34%"></span><span class="away" style="width:66%"></span></div>
+    </div>
+
+    <div class="mc-stat-groups">
+      <article class="mc-stat-group">
+        <div class="mc-stat-group-head"><span class="mini-crest home">NFO</span><h3 class="mc-stat-group-title">الاستحواذ والتمرير</h3><span class="mini-crest away">ARS</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">34%</span><div class="mc-stat-mid"><span class="mc-stat-label">الاستحواذ</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:52%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">66%</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">231</span><div class="mc-stat-mid"><span class="mc-stat-label">إجمالي التمريرات <span class="tag">جديد</span></span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:52%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">448</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">172</span><div class="mc-stat-mid"><span class="mc-stat-label">التمريرات الصحيحة <span class="tag">جديد</span></span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:44%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">395</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">74%</span><div class="mc-stat-mid"><span class="mc-stat-label">دقة التمرير</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:84%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">88%</span></div>
+      </article>
+
+      <article class="mc-stat-group">
+        <div class="mc-stat-group-head"><span class="mini-crest home">NFO</span><h3 class="mc-stat-group-title">التسديد</h3><span class="mini-crest away">ARS</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">9</span><div class="mc-stat-mid"><span class="mc-stat-label">إجمالي التسديدات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:64%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">14</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">3</span><div class="mc-stat-mid"><span class="mc-stat-label">على المرمى</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:50%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">6</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">2</span><div class="mc-stat-mid"><span class="mc-stat-label">تسديدات تم اعتراضها</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:50%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">4</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">33%</span><div class="mc-stat-mid"><span class="mc-stat-label">نسبة التسديد على المرمى <span class="tag">جديد</span></span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:77%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">43%</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">0</span><div class="mc-stat-mid"><span class="mc-stat-label">ركلات جزاء — محاولات <span class="tag">جديد</span></span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:0%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">1</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">0</span><div class="mc-stat-mid"><span class="mc-stat-label">ركلات جزاء — أهداف <span class="tag">جديد</span></span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:0%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">1</span></div>
+      </article>
+
+      <article class="mc-stat-group">
+        <div class="mc-stat-group-head"><span class="mini-crest home">NFO</span><h3 class="mc-stat-group-title">بناء الهجمة <span class="tag">مجموعة جديدة</span></h3><span class="mini-crest away">ARS</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">11</span><div class="mc-stat-mid"><span class="mc-stat-label">العرضيات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:61%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">18</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">3</span><div class="mc-stat-mid"><span class="mc-stat-label">العرضيات الدقيقة</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:50%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">6</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">27%</span><div class="mc-stat-mid"><span class="mc-stat-label">دقة العرضيات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:82%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">33%</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">41</span><div class="mc-stat-mid"><span class="mc-stat-label">الكرات الطويلة</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:54%"></i></span></div></div><span class="mc-stat-val away">22</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">19</span><div class="mc-stat-mid"><span class="mc-stat-label">الكرات الطويلة الدقيقة</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:74%"></i></span></div></div><span class="mc-stat-val away">14</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">4</span><div class="mc-stat-mid"><span class="mc-stat-label">الركنيات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:57%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">7</span></div>
+      </article>
+
+      <article class="mc-stat-group">
+        <div class="mc-stat-group-head"><span class="mini-crest home">NFO</span><h3 class="mc-stat-group-title">الدفاع <span class="tag">مجموعة جديدة</span></h3><span class="mini-crest away">ARS</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">18</span><div class="mc-stat-mid"><span class="mc-stat-label">التدخلات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:61%"></i></span></div></div><span class="mc-stat-val away">11</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">12</span><div class="mc-stat-mid"><span class="mc-stat-label">التدخلات الناجحة</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:67%"></i></span></div></div><span class="mc-stat-val away">8</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">67%</span><div class="mc-stat-mid"><span class="mc-stat-label">نسبة نجاح التدخلات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:92%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">73%</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">9</span><div class="mc-stat-mid"><span class="mc-stat-label">الاعتراضات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:56%"></i></span></div></div><span class="mc-stat-val away">5</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">21</span><div class="mc-stat-mid"><span class="mc-stat-label">التشتيت</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:43%"></i></span></div></div><span class="mc-stat-val away">9</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">17</span><div class="mc-stat-mid"><span class="mc-stat-label">التشتيت الفعّال</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:0%"></i></span></div></div><span class="mc-stat-none">لا رقم من المصدر</span></div>
+      </article>
+
+      <article class="mc-stat-group">
+        <div class="mc-stat-group-head"><span class="mini-crest home">NFO</span><h3 class="mc-stat-group-title">حراسة المرمى</h3><span class="mini-crest away">ARS</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">4</span><div class="mc-stat-mid"><span class="mc-stat-label">التصديات</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:50%"></i></span></div></div><span class="mc-stat-val away">2</span></div>
+      </article>
+
+      <article class="mc-stat-group">
+        <div class="mc-stat-group-head"><span class="mini-crest home">NFO</span><h3 class="mc-stat-group-title">الانضباط</h3><span class="mini-crest away">ARS</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">13</span><div class="mc-stat-mid"><span class="mc-stat-label">الأخطاء</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:69%"></i></span></div></div><span class="mc-stat-val away">9</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">1</span><div class="mc-stat-mid"><span class="mc-stat-label">التسلل</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:33%"></i></span><span class="mc-stat-bar away"><i style="width:100%"></i></span></div></div><span class="mc-stat-val away lead">3</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home lead">2</span><div class="mc-stat-mid"><span class="mc-stat-label">بطاقات صفراء</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:100%"></i></span><span class="mc-stat-bar away"><i style="width:50%"></i></span></div></div><span class="mc-stat-val away">1</span></div>
+        <div class="mc-stat-row"><span class="mc-stat-val home">0</span><div class="mc-stat-mid"><span class="mc-stat-label">بطاقات حمراء</span><div class="mc-stat-bars"><span class="mc-stat-bar home"><i style="width:0%"></i></span><span class="mc-stat-bar away"><i style="width:0%"></i></span></div></div><span class="mc-stat-val away">0</span></div>
+      </article>
+    </div>
+
+    <div class="mc-notes">
+      <strong>ما لا يرسله المصدر (يُقال ولا يُمثَّل):</strong>
+      <ul>
+        <li>تسديدات خارج المرمى — لا تُشتق بالطرح من الإجمالي.</li>
+        <li>الالتحامات الأرضية/الهوائية، المراوغات، فقدان الاستحواذ، اللمسات داخل المنطقة، الرميات الجانبية، ضربات المرمى، التقاط الكرات العالية.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ====== المواجهات السابقة — سطر المجمل جديد ====== -->
+  <section class="mc-panel" aria-labelledby="h2h-h">
+    <h2 id="h2h-h">المواجهات السابقة <span class="tag">سطر المجمل جديد</span></h2>
+    <p class="lead">العينة: آخر 5 مواجهات عبر البطولات كما أرسلها المصدر — ليست سجلًا تاريخيًا كاملًا (النتائج والتواريخ أدناه توضيحية).</p>
+    <div class="mc-h2h-agg">
+      <div class="mc-h2h-cell home"><b>1</b><small>فوز نوتنجهام فورست</small></div>
+      <div class="mc-h2h-cell"><b>2</b><small>تعادل</small></div>
+      <div class="mc-h2h-cell away"><b>2</b><small>فوز أرسنال</small></div>
+    </div>
+    <ul class="mc-h2h-list">
+      <li><span class="r">نوتنجهام فورست<br><span class="meta">الدوري الإنجليزي · 17/01/2026</span></span><span class="sc">0 – 0</span><span class="l">أرسنال</span></li>
+      <li><span class="r">أرسنال<br><span class="meta">الدوري الإنجليزي · 13/09/2025</span></span><span class="sc">3 – 0</span><span class="l">نوتنجهام فورست</span></li>
+      <li><span class="r">نوتنجهام فورست<br><span class="meta">الدوري الإنجليزي · 26/02/2025</span></span><span class="sc">0 – 0</span><span class="l">أرسنال</span></li>
+      <li><span class="r">أرسنال<br><span class="meta">الدوري الإنجليزي · 23/11/2024</span></span><span class="sc">3 – 0</span><span class="l">نوتنجهام فورست</span></li>
+      <li><span class="r">نوتنجهام فورست<br><span class="meta">الدوري الإنجليزي · 30/01/2024</span></span><span class="sc">1 – 2</span><span class="l">أرسنال</span></li>
+    </ul>
+  </section>
+
+</div>
+</body>
+</html>

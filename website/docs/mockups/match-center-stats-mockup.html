@@ -11,7 +11,7 @@
 <div class="mc-container">
 
   <div class="mock-banner" role="note">
-    <div><strong>تصور تصميمي — المرحلة أ (مجانية بالكامل) · حالة «مباشر»</strong> · <a href="match-center-prematch-mockup.html" style="color:var(--mc-lime)">حالة «قبل المباراة» ←</a> · النتيجة والأحداث والأرقام هنا <strong>توضيحية</strong> لشرح التخطيط فقط وليست وقائع حقيقية.</div>
+    <div><strong>تصور تصميمي — المرحلة أ (مجانية بالكامل) · مباشر</strong> · <a href="match-center-prematch-mockup.html" style="color:var(--mc-lime)">قبل المباراة (أ): لا تشكيلة بعد ←</a> · <a href="match-center-prematch-confirmed-mockup.html" style="color:var(--mc-lime)">قبل المباراة (ب): التشكيلة مؤكدة ←</a> · النتيجة والأحداث والأرقام هنا <strong>توضيحية</strong> لشرح التخطيط فقط وليست وقائع حقيقية.</div>
     <div class="legend"><span class="l-now">موجود حاليًا كما هو</span><span class="l-new">جديد — بلا تكلفة</span></div>
   </div>
 
@@ -166,10 +166,14 @@
 
   <div class="mc-meta"><div class="mc-meta-service"><span class="mc-read" data-level="fresh">آخر قراءة قبل 28 ثانية</span><button class="mc-refresh" type="button">تحديث الآن</button></div></div>
 
-  <div class="mc-tabs" role="tablist">
+  <div class="mc-tabs" role="tablist" aria-label="قبل المباراة وأثناءها: تبويبان فقط">
     <button class="mc-tab" role="tab" aria-selected="false">قبل المباراة</button>
     <button class="mc-tab" role="tab" aria-selected="true">مباشر</button>
-    <button class="mc-tab" role="tab" aria-selected="false">بعد المباراة</button>
+  </div>
+  <div class="mock-lifecycle" role="note">
+    <strong>دورة حياة التبويبات</strong>
+    <span><b>قبل المباراة وأثناءها:</b> <i>قبل المباراة</i><i>مباشر</i> — «بعد المباراة» مخفي</span>
+    <span><b>بعد صافرة النهاية:</b> <i>قبل المباراة</i><i>بعد المباراة</i> — «مباشر» يُحذف</span>
   </div>
 
   <!-- ====== لوحة الإحصائيات — 6 مجموعات بدل 3 ====== -->

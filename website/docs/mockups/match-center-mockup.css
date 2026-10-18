@@ -214,6 +214,36 @@
   .mc-docs-review strong { color: var(--mc-text); margin-inline-end: 8px; }
   .mc-report { min-height: 38px; padding: 6px 14px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255,255,255,.04); color: var(--mc-text); font-size: .76rem; font-weight: 800; }
 
+  /* تعليق تصميمي: دورة حياة التبويبات */
+  .mock-lifecycle { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; margin: 8px 2px 0; padding: 8px 12px; border: 1px dashed rgba(62,255,224,.4); border-radius: 10px; background: rgba(62,255,224,.05); color: var(--mc-muted); font-size: .72rem; }
+  .mock-lifecycle strong { color: var(--mc-new); }
+  .mock-lifecycle b { color: var(--mc-text); font-weight: 800; }
+  .mock-lifecycle i { display: inline-block; margin-inline-start: 4px; padding: 0 9px; border: 1px solid var(--mc-line); border-radius: 999px; font-style: normal; font-weight: 800; color: var(--mc-text); background: rgba(255,255,255,.04); }
+
+  /* ====== المعاينة على الملعب (قبل صدور التشكيلة) ====== */
+  .mc-pitch-preview { grid-column: 1 / -1; z-index: 1; min-width: 0; width: 100%; padding-top: 16px; border-top: 1px solid #ffffff40; }
+  .mc-pitch-preview h2 { margin: 0; text-align: center; font-size: 1rem; }
+  .mc-pitch-preview-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; margin: 12px 0 14px; padding: 0; }
+  .mc-pitch-preview-facts > div { min-width: 0; padding: 7px 10px; border: 1px solid rgba(255,255,255,.2); border-radius: 11px; background: rgba(5,16,13,.5); text-align: center; backdrop-filter: blur(4px); }
+  .mc-pitch-preview-facts dt { color: rgba(255,255,255,.72); font-size: .64rem; }
+  .mc-pitch-preview-facts dd { margin: 1px 0 0; color: #fff; font-size: .78rem; font-weight: 800; }
+  .mc-pitch-forms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+  .mc-pitch-form { min-width: 0; border: 1px solid #ffffff40; border-radius: 14px; padding: 12px 10px; background: #062b1d45; }
+  .mc-pitch-form h3 { margin: 0 0 4px; text-align: center; font-size: .9rem; }
+  .mc-pitch-form-sub { margin: 0 0 10px; text-align: center; color: #d5e7dd; font-size: .66rem; }
+  .mc-pitch-form ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .mc-pitch-form li { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 8px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.16); border-radius: 10px; background: rgba(5,16,13,.55); font-size: .76rem; }
+  .mc-pitch-form li small { display: block; color: #cfe0d4; font-size: .64rem; }
+  .mc-form-result { display: inline-grid; place-items: center; min-height: 22px; border-radius: 999px; font-size: .66rem; font-weight: 900; }
+  .mc-form-result[data-r="W"] { background: rgba(216,255,62,.18); color: var(--mc-lime); border: 1px solid rgba(216,255,62,.5); }
+  .mc-form-result[data-r="D"] { background: rgba(255,255,255,.08); color: #e8eef5; border: 1px solid rgba(255,255,255,.3); }
+  .mc-form-result[data-r="L"] { background: rgba(239,51,64,.18); color: #ffb1b7; border: 1px solid rgba(239,51,64,.5); }
+  .mc-pitch-form li .num.sc { font-weight: 900; color: #fff; font-size: .82rem; }
+  .mc-pitch-form-summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 10px 0 0; padding: 0; list-style: none; }
+  .mc-pitch-form-summary li { padding: 2px 9px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(5,16,13,.55); color: #fff; font-size: .66rem; font-weight: 800; }
+  .mc-pitch-form-summary li em { font-style: normal; color: rgba(255,255,255,.72); font-weight: 700; margin-inline-end: 4px; }
+  @media (max-width: 767px) { .mc-pitch-forms { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+
   @media (max-width: 767px) {
     .mc-lineup-squads { grid-template-columns: minmax(0, 1fr); gap: 14px; }
     .mc-lineup-player { flex-basis: 21%; }

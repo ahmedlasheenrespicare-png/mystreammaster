@@ -3,10 +3,16 @@ import assert from 'node:assert/strict';
 import {
   EVENT_FILTER_ALL,
   EVENT_TYPE_LABELS,
+  PITCH_ZONE_ABSENT_METRICS,
+  PITCH_ZONE_FALLBACK,
+  PITCH_ZONE_ORDER,
+  PITCH_ZONES,
+  STAT_GROUP_FALLBACK,
   STAT_GROUPS,
   activeEventFilterCount,
   analysisFacts,
   analysisIsAvailable,
+  changedStatKeys,
   compareStatRow,
   computeAvailableTabs,
   confirmedLineupSides,
@@ -22,10 +28,13 @@ import {
   eventTypeFacet,
   filterEvents,
   groupStatistics,
+  hasPitchStatistics,
   headToHeadFor,
   normalizeEvent,
+  pitchStatZones,
   normalizeStatus,
   renderableEvents,
+  statRowsSignature,
   summarizeSourceEvents,
   unavailableDataNotes,
 } from '../src/lib/match-center.mjs';
@@ -147,6 +156,136 @@ test('the numeric summary is only said when both sides are present', () => {
   assert.equal(facts.some(row => row.key === 'tackles'), false);
   assert.equal(facts.some(row => row.key === 'redCards'), false, 'one side has no number, so the pair is not said');
   assert.ok(facts.some(row => row.key === 'shotsOnTarget'), 'the shots-on-target pair is exactly what a reader asked to see');
+});
+
+/* ── 1ب) التمثيل البصري للإحصائيات على الملعب ───────────────────────────
+   الأرقام تُسقَط فوق مناطق الملعب بدل القوائم النصية. ما يُختبر هنا هو
+   القرار لا التنسيق: أي رقم يقف في أي منطقة، وأي منطقة يُسمّى غيابها،
+   وكيف تُعرف القراءة التي غيّرت رقماً. */
+
+const zoneById = zones => new Map(zones.map(zone => [zone.id, zone]));
+
+test('every stat group declares a pitch zone, and no key is left without one', () => {
+  for (const group of STAT_GROUPS) {
+    assert.ok(['midfield', 'attack', 'defense'].includes(group.zone), `${group.id} needs a zone`);
+  }
+  assert.equal(STAT_GROUP_FALLBACK.zone, PITCH_ZONE_FALLBACK, 'an unknown key stands in the centre circle');
+  // كل مفتاح يعرفه العقد يصل إلى منطقة: رقمٌ لا منطقة له رقمٌ لا يُعرض.
+  const zones = zoneById(pitchStatZones(STAT_INPUT));
+  const mapped = new Set([...zones.values()].flatMap(zone => zone.rows.map(row => row.key)));
+  for (const key of STAT_GROUPS.flatMap(group => group.keys)) {
+    assert.ok(mapped.has(key), `${key} must be dropped on the pitch`);
+  }
+});
+
+test('shots stand over the boxes, possession in the centre circle, defence in each own third', () => {
+  const zones = zoneById(pitchStatZones(STAT_INPUT));
+  const keysOf = id => zones.get(id).rows.map(row => row.key);
+  assert.deepEqual(keysOf('midfield'), ['possessionPct', 'passPct']);
+  assert.equal(zones.get('midfield').owner, null, 'midfield belongs to neither side');
+  // التسديد فوق منطقتي الجزاء: أرقام الفريقين معاً في كل منطقة، فالرقم يُنسب
+  // إلى صاحبه بالاسم لا بمكانه وحده.
+  assert.deepEqual(keysOf('homeAttack'), ['totalShots', 'shotsOnTarget', 'blockedShots']);
+  assert.deepEqual(keysOf('awayAttack'), ['totalShots', 'shotsOnTarget', 'blockedShots']);
+  assert.equal(zones.get('homeAttack').owner, 'home');
+  assert.equal(zones.get('awayAttack').owner, 'away');
+  // الدفاع والانضباط في الثلث الدفاعي لكل فريق، بترتيب تعريف المجموعة.
+  const defenceKeys = STAT_GROUPS.find(group => group.id === 'defense-discipline').keys;
+  assert.deepEqual(keysOf('homeDefense'), defenceKeys);
+  assert.deepEqual(keysOf('awayDefense'), defenceKeys);
+  assert.equal(zones.get('homeDefense').owner, 'home');
+  // مناطق المضيف عند نهايته من الملعب (مرماه)، ومناطق الضيف عند النهاية الأخرى.
+  assert.ok(PITCH_ZONES.homeDefense.inlineStart > PITCH_ZONES.awayDefense.inlineStart);
+  assert.ok(PITCH_ZONES.homeAttack.inlineStart > PITCH_ZONES.awayAttack.inlineStart);
+  // ومنطقة الهجوم فوق منطقة الجزاء، والدفاع في الثلث: الهجوم أعلى في الملعب.
+  assert.ok(PITCH_ZONES.homeAttack.block < PITCH_ZONES.homeDefense.block);
+  assert.ok(PITCH_ZONES.awayAttack.block < PITCH_ZONES.awayDefense.block);
+  // ودائرة المنتصف بين الطرفين لا فوق أحدهما.
+  assert.ok(PITCH_ZONES.midfield.inlineStart > PITCH_ZONES.awayAttack.inlineStart);
+  assert.ok(PITCH_ZONES.midfield.inlineStart < PITCH_ZONES.homeAttack.inlineStart);
+  // لا منطقة بلا مرساة داخل أرضية الملعب.
+  for (const zone of Object.values(PITCH_ZONES)) {
+    assert.ok(zone.inlineStart > 0 && zone.inlineStart < 100, `${zone.id} inline anchor`);
+    assert.ok(zone.block >= 0 && zone.block <= 100, `${zone.id} block anchor`);
+  }
+});
+
+test('zones keep the pitch order, and every row is a comparison row unchanged', () => {
+  const zones = pitchStatZones(STAT_INPUT);
+  assert.deepEqual(zones.map(zone => zone.id), PITCH_ZONE_ORDER);
+  const midfield = zoneById(zones).get('midfield');
+  const possession = midfield.rows.find(row => row.key === 'possessionPct');
+  assert.deepEqual(
+    Object.keys(possession).sort(),
+    Object.keys(compareStatRow(STAT_INPUT[0])).sort(),
+    'the pitch reuses the one comparison contract — no second row shape',
+  );
+  assert.equal(possession.home, 58);
+  assert.equal(possession.away, 42);
+});
+
+test('a value the source did not send stays absent on the pitch, and a real zero stays zero', () => {
+  // `redCards` في مُدخل الاختبار: المضيف بلا رقم، والضيف صفر حقيقي من المصدر.
+  const zones = zoneById(pitchStatZones(STAT_INPUT));
+  for (const zoneId of ['homeDefense', 'awayDefense']) {
+    const cards = zones.get(zoneId).rows.find(row => row.key === 'redCards');
+    assert.equal(cards.home, null, `${zoneId}: absent is null, not 0`);
+    assert.equal(cards.away, 0, `${zoneId}: a genuine zero from the source stays zero`);
+    assert.equal(cards.both, false, 'no comparison against an absent value');
+  }
+  const passing = zones.get('midfield').rows.find(row => row.key === 'passPct');
+  assert.deepEqual([passing.home, passing.away], [84, 79]);
+  // وطرفٌ واحد بلا رقم لا يُسقَط من الملعب: يبقى صفّه بوصف غيابه.
+  const oneSided = zoneById(pitchStatZones([
+    { key: 'yellowCards', label: 'بطاقات صفراء', unit: '', home: 2, away: null },
+  ])).get('homeDefense');
+  assert.equal(oneSided.rows.length, 1);
+  assert.equal(oneSided.rows[0].away, null);
+});
+
+test('a stat the contract does not know lands in the centre circle instead of vanishing', () => {
+  const zones = zoneById(pitchStatZones([
+    { key: 'distanceKm', label: 'المسافة المقطوعة', unit: 'كم', home: 108, away: 104 },
+  ]));
+  assert.deepEqual(zones.get('midfield').rows.map(row => row.key), ['distanceKm']);
+  assert.deepEqual(zones.get('midfield').groups.map(group => group.id), ['source-other']);
+});
+
+test('no numbers means no pitch at all — and the availability gate agrees', () => {
+  assert.deepEqual(pitchStatZones(null), []);
+  assert.deepEqual(pitchStatZones([]), []);
+  assert.equal(hasPitchStatistics(null), false);
+  assert.equal(hasPitchStatistics([{ key: 'x', label: 'فارغة', home: null, away: null }]), false);
+  assert.equal(hasPitchStatistics(STAT_INPUT), true);
+});
+
+test('metrics the source never sends are named inside their own zone, never drawn as zero', () => {
+  const zones = zoneById(pitchStatZones(STAT_INPUT));
+  // الأهداف المتوقعة داخل الصندوق تُطلب فوق منطقتي الجزاء ولا تصل.
+  assert.deepEqual(zones.get('homeAttack').absentMetrics.map(metric => metric.id), ['xg-box']);
+  assert.deepEqual(zones.get('awayAttack').absentMetrics.map(metric => metric.id), ['xg-box']);
+  assert.deepEqual(zones.get('midfield').absentMetrics.map(metric => metric.id), ['chances-created']);
+  assert.deepEqual(zones.get('homeDefense').absentMetrics.map(metric => metric.id), ['clearances-tackles']);
+  // كل غياب مُسمّى يقف في منطقة موجودة فعلاً.
+  for (const metric of PITCH_ZONE_ABSENT_METRICS) {
+    assert.ok(PITCH_ZONES[metric.zone], `absent metric ${metric.id} needs a real zone`);
+  }
+  assert.deepEqual(pitchStatZones([]).length, 0, 'with no numbers there is no board, so nothing is named');
+});
+
+test('a read that changed a number names it, and a read that changed nothing stays quiet', () => {
+  const before = statRowsSignature(STAT_INPUT);
+  const after = statRowsSignature(STAT_INPUT.map(stat => (stat.key === 'totalShots' ? { ...stat, home: 12 } : stat)));
+  assert.deepEqual(changedStatKeys(before, after), ['totalShots']);
+  assert.deepEqual(changedStatKeys(before, before), [], 'no change, no false flash');
+  // تنسيق المصدر لا يغيّر البصمة: «58» و58 رقمٌ واحد بعد التطبيع.
+  const formatted = statRowsSignature(STAT_INPUT.map(stat => (stat.key === 'possessionPct' ? { ...stat, home: '58' } : stat)));
+  assert.deepEqual(changedStatKeys(before, formatted), []);
+  // لا قراءة سابقة (أول قراءة في الصفحة) ⇒ لا «تغيّر» يُعلن.
+  assert.deepEqual(changedStatKeys(null, after), []);
+  assert.deepEqual(changedStatKeys('', after), []);
+  // البصمة قيم وحدها: لا وقت قراءة ولا كاش فيها، فلا يتوهّج رقم لأن الساعة تحركت.
+  assert.equal(before.includes('2026'), false);
 });
 
 /* ── 2) أحداث المصدر: الوصف والعدّ والفلاتر ───────────────────────── */

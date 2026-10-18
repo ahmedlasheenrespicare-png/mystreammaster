@@ -337,14 +337,62 @@ export interface StatComparisonRow {
   bar: { home: number | null; away: number | null };
 }
 
-export interface StatGroup { id: string; label: string; rows: StatComparisonRow[] }
+export interface StatGroup { id: string; label: string; zone: PitchZoneId; rows: StatComparisonRow[] }
 
-export const STAT_GROUPS: { id: string; label: string; keys: string[] }[];
-export const STAT_GROUP_FALLBACK: { id: string; label: string };
+export const STAT_GROUPS: { id: string; label: string; zone: PitchZoneId; keys: string[] }[];
+export const STAT_GROUP_FALLBACK: { id: string; label: string; zone: PitchZoneId };
 
 export function compareStatRow(stat: StatPair | null | undefined): StatComparisonRow;
 export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
 export function analysisFacts(statistics: StatPair[] | null | undefined): StatComparisonRow[];
+
+/* ── التمثيل البصري للإحصائيات على الملعب (Pitch-Mapped Team Stats) ──
+   الأرقام تُسقَط فوق رسم الملعب بدل القوائم النصية في مرحلتي «مباشر» و«بعد
+   المباراة». الموضع قرار بيانات هنا: أي مجموعة تقف في أي منطقة، وأي منطقة
+   يُسمّى غيابها. لا إحداثيات تتبّع ولا x/y — المصدر لا يرسلها. */
+
+/** دائرة المنتصف، منطقتا الجزاء (هجوم كل طرف)، والثلثان الدفاعيان. */
+export type PitchZoneId = 'midfield' | 'homeAttack' | 'awayAttack' | 'homeDefense' | 'awayDefense';
+/** طبيعة منطقة المجموعة في `STAT_GROUPS`: وسط، أو هجوم/دفاع لكل طرف. */
+export type StatZoneKind = 'midfield' | 'attack' | 'defense';
+
+export interface PitchZoneGeometry {
+  id: PitchZoneId;
+  /** الوصف المكاني للمنطقة («دائرة المنتصف»، «الثلث الدفاعي»). */
+  title: string;
+  /** صاحب الأرقام في المنطقة، أو `null` لمنطقة الوسط المشتركة. */
+  owner: 'home' | 'away' | null;
+  /** نسبة من أرضية الملعب؛ `inlineStart` counted من مرمى المضيف. */
+  inlineStart: number;
+  block: number;
+}
+
+export interface PitchStatZone {
+  zone: PitchZoneGeometry;
+  id: PitchZoneId;
+  /** عنوان المنطقة مع صاحب الرقم فيها إن كانت منطقة طرف واحد. */
+  title: string;
+  owner: 'home' | 'away' | null;
+  /** المجموعات الممثلة في المنطقة — للتعريف بها لا لإعادة تجميعها. */
+  groups: { id: string; label: string }[];
+  /** صفوف المقارنة نفسها التي تُبنى منها أي لوحة: قيمتان، وغيابٌ كلمة. */
+  rows: StatComparisonRow[];
+  /** أرقامٌ تُطلب في هذه المنطقة ولا يرسلها المصدر — تُسمّى في مكانها. */
+  absentMetrics: { id: string; label: string }[];
+}
+
+export const PITCH_ZONES: Record<PitchZoneId, PitchZoneGeometry>;
+export const PITCH_ZONE_ORDER: PitchZoneId[];
+export const PITCH_ZONE_FALLBACK: PitchZoneId;
+export const PITCH_ZONE_ABSENT_METRICS: { zone: PitchZoneId; id: string; label: string; absent: boolean }[];
+
+export function pitchStatZones(statistics: StatPair[] | null | undefined): PitchStatZone[];
+/** هل وصلت أرقام تُسقَط على الملعب أصلاً؟ */
+export function hasPitchStatistics(statistics: StatPair[] | null | undefined): boolean;
+/** بصمة قيم الأرقام وحدها (بلا وقت قراءة ولا كاش) لمقارنة قراءتين. */
+export function statRowsSignature(statistics: StatPair[] | null | undefined): string;
+/** مفاتيح الأرقام التي تغيّرت بين بصمتين — للاحتفاء بالتغيّر لا للحكم عليه. */
+export function changedStatKeys(previous: string | null | undefined, next: string | null | undefined): string[];
 
 /* ── الوقائع المعدودة والفلاتر ── */
 export interface EventFilterOption { value: string; label: string; count: number }

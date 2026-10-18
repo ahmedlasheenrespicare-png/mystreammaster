@@ -8,7 +8,6 @@ import {
   displayableComparisonAxes,
   displayablePlayers,
   displayableRatings,
-  displayableStatistics,
   formatInZone,
   hasDisplayableForm,
   headToHeadFor,
@@ -25,7 +24,7 @@ import {
 } from '../lib/match-center.mjs';
 import type { MatchCenterTools } from './useMatchCenterTools';
 import MatchCenterRadar from './MatchCenterRadar';
-import MatchCenterStatGroups from './MatchCenterStatGroups';
+import MatchCenterStatPitch from './MatchCenterStatPitch';
 import MatchCenterAnalysis from './MatchCenterAnalysis';
 
 /* ==========================================================================
@@ -310,8 +309,6 @@ export function LineupsPanel({ match, snapshot }: PanelProps) {
 /* ─────────────────────────── 4) مباشر ─────────────────────────── */
 
 export function LivePanel({ match, snapshot, status, countdown, freshnessText, readAtLabel }: PanelProps) {
-  const statistics = displayableStatistics(snapshot?.statistics ?? null);
-
   const statusLabel = text(status?.label);
   const clock = text(status?.clock);
   const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
@@ -324,7 +321,17 @@ export function LivePanel({ match, snapshot, status, countdown, freshnessText, r
       )}
       {freshnessText && <p>{freshnessText}{readAtLabel && <> · آخر قراءة: {readAtLabel}</>}</p>}
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
-      <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} idPrefix="live" />
+      {/* لا قائمة أرقام نصية هنا: أرقام الفريقين مسقوطة على الملعب، وتتحدث
+          مع كل قراءة مؤكدة تصل (البند 11: طبقة بيانات واحدة تُغذّي اللوحتين). */}
+      <MatchCenterStatPitch
+        statistics={snapshot?.statistics ?? null}
+        homeName={homeName}
+        awayName={awayName}
+        mode="live"
+        idPrefix="live"
+        headingLevel="h3"
+        readAtLabel={readAtLabel}
+      />
     </div>
   );
 }

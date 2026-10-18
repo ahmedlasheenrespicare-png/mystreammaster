@@ -1241,20 +1241,26 @@ export function comparisonFor(snapshot) {
 /* ─────────────────────── مجموعات الأرقام وسهولة المسح ─────────────────────── */
 
 /* التجميع بـ`key` الذي يرسله وسيط الموقع، لا بالتسمية العربية: التسمية قد
-   تتغيّر في الطبقة التالية، والمفتاح هو ما يربط الرقم بمصدره. */
+   تتغيّر في الطبقة التالية، والمفتاح هو ما يربط الرقم بمصدره.
+
+   `zone` هي منطقة الملعب التي يُسقَط فيها رقم المجموعة (التمثيل البصري
+   للإحصائيات على الملعب): الاستحواذ والتمرير في دائرة المنتصف، والتسديد فوق
+   منطقتي الجزاء، والدفاع والانضباط في الثلث الدفاعي لكل فريق. الموضع قرار
+   بيانات هنا لا قرار تنسيق في المكوّن، وإلا صار «أي رقم يقف أين» إجابتين. */
 export const STAT_GROUPS = [
-  { id: 'possession-passing', label: 'الاستحواذ والتمرير', keys: ['possessionPct', 'passPct'] },
-  { id: 'shots', label: 'التسديد', keys: ['totalShots', 'shotsOnTarget', 'blockedShots'] },
+  { id: 'possession-passing', label: 'الاستحواذ والتمرير', zone: 'midfield', keys: ['possessionPct', 'passPct'] },
+  { id: 'shots', label: 'التسديد', zone: 'attack', keys: ['totalShots', 'shotsOnTarget', 'blockedShots'] },
   {
     id: 'defense-discipline',
     label: 'الدفاع والانضباط',
+    zone: 'defense',
     keys: ['saves', 'wonCorners', 'foulsCommitted', 'offsides', 'yellowCards', 'redCards'],
   },
 ];
 
 /* كل مفتاح تعرفه الطبقة مُجمَّع؛ ما يرسله مصدر لاحقاً بلا تعريف عندنا لا
    يُرمى ولا يُجمَع قسراً مع جيران لا علاقة له بهم. */
-export const STAT_GROUP_FALLBACK = { id: 'source-other', label: 'أرقام أخرى من المصدر' };
+export const STAT_GROUP_FALLBACK = { id: 'source-other', label: 'أرقام أخرى من المصدر', zone: 'midfield' };
 
 /**
  * صف مقارنة واحد: القيمتان كما وردتا، الفارق، ونسبة كل طرف إلى الأعلى بينهما.
@@ -1314,11 +1320,18 @@ export function groupStatistics(statistics) {
     const bucket = buckets[index];
     const ordered = def.keys.map(key => bucket.get(key)).filter(Boolean);
     if (ordered.length > 0) {
-      groups.push({ id: def.id, label: def.label, rows: ordered.map(compareStatRow) });
+      /* `zone` تُمرَّر مع المجموعة: منطقة الملعب قرارٌ في تعريف المجموعة نفسها،
+         فلا يُعاد اشتقاقها في المكوّن (ولا في اختبار) بنسخة قد تتباعد. */
+      groups.push({ id: def.id, label: def.label, zone: def.zone ?? PITCH_ZONE_FALLBACK, rows: ordered.map(compareStatRow) });
     }
   });
   if (extra.length > 0) {
-    groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows: extra.map(compareStatRow) });
+    groups.push({
+      id: STAT_GROUP_FALLBACK.id,
+      label: STAT_GROUP_FALLBACK.label,
+      zone: STAT_GROUP_FALLBACK.zone,
+      rows: extra.map(compareStatRow),
+    });
   }
   return groups;
 }
@@ -1332,6 +1345,143 @@ export function analysisFacts(statistics) {
   return displayableStatistics(statistics)
     .map(compareStatRow)
     .filter(row => row.both);
+}
+
+/* ──────────── التمثيل البصري للإحصائيات على الملعب (Pitch-Mapped) ──────────── */
+
+/* الإحصائيات لا تُعرض قوائم نصية في مرحلتي «مباشر» و«بعد المباراة»: تُسقَط
+   فوق رسم الملعب بحسب طبيعة الرقم. ما يُقرَّر هنا هو **أي رقم يقف في أي
+   منطقة** — قرار بيانات واحد تختبره Node، فتبقى الشاشة والاختبار على جواب
+   واحد. أما الإحداثيات فأثر تخطيطي لا بيانات تتبّع: المصدر لا يرسل x/y، فلا
+   يُدّعى أن الرقم وقع حيث وقعت الكرة.
+
+   المحاور بالنسبة المئوية من أرضية الملعب، و`inlineStart` من مرمى المضيف
+   (يمين الشاشة في صفحة RTL): 0% عند مرمى المضيف و100% عند مرمى الضيف.
+   لذلك منطقة «هجوم المضيف» هي منطقة جزاء الضيف، ومنطقة «دفاع المضيف» ثلثه
+   هو — وكل رقم يُنسب إلى الفريق صاحب الرقم لا إلى المكان وحده. */
+export const PITCH_ZONES = {
+  midfield: { id: 'midfield', title: 'دائرة المنتصف', owner: null, inlineStart: 50, block: 4 },
+  homeAttack: { id: 'homeAttack', title: 'منطقة الجزاء — هجوم', owner: 'home', inlineStart: 88, block: 4 },
+  awayAttack: { id: 'awayAttack', title: 'منطقة الجزاء — هجوم', owner: 'away', inlineStart: 12, block: 4 },
+  homeDefense: { id: 'homeDefense', title: 'الثلث الدفاعي', owner: 'home', inlineStart: 88, block: 42 },
+  awayDefense: { id: 'awayDefense', title: 'الثلث الدفاعي', owner: 'away', inlineStart: 12, block: 42 },
+};
+
+/* منطقة الأرقام غير المعرَّفة: دائرة المنتصف — أوسع المناطق، ورقمٌ لا نعرف
+   طبيعته لا يُدفع إلى منطقة جزاء ولا إلى ثلث دفاعي بلا دليل. */
+export const PITCH_ZONE_FALLBACK = 'midfield';
+
+/* ترتيب المناطق في القراءة وفي DOM: اليمين (مرمى المضيف) إلى اليسار، ثم
+   الأسفل — نفس اتجاه العين في صفحة RTL، فلا يختلف ترتيب الشاشة عن العقد. */
+export const PITCH_ZONE_ORDER = ['homeDefense', 'homeAttack', 'midfield', 'awayAttack', 'awayDefense'];
+
+/* مناطق لا تصل أرقامها من المصدر الحالي فتُسمّى في مكانها: الغياب كلمة في
+   المنطقة التي كان سيُعرض فيها، لا صفر ولا خانة فارغة. `absent: true` تعني
+   أن المزوّد الحالي لا يرسل أي مفتاح يملؤها؛ إن وصل مفتاحها يوماً تُدرج في
+   `STAT_GROUPS` فتختفي الملاحظة وحدها. */
+export const PITCH_ZONE_ABSENT_METRICS = [
+  { zone: 'homeAttack', id: 'xg-box', label: 'الأهداف المتوقعة داخل الصندوق (xG)', absent: true },
+  { zone: 'awayAttack', id: 'xg-box', label: 'الأهداف المتوقعة داخل الصندوق (xG)', absent: true },
+  { zone: 'midfield', id: 'chances-created', label: 'صناعة الفرص', absent: true },
+  { zone: 'homeDefense', id: 'clearances-tackles', label: 'التشتيتات والتدخلات الناجحة', absent: true },
+  { zone: 'awayDefense', id: 'clearances-tackles', label: 'التشتيتات والتدخلات الناجحة', absent: true },
+];
+
+const PITCH_ZONE_TITLE_OVERRIDES = {
+  homeAttack: 'منطقة الجزاء — أرقام هجوم المضيف',
+  awayAttack: 'منطقة الجزاء — أرقام هجوم الضيف',
+  homeDefense: 'الثلث الدفاعي للمضيف — تصدياته وانضباطه',
+  awayDefense: 'الثلث الدفاعي للضيف — تصدياته وانضباطه',
+};
+
+/** عنوان المنطقة: وصفها المكاني + صاحب الرقم فيها إن كانت منطقة طرف واحد. */
+function pitchZoneTitle(zone) {
+  return PITCH_ZONE_TITLE_OVERRIDES[zone.id] ?? zone.title;
+}
+
+/**
+ * توزيع أرقام الفريقين على مناطق الملعب.
+ *
+ * • الصفوف نفسها التي تُبنى منها أي لوحة (`compareStatRow`): قيمتان كما وردتا،
+ *   وغيابٌ يبقى كلمة «لا رقم من المصدر» ولا يصير صفراً.
+ * • المجموعة الفارغة لا تُنشأ منطقةً لها؛ والمنطقة التي لا رقم فيها لا تُرسم.
+ * • مفتاحٌ لا تعريف له لا يُرمى: يقف في دائرة المنتصف مع بقية «أرقام أخرى من
+ *   المصدر»، لأن إسقاطه يعني رقماً وصل من المصدر ولا يراه الزائر.
+ */
+export function pitchStatZones(statistics) {
+  const groups = groupStatistics(statistics);
+  if (groups.length === 0) return [];
+
+  /* كل مجموعة تسقط في منطقتي الطرفين إن كانت أرقامَ هجومٍ أو دفاع (لكل طرف
+     ثلثه)، وفي دائرة المنتصف وحدها إن كانت أرقام وسط لا طرف لها. */
+  const zoneRows = new Map();
+  for (const group of groups) {
+    const zoneOf = group.zone ?? PITCH_ZONE_FALLBACK;
+    const zoneIds = zoneOf === 'attack'
+      ? ['homeAttack', 'awayAttack']
+      : zoneOf === 'defense'
+        ? ['homeDefense', 'awayDefense']
+        : [PITCH_ZONE_FALLBACK];
+    for (const zoneId of zoneIds) {
+      if (!zoneRows.has(zoneId)) zoneRows.set(zoneId, []);
+      zoneRows.get(zoneId).push({ group, rows: group.rows });
+    }
+  }
+
+  const zones = [];
+  for (const zoneId of PITCH_ZONE_ORDER) {
+    const zone = PITCH_ZONES[zoneId];
+    const entries = zoneRows.get(zoneId) ?? [];
+    /* المنطقة التي لا رقم فيها لا تُرسم، لكن غيابها المُسمّى يبقى مذكوراً:
+       «لا يصل» جواب، وصمتُ المنطقة وحده يُقرأ نقصاً في الشاشة لا في المصدر. */
+    const absent = PITCH_ZONE_ABSENT_METRICS.filter(metric => metric.zone === zoneId && metric.absent === true);
+    if (entries.length === 0 && absent.length === 0) continue;
+    zones.push({
+      zone,
+      id: zone.id,
+      title: pitchZoneTitle(zone),
+      owner: zone.owner,
+      groups: entries.map(entry => ({ id: entry.group.id, label: entry.group.label })),
+      rows: entries.flatMap(entry => entry.rows),
+      absentMetrics: absent.map(metric => ({ id: metric.id, label: metric.label })),
+    });
+  }
+  return zones;
+}
+
+/** هل وصلت أرقام تُسقَط على الملعب أصلاً؟ بوابة العرض نفسها في اللوحتين. */
+export function hasPitchStatistics(statistics) {
+  return pitchStatZones(statistics).some(zone => zone.rows.length > 0);
+}
+
+/* ── التحديث الحي: أي الأرقام تغيّر بين قراءتين ────────────────────────────
+   الشاشة في وضع «مباشر» تتحدث مع كل قراءة مؤكدة تصل؛ ولولا بصمة تُقارن بها
+   القراءةُ السابقة لتوهّج كل رقم مع كل تحديث ولو لم يتغير — والتوهج بلا تغير
+   إشعار كاذب. البصمة نصّ القيم وحدها: لا وقت القراءة ولا الكاش ولا الحالة،
+   فلا يتغيّر رقم لأن الساعة تغيّرت. وبعد المباراة لا تُحسب بصمة أصلاً:
+   الأرقام ختامية ولا شيء ليُعلن. */
+export function statRowsSignature(statistics) {
+  return displayableStatistics(statistics)
+    .map(stat => [filledText(stat.key) ?? filledText(stat.label) ?? '', toFiniteOrNull(stat.home), toFiniteOrNull(stat.away)].join(':'))
+    .join('|');
+}
+
+/* سطر واحد لكل رقم: `المفتاح:المضيف:الضيف`. القيمتان عدديتان بعد التطبيع، فلا
+   يختلف السطر بتنسيق المصدر («54%» و54 سطرٌ واحد بعد `toFiniteOrNull`). */
+function statRowEntries(signature) {
+  return new Map(String(signature ?? '').split('|').filter(Boolean).map(entry => {
+    const away = entry.lastIndexOf(':');
+    const home = entry.lastIndexOf(':', away - 1);
+    return [entry.slice(0, home), entry.slice(home)];
+  }));
+}
+
+/** مفاتيح الصفوف التي اختلفت قيمها بين القراءتين — للاحتفاء بها لا للحكم عليها. */
+export function changedStatKeys(previous, next) {
+  if (typeof previous !== 'string' || previous === '' || typeof next !== 'string' || next === '') return [];
+  if (previous === next) return [];
+  const before = statRowEntries(previous);
+  return [...statRowEntries(next)].flatMap(([key, values]) => (before.has(key) && before.get(key) !== values ? [key] : []));
 }
 
 /* ───────────────────────── عدد أحداث المصدر كما وردت ───────────────────────── */

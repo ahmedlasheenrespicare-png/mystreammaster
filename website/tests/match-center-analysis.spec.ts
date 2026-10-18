@@ -104,7 +104,7 @@ async function expectNoOverflow(page, width: number, label: string) {
     const limit = document.documentElement.clientWidth;
     const outside: string[] = [];
     const scrollable: string[] = [];
-    for (const node of document.querySelectorAll('.mc-page, .mc-container, .mc-panel, .mc-pitch-frame, .mc-pitch-events, .mc-analysis-filters')) {
+    for (const node of document.querySelectorAll('.mc-page, .mc-container, .mc-panel, .mc-pitch-frame, .mc-pitch-events, .mc-statpitch-field, .mc-analysis-filters')) {
       const el = node as HTMLElement;
       if (el.scrollWidth - el.clientWidth > 1) scrollable.push(el.className.toString());
       const box = el.getBoundingClientRect();
@@ -137,42 +137,84 @@ test.describe('match analysis tab', () => {
     await expect(page.getByText('Start Delay')).toHaveCount(0);
   });
 
-  test('the summary says only what the numbers say: both values, no verdict', async ({ page }) => {
+  test('the numbers stand on the pitch by zone: boxes, centre circle, defensive thirds', async ({ page }) => {
     await openMatchCenter(page);
     await openTab(page, 'postmatch');
 
-    const shots = page.locator('.mc-analysis-fact', { has: page.getByText('على المرمى') });
-    await expect(shots).toContainText('٤');
-    await expect(shots).toContainText('مقابل');
-    await expect(shots).toContainText('٢');
-    await expect(page.locator('.mc-analysis-facts')).toContainText('الاستحواذ');
-    await expect(page.locator('.mc-analysis-fact').filter({ hasText: 'الاستحواذ' })).toContainText('٥٨%');
-    // نفس الصفوف في لوحة «مباشر» — المجموعة مشتركة، لا نسخة ثانية من العقد.
-    await expect(page.locator('.mc-analysis-fact').filter({ hasText: 'الاستحواذ' })).toContainText('٤٢%');
+    // القوائم النصية التقليدية أُلغيت: لا جداول مجموعات ولا قائمة «ملخص الأرقام».
+    await expect(page.locator('.mc-stat-groups, .mc-stat-compare, .mc-analysis-facts')).toHaveCount(0);
 
-    // دقة التمريرطرفٌ فيها غائب: لا «٨٤ مقابل ٠» في الملخص.
-    await expect(page.locator('.mc-analysis-facts')).not.toContainText('دقة التمرير');
-    // لكنها باقية في جدول الأرقام بوصف الغياب، لا بصفر.
-    const passing = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'دقة التمرير' });
-    await expect(passing).toContainText('٨٤');
-    await expect(passing).toContainText('لا رقم من المصدر');
+    const pitch = page.locator('.mc-analysis .mc-statpitch');
+    await expect(pitch).toBeVisible();
+    await expect(page.locator('.mc-analysis .mc-statpitch-zone')).toHaveCount(5);
 
-    await expect(page.locator('.mc-analysis .mc-stat-group-title')).toHaveText(['الاستحواذ والتمرير', 'التسديد', 'الدفاع والانضباط']);
-    const fouls = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'الأخطاء' });
-    await expect(fouls).toContainText('٩');
-    await expect(fouls).toContainText('١٤');
-    await expect(fouls).toContainText('الفارق ٥');
-    await expect(fouls).toContainText('الأعلى رقمياً: إيبسويتش تاون');
-    await expect(fouls.locator('.mc-stat-bar')).toHaveCount(2);
+    // الوسط: الاستحواذ ودقة التمرير في دائرة المنتصف، بقيمتي الفريقين.
+    const midfield = page.locator('.mc-statpitch-zone[data-zone="midfield"]');
+    await expect(midfield).toContainText('الاستحواذ');
+    await expect(midfield.locator('.mc-statpitch-row[data-stat-key="possessionPct"] .mc-statpitch-value[data-side="home"]')).toHaveText('٥٨%');
+    await expect(midfield.locator('.mc-statpitch-row[data-stat-key="possessionPct"] .mc-statpitch-value[data-side="away"]')).toHaveText('٤٢%');
+    // دقة التمرير طرفٌ فيها غائب: يبقى الغياب كلمة، لا «٨٤ مقابل ٠».
+    const passing = midfield.locator('.mc-statpitch-row[data-stat-key="passPct"]');
+    await expect(passing.locator('.mc-statpitch-value[data-side="home"]')).toHaveText('٨٤%');
+    await expect(passing.locator('[data-side="away"]')).toContainText('لا رقم');
+    await expect(passing.locator('.mc-statpitch-value[data-side="away"]')).toHaveCount(0);
+
+    // الهجوم والتسديد فوق منطقتي الجزاء — أرقام الفريقين معاً في كل منطقة.
+    for (const zone of ['homeAttack', 'awayAttack']) {
+      const box = page.locator(`.mc-statpitch-zone[data-zone="${zone}"]`);
+      await expect(box).toContainText('منطقة الجزاء');
+      await expect(box.locator('.mc-statpitch-row')).toHaveCount(3);
+      await expect(box.locator('.mc-statpitch-row[data-stat-key="shotsOnTarget"] .mc-statpitch-value[data-side="home"]')).toHaveText('٤');
+      await expect(box.locator('.mc-statpitch-row[data-stat-key="shotsOnTarget"] .mc-statpitch-value[data-side="away"]')).toHaveText('٢');
+      // الأهداف المتوقعة داخل الصندوق لا تصل من المصدر: تُسمّى في مكانها.
+      await expect(box.locator('.mc-statpitch-absent')).toContainText('xG');
+    }
+
+    // الدفاع والانضباط في الثلث الدفاعي لكل فريق.
+    const defence = page.locator('.mc-statpitch-zone[data-zone="homeDefense"]');
+    await expect(defence).toContainText('الثلث الدفاعي');
+    await expect(defence.locator('.mc-statpitch-row')).toHaveCount(6);
+    const fouls = defence.locator('.mc-statpitch-row[data-stat-key="foulsCommitted"]');
+    await expect(fouls.locator('.mc-statpitch-value[data-side="home"]')).toHaveText('٩');
+    await expect(fouls.locator('.mc-statpitch-value[data-side="away"]')).toHaveText('١٤');
+    await expect(fouls.locator('.mc-statpitch-bar')).toHaveCount(2);
+    await expect(defence.locator('.mc-statpitch-absent')).toContainText('التشتيتات');
+    // الصفر الحقيقي من المصدر يبقى صفرًا، والغياب لا يصير صفرًا.
+    const cards = defence.locator('.mc-statpitch-row[data-stat-key="redCards"]');
+    await expect(cards.locator('.mc-statpitch-value[data-side="away"]')).toHaveText('٠');
+    await expect(cards.locator('[data-side="home"]')).toContainText('لا رقم');
+
+    // كل قيمة تحمل اسم فريقها: المكان وحده لا يُقرأ، واللون وحده لا يكفي.
+    await expect(
+      midfield.locator('.mc-statpitch-row[data-stat-key="possessionPct"] .mc-statpitch-value[data-side="home"]'),
+    ).toHaveAttribute('aria-label', `الاستحواذ — ${HOME}: ٥٨%`);
 
     // لفظ الحكم ممنوع في الأرقام نفسها (سطر التوضيح يذكر المنع صراحةً، فلا يُفحص معه).
-    const verdicts = (await page.locator('.mc-analysis .mc-stat-compare, .mc-analysis .mc-analysis-fact').allTextContents()).join(' ');
+    const verdicts = (await page.locator('.mc-analysis .mc-statpitch-zone').allTextContents()).join(' ');
     expect(verdicts).not.toMatch(/أفضل|أفضلية|سيطرة|الأقوى|أخطر|لصالح/);
     await expect(page.locator('.mc-analysis')).toContainText('ليست أفضلية');
-    // الصفر الحقيقي من المصدر يبقى صفرًا، والغياب لا يصير صفرًا.
-    const cards = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'بطاقات حمراء' });
-    await expect(cards).toContainText('٠');
-    await expect(cards).toContainText('لا رقم من المصدر');
+
+    // «بعد المباراة»: الشاشة ثابتة على الأرقام الختامية — لا إعلان تحديث فيها.
+    await expect(page.locator('.mc-analysis .mc-statpitch-field')).toHaveAttribute('data-mode', 'final');
+    await expect(page.locator('.mc-analysis .mc-statpitch-screen')).toHaveAttribute('aria-live', 'off');
+    await expect(page.locator('.mc-analysis .mc-statpitch-caption')).toContainText('ختامية');
+  });
+
+  test('the live board is the same pitch, announced and unfrozen', async ({ page }) => {
+    await openMatchCenter(page, { overrides: { status: { type: { name: 'STATUS_SECOND_HALF', state: 'in', completed: false }, displayClock: '62:00' } } });
+    await openTab(page, 'live');
+
+    const live = page.locator('#mc-panel-live .mc-statpitch');
+    await expect(live).toBeVisible();
+    await expect(page.locator('#mc-panel-live .mc-stat-groups, #mc-panel-live .mc-stat-compare')).toHaveCount(0);
+    // نفس المناطق والعقد: لا نسخة ثانية من الأرقام في التبويب الآخر.
+    await expect(page.locator('#mc-panel-live .mc-statpitch-zone')).toHaveCount(5);
+    await expect(page.locator('#mc-panel-live .mc-statpitch-field')).toHaveAttribute('data-mode', 'live');
+    await expect(page.locator('#mc-panel-live .mc-statpitch-screen')).toHaveAttribute('aria-live', 'polite');
+    await expect(live.locator('.mc-statpitch-row[data-stat-key="possessionPct"] .mc-statpitch-value[data-side="home"]')).toHaveText('٥٨%');
+    // أول قراءة في الصفحة لا تُعلن تغيّراً لم يحدث: لا وميض ولا كلمة «تحدّث».
+    await expect(page.locator('#mc-panel-live .mc-statpitch-row--changed')).toHaveCount(0);
+    await expect(page.locator('#mc-panel-live .mc-statpitch-screen')).toContainText('لم يتغيّر رقم');
   });
 
   test('filters match source events by team, period and type; عرض الكل resets', async ({ page }) => {
@@ -273,7 +315,7 @@ test.describe('match analysis tab', () => {
     await openMatchCenter(page, { overrides: { statistics: null, events: [], lineups: null, ratings: null, h2h: [], form: null } });
     await expect(page.locator('.mc-analysis')).toHaveCount(0);
     await expect(page.locator('#mc-tab-live')).toHaveCount(0);
-    await expect(page.locator('.mc-analysis, .mc-stat-group')).toHaveCount(0);
+    await expect(page.locator('.mc-analysis, .mc-statpitch, .mc-stat-group')).toHaveCount(0);
     await expect(page.locator('#mc-tab-postmatch')).toBeVisible();
     await expect(page.locator('#mc-panel-postmatch')).toContainText('النتيجة النهائية');
     // شريط الدقيقة لا يَرسم أحداثًا ليست موجودة، ولا يَخترع ساعة.

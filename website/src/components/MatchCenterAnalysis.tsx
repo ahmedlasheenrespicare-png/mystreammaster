@@ -3,7 +3,6 @@ import {
   EVENT_FILTER_ALL,
   EVENT_FILTER_DEFAULTS,
   activeEventFilterCount,
-  analysisFacts,
   analysisIsAvailable,
   describeEvent,
   displayableStatistics,
@@ -21,7 +20,7 @@ import {
   type MatchEvent,
 } from '../lib/match-center.mjs';
 import EventIcon from './MatchCenterSymbols';
-import MatchCenterStatGroups from './MatchCenterStatGroups';
+import MatchCenterStatPitch from './MatchCenterStatPitch';
 import type { PanelProps } from './MatchCenterPanels';
 
 /* ==========================================================================
@@ -75,7 +74,6 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
   const awayName = cleanText(match.away.name) ?? cleanText(match.away.sourceName) ?? 'الضيف';
   const summary = useMemo(() => summarizeSourceEvents(events), [events]);
   const choices = useMemo(() => eventFilterOptions(events, { homeName, awayName }), [events, homeName, awayName]);
-  const facts = useMemo(() => analysisFacts(statistics), [statistics]);
   const visible = useMemo(() => filterEvents(events, filters), [events, filters]);
   const activeCount = activeEventFilterCount(filters);
 
@@ -97,25 +95,6 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
         {statusLabel ? ` — ${statusLabel}` : ''}
         {clock ? <> · <span className="mc-num" dir="ltr">{clock}</span></> : null}
       </p>
-
-      {facts.length > 0 && (
-        <section aria-labelledby="mc-analysis-facts-title">
-          <h3 id="mc-analysis-facts-title">ملخص الأرقام</h3>
-          <ul className="mc-analysis-facts">
-            {facts.map(row => (
-              <li className="mc-analysis-fact" key={row.key || row.label}>
-                <span className="mc-analysis-fact-label">{row.label}</span>
-                <span className="mc-analysis-fact-values">
-                  <bdi className="mc-num">{numberLabel(row.home as number)}{row.unitIsPercent ? '%' : row.unit ? ` ${row.unit}` : ''}</bdi>
-                  <span className="mc-analysis-fact-vs">مقابل</span>
-                  <bdi className="mc-num">{numberLabel(row.away as number)}{row.unitIsPercent ? '%' : row.unit ? ` ${row.unit}` : ''}</bdi>
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mc-note">لا يُشتق من هذه الأرقام حكم: لا «سيطرة»، ولا «فرصة أخطر»، ولا وصف تكتيكي.</p>
-        </section>
-      )}
 
       {events.length > 0 && (
         <section aria-labelledby="mc-analysis-events-title">
@@ -193,17 +172,17 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
         </section>
       )}
 
+      {/* لا قائمة نصية للأرقام في «بعد المباراة»: اللوحة نفسها المسقوطة على
+          الملعب في تبويب «مباشر»، مثبَّتة هنا على الأرقام الختامية. */}
       {statistics.length > 0 && (
-        <section aria-labelledby="mc-analysis-stats-title">
-          <h3 id="mc-analysis-stats-title">إحصائيات الفريقين</h3>
-          <MatchCenterStatGroups
-            statistics={statistics}
-            homeName={homeName}
-            awayName={awayName}
-            idPrefix="analysis"
-            headingLevel="h4"
-          />
-        </section>
+        <MatchCenterStatPitch
+          statistics={statistics}
+          homeName={homeName}
+          awayName={awayName}
+          mode="final"
+          idPrefix="analysis"
+          headingLevel="h3"
+        />
       )}
 
       {selected && (

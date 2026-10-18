@@ -42,6 +42,10 @@ test('events sit on the pitch as symbols by minute and team, with delays filtere
   });
 
   await page.goto(`/matches/الدوري-الإنجليزي/${MATCH}/`);
+  /* لا فحص قبل هبوط القراءة: الشريط لا يُرسم إلا بعد الترطيب، ومهلة الخمس
+     ثوان الافتراضية تُسقط الاختبار على آلة مثقلة وواجهةٌ سليمة — كما في
+     `match-center-analysis.spec.ts` الذي ينتظر علامة القراءة نفسها. */
+  await expect(page.locator('.mc-pitch-statusline')).toBeVisible({ timeout: 30_000 });
   const timeline = page.locator('.mc-pitch-events');
   await expect(timeline).toBeVisible();
   // The band lives inside the pitch frame, not in a separate list below it.

@@ -41,6 +41,9 @@ npm run preview     # معاينة جميع الصفحات على 0.0.0.0:3000
 | `website/scripts/legacy-shell.mjs` | رأس وتذييل الصفحات القديمة |
 | `website/scripts/publish-static.mjs` | نشر مخرجات البناء محلياً إلى جذر المستودع |
 | `website/src/lib/standings.mjs` | عقد جدول الترتيب لصفحات البطولات (تحقق، صياغة الحالات، رابط الوسيط) |
+| `website/src/components/MatchCenterStatPitch.tsx` | إحصائيات الفريقين مسقوطة على رسم الملعب في «مباشر» و«بعد المباراة» — رسم فقط |
+| `website/src/lib/match-center.mjs` | عقد مركز المباراة: الحالة والأحداث والأرقام، و`STAT_GROUPS` / `PITCH_ZONES` / `pitchStatZones` تقرّر أي رقم يقف في أي منطقة |
+| `website/docs/match-center-pitch-stats-2026-10-18.md` | توثيق مرحلة التمثيل البصري للإحصائيات على الملعب (التوزيع، التحديث الحيّ، الغياب المُسمّى، الاختبارات) |
 | `website/scripts/probe-standings.mjs` | مسبار بوابة إدخال بطولة إلى قائمة الوسيط — يُشغَّل محلياً ولا يعدّل أي ملف |
 | `website/scripts/fetch-standings-snapshot.mjs` | جلب لقطة الترتيب من المصدر الموثوق وحكمها قبل الكتابة (يُشغَّل في CI، لا يعدّل أي ملف داخل الحزمة) |
 | `website/docs/standings-probe-report.json` | تقرير مسبار موثّق: البطولات المؤهَّلة بمعرّفاتها وأعداد فرقها، وما فشل وسببه |

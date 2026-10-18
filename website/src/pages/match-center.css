@@ -282,36 +282,113 @@
 .mc-pitch-events-count { display: inline-block; min-width: 1.7em; margin-inline-start: 6px; padding: 1px 6px; border-radius: 999px; background: rgba(216, 255, 62, .16); color: #0b0b0f; font-family: var(--font-latin, ui-sans-serif); font-size: .62rem; font-weight: 900; }
 .mc-pitch-event-pinned { color: var(--mc-lime); font-weight: 900; }
 
-/* Grouped comparison numbers: possession & passing, shots, defence & discipline.
-   Both raw source values are always shown; the bars are a proportion of the
-   larger value in the row, never a verdict of "better". */
-.mc-stat-groups { display: grid; gap: 14px; margin-top: 4px; }
-.mc-stat-group { min-width: 0; padding: 12px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
-.mc-stat-group-title { margin: 0 0 9px; color: var(--mc-lime); font-size: .84rem; font-weight: 900; }
-.mc-stat-compares { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.mc-stat-compare { display: grid; gap: 5px; min-width: 0; padding: 10px 11px; border: 1px solid rgba(255, 255, 255, .07); border-radius: 12px; background: rgba(8, 11, 18, .38); }
-.mc-stat-compare-label { margin: 0; color: var(--mc-muted); font-size: .74rem; font-weight: 800; }
-.mc-stat-compare-values { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0; font-size: .76rem; }
-.mc-stat-side { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 5px; min-width: 0; }
-.mc-stat-side-name { color: var(--mc-muted); font-weight: 700; }
-.mc-stat-side[data-side="home"] .mc-stat-side-value { color: #cfc4ff; }
-.mc-stat-side[data-side="away"] .mc-stat-side-value { color: var(--mc-lime); }
-.mc-stat-side-value { font-weight: 900; white-space: nowrap; }
-.mc-stat-side-none { color: #ff9aa2; font-size: .68rem; font-weight: 700; }
-.mc-stat-compare-vs { color: var(--mc-muted); font-size: .68rem; }
-.mc-stat-compare-bars { display: grid; gap: 3px; }
-.mc-stat-bar { display: block; block-size: 6px; min-inline-size: 2px; border-radius: 999px; }
-.mc-stat-bar--home { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .55)); }
-.mc-stat-bar--away { background: linear-gradient(90deg, rgba(216, 255, 62, .92), rgba(216, 255, 62, .5)); }
-.mc-stat-compare-difference { margin: 0; color: var(--mc-muted); font-size: .68rem; }
-.mc-stat-compare[data-difference="equal"] .mc-stat-compare-difference { color: #dfe6f2; }
+/* Pitch-mapped team stats — the two teams' numbers dropped onto the pitch
+   instead of textual lists. Which number stands in which zone is decided in
+   `lib/match-center.mjs` (`pitchStatZones`), never here: this file only draws.
+   Positions are schematic zones (boxes, centre circle, defensive thirds), not
+   tracking coordinates — the source sends no x/y and no xG. */
+.mc-statpitch { display: grid; gap: 10px; margin-top: 6px; }
+.mc-statpitch-head { display: grid; gap: 4px; }
+.mc-statpitch-title { margin: 0; color: var(--mc-lime); font-size: .92rem; font-weight: 900; }
+.mc-statpitch-caption { margin: 0; color: var(--mc-muted); font-size: .72rem; line-height: 1.7; }
+.mc-statpitch-field {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  /* ارتفاع يكفي المنطقة الأعلى محتوى (الثلث الدفاعي بستة أرقام) في كل عرض
+     مقبول: الأرقام لا تُقصّ ولا يتراكب شريطا منطقتين، فالملعب يكبر بدل ذلك. */
+  height: max(470px, 56vw);
+  overflow: hidden;
+  border: 1px solid rgba(218, 255, 221, .38);
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .035) 0 8.333%, transparent 8.333% 16.666%),
+    linear-gradient(135deg, #155b3b, #0d482f 48%, #176342);
+  box-shadow: inset 0 0 44px rgba(0, 0, 0, .22);
+}
+.mc-statpitch-markings { position: absolute; inset: 9px; border: 1px solid rgba(239, 255, 241, .48); border-radius: 9px; pointer-events: none; }
+.mc-statpitch-halfway { position: absolute; inset-block: 0; inset-inline-start: 50%; width: 1px; background: rgba(239, 255, 241, .42); transform: translateX(50%); }
+.mc-statpitch-circle { position: absolute; inset-block-start: 50%; inset-inline-start: 50%; width: clamp(64px, 13vw, 104px); aspect-ratio: 1; border: 1px solid rgba(239, 255, 241, .44); border-radius: 50%; transform: translate(50%, -50%); }
+.mc-statpitch-spot { position: absolute; inset-block-start: 50%; inset-inline-start: 50%; width: 5px; height: 5px; border-radius: 50%; background: rgba(239, 255, 241, .7); transform: translate(50%, -50%); }
+.mc-statpitch-box { position: absolute; inset-block-start: 27%; width: 12%; height: 46%; border: 1px solid rgba(239, 255, 241, .38); }
+.mc-statpitch-box--home { inset-inline-start: 0; border-inline-start: 0; }
+.mc-statpitch-box--away { inset-inline-end: 0; border-inline-end: 0; }
+.mc-statpitch-goal { position: absolute; inset-block-start: 40%; width: 3%; height: 20%; border: 1px solid rgba(239, 255, 241, .44); }
+.mc-statpitch-goal--home { inset-inline-start: -1px; border-inline-start: 0; }
+.mc-statpitch-goal--away { inset-inline-end: -1px; border-inline-end: 0; }
 
-/* Analysis tab: facts, filters and the event list. */
-.mc-analysis-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
-.mc-analysis-fact { display: grid; gap: 3px; min-width: 0; padding: 9px 11px; border: 1px solid var(--mc-line); border-radius: 11px; background: rgba(255, 255, 255, .03); }
-.mc-analysis-fact-label { color: var(--mc-muted); font-size: .72rem; font-weight: 800; }
-.mc-analysis-fact-values { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: .8rem; font-weight: 900; }
-.mc-analysis-fact-vs { color: var(--mc-muted); font-size: .68rem; font-weight: 700; }
+/* منطقة واحدة لكل مجموعة أرقام: العنوان ثم صفوف القيم. الوضع منطقي (inline-start
+   / inline-end) لا translate بنسبة: الشريط ملتصق بحدّ الملعب من جهة منطقته، فلا
+   يخرج نصفُه خارج الأرضية ولا يُقصّ رقم، ودائرة المنتصف وحدها المتمركزة. */
+.mc-statpitch-zone {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+  width: 40%;
+  max-width: 330px;
+  padding: 6px 7px 7px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 12px;
+  background: rgba(6, 14, 11, .84);
+  backdrop-filter: blur(3px);
+}
+.mc-statpitch-zone--home { border-color: rgba(207, 196, 255, .42); }
+.mc-statpitch-zone--away { border-color: rgba(216, 255, 62, .34); }
+.mc-statpitch-zone--empty { border-style: dashed; background: rgba(6, 14, 11, .62); }
+/* الجهة من نهاية الملعب لا من نقطة: المضيف عند نهايته (يمين الشاشة في RTL،
+   حيث مرماه)، والضيف عند نهايته، والوسط بين الخطّين. الالتصاق بالحدّ يجعل
+   الشريط داخل الأرضية في كل عرض — لا `translate` بنسبة تُخرجه ولا رقم يُقصّ.
+   منطقة الهجوم فوق منطقة جزاء الفريق نفسه، ومنطقة الدفاع في ثلثه. */
+.mc-statpitch-zone[data-zone="homeDefense"], .mc-statpitch-zone[data-zone="homeAttack"] { inset-inline-start: 0; }
+.mc-statpitch-zone[data-zone="awayDefense"], .mc-statpitch-zone[data-zone="awayAttack"] { inset-inline-end: 0; }
+.mc-statpitch-zone[data-zone="midfield"] { inset-inline: 0; width: auto; max-width: 300px; margin-inline: auto; }
+.mc-statpitch-zone-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; color: #eaf3e6; font-size: .62rem; font-weight: 900; line-height: 1.4; }
+.mc-statpitch-zone-owner { color: var(--mc-lime); font-weight: 800; }
+.mc-statpitch-rows { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.mc-statpitch-row { display: grid; gap: 1px; min-width: 0; padding: 3px 5px; border: 1px solid rgba(255, 255, 255, .07); border-radius: 8px; background: rgba(8, 11, 18, .5); }
+.mc-statpitch-row--changed { border-color: rgba(216, 255, 62, .6); animation: mc-stat-pulse 1600ms ease-out 1; }
+.mc-statpitch-label { color: var(--mc-muted); font-size: .62rem; font-weight: 800; line-height: 1.35; }
+.mc-statpitch-values { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 1px 6px; font-size: .74rem; }
+.mc-statpitch-value { font-weight: 900; white-space: nowrap; }
+.mc-statpitch-value[data-side="home"] { color: #cfc4ff; }
+.mc-statpitch-value[data-side="away"] { color: var(--mc-lime); }
+.mc-statpitch-none { color: #ff9aa2; font-size: .56rem; font-weight: 700; }
+.mc-statpitch-vs { color: rgba(255, 255, 255, .4); font-size: .58rem; }
+.mc-statpitch-bars { display: grid; gap: 2px; }
+.mc-statpitch-bar { display: block; block-size: 4px; min-inline-size: 2px; border-radius: 999px; }
+.mc-statpitch-bar--home { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .5)); }
+.mc-statpitch-bar--away { background: linear-gradient(90deg, rgba(216, 255, 62, .92), rgba(216, 255, 62, .45)); }
+.mc-statpitch-empty { margin: 0; color: var(--mc-muted); font-size: .6rem; line-height: 1.6; }
+.mc-statpitch-absent { margin: 0; padding-top: 3px; border-top: 1px dashed rgba(255, 255, 255, .16); color: #cdd6e4; font-size: .56rem; line-height: 1.6; }
+.mc-statpitch-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 0; padding: 0; list-style: none; position: absolute; inset-block-end: 4px; inset-inline: 0; color: rgba(255, 255, 255, .8); font-size: .56rem; font-weight: 800; }
+.mc-statpitch-legend li { display: inline-flex; align-items: center; gap: 5px; }
+.mc-statpitch-legend li::before { content: ""; width: 11px; height: 4px; border-radius: 999px; }
+.mc-statpitch-legend li[data-side="home"]::before { background: rgba(124, 92, 255, .95); }
+.mc-statpitch-legend li[data-side="away"]::before { background: rgba(216, 255, 62, .9); }
+/* إعلان التحديث: مرئي قصداً — الزائر يرى أن الأرقام تحرّكت فعلاً أم لا، ولا
+   يعتمد على وميض قد يفوته. */
+.mc-statpitch-screen { margin: 0; color: var(--mc-muted); font-size: .66rem; font-weight: 700; }
+.mc-statpitch-field[data-mode="final"] { filter: saturate(.92); }
+
+@media (max-width: 720px) {
+  .mc-statpitch-zone-title { font-size: .58rem; }
+  .mc-statpitch-label { font-size: .56rem; }
+  .mc-statpitch-values { font-size: .66rem; }
+  .mc-statpitch-absent { font-size: .52rem; }
+  .mc-statpitch-legend { font-size: .52rem; }
+}
+@media (max-width: 420px) {
+  .mc-statpitch-zone { width: 44%; }
+  .mc-statpitch-none { font-size: .52rem; }
+}
+
+@keyframes mc-stat-pulse {
+  from { background: rgba(216, 255, 62, .22); }
+  to { background: rgba(8, 11, 18, .5); }
+}
+
+/* Analysis tab: tallies, filters and the event list. */
 .mc-analysis-tally { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 12px 0 0; color: var(--mc-muted); font-size: .72rem; }
 .mc-analysis-tally b { color: var(--mc-text); }
 .mc-analysis-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 9px; margin-top: 12px; padding: 11px; border: 1px solid var(--mc-line); border-radius: 13px; background: rgba(255, 255, 255, .02); }
@@ -389,7 +466,6 @@
   .mc-tab { padding: 8px 2px; font-size: .65rem; }
   .mc-panel { padding: 15px 11px; }
   .mc-comparison-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
-  .mc-stat-compare { grid-template-columns: minmax(0, 1fr); }
 }
 /* LTR is not used by the page today, but the band should not sit half a marker
    off its minute if it is ever reused without `dir="rtl"`. */
@@ -405,12 +481,9 @@
   .mc-pitch-status[data-code="live"]::before { animation: none; opacity: 1; transform: none; }
 }
 
-/* Narrow screens: grouped comparisons stay single-column. */
+/* Narrow screens: event rows tighten; the pitch zones widen (see above). */
 @media (max-width: 420px) {
-  .mc-stat-compare { padding: 9px 9px; }
-  .mc-stat-compare-values { gap: 3px 8px; font-size: .74rem; }
   .mc-analysis-event-button { grid-template-columns: 24px 40px minmax(0, 1fr); gap: 7px; padding: 8px 9px; }
-  .mc-analysis-fact-values { font-size: .76rem; }
 }
 
 /* Print / Save as PDF from the browser — no dependency, no second document.
@@ -441,12 +514,18 @@
     .mc-pitch-lane, .mc-pitch-axis { color: #101218; }
     .mc-pitch-tick b { color: #4a5262; }
     .mc-pitch-icon, .mc-analysis-event-symbol { filter: grayscale(.2); }
-    .mc-match-facts > div, .mc-preview-facts > div, .mc-form-summary > div, .mc-stat-group, .mc-stat-compare,
-    .mc-analysis-fact, .mc-history-item, .mc-event, .mc-analysis-detail-values > div,
+    .mc-match-facts > div, .mc-preview-facts > div, .mc-form-summary > div, .mc-statpitch-zone, .mc-statpitch-row,
+    .mc-history-item, .mc-event, .mc-analysis-detail-values > div,
     .mc-analysis-absent li { background: #fff; border-color: #c9ced8; }
-    .mc-analysis-detail, .mc-stat-side[data-side="away"] .mc-stat-side-value { color: #101218; border-color: #1f6b2e; }
-    .mc-stat-bar--home { background: #3b2a7a; }
-    .mc-stat-bar--away { background: #1f6b2e; }
+    /* الملعب المسقوطة عليه الأرقام يُطبع فاتحاً، ومواضع المناطق تبقى كما على الشاشة. */
+    .mc-statpitch-field { height: auto; min-height: 300px; border-color: #a9b1c0; background: #f3f5f8; box-shadow: none; }
+    .mc-statpitch-markings { border-color: #a9b1c0; }
+    .mc-statpitch-zone { backdrop-filter: none; }
+    .mc-statpitch-zone-title, .mc-statpitch-zone-owner, .mc-statpitch-label, .mc-statpitch-screen, .mc-statpitch-legend { color: #101218; }
+    .mc-statpitch-absent { color: #4a5262; }
+    .mc-analysis-detail, .mc-statpitch-value { color: #101218; border-color: #1f6b2e; }
+    .mc-statpitch-bar--home { background: #3b2a7a; }
+    .mc-statpitch-bar--away { background: #1f6b2e; }
     .mc-analysis-event { break-inside: avoid; }
     .mc-warning, .mc-simulated { border-style: dashed; border-color: #8a1220; background: #fff; color: #8a1220; }
     .mc-lineup-event-detail { display: none !important; }

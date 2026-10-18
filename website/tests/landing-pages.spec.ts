@@ -328,8 +328,8 @@ test('attack & defence rates card: analyst summary uses league-wide totals, samp
   );
   expect(benchGeometry.every(g => g.fillValid && g.avgValid && g.trackVisible)).toBe(true);
 
-  /* لا أعمدة أرشيف محلية دون أرشيف مخزَّن لهذه البطولة في حزمة البناء الحالية */
-  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(0);
+  /* الأرشيف المحلي لـ eng.1 موجود (49 مباراة) → عمود الشباك النظيفة يظهر لكل فريق */
+  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(20);
 });
 
 test('attack & defence rates card updates reactively when /standings.php returns fresh standings', async ({ page }) => {

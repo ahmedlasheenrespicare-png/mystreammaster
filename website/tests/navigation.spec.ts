@@ -63,7 +63,7 @@ test('legacy mobile menu opens the current page group', async ({ page }) => {
   const menu = page.locator('#sm-mobile-nav');
   await expect(menu).toBeVisible();
   await expect(menu.locator('details[data-group="help"]')).toHaveAttribute('open', '');
-  await menu.locator('details[data-group="watch"] summary').click();
+  await menu.locator('details[data-group="matches"] summary').click();
   await menu.getByRole('link', { name: 'مكتبة القنوات' }).click();
   await expect(page).toHaveURL(/\/channels\/$/);
 });

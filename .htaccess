@@ -76,6 +76,25 @@ RewriteRule ^player/(.*)$ embed.php?u=player&p=/$1 [L,QSA]
 #      الوصول المباشر إليها (403) حتى لا يُخدَم أي محتوى قديم من lib/.
 RewriteRule ^lib(/|$) - [F,L]
 
+# 3.3) تحويلات 301 لهيكلة الموقع الجديدة (أكتوبر 2026)
+#      تحليل مباريات UCL → مركز المباراة (فقط إذا لم يوجد ملف/مجلد فعلي)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^match-analysis/?$ /match-center/ [R=301,L]
+#      صفحات تحليل UCL القديمة → مركز المباراة
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^roma-real-madrid(/.*)?$ /matches/%D8%AF%D9%88%D8%B1%D9%8A-%D8%A3%D8%A8%D8%B7%D8%A7%D9%84-%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7/roma-real-madrid/ [R=301,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^manchester-city-psg(/.*)?$ /matches/%D8%AF%D9%88%D8%B1%D9%8A-%D8%A3%D8%A8%D8%B7%D8%A7%D9%84-%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7/manchester-city-psg/ [R=301,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^manchester-united-atletico(/.*)?$ /matches/%D8%AF%D9%88%D8%B1%D9%8A-%D8%A3%D8%A8%D8%B7%D8%A7%D9%84-%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7/manchester-united-atletico/ [R=301,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^galatasaray-barcelona(/.*)?$ /matches/%D8%AF%D9%88%D8%B1%D9%8A-%D8%A3%D8%A8%D8%B7%D8%A7%D9%84-%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7/galatasaray-barcelona/ [R=301,L]
+
 # لا تعيد توجيه الملفات الموجودة
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

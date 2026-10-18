@@ -335,6 +335,7 @@ export function mergeReads(current, results, now) {
 export const TABS = [
   { id: 'prematch', label: 'قبل المباراة' },
   { id: 'live', label: 'مباشر' },
+  { id: 'analysis', label: 'التحليل' },
   { id: 'postmatch', label: 'بعد المباراة' },
 ];
 
@@ -1223,61 +1224,11 @@ export function headToHeadFor(match, snapshot, status) {
       completed: true,
       home: filledText(match?.home?.name) ?? filledText(match?.home?.sourceName) ?? '',
       away: filledText(match?.away?.name) ?? filledText(match?.away?.sourceName) ?? '',
-      homeTeamId: match?.home?.externalIds?.espn ?? null,
-      awayTeamId: match?.away?.externalIds?.espn ?? null,
       homeGoals: score.home,
       awayGoals: score.away,
     }
     : null;
   return displayableHeadToHead(mergeH2h(snapshot?.h2h ?? [], self, 3));
-}
-
-/**
- * مجمل المواجهات من الصفوف المعروضة نفسها: فوز المضيف / تعادل / فوز الضيف.
- * نسبة الفوز بمعرّف فريق المصدر إن حمله الصف وطرفُ المباراة، وإلا بمطابقة
- * الاسم كما يُعرض (الاسم العربي أو اسم المصدر). صفٌّ واحد لا يُنسب لأحدهما
- * يُسقط السطر كله (`null`) — لا تخمين ولا «أخرى».
- *
- * `home`/`away`: نص الاسم، أو طرف المباراة `{ name, sourceName, shortName, externalIds }`.
- */
-export function headToHeadSummary(entries, home, away) {
-  const rows = displayableHeadToHead(entries);
-  const sides = [h2hSide(home), h2hSide(away)];
-  if (rows.length === 0 || sides.some(side => side === null)) return null;
-  if (sides[0].id !== null && sides[0].id === sides[1].id) return null;
-  if (sides[0].names.some(name => sides[1].names.includes(name))) return null;
-  const summary = { homeWins: 0, draws: 0, awayWins: 0, total: rows.length };
-  for (const entry of rows) {
-    const hg = finiteNumber(entry.homeGoals);
-    const ag = finiteNumber(entry.awayGoals);
-    if (hg === null || ag === null) return null;
-    if (hg === ag) { summary.draws += 1; continue; }
-    const winnerId = firstString(hg > ag ? entry.homeTeamId : entry.awayTeamId);
-    const winnerName = normalizeName(hg > ag ? entry.home : entry.away);
-    const index = sides.findIndex(side => (winnerId !== null && side.id !== null)
-      ? side.id === winnerId
-      : (winnerName !== null && side.names.includes(winnerName)));
-    if (index === 0) summary.homeWins += 1;
-    else if (index === 1) summary.awayWins += 1;
-    else return null;
-  }
-  return summary;
-}
-
-function normalizeName(value) {
-  const text = filledText(value);
-  return text ? text.replace(/\s+/g, ' ').toLowerCase() : null;
-}
-
-function h2hSide(side) {
-  if (typeof side === 'string') {
-    const name = normalizeName(side);
-    return name ? { id: null, names: [name] } : null;
-  }
-  if (!side || typeof side !== 'object') return null;
-  const names = [side.name, side.sourceName, side.shortName].map(normalizeName).filter(Boolean);
-  const id = firstString(side.externalIds?.espn);
-  return names.length > 0 || id !== null ? { id, names } : null;
 }
 
 /** معطيات المقارنة الموسمية كما تصل، محصنة ضد صف المقارنة الناقصة. */
@@ -1293,16 +1244,13 @@ export function comparisonFor(snapshot) {
 /* التجميع بـ`key` الذي يرسله وسيط الموقع، لا بالتسمية العربية: التسمية قد
    تتغيّر في الطبقة التالية، والمفتاح هو ما يربط الرقم بمصدره. */
 export const STAT_GROUPS = [
-  { id: 'possession-passing', label: 'الاستحواذ والتمرير', keys: ['possessionPct', 'totalPasses', 'accuratePasses', 'passPct'] },
-  { id: 'shots', label: 'التسديد', keys: ['totalShots', 'shotsOnTarget', 'blockedShots', 'shotPct', 'penaltyKickShots', 'penaltyKickGoals'] },
+  { id: 'possession-passing', label: 'الاستحواذ والتمرير', keys: ['possessionPct', 'passPct'] },
+  { id: 'shots', label: 'التسديد', keys: ['totalShots', 'shotsOnTarget', 'blockedShots'] },
   {
-    id: 'build-up',
-    label: 'بناء الهجمة',
-    keys: ['totalCrosses', 'accurateCrosses', 'crossPct', 'totalLongBalls', 'accurateLongBalls', 'longballPct', 'wonCorners'],
+    id: 'defense-discipline',
+    label: 'الدفاع والانضباط',
+    keys: ['saves', 'wonCorners', 'foulsCommitted', 'offsides', 'yellowCards', 'redCards'],
   },
-  { id: 'defense', label: 'الدفاع', keys: ['totalTackles', 'effectiveTackles', 'tacklePct', 'interceptions', 'totalClearance', 'effectiveClearance'] },
-  { id: 'goalkeeping', label: 'حراسة المرمى', keys: ['saves'] },
-  { id: 'discipline', label: 'الانضباط', keys: ['foulsCommitted', 'offsides', 'yellowCards', 'redCards'] },
 ];
 
 /* كل مفتاح تعرفه الطبقة مُجمَّع؛ ما يرسله مصدر لاحقاً بلا تعريف عندنا لا
@@ -1374,37 +1322,6 @@ export function groupStatistics(statistics) {
     groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows: extra.map(compareStatRow) });
   }
   return groups;
-}
-
-/**
- * شريط الاستحواذ البارز: يُرسم فقط إذا وصلت نسبتا الطرفين رقميتين معاً.
- * النسبة المكتوبة رقم المصدر كما هو، وعرض الشريط منسوب إلى مجموعهما — حرس
- * بصري وحده إن لم يبلغ المجموع 100 بسبب التقريب، لا تعديل على الرقم.
- */
-export function possessionSplit(statistics) {
-  const row = displayableStatistics(statistics).find(stat => stat.key === 'possessionPct');
-  const home = finiteNumber(row?.home);
-  const away = finiteNumber(row?.away);
-  if (home === null || away === null || home < 0 || away < 0 || home + away <= 0) return null;
-  const total = home + away;
-  return { home, away, homeShare: home / total, awayShare: away / total };
-}
-
-/* عدّادات بطاقة الفريق على الملعب: من جدول الإحصائيات نفسه لا من الأحداث،
-   حتى يبقى الرقم على الملعب هو الرقم في الجدول. الحبّة بلا قيمة تُحذف. */
-export const PITCH_COUNTERS = [
-  { id: 'yellow', key: 'yellowCards', label: 'صفراء' },
-  { id: 'red', key: 'redCards', label: 'حمراء' },
-  { id: 'corners', key: 'wonCorners', label: 'ركنيات' },
-];
-
-export function pitchCounters(statistics, side) {
-  if (side !== 'home' && side !== 'away') return [];
-  const rows = displayableStatistics(statistics);
-  return PITCH_COUNTERS.flatMap(({ id, key, label }) => {
-    const value = finiteNumber(rows.find(stat => stat.key === key)?.[side]);
-    return value === null ? [] : [{ id, label, value }];
-  });
 }
 
 /**
@@ -1555,6 +1472,11 @@ export function analysisIsAvailable(snapshot) {
     || displayableStatistics(snapshot?.statistics).length > 0;
 }
 
+/** هل للمباراة تحليل مكتوب (من match-analysis.json)؟ */
+export function hasMatchAnalysis(match) {
+  return typeof match?.analysisSlug === 'string' && match.analysisSlug.trim() !== '';
+}
+
 /* ───────────────────────── ترتيب التبويبات وآليته ───────────────────────── */
 
 export function hasPreviewFacts(match, snapshot, status) {
@@ -1582,6 +1504,7 @@ export function computeAvailableTabs({ match, snapshot, status }) {
   if ((status?.phase === 'pre' || status?.phase === 'live')
     && (canShowKickoff(status) && Number.isFinite(Date.parse(match?.kickoffUtc))
       || snapshot && (isValidScore(snapshot.score) || analysisIsAvailable(snapshot)))) tabs.push('live');
+  if (hasMatchAnalysis(match)) tabs.push('analysis');
   if (status?.phase === 'post' && (analysisIsAvailable(snapshot)
     || isResultOfficial(status, snapshot?.score ?? null))) tabs.push('postmatch');
   return tabs;
@@ -1662,80 +1585,4 @@ export function lineupPitchSides({ match, snapshot }) {
     });
   }
   return result;
-}
-
-/* ─────────────── المعاينة: حقائقها وموضعها (الملعب أو اللوحة) ─────────────── */
-
-/**
- * حقائق المباراة الست بمصدر واحد للملعب واللوحة معاً: المسابقة، الموسم،
- * الجولة، الملعب، موعد القاهرة، موعد مكة — بما وصل فقط، والموعد التالف يُحذف
- * بدل قيمة بديلة.
- */
-export function previewFacts(match, snapshot, status) {
-  const competition = filledText(match?.competitionName);
-  const season = filledText(match?.season);
-  const round = typeof match?.round === 'number' && Number.isFinite(match.round)
-    ? String(match.round)
-    : filledText(match?.round);
-  const venue = snapshot ? filledText(snapshot.venue) : filledText(match?.venue);
-  let cairo = null;
-  let mecca = null;
-  if (canShowKickoff(status) && typeof match?.kickoffUtc === 'string' && Number.isFinite(Date.parse(match.kickoffUtc))) {
-    try {
-      const time = kickoffLabel(match.kickoffUtc, 'Africa/Cairo');
-      let day = null;
-      try {
-        day = formatInZone(match.kickoffUtc, 'Africa/Cairo', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      } catch { day = null; }
-      cairo = `${time}${day ? ` · ${day}` : ''}`;
-      mecca = kickoffLabel(match.kickoffUtc, 'Asia/Riyadh');
-    } catch {
-      cairo = null;
-      mecca = null;
-    }
-  }
-  return [
-    ['competition', 'المسابقة', competition],
-    ['season', 'الموسم', season],
-    ['round', 'الجولة', round],
-    ['venue', 'الملعب', venue],
-    ['cairo', 'موعد القاهرة', cairo],
-    ['mecca', 'موعد مكة', mecca],
-  ].flatMap(([id, label, value]) => (value ? [{ id, label, value }] : []));
-}
-
-/**
- * للمحتوى بيت واحد في كل لحظة: المعاينة على الملعب ما دام الملعب لا يرسم
- * تشكيلة والمباراة لم تنطلق بعد، وتعود إلى لوحة «قبل المباراة» حين تحل
- * التشكيلة محلها على الملعب — أو حين تنطلق المباراة فيصير الملعب للأحداث
- * والنتيجة (مباشر/بعد المباراة/حالة نهائية) ولو لم تصل تشكيلة قط.
- * المرجع للتشكيلة هو ما يُرسم فعلاً (`lineupPitchSides`)، لا «مؤكدة» نظرياً:
- * تشكيلة تعذّر رسمها لا تُخلي الملعب من المعاينة قبل الانطلاق.
- * الحالة قبل أول قراءة (`status` غائبة أو `unknown`) تُعامل كما قبل المباراة.
- */
-export function previewPlacement({ match, snapshot, status = null }) {
-  if (status?.phase && status.phase !== 'pre') return 'panel';
-  return lineupPitchSides({ match, snapshot }).length > 0 ? 'panel' : 'pitch';
-}
-
-/* ─────────────── أسماء المراكز بالعربية (رموز المصدر الصريحة فقط) ─────────────── */
-
-const POSITION_LABELS_AR = new Map([
-  ['G', 'حارس المرمى'],
-  ['CD', 'قلب دفاع'], ['CD-L', 'قلب دفاع أيسر'], ['CD-R', 'قلب دفاع أيمن'],
-  ['LB', 'ظهير أيسر'], ['RB', 'ظهير أيمن'],
-  ['DM', 'وسط دفاعي'], ['DM-L', 'وسط دفاعي أيسر'], ['DM-R', 'وسط دفاعي أيمن'],
-  ['CM', 'وسط'], ['CM-L', 'وسط أيسر'], ['CM-R', 'وسط أيمن'],
-  ['LM', 'جناح أيسر'], ['RM', 'جناح أيمن'],
-  ['AM', 'وسط هجومي'], ['AM-L', 'وسط هجومي أيسر'], ['AM-R', 'وسط هجومي أيمن'],
-  ['F', 'مهاجم'], ['CF', 'مهاجم'], ['CF-L', 'مهاجم أيسر'], ['CF-R', 'مهاجم أيمن'],
-]);
-
-/** كل رموز المراكز التي يوزّعها الملعب — للاختبار: لكل رمز تسمية. */
-export const PITCH_POSITION_CODES = [...PITCH_ROLES.values()].flat();
-
-/** تسمية عربية لرمز مركز المصدر، أو `null` لرمز غير معروف فيبقى الرمز وحده. */
-export function positionLabelAr(code) {
-  const key = filledText(code);
-  return key ? POSITION_LABELS_AR.get(key.toUpperCase()) ?? null : null;
 }

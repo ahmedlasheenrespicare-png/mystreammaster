@@ -144,9 +144,10 @@ test('matches link exists in both modern and retained page navigation, with corr
   await mockSource(page);
   await page.goto('/matches/');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://streammasterstore.com/matches/');
-  await page.getByRole('button', { name: 'القنوات والبث', exact: true }).click();
+  await page.getByRole('button', { name: 'المباريات', exact: true }).click();
   await expect(page.locator('header a[href="/matches/"]').first()).toContainText('مواعيد المباريات');
   await page.goto('/predictions/');
+  await page.getByRole('button', { name: 'المباريات', exact: true }).click();
   await expect(page.locator('header a[href="/matches/"]').first()).toContainText('مواعيد المباريات');
 });
 

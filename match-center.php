@@ -1130,16 +1130,22 @@ function mc_num(mixed $value): int|float|null {
 }
 
 /**
+<<<<<<< HEAD
  * إحصائيات الفريقين من `summary.boxscore.teams` — 28 اسماً مؤكداً بمسبار
  * P1 (`website/docs/espn-summary-probe.json → results[].rawStatNames`)، وتُقرأ
  * كلها بأسماء المصدر نفسها وتعريفها؛ الترتيب هنا للقراءة، وترتيب العرض
  * تقرّره `STAT_GROUPS` في الواجهة.
+=======
+ * إحصائيات الفريقين من `summary.boxscore.teams` — 29 اسماً مؤكداً بمسبار
+ * P1، يُعرض منها ما طلبه نطاق مركز المباراة بأسماء المصدر نفسها وتعريفها.
+>>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
  * لا «خارج المرمى» مشتقة: اسمها غير موجود في القائمة، وطرحها من الكلية
  * ونسبة الاعتراض يفترض هوية حسابية غير موثقة فلا تُفترض.
  *
  * @return array<int,array{key:string,label:string,unit:string,home:int|float|null,away:int|float|null}>|null
  */
 const MC_STAT_LABELS = [
+<<<<<<< HEAD
     /* الاستحواذ والتمرير */
     'possessionPct'      => ['الاستحواذ', '%'],
     'totalPasses'        => ['إجمالي التمريرات', ''],
@@ -1197,6 +1203,21 @@ function mc_pct(mixed $value): int|float|null {
     return ($number < 0 || $number > 100) ? null : $number;
 }
 
+=======
+    'possessionPct'  => ['الاستحواذ', '%'],
+    'totalShots'     => ['التسديدات', ''],
+    'shotsOnTarget'  => ['على المرمى', ''],
+    'blockedShots'   => ['تسديدات تم اعتراضها', ''],
+    'wonCorners'     => ['الركنيات', ''],
+    'foulsCommitted' => ['الأخطاء', ''],
+    'offsides'       => ['التسلل', ''],
+    'passPct'        => ['دقة التمرير', '%'],
+    'saves'          => ['التصديات', ''],
+    'yellowCards'    => ['بطاقات صفراء', ''],
+    'redCards'       => ['بطاقات حمراء', ''],
+];
+
+>>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 function mc_read_statistics(array $summary, array $competitors): ?array {
     $teams = $summary['boxscore']['teams'] ?? null;
     if (!is_array($teams)) {
@@ -1230,8 +1251,12 @@ function mc_read_statistics(array $summary, array $competitors): ?array {
             if ($name === null || !isset(MC_STAT_LABELS[$name])) {
                 continue;
             }
+<<<<<<< HEAD
             $raw = $stat['value'] ?? ($stat['displayValue'] ?? null);
             $bySide[$side][$name] = MC_STAT_LABELS[$name][1] === '%' ? mc_pct($raw) : mc_num($raw);
+=======
+            $bySide[$side][$name] = mc_num($stat['value'] ?? ($stat['displayValue'] ?? null));
+>>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
         }
     }
 
@@ -1339,9 +1364,13 @@ function mc_read_h2h(array $summary): array {
             if (!is_array($competitor)) {
                 continue;
             }
+<<<<<<< HEAD
             $teamId = $competitor['team']['id'] ?? null;
             $entry = [
                 'id'    => is_int($teamId) ? (string) $teamId : mc_str($teamId),
+=======
+            $entry = [
+>>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
                 'name'  => mc_str($competitor['team']['displayName'] ?? null),
                 'score' => mc_int($competitor['score'] ?? null),
             ];
@@ -1368,9 +1397,12 @@ function mc_read_h2h(array $summary): array {
             'completed'   => $typeCompleted || ($item['status'] ?? '') === 'post',
             'home'        => $home['name'],
             'away'        => $away['name'],
+<<<<<<< HEAD
             /* معرّفا فريقي المصدر — بهما يُنسب الفوز في سطر المجمل لا بالاسم المعروض. */
             'homeTeamId'  => $home['id'],
             'awayTeamId'  => $away['id'],
+=======
+>>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
             'homeGoals'   => $home['score'],
             'awayGoals'   => $away['score'],
         ];

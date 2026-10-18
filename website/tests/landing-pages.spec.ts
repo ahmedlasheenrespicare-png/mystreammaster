@@ -135,9 +135,9 @@ test('FAQ items are keyboard operable', async ({ page }) => {
 test('header dropdown navigates to Arabic-slug landing pages (SPA + direct)', async ({ page }) => {
   await page.goto('/');
   const nav = page.locator('header nav').first();
-  const trigger = nav.getByRole('button', { name: 'البطولات والمنتخبات', exact: true });
+  const trigger = nav.getByRole('button', { name: 'المباريات', exact: true });
   await trigger.click();
-  await page.locator('#nav-panel-tournaments').getByRole('link', { name: /مباريات الدوري السعودي/ }).click();
+  await page.locator('#nav-panel-matches').getByRole('link', { name: /مباريات الدوري السعودي/ }).click();
   await expect(page).toHaveURL(/\/matches\//);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('مباريات الدوري السعودي');
 });
@@ -328,8 +328,8 @@ test('attack & defence rates card: analyst summary uses league-wide totals, samp
   );
   expect(benchGeometry.every(g => g.fillValid && g.avgValid && g.trackVisible)).toBe(true);
 
-  /* لا أعمدة أرشيف محلية دون أرشيف مخزَّن لهذه البطولة في حزمة البناء الحالية */
-  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(0);
+  /* الأرشيف المحلي لـ eng.1 موجود (49 مباراة) → عمود الشباك النظيفة يظهر لكل فريق */
+  await expect(ratesCard.locator('[data-rate-clean-sheets]')).toHaveCount(20);
 });
 
 test('attack & defence rates card updates reactively when /standings.php returns fresh standings', async ({ page }) => {

@@ -8,7 +8,7 @@ export type MatchCode =
 
 export type MatchPhase = 'pre' | 'live' | 'post' | 'terminal';
 
-export type TabId = 'prematch' | 'live' | 'postmatch';
+export type TabId = 'prematch' | 'live' | 'analysis' | 'postmatch';
 
 export type ProviderId = 'espn' | 'apifootball' | 'snapshot' | 'unknown';
 
@@ -92,9 +92,6 @@ export interface H2hEntry {
   completed: boolean;
   home: string;
   away: string;
-  /** معرّفا فريقي المصدر إن أرسلهما — بهما يُنسب الفوز في سطر المجمل. */
-  homeTeamId?: string | number | null;
-  awayTeamId?: string | number | null;
   homeGoals: number | null;
   awayGoals: number | null;
 }
@@ -310,6 +307,7 @@ export function headToHeadFor(
 ): H2hEntry[];
 export function comparisonFor(snapshot: MatchSnapshot | null): Comparison;
 export function analysisIsAvailable(snapshot: MatchSnapshot | null): boolean;
+export function hasMatchAnalysis(match: MatchDefinition | null | undefined): boolean;
 export function hasPreviewFacts(
   match: MatchDefinition | null | undefined,
   snapshot: MatchSnapshot | null,
@@ -348,20 +346,6 @@ export const STAT_GROUP_FALLBACK: { id: string; label: string };
 export function compareStatRow(stat: StatPair | null | undefined): StatComparisonRow;
 export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
 export function analysisFacts(statistics: StatPair[] | null | undefined): StatComparisonRow[];
-
-/** شريط الاستحواذ البارز — `null` ما لم تصل النسبتان رقميتين معاً. */
-export interface PossessionSplit { home: number; away: number; homeShare: number; awayShare: number }
-export function possessionSplit(statistics: StatPair[] | null | undefined): PossessionSplit | null;
-
-/** عدّادات بطاقة الفريق على الملعب (صفراء/حمراء/ركنيات) من جدول الإحصائيات نفسه. */
-export interface PitchCounter { id: 'yellow' | 'red' | 'corners'; label: string; value: number }
-export const PITCH_COUNTERS: { id: 'yellow' | 'red' | 'corners'; key: string; label: string }[];
-export function pitchCounters(statistics: StatPair[] | null | undefined, side: 'home' | 'away'): PitchCounter[];
-
-/** مجمل المواجهات من الصفوف المعروضة نفسها، أو `null` إن تعذّرت نسبة صف. */
-export interface HeadToHeadSummary { homeWins: number; draws: number; awayWins: number; total: number }
-export type HeadToHeadSide = string | { name?: string | null; sourceName?: string | null; shortName?: string | null; externalIds?: Partial<Record<string, string | number | null>> | null } | null | undefined;
-export function headToHeadSummary(entries: H2hEntry[] | null | undefined, home: HeadToHeadSide, away: HeadToHeadSide): HeadToHeadSummary | null;
 
 /* ── الوقائع المعدودة والفلاتر ── */
 export interface EventFilterOption { value: string; label: string; count: number }
@@ -453,6 +437,8 @@ export interface MatchDefinition {
   externalIds: Partial<Record<ProviderId | string, string | number | null>>;
   /** أين تُعرض أسماء المصادر — البند 12 يحصرها في التوثيق والمراجعة. */
   sourcesNote?: string;
+  /** معرّف التحليل إن وُجد (slug في match-analysis.json) — يُظهر تبويب التحليل. */
+  analysisSlug?: string | null;
 }
 
 export const MATCH_CODES: MatchCode[];
@@ -567,14 +553,3 @@ export interface PitchLineupSide {
   substitutes: PitchLineupPlayer[];
 }
 export function lineupPitchSides(input: { match: MatchDefinition; snapshot: MatchSnapshot | null }): PitchLineupSide[];
-
-/* ── المعاينة: حقائقها وموضعها ── */
-export interface PreviewFact { id: 'competition' | 'season' | 'round' | 'venue' | 'cairo' | 'mecca'; label: string; value: string }
-export function previewFacts(match: MatchDefinition | null | undefined, snapshot: MatchSnapshot | null, status: MatchStatus | null): PreviewFact[];
-/** `pitch` ما دام الملعب لا يرسم تشكيلة، و`panel` حين تحل التشكيلة محل المعاينة عليه. */
-export type PreviewPlacement = 'pitch' | 'panel';
-export function previewPlacement(input: { match: MatchDefinition; snapshot: MatchSnapshot | null; status?: MatchStatus | null }): PreviewPlacement;
-
-/* ── أسماء المراكز بالعربية ── */
-export const PITCH_POSITION_CODES: string[];
-export function positionLabelAr(code: string | null | undefined): string | null;

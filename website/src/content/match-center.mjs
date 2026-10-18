@@ -973,15 +973,152 @@ export const MATCH_CENTER_ENGLISH_MATCHES = [
   ...MATCH_CENTER_ENGLISH_20270529_20270604_MATCHES,
 ];
 
+/* ════════════════════════ مباريات دوري أبطال أوروبا ════════════════════════
+   مباريات الجولة الثانية (أكتوبر 2026) — لها صفحات تحليل مفصّلة سابقة
+   (roma-real-madrid/ إلخ) وتُدمج الآن في نظام مركز المباراة.
+   ⚠️ هذه المباريات ليس لها بيانات ESPN حيّة حالياً (fixture IDs غير متوفرة)؛
+   therefore verification: 'confirmed' بمعنى «التعريف مؤكد من مصادر التحليل»،
+   لا بمعنى «يصلها تحديث تلقائي من ESPN». تبويب التحليل يعرض المحتوى
+   المكتوب فقط (من match-analysis.json وملفات التقارير).
+═══════════════════════════════════════════════════════════════════════════ */
+
+export const MATCH_CENTER_UCL_COMPETITION = {
+  slug: 'دوري-أبطال-أوروبا',
+  leagueId: 'uefa.champions',
+  name: 'دوري أبطال أوروبا',
+  season: '2026/27',
+};
+
+export const MATCH_CENTER_UCL_MATCHES = [
+  {
+    id: 'roma-real-madrid',
+    slug: 'roma-real-madrid',
+    competitionSlug: MATCH_CENTER_UCL_COMPETITION.slug,
+    competitionName: MATCH_CENTER_UCL_COMPETITION.name,
+    leagueId: MATCH_CENTER_UCL_COMPETITION.leagueId,
+    season: MATCH_CENTER_UCL_COMPETITION.season,
+    round: 'الجولة الثانية',
+    kickoffUtc: '2026-10-14T19:00:00Z',
+    venue: 'ملعب الأولمبيكو',
+    sourceEventName: 'Roma vs Real Madrid',
+    verification: 'confirmed',
+    externalIds: { espn: null, apifootball: null },
+    home: {
+      name: 'روما',
+      shortName: 'روما',
+      sourceName: 'Roma',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    away: {
+      name: 'ريال مدريد',
+      shortName: 'ريال مدريد',
+      sourceName: 'Real Madrid',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    analysisSlug: 'roma-real-madrid',
+  },
+  {
+    id: 'manchester-city-psg',
+    slug: 'manchester-city-psg',
+    competitionSlug: MATCH_CENTER_UCL_COMPETITION.slug,
+    competitionName: MATCH_CENTER_UCL_COMPETITION.name,
+    leagueId: MATCH_CENTER_UCL_COMPETITION.leagueId,
+    season: MATCH_CENTER_UCL_COMPETITION.season,
+    round: 'الجولة الثانية',
+    kickoffUtc: '2026-10-14T19:00:00Z',
+    venue: 'ملعب مدينة مانشستر (الاتحاد)',
+    sourceEventName: 'Manchester City vs Paris Saint-Germain',
+    verification: 'confirmed',
+    externalIds: { espn: null, apifootball: null },
+    home: {
+      name: 'مانشستر سيتي',
+      shortName: 'سيتي',
+      sourceName: 'Manchester City',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    away: {
+      name: 'باريس سان جيرمان',
+      shortName: 'باريس',
+      sourceName: 'Paris Saint-Germain',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    analysisSlug: 'manchester-city-psg',
+  },
+  {
+    id: 'manchester-united-atletico',
+    slug: 'manchester-united-atletico',
+    competitionSlug: MATCH_CENTER_UCL_COMPETITION.slug,
+    competitionName: MATCH_CENTER_UCL_COMPETITION.name,
+    leagueId: MATCH_CENTER_UCL_COMPETITION.leagueId,
+    season: MATCH_CENTER_UCL_COMPETITION.season,
+    round: 'الجولة الثانية',
+    kickoffUtc: '2026-10-13T19:00:00Z',
+    venue: 'رياض إير ميتروبوليتانو',
+    sourceEventName: 'Atletico Madrid vs Manchester United',
+    verification: 'confirmed',
+    externalIds: { espn: null, apifootball: null },
+    home: {
+      name: 'أتلتيكو مدريد',
+      shortName: 'أتلتيكو',
+      sourceName: 'Atletico Madrid',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    away: {
+      name: 'مانشستر يونايتد',
+      shortName: 'يونايتد',
+      sourceName: 'Manchester United',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    analysisSlug: 'manchester-united-atletico',
+  },
+  {
+    id: 'galatasaray-barcelona',
+    slug: 'galatasaray-barcelona',
+    competitionSlug: MATCH_CENTER_UCL_COMPETITION.slug,
+    competitionName: MATCH_CENTER_UCL_COMPETITION.name,
+    leagueId: MATCH_CENTER_UCL_COMPETITION.leagueId,
+    season: MATCH_CENTER_UCL_COMPETITION.season,
+    round: 'الجولة الثانية',
+    kickoffUtc: '2026-10-13T19:00:00Z',
+    venue: 'ملعب رامس بارك',
+    sourceEventName: 'Galatasaray vs Barcelona',
+    verification: 'confirmed',
+    externalIds: { espn: null, apifootball: null },
+    home: {
+      name: 'جالاتا سراي',
+      shortName: 'جالاتا سراي',
+      sourceName: 'Galatasaray',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    away: {
+      name: 'برشلونة',
+      shortName: 'برشلونة',
+      sourceName: 'Barcelona',
+      logo: null,
+      externalIds: { espn: null, apifootball: null },
+    },
+    analysisSlug: 'galatasaray-barcelona',
+  },
+];
+
 /** كل المباريات المسجلة للصفحات والفهرسة، مع إبقاء الثلاث الأولى مرجعاً لاختبارات النقل القديمة. */
 export const MATCH_CENTER_ALL_MATCHES = [
   ...MATCH_CENTER_ENGLISH_MATCHES,
   ...MATCH_CENTER_SPANISH_MATCHES,
+  ...MATCH_CENTER_UCL_MATCHES,
 ];
 
 export const MATCH_CENTER_COMPETITIONS = [
   MATCH_CENTER_COMPETITION,
   MATCH_CENTER_SPANISH_COMPETITION,
+  MATCH_CENTER_UCL_COMPETITION,
 ];
 
 /* البند 12: أسماء المزوّدين وروابط الاستشهاد تظهر في «التوثيق والمراجعة»

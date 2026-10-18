@@ -18,7 +18,7 @@ export function getAllRoutes(): string[] {
     "/en", "/en/nova", "/en/istar", "/en/moka", "/en/faq",
     "/channels",
     ...CHANNEL_CATEGORY_PAGES.map((category) => `/channels/${category.slug}`),
-    "/matches", "/store", "/servers", "/cart", "/faq", "/trial",
+    "/matches", "/match-center", "/store", "/servers", "/cart", "/faq", "/trial",
     "/blog",
     ...BLOG_POSTS.map((p) => `/blog/${p.slug}`),
     ...PRICING_PLANS.map((p) => `/${p.serverCode}`),

@@ -4,7 +4,6 @@ import MatchCenterVisuals from '../components/MatchCenterVisuals';
 import MatchCenterTabs from '../components/MatchCenterTabs';
 import { availableMatchCenterTabs, PANELS } from '../components/MatchCenterPanels';
 import { useMatchCenterTools } from '../components/useMatchCenterTools';
-import MatchCenterDocs from '../components/MatchCenterDocs';
 import {
   MATCH_CENTER_DOCUMENTATION,
   type MatchCenterFixture,
@@ -32,8 +31,9 @@ function validDate(value: unknown): value is string {
    الزائر ما في القسم قبل أن يفتحه — ووصفٌ لا يُطابق ما يُعرض أسوأ من لا شيء،
    لذلك تُركت النصوص عامة بلا أرقام: الأرقام تتغيّر مع كل قراءة. */
 const TAB_HINTS: Partial<Record<import('../lib/match-center.mjs').TabId, string>> = {
-  prematch: 'المواجهات السابقة، والمعاينة ومستوى الفريقين بعد أن تحل التشكيلة محلها على الملعب',
+  prematch: 'المعاينة والمواجهات والتشكيلات المؤكدة إن وصلت',
   live: 'العد التنازلي وآخر قراءة وأرقام الفريقين من المصدر',
+  analysis: 'تحليل المباراة المكتوب — الأحداث والإحصائيات والمصادر',
   postmatch: 'ملخص الوقائع وفلاتر الأحداث والإحصائيات وتقرير ما بعد المباراة',
 };
 function readTimeLabel(value: unknown): string | null {
@@ -112,7 +112,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
         <nav className="mc-crumbs" aria-label="مسار التصفح">
           <a href={to('')}>الرئيسية</a>
           <span aria-hidden="true">/</span>
-          <a href={to('matches/')}>مواعيد المباريات</a>
+          <a href={to('match-center/')}>مركز المباراة</a>
           {competition && <>
             <span aria-hidden="true">/</span>
             {match.leagueId === 'eng.1'
@@ -210,8 +210,6 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
 
         <section className="mc-docs" aria-labelledby="mc-docs-title">
           <h2 id="mc-docs-title">التوثيق والمراجعة</h2>
-          {/* البيت الوحيد لنصوص المصدر وطريقة قراءة الأرقام؛ أعلى الصفحة للأرقام فقط. */}
-          <MatchCenterDocs match={match} readAtLabel={readAtLabel} freshnessText={freshness.text} />
           <p>{MATCH_CENTER_DOCUMENTATION.rightsNote}</p>
           <ul>
             {MATCH_CENTER_DOCUMENTATION.providers.map(provider => (

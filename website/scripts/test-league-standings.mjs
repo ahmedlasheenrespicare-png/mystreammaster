@@ -113,8 +113,8 @@ test('كل جدول في اللقطة مؤهَّل في وحدة الترتيب�
 
 test('ترتيب البطولات المعتمد واحد في المصدرين: خريطة التنقّل وقائمة الصفحات', async () => {
   const navigation = await import('../src/navigation.mjs');
-  const group = navigation.NAV_GROUPS.find((entry) => entry.key === 'tournaments');
-  assert.ok(group, 'مجموعة البطولات والمنتخبات غير موجودة');
+  const group = navigation.NAV_GROUPS.find((entry) => entry.key === 'matches');
+  assert.ok(group, ' مجموعة المباريات غير موجودة');
   const navSlugs = group.links
     .map((link) => /^matches\/(.+)\/$/.exec(link.href)?.[1])
     .filter(Boolean);

@@ -8,6 +8,7 @@ import {
   eventSymbol,
   formatInZone,
   kickoffLabel,
+  lineupPitchSides,
   pitchLanes,
   safeLogoUrl,
   type MatchDefinition,
@@ -15,6 +16,7 @@ import {
   type MatchSnapshot,
   type MatchStatus,
   type PitchMarker,
+  type PitchLineupPlayer,
 } from '../lib/match-center.mjs';
 import EventIcon from './MatchCenterSymbols';
 import type { MatchCenterTools } from './useMatchCenterTools';
@@ -29,6 +31,80 @@ import type { MatchCenterTools } from './useMatchCenterTools';
    لا يُرسم شيء من عندنا: الشعار من المصدر بحدّ `https://` وحده، والدقيقة كما
    وصلت، ومواضع الأحداث داخل الملعب غير مرسومة لأن المصدر لا يرسل إحداثيات.
 ========================================================================== */
+
+function LineupPlayer({ player, matchId, tools, onHover }: {
+  player: PitchLineupPlayer; matchId: string; tools?: MatchCenterTools;
+  onHover: (event: MatchEvent | null) => void;
+}) {
+  return (
+    <li className="mc-lineup-player" data-player-id={player.id}>
+      <div className="mc-player-badges">
+        {player.badges.map(badge => {
+          const key = eventKey(matchId, badge.event);
+          const selected = tools?.selectedEventKey === key;
+          return (
+            <button type="button" className="mc-player-badge" key={key} data-event-key={key}
+              data-kind={badge.event.cancelled ? 'cancelled' : badge.event.type}
+              data-minute={badge.event.minute} data-active={selected ? 'true' : 'false'}
+              aria-label={`${badge.label}${badge.role ? ` · ${badge.role}` : ''}`}
+              aria-pressed={selected} aria-controls="mc-lineup-event-detail"
+              onMouseEnter={() => onHover(badge.event)} onMouseLeave={() => onHover(null)}
+              onFocus={() => onHover(badge.event)} onBlur={() => onHover(null)}
+              onClick={() => tools?.selectEvent(key)}>
+              <EventIcon symbol={eventSymbol(badge.event.type)} />
+              <span>{badge.role ?? badge.typeLabel}</span>
+              <bdi dir="ltr">{badge.minute}</bdi>
+            </button>
+          );
+        })}
+      </div>
+      <span className="mc-player-shirt" aria-label={player.shirtNumber != null ? `رقم القميص ${player.shirtNumber}` : undefined}>
+        {player.shirtNumber ?? '—'}
+      </span>
+      <span className="mc-player-name" dir="auto">{player.name}</span>
+      <small dir="ltr">{player.positionCode}</small>
+    </li>
+  );
+}
+
+function PitchLineups({ match, snapshot, tools }: {
+  match: MatchDefinition; snapshot: MatchSnapshot | null; tools?: MatchCenterTools;
+}) {
+  const sides = useMemo(() => lineupPitchSides({ match, snapshot }), [match, snapshot]);
+  const [hovered, setHovered] = useState<MatchEvent | null>(null);
+  useEffect(() => setHovered(null), [snapshot]);
+  if (!sides.length) return null;
+  return (
+    <section className="mc-pitch-lineups" aria-label="التشكيلة الأساسية المؤكدة على الملعب">
+      <h2>التشكيلة الأساسية المؤكدة</h2>
+      <p className="mc-lineup-explainer">توزيع تخطيطي حسب مراكز المصدر، وليس إحداثيات أو حركة فعلية. تبقى التشكيلة الأساسية ثابتة؛ شارات التبديلات لا تغيّر مواقع اللاعبين.</p>
+      <div className="mc-lineup-squads">
+        {sides.map(squad => (
+          <section className="mc-lineup-squad" key={squad.side} data-side={squad.side} aria-label={squad.teamName}>
+            <h3>{squad.teamName}{squad.formation && <bdi dir="ltr"> · {squad.formation}</bdi>}</h3>
+            <div className="mc-lineup-rows">
+              {squad.rows.map(row => (
+                <div className="mc-lineup-row" key={row.label}>
+                  <h4>{row.label}</h4>
+                  <ul>{row.players.map(player => <LineupPlayer key={player.id} player={player} matchId={match.id} tools={tools} onHover={setHovered} />)}</ul>
+                </div>
+              ))}
+            </div>
+            {squad.substitutes.length > 0 && (
+              <div className="mc-lineup-bench">
+                <h4>البدلاء المرتبطون بأحداث — خارج توزيع الأساسيين</h4>
+                <ul>{squad.substitutes.map(player => <LineupPlayer key={player.id} player={player} matchId={match.id} tools={tools} onHover={setHovered} />)}</ul>
+              </div>
+            )}
+          </section>
+        ))}
+      </div>
+      <p className="mc-lineup-event-detail" id="mc-lineup-event-detail" aria-live="polite">
+        {describeEvent(hovered ?? tools?.selectedEvent) ?? 'مرّر المؤشر أو ركّز على الشارة لقراءة تفاصيلها، واضغط لتثبيتها أو إلغاء تثبيتها.'}
+      </p>
+    </section>
+  );
+}
 
 function cleanText(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -367,6 +443,7 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
         <Team match={match} snapshot={snapshot} side="away" flash={flash === 'away'} />
 
         <PitchEvents snapshot={snapshot} matchId={match.id} tools={tools} />
+        <PitchLineups match={match} snapshot={snapshot} tools={tools} />
       </div>
 
       {(venue || competitionLine || cairoKickoff || meccaKickoff || readAtLabel) && (
@@ -380,7 +457,7 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
           {readAtLabel && <div><dt>وقت القراءة</dt><dd>{readAtLabel}</dd></div>}
         </dl>
       )}
-      <p className="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ مواضع الأحداث داخل الملعب غير مرسومة لأن المصدر لا يرسل إحداثياتها. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله، والنقر يثبّته.</p>
+      <p className="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ شارات اللاعبين، إن توفرت تشكيلة مؤكدة، تربط الحدث بصاحبه لا بموقع حدوثه. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله، والنقر يثبّته.</p>
     </section>
   );
 }

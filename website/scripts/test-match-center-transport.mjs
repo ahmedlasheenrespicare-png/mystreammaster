@@ -361,7 +361,7 @@ test('the same URL moves from preview to live to report as the clock passes', ()
   const kickoff = Date.parse(HOME.kickoffUtc);
   const at = minutes => mockSnapshot(HOME, { now: kickoff + minutes * 60_000 });
   const seen = [
-    [-30, 'preview'], [0, 'live'], [30, 'live'], [50, 'live'], [84, 'live'], [95, 'report'], [180, 'report'],
+    [-30, 'live'], [0, 'live'], [30, 'live'], [50, 'live'], [84, 'live'], [95, 'postmatch'], [180, 'postmatch'],
   ];
   for (const [minutes, tab] of seen) {
     const snapshot = at(minutes);
@@ -369,8 +369,8 @@ test('the same URL moves from preview to live to report as the clock passes', ()
     assert.equal(snapshot.matchId, HOME.id, 'the identity never changes across states');
   }
   // Rule 5: opening the state's tab must not evict a tab the visitor chose.
-  const chosen = resolveTab(at(84).status, 'history');
-  assert.equal(chosen, 'history', 'a chosen tab survives a goal');
+  const chosen = resolveTab(at(84).status, 'prematch');
+  assert.equal(chosen, 'prematch', 'a chosen tab survives a goal');
   assert.equal(resolveTab(at(84).status, null), 'live', 'but no choice follows the state');
 
   // Rule 6: reaching zero on the countdown does not by itself make it live —
@@ -570,7 +570,7 @@ test("one match's failure does not wipe the other two, and keeps its own last co
     'the failed match did not pick up the others\' newer read');
 });
 
-test('one read serves all five tabs: the transport is called once per poll, not once per tab', async () => {
+test('one read serves all three tabs: the transport is called once per poll, not once per tab', async () => {
   // Rule 11: "one shared data layer per match, not a request per tab".
   const now = Date.parse('2026-10-17T14:30:00Z');
   const { impl, calls } = stubFetch(payload(HOME, {
@@ -580,8 +580,8 @@ test('one read serves all five tabs: the transport is called once per poll, not 
   }));
 
   const result = await fetchMatchSnapshot(HOME, { fetchImpl: impl });
-  // All five tabs read from the one snapshot; none of them fetches.
-  const tabs = ['preview', 'history', 'lineups', 'live', 'report'];
+  // All three tabs read from the one snapshot; none of them fetches.
+  const tabs = ['prematch', 'live', 'postmatch'];
   for (const tab of tabs) {
     assert.equal(resolveTab(result.data.status, tab), tab);
   }

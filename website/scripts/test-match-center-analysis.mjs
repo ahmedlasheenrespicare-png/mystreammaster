@@ -294,7 +294,7 @@ test('a payload of only stoppages is not "data": the analysis tab stays closed',
   assert.equal(renderableEvents(delays).length, 0);
   assert.equal(analysisIsAvailable(snapshotOf({ events: delays })), false);
   const tabs = computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ events: delays }), status: normalizeStatus({ type: { name: 'STATUS_IN_PROGRESS', state: 'in' } }, 'espn') });
-  assert.equal(tabs.includes('analysis'), false);
+  assert.equal(tabs.includes('postmatch'), false);
 });
 
 test('tab availability is computed from the snapshot, in one place for the whole page', () => {
@@ -304,16 +304,16 @@ test('tab availability is computed from the snapshot, in one place for the whole
     snapshot: snapshotOf({ events: eventsFrom(RAW_EVENTS), statistics: STAT_INPUT }),
     status: liveStatus,
   });
-  assert.deepEqual(tabs, ['preview', 'live', 'analysis', 'notes']);
-  // لا «lineups» ولا «report» ولا «history» ما دامت بياناتها لم تصل.
+  assert.deepEqual(tabs, ['prematch', 'live']);
+  // الأسماء القديمة لم تعد تبويبات؛ بعد المباراة ممنوع أثناء السير.
   assert.equal(tabs.includes('lineups'), false);
-  assert.equal(tabs.includes('report'), false);
+  assert.equal(tabs.includes('postmatch'), false);
   assert.equal(tabs.includes('history'), false);
 });
 
-test('the notebook is offered whenever the page has any panel, and never alone', () => {
+test('pre-match facts and kickoff open only data-backed panels', () => {
   const scheduled = normalizeStatus({ type: { name: 'STATUS_SCHEDULED', state: 'pre' } }, 'espn');
-  assert.deepEqual(computeAvailableTabs({ match: MATCH, snapshot: null, status: scheduled }), ['preview', 'notes']);
+  assert.deepEqual(computeAvailableTabs({ match: MATCH, snapshot: null, status: scheduled }), ['prematch', 'live']);
   const bare = computeAvailableTabs({
     match: { ...MATCH, competitionName: '', season: '', round: null, venue: null, kickoffUtc: 'not-a-date' },
     snapshot: null,
@@ -324,11 +324,11 @@ test('the notebook is offered whenever the page has any panel, and never alone',
 
 test('the report tab needs an official result and something to report', () => {
   const finished = normalizeStatus({ type: { name: 'STATUS_FULL_TIME', state: 'post', completed: true } }, 'espn');
-  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ status: finished, statistics: STAT_INPUT }), status: finished }).includes('report'), true);
-  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ status: finished }), status: finished }).includes('report'), false);
+  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ status: finished, statistics: STAT_INPUT }), status: finished }).includes('postmatch'), true);
+  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ status: finished }), status: finished }).includes('postmatch'), true);
   // نتيجة غير مؤكدة (مباراة متوقفة) لا تفتح «بعد المباراة».
   const suspended = normalizeStatus({ type: { name: 'STATUS_SUSPENDED', state: 'in' } }, 'espn');
-  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ status: suspended, statistics: STAT_INPUT }), status: suspended }).includes('report'), false);
+  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ status: suspended, statistics: STAT_INPUT }), status: suspended }).includes('postmatch'), false);
 });
 
 test('the record tab and the panel read the same head-to-head list', () => {
@@ -337,7 +337,7 @@ test('the record tab and the panel read the same head-to-head list', () => {
   const entries = headToHeadFor(MATCH, snapshot, finished);
   assert.equal(entries.length, 2, 'the completed fixture itself joins the record once');
   assert.equal(displayableHeadToHead(entries).length, 2);
-  assert.equal(computeAvailableTabs({ match: MATCH, snapshot, status: finished }).includes('history'), true);
+  assert.equal(computeAvailableTabs({ match: MATCH, snapshot, status: finished }).includes('prematch'), true);
 
   const scheduled = normalizeStatus({ type: { name: 'STATUS_SCHEDULED', state: 'pre' } }, 'espn');
   assert.equal(headToHeadFor(MATCH, snapshotOf({ status: scheduled, h2h: [] }), scheduled).length, 0, 'the upcoming match is not yet in its own record');
@@ -358,4 +358,24 @@ test('lineup and rating sections stay closed while the provider sends nulls', ()
   assert.equal(unavailableDataNotes(withLineups).some(note => note.id === 'lineups'), false, 'the section opened, so the apology must go away');
   // الإحداثيات وxG تظل مذكورة حتى مع وصول تشكيلات: لا يرسلهما المصدر مطلقاً.
   assert.equal(unavailableDataNotes(withLineups).some(note => note.id === 'spatial'), true);
+});
+
+test('phase gates preserve valid data and ignore snapshot status', () => {
+  const snapshot = snapshotOf({ statistics: STAT_INPUT, events: eventsFrom(RAW_EVENTS) });
+  const original = structuredClone(snapshot);
+  for (const phase of ['pre', 'live', 'post', 'terminal']) {
+    const tabs = computeAvailableTabs({ match: MATCH, snapshot, status: { phase } });
+    assert.equal(tabs.includes('postmatch'), phase === 'post');
+    assert.equal(tabs.includes('live'), phase === 'pre' || phase === 'live');
+    assert.deepEqual(snapshot, original);
+  }
+});
+
+test('postmatch retains final score alone and events alone without empty statistics', () => {
+  const status = normalizeStatus({ type: { name: 'STATUS_FULL_TIME', state: 'post', completed: true } }, 'espn');
+  for (const snapshot of [snapshotOf({ statistics: null }), snapshotOf({ score: null, events: eventsFrom(RAW_EVENTS) })]) {
+    assert.equal(computeAvailableTabs({ match: MATCH, snapshot, status }).includes('postmatch'), true);
+    assert.deepEqual(displayableStatistics(snapshot.statistics), []);
+  }
+  assert.equal(computeAvailableTabs({ match: MATCH, snapshot: snapshotOf({ score: null }), status }).includes('postmatch'), false);
 });

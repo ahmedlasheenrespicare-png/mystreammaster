@@ -90,7 +90,7 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
 
   return (
     <div className="mc-analysis">
-      <h2>تحليل المباراة</h2>
+      <h3>ملخص الوقائع</h3>
       <p>
         الوقائع الواردة من المصدر فقط: {numberLabel(summary.total)} حدثاً
         {statistics.length > 0 ? ` و${numberLabel(statistics.length)} رقماً للفريقين` : ''}
@@ -114,19 +114,6 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
             ))}
           </ul>
           <p className="mc-note">لا يُشتق من هذه الأرقام حكم: لا «سيطرة»، ولا «فرصة أخطر»، ولا وصف تكتيكي.</p>
-        </section>
-      )}
-
-      {statistics.length > 0 && (
-        <section aria-labelledby="mc-analysis-stats-title">
-          <h3 id="mc-analysis-stats-title">إحصائيات الفريقين</h3>
-          <MatchCenterStatGroups
-            statistics={statistics}
-            homeName={homeName}
-            awayName={awayName}
-            idPrefix="analysis"
-            headingLevel="h4"
-          />
         </section>
       )}
 
@@ -199,11 +186,23 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
                   selected={selected === event}
                   onSelect={key => tools?.selectEvent(key)}
                   onReveal={key => tools?.revealEvent(key)}
-                  onNote={noteEvent => tools?.requestNoteDraft(noteEvent)}
                 />
               ))}
             </ul>
           )}
+        </section>
+      )}
+
+      {statistics.length > 0 && (
+        <section aria-labelledby="mc-analysis-stats-title">
+          <h3 id="mc-analysis-stats-title">إحصائيات الفريقين</h3>
+          <MatchCenterStatGroups
+            statistics={statistics}
+            homeName={homeName}
+            awayName={awayName}
+            idPrefix="analysis"
+            headingLevel="h4"
+          />
         </section>
       )}
 
@@ -227,13 +226,12 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
 /* صف حدث واحد: زرّ يحدّث الاختيار في اللوحتين، وتفاصيل مُعرَجة عليه.
    الوصول باللمس ولوحة المفاتيح من نفس الزرّ، والتفاصيل تُقرأ في `aria-live`
    للتحديث لا للقراءة الآلية — فلا يُقاطع الناطقُ مستخدماً يتنقل بالأسهم. */
-function AnalysisEventRow({ event, matchId, selected, onSelect, onReveal, onNote }: {
+function AnalysisEventRow({ event, matchId, selected, onSelect, onReveal }: {
   event: MatchEvent;
   matchId: string;
   selected: boolean;
   onSelect: (key: string) => void;
   onReveal: (key: string) => void;
-  onNote: (event: MatchEvent) => void;
 }) {
   const key = eventKey(matchId, event);
   const description = describeEvent(event);
@@ -270,9 +268,6 @@ function AnalysisEventRow({ event, matchId, selected, onSelect, onReveal, onNote
                 إظهار على الشريط الزمني
               </button>
             )}
-            <button type="button" className="mc-inline-button" onClick={() => onNote(event)}>
-              ملاحظة بهذا الحدث
-            </button>
           </div>
         </div>
       )}

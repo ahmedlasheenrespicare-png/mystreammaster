@@ -33,6 +33,7 @@ php.writeFile('/app/fixtures.json', JSON.stringify(fixtures));
 // Namespace only for extension doubles: transport and cache logic are otherwise unchanged.
 php.writeFile('/app/php-lib/espn-curl-double.php', (await fs.readFile(path.join(root, 'php-lib/espn_source.php'), 'utf8')).replace('declare(strict_types=1);', 'declare(strict_types=1); namespace SMCurlQA;'));
 php.writeFile('/app/curl-double.php', await fs.readFile(new URL('./curl-double.php', import.meta.url), 'utf8'));
+for (const filename of ['lineups.php', 'lineups-evidence.json']) php.writeFile('/app/' + filename, await fs.readFile(new URL('./' + filename, import.meta.url), 'utf8'));
 php.writeFile('/app/test.php', await fs.readFile(new URL('./test.php', import.meta.url), 'utf8'));
 try {
   const result = await php.run({ scriptPath: '/app/test.php' });
@@ -53,11 +54,17 @@ try {
     competitors: [{ homeAway: 'home', team: { id: '1', displayName: 'Home' }, score: null }, { homeAway: 'away', team: { id: '2', displayName: 'Away' }, score: null }],
   }] };
   event.competitions[0].date = event.date;
+  event.competitions[0].id = id;
   const record = payload => ({ schema: 1, checked_at: epoch, fetched_at: epoch, ttl: 900, frozen: false, error: null, payload, stale_ttl: 600 });
   const dayFile = `/private/espn-days/${league}-${day}.json`;
   const summaryFile = `/private/espn-summaries/${league}-${id}.json`;
   const sourceDay = record({ events: [event] });
-  const sourceSummary = record({ header: { id, competitions: event.competitions } });
+  const sourceSummary = record({ header: { id, league: { slug: league }, competitions: event.competitions },
+    rosters: ['1', '2'].map(teamId => ({ team: { id: teamId }, roster: Array.from({ length: 11 }, (_, index) => ({
+      athlete: { id: `${teamId}-${index}`, displayName: `Mock player ${teamId}-${index}` }, starter: true,
+      jersey: String(index + 1), position: { abbreviation: index === 0 ? 'G' : 'F' },
+    })) })),
+  });
   php.writeFile(dayFile, JSON.stringify(sourceDay));
   php.writeFile(summaryFile, JSON.stringify(sourceSummary));
   const request = (file, query) => php.run({ scriptPath: '/app/' + file, relativeUri: '/' + file + '?' + query, env: { SM_DATA_DIR: '/private' }, $_SERVER: { DOCUMENT_ROOT: '/app', REMOTE_ADDR: '192.0.2.1' } });
@@ -72,6 +79,11 @@ try {
   const center = await request('match-center.php', 'match=' + slug);
   assert.equal(JSON.parse(center.text).event, id, center.text);
   assert.equal(JSON.parse(center.text).score.home, null);
+  assert.equal(JSON.parse(center.text).lineups.home.starters.length, 11);
+  assert.equal(JSON.parse(center.text).lineups.away.starters.length, 11);
+  assert.deepEqual(JSON.parse(center.text).events, [], 'pre-match XI does not expose future events');
+  assert.equal(JSON.parse(center.text).ratings, null);
+  assert.equal(php.readFileAsText(summaryFile), JSON.stringify(sourceSummary), 'XI reuses the existing summary without another upstream call');
   const centerHit = await request('match-center.php', 'match=' + slug);
   assert.equal(centerHit.headers['x-match-center-cache'][0], 'HIT');
   assert.equal(php.readFileAsText(dayFile), JSON.stringify(sourceDay), 'both endpoints reuse the very same day record without fetching');
@@ -88,6 +100,7 @@ try {
   assert.equal(php.fileExists(responseFile), false, 'STALE is never written to the response cache');
   const centerStale = await request('match-center.php', 'match=' + slug);
   assert.equal(JSON.parse(centerStale.text).cache, 'STALE', centerStale.text);
+  assert.deepEqual(JSON.parse(centerStale.text).lineups, JSON.parse(center.text).lineups, 'STALE preserves confirmed XI without calling it fresh');
   assert.equal(centerStale.headers['x-diagnostic-code'][0], 'UPSTREAM_TIMEOUT');
   assert.equal(php.fileExists(`/private/match-center-responses/response_${slug}.json`), false);
   php.writeFile(dayFile, JSON.stringify({ ...stale, fetched_at: null, payload: null, error: 'UPSTREAM_RATE_LIMITED', error_http: 503 }));

@@ -1,9 +1,5 @@
 import type { ReactElement } from 'react';
 import {
-<<<<<<< HEAD
-=======
-  canShowKickoff,
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
   type CountdownParts,
   comparisonFor,
   computeAvailableTabs,
@@ -15,21 +11,14 @@ import {
   formatInZone,
   hasDisplayableForm,
   headToHeadFor,
-<<<<<<< HEAD
   headToHeadSummary,
   isResultOfficial,
   isValidScore,
   lineupPitchSides,
-=======
-  isResultOfficial,
-  isValidScore,
-  kickoffLabel,
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
   type LineupSide as LineupSideData,
   type MatchDefinition,
   type MatchSnapshot,
   type MatchStatus,
-<<<<<<< HEAD
   previewFacts,
   previewPlacement,
   type ScoredPlayer,
@@ -38,14 +27,6 @@ import {
 import type { MatchCenterTools } from './useMatchCenterTools';
 import MatchCenterRadar from './MatchCenterRadar';
 import FormSide from './MatchCenterForm';
-=======
-  type ScoredPlayer,
-  type TabId,
-  type TeamForm,
-} from '../lib/match-center.mjs';
-import type { MatchCenterTools } from './useMatchCenterTools';
-import MatchCenterRadar from './MatchCenterRadar';
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 import MatchCenterStatGroups from './MatchCenterStatGroups';
 import MatchCenterAnalysis from './MatchCenterAnalysis';
 import MatchCenterAnalysisTab from './MatchCenterAnalysisTab';
@@ -98,13 +79,6 @@ function numberLabel(value: number): string {
   return new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 2 }).format(value);
 }
 
-<<<<<<< HEAD
-=======
-function matchVenue(match: MatchDefinition, snapshot: MatchSnapshot | null): string | null {
-  return snapshot ? text(snapshot.venue) : text(match.venue);
-}
-
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 /** تبويبات تُشتق من اللقطة ذاتها التي تغذي الملعب؛ لا طلب مستقل لكل قسم. */
 export function availableMatchCenterTabs(
   match: MatchDefinition,
@@ -116,69 +90,8 @@ export function availableMatchCenterTabs(
 
 /* ─────────────────────────── 1) معاينة ─────────────────────────── */
 
-<<<<<<< HEAD
 /** الحقائق الست + مستوى الفريقين. تُرسم هنا فقط حين تكون المعاينة في بيتها
     الثاني (اللوحة) — أي بعد أن حلّت التشكيلة محلها على الملعب (`previewPlacement`). */
-=======
-const RESULT_WORD: Record<TeamForm['matches'][number]['result'], string> = { W: 'فوز', D: 'تعادل', L: 'خسارة' };
-
-function FormSide({ name, form }: { name: string; form: TeamForm | null }) {
-  if (!hasDisplayableForm(form)) return null;
-  const matches = (form?.matches ?? []).filter(item => item
-    && numeric(item.goalsFor) !== null
-    && numeric(item.goalsAgainst) !== null
-    && (item.result === 'W' || item.result === 'D' || item.result === 'L'));
-  const totals: [string, number | null][] = [
-    ['مباريات موثقة', numeric(form?.played)],
-    ['فوز', numeric(form?.wins)],
-    ['تعادل', numeric(form?.draws)],
-    ['خسارة', numeric(form?.losses)],
-    ['أهداف مسجلة', numeric(form?.goalsFor)],
-    ['أهداف مستقبلة', numeric(form?.goalsAgainst)],
-    ['متوسط التسجيل', numeric(form?.avgGoalsFor)],
-    ['متوسط الاستقبال', numeric(form?.avgGoalsAgainst)],
-  ];
-  const shown = totals.filter((entry): entry is [string, number] => entry[1] !== null);
-  const competitions = Array.isArray(form?.competitions) ? form.competitions.map(text).filter((item): item is string => Boolean(item)) : [];
-
-  return (
-    <section className="mc-form-side">
-      <h3>{name}</h3>
-      {matches.length > 0 && (
-        <ol className="mc-events" aria-label={`مباريات موثقة لـ ${name}`}>
-          {matches.map((item, index) => {
-            const opponent = text(item.opponent);
-            const date = validDate(item.date)
-              ? formatInZone(item.date, 'Africa/Cairo', { year: 'numeric', month: '2-digit', day: '2-digit' })
-              : null;
-            const competition = text(item.competition);
-            return (
-              <li className="mc-event" key={item.fixtureId ?? `${item.date}-${index}`}>
-                <span className="mc-event-minute">{RESULT_WORD[item.result]}</span>
-                <span className="mc-event-body">
-                  {opponent && <span>{item.venue === 'home' ? 'ضد' : 'لدى'} {opponent}</span>}
-                  <small>
-                    <span className="mc-num">{numberLabel(item.goalsFor)}–{numberLabel(item.goalsAgainst)}</span>
-                    {date && <> · {date}</>}
-                    {competition && <> · {competition}</>}
-                  </small>
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      )}
-      {shown.length > 0 && (
-        <dl className="mc-form-summary">
-          {shown.map(([label, value]) => <div key={label}><dt>{label}</dt><dd className="mc-num">{numberLabel(value)}</dd></div>)}
-        </dl>
-      )}
-      {competitions.length > 0 && <p className="mc-note">نطاق السجل: {competitions.join('، ')}.</p>}
-    </section>
-  );
-}
-
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 export function PreviewPanel({ match, snapshot, status }: PanelProps) {
   const axes = displayableComparisonAxes(comparisonFor(snapshot));
   const comparison = comparisonFor(snapshot);
@@ -186,50 +99,15 @@ export function PreviewPanel({ match, snapshot, status }: PanelProps) {
   const awayFormCandidate = snapshot?.form?.away ?? null;
   const homeForm = hasDisplayableForm(homeFormCandidate) ? homeFormCandidate : null;
   const awayForm = hasDisplayableForm(awayFormCandidate) ? awayFormCandidate : null;
-<<<<<<< HEAD
   const facts = previewFacts(match, snapshot, status);
   if (facts.length === 0 && !homeForm && !awayForm && axes.length === 0) return null;
-=======
-  const competition = text(match.competitionName);
-  const venue = matchVenue(match, snapshot);
-  const season = text(match.season);
-  const round = typeof match.round === 'number' && Number.isFinite(match.round)
-    ? String(match.round)
-    : text(match.round);
-
-  let cairoTime: string | null = null;
-  let cairoDay: string | null = null;
-  let meccaTime: string | null = null;
-  if (canShowKickoff(status) && validDate(match.kickoffUtc)) {
-    try {
-      cairoTime = kickoffLabel(match.kickoffUtc, 'Africa/Cairo');
-      cairoDay = dayLabelInZoneSafe(match.kickoffUtc, 'Africa/Cairo');
-      meccaTime = kickoffLabel(match.kickoffUtc, 'Asia/Riyadh');
-    } catch {
-      /* حذف الموعد التالف بدلاً من تخمين قيمة. */
-    }
-  }
-
-  const facts = [
-    ...(competition ? [{ label: 'المسابقة', value: competition }] : []),
-    ...(season ? [{ label: 'الموسم', value: season }] : []),
-    ...(round ? [{ label: 'الجولة', value: round }] : []),
-    ...(venue ? [{ label: 'الملعب', value: venue }] : []),
-    ...(cairoTime ? [{ label: 'موعد القاهرة', value: `${cairoTime}${cairoDay ? ` · ${cairoDay}` : ''}` }] : []),
-    ...(meccaTime ? [{ label: 'موعد مكة', value: meccaTime }] : []),
-  ];
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 
   return (
     <div>
       <h3>المعاينة</h3>
       {facts.length > 0 && (
         <dl className="mc-preview-facts">
-<<<<<<< HEAD
           {facts.map(({ id, label, value }) => <div key={id}><dt>{label}</dt><dd dir="auto">{value}</dd></div>)}
-=======
-          {facts.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd dir="auto">{value}</dd></div>)}
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
         </dl>
       )}
 
@@ -237,13 +115,8 @@ export function PreviewPanel({ match, snapshot, status }: PanelProps) {
         <section aria-labelledby="mc-form-title">
           <h3 id="mc-form-title">مستوى الفريقين — مباريات موثقة</h3>
           <div className="mc-form-grid">
-<<<<<<< HEAD
             {homeForm && <FormSide variant="panel" side="home" name={text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف'} form={homeForm} />}
             {awayForm && <FormSide variant="panel" side="away" name={text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف'} form={awayForm} />}
-=======
-            {homeForm && <FormSide name={text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف'} form={homeForm} />}
-            {awayForm && <FormSide name={text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف'} form={awayForm} />}
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
           </div>
         </section>
       )}
@@ -255,19 +128,6 @@ export function PreviewPanel({ match, snapshot, status }: PanelProps) {
   );
 }
 
-<<<<<<< HEAD
-=======
-/* `dayLabelInZone` ترمي على تاريخ تالف؛ تُلفّ هنا حتى يسقط سطر التاريخ وحده
-   ولا يسقط عرض الموعد الذي تحقّق منه المصدر. */
-function dayLabelInZoneSafe(iso: string, zone: string): string | null {
-  try {
-    return formatInZone(iso, zone, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  } catch {
-    return null;
-  }
-}
-
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 /* ─────────────────────────── 2) المواجهات ─────────────────────────── */
 
 export function HistoryPanel({ match, snapshot, status }: PanelProps) {
@@ -275,18 +135,14 @@ export function HistoryPanel({ match, snapshot, status }: PanelProps) {
      قرار إظهاره، لا حساباً ثانياً قد يختلف عنه. */
   const entries = headToHeadFor(match, snapshot, status);
   if (entries.length === 0) return null;
-<<<<<<< HEAD
   const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
   const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
   /* سطر المجمل من الصفوف المعروضة نفسها؛ `null` ⇒ لا يُرسم شيء (لا تخمين). */
   const summary = headToHeadSummary(entries, match.home, match.away);
-=======
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 
   return (
     <div>
       <h3>المواجهات</h3>
-<<<<<<< HEAD
       <p>آخر <span className="mc-num">{numberLabel(entries.length)}</span> مواجهات عبر البطولات.</p>
       {summary && (
         <ul className="mc-h2h-agg" aria-label="مجمل المواجهات المعروضة">
@@ -295,9 +151,6 @@ export function HistoryPanel({ match, snapshot, status }: PanelProps) {
           <li className="mc-h2h-cell" data-side="away"><b className="mc-num">{numberLabel(summary.awayWins)}</b><small>فوز {awayName}</small></li>
         </ul>
       )}
-=======
-      <p>المواجهات المكتملة التي أرسلها المصدر فقط.</p>
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
       <ol className="mc-history-list">
         {entries.map((entry, index) => {
           const date = validDate(entry.date)
@@ -354,14 +207,10 @@ function ConfirmedLineupSide({ name, data }: { name: string; data: LineupSideDat
   );
 }
 
-<<<<<<< HEAD
 /** احتياط فقط: تشكيلة مؤكدة تعذّر رسمها على الملعب (ناقصة أو برموز مراكز
     غير معروفة). حين يرسمها الملعب لا تُكرَّر هنا — للمحتوى بيت واحد. */
 export function LineupsPanel({ match, snapshot }: PanelProps) {
   if (lineupPitchSides({ match, snapshot }).length > 0) return null;
-=======
-export function LineupsPanel({ match, snapshot }: PanelProps) {
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
   const sides = confirmedLineupSides(snapshot?.lineups ?? null);
   if (sides.length === 0) return null;
 
@@ -396,11 +245,7 @@ export function LivePanel({ match, snapshot, status, countdown, freshnessText, r
       )}
       {freshnessText && <p>{freshnessText}{readAtLabel && <> · آخر قراءة: {readAtLabel}</>}</p>}
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
-<<<<<<< HEAD
       <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} logos={snapshot?.logos ?? null} idPrefix="live" />
-=======
-      <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} idPrefix="live" />
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
     </div>
   );
 }
@@ -441,7 +286,6 @@ export function ReportPanel({ snapshot, status }: PanelProps) {
   );
 }
 
-<<<<<<< HEAD
 /** التجميع فقط؛ تبقى بوابات البيانات في طبقة العقد واللوحات الأصلية.
     المعاينة لها بيت واحد: على الملعب حتى تصدر التشكيلة، ثم هنا. */
 export function PrematchPanel(props: PanelProps) {
@@ -456,11 +300,6 @@ export function PrematchPanel(props: PanelProps) {
       <LineupsPanel {...props} />
     </div>
   );
-=======
-/** التجميع فقط؛ تبقى بوابات البيانات في طبقة العقد واللوحات الأصلية. */
-export function PrematchPanel(props: PanelProps) {
-  return <div><h2>قبل المباراة</h2><PreviewPanel {...props} /><HistoryPanel {...props} /><LineupsPanel {...props} /></div>;
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 }
 
 export function AnalysisPanel(props: PanelProps) {

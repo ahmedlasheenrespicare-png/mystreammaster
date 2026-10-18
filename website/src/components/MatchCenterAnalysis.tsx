@@ -200,10 +200,7 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
             statistics={statistics}
             homeName={homeName}
             awayName={awayName}
-<<<<<<< HEAD
             logos={snapshot?.logos ?? null}
-=======
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
             idPrefix="analysis"
             headingLevel="h4"
           />

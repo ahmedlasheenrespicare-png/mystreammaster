@@ -39,7 +39,6 @@ test('every registered fixture has the shared pitch and data-driven panel in its
     } else {
       assert.doesNotMatch(html, /role="tablist"|mc-panel-prematch/, `${route}: empty preview tab/panel must stay hidden`);
     }
-<<<<<<< HEAD
     // «التوثيق والمراجعة» يشرح معنى «غير متاح» نصاً ثابتاً؛ خارجه لا بديل ولا عنصر نائب لبيانات غائبة.
     const outsideDocs = html.replace(/<section class="mc-docs"[\s\S]*?<\/section>/, '');
     assert.doesNotMatch(outsideDocs, /mc-unavailable|غير متاح|لم يُعلن بعد/, `${route}: blank match data must not render as a fallback`);
@@ -52,9 +51,6 @@ test('every registered fixture has the shared pitch and data-driven panel in its
     }
     assert.doesNotMatch(html, /mc-lineup-explainer|mc-pitch-disclaimer|وقت القراءة/, `${route}: explanatory source texts live only in the documentation section`);
     assert.match(html, /class="mc-docs-grid"/, `${route}: documentation cards missing`);
-=======
-    assert.doesNotMatch(html, /mc-unavailable|غير متاح|لم يُعلن بعد/, `${route}: blank match data must not render as a fallback`);
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
     assert.doesNotMatch(html, /class="mc-pitch-score"/, `${route}: static page must not invent a score before a source read`);
   }
   assert.equal(routes.size, MATCH_CENTER_ALL_MATCHES.length);

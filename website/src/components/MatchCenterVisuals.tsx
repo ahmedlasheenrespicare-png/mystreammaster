@@ -7,10 +7,14 @@ import {
   eventMinuteLabel,
   eventSymbol,
   formatInZone,
+  hasDisplayableForm,
   kickoffLabel,
   lineupPitchSides,
+  pitchCounters,
   pitchLanes,
-  safeLogoUrl,
+  positionLabelAr,
+  previewFacts,
+  previewPlacement,
   type MatchDefinition,
   type MatchEvent,
   type MatchSnapshot,
@@ -18,6 +22,8 @@ import {
   type PitchMarker,
   type PitchLineupPlayer,
 } from '../lib/match-center.mjs';
+import TeamCrest from './MatchCenterCrest';
+import FormSide from './MatchCenterForm';
 import EventIcon from './MatchCenterSymbols';
 import type { MatchCenterTools } from './useMatchCenterTools';
 
@@ -62,7 +68,11 @@ function LineupPlayer({ player, matchId, tools, onHover }: {
         {player.shirtNumber ?? '—'}
       </span>
       <span className="mc-player-name" dir="auto">{player.name}</span>
-      <small dir="ltr">{player.positionCode}</small>
+      {/* التسمية العربية ترجمتنا لرمز المصدر؛ الرمز يبقى ظاهراً بعدها كما كان. رمز غير معروف ⇒ الرمز وحده. */}
+      <small>
+        {positionLabelAr(player.positionCode) && <span className="mc-player-pos">{positionLabelAr(player.positionCode)} </span>}
+        <span className="mc-player-pos-code" dir="ltr">{player.positionCode}</span>
+      </small>
     </li>
   );
 }
@@ -77,7 +87,7 @@ function PitchLineups({ match, snapshot, tools }: {
   return (
     <section className="mc-pitch-lineups" aria-label="التشكيلة الأساسية المؤكدة على الملعب">
       <h2>التشكيلة الأساسية المؤكدة</h2>
-      <p className="mc-lineup-explainer">توزيع تخطيطي حسب مراكز المصدر، وليس إحداثيات أو حركة فعلية. تبقى التشكيلة الأساسية ثابتة؛ شارات التبديلات لا تغيّر مواقع اللاعبين.</p>
+      {/* شرح التوزيع التخطيطي انتقل إلى «توثيق ومراجعة» آخر الصفحة (بطاقة «كيف تُقرأ التشكيلة»). */}
       <div className="mc-lineup-squads">
         {sides.map(squad => (
           <section className="mc-lineup-squad" key={squad.side} data-side={squad.side} aria-label={squad.teamName}>
@@ -106,6 +116,40 @@ function PitchLineups({ match, snapshot, tools }: {
   );
 }
 
+/* ─────────── المعاينة على الملعب ───────────
+   للمحتوى بيت واحد: ما دام الملعب لا يرسم تشكيلة تُعرض هنا — في موضع
+   `.mc-pitch-lineups` نفسه — حقائقُ المباراة ومستوى الفريقين؛ وحين تصدر
+   التشكيلة تحل محلها في الموضع ذاته وتعود المعاينة إلى لوحة «قبل المباراة».
+   ومع الانطلاق يصير الملعب للأحداث والنتيجة: المعاينة تعود إلى اللوحة ولو لم
+   تصل تشكيلة قط (`previewPlacement`). */
+function PitchPreview({ match, snapshot, status }: {
+  match: MatchDefinition; snapshot: MatchSnapshot | null; status: MatchStatus | null;
+}) {
+  if (previewPlacement({ match, snapshot, status }) !== 'pitch') return null;
+  const facts = previewFacts(match, snapshot, status);
+  const homeForm = hasDisplayableForm(snapshot?.form?.home ?? null) ? snapshot?.form?.home ?? null : null;
+  const awayForm = hasDisplayableForm(snapshot?.form?.away ?? null) ? snapshot?.form?.away ?? null : null;
+  if (facts.length === 0 && !homeForm && !awayForm) return null;
+  const homeName = cleanText(match.home.name) ?? cleanText(match.home.sourceName) ?? 'المضيف';
+  const awayName = cleanText(match.away.name) ?? cleanText(match.away.sourceName) ?? 'الضيف';
+  return (
+    <section className="mc-pitch-preview" aria-label="المعاينة على الملعب حتى صدور التشكيلة">
+      <h2>المعاينة</h2>
+      {facts.length > 0 && (
+        <dl className="mc-pitch-preview-facts">
+          {facts.map(({ id, label, value }) => <div key={id}><dt>{label}</dt><dd dir="auto">{value}</dd></div>)}
+        </dl>
+      )}
+      {(homeForm || awayForm) && (
+        <div className="mc-pitch-forms" role="group" aria-label="مستوى الفريقين — مباريات موثقة">
+          {homeForm && <FormSide variant="pitch" side="home" name={homeName} form={homeForm} />}
+          {awayForm && <FormSide variant="pitch" side="away" name={awayName} form={awayForm} />}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function cleanText(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
@@ -114,33 +158,8 @@ function validDate(value: unknown): value is string {
   return typeof value === 'string' && value.trim() !== '' && Number.isFinite(Date.parse(value));
 }
 
-function monogram(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length > 1) return words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
-  return name.trim().slice(0, 2).toUpperCase();
-}
-
 function Crest({ logo, name, side }: { logo: string | null; name: string; side: 'home' | 'away' }) {
-  const [failed, setFailed] = useState(false);
-  const safeLogo = safeLogoUrl(logo);
-  useEffect(() => setFailed(false), [safeLogo]);
-
-  if (safeLogo && !failed) {
-    return (
-      <img
-        className={`mc-pitch-crest mc-pitch-crest--${side}`}
-        src={safeLogo}
-        alt=""
-        width="56"
-        height="56"
-        loading="lazy"
-        decoding="async"
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
-  return <span className={`mc-pitch-crest mc-pitch-crest--${side}`} aria-hidden="true">{monogram(name)}</span>;
+  return <TeamCrest logo={logo} name={name} className={`mc-pitch-crest mc-pitch-crest--${side}`} size={56} />;
 }
 
 /* ─────────── رموز الملعب ───────────
@@ -338,6 +357,7 @@ function Team({ match, snapshot, side, flash }: {
   const sourceName = cleanText(team.sourceName);
   const shortName = cleanText(team.shortName);
   const logo = snapshot?.logos?.[side] ?? team.logo;
+  const counters = pitchCounters(snapshot?.statistics ?? null, side);
 
   return (
     <div className={`mc-pitch-team mc-pitch-team--${side}${flash ? ' mc-pitch-team--flash' : ''}`}>
@@ -345,6 +365,18 @@ function Team({ match, snapshot, side, flash }: {
       <span className="mc-pitch-team-name">{name}</span>
       {shortName && shortName !== name && <span className="mc-pitch-team-short">{shortName}</span>}
       <span className="mc-pitch-team-role">{side === 'home' ? 'المضيف' : 'الضيف'}</span>
+      {/* صفراء/حمراء/ركنيات من جدول الإحصائيات نفسه؛ الحبّة بلا قيمة تُحذف، وبلا أي قيمة لا صف. */}
+      {counters.length > 0 && (
+        <ul className="mc-pitch-counters" aria-label={`بطاقات وركنيات ${side === 'home' ? 'المضيف' : 'الضيف'}`}>
+          {counters.map(counter => (
+            <li className="mc-pitch-counter" data-counter={counter.id} key={counter.id}>
+              <i aria-hidden="true" />
+              <span className="mc-num">{new Intl.NumberFormat('ar-EG').format(counter.value)}</span>
+              <em>{counter.label}</em>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -397,9 +429,9 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
     }
   }
 
-  const readAtLabel = validDate(snapshot?.readAt)
-    ? formatInZone(snapshot.readAt, 'Africa/Cairo', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
-    : null;
+  /* حقائق الملعب تحت الإطار تُرسم فقط حين تكون المعاينة في اللوحة؛ وإلا فهي
+     على الملعب نفسه (`PitchPreview`) ولا تُكرَّر تحته مباشرة. */
+  const previewOnPitch = previewPlacement({ match, snapshot, status }) === 'pitch';
 
   return (
     <section className="mc-match-visual" aria-labelledby="mc-title">
@@ -444,9 +476,10 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
 
         <PitchEvents snapshot={snapshot} matchId={match.id} tools={tools} />
         <PitchLineups match={match} snapshot={snapshot} tools={tools} />
+        <PitchPreview match={match} snapshot={snapshot} status={status} />
       </div>
 
-      {(venue || competitionLine || cairoKickoff || meccaKickoff || readAtLabel) && (
+      {!previewOnPitch && (venue || competitionLine || cairoKickoff || meccaKickoff) && (
         <dl className="mc-match-facts">
           {venue && <div><dt>الملعب</dt><dd dir="auto">{venue}</dd></div>}
           {competition && <div><dt>المسابقة</dt><dd>{competition}</dd></div>}
@@ -454,10 +487,9 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
           {round && <div><dt>الجولة</dt><dd className="mc-num">{round}</dd></div>}
           {cairoKickoff && <div><dt>موعد القاهرة</dt><dd>{cairoKickoff}{cairoDay ? ` · ${cairoDay}` : ''}</dd></div>}
           {meccaKickoff && <div><dt>موعد مكة</dt><dd>{meccaKickoff}</dd></div>}
-          {readAtLabel && <div><dt>وقت القراءة</dt><dd>{readAtLabel}</dd></div>}
         </dl>
       )}
-      <p className="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ شارات اللاعبين، إن توفرت تشكيلة مؤكدة، تربط الحدث بصاحبه لا بموقع حدوثه. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله، والنقر يثبّته.</p>
+      {/* وقت القراءة وشرح شريط الأحداث انتقلا إلى «توثيق ومراجعة» آخر الصفحة. */}
     </section>
   );
 }

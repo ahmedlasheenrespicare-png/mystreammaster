@@ -61,14 +61,14 @@ for(const width of [390,1440]){
   await page.goto('/match-analysis/');
   if(width<1360){
    await page.locator('.sm-menu-toggle').click();
-   const group=page.locator('.sm-acc[data-group="analysis"]');
+   const group=page.locator('.sm-acc[data-group="match-center"]');
    if(await group.getAttribute('open')===null)await group.locator(':scope > summary').click();
-  }else await page.locator('#sm-dd-btn-analysis').click();
-  const season=page.locator(width<1360?'.sm-mobile .sm-season':'.sm-dd-analysis .sm-season');
+  }else await page.locator('#sm-dd-btn-match-center').click();
+  const season=page.locator(width<1360?'.sm-mobile .sm-season':'.sm-dd-match-center .sm-season');
   await expect(season).not.toHaveAttribute('open','');
   await season.locator('summary').click();
   await expect(season).toHaveAttribute('open','');
-  await expect(season.getByText('الجولة الثانية',{exact:true})).toBeVisible();
+  await expect(season.getByText('تحليلات الجولة الثانية',{exact:true})).toBeVisible();
   for(const route of routes)await expect(season.locator(`a[href="${route}"]`)).toBeVisible();
   await season.locator(`a[href="${routes[0]}"]`).click();
   await expect(page).toHaveURL(/\/roma-real-madrid\/$/);

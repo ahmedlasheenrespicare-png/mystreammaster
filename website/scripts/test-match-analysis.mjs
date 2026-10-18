@@ -37,8 +37,8 @@ test('the four reports and their follow pages link back to their analysis parent
   assert.equal(crumbs[1].name,'تحليل المباريات');
   assert.equal(crumbs[1].item,'https://streammasterstore.com/match-analysis/');
  }
- const group=NAV_GROUPS.find(g=>g.key==='analysis');assert.equal(group.links[0].href,'match-analysis/');assert.equal(group.links[0].label,'دوري أبطال أوروبا — موسم 2026/2027');
- for(const route of ['match-analysis',...data.reports.map(r=>r.slug)])assert.equal(activeGroupKey('/'+route+'/'),'analysis');
+ const group=NAV_GROUPS.find(g=>g.key==='match-center');assert.ok(group,'match-center group not found');const analysisLink=group.links.find(l=>l.href==='match-analysis/');assert.ok(analysisLink,'match-analysis link not in match-center');assert.equal(analysisLink.label,'تحليل دوري أبطال أوروبا');
+ for(const route of ['match-analysis',...data.reports.map(r=>r.slug)])assert.equal(activeGroupKey('/'+route+'/'),'match-center');
 });
 test('analysis collection refuses malformed or duplicate card identities',()=>{
  for(const change of [d=>d.reports.pop(),d=>d.reports[1].slug=d.reports[0].slug,d=>d.reports[0].slug='../invalid',d=>d.reports[0].homeScore=-1 ]){

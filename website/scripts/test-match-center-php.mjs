@@ -39,9 +39,12 @@ function phpBindings() {
 
 test('the PHP binding table matches the JS fixtures exactly — slug, event id, league and day', () => {
   const bindings = phpBindings();
-  assert.equal(bindings.size, MATCH_CENTER_ALL_MATCHES.length, 'every fixture must be bound in the server table');
+  // Content-only matches (e.g. UCL analysis pages) have no ESPN event ID and
+  // therefore no PHP binding; only fixtures with a confirmed event ID are bound.
+  const boundFixtures = MATCH_CENTER_ALL_MATCHES.filter(f => f.externalIds.espn != null);
+  assert.equal(bindings.size, boundFixtures.length, 'every fixture with an event id must be bound in the server table');
 
-  for (const fixture of MATCH_CENTER_ALL_MATCHES) {
+  for (const fixture of boundFixtures) {
     const bound = bindings.get(fixture.slug);
     assert.ok(bound, `${fixture.slug} is missing from the PHP table`);
     // Rule 3: bound by fixture id, not by team name or kickoff.

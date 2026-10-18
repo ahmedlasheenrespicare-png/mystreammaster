@@ -34,6 +34,12 @@ const NOINDEX = new Set([
   'search/index.html',
   'cart/index.html',
 ]);
+/* صفحات تفاصيل المباريات الفردية داخل أي بطولة — noindex مقصود */
+const isMatchDetailPage = (rel) => {
+  // matches/{competition}/{match-slug}/index.html  (3+ segments after matches/)
+  const parts = rel.replace(/\/index\.html$/, '').split('/');
+  return parts[0] === 'matches' && parts.length >= 3;
+};
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'website', 'admin-dashboard', 'dist', 'dist-ssr']);
 
 async function htmlFiles(dir, out = []) {
@@ -104,7 +110,7 @@ test('بيانات <head> كاملة وفريدة لكل صفحة قابلة ل�
   const titles = new Map();
   const descriptions = new Map();
   for (const [rel, html] of pages) {
-    if (NOINDEX.has(rel)) {
+    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) {
       assert.match(meta(html, 'name', 'robots') || '', /noindex/i, `${rel}: صفحة وظيفية يجب أن تكون noindex`);
       continue;
     }
@@ -217,7 +223,7 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
   }
 
   for (const rel of pages.keys()) {
-    if (NOINDEX.has(rel)) continue;
+    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) continue;
     const url = urlOf(rel);
     assert.ok(inSitemap.has(url), `${rel}: غير موجود في أي sitemap`);
     const route = routeOf(rel);
@@ -230,6 +236,6 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
     const route = decodeURIComponent(new URL(url).pathname);
     const rel = route === '/' ? 'index.html' : route.endsWith('/') ? `${route.slice(1)}index.html` : route.slice(1);
     assert.ok(pages.has(rel), `sitemap يشير إلى صفحة غير موجودة: ${url}`);
-    assert.ok(!NOINDEX.has(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
+    assert.ok(!NOINDEX.has(rel) && !isMatchDetailPage(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
   }
 });

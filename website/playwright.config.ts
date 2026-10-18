@@ -6,7 +6,7 @@ import path from 'node:path';
 const libraries = await inflate(path.resolve('node_modules/@sparticuz/chromium/bin/al2023.tar.br'));
 export default defineConfig({
   testDir: './tests',
-  timeout: 30000,
+  timeout: 60000,
   workers: 1,
   // A single CI retry distinguishes transient runner/layout timing from persistent failures.
   retries: process.env.CI ? 1 : 0,

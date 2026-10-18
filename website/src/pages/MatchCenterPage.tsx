@@ -31,15 +31,10 @@ function validDate(value: unknown): value is string {
    الزائر ما في القسم قبل أن يفتحه — ووصفٌ لا يُطابق ما يُعرض أسوأ من لا شيء،
    لذلك تُركت النصوص عامة بلا أرقام: الأرقام تتغيّر مع كل قراءة. */
 const TAB_HINTS: Partial<Record<import('../lib/match-center.mjs').TabId, string>> = {
-  preview: 'المسابقة والموسم والجولة والملعب والموعد ومستوى الفريقين',
-  history: 'آخر ثلاث مواجهات مكتملة أرسلها المصدر',
-  lineups: 'التشكيلات المؤكدة من المصدر فقط',
-  live: 'أرقام المباراة للفريقين مجمّعة في مجموعات يسهل مسحها',
-  analysis: 'وقائع المصدر: ملخص الأرقام والأحداث مع فلاتر الفريق والشوط والنوع',
-  report: 'النتيجة النهائية وأرقام المباراة بعد تأكيد المصدر',
-  notes: 'ملاحظاتك أنت، محفوظة في هذا المتصفح لهذه المباراة وحدها',
+  prematch: 'المعاينة والمواجهات والتشكيلات المؤكدة إن وصلت',
+  live: 'العد التنازلي وآخر قراءة وأرقام الفريقين من المصدر',
+  postmatch: 'ملخص الوقائع وفلاتر الأحداث والإحصائيات وتقرير ما بعد المباراة',
 };
-
 function readTimeLabel(value: unknown): string | null {
   if (!validDate(value)) return null;
   try {
@@ -64,11 +59,10 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
     clearAnnouncements,
   } = state;
 
-  /* حالة الاختار المشتركة بين شريط الملعب وقسم التحليل ودفتر المحلل. */
+  /* حالة الاختار المشتركة بين شريط الملعب وقسم التحليل. */
   const tools = useMatchCenterTools({
     events: snapshot?.events ?? null,
     matchId: match.id,
-    onOpenNotes: () => chooseTab('notes'),
   });
 
   const [flash, setFlash] = useState<'home' | 'away' | null>(null);
@@ -96,7 +90,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
     ? state.activeTab
     : availableTabs.includes(defaultTab(status))
       ? defaultTab(status)
-      : availableTabs[0] ?? 'preview';
+      : availableTabs[0] ?? 'prematch';
   const score = snapshot?.score ?? null;
   const showScore = canShowScore(status, score);
   const livePulse = status?.code === 'live' && freshness.level === 'fresh';
@@ -195,6 +189,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
                     snapshot={snapshot}
                     status={status}
                     now={state.now}
+                    countdown={state.countdown}
                     tools={tools}
                     freshnessText={freshness.text}
                     readAtLabel={readAtLabel}

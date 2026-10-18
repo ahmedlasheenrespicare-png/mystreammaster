@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import {
   canShowKickoff,
+  type CountdownParts,
   comparisonFor,
   computeAvailableTabs,
   confirmedLineupSides,
@@ -26,7 +27,6 @@ import type { MatchCenterTools } from './useMatchCenterTools';
 import MatchCenterRadar from './MatchCenterRadar';
 import MatchCenterStatGroups from './MatchCenterStatGroups';
 import MatchCenterAnalysis from './MatchCenterAnalysis';
-import MatchCenterAnalystNotes from './MatchCenterAnalystNotes';
 
 /* ==========================================================================
    لوحات مركز المباراة — عرضٌ فقط، وبلا طلبات
@@ -46,9 +46,10 @@ export interface PanelProps {
   status: MatchStatus | null;
   /** محفوظ للتوافق مع مستهلكي اللوحات؛ لا تُشتق حالة المباراة من الساعة. */
   now: number;
-  /** حالة تفاعلية مشتركة مع شريط الملعب: التحديد، والإظهار، وربط الملاحظة. */
+  countdown?: CountdownParts | null;
+  /** حالة تفاعلية مشتركة مع شريط الملعب: التحديد والإظهار. */
   tools?: MatchCenterTools;
-  /** نص حداثة القراءة كما تقرّره طبقة العقد — للعرض والتصدير، لا للاستنتاج. */
+  /** نص حداثة القراءة كما تقرّره طبقة العقد — للعرض، لا للاستنتاج. */
   freshnessText?: string | null;
   /** وقت القراءة منسَّقاً بالعربية، أو `null` إن لم يصل وقت صالح. */
   readAtLabel?: string | null;
@@ -186,7 +187,7 @@ export function PreviewPanel({ match, snapshot, status }: PanelProps) {
 
   return (
     <div>
-      <h2>معاينة المباراة</h2>
+      <h3>المعاينة</h3>
       {facts.length > 0 && (
         <dl className="mc-preview-facts">
           {facts.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd dir="auto">{value}</dd></div>)}
@@ -230,7 +231,7 @@ export function HistoryPanel({ match, snapshot, status }: PanelProps) {
 
   return (
     <div>
-      <h2>المواجهات السابقة</h2>
+      <h3>المواجهات</h3>
       <p>المواجهات المكتملة التي أرسلها المصدر فقط.</p>
       <ol className="mc-history-list">
         {entries.map((entry, index) => {
@@ -294,7 +295,7 @@ export function LineupsPanel({ match, snapshot }: PanelProps) {
 
   return (
     <div>
-      <h2>التشكيلات المؤكدة</h2>
+      <h3>التشكيلات المؤكدة</h3>
       <div className="mc-lineup-grid">
         {sides.map(({ side, data }) => {
           const team = match[side];
@@ -308,9 +309,8 @@ export function LineupsPanel({ match, snapshot }: PanelProps) {
 
 /* ─────────────────────────── 4) مباشر ─────────────────────────── */
 
-export function LivePanel({ match, snapshot, status }: PanelProps) {
+export function LivePanel({ match, snapshot, status, countdown, freshnessText, readAtLabel }: PanelProps) {
   const statistics = displayableStatistics(snapshot?.statistics ?? null);
-  if (statistics.length === 0) return null;
 
   const statusLabel = text(status?.label);
   const clock = text(status?.clock);
@@ -318,7 +318,11 @@ export function LivePanel({ match, snapshot, status }: PanelProps) {
   const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
   return (
     <div>
-      <h2>بيانات المباراة</h2>
+      <h2>مباشر</h2>
+      {status?.phase === 'pre' && countdown && !countdown.started && (
+        <p aria-label="العد التنازلي لموعد المباراة">متبقي على الموعد: <bdi className="mc-num">{numberLabel(countdown.days)} يوم · {numberLabel(countdown.hours)} ساعة · {numberLabel(countdown.minutes)} دقيقة · {numberLabel(countdown.seconds)} ثانية</bdi></p>
+      )}
+      {freshnessText && <p>{freshnessText}{readAtLabel && <> · آخر قراءة: {readAtLabel}</>}</p>}
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
       <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} idPrefix="live" />
     </div>
@@ -346,38 +350,32 @@ function RatingList({ ratings }: { ratings: ScoredPlayer[] }) {
   );
 }
 
-export function ReportPanel({ match, snapshot, status }: PanelProps) {
+export function ReportPanel({ snapshot, status }: PanelProps) {
   const official = isResultOfficial(status, snapshot?.score ?? null);
-  const statistics = displayableStatistics(snapshot?.statistics ?? null);
   const ratings = displayableRatings(snapshot?.ratings ?? null);
   const finalScore = snapshot?.score ?? null;
-  if (!official || !finalScore || !isValidScore(finalScore)
-    || (statistics.length === 0 && ratings.length === 0)) return null;
+  if (!official || !finalScore || !isValidScore(finalScore)) return null;
 
-  const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
-  const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
   return (
     <div>
-      <h2>بعد المباراة</h2>
+      <h3>تقرير ما بعد المباراة</h3>
       <p>النتيجة النهائية: <b className="mc-num">{numberLabel(finalScore.home as number)}–{numberLabel(finalScore.away as number)}</b></p>
-      <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} idPrefix="report" />
       <RatingList ratings={ratings} />
     </div>
   );
 }
 
-/* ───────────────── 6) تحليل المباراة · 7) دفتر المحلل ─────────────────
-   اللوحتان في ملفيهما الخاصّين — `MatchCenterAnalysis` و
-   `MatchCenterAnalystNotes` — ويُذكران هنا لأن `PANELS` هو الجدول الذي يربط
-   معرّف التبويب بمكوّنه: لا يصحّ أن يوجد تبويب في العقد بلا لوحة، ولا لوحة
-   لا يبلغها التبويب. */
+/** التجميع فقط؛ تبقى بوابات البيانات في طبقة العقد واللوحات الأصلية. */
+export function PrematchPanel(props: PanelProps) {
+  return <div><h2>قبل المباراة</h2><PreviewPanel {...props} /><HistoryPanel {...props} /><LineupsPanel {...props} /></div>;
+}
+
+export function PostmatchPanel(props: PanelProps) {
+  return <div><h2>بعد المباراة</h2><MatchCenterAnalysis {...props} /><ReportPanel {...props} /></div>;
+}
 
 export const PANELS: Record<TabId, (props: PanelProps) => ReactElement | null> = {
-  preview: PreviewPanel,
-  history: HistoryPanel,
-  lineups: LineupsPanel,
+  prematch: PrematchPanel,
   live: LivePanel,
-  analysis: MatchCenterAnalysis,
-  report: ReportPanel,
-  notes: MatchCenterAnalystNotes,
+  postmatch: PostmatchPanel,
 };

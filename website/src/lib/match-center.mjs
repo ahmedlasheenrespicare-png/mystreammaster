@@ -332,24 +332,16 @@ export function mergeReads(current, results, now) {
 
 /* ──────────────────── التبويبات: الافتراضي وثبات الاختيار ──────────────────── */
 
-/* `analysis` و`notes` في هذا الترتيب عمداً: التحليل يقرأ من نفس أرقام
-   «مباشر» فيليه مباشرة، ودفتر المحلل أداة شخصية تأتي بعد كل ما هو بيانات. */
 export const TABS = [
-  { id: 'preview', label: 'معاينة' },
-  { id: 'history', label: 'المواجهات' },
-  { id: 'lineups', label: 'التشكيلات' },
+  { id: 'prematch', label: 'قبل المباراة' },
   { id: 'live', label: 'مباشر' },
-  { id: 'analysis', label: 'تحليل' },
-  { id: 'report', label: 'بعد المباراة' },
-  { id: 'notes', label: 'دفتر المحلل' },
+  { id: 'postmatch', label: 'بعد المباراة' },
 ];
 
-/* البند 5: «عند الدخول نفتح التبويب المناسب للحالة». */
 export function defaultTab(status) {
-  const code = status?.code || 'scheduled';
-  if (code === 'live' || code === 'halftime' || code === 'suspended') return 'live';
-  if (COMPLETED_CODES.has(code)) return 'report';
-  return 'preview';
+  if (status?.phase === 'post') return 'postmatch';
+  if (status?.phase === 'pre' || status?.phase === 'live') return 'live';
+  return 'prematch';
 }
 
 /* البند 5 (الفقرة الأخيرة): «إذا اختار المستخدم تبويباً بنفسه، فلا ننقله منه
@@ -1497,24 +1489,17 @@ export function hasPreviewFacts(match, snapshot, status) {
   );
 }
 
-/**
- * التبويبات التي لها ما يعرضها، بترتيب ثابت.
- *
- * • `analysis` لا يظهر بلا أحداث أو أرقام — لا تبويب يتيم ولا لوحة فارغة.
- * • `notes` أداة للمحلل لا لوحة بيانات: يظهر متى وُجد تبويب واحد يعرضه،
- *   ولا يخترع رقماً ولا يصف فريقاً. عدده صفر في البداية، وهذا صحيح.
- */
+/** المرحلة أولاً ثم توافر بيانات المصدر، للواجهة والروابط والطباعة معاً. */
 export function computeAvailableTabs({ match, snapshot, status }) {
   const tabs = [];
-  if (hasPreviewFacts(match, snapshot, status)) tabs.push('preview');
-  if (headToHeadFor(match, snapshot, status).length > 0) tabs.push('history');
-  if (confirmedLineupSides(snapshot?.lineups ?? null).length > 0) tabs.push('lineups');
-  if (displayableStatistics(snapshot?.statistics ?? null).length > 0) tabs.push('live');
-  if (analysisIsAvailable(snapshot)) tabs.push('analysis');
-  const official = isResultOfficial(status, snapshot?.score ?? null);
-  if (official && (displayableStatistics(snapshot?.statistics ?? null).length > 0
-    || displayableRatings(snapshot?.ratings ?? null).length > 0)) tabs.push('report');
-  if (tabs.length > 0) tabs.push('notes');
+  if (hasPreviewFacts(match, snapshot, status)
+    || headToHeadFor(match, snapshot, status).length > 0
+    || confirmedLineupSides(snapshot?.lineups ?? null).length > 0) tabs.push('prematch');
+  if ((status?.phase === 'pre' || status?.phase === 'live')
+    && (canShowKickoff(status) && Number.isFinite(Date.parse(match?.kickoffUtc))
+      || snapshot && (isValidScore(snapshot.score) || analysisIsAvailable(snapshot)))) tabs.push('live');
+  if (status?.phase === 'post' && (analysisIsAvailable(snapshot)
+    || isResultOfficial(status, snapshot?.score ?? null))) tabs.push('postmatch');
   return tabs;
 }
 /* ─────────────────────── أدوات داخلية ─────────────────────── */

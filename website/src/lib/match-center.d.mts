@@ -8,7 +8,7 @@ export type MatchCode =
 
 export type MatchPhase = 'pre' | 'live' | 'post' | 'terminal';
 
-export type TabId = 'preview' | 'history' | 'lineups' | 'live' | 'analysis' | 'report' | 'notes';
+export type TabId = 'prematch' | 'live' | 'postmatch';
 
 export type ProviderId = 'espn' | 'apifootball' | 'snapshot' | 'unknown';
 

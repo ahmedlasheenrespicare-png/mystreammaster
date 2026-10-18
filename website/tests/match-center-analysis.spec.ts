@@ -1,15 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 /* ==========================================================================
-   قسم «تحليل المباراة» ودفتر ملاحظات المحلل — اختبار الواجهة
+   قسم «بعد المباراة» وملخص الوقائع — اختبار الواجهة
    --------------------------------------------------------------------------
    كل رقم في هذا الملف مُدخلٌ للاختبار لا بيانات منشورة: يُحقن في
    `match-center.php` ثم يُقرأ كما يقرأه الزائر. الفحوص على ما لا يُغتفر إفساده:
    • التبويب لا يظهر بلا أحداث ولا أرقام، ولا يظهر صفٌّ فارغ بدل ذلك.
    • القيمة الناقصة تبقى كلمة، ولا تتحول صفرًا.
    • الفلاتر تُطابق أحداث المصدر، وتعمل باللمس ولوحة المفاتيح.
-   • الملاحظة تُحفظ لمباراتها وحدها، وتعود بعد إعادة التحميل، وتُعدَّل وتحذف
-     وتُصدَّر — بلا خدمة خلفية.
+   • المرحلة تمنع تركيب اللوحات والروابط المخالفة، والطباعة تفتح اللوحات المتاحة.
 ========================================================================== */
 
 const MATCH = 'manchester-city-ipswich-town';
@@ -58,7 +57,7 @@ function payload(overrides = {}) {
     event: EVENT_ID,
     readAt: '2026-10-17T15:19:20Z',
     cache: 'HIT',
-    status: { type: { name: 'STATUS_SECOND_HALF', state: 'in', completed: false }, displayClock: "78'" },
+    status: { type: { name: 'STATUS_FULL_TIME', state: 'post', completed: true }, displayClock: "78'" },
     score: { home: 2, away: 0 },
     events: EVENTS,
     statistics: STATISTICS,
@@ -105,7 +104,7 @@ async function expectNoOverflow(page, width: number, label: string) {
     const limit = document.documentElement.clientWidth;
     const outside: string[] = [];
     const scrollable: string[] = [];
-    for (const node of document.querySelectorAll('.mc-page, .mc-container, .mc-panel, .mc-pitch-frame, .mc-pitch-events, .mc-analysis-filters, .mc-note-form')) {
+    for (const node of document.querySelectorAll('.mc-page, .mc-container, .mc-panel, .mc-pitch-frame, .mc-pitch-events, .mc-analysis-filters')) {
       const el = node as HTMLElement;
       if (el.scrollWidth - el.clientWidth > 1) scrollable.push(el.className.toString());
       const box = el.getBoundingClientRect();
@@ -121,18 +120,18 @@ async function expectNoOverflow(page, width: number, label: string) {
 test.describe('match analysis tab', () => {
   test('the tab opens when the source sent events or numbers', async ({ page }) => {
     await openMatchCenter(page);
-    await expect(page.locator('#mc-tab-analysis')).toBeVisible();
+    await expect(page.locator('#mc-tab-postmatch')).toBeVisible();
   });
 
   test('no events and no numbers: no analysis tab, no empty panel', async ({ page }) => {
-    await openMatchCenter(page, { overrides: { events: [], statistics: null } });
-    await expect(page.locator('#mc-tab-analysis')).toHaveCount(0);
+    await openMatchCenter(page, { overrides: { events: [], statistics: null, score: null } });
+    await expect(page.locator('#mc-tab-postmatch')).toHaveCount(0);
     await expect(page.locator('.mc-analysis')).toHaveCount(0);
   });
 
   test('stoppages alone are not data: the analysis tab stays closed', async ({ page }) => {
-    await openMatchCenter(page, { overrides: { events: [EVENTS[3]], statistics: null } });
-    await expect(page.locator('#mc-tab-analysis')).toHaveCount(0);
+    await openMatchCenter(page, { overrides: { events: [EVENTS[3]], statistics: null, score: null } });
+    await expect(page.locator('#mc-tab-postmatch')).toHaveCount(0);
     await expect(page.locator('.mc-analysis')).toHaveCount(0);
     // ولا يصل نصّهما الإنجليزي إلى الصفحة كلها.
     await expect(page.getByText('Start Delay')).toHaveCount(0);
@@ -140,7 +139,7 @@ test.describe('match analysis tab', () => {
 
   test('the summary says only what the numbers say: both values, no verdict', async ({ page }) => {
     await openMatchCenter(page);
-    await openTab(page, 'analysis');
+    await openTab(page, 'postmatch');
 
     const shots = page.locator('.mc-analysis-fact', { has: page.getByText('على المرمى') });
     await expect(shots).toContainText('٤');
@@ -178,7 +177,7 @@ test.describe('match analysis tab', () => {
 
   test('filters match source events by team, period and type; عرض الكل resets', async ({ page }) => {
     await openMatchCenter(page);
-    await openTab(page, 'analysis');
+    await openTab(page, 'postmatch');
 
     const rows = page.locator('.mc-analysis-event');
     await expect(rows).toHaveCount(RENDERABLE);
@@ -225,7 +224,7 @@ test.describe('match analysis tab', () => {
 
   test('an event row opens details, works by keyboard, and reveals itself on the strip', async ({ page }) => {
     await openMatchCenter(page);
-    await openTab(page, 'analysis');
+    await openTab(page, 'postmatch');
 
     const substitution = page.locator('.mc-analysis-event', { hasText: 'تبديل' }).first();
     await substitution.locator('button').focus();
@@ -259,7 +258,7 @@ test.describe('match analysis tab', () => {
 
   test('sections the provider does not deliver are named, not drawn empty', async ({ page }) => {
     await openMatchCenter(page);
-    await openTab(page, 'analysis');
+    await openTab(page, 'postmatch');
     const absent = page.locator('.mc-analysis-absent');
     await expect(absent.getByText('التشكيلات', { exact: false })).toBeVisible();
     await expect(absent).toContainText('تقييمات اللاعبين');
@@ -272,9 +271,11 @@ test.describe('match analysis tab', () => {
 
   test('a payload with neither events nor statistics opens no analysis and no zero table', async ({ page }) => {
     await openMatchCenter(page, { overrides: { statistics: null, events: [], lineups: null, ratings: null, h2h: [], form: null } });
-    await expect(page.locator('#mc-tab-analysis')).toHaveCount(0);
+    await expect(page.locator('.mc-analysis')).toHaveCount(0);
     await expect(page.locator('#mc-tab-live')).toHaveCount(0);
     await expect(page.locator('.mc-analysis, .mc-stat-group')).toHaveCount(0);
+    await expect(page.locator('#mc-tab-postmatch')).toBeVisible();
+    await expect(page.locator('#mc-panel-postmatch')).toContainText('النتيجة النهائية');
     // شريط الدقيقة لا يَرسم أحداثًا ليست موجودة، ولا يَخترع ساعة.
     await expect(page.locator('.mc-pitch-events')).toHaveCount(0);
     await expect(page.locator('.mc-pitch-axis')).toHaveCount(0);
@@ -285,123 +286,11 @@ test.describe('match analysis tab', () => {
   });
 });
 
-test.describe('analyst notebook', () => {
-  test('a note is saved per match, returns after reload, and can be edited, deleted, exported', async ({ page }) => {
-    await openMatchCenter(page);
-    await openTab(page, 'notes');
-
-    await expect(page.locator('.mc-notebook-storage')).toContainText('هذا المتصفح على هذا الجهاز فقط');
-    await expect(page.locator('.mc-note-empty')).toContainText('لا ملاحظات في هذا المتصفح لهذه المباراة');
-
-    await page.locator('#mc-note-text').fill('خروج الظهير الأيسر ترك مساحة على الجهة اليمنى.');
-    await page.getByRole('radio', { name: 'دقيقة أختارها' }).check();
-    await page.locator('#mc-note-minute').fill('62');
-    await page.locator('#mc-note-side').selectOption('away');
-    await page.getByRole('button', { name: 'كرة ثابتة', exact: true }).click();
-    await page.getByRole('button', { name: 'حفظ الملاحظة' }).click();
-
-    const saved = page.locator('.mc-note-item');
-    await expect(saved).toHaveCount(1);
-    await expect(saved.first()).toContainText('خروج الظهير الأيسر');
-    await expect(saved.first()).toContainText('كرة ثابتة');
-    await expect(saved.first()).toContainText('الدقيقة 62′ · إيبسويتش تاون');
-    await expect(page.locator('.mc-note-status')).toContainText('حُفظت الملاحظة');
-
-    // بعد إعادة التحميل: الملاحظة لمباراتها هي، ولم تُرسل إلى أي مكان.
-    await page.reload();
-    await expect(page.locator('.mc-pitch-statusline')).toBeVisible({ timeout: 30_000 });
-    await page.locator('#mc-tab-notes').click();
-    await expect(page.locator('.mc-note-item')).toHaveCount(1);
-    await expect(page.locator('.mc-note-item').first()).toContainText('خروج الظهير الأيسر');
-
-    // التعديل يحفظ في السطر نفسه، لا في سطر ثانٍ.
-    await page.getByRole('button', { name: /تعديل الملاحظة/ }).click();
-    await page.locator('#mc-note-text').fill('خروج الظهير + تأخر الارتداد — مساحة على الجهة اليمنى.');
-    await page.getByRole('button', { name: 'حفظ التعديل' }).click();
-    await expect(page.locator('.mc-note-item')).toHaveCount(1);
-    await expect(page.locator('.mc-note-item').first()).toContainText('تأخر الارتداد');
-
-    // التصدير: ملف واحد فيه الملاحظة وأرقام المباراة، والغياب يبقى غيابًا.
-    const [download] = await Promise.all([
-      page.waitForEvent('download'),
-      page.getByRole('button', { name: /تصدير الملاحظات والبيانات/ }).click(),
-    ]);
-    expect(download.suggestedFilename()).toMatch(/^analyst-notes-manchester-city-ipswich-town-\d{8}-\d{4}\.json$/);
-    const stream = await download.createReadStream();
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) chunks.push(chunk as Buffer);
-    const exported = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-    expect(exported.notes).toHaveLength(1);
-    expect(exported.notes[0].minute).toBe(62);
-    expect(exported.notes[0].teamSide).toBe('away');
-    expect(exported.notes[0].tags).toEqual(['كرة ثابتة']);
-    expect(exported.read.statistics[1]).toEqual({ key: 'passPct', label: 'دقة التمرير', unit: '%', home: 84, away: null });
-    expect(exported.read.score).toEqual({ home: 2, away: 0 });
-    expect(exported.read.lineups).toBeNull();
-    expect(exported.notAvailableFromProvider.expectedGoals).toBeNull();
-    expect(exported.events.count).toBe(RENDERABLE);
-    expect(JSON.stringify(exported.events.items)).not.toMatch(/Start Delay/);
-    expect(exported.privacyNote).toContain('هذا الجهاز');
-
-    await page.getByRole('button', { name: /حذف الملاحظة/ }).click();
-    await expect(page.locator('.mc-note-item')).toHaveCount(0);
-    await expect(page.locator('.mc-note-empty')).toContainText('لا ملاحظات في هذا المتصفح لهذه المباراة');
-  });
-
-  test('a note can be pinned to a source event from the analysis list', async ({ page }) => {
-    await openMatchCenter(page);
-    await openTab(page, 'analysis');
-    const redCard = page.locator('.mc-analysis-event', { hasText: 'بطاقة حمراء' }).first();
-    await redCard.locator('button').click();
-    await redCard.getByRole('button', { name: 'ملاحظة بهذا الحدث' }).click();
-
-    await expect(page.locator('#mc-tab-notes')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('#mc-note-event')).toBeVisible();
-    expect(await page.locator('#mc-note-event').inputValue()).toContain('a7');
-    await expect(page.locator('.mc-note-linked-hint')).toContainText('78′');
-    await page.locator('#mc-note-text').fill('البطاقة بعد فقدان الكرة في الخروج الأول.');
-    await page.getByRole('button', { name: 'حفظ الملاحظة' }).click();
-    await expect(page.locator('.mc-note-item').first()).toContainText('البطاقة بعد فقدان الكرة');
-    await expect(page.locator('.mc-note-item').first()).toContainText('78′');
-  });
-
-  test('an empty note or an impossible minute is refused, not saved as an empty row', async ({ page }) => {
-    await openMatchCenter(page);
-    await openTab(page, 'notes');
-    await page.getByRole('radio', { name: 'دقيقة أختارها' }).check();
-    await page.locator('#mc-note-minute').fill('400');
-    await page.getByRole('button', { name: 'حفظ الملاحظة' }).click();
-    await expect(page.locator('.mc-note-error').first()).toContainText('نص الملاحظة');
-    await expect(page.locator('.mc-note-item')).toHaveCount(0);
-
-    await page.locator('#mc-note-text').fill('ملاحظة قصيرة');
-    await page.getByRole('button', { name: 'حفظ الملاحظة' }).click();
-    await expect(page.locator('.mc-note-error')).toContainText('الدقيقة بين 0 و240');
-    await expect(page.locator('.mc-note-item')).toHaveCount(0);
-
-    await page.locator('#mc-note-minute').fill('35');
-    await page.getByRole('button', { name: 'حفظ الملاحظة' }).click();
-    await expect(page.locator('.mc-note-item')).toHaveCount(1);
-    await expect(page.locator('.mc-note-item').first()).toContainText('الدقيقة 35′');
-  });
-
-  test('the notebook of one match never shows up on another', async ({ page }) => {
-    await openMatchCenter(page);
-    await openTab(page, 'notes');
-    await page.locator('#mc-note-text').fill('ملاحظة لمباراة واحدة فقط.');
-    await page.getByRole('button', { name: 'حفظ الملاحظة' }).click();
-    await expect(page.locator('.mc-note-item')).toHaveCount(1);
-
-    // مباراة بلا معرّف حدث في مصدرها: لا قراءة ولا انتظارها — الدفتر لا يحتاج قراءة.
-    const other = 'epl-afc-bournemouth-vs-arsenal';
-    await openMatchCenter(page, { match: other, overrides: { event: '401879270' }, requireRead: false });
-    await page.locator('#mc-tab-notes').click();
-    await expect(page.locator('.mc-note-item')).toHaveCount(0);
-    await expect(page.locator('.mc-note-empty')).toContainText('لا ملاحظات في هذا المتصفح لهذه المباراة');
-  });
-
+test.describe('printing', () => {
   test('print media reveals every data-backed panel and hides the controls', async ({ page }) => {
     await openMatchCenter(page);
+    await openTab(page, 'prematch');
+    await expect(page.locator('#mc-panel-postmatch')).toBeHidden();
     await page.emulateMedia({ media: 'print' });
     const styles = await page.evaluate(() => {
       const display = selector => {
@@ -409,17 +298,18 @@ test.describe('analyst notebook', () => {
         return el ? getComputedStyle(el).display : 'missing';
       };
       return {
-        analysis: display('#mc-panel-analysis'),
-        notes: display('#mc-panel-notes'),
+        analysis: display('#mc-panel-postmatch'),
+        prematch: display('#mc-panel-prematch'),
+        filters: display('.mc-analysis-filters'),
         tabs: display('.mc-tabs'),
-        form: display('.mc-note-form'),
         mini: display('.mc-mini'),
       };
     });
     expect(styles.analysis, 'كل قسم فيه بيانات يُطبع لا القسم المفتوح وحده').not.toBe('none');
-    expect(styles.notes).not.toBe('none');
+    expect(styles.analysis).not.toBe('missing');
+    expect(styles.prematch).not.toBe('none');
+    expect(styles.filters).toBe('none');
     expect(styles.tabs).toBe('none');
-    expect(styles.form).toBe('none');
     expect(styles.mini).toBe('none');
   });
 });
@@ -431,7 +321,7 @@ test.describe('layout at every accepted width', () => {
       await page.setViewportSize({ width, height: 900 });
       await openMatchCenter(page);
 
-      for (const tabId of ['preview', 'live', 'analysis', 'notes']) {
+      for (const tabId of ['prematch', 'postmatch']) {
         await openTab(page, tabId);
         await expectNoOverflow(page, width, tabId);
       }
@@ -441,7 +331,7 @@ test.describe('layout at every accepted width', () => {
         const box = item.getBoundingClientRect();
         return { x: box.x, y: box.y, right: box.right, bottom: box.bottom };
       }));
-      expect(boxes.length).toBeGreaterThan(3);
+      expect(boxes.length).toBe(2);
       for (const [index, box] of boxes.entries()) {
         for (const other of boxes.slice(index + 1)) {
           const overlapX = box.x < other.right - 1 && other.x < box.right - 1;
@@ -457,3 +347,26 @@ test.describe('layout at every accepted width', () => {
     });
   }
 });
+
+for (const width of [320, 1440]) {
+  for (const phase of ['pre', 'live', 'post', 'terminal']) {
+    test(`phase ${phase} removes forbidden tabs, panels and anchors at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const names = { pre: 'STATUS_SCHEDULED', live: 'STATUS_SECOND_HALF', post: 'STATUS_FULL_TIME', terminal: 'STATUS_CANCELED' };
+      await openMatchCenter(page, { overrides: { status: { type: { name: names[phase], state: phase === 'live' ? 'in' : phase, completed: phase === 'post' } } } });
+      const ids = phase === 'post' ? ['prematch', 'postmatch'] : phase === 'terminal' ? ['prematch'] : ['prematch', 'live'];
+      expect(await page.locator('.mc-tab').evaluateAll(items => items.map(item => item.id))).toEqual(ids.map(id => `mc-tab-${id}`));
+      await openTab(page, 'prematch');
+      await page.locator('#mc-tab-prematch').focus();
+      await page.keyboard.press('ArrowLeft');
+      await expect(page.locator(`#mc-tab-${ids[ids.length - 1]}`)).toBeFocused();
+      await page.keyboard.press('ArrowLeft');
+      await expect(page.locator('#mc-tab-prematch')).toBeFocused();
+      for (const id of ['prematch', 'live', 'postmatch']) {
+        await expect(page.locator(`#mc-panel-${id}`)).toHaveCount(ids.includes(id) ? 1 : 0);
+        if (!ids.includes(id)) await expect(page.locator(`.mc-mini-link[href="#mc-panel-${id}"]`)).toHaveCount(0);
+      }
+      await expectNoOverflow(page, width, phase);
+    });
+  }
+}

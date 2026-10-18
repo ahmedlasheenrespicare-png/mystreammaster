@@ -15,6 +15,7 @@ import {
   canShowKickoff,
   canShowScore,
   countdownParts,
+  computeAvailableTabs,
   defaultTab,
   deriveScore,
   detectScoreCorrection,
@@ -968,57 +969,36 @@ test('only an official result enters the record: an abandoned match without a sc
 
 /* ── 8. Tabs ──────────────────────────────────────────────────────── */
 
-test('the opening tab follows the data state, and seven tabs exist in a fixed order', () => {
-  // Rule 5: "عند الدخول نفتح التبويب المناسب للحالة".
-  assert.deepEqual(TABS.map(tab => tab.id), ['preview', 'history', 'lineups', 'live', 'analysis', 'report', 'notes']);
-  assert.deepEqual(TABS.map(tab => tab.label), ['معاينة', 'المواجهات', 'التشكيلات', 'مباشر', 'تحليل', 'بعد المباراة', 'دفتر المحلل']);
-  // The analysis tab follows `live` (same numbers, read differently) and the
-  // notebook comes last: a personal tool after every data panel.
-  assert.equal(TABS.findIndex(tab => tab.id === 'analysis'), TABS.findIndex(tab => tab.id === 'live') + 1);
-  assert.equal(TABS[TABS.length - 1].id, 'notes');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_SCHEDULED'), 'espn')), 'preview');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn')), 'live');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_HALFTIME'), 'espn')), 'live');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_SUSPENDED'), 'espn')), 'live');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_FULL_TIME'), 'espn')), 'report');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_ABANDONED'), 'espn')), 'report');
-  assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_POSTPONED'), 'espn')), 'preview');
-  assert.equal(defaultTab(null), 'preview', 'unknown state opens on the preview, not on a claim');
+test('three tabs have fixed names and opening follows phase only', () => {
+  assert.deepEqual(TABS.map(tab => tab.id), ['prematch', 'live', 'postmatch']);
+  assert.deepEqual(TABS.map(tab => tab.label), ['قبل المباراة', 'مباشر', 'بعد المباراة']);
+  for (const phase of ['pre', 'live']) assert.equal(defaultTab({ phase, code: 'finished' }), 'live');
+  assert.equal(defaultTab({ phase: 'post', code: 'scheduled' }), 'postmatch');
+  assert.equal(defaultTab({ phase: 'terminal' }), 'prematch');
+  assert.equal(defaultTab(null), 'prematch');
 });
 
-test('a tab the visitor chose is never taken away by a refresh or an arriving goal', () => {
-  // Rule 5: "إذا اختار المستخدم تبويباً بنفسه، فلا ننقله منه قسرياً".
-  const nowLive = normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn');
-  assert.equal(resolveTab(nowLive, 'history'), 'history', 'reading the record while the match goes live');
-  assert.equal(resolveTab(nowLive, 'preview'), 'preview');
-  assert.equal(resolveTab(nowLive, 'lineups'), 'lineups');
-  // The state change from pre-match to live does not move a settled visitor.
-  assert.equal(resolveTab(normalizeStatus(espnStatus('STATUS_SCHEDULED'), 'espn'), 'lineups'), 'lineups');
-  assert.equal(resolveTab(nowLive, 'lineups'), 'lineups');
-  // With no choice, the state decides.
-  assert.equal(resolveTab(nowLive, null), 'live');
-  // An invalid choice falls back rather than breaking the tablist.
-  assert.equal(resolveTab(nowLive, 'not-a-tab'), 'live');
+test('phase removes postmatch before full time and live after it', () => {
+  const match = { competitionName: 'League' };
+  const snapshot = { statistics: [{ key: 'totalShots', label: 'Shots', home: 0, away: 1 }] };
+  for (const phase of ['pre', 'live']) {
+    assert.deepEqual(computeAvailableTabs({ match, snapshot, status: { phase } }), ['prematch', 'live']);
+  }
+  assert.deepEqual(computeAvailableTabs({ match, snapshot, status: { phase: 'post' } }), ['prematch', 'postmatch']);
+  assert.deepEqual(computeAvailableTabs({ match, snapshot, status: { phase: 'terminal' } }), ['prematch']);
 });
 
-test('arrow keys walk the tablist in visual RTL order', () => {
-  // Rule 10: keyboard-operable tabs with a sensible RTL order. In RTL the
-  // visually next tab sits to the left, i.e. earlier in DOM order.
-  assert.equal(nextTabId('preview', 'next'), 'history');
-  assert.equal(nextTabId('history', 'next'), 'lineups');
-  assert.equal(nextTabId('live', 'next'), 'analysis');
-  assert.equal(nextTabId('analysis', 'next'), 'report');
-  assert.equal(nextTabId('report', 'next'), 'notes');
-  assert.equal(nextTabId('notes', 'next'), 'preview', 'wraps forward');
-  assert.equal(nextTabId('preview', 'previous'), 'notes', 'wraps backward');
-  assert.equal(nextTabId('report', 'previous'), 'analysis', 'the analysis tab sits before the report');
-  assert.equal(nextTabId('live', 'previous'), 'lineups');
-  // Every tab is reachable in TABS.length steps with no dead end.
-  let id = 'preview';
-  const visited = new Set();
-  for (let step = 0; step < TABS.length; step++) { visited.add(id); id = nextTabId(id, 'next'); }
-  assert.equal(visited.size, TABS.length);
-  assert.equal(id, 'preview', 'returns to the start');
+test('a valid visitor choice survives refresh and an invalid one falls back', () => {
+  assert.equal(resolveTab({ phase: 'live' }, 'prematch'), 'prematch');
+  assert.equal(resolveTab({ phase: 'live' }, null), 'live');
+  assert.equal(resolveTab({ phase: 'live' }, 'not-a-tab'), 'live');
+});
+
+test('arrow keys walk all three tabs in RTL order and wrap', () => {
+  for (const [index, tab] of TABS.entries()) {
+    assert.equal(nextTabId(tab.id, 'next'), TABS[(index + 1) % 3].id);
+    assert.equal(nextTabId(tab.id, 'previous'), TABS[(index + 2) % 3].id);
+  }
 });
 
 /* ── 9. Comparison and radar honesty ──────────────────────────────── */

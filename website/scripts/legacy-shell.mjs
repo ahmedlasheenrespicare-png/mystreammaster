@@ -12,16 +12,19 @@ const item = (href, label, desc = '', icon = '') =>
 
 function analysisMenu(group) {
   const [hub, analysis, ...matches] = group.links;
-  return `<details class="sm-season"><summary>${esc(analysis.label)}<span aria-hidden="true">⌄</span></summary><div class="sm-season-body">${item(page(hub.href), 'كل المباريات المغطاة')}<p>تحليل دوري أبطال أوروبا — الجولة الثانية</p>${matches.map(l => item(page(l.href), l.label, l.desc)).join('')}</div></details>`;
+  return `<details class="sm-season"><summary>${esc(group.label)}<span aria-hidden="true">▾</span></summary><div class="sm-season-body">${item(page(hub.href), 'كل المباريات المغطاة')}${item(page(analysis.href), analysis.label, analysis.desc)}<p>تحليلات الجولة الثانية</p>${matches.map(l => item(page(l.href), l.label, l.desc)).join('')}</div></details>`;
 }
 
 function desktopPanel(group) {
   if (group.key === 'match-center') return analysisMenu(group);
   if (group.key === 'matches') {
     const scheduleLink = group.links.slice(0, 1);
-    const leagueLinks = group.links.slice(1, 9);
-    const teamLinks = group.links.slice(9);
+    const extraLinks = group.links.slice(1, 6);
+    const leagueLinks = group.links.slice(6, 14);
+    const teamLinks = group.links.slice(14);
     return `<div class="sm-dd-grid sm-dd-grid-3">${scheduleLink.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
+      + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">القنوات والبث</p>`
+      + `<div class="sm-dd-grid sm-dd-grid-3">${extraLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
       + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">البطولات</p>`
       + `<div class="sm-dd-grid sm-dd-grid-3">${leagueLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
       + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">المنتخبات</p>`

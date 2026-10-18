@@ -396,16 +396,8 @@ function mobileLinks(group: NavGroup): { href: string; label: string; icon?: str
     ];
   }
   if (group.key === "matches") {
-    /* قسم المباريات: مواعيد المباريات + البطولات + المنتخبات */
-    const scheduleLink = group.links.slice(0, 1);
-    const leagueLinks = group.links.slice(1, 9);
-    const teamLinks = group.links.slice(9);
-    return [
-      ...scheduleLink.map((l) => ({ href: pageHref(l), label: l.label, icon: l.icon })),
-      /* عناوين الأقسام الفرعية بوصفها عناصر غير قابلة للنقر */
-      ...leagueLinks.map((l) => ({ href: pageHref(l), label: l.label, icon: l.icon })),
-      ...teamLinks.map((l) => ({ href: pageHref(l), label: l.label, icon: l.icon })),
-    ];
+    /* قسم المباريات: مواعيد + القنوات + البطولات + المنتخبات */
+    return group.links.map((l) => ({ href: pageHref(l), label: l.label, icon: l.icon }));
   }
   return [...group.links, ...(group.legal ?? [])].map((l) => ({ href: pageHref(l), label: l.label }));
 }
@@ -413,10 +405,11 @@ function mobileLinks(group: NavGroup): { href: string; label: string; icon?: str
 function MatchCenterMenu({group, onNavigate}: {group: NavGroup; onNavigate: () => void}) {
   const [hub, analysis, ...matches] = group.links;
   return <details className="rounded-xl border border-black/10">
-    <summary className="flex cursor-pointer items-center justify-between gap-3 p-3 text-[14px] font-black list-none">{analysis.label}<span aria-hidden="true">⌄</span></summary>
+    <summary className="flex cursor-pointer items-center justify-between gap-3 p-3 text-[14px] font-black list-none">{group.label}<span aria-hidden="true">⌄</span></summary>
     <div className="border-t border-black/10 p-2">
       <PanelLink href={pageHref(hub)} label="كل المباريات المغطاة" onNavigate={onNavigate} />
-      <p className="px-3 py-2 text-[12px] font-bold text-black/60">تحليل دوري أبطال أوروبا — الجولة الثانية</p>
+      <PanelLink href={pageHref(analysis)} label={analysis.label} desc={analysis.desc} onNavigate={onNavigate} />
+      <p className="px-3 py-2 text-[12px] font-bold text-black/60">تحليلات الجولة الثانية</p>
       {matches.map(link => <PanelLink key={link.href} href={pageHref(link)} label={link.label} desc={link.desc} onNavigate={onNavigate} />)}
     </div>
   </details>;
@@ -502,18 +495,18 @@ function DesktopPanel({
   }
 
   if (group.key === "match-center") {
-    /* لوحة مركز المباراة: رابط للصفحة الرئيسية + تحليلات UCL */
+    /* لوحة مركز المباراة: كل الروابط مرئية مباشرة */
+    const [hub, analysis, ...matches] = group.links;
     return (
       <div className="w-[340px] max-w-full">
         <div className="grid gap-0.5">
-          {group.links.slice(0, 1).map((l) => (
-            <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} onNavigate={onNavigate} />
-          ))}
+          <PanelLink href={pageHref(hub)} label={hub.label} desc={hub.desc} onNavigate={onNavigate} />
+          <PanelLink href={pageHref(analysis)} label={analysis.label} desc={analysis.desc} onNavigate={onNavigate} />
         </div>
         <div className="mt-2 pt-2.5 px-3 border-t border-black/10">
-          <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1">تحليل دوري أبطال أوروبا</p>
+          <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1">تحليلات الجولة الثانية</p>
           <div className="grid gap-0.5">
-            {group.links.slice(1).map((l) => (
+            {matches.map((l) => (
               <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} onNavigate={onNavigate} />
             ))}
           </div>
@@ -523,11 +516,11 @@ function DesktopPanel({
   }
 
   if (group.key === "matches") {
-    /* لوحة المباريات: مواعيد المباريات + البطولات + المنتخبات
-       البطولات والمنتخبات في أعمدة متعددة، مع روابط سريعة في الأسفل */
+    /* لوحة المباريات: مواعيد المباريات + القنوات + البطولات + المنتخبات */
     const scheduleLink = group.links.slice(0, 1);
-    const leagueLinks = group.links.slice(1, 9); /* أبطال أوروبا + 7 دوريات */
-    const teamLinks = group.links.slice(9); /* 8 منتخبات */
+    const extraLinks = group.links.slice(1, 6); /* القنوات والبث */
+    const leagueLinks = group.links.slice(6, 14); /* أبطال أوروبا + 7 دوريات */
+    const teamLinks = group.links.slice(14); /* 8 منتخبات */
     return (
       <div className="w-[640px]">
         {/* مواعيد المباريات */}
@@ -536,8 +529,15 @@ function DesktopPanel({
             <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />
           ))}
         </div>
+        {/* القنوات والبث */}
+        <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1 px-3">القنوات والبث</p>
+        <div className="grid grid-cols-3 gap-1">
+          {extraLinks.map((l) => (
+            <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />
+          ))}
+        </div>
         {/* البطولات */}
-        <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1 px-3">البطولات</p>
+        <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1 mt-2 px-3">البطولات</p>
         <div className="grid grid-cols-3 gap-1">
           {leagueLinks.map((l) => (
             <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />

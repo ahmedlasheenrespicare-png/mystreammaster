@@ -72,7 +72,6 @@ const RAW_EVENTS = [
 
 /* ── 1) تجميع الأرقام ───────────────────────────────────────────────── */
 
-<<<<<<< HEAD
 test('statistics arrive in the six scanning groups, in one fixed order', () => {
   const groups = groupStatistics(STAT_INPUT);
   // المجموعة التي لا يصلها صف لا تُنشأ: العينة بلا تدخلات/اعتراضات/تشتيت ⇒ لا «الدفاع».
@@ -103,17 +102,6 @@ test('all 28 source names land in their groups with the full defence block', () 
   assert.deepEqual(groups.find(group => group.id === 'defense').rows.map(row => row.key),
     ['totalTackles', 'effectiveTackles', 'tacklePct', 'interceptions', 'totalClearance', 'effectiveClearance']);
   for (const row of groups.flatMap(group => group.rows)) assert.equal(row.unitIsPercent, row.key.endsWith('Pct'));
-=======
-test('statistics arrive in the three scanning groups, in one fixed order', () => {
-  const groups = groupStatistics(STAT_INPUT);
-  assert.deepEqual(groups.map(group => group.id), STAT_GROUPS.map(group => group.id));
-  assert.deepEqual(groups.map(group => group.label), ['الاستحواذ والتمرير', 'التسديد', 'الدفاع والانضباط']);
-  assert.deepEqual(groups[1].rows.map(row => row.key), ['totalShots', 'shotsOnTarget', 'blockedShots']);
-  // الدفاع والانضباط بترتيب التعريف لا بترتيب الاستجابة: يُقرأ الصف بالمكان
-  // نفسه في كل مباراة، ولو بدّل المصدر ترتيبه.
-  const defenceKeys = STAT_GROUPS.find(group => group.id === 'defense-discipline').keys;
-  assert.deepEqual(groups[2].rows.map(row => row.key), defenceKeys);
->>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 });
 
 test('a stat the grouping does not know is kept in a source bucket, never dropped', () => {

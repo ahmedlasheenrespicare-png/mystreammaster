@@ -12,6 +12,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      # حارس وقائي: علامات تعارض دمج غير محلولة وصلت إلى main عبر PR #71
+      # (18 أكتوبر 2026) وكسرت النشر؛ نرفض أي شجرة تحملها قبل أي فحص آخر.
+      - name: Reject unresolved merge conflict markers
+        run: |
+          if grep -RInE '^(<<<<<<< |=======$|>>>>>>> )' \
+              --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=dist-ssr . ; then
+            echo '::error::Unresolved merge conflict markers found in the tree (matches listed above). Resolve them before merging.'
+            exit 1
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 22

@@ -1,8 +1,11 @@
-import { groupStatistics, type StatComparisonRow } from '../lib/match-center.mjs';
+import { groupStatistics, possessionSplit, type StatComparisonRow } from '../lib/match-center.mjs';
+import TeamCrest from './MatchCenterCrest';
 
-/* مجموعات الأرقام «السهلة المسح»: الاستحواذ والتمرير، التسديد، الدفاع
-   والانضباط. التجميع في طبقة العقد (`groupStatistics`) لا هنا، حتى يبقى
-   «أي رقم ينتمي إلى أي مجموعة» قراراً واحداً تُختبر في Node. */
+/* مجموعات الأرقام «السهلة المسح» الست: الاستحواذ والتمرير، التسديد، بناء
+   الهجمة، الدفاع، حراسة المرمى، الانضباط. التجميع في طبقة العقد
+   (`groupStatistics`) لا هنا، حتى يبقى «أي رقم ينتمي إلى أي مجموعة» قراراً
+   واحداً تُختبر في Node. شرح الشريط ومعنى «غير متاح» في «توثيق ومراجعة» آخر
+   الصفحة، لا بين الأرقام. */
 
 function numberLabel(value: number): string {
   return new Intl.NumberFormat('ar-EG', { maximumFractionDigits: 2 }).format(value);
@@ -28,7 +31,7 @@ function SideValue({ row, value, name, side }: { row: StatComparisonRow; value: 
       <bdi className="mc-stat-side-name">{name}</bdi>
       {value === null
         /* الغياب كلمة، لا صفر ولا شرطة تُقرأ رقمًا في نص مختصر. */
-        ? <span className="mc-stat-side-none">لا رقم من المصدر</span>
+        ? <span className="mc-stat-side-none">غير متاح</span>
         : <span className="mc-num mc-stat-side-value">{valueText(row, value)}</span>}
     </span>
   );
@@ -38,15 +41,43 @@ export interface MatchCenterStatGroupsProps {
   statistics: unknown;
   homeName: string;
   awayName: string;
+  /** شعارا الفريقين من اللقطة (`https://` فقط)؛ غيابهما يعرض الحرفين الأولين. */
+  logos?: { home: string | null; away: string | null } | null;
   /** بادئة معرفات العناوين: اللوحة قد تُرسم في تبويبين في الصفحة نفسها. */
   idPrefix: string;
   headingLevel?: 'h3' | 'h4';
+}
+
+/** شريط الاستحواذ البارز: يُرسم فقط إذا وصلت النسبتان رقميتين معاً. */
+function PossessionBar({ statistics, homeName, awayName }: { statistics: unknown; homeName: string; awayName: string }) {
+  const split = possessionSplit(statistics as never);
+  if (!split) return null;
+  return (
+    <section className="mc-possession" aria-label="الاستحواذ">
+      <div className="mc-possession-head">
+        <span className="mc-possession-side" data-side="home">
+          <bdi>{homeName}</bdi>
+          <span className="mc-num mc-possession-pct">{numberLabel(split.home)}%</span>
+        </span>
+        <span className="mc-possession-title">الاستحواذ</span>
+        <span className="mc-possession-side" data-side="away">
+          <span className="mc-num mc-possession-pct">{numberLabel(split.away)}%</span>
+          <bdi>{awayName}</bdi>
+        </span>
+      </div>
+      <div className="mc-possession-bar" aria-hidden="true">
+        <span className="mc-possession-fill" data-side="home" style={{ inlineSize: `${Math.round(split.homeShare * 1000) / 10}%` }} />
+        <span className="mc-possession-fill" data-side="away" style={{ inlineSize: `${Math.round(split.awayShare * 1000) / 10}%` }} />
+      </div>
+    </section>
+  );
 }
 
 export default function MatchCenterStatGroups({
   statistics,
   homeName,
   awayName,
+  logos = null,
   idPrefix,
   headingLevel = 'h3',
 }: MatchCenterStatGroupsProps) {
@@ -56,11 +87,17 @@ export default function MatchCenterStatGroups({
 
   return (
     <div className="mc-stat-groups">
+      <PossessionBar statistics={statistics} homeName={homeName} awayName={awayName} />
       {groups.map(group => {
         const headingId = `${idPrefix}-statgroup-${group.id}`;
         return (
           <section className="mc-stat-group" key={group.id} aria-labelledby={headingId}>
-            <Heading id={headingId} className="mc-stat-group-title">{group.label}</Heading>
+            {/* رأس المجموعة: شعار المضيف (يمين) · العنوان · شعار الضيف (يسار) فوق عمودي القيم. */}
+            <div className="mc-stat-group-head">
+              <TeamCrest logo={logos?.home} name={homeName} className="mc-mini-crest mc-mini-crest--home" size={34} />
+              <Heading id={headingId} className="mc-stat-group-title">{group.label}</Heading>
+              <TeamCrest logo={logos?.away} name={awayName} className="mc-mini-crest mc-mini-crest--away" size={34} />
+            </div>
             <ul className="mc-stat-compares">
               {group.rows.map(row => (
                 <li className="mc-stat-compare" key={`${group.id}-${row.key}`} data-difference={row.leadingSide ?? 'equal'}>
@@ -89,10 +126,6 @@ export default function MatchCenterStatGroups({
           </section>
         );
       })}
-      <p className="mc-note">
-        كل صف يعرض قيمتي الفريقين كما أرسلهما المصدر. الشريط نسبة إلى الأعلى بين الرقمين في الصف نفسه فقط — لا درجة من 100 ولا حكم جودة:
-        زيادة الأخطاء أو البطاقات أو التسلل أرقام، ليست أفضلية.
-      </p>
     </div>
   );
 }

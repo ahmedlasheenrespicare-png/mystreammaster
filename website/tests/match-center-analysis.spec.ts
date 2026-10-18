@@ -155,9 +155,16 @@ test.describe('match analysis tab', () => {
     // لكنها باقية في جدول الأرقام بوصف الغياب، لا بصفر.
     const passing = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'دقة التمرير' });
     await expect(passing).toContainText('٨٤');
-    await expect(passing).toContainText('لا رقم من المصدر');
+    await expect(passing).toContainText('غير متاح');
 
-    await expect(page.locator('.mc-analysis .mc-stat-group-title')).toHaveText(['الاستحواذ والتمرير', 'التسديد', 'الدفاع والانضباط']);
+    // ست مجموعات معرَّفة؛ العينة بلا تدخلات/اعتراضات/تشتيت فلا تُنشأ «الدفاع». الركنيات في «بناء الهجمة».
+    await expect(page.locator('.mc-analysis .mc-stat-group-title')).toHaveText(['الاستحواذ والتمرير', 'التسديد', 'بناء الهجمة', 'حراسة المرمى', 'الانضباط']);
+    await expect(page.locator('.mc-analysis .mc-stat-group[aria-labelledby="analysis-statgroup-build-up"]')).toContainText('الركنيات');
+    // شعارا الفريقين (أو حرفاهما) فوق عمودي القيم في كل رأس مجموعة.
+    await expect(page.locator('.mc-analysis .mc-stat-group-head .mc-mini-crest--home')).toHaveCount(5);
+    // شريط الاستحواذ البارز: النسبتان وصلتا رقميتين معاً.
+    await expect(page.locator('.mc-analysis .mc-possession')).toContainText('٥٨%');
+    await expect(page.locator('.mc-analysis .mc-possession')).toContainText('٤٢%');
     const fouls = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'الأخطاء' });
     await expect(fouls).toContainText('٩');
     await expect(fouls).toContainText('١٤');
@@ -168,11 +175,12 @@ test.describe('match analysis tab', () => {
     // لفظ الحكم ممنوع في الأرقام نفسها (سطر التوضيح يذكر المنع صراحةً، فلا يُفحص معه).
     const verdicts = (await page.locator('.mc-analysis .mc-stat-compare, .mc-analysis .mc-analysis-fact').allTextContents()).join(' ');
     expect(verdicts).not.toMatch(/أفضل|أفضلية|سيطرة|الأقوى|أخطر|لصالح/);
-    await expect(page.locator('.mc-analysis')).toContainText('ليست أفضلية');
+    // شرح «الشريط ليس حكماً» انتقل إلى «التوثيق والمراجعة» آخر الصفحة.
+    await expect(page.locator('.mc-docs')).toContainText('ليست أفضلية');
     // الصفر الحقيقي من المصدر يبقى صفرًا، والغياب لا يصير صفرًا.
     const cards = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'بطاقات حمراء' });
     await expect(cards).toContainText('٠');
-    await expect(cards).toContainText('لا رقم من المصدر');
+    await expect(cards).toContainText('غير متاح');
   });
 
   test('filters match source events by team, period and type; عرض الكل resets', async ({ page }) => {

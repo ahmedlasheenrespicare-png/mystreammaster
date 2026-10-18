@@ -34,3 +34,6 @@ await fs.mkdir('website/.fixtures-out', { recursive: true });
 await fs.writeFile('website/.fixtures-out/lineups-probe.json', JSON.stringify({ results }, null, 2) + '\n');
 console.log(JSON.stringify(results.map(({ rosters, ...rest }) => ({ ...rest, rosters: rosters?.map(({ roster, ...side }) => side) })), null, 2));
 if (results.some(result => result.error)) process.exitCode = 1;
+// The compact, allowlisted evidence is also a check annotation (readable without
+// downloading raw upstream bodies or exposing any credentials).
+console.log('::notice title=Match lineup evidence::' + JSON.stringify(results).replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A'));

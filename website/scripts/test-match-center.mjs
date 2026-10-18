@@ -968,10 +968,14 @@ test('only an official result enters the record: an abandoned match without a sc
 
 /* ── 8. Tabs ──────────────────────────────────────────────────────── */
 
-test('the opening tab follows the data state, and five tabs exist in a fixed order', () => {
+test('the opening tab follows the data state, and seven tabs exist in a fixed order', () => {
   // Rule 5: "عند الدخول نفتح التبويب المناسب للحالة".
-  assert.deepEqual(TABS.map(tab => tab.id), ['preview', 'history', 'lineups', 'live', 'report']);
-  assert.deepEqual(TABS.map(tab => tab.label), ['معاينة', 'المواجهات', 'التشكيلات', 'مباشر', 'بعد المباراة']);
+  assert.deepEqual(TABS.map(tab => tab.id), ['preview', 'history', 'lineups', 'live', 'analysis', 'report', 'notes']);
+  assert.deepEqual(TABS.map(tab => tab.label), ['معاينة', 'المواجهات', 'التشكيلات', 'مباشر', 'تحليل', 'بعد المباراة', 'دفتر المحلل']);
+  // The analysis tab follows `live` (same numbers, read differently) and the
+  // notebook comes last: a personal tool after every data panel.
+  assert.equal(TABS.findIndex(tab => tab.id === 'analysis'), TABS.findIndex(tab => tab.id === 'live') + 1);
+  assert.equal(TABS[TABS.length - 1].id, 'notes');
   assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_SCHEDULED'), 'espn')), 'preview');
   assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_IN_PLAY'), 'espn')), 'live');
   assert.equal(defaultTab(normalizeStatus(espnStatus('STATUS_HALFTIME'), 'espn')), 'live');
@@ -1002,11 +1006,14 @@ test('arrow keys walk the tablist in visual RTL order', () => {
   // visually next tab sits to the left, i.e. earlier in DOM order.
   assert.equal(nextTabId('preview', 'next'), 'history');
   assert.equal(nextTabId('history', 'next'), 'lineups');
-  assert.equal(nextTabId('report', 'next'), 'preview', 'wraps forward');
-  assert.equal(nextTabId('preview', 'previous'), 'report', 'wraps backward');
-  assert.equal(nextTabId('report', 'previous'), 'live', 'the tab before the report is the live tab');
+  assert.equal(nextTabId('live', 'next'), 'analysis');
+  assert.equal(nextTabId('analysis', 'next'), 'report');
+  assert.equal(nextTabId('report', 'next'), 'notes');
+  assert.equal(nextTabId('notes', 'next'), 'preview', 'wraps forward');
+  assert.equal(nextTabId('preview', 'previous'), 'notes', 'wraps backward');
+  assert.equal(nextTabId('report', 'previous'), 'analysis', 'the analysis tab sits before the report');
   assert.equal(nextTabId('live', 'previous'), 'lineups');
-  // Every tab is reachable in five steps with no dead end.
+  // Every tab is reachable in TABS.length steps with no dead end.
   let id = 'preview';
   const visited = new Set();
   for (let step = 0; step < TABS.length; step++) { visited.add(id); id = nextTabId(id, 'next'); }

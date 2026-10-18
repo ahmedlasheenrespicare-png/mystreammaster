@@ -1,20 +1,34 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
   canShowKickoff,
   canShowScore,
-  dayLabelInZone,
+  describeEvent,
+  eventKey,
+  eventMinuteLabel,
   eventSymbol,
   formatInZone,
   kickoffLabel,
   pitchLanes,
   safeLogoUrl,
-  type EventSymbol,
   type MatchDefinition,
   type MatchEvent,
   type MatchSnapshot,
   type MatchStatus,
   type PitchMarker,
 } from '../lib/match-center.mjs';
+import EventIcon from './MatchCenterSymbols';
+import type { MatchCenterTools } from './useMatchCenterTools';
+
+/* ==========================================================================
+   لوحة الملعب: النتيجة والفريقان والحالة، ثم شريط أحداث المباراة.
+   --------------------------------------------------------------------------
+   الترتيب البصري مقصود: النتيجة في الوسط بين الفريقين، وفوقها المسابقة
+   وحالتها ودقيقتها، وتحتها مباشرةً شريط الأحداث — لأن الشريط يُقرأ بدقائقه
+   لا بوصفٍ مستقل. وتحت الملعب تُصفّ تفاصيل الملعب والموعد ووقت القراءة.
+
+   لا يُرسم شيء من عندنا: الشعار من المصدر بحدّ `https://` وحده، والدقيقة كما
+   وصلت، ومواضع الأحداث داخل الملعب غير مرسومة لأن المصدر لا يرسل إحداثيات.
+========================================================================== */
 
 function cleanText(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -53,153 +67,50 @@ function Crest({ logo, name, side }: { logo: string | null; name: string; side: 
   return <span className={`mc-pitch-crest mc-pitch-crest--${side}`} aria-hidden="true">{monogram(name)}</span>;
 }
 
-/* أنواع الأحداث المعروفة تُعرَّب؛ وما لا تعرفه الخريطة يُعرض بنص المصدر
-   (كما كان) بدل اختلاق اسم عربي له. */
-const EVENT_LABELS: Partial<Record<MatchEvent['type'], string>> = {
-  goal: 'هدف', penalty: 'هدف من ركلة جزاء', own_goal: 'هدف عكسي', missed_penalty: 'ركلة جزاء مهدرة',
-  yellow_card: 'بطاقة صفراء', red_card: 'بطاقة حمراء', substitution: 'تبديل',
-  var_cancelled: 'مراجعة فيديو — إلغاء', var_confirmed: 'مراجعة فيديو — تأكيد',
-};
-
-/** الدقيقة كما تصل: «55′» أو «45+2′» للبدل الضائع؛ وبلا دقيقة لا نخترع رقماً. */
-function minuteText(event: MatchEvent): string | null {
-  if (typeof event.minute !== 'number' || !Number.isFinite(event.minute) || event.minute < 0) return null;
-  const extra = typeof event.extraMinute === 'number' && Number.isFinite(event.extraMinute) && event.extraMinute >= 0
-    ? `+${event.extraMinute}`
-    : '';
-  return `${event.minute}${extra}′`;
-}
-
-/** وصف كامل للحدث: يُقرأ في `aria-label` ويُعرض في شريط التفاصيل عند التحديد. */
-function eventDescription(event: MatchEvent): string | null {
-  const kind = EVENT_LABELS[event.type] ?? event.sourceType;
-  const team = event.teamSide === 'home' || event.teamSide === 'away' ? event.team : null;
-  const side = event.teamSide === 'home' ? 'المضيف' : event.teamSide === 'away' ? 'الضيف' : null;
-  const related = event.type === 'substitution' && event.relatedPlayer?.name
-    ? `لاعب مرتبط: ${event.relatedPlayer.name}`
-    : null;
-  return [
-    minuteText(event), kind, side, team, event.player?.name ?? null, related,
-    event.cancelled ? 'ملغى من المصدر' : null,
-    event.type === 'other' ? event.detail : null,
-  ].filter((part): part is string => Boolean(part && part.trim())).join(' · ') || null;
-}
-
 /* ─────────── رموز الملعب ───────────
-   أشكال مرسومة لا إيموجي: البطاقة مستطيل بلونها، والهدف كرة، والتبديل
-   سهمان، وVAR شارة. الشكل نفسه يميّز الحدث حتى بلا لون (وضع التباين العالي
-   أو عمى الألوان)، والنص الكامل يحمله `aria-label` وشريط التفاصيل. */
-function BallShape() {
-  return (
-    <g>
-      <circle cx="12" cy="12" r="8.2" fill="#f6faff" stroke="#0b0f16" strokeWidth="1.1" />
-      <path d="M12 7.4 15.3 9.8l-1.3 3.8h-4L8.7 9.8 12 7.4Z" fill="#0b0f16" />
-      <circle cx="9.1" cy="6" r="1.15" fill="#0b0f16" />
-      <circle cx="14.9" cy="6" r="1.15" fill="#0b0f16" />
-      <circle cx="6.6" cy="15.2" r="1.35" fill="#0b0f16" />
-      <circle cx="17.4" cy="15.2" r="1.35" fill="#0b0f16" />
-    </g>
-  );
-}
+   الأشكال في `MatchCenterSymbols` وحدها: الرمز نفسه يظهر على الشريط وفي قائمة
+   التحليل، فرسمُه مرتين يعني رمزين مختلفين للحدث الواحد. */
 
-function EventIcon({ symbol }: { symbol: EventSymbol }) {
-  if (symbol === 'yellow-card' || symbol === 'red-card') {
-    return (
-      <svg viewBox="0 0 24 24" className="mc-pitch-icon" aria-hidden="true" focusable="false">
-        <rect
-          x="8.4" y="3.2" width="7.6" height="17.6" rx="1.4"
-          fill={symbol === 'yellow-card' ? '#ffd34d' : '#ff4d5e'}
-          stroke="rgba(0,0,0,.35)" strokeWidth=".8" transform="rotate(8 12 12)"
-        />
-      </svg>
-    );
-  }
-
-  if (symbol === 'substitution') {
-    return (
-      <svg viewBox="0 0 24 24" className="mc-pitch-icon" aria-hidden="true" focusable="false">
-        <path
-          d="M4 8.6h12.3l-2.7-2.7M20 15.4H7.7l2.7 2.7"
-          fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  if (symbol === 'var') {
-    return (
-      <svg viewBox="0 0 24 24" className="mc-pitch-icon" aria-hidden="true" focusable="false">
-        <rect x="2.2" y="7.2" width="19.6" height="9.6" rx="2" fill="none" stroke="currentColor" strokeWidth="1.4" />
-        <text x="12" y="14.2" textAnchor="middle" fontSize="6.4" fontWeight="900" fontFamily="ui-sans-serif, system-ui" fill="currentColor">VAR</text>
-      </svg>
-    );
-  }
-
-  if (symbol === 'other') {
-    return (
-      <svg viewBox="0 0 24 24" className="mc-pitch-icon" aria-hidden="true" focusable="false">
-        <circle cx="12" cy="12" r="3.4" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" className="mc-pitch-icon" aria-hidden="true" focusable="false">
-      <BallShape />
-      {symbol === 'penalty' && (
-        <g>
-          <circle cx="18.1" cy="18" r="4.2" fill="#0b0f16" stroke="currentColor" strokeWidth="1" />
-          <text x="18.1" y="20.1" textAnchor="middle" fontSize="5.4" fontWeight="900" fill="currentColor">P</text>
-        </g>
-      )}
-      {symbol === 'missed-penalty' && (
-        <path d="m16.4 15.6 4.2 4.2m0-4.2-4.2 4.2" stroke="#ff6b75" strokeWidth="1.9" strokeLinecap="round" />
-      )}
-      {symbol === 'own-goal' && (
-        <path
-          d="M17.8 8.2a5.2 5.2 0 1 0 1.5 5.4m-1.5-5.4.5-3.1m-.5 3.1-3.1-.4"
-          fill="none" stroke="#ffd34d" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-        />
-      )}
-    </svg>
-  );
-}
-
-function MarkerButton({ event, active, onSelect }: {
+function MarkerButton({ event, matchId, active, onHover, onPin }: {
   event: MatchEvent;
+  matchId: string;
   active: boolean;
-  onSelect: (event: MatchEvent | null) => void;
+  onHover: (event: MatchEvent | null) => void;
+  onPin: (key: string) => void;
 }) {
-  const description = eventDescription(event);
+  const description = describeEvent(event);
   if (!description) return null;
   return (
     <button
       type="button"
       className="mc-pitch-marker"
+      data-event-key={eventKey(matchId, event)}
       data-kind={event.cancelled ? 'cancelled' : event.type}
       data-symbol={eventSymbol(event.type)}
       data-side={event.teamSide ?? 'unknown'}
       data-minute={typeof event.minute === 'number' ? event.minute : undefined}
       data-active={active ? 'true' : 'false'}
       aria-label={description}
-      onMouseEnter={() => onSelect(event)}
-      onFocus={() => onSelect(event)}
-      onMouseLeave={() => onSelect(null)}
-      onBlur={() => onSelect(null)}
-      onClick={() => onSelect(event)}
+      onMouseEnter={() => onHover(event)}
+      onFocus={() => onHover(event)}
+      onMouseLeave={() => onHover(null)}
+      onBlur={() => onHover(null)}
+      onClick={() => onPin(eventKey(matchId, event))}
     >
       <EventIcon symbol={eventSymbol(event.type)} />
-      <span className="mc-pitch-marker-minute" aria-hidden="true">{minuteText(event) ?? '—'}</span>
+      <span className="mc-pitch-marker-minute" aria-hidden="true">{eventMinuteLabel(event) ?? '—'}</span>
     </button>
   );
 }
 
-function PitchLane({ markers, side, label, selected, onSelect }: {
+function PitchLane({ markers, side, label, selectedKey, matchId, onHover, onPin }: {
   markers: PitchMarker[];
   side: 'home' | 'away' | 'unknown';
   label: string;
-  selected: MatchEvent | null;
-  onSelect: (event: MatchEvent | null) => void;
+  selectedKey: string | null;
+  matchId: string;
+  onHover: (event: MatchEvent | null) => void;
+  onPin: (key: string) => void;
 }) {
   if (markers.length === 0) return null;
   const rows = Math.max(...markers.map(marker => marker.row + 1));
@@ -217,7 +128,13 @@ function PitchLane({ markers, side, label, selected, onSelect }: {
           className="mc-pitch-marker-item"
           style={{ insetInlineStart: `${marker.position}%`, '--mc-marker-row': String(marker.row) } as CSSProperties}
         >
-          <MarkerButton event={marker.event} active={selected === marker.event} onSelect={onSelect} />
+          <MarkerButton
+            event={marker.event}
+            matchId={matchId}
+            active={selectedKey === eventKey(matchId, marker.event)}
+            onHover={onHover}
+            onPin={onPin}
+          />
         </li>
       ))}
     </ol>
@@ -251,29 +168,74 @@ function TimelineAxis({ totalMinutes }: { totalMinutes: number }) {
 
 /**
  * أحداث المباراة على الملعب: الموضع الأفقي هو الدقيقة وحدها (المصدر لا يرسل
- * إحداثيات x/y)، والصف هو الفريق. التوقفات (`Start Delay`/`End Delay`)
- * تُخفى في طبقة العقد، ولا تدخل الشريط إطلاقاً.
+ * إحداثيات x/y)، والصف هو فريقه. التوقفات (`Start Delay`/`End Delay`) تُخفى في
+ * طبقة العقد، ولا تدخل الشريط إطلاقاً.
+ *
+ * التحديد حالة مشتركة مع قسم التحليل: التمرير بالماوس معاينةٌ لحظية، والنقر
+ * تثبيتٌ يبقى بعد أن تبرم الماوس — وهذا ما يجعل «الحدث المختار» مفهوماً واحداً
+ * في الصفحة.
  */
-function PitchEvents({ snapshot }: { snapshot: MatchSnapshot | null }) {
-  const [selected, setSelected] = useState<MatchEvent | null>(null);
-  const lanes = pitchLanes(Array.isArray(snapshot?.events) ? snapshot.events : []);
-  const count = lanes.home.length + lanes.away.length + lanes.unknown.length + lanes.untimed.length;
+function PitchEvents({ snapshot, matchId, tools }: {
+  snapshot: MatchSnapshot | null;
+  matchId: string;
+  tools?: MatchCenterTools;
+}) {
+  const [hovered, setHovered] = useState<MatchEvent | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const lanes = useMemo(() => pitchLanes(Array.isArray(snapshot?.events) ? snapshot.events : []), [snapshot]);
+  const allMarkers = useMemo(
+    () => [...lanes.home, ...lanes.away, ...lanes.unknown, ...lanes.untimed.map(entry => ({ ...entry, position: 0, row: 0, minute: 0 }))],
+    [lanes],
+  );
+  const count = allMarkers.length;
+
+  const pinnedKey = tools?.selectedEventKey ?? null;
+  const pinned = useMemo(() => {
+    if (!pinnedKey) return null;
+    const found = allMarkers.find(marker => eventKey(matchId, marker.event) === pinnedKey);
+    return found ? found.event : null;
+  }, [allMarkers, matchId, pinnedKey]);
+
+  /* طلب «إظهار على الشريط» من التحليل: يمرّر التركيز إلى العلامة نفسها، فيقرأ
+     الناطق وصفها وتظهر تفاصيلها كما لو حُدِّدت هنا. */
+  const reveal = tools?.reveal ?? null;
+  useEffect(() => {
+    if (!reveal) return;
+    const root = sectionRef.current;
+    if (!root) return;
+    const markers = Array.from(root.querySelectorAll<HTMLElement>('.mc-pitch-marker[data-event-key]'));
+    const node = markers.find(marker => marker.getAttribute('data-event-key') === reveal.key) ?? null;
+    if (!node) return;
+    node.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'auto' });
+    node.focus({ preventScroll: true });
+  }, [reveal]);
+
   if (count === 0) return null;
-  const detail = selected ? eventDescription(selected) : null;
+  const detailEvent = hovered ?? pinned;
+  const detail = detailEvent ? describeEvent(detailEvent) : null;
 
   return (
-    <section className="mc-pitch-events" aria-labelledby="mc-pitch-events-title">
-      <h2 id="mc-pitch-events-title" className="mc-pitch-events-title">أحداث المباراة</h2>
+    <section className="mc-pitch-events" ref={sectionRef} aria-labelledby="mc-pitch-events-title">
+      <h2 id="mc-pitch-events-title" className="mc-pitch-events-title">
+        أحداث المباراة
+        <span className="mc-pitch-events-count" aria-hidden="true">{new Intl.NumberFormat('ar-EG').format(count)}</span>
+      </h2>
       <div className="mc-pitch-timeline">
-        <PitchLane markers={lanes.home} side="home" label="أحداث المضيف" selected={selected} onSelect={setSelected} />
+        <PitchLane markers={lanes.home} side="home" label="أحداث المضيف" selectedKey={pinnedKey} matchId={matchId} onHover={setHovered} onPin={key => tools?.selectEvent(key)} />
         <TimelineAxis totalMinutes={lanes.totalMinutes} />
-        <PitchLane markers={lanes.away} side="away" label="أحداث الضيف" selected={selected} onSelect={setSelected} />
-        <PitchLane markers={lanes.unknown} side="unknown" label="أحداث غير منسوبة" selected={selected} onSelect={setSelected} />
+        <PitchLane markers={lanes.away} side="away" label="أحداث الضيف" selectedKey={pinnedKey} matchId={matchId} onHover={setHovered} onPin={key => tools?.selectEvent(key)} />
+        <PitchLane markers={lanes.unknown} side="unknown" label="أحداث غير منسوبة" selectedKey={pinnedKey} matchId={matchId} onHover={setHovered} onPin={key => tools?.selectEvent(key)} />
         {lanes.untimed.length > 0 && (
           <ol className="mc-pitch-lane mc-pitch-lane--untimed" aria-label="أحداث بلا دقيقة">
             {lanes.untimed.map(({ event, key }) => (
               <li key={key} className="mc-pitch-marker-item mc-pitch-marker-item--untimed">
-                <MarkerButton event={event} active={selected === event} onSelect={setSelected} />
+                <MarkerButton
+                  event={event}
+                  matchId={matchId}
+                  active={pinnedKey === eventKey(matchId, event)}
+                  onHover={setHovered}
+                  onPin={pinKey => tools?.selectEvent(pinKey)}
+                />
               </li>
             ))}
           </ol>
@@ -281,6 +243,7 @@ function PitchEvents({ snapshot }: { snapshot: MatchSnapshot | null }) {
       </div>
       <p className="mc-pitch-event-detail" aria-live="polite">
         {detail ?? 'مرّر المؤشر فوق الرمز أو اضغط عليه لعرض تفاصيل الحدث.'}
+        {pinned && !hovered && <span className="mc-pitch-event-pinned"> — مثبَّت</span>}
       </p>
     </section>
   );
@@ -316,15 +279,20 @@ export interface MatchCenterVisualsProps {
   status: MatchStatus | null;
   flash?: 'home' | 'away' | null;
   fresh?: boolean;
+  tools?: MatchCenterTools;
 }
 
 /** ملعب تخطيطي: الفريقان والنتيجة، وأحداث المباراة كرموز على شريط زمني. */
-export default function MatchCenterVisuals({ match, snapshot, status, flash = null, fresh = false }: MatchCenterVisualsProps) {
+export default function MatchCenterVisuals({ match, snapshot, status, flash = null, fresh = false, tools }: MatchCenterVisualsProps) {
   const homeName = cleanText(match.home.name) ?? cleanText(match.home.sourceName) ?? cleanText(match.home.shortName);
   const awayName = cleanText(match.away.name) ?? cleanText(match.away.sourceName) ?? cleanText(match.away.shortName);
   const score = snapshot?.score ?? null;
   const showScore = canShowScore(status, score);
   const competition = cleanText(match.competitionName);
+  const season = cleanText(match.season);
+  const round = typeof match.round === 'number' && Number.isFinite(match.round)
+    ? String(match.round)
+    : cleanText(match.round);
   /* عند وصول لقطة حديثة، لا نُبقي ملعباً قديماً إذا غاب عن القراءة. وقبل
      أول قراءة يستخدم HTML الثابت قيمة الملعب المؤكدة في تعريف المباراة. */
   const venue = snapshot ? cleanText(snapshot.venue) : cleanText(match.venue);
@@ -335,18 +303,27 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
     ? `مركز المباراة · ${homeName} ضد ${awayName}`
     : 'مركز المباراة';
 
+  /* سطر المسابقة: اسم البطولة ثم الموسم ثم الجولة، بما وصل فقط. */
+  const competitionLine = [competition, season ? `موسم ${season}` : null, round ? `الجولة ${round}` : null]
+    .filter((part): part is string => Boolean(part))
+    .join(' · ');
+
   let cairoKickoff: string | null = null;
   let cairoDay: string | null = null;
   let meccaKickoff: string | null = null;
   if (kickoff) {
     try {
       cairoKickoff = kickoffLabel(kickoff, 'Africa/Cairo');
-      cairoDay = dayLabelInZone(kickoff, 'Africa/Cairo');
+      cairoDay = formatInZone(kickoff, 'Africa/Cairo', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       meccaKickoff = kickoffLabel(kickoff, 'Asia/Riyadh');
     } catch {
       /* التاريخ غير صالح: تُحذف معلومة الموعد بدلاً من إظهار قيمة بديلة. */
     }
   }
+
+  const readAtLabel = validDate(snapshot?.readAt)
+    ? formatInZone(snapshot.readAt, 'Africa/Cairo', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    : null;
 
   return (
     <section className="mc-match-visual" aria-labelledby="mc-title">
@@ -366,8 +343,13 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
         <Team match={match} snapshot={snapshot} side="home" flash={flash === 'home'} />
 
         <div className="mc-pitch-scoreboard" aria-live="off">
-          {competition && <span className="mc-pitch-competition">{competition}</span>}
-          {statusLabel && <span className="mc-pitch-status" data-code={status?.code ?? 'unknown'} data-fresh={fresh ? 'true' : 'false'}>{statusLabel}</span>}
+          {competitionLine && <span className="mc-pitch-competition">{competitionLine}</span>}
+          {(statusLabel || clock) && (
+            <p className="mc-pitch-statusline">
+              {statusLabel && <span className="mc-pitch-status" data-code={status?.code ?? 'unknown'} data-fresh={fresh ? 'true' : 'false'}>{statusLabel}</span>}
+              {clock && <span className="mc-pitch-clock" dir="ltr">{clock}</span>}
+            </p>
+          )}
           {showScore && score ? (
             <p className="mc-pitch-score" aria-label={`نتيجة المضيف ${score.home}، ثم الضيف ${score.away}`}>
               <span className="mc-score-order">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
@@ -375,7 +357,6 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
           ) : (
             <span className="mc-pitch-vs" aria-label="مواجهة بين الفريقين">VS</span>
           )}
-          {clock && statusLabel && <span className="mc-pitch-clock" dir="ltr">{clock}</span>}
           {cairoKickoff && (
             <span className="mc-pitch-kickoff">
               {cairoKickoff}{cairoDay ? ` · ${cairoDay}` : ''}
@@ -385,24 +366,21 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
 
         <Team match={match} snapshot={snapshot} side="away" flash={flash === 'away'} />
 
-        <PitchEvents snapshot={snapshot} />
+        <PitchEvents snapshot={snapshot} matchId={match.id} tools={tools} />
       </div>
 
-      {(competition || venue || cairoKickoff || meccaKickoff) && (
+      {(venue || competitionLine || cairoKickoff || meccaKickoff || readAtLabel) && (
         <dl className="mc-match-facts">
           {venue && <div><dt>الملعب</dt><dd dir="auto">{venue}</dd></div>}
           {competition && <div><dt>المسابقة</dt><dd>{competition}</dd></div>}
+          {season && <div><dt>الموسم</dt><dd dir="auto">{season}</dd></div>}
+          {round && <div><dt>الجولة</dt><dd className="mc-num">{round}</dd></div>}
           {cairoKickoff && <div><dt>موعد القاهرة</dt><dd>{cairoKickoff}{cairoDay ? ` · ${cairoDay}` : ''}</dd></div>}
           {meccaKickoff && <div><dt>موعد مكة</dt><dd>{meccaKickoff}</dd></div>}
-          {validDate(snapshot?.readAt) && (
-            <div>
-              <dt>وقت القراءة</dt>
-              <dd>{formatInZone(snapshot.readAt, 'Africa/Cairo', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}</dd>
-            </div>
-          )}
+          {readAtLabel && <div><dt>وقت القراءة</dt><dd>{readAtLabel}</dd></div>}
         </dl>
       )}
-      <p className="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ مواضع الأحداث داخل الملعب غير مرسومة لأن المصدر لا يرسل إحداثياتها. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله.</p>
+      <p className="mc-pitch-disclaimer">الشريط الزمني أعلاه يعرض الدقيقة وجهة الفريق فقط؛ مواضع الأحداث داخل الملعب غير مرسومة لأن المصدر لا يرسل إحداثياتها. مرّر المؤشر أو اضغط على أي رمز لعرض تفاصيله، والنقر يثبّته.</p>
     </section>
   );
 }

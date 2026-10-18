@@ -3,6 +3,7 @@ import { useMatchCenter } from '../components/useMatchCenter';
 import MatchCenterVisuals from '../components/MatchCenterVisuals';
 import MatchCenterTabs from '../components/MatchCenterTabs';
 import { availableMatchCenterTabs, PANELS } from '../components/MatchCenterPanels';
+import { useMatchCenterTools } from '../components/useMatchCenterTools';
 import {
   MATCH_CENTER_DOCUMENTATION,
   type MatchCenterFixture,
@@ -25,6 +26,19 @@ function cleanText(value: unknown): string | null {
 function validDate(value: unknown): value is string {
   return typeof value === 'string' && value.trim() !== '' && Number.isFinite(Date.parse(value));
 }
+
+/* سطر واحد لكل تبويب: يُقرأ في `title` وفي `aria-describedby` الضمني، فيعرف
+   الزائر ما في القسم قبل أن يفتحه — ووصفٌ لا يُطابق ما يُعرض أسوأ من لا شيء،
+   لذلك تُركت النصوص عامة بلا أرقام: الأرقام تتغيّر مع كل قراءة. */
+const TAB_HINTS: Partial<Record<import('../lib/match-center.mjs').TabId, string>> = {
+  preview: 'المسابقة والموسم والجولة والملعب والموعد ومستوى الفريقين',
+  history: 'آخر ثلاث مواجهات مكتملة أرسلها المصدر',
+  lineups: 'التشكيلات المؤكدة من المصدر فقط',
+  live: 'أرقام المباراة للفريقين مجمّعة في مجموعات يسهل مسحها',
+  analysis: 'وقائع المصدر: ملخص الأرقام والأحداث مع فلاتر الفريق والشوط والنوع',
+  report: 'النتيجة النهائية وأرقام المباراة بعد تأكيد المصدر',
+  notes: 'ملاحظاتك أنت، محفوظة في هذا المتصفح لهذه المباراة وحدها',
+};
 
 function readTimeLabel(value: unknown): string | null {
   if (!validDate(value)) return null;
@@ -49,6 +63,13 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
     refreshNow,
     clearAnnouncements,
   } = state;
+
+  /* حالة الاختار المشتركة بين شريط الملعب وقسم التحليل ودفتر المحلل. */
+  const tools = useMatchCenterTools({
+    events: snapshot?.events ?? null,
+    matchId: match.id,
+    onOpenNotes: () => chooseTab('notes'),
+  });
 
   const [flash, setFlash] = useState<'home' | 'away' | null>(null);
   useEffect(() => {
@@ -115,6 +136,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
           status={status}
           flash={flash}
           fresh={livePulse}
+          tools={tools}
         />
 
         {/* حداثة القراءة والاتصال حالة خدمة فقط، وليسا بديلاً عن حقول المباراة. */}
@@ -149,7 +171,12 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
 
         {availableTabs.length > 0 && (
           <>
-            <MatchCenterTabs activeTab={activeTab} onChoose={chooseTab} tabs={availableTabs} />
+            <MatchCenterTabs
+              activeTab={activeTab}
+              onChoose={chooseTab}
+              tabs={availableTabs}
+              describeTab={tab => TAB_HINTS[tab] ?? null}
+            />
             {availableTabs.map(tabId => {
               const Panel = PANELS[tabId];
               const selected = tabId === activeTab;
@@ -163,7 +190,15 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
                   tabIndex={selected ? 0 : -1}
                   hidden={!selected}
                 >
-                  <Panel match={match} snapshot={snapshot} status={status} now={state.now} />
+                  <Panel
+                    match={match}
+                    snapshot={snapshot}
+                    status={status}
+                    now={state.now}
+                    tools={tools}
+                    freshnessText={freshness.text}
+                    readAtLabel={readAtLabel}
+                  />
                 </div>
               );
             })}

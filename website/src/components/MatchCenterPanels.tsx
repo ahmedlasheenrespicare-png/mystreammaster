@@ -1,26 +1,44 @@
+import type { ReactElement } from 'react';
 import {
-  buildComparison,
   canShowKickoff,
-  dayLabelInZone,
+  comparisonFor,
+  computeAvailableTabs,
+  confirmedLineupSides,
+  displayableComparisonAxes,
+  displayablePlayers,
+  displayableRatings,
+  displayableStatistics,
   formatInZone,
+  hasDisplayableForm,
+  headToHeadFor,
   isResultOfficial,
   isValidScore,
   kickoffLabel,
-  mergeH2h,
-  type Comparison,
-  type ComparisonAxis,
-  type H2hEntry,
   type LineupSide as LineupSideData,
   type MatchDefinition,
-  type MatchLineups,
   type MatchSnapshot,
   type MatchStatus,
   type ScoredPlayer,
-  type StatPair,
-  type TeamForm,
   type TabId,
+  type TeamForm,
 } from '../lib/match-center.mjs';
+import type { MatchCenterTools } from './useMatchCenterTools';
 import MatchCenterRadar from './MatchCenterRadar';
+import MatchCenterStatGroups from './MatchCenterStatGroups';
+import MatchCenterAnalysis from './MatchCenterAnalysis';
+import MatchCenterAnalystNotes from './MatchCenterAnalystNotes';
+
+/* ==========================================================================
+   لوحات مركز المباراة — عرضٌ فقط، وبلا طلبات
+   --------------------------------------------------------------------------
+   البند 11: طبقة بيانات واحدة لكل مباراة؛ لذلك لا تعرف أي لوحة `fetch` ولا
+   تقرأ ساعةً لتقرير حالة. تدخلها اللقطة نفسها التي تُغذّي الملعب، وتخرج منها
+   أمانةُ ما فيها: قسمٌ بلا بيانات لا يُرسم، وقيمةٌ ناقصة لا تُستكمل صفراً.
+
+   «يُعرض أم لا» ليس قراراً هنا: كل فاحص توافر يعيش في `lib/match-center.mjs`
+   (`displayable*` و`computeAvailableTabs`) لأن التبويبَ والتقريرَ والاختبارَ
+   يجب أن يروا الجواب نفسه.
+========================================================================== */
 
 export interface PanelProps {
   match: MatchDefinition;
@@ -28,6 +46,12 @@ export interface PanelProps {
   status: MatchStatus | null;
   /** محفوظ للتوافق مع مستهلكي اللوحات؛ لا تُشتق حالة المباراة من الساعة. */
   now: number;
+  /** حالة تفاعلية مشتركة مع شريط الملعب: التحديد، والإظهار، وربط الملاحظة. */
+  tools?: MatchCenterTools;
+  /** نص حداثة القراءة كما تقرّره طبقة العقد — للعرض والتصدير، لا للاستنتاج. */
+  freshnessText?: string | null;
+  /** وقت القراءة منسَّقاً بالعربية، أو `null` إن لم يصل وقت صالح. */
+  readAtLabel?: string | null;
 }
 
 function text(value: unknown): string | null {
@@ -55,115 +79,13 @@ function matchVenue(match: MatchDefinition, snapshot: MatchSnapshot | null): str
   return snapshot ? text(snapshot.venue) : text(match.venue);
 }
 
-function displayableStatistics(value: MatchSnapshot['statistics']): StatPair[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter(stat => Boolean(text(stat?.label))
-    && (numeric(stat?.home) !== null || numeric(stat?.away) !== null));
-}
-
-
-function displayablePlayers(value: unknown): ScoredPlayer[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((player): player is ScoredPlayer => Boolean(player && text(player.name)));
-}
-
-function confirmedSides(lineups: MatchLineups | null): { side: 'home' | 'away'; data: LineupSideData }[] {
-  if (!lineups || typeof lineups !== 'object') return [];
-  return (['home', 'away'] as const).flatMap(side => {
-    const data = lineups[side];
-    if (!data || data.confirmed !== true) return [];
-    const starters = displayablePlayers(data.starters);
-    const substitutes = displayablePlayers(data.substitutes);
-    const hasVisibleContent = Boolean(text(data.formation) || text(data.coach) || starters.length || substitutes.length);
-    return hasVisibleContent ? [{ side, data }] : [];
-  });
-}
-
-function displayableHeadToHead(entries: H2hEntry[]): H2hEntry[] {
-  return entries.filter(entry => Boolean(
-    entry
-      && text(entry.home)
-      && text(entry.away)
-      && validDate(entry.date)
-      && isValidScore({ home: entry.homeGoals, away: entry.awayGoals }),
-  ));
-}
-
-function displayableRatings(value: MatchSnapshot['ratings']): ScoredPlayer[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter(player => Boolean(text(player?.name) && numeric(player?.rating) !== null));
-}
-
-function hasFormData(form: TeamForm | null | undefined): form is TeamForm {
-  return Boolean(form && Array.isArray(form.matches) && form.matches.some(item =>
-    item
-      && numeric(item.goalsFor) !== null
-      && numeric(item.goalsAgainst) !== null
-      && (item.result === 'W' || item.result === 'D' || item.result === 'L'),
-  ));
-}
-
-function comparisonFor(snapshot: MatchSnapshot | null): Comparison {
-  return buildComparison(
-    (snapshot?.seasonComparison ?? []).map(metric => ({ ...metric, mode: 'season' as const })),
-    { mode: 'season', sample: snapshot?.seasonSample ?? null, provider: snapshot?.provider ?? null },
-  );
-}
-
-function displayableAxes(comparison: Comparison): ComparisonAxis[] {
-  return comparison.axes.filter(axis => text(axis.label)
-    && (numeric(axis.home) !== null || numeric(axis.away) !== null));
-}
-
-function hasPreviewData(match: MatchDefinition, snapshot: MatchSnapshot | null, status: MatchStatus | null): boolean {
-  const comparison = displayableAxes(comparisonFor(snapshot));
-  const hasFixtureFacts = Boolean(
-    text(match.competitionName)
-      || text(matchVenue(match, snapshot))
-      || (canShowKickoff(status) && validDate(match.kickoffUtc) && kickoffLabel(match.kickoffUtc, 'Africa/Cairo'))
-      || text(match.season)
-      || text(match.round),
-  );
-  return hasFixtureFacts
-    || hasFormData(snapshot?.form?.home)
-    || hasFormData(snapshot?.form?.away)
-    || comparison.length > 0;
-}
-
 /** تبويبات تُشتق من اللقطة ذاتها التي تغذي الملعب؛ لا طلب مستقل لكل قسم. */
 export function availableMatchCenterTabs(
   match: MatchDefinition,
   snapshot: MatchSnapshot | null,
   status: MatchStatus | null,
 ): TabId[] {
-  const tabs: TabId[] = [];
-  if (hasPreviewData(match, snapshot, status)) tabs.push('preview');
-
-  const official = isResultOfficial(status, snapshot?.score ?? null);
-  const h2h = displayableHeadToHead(mergeH2h(snapshot?.h2h ?? [], official && snapshot?.score
-    ? {
-      fixtureId: match.externalIds.espn ?? null,
-      date: match.kickoffUtc,
-      competition: text(match.competitionName),
-      year: text(match.season),
-      friendly: false,
-      completed: true,
-      home: text(match.home.name) ?? text(match.home.sourceName) ?? '',
-      away: text(match.away.name) ?? text(match.away.sourceName) ?? '',
-      homeGoals: snapshot.score.home,
-      awayGoals: snapshot.score.away,
-    }
-    : null, 3));
-  if (h2h.length > 0) tabs.push('history');
-
-  if (confirmedSides(snapshot?.lineups ?? null).length > 0) tabs.push('lineups');
-
-  const statistics = displayableStatistics(snapshot?.statistics ?? null);
-  if (statistics.length > 0) tabs.push('live');
-
-  const ratings = displayableRatings(snapshot?.ratings ?? null);
-  if (official && (statistics.length > 0 || ratings.length > 0)) tabs.push('report');
-  return tabs;
+  return computeAvailableTabs({ match, snapshot, status });
 }
 
 /* ─────────────────────────── 1) معاينة ─────────────────────────── */
@@ -171,22 +93,23 @@ export function availableMatchCenterTabs(
 const RESULT_WORD: Record<TeamForm['matches'][number]['result'], string> = { W: 'فوز', D: 'تعادل', L: 'خسارة' };
 
 function FormSide({ name, form }: { name: string; form: TeamForm | null }) {
-  if (!hasFormData(form)) return null;
-  const matches = form.matches.filter(item => item
+  if (!hasDisplayableForm(form)) return null;
+  const matches = (form?.matches ?? []).filter(item => item
     && numeric(item.goalsFor) !== null
     && numeric(item.goalsAgainst) !== null
     && (item.result === 'W' || item.result === 'D' || item.result === 'L'));
-  const totals = [
-    ['مباريات موثقة', numeric(form.played)],
-    ['فوز', numeric(form.wins)],
-    ['تعادل', numeric(form.draws)],
-    ['خسارة', numeric(form.losses)],
-    ['أهداف مسجلة', numeric(form.goalsFor)],
-    ['أهداف مستقبلة', numeric(form.goalsAgainst)],
-    ['متوسط التسجيل', numeric(form.avgGoalsFor)],
-    ['متوسط الاستقبال', numeric(form.avgGoalsAgainst)],
-  ].filter((entry): entry is [string, number] => entry[1] !== null);
-  const competitions = Array.isArray(form.competitions) ? form.competitions.map(text).filter((item): item is string => Boolean(item)) : [];
+  const totals: [string, number | null][] = [
+    ['مباريات موثقة', numeric(form?.played)],
+    ['فوز', numeric(form?.wins)],
+    ['تعادل', numeric(form?.draws)],
+    ['خسارة', numeric(form?.losses)],
+    ['أهداف مسجلة', numeric(form?.goalsFor)],
+    ['أهداف مستقبلة', numeric(form?.goalsAgainst)],
+    ['متوسط التسجيل', numeric(form?.avgGoalsFor)],
+    ['متوسط الاستقبال', numeric(form?.avgGoalsAgainst)],
+  ];
+  const shown = totals.filter((entry): entry is [string, number] => entry[1] !== null);
+  const competitions = Array.isArray(form?.competitions) ? form.competitions.map(text).filter((item): item is string => Boolean(item)) : [];
 
   return (
     <section className="mc-form-side">
@@ -215,9 +138,9 @@ function FormSide({ name, form }: { name: string; form: TeamForm | null }) {
           })}
         </ol>
       )}
-      {totals.length > 0 && (
+      {shown.length > 0 && (
         <dl className="mc-form-summary">
-          {totals.map(([label, value]) => <div key={label}><dt>{label}</dt><dd className="mc-num">{numberLabel(value)}</dd></div>)}
+          {shown.map(([label, value]) => <div key={label}><dt>{label}</dt><dd className="mc-num">{numberLabel(value)}</dd></div>)}
         </dl>
       )}
       {competitions.length > 0 && <p className="mc-note">نطاق السجل: {competitions.join('، ')}.</p>}
@@ -226,10 +149,12 @@ function FormSide({ name, form }: { name: string; form: TeamForm | null }) {
 }
 
 export function PreviewPanel({ match, snapshot, status }: PanelProps) {
+  const axes = displayableComparisonAxes(comparisonFor(snapshot));
   const comparison = comparisonFor(snapshot);
-  const axes = displayableAxes(comparison);
-  const homeForm = hasFormData(snapshot?.form?.home) ? snapshot.form.home : null;
-  const awayForm = hasFormData(snapshot?.form?.away) ? snapshot.form.away : null;
+  const homeFormCandidate = snapshot?.form?.home ?? null;
+  const awayFormCandidate = snapshot?.form?.away ?? null;
+  const homeForm = hasDisplayableForm(homeFormCandidate) ? homeFormCandidate : null;
+  const awayForm = hasDisplayableForm(awayFormCandidate) ? awayFormCandidate : null;
   const competition = text(match.competitionName);
   const venue = matchVenue(match, snapshot);
   const season = text(match.season);
@@ -243,7 +168,7 @@ export function PreviewPanel({ match, snapshot, status }: PanelProps) {
   if (canShowKickoff(status) && validDate(match.kickoffUtc)) {
     try {
       cairoTime = kickoffLabel(match.kickoffUtc, 'Africa/Cairo');
-      cairoDay = dayLabelInZone(match.kickoffUtc, 'Africa/Cairo');
+      cairoDay = dayLabelInZoneSafe(match.kickoffUtc, 'Africa/Cairo');
       meccaTime = kickoffLabel(match.kickoffUtc, 'Asia/Riyadh');
     } catch {
       /* حذف الموعد التالف بدلاً من تخمين قيمة. */
@@ -285,26 +210,22 @@ export function PreviewPanel({ match, snapshot, status }: PanelProps) {
   );
 }
 
+/* `dayLabelInZone` ترمي على تاريخ تالف؛ تُلفّ هنا حتى يسقط سطر التاريخ وحده
+   ولا يسقط عرض الموعد الذي تحقّق منه المصدر. */
+function dayLabelInZoneSafe(iso: string, zone: string): string | null {
+  try {
+    return formatInZone(iso, zone, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return null;
+  }
+}
+
 /* ─────────────────────────── 2) المواجهات ─────────────────────────── */
 
 export function HistoryPanel({ match, snapshot, status }: PanelProps) {
-  const official = isResultOfficial(status, snapshot?.score ?? null);
-  const self = official && snapshot?.score
-    ? {
-      fixtureId: match.externalIds.espn ?? null,
-      date: match.kickoffUtc,
-      competition: text(match.competitionName),
-      year: text(match.season),
-      friendly: false,
-      completed: true,
-      home: text(match.home.name) ?? text(match.home.sourceName) ?? '',
-      away: text(match.away.name) ?? text(match.away.sourceName) ?? '',
-      homeGoals: snapshot.score.home,
-      awayGoals: snapshot.score.away,
-    }
-    : null;
-  const entries = displayableHeadToHead(mergeH2h(snapshot?.h2h ?? [], self, 3));
-
+  /* نفس دالة التجميع التي يقرأ منها فاحص التوافر: القسم يعرض ما بُني عليه
+     قرار إظهاره، لا حساباً ثانياً قد يختلف عنه. */
+  const entries = headToHeadFor(match, snapshot, status);
   if (entries.length === 0) return null;
 
   return (
@@ -322,7 +243,7 @@ export function HistoryPanel({ match, snapshot, status }: PanelProps) {
               {date && <time className="mc-history-date" dateTime={entry.date}>{date}</time>}
               <strong className="mc-history-scoreline">
                 {text(entry.home)}
-                <span className="mc-num">{numberLabel(entry.homeGoals as number)}–{numberLabel(entry.awayGoals as number)}</span>
+                <span className="mc-num">{numberLabel(numeric(entry.homeGoals) ?? 0)}–{numberLabel(numeric(entry.awayGoals) ?? 0)}</span>
                 {text(entry.away)}
               </strong>
               {(competition || entry.friendly === true) && (
@@ -368,7 +289,7 @@ function ConfirmedLineupSide({ name, data }: { name: string; data: LineupSideDat
 }
 
 export function LineupsPanel({ match, snapshot }: PanelProps) {
-  const sides = confirmedSides(snapshot?.lineups ?? null);
+  const sides = confirmedLineupSides(snapshot?.lineups ?? null);
   if (sides.length === 0) return null;
 
   return (
@@ -387,45 +308,19 @@ export function LineupsPanel({ match, snapshot }: PanelProps) {
 
 /* ─────────────────────────── 4) مباشر ─────────────────────────── */
 
-
-function StatisticList({ statistics, match }: { statistics: StatPair[]; match: MatchDefinition }) {
-  if (statistics.length === 0) return null;
-  const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
-  const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
-  return (
-    <section className="mc-statistics">
-      <h3>إحصائيات المباراة</h3>
-      <dl className="mc-stat-list">
-        {statistics.map(stat => {
-          const home = numeric(stat.home);
-          const away = numeric(stat.away);
-          const unit = text(stat.unit);
-          return (
-            <div className="mc-stat-row" key={stat.key}>
-              <dt>{text(stat.label)}{unit ? ` (${unit})` : ''}</dt>
-              <dd>
-                {home !== null && <span data-side="home"><b>{homeName}</b><span className="mc-num">{numberLabel(home)}</span></span>}
-                {away !== null && <span data-side="away"><b>{awayName}</b><span className="mc-num">{numberLabel(away)}</span></span>}
-              </dd>
-            </div>
-          );
-        })}
-      </dl>
-    </section>
-  );
-}
-
 export function LivePanel({ match, snapshot, status }: PanelProps) {
   const statistics = displayableStatistics(snapshot?.statistics ?? null);
   if (statistics.length === 0) return null;
 
   const statusLabel = text(status?.label);
   const clock = text(status?.clock);
+  const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
+  const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
   return (
     <div>
       <h2>بيانات المباراة</h2>
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
-      <StatisticList statistics={statistics} match={match} />
+      <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} idPrefix="live" />
     </div>
   );
 }
@@ -442,7 +337,7 @@ function RatingList({ ratings }: { ratings: ScoredPlayer[] }) {
           <li className="mc-event" key={player.id ?? `${player.name}-${index}`}>
             <span className="mc-event-body">
               {text(player.name)}
-              <small>تقييم وارد من المصدر: <span className="mc-num">{numberLabel(player.rating as number)}</span>{player.provisional ? ' · أولي وقابل للتغير' : ''}</small>
+              <small>تقييم وارد من المصدر: <span className="mc-num">{numberLabel(numeric(player.rating) ?? 0)}</span>{player.provisional ? ' · أولي وقابل للتغير' : ''}</small>
             </span>
           </li>
         ))}
@@ -459,20 +354,30 @@ export function ReportPanel({ match, snapshot, status }: PanelProps) {
   if (!official || !finalScore || !isValidScore(finalScore)
     || (statistics.length === 0 && ratings.length === 0)) return null;
 
+  const homeName = text(match.home.name) ?? text(match.home.sourceName) ?? 'المضيف';
+  const awayName = text(match.away.name) ?? text(match.away.sourceName) ?? 'الضيف';
   return (
     <div>
       <h2>بعد المباراة</h2>
       <p>النتيجة النهائية: <b className="mc-num">{numberLabel(finalScore.home as number)}–{numberLabel(finalScore.away as number)}</b></p>
-      <StatisticList statistics={statistics} match={match} />
+      <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} idPrefix="report" />
       <RatingList ratings={ratings} />
     </div>
   );
 }
 
-export const PANELS = {
+/* ───────────────── 6) تحليل المباراة · 7) دفتر المحلل ─────────────────
+   اللوحتان في ملفيهما الخاصّين — `MatchCenterAnalysis` و
+   `MatchCenterAnalystNotes` — ويُذكران هنا لأن `PANELS` هو الجدول الذي يربط
+   معرّف التبويب بمكوّنه: لا يصحّ أن يوجد تبويب في العقد بلا لوحة، ولا لوحة
+   لا يبلغها التبويب. */
+
+export const PANELS: Record<TabId, (props: PanelProps) => ReactElement | null> = {
   preview: PreviewPanel,
   history: HistoryPanel,
   lineups: LineupsPanel,
   live: LivePanel,
+  analysis: MatchCenterAnalysis,
   report: ReportPanel,
-} as const;
+  notes: MatchCenterAnalystNotes,
+};

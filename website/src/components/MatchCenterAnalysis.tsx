@@ -200,6 +200,7 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
             statistics={statistics}
             homeName={homeName}
             awayName={awayName}
+            logos={snapshot?.logos ?? null}
             idPrefix="analysis"
             headingLevel="h4"
           />

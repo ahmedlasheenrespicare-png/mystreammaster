@@ -487,3 +487,102 @@
   .mc-lineup-player { flex-basis: 21%; }
   .mc-lineup-squad { padding-inline: 6px; }
 }
+
+/* ==========================================================================
+   المرحلة أ — 28 رقماً من المصدر نفسه، والمعاينة على الملعب حتى صدور التشكيلة
+   ========================================================================== */
+
+/* عدّادات بطاقة الفريق على الملعب: صفراء/حمراء/ركنيات من جدول الإحصائيات. */
+.mc-pitch-counters { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 2px 0 0; padding: 0; list-style: none; }
+.mc-pitch-counter { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; background: rgba(5, 16, 13, .55); color: #fff; font-size: .66rem; font-weight: 800; }
+.mc-pitch-counter i { display: inline-block; width: 8px; height: 11px; border-radius: 2px; background: #ffd34d; }
+.mc-pitch-counter[data-counter="red"] i { background: #ff4d5e; }
+.mc-pitch-counter[data-counter="corners"] i { width: 9px; height: 9px; border-radius: 50%; background: #dfe9dc; }
+.mc-pitch-counter em { font-style: normal; color: rgba(255, 255, 255, .75); font-weight: 700; }
+
+/* اسم المركز بالعربية ثم رمز المصدر؛ الرمز لا ينكسر إلى سطرين (CD-R). */
+.mc-player-pos-code { white-space: nowrap; unicode-bidi: isolate; }
+
+/* المعاينة على الملعب — الموضع نفسه الذي تشغله التشكيلة حين تصدر. */
+.mc-pitch-preview { grid-column: 1 / -1; z-index: 1; min-width: 0; width: 100%; padding-top: 16px; border-top: 1px solid #ffffff40; }
+.mc-pitch-preview h2 { margin: 0; text-align: center; font-size: 1rem; }
+.mc-pitch-preview-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; margin: 12px 0 0; padding: 0; }
+.mc-pitch-preview-facts > div { min-width: 0; padding: 7px 10px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 11px; background: rgba(5, 16, 13, .5); text-align: center; backdrop-filter: blur(4px); }
+.mc-pitch-preview-facts dt { color: rgba(255, 255, 255, .72); font-size: .64rem; }
+.mc-pitch-preview-facts dd { margin: 1px 0 0; color: #fff; font-size: .78rem; font-weight: 800; }
+.mc-pitch-forms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; margin-top: 14px; }
+.mc-pitch-form { min-width: 0; border: 1px solid #ffffff40; border-radius: 14px; padding: 12px 10px; background: #062b1d45; }
+.mc-pitch-form h3 { margin: 0 0 4px; text-align: center; color: #fff; font-size: .9rem; }
+.mc-pitch-form-sub { margin: 0 0 10px; text-align: center; color: #d5e7dd; font-size: .66rem; }
+.mc-pitch-form .mc-events { gap: 6px; }
+.mc-pitch-form .mc-event { padding: 6px 9px; border-color: rgba(255, 255, 255, .16); background: rgba(5, 16, 13, .55); font-size: .76rem; }
+.mc-pitch-form .mc-event-body small { color: #cfe0d4; font-size: .64rem; }
+.mc-pitch-form .mc-form-score { color: #fff; font-weight: 900; font-size: .8rem; }
+.mc-form-result { display: inline-grid; place-items: center; min-width: 48px; min-height: 22px; padding-inline: 6px; border: 1px solid rgba(255, 255, 255, .3); border-radius: 999px; background: rgba(255, 255, 255, .08); color: #e8eef5; font-family: inherit; font-size: .66rem; font-weight: 900; }
+.mc-form-result[data-r="W"] { border-color: rgba(216, 255, 62, .5); background: rgba(216, 255, 62, .18); color: var(--mc-lime); }
+.mc-form-result[data-r="L"] { border-color: rgba(239, 51, 64, .5); background: rgba(239, 51, 64, .18); color: #ffb1b7; }
+.mc-pitch-form-summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 10px 0 0; padding: 0; }
+.mc-pitch-form-summary > div { display: inline-flex; align-items: baseline; gap: 4px; padding: 2px 9px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; background: rgba(5, 16, 13, .55); color: #fff; font-size: .66rem; font-weight: 800; }
+.mc-pitch-form-summary dt { color: rgba(255, 255, 255, .72); font-weight: 700; }
+.mc-pitch-form-summary dd { margin: 0; }
+.mc-prematch-pointer { margin: 0 0 14px; color: var(--mc-muted); font-size: .82rem; }
+
+/* سطر مجمل المواجهات: من الصفوف المعروضة نفسها. */
+.mc-h2h-agg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 12px; padding: 0; list-style: none; }
+.mc-h2h-cell { min-width: 0; padding: 10px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255, 255, 255, .025); text-align: center; }
+.mc-h2h-cell b { display: block; font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
+.mc-h2h-cell small { color: var(--mc-muted); font-size: .72rem; }
+.mc-h2h-cell[data-side="home"] b { color: #cfc4ff; }
+.mc-h2h-cell[data-side="away"] b { color: var(--mc-lime); }
+
+/* شريط الاستحواذ البارز فوق المجموعات. */
+.mc-possession { padding: 14px; border: 1px solid rgba(216, 255, 62, .22); border-radius: 14px; background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015)); }
+.mc-possession-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 900; }
+.mc-possession-side { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; font-size: .8rem; }
+.mc-possession-side[data-side="home"] { color: #cfc4ff; }
+.mc-possession-side[data-side="away"] { color: var(--mc-lime); }
+.mc-possession-pct { font-size: 1.7rem; line-height: 1; }
+.mc-possession-title { color: var(--mc-muted); font-size: .8rem; font-weight: 800; }
+.mc-possession-bar { display: flex; height: 14px; margin-top: 8px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .06); }
+.mc-possession-fill { display: block; block-size: 100%; }
+.mc-possession-fill[data-side="home"] { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .6)); }
+.mc-possession-fill[data-side="away"] { background: linear-gradient(90deg, rgba(216, 255, 62, .55), rgba(216, 255, 62, .95)); }
+
+/* رأس كل مجموعة: شعار المضيف · العنوان · شعار الضيف فوق عمودي القيم. */
+.mc-stat-group-head { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 8px; margin-bottom: 9px; }
+.mc-stat-group-head .mc-stat-group-title { margin: 0; text-align: center; }
+.mc-mini-crest { display: grid; place-items: center; width: 34px; height: 34px; justify-self: center; border: 1.5px solid rgba(255, 255, 255, .3); border-radius: 50%; object-fit: contain; padding: 3px; font-family: var(--font-latin, ui-sans-serif); font-size: .62rem; font-weight: 900; }
+.mc-mini-crest--home { border-color: rgba(207, 196, 255, .7); background: rgba(124, 92, 255, .14); color: #cfc4ff; }
+.mc-mini-crest--away { border-color: rgba(216, 255, 62, .7); background: rgba(216, 255, 62, .1); color: var(--mc-lime); }
+
+/* «التوثيق والمراجعة»: بطاقات النصوص التفسيرية وسطر المراجعة. */
+.mc-docs-grid { display: grid; gap: 10px; margin: 10px 0 12px; }
+.mc-doc { min-width: 0; padding: 12px 14px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255, 255, 255, .02); }
+.mc-doc h3 { margin: 0 0 4px; color: var(--mc-text); font-size: .84rem; font-weight: 900; }
+.mc-doc p { margin: 0; color: var(--mc-muted); font-size: .76rem; line-height: 1.75; }
+.mc-docs-review { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin: 0 0 12px; padding: 10px 14px; border: 1px dashed rgba(255, 255, 255, .14); border-radius: 12px; color: var(--mc-muted); font-size: .76rem; }
+.mc-docs-review strong { margin-inline-end: 8px; color: var(--mc-text); }
+.mc-report { display: inline-flex; align-items: center; min-height: 38px; padding: 6px 14px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255, 255, 255, .04); color: var(--mc-text); font-size: .76rem; font-weight: 800; text-decoration: none; }
+.mc-report:hover { border-color: var(--mc-lime); color: var(--mc-lime); }
+@media (min-width: 900px) { .mc-docs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .mc-pitch-forms { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+@media (max-width: 420px) {
+  .mc-stat-group-head { grid-template-columns: 36px minmax(0, 1fr) 36px; }
+  .mc-mini-crest { width: 30px; height: 30px; }
+  .mc-h2h-agg { gap: 5px; }
+  .mc-h2h-cell { padding: 8px 4px; }
+  .mc-h2h-cell b { font-size: 1.2rem; }
+  .mc-possession-pct { font-size: 1.3rem; }
+  .mc-pitch-counter { font-size: .6rem; padding: 1px 5px; }
+}
+@layer mc-print {
+  @media print {
+    .mc-pitch-preview-facts > div, .mc-pitch-form, .mc-pitch-form .mc-event, .mc-pitch-form-summary > div, .mc-pitch-counter,
+    .mc-h2h-cell, .mc-possession, .mc-doc { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
+    .mc-pitch-preview h2, .mc-pitch-form h3, .mc-pitch-form-sub, .mc-pitch-preview-facts dt, .mc-pitch-preview-facts dd,
+    .mc-pitch-form .mc-event-body small, .mc-pitch-form .mc-form-score, .mc-pitch-form-summary dt, .mc-pitch-counter em { color: #101218 !important; }
+    .mc-possession-fill[data-side="home"] { background: #3b2a7a; }
+    .mc-possession-fill[data-side="away"] { background: #1f6b2e; }
+    .mc-report { display: none !important; }
+  }
+}

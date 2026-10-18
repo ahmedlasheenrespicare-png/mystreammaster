@@ -14,6 +14,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MATCH_CENTER_ALL_MATCHES, MATCH_CENTER_MATCHES } from '../src/content/match-center.mjs';
@@ -261,9 +262,25 @@ test('stage 2: statistics reader binds sides by team id and never derives shots 
   // الشكل المؤكد بـ P1: boxscore.teams[{team.id,statistics[{name,value|displayValue}]}].
   assert.match(source, /function mc_read_statistics\(array \$summary, array \$competitors\): \?array/);
   assert.match(source, /const MC_STAT_LABELS = \[/);
-  for (const name of ['possessionPct','totalShots','shotsOnTarget','blockedShots','wonCorners','foulsCommitted','offsides','passPct','saves','yellowCards','redCards']) {
-    assert.match(source, new RegExp(`'${name}'\\s*=>`), `stat label map must include ${name}`);
+  // الأسماء الـ28 المؤكدة في المسبار (espn-summary-probe.json → rawStatNames)، لا أكثر.
+  const probe = JSON.parse(readFileSync(new URL('../docs/espn-summary-probe.json', import.meta.url), 'utf8'));
+  const confirmed = [...new Set(probe.results.flatMap(result => result.rawStatNames ?? []))];
+  assert.equal(confirmed.length, 28);
+  const labelsBlock = source.slice(source.indexOf('const MC_STAT_LABELS = ['), source.indexOf('];', source.indexOf('const MC_STAT_LABELS = [')));
+  for (const name of confirmed) {
+    assert.match(labelsBlock, new RegExp(`'${name}'\\s*=>`), `stat label map must include ${name}`);
   }
+  assert.equal((labelsBlock.match(/=>\s*\[/g) ?? []).length, 28, 'exactly the 28 confirmed names, nothing invented');
+  // النسب الست وحدها بوحدة %؛ والعدّ والمحاولات بلا وحدة.
+  for (const name of ['possessionPct', 'passPct', 'shotPct', 'crossPct', 'longballPct', 'tacklePct']) {
+    assert.match(labelsBlock, new RegExp(`'${name}'\\s*=> \\['[^']+', '%'\\]`), `${name} is a percentage`);
+  }
+  assert.equal((labelsBlock.match(/'%'\]/g) ?? []).length, 6);
+  // مقياس النسب يوحَّد (0–100): الكسر (0,1] يُحوَّل إلى نقاط مئوية، وما خرج عن [0,100] يصير null.
+  assert.match(source, /function mc_pct\(mixed \$value\): int\|float\|null/);
+  assert.match(source, /if \(\$number > 0 && \$number <= 1\) \{\s*\$number = round\(\$number \* 100, 1\);/);
+  assert.match(source, /return \(\$number < 0 \|\| \$number > 100\) \? null : \$number;/);
+  assert.match(source, /MC_STAT_LABELS\[\$name\]\[1\] === '%' \? mc_pct\(\$raw\) : mc_num\(\$raw\)/);
   // لا اشتقاق: «خارج المرمى» غير موجودة بالاسم في قائمة P1 ولا تُحسب بطرح.
   assert.doesNotMatch(source, /shotsOffTarget/);
   // الربط بهوية الفريق لا بترتيب المصفوفة، والصف يُحذف فقط إذا غاب عند

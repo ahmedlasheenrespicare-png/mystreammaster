@@ -1130,26 +1130,72 @@ function mc_num(mixed $value): int|float|null {
 }
 
 /**
- * إحصائيات الفريقين من `summary.boxscore.teams` — 29 اسماً مؤكداً بمسبار
- * P1، يُعرض منها ما طلبه نطاق مركز المباراة بأسماء المصدر نفسها وتعريفها.
+ * إحصائيات الفريقين من `summary.boxscore.teams` — 28 اسماً مؤكداً بمسبار
+ * P1 (`website/docs/espn-summary-probe.json → results[].rawStatNames`)، وتُقرأ
+ * كلها بأسماء المصدر نفسها وتعريفها؛ الترتيب هنا للقراءة، وترتيب العرض
+ * تقرّره `STAT_GROUPS` في الواجهة.
  * لا «خارج المرمى» مشتقة: اسمها غير موجود في القائمة، وطرحها من الكلية
  * ونسبة الاعتراض يفترض هوية حسابية غير موثقة فلا تُفترض.
  *
  * @return array<int,array{key:string,label:string,unit:string,home:int|float|null,away:int|float|null}>|null
  */
 const MC_STAT_LABELS = [
-    'possessionPct'  => ['الاستحواذ', '%'],
-    'totalShots'     => ['التسديدات', ''],
-    'shotsOnTarget'  => ['على المرمى', ''],
-    'blockedShots'   => ['تسديدات تم اعتراضها', ''],
-    'wonCorners'     => ['الركنيات', ''],
-    'foulsCommitted' => ['الأخطاء', ''],
-    'offsides'       => ['التسلل', ''],
-    'passPct'        => ['دقة التمرير', '%'],
-    'saves'          => ['التصديات', ''],
-    'yellowCards'    => ['بطاقات صفراء', ''],
-    'redCards'       => ['بطاقات حمراء', ''],
+    /* الاستحواذ والتمرير */
+    'possessionPct'      => ['الاستحواذ', '%'],
+    'totalPasses'        => ['إجمالي التمريرات', ''],
+    'accuratePasses'     => ['التمريرات الصحيحة', ''],
+    'passPct'            => ['دقة التمرير', '%'],
+    /* التسديد */
+    'totalShots'         => ['التسديدات', ''],
+    'shotsOnTarget'      => ['على المرمى', ''],
+    'blockedShots'       => ['تسديدات تم اعتراضها', ''],
+    'shotPct'            => ['نسبة التسديد', '%'],
+    'penaltyKickShots'   => ['ركلات جزاء — محاولات', ''],
+    'penaltyKickGoals'   => ['ركلات جزاء — أهداف', ''],
+    /* بناء الهجمة */
+    'totalCrosses'       => ['العرضيات', ''],
+    'accurateCrosses'    => ['العرضيات الدقيقة', ''],
+    'crossPct'           => ['دقة العرضيات', '%'],
+    'totalLongBalls'     => ['الكرات الطويلة', ''],
+    'accurateLongBalls'  => ['الكرات الطويلة الدقيقة', ''],
+    'longballPct'        => ['دقة الكرات الطويلة', '%'],
+    'wonCorners'         => ['الركنيات', ''],
+    /* الدفاع */
+    'totalTackles'       => ['التدخلات', ''],
+    'effectiveTackles'   => ['التدخلات الناجحة', ''],
+    'tacklePct'          => ['نسبة نجاح التدخلات', '%'],
+    'interceptions'      => ['الاعتراضات', ''],
+    'totalClearance'     => ['التشتيت', ''],
+    'effectiveClearance' => ['التشتيت الفعّال', ''],
+    /* حراسة المرمى */
+    'saves'              => ['التصديات', ''],
+    /* الانضباط */
+    'foulsCommitted'     => ['الأخطاء', ''],
+    'offsides'           => ['التسلل', ''],
+    'yellowCards'        => ['بطاقات صفراء', ''],
+    'redCards'           => ['بطاقات حمراء', ''],
 ];
+
+/**
+ * النسب المئوية بمقياس واحد (0–100) كما تُعرض.
+ *
+ * المصدر لا يوحّد مقياس نسبه: `possessionPct` تصل من 0 إلى 100 (مثل 47.2)،
+ * بينما `passPct` تصل كسراً من 0 إلى 1 بخانة عشرية واحدة (0.6–0.9 في 240
+ * مباراة مؤرشفة في `website/src/content/fixtures-archive/`). الكسر في (0, 1]
+ * يُحوَّل إلى نقاط مئوية (0.8 ← 80)؛ وهذا تحويل وحدة لا اشتقاق رقم من رقمين.
+ * نسبة أقل من 1% لا تحدث واقعياً لأي من هذه المقاييس، فلا التباس. القيمة
+ * خارج [0, 100] بعد ذلك تُعاد null — لا تُقصّ ولا تُصحَّح.
+ */
+function mc_pct(mixed $value): int|float|null {
+    $number = mc_num($value);
+    if ($number === null) {
+        return null;
+    }
+    if ($number > 0 && $number <= 1) {
+        $number = round($number * 100, 1);
+    }
+    return ($number < 0 || $number > 100) ? null : $number;
+}
 
 function mc_read_statistics(array $summary, array $competitors): ?array {
     $teams = $summary['boxscore']['teams'] ?? null;
@@ -1184,7 +1230,8 @@ function mc_read_statistics(array $summary, array $competitors): ?array {
             if ($name === null || !isset(MC_STAT_LABELS[$name])) {
                 continue;
             }
-            $bySide[$side][$name] = mc_num($stat['value'] ?? ($stat['displayValue'] ?? null));
+            $raw = $stat['value'] ?? ($stat['displayValue'] ?? null);
+            $bySide[$side][$name] = MC_STAT_LABELS[$name][1] === '%' ? mc_pct($raw) : mc_num($raw);
         }
     }
 
@@ -1292,7 +1339,9 @@ function mc_read_h2h(array $summary): array {
             if (!is_array($competitor)) {
                 continue;
             }
+            $teamId = $competitor['team']['id'] ?? null;
             $entry = [
+                'id'    => is_int($teamId) ? (string) $teamId : mc_str($teamId),
                 'name'  => mc_str($competitor['team']['displayName'] ?? null),
                 'score' => mc_int($competitor['score'] ?? null),
             ];
@@ -1319,6 +1368,9 @@ function mc_read_h2h(array $summary): array {
             'completed'   => $typeCompleted || ($item['status'] ?? '') === 'post',
             'home'        => $home['name'],
             'away'        => $away['name'],
+            /* معرّفا فريقي المصدر — بهما يُنسب الفوز في سطر المجمل لا بالاسم المعروض. */
+            'homeTeamId'  => $home['id'],
+            'awayTeamId'  => $away['id'],
             'homeGoals'   => $home['score'],
             'awayGoals'   => $away['score'],
         ];

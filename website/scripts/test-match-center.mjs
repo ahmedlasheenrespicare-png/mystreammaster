@@ -988,6 +988,25 @@ test('phase removes postmatch before full time and live after it', () => {
   assert.deepEqual(computeAvailableTabs({ match, snapshot, status: { phase: 'terminal' } }), ['prematch']);
 });
 
+test('tab lifecycle: before and during the match «قبل المباراة»+«مباشر» only; after the final whistle «مباشر» goes and «بعد المباراة» appears', () => {
+  const match = { competitionName: 'League', kickoffUtc: '2026-10-18T15:30:00Z' };
+  const prematchSnapshot = { statistics: null, events: [], h2h: [], lineups: null, score: null };
+  for (const code of ['scheduled', 'live', 'halftime']) {
+    const phase = code === 'scheduled' ? 'pre' : 'live';
+    const tabs = computeAvailableTabs({ match, snapshot: prematchSnapshot, status: { phase, code } });
+    assert.deepEqual(tabs, ['prematch', 'live'], code);
+    assert.ok(!tabs.includes('postmatch'), 'postmatch hidden before full time');
+  }
+  const finished = { phase: 'post', code: 'finished' };
+  const finalSnapshot = { ...prematchSnapshot, score: { home: 1, away: 2 }, statistics: [{ key: 'totalShots', label: 'x', home: 9, away: 12 }] };
+  const tabs = computeAvailableTabs({ match, snapshot: finalSnapshot, status: finished });
+  assert.deepEqual(tabs, ['prematch', 'postmatch']);
+  assert.ok(!tabs.includes('live'), 'live removed after the final whistle');
+  // زائر كان على «مباشر» عند الصافرة: اختياره لم يعد متاحاً، فالصفحة تعود إلى افتراضي المرحلة.
+  const choice = resolveTab(finished, 'live');
+  assert.equal(tabs.includes(choice) ? choice : defaultTab(finished), 'postmatch');
+});
+
 test('a valid visitor choice survives refresh and an invalid one falls back', () => {
   assert.equal(resolveTab({ phase: 'live' }, 'prematch'), 'prematch');
   assert.equal(resolveTab({ phase: 'live' }, null), 'live');

@@ -72,15 +72,36 @@ const RAW_EVENTS = [
 
 /* ── 1) تجميع الأرقام ───────────────────────────────────────────────── */
 
-test('statistics arrive in the three scanning groups, in one fixed order', () => {
+test('statistics arrive in the six scanning groups, in one fixed order', () => {
   const groups = groupStatistics(STAT_INPUT);
-  assert.deepEqual(groups.map(group => group.id), STAT_GROUPS.map(group => group.id));
-  assert.deepEqual(groups.map(group => group.label), ['الاستحواذ والتمرير', 'التسديد', 'الدفاع والانضباط']);
+  // المجموعة التي لا يصلها صف لا تُنشأ: العينة بلا تدخلات/اعتراضات/تشتيت ⇒ لا «الدفاع».
+  assert.deepEqual(groups.map(group => group.id), ['possession-passing', 'shots', 'build-up', 'goalkeeping', 'discipline']);
+  assert.deepEqual(groups.map(group => group.label), ['الاستحواذ والتمرير', 'التسديد', 'بناء الهجمة', 'حراسة المرمى', 'الانضباط']);
+  assert.deepEqual(STAT_GROUPS.map(group => group.id), ['possession-passing', 'shots', 'build-up', 'defense', 'goalkeeping', 'discipline']);
   assert.deepEqual(groups[1].rows.map(row => row.key), ['totalShots', 'shotsOnTarget', 'blockedShots']);
-  // الدفاع والانضباط بترتيب التعريف لا بترتيب الاستجابة: يُقرأ الصف بالمكان
-  // نفسه في كل مباراة، ولو بدّل المصدر ترتيبه.
-  const defenceKeys = STAT_GROUPS.find(group => group.id === 'defense-discipline').keys;
-  assert.deepEqual(groups[2].rows.map(row => row.key), defenceKeys);
+  // الركنيات انتقلت إلى «بناء الهجمة»؛ والانضباط بترتيب التعريف لا بترتيب
+  // الاستجابة: يُقرأ الصف بالمكان نفسه في كل مباراة، ولو بدّل المصدر ترتيبه.
+  assert.deepEqual(groups[2].rows.map(row => row.key), ['wonCorners']);
+  assert.deepEqual(groups[4].rows.map(row => row.key), STAT_GROUPS.find(group => group.id === 'discipline').keys);
+  // المفاتيح الـ28 كلها معرَّفة في مجموعة واحدة بالضبط.
+  const keys = STAT_GROUPS.flatMap(group => group.keys);
+  assert.equal(keys.length, 28);
+  assert.equal(new Set(keys).size, 28);
+});
+
+test('all 28 source names land in their groups with the full defence block', () => {
+  const full = [
+    'possessionPct', 'totalPasses', 'accuratePasses', 'passPct', 'totalShots', 'shotsOnTarget', 'blockedShots', 'shotPct',
+    'penaltyKickShots', 'penaltyKickGoals', 'totalCrosses', 'accurateCrosses', 'crossPct', 'totalLongBalls', 'accurateLongBalls',
+    'longballPct', 'wonCorners', 'totalTackles', 'effectiveTackles', 'tacklePct', 'interceptions', 'totalClearance',
+    'effectiveClearance', 'saves', 'foulsCommitted', 'offsides', 'yellowCards', 'redCards',
+  ].map((key, index) => ({ key, label: `صف ${index}`, unit: key.endsWith('Pct') ? '%' : '', home: index, away: 28 - index }));
+  const groups = groupStatistics(full);
+  assert.deepEqual(groups.map(group => group.id), STAT_GROUPS.map(group => group.id));
+  assert.equal(groups.reduce((count, group) => count + group.rows.length, 0), 28);
+  assert.deepEqual(groups.find(group => group.id === 'defense').rows.map(row => row.key),
+    ['totalTackles', 'effectiveTackles', 'tacklePct', 'interceptions', 'totalClearance', 'effectiveClearance']);
+  for (const row of groups.flatMap(group => group.rows)) assert.equal(row.unitIsPercent, row.key.endsWith('Pct'));
 });
 
 test('a stat the grouping does not know is kept in a source bucket, never dropped', () => {

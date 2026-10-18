@@ -39,7 +39,18 @@ test('every registered fixture has the shared pitch and data-driven panel in its
     } else {
       assert.doesNotMatch(html, /role="tablist"|mc-panel-prematch/, `${route}: empty preview tab/panel must stay hidden`);
     }
-    assert.doesNotMatch(html, /mc-unavailable|غير متاح|لم يُعلن بعد/, `${route}: blank match data must not render as a fallback`);
+    // «التوثيق والمراجعة» يشرح معنى «غير متاح» نصاً ثابتاً؛ خارجه لا بديل ولا عنصر نائب لبيانات غائبة.
+    const outsideDocs = html.replace(/<section class="mc-docs"[\s\S]*?<\/section>/, '');
+    assert.doesNotMatch(outsideDocs, /mc-unavailable|غير متاح|لم يُعلن بعد/, `${route}: blank match data must not render as a fallback`);
+    // قبل أول قراءة لا تشكيلة، فالمعاينة (حقائق المباراة) على الملعب نفسه، ولا تُكرَّر تحته.
+    if (hasPreviewFacts) {
+      assert.match(html, /class="mc-pitch-preview"/, `${route}: pre-lineup preview must sit on the pitch`);
+      assert.doesNotMatch(html, /class="mc-match-facts"/, `${route}: facts must not repeat under the pitch while the preview is on it`);
+    } else {
+      assert.doesNotMatch(html, /mc-pitch-preview/, `${route}: no empty preview block on the pitch`);
+    }
+    assert.doesNotMatch(html, /mc-lineup-explainer|mc-pitch-disclaimer|وقت القراءة/, `${route}: explanatory source texts live only in the documentation section`);
+    assert.match(html, /class="mc-docs-grid"/, `${route}: documentation cards missing`);
     assert.doesNotMatch(html, /class="mc-pitch-score"/, `${route}: static page must not invent a score before a source read`);
   }
   assert.equal(routes.size, MATCH_CENTER_ALL_MATCHES.length);

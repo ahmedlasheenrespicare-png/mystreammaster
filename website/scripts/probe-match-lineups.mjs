@@ -34,6 +34,17 @@ await fs.mkdir('website/.fixtures-out', { recursive: true });
 await fs.writeFile('website/.fixtures-out/lineups-probe.json', JSON.stringify({ results }, null, 2) + '\n');
 console.log(JSON.stringify(results.map(({ rosters, ...rest }) => ({ ...rest, rosters: rosters?.map(({ roster, ...side }) => side) })), null, 2));
 if (results.some(result => result.error)) process.exitCode = 1;
-// The compact, allowlisted evidence is also a check annotation (readable without
-// downloading raw upstream bodies or exposing any credentials).
-console.log('::notice title=Match lineup evidence::' + JSON.stringify(results).replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A'));
+// Separate annotations stay below GitHub's per-annotation truncation limit.
+for (const result of results) {
+  const { rosters, ...meta } = result;
+  console.log(`::notice title=Lineup meta ${result.event}::${JSON.stringify({ ...meta, sides: rosters?.map(({ roster, ...side }) => side) })}`);
+  for (const side of rosters ?? []) {
+    const evidence = { event: result.event, side: side.homeAway, teamId: side.team.id, formation: side.formation,
+      statNames: [...new Set(side.roster.flatMap(player => player.statNames))],
+      columns: ['id', 'name', 'starter', 'jersey', 'position', 'formationPlace', 'subbedIn', 'subbedOut'],
+      players: side.roster.map(player => [player.athlete.id, player.athlete.displayName, player.starter,
+        player.jersey, player.position?.abbreviation, player.formationPlace, player.subbedIn, player.subbedOut]),
+    };
+    console.log(`::notice title=Lineup side ${result.event} ${side.homeAway}::${JSON.stringify(evidence)}`);
+  }
+}

@@ -449,6 +449,41 @@
     .mc-stat-bar--away { background: #1f6b2e; }
     .mc-analysis-event { break-inside: avoid; }
     .mc-warning, .mc-simulated { border-style: dashed; border-color: #8a1220; background: #fff; color: #8a1220; }
+    .mc-lineup-event-detail { display: none !important; }
+    .mc-lineup-squad, .mc-lineup-bench, .mc-player-badge { background: #fff !important; border-color: #a9b1c0 !important; color: #101218 !important; }
+    .mc-lineup-explainer, .mc-lineup-row h4, .mc-lineup-bench h4, .mc-lineup-player small { color: #101218 !important; }
+    .mc-lineup-player, .mc-lineup-row { break-inside: avoid; }
     .mc-page a { color: #101218; text-decoration: none; }
   }
+}
+
+/* Static XI, schematic source-role rows. Badges flow above their player so
+   simultaneous events wrap and grow their row, never cover another player. */
+.mc-pitch-lineups { grid-column: 1 / -1; z-index: 1; min-width: 0; width: 100%; padding-top: 16px; border-top: 1px solid #ffffff40; }
+.mc-pitch-lineups h2 { margin: 0; text-align: center; font-size: 1rem; }
+.mc-lineup-explainer { margin: 6px 0 14px; text-align: center; color: #e6f1e8; font-size: .72rem; }
+.mc-lineup-squads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.mc-lineup-squad { min-width: 0; border: 1px solid #ffffff40; border-radius: 14px; padding: 12px 8px; background: #062b1d45; }
+.mc-lineup-squad h3 { text-align: center; font-size: .9rem; margin: 0 0 12px; }
+.mc-lineup-row h4, .mc-lineup-bench h4 { margin: 8px 0 6px; font-size: .65rem; text-align: center; color: #e6f1e8; font-weight: 500; }
+.mc-lineup-row ul, .mc-lineup-bench ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: space-evenly; gap: 10px 4px; }
+.mc-lineup-row { border-top: 1px dashed #ffffff25; padding-block: 4px 12px; }
+.mc-lineup-player { flex: 0 1 82px; min-width: 0; max-width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.mc-player-shirt { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 auto; border: 1px solid #e9e0ff; border-radius: 8px 8px 12px 12px; background: #412777; font: 800 .8rem var(--font-latin, sans-serif); }
+.mc-lineup-squad[data-side="away"] .mc-player-shirt { background: #d8ff3e; border-color: #f0ffaf; color: #16210a; }
+.mc-player-name { max-width: 100%; font-size: .7rem; line-height: 1.4; }
+.mc-lineup-player small { color: #d5e7dd; font-size: .6rem; }
+.mc-player-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: 100%; }
+.mc-player-badge { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; width: 100%; max-width: 100%; min-height: 40px; border: 1px solid #b7c9be; border-radius: 7px; padding: 4px 3px; color: #f8fff9; background: #0b1820; line-height: 1.2; }
+.mc-page .mc-player-badge { font-size: .62rem; }
+.mc-player-badge svg { width: 15px; height: 15px; flex: 0 0 auto; }
+.mc-player-badge bdi { white-space: nowrap; font-weight: 800; }
+.mc-player-badge[data-active="true"], .mc-player-badge:hover { border-color: var(--mc-lime); background: #203627; }
+.mc-player-badge[data-kind="cancelled"] { text-decoration: line-through; border-style: dashed; opacity: .85; }
+.mc-lineup-bench { margin-top: 10px; border-top: 1px solid #ffffff60; padding-top: 4px; background: #071b15a0; border-radius: 10px; padding-bottom: 8px; }
+.mc-lineup-event-detail { margin: 12px 0 0; padding: 10px; border-radius: 10px; background: #071b15e6; color: #f0fff1; font-size: .75rem; min-height: 46px; }
+@media (max-width: 767px) {
+  .mc-lineup-squads { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .mc-lineup-player { flex-basis: 21%; }
+  .mc-lineup-squad { padding-inline: 6px; }
 }

@@ -243,4 +243,5 @@ putenv('SM_HIGHLIGHTLY_KEY=qaOnlyNotARealCredential');
 check(sm_st_highlightly_key()==='qaOnlyNotARealCredential','Highlightly still reads its credential from environment only');
 putenv('SM_HIGHLIGHTLY_KEY');
 check(!glob('/private/*/write-*'),'atomic writes leave no temporary files');
+require '/app/lineups.php';
 echo 'ALL SOURCE TESTS PASSED: '.$n.' assertions; PHP '.PHP_VERSION."\n";

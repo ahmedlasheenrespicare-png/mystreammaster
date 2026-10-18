@@ -64,9 +64,12 @@ export interface ScoredPlayer {
   rating: number | null;
   /** البند 7: التقييمات أثناء المباراة قابلة للتغير وتُوسم كذلك. */
   provisional?: boolean;
+  shirtNumber?: string | null;
+  positionCode?: string | null;
 }
 
 export interface LineupSide {
+  teamId?: string;
   /** البند 6: تشكيل متوقع يجب أن يُوصف صراحة بأنه متوقع. */
   confirmed: boolean;
   formation: string | null;
@@ -77,7 +80,7 @@ export interface LineupSide {
   captainId?: string | number | null;
 }
 
-export interface MatchLineups { home: LineupSide; away: LineupSide; announcedAt?: string | null }
+export interface MatchLineups { provider?: string; eventId?: string; home: LineupSide | null; away: LineupSide | null; announcedAt?: string | null }
 
 /** البند 5: الودية تُميّز إن ميّزها المصدر؛ وإلا `null` ولا يُخمَّن. */
 export interface H2hEntry {
@@ -536,3 +539,14 @@ export function radarAxisLabels(axes: ComparisonAxis[], options?: { cx?: number;
 export function matchPath(competitionSlug: string, slug: string): string;
 export function matchByFixtureId(matches: MatchDefinition[], provider: ProviderId | string, fixtureId: string | number | null): MatchDefinition | null;
 export function isVerified(match: MatchDefinition | null | undefined): boolean;
+
+export interface PlayerEventBadge {
+  event: MatchEvent; label: string; minute: string; typeLabel: string; role: string | null;
+}
+export interface PitchLineupPlayer extends ScoredPlayer { badges: PlayerEventBadge[] }
+export interface PitchLineupSide {
+  side: 'home' | 'away'; teamName: string; formation: string | null;
+  rows: { label: string; players: PitchLineupPlayer[] }[];
+  substitutes: PitchLineupPlayer[];
+}
+export function lineupPitchSides(input: { match: MatchDefinition; snapshot: MatchSnapshot | null }): PitchLineupSide[];

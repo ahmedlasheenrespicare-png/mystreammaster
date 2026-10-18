@@ -1,0 +1,390 @@
+{
+  "provenance": {
+    "run": "39089234991",
+    "checkRun": "117562188922",
+    "commit": "fdd4e5d4",
+    "note": "Sanitized, identity-checked ESPN probe annotations; metadata header below is reconstructed from probe-validated IDs, not a raw response."
+  },
+  "annotations": [
+    {
+      "event": "401879263",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879263",
+      "readAt": "2026-10-18T02:12:12.051Z",
+      "status": {
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 18th at 9:00 AM EDT",
+          "shortDetail": "10/18 - 9:00 AM EDT"
+        }
+      },
+      "competitors": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "349"
+          }
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "366"
+          }
+        }
+      ],
+      "sides": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "349"
+          },
+          "formation": null,
+          "starters": 0,
+          "substitutes": 0
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "366"
+          },
+          "formation": null,
+          "starters": 0,
+          "substitutes": 0
+        }
+      ]
+    },
+    {
+      "event": "401879258",
+      "side": "away",
+      "teamId": "362",
+      "formation": "4-2-3-1",
+      "statNames": ["appearances", "foulsCommitted", "foulsSuffered", "ownGoals", "redCards", "subIns", "yellowCards", "goalsConceded", "saves", "shotsFaced", "goalAssists", "shotsOnTarget", "totalGoals", "totalShots", "offsides"],
+      "columns": ["id", "name", "starter", "jersey", "position", "formationPlace", "subbedIn", "subbedOut"],
+      "players": [
+        ["265958", "Zion Suzuki", true, "1", "G", "1", false, false],
+        ["181312", "Tyrone Mings", true, "5", "CD-L", "6", false, false],
+        ["204679", "Victor Lindelöf", true, "3", "CD-R", "5", false, false],
+        ["250945", "Aaron Wan-Bissaka", true, "29", "LB", "3", false, true],
+        ["234698", "Matty Cash", true, "2", "RB", "2", false, false],
+        ["386992", "Johan Manzambi", true, "44", "AM", "10", false, true],
+        ["301524", "João Gomes", true, "35", "LM", "4", false, true],
+        ["250936", "Boubacar Kamara", true, "8", "RM", "8", false, false],
+        ["308524", "Nicolas Jackson", true, "11", "F", "9", false, false],
+        ["214375", "Emiliano Buendía", true, "10", "AM-L", "11", false, true],
+        ["382839", "Alysson", true, "47", "AM-R", "7", false, true],
+        ["152469", "Ross Barkley", false, "6", "SUB", "0", true, false],
+        ["162843", "John McGinn", false, "7", "SUB", "0", true, false],
+        ["132233", "Marco Bizot", false, "40", "SUB", "0", false, false],
+        ["174550", "Leon Goretzka", false, "27", "SUB", "0", true, false],
+        ["388522", "Ibrahim Mbaye", false, "19", "SUB", "0", true, false],
+        ["310607", "Lamare Bogarde", false, "26", "SUB", "0", false, false],
+        ["251100", "Pau Torres", false, "14", "SUB", "0", true, false],
+        ["401451", "Brian Madjo", false, "39", "SUB", "0", false, false],
+        ["281121", "Taylor Harwood-Bellis", false, "4", "SUB", "0", false, false]
+      ]
+    },
+    {
+      "event": "401879258",
+      "side": "home",
+      "teamId": "361",
+      "formation": "4-2-3-1",
+      "statNames": ["appearances", "foulsCommitted", "foulsSuffered", "ownGoals", "redCards", "subIns", "yellowCards", "goalsConceded", "saves", "shotsFaced", "goalAssists", "shotsOnTarget", "totalGoals", "totalShots", "offsides"],
+      "columns": ["id", "name", "starter", "jersey", "position", "formationPlace", "subbedIn", "subbedOut"],
+      "players": [
+        ["319267", "Lukás Hornícek", true, "21", "G", "1", false, false],
+        ["274633", "Sven Botman", true, "4", "CD-L", "6", false, false],
+        ["303444", "Malick Thiaw", true, "12", "CD-R", "5", false, false],
+        ["106139", "Lewis Hall", true, "3", "LB", "3", false, false],
+        ["349078", "Lewis Miley", true, "67", "RB", "2", false, false],
+        ["259517", "Joe Willock", true, "28", "AM", "10", false, true],
+        ["323986", "Nico González", true, "6", "LM", "4", false, false],
+        ["202232", "Joelinton", true, "7", "RM", "8", false, true],
+        ["224077", "Yoane Wissa", true, "9", "F", "9", false, false],
+        ["243386", "Harvey Barnes", true, "11", "AM-L", "11", false, false],
+        ["359651", "Matias Fernandez-Pardo", true, "20", "AM-R", "7", false, true],
+        ["179233", "Fabian Schär", false, "5", "SUB", "0", false, false],
+        ["396630", "Aladji Bamba", false, "8", "SUB", "0", false, false],
+        ["308979", "Amar Dedic", false, "37", "SUB", "0", false, false],
+        ["161715", "Nick Pope", false, "1", "SUB", "0", false, false],
+        ["198138", "Dan Burn", false, "33", "SUB", "0", true, false],
+        ["384372", "Sean Steur", false, "14", "SUB", "0", false, false],
+        ["319431", "William Osula", false, "10", "SUB", "0", true, false],
+        ["172836", "Jacob Murphy", false, "23", "SUB", "0", false, false],
+        ["359108", "Bazoumana Touré", false, "17", "SUB", "0", true, false]
+      ]
+    },
+    {
+      "event": "401879258",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879258",
+      "readAt": "2026-10-18T02:12:11.941Z",
+      "status": {
+        "type": {
+          "id": "28",
+          "name": "STATUS_FULL_TIME",
+          "state": "post",
+          "completed": true,
+          "description": "Full Time",
+          "detail": "FT",
+          "shortDetail": "FT"
+        }
+      },
+      "competitors": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "361"
+          }
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "362"
+          }
+        }
+      ],
+      "sides": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "361"
+          },
+          "formation": "4-2-3-1",
+          "starters": 11,
+          "substitutes": 9
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "362"
+          },
+          "formation": "4-2-3-1",
+          "starters": 11,
+          "substitutes": 9
+        }
+      ]
+    },
+    {
+      "event": "401879259",
+      "side": "away",
+      "teamId": "373",
+      "formation": "3-4-2-1",
+      "statNames": ["appearances", "foulsCommitted", "foulsSuffered", "ownGoals", "redCards", "subIns", "yellowCards", "goalsConceded", "saves", "shotsFaced", "goalAssists", "shotsOnTarget", "totalGoals", "totalShots", "offsides"],
+      "columns": ["id", "name", "starter", "jersey", "position", "formationPlace", "subbedIn", "subbedOut"],
+      "players": [
+        ["168746", "Christian Walton", true, "28", "G", "1", false, false],
+        ["230963", "Issa Diop", true, "6", "CD", "5", false, false],
+        ["291174", "Jacob Greaves", true, "24", "CD-L", "4", false, true],
+        ["243440", "Dara O'Shea", true, "26", "CD-R", "6", false, false],
+        ["228393", "Exequiel Palacios", true, "25", "CM-L", "8", false, false],
+        ["256607", "Florentino", true, "12", "CM-R", "7", false, true],
+        ["283086", "Leif Davis", true, "3", "LM", "3", false, false],
+        ["336794", "Abdoul Ouattara", true, "42", "RM", "2", false, false],
+        ["322654", "Emersonn", true, "19", "F", "9", false, true],
+        ["20975", "Julio Enciso", true, "10", "CF-L", "11", false, true],
+        ["286347", "Daizen Maeda", true, "38", "CF-R", "10", false, true],
+        ["243648", "Cedric Kipre", false, "4", "SUB", "0", false, false],
+        ["269343", "Jack Clarke", false, "47", "SUB", "0", true, false],
+        ["261598", "Zian Flemming", false, "9", "SUB", "0", true, false],
+        ["215075", "Darnell Furlong", false, "2", "SUB", "0", false, false],
+        ["181092", "Chuba Akpom", false, "29", "SUB", "0", true, false],
+        ["246244", "Kjell Scherpen", false, "37", "SUB", "0", false, false],
+        ["295370", "Jaden Philogene", false, "11", "SUB", "0", false, false],
+        ["318680", "Fatawu Issahaku", false, "7", "SUB", "0", true, false],
+        ["246825", "Azor Matusiwa", false, "5", "SUB", "0", true, false]
+      ]
+    },
+    {
+      "event": "401879259",
+      "side": "home",
+      "teamId": "382",
+      "formation": "4-2-3-1",
+      "statNames": ["appearances", "foulsCommitted", "foulsSuffered", "ownGoals", "redCards", "subIns", "yellowCards", "goalsConceded", "saves", "shotsFaced", "goalAssists", "shotsOnTarget", "totalGoals", "totalShots", "offsides"],
+      "columns": ["id", "name", "starter", "jersey", "position", "formationPlace", "subbedIn", "subbedOut"],
+      "players": [
+        ["217092", "Gianluigi Donnarumma", true, "1", "G", "1", false, false],
+        ["265907", "Marc Guéhi", true, "6", "CD-L", "6", false, false],
+        ["234878", "Rúben Dias", true, "3", "CD-R", "5", false, false],
+        ["328464", "Nico O'Reilly", true, "33", "LB", "3", false, true],
+        ["303785", "Matheus Nunes", true, "27", "RB", "2", false, true],
+        ["250787", "Phil Foden", true, "47", "AM", "10", false, true],
+        ["373927", "Ayyoub Bouaddi", true, "32", "LM", "4", false, false],
+        ["154595", "Mateo Kovacic", true, "8", "RM", "8", false, true],
+        ["253989", "Erling Haaland", true, "9", "F", "9", false, false],
+        ["283672", "Jérémy Doku", true, "11", "AM-L", "11", false, true],
+        ["268641", "Iliman Ndiaye", true, "7", "AM-R", "7", false, false],
+        ["167192", "Gerónimo Rulli", false, "28", "SUB", "0", false, false],
+        ["272512", "Rayan Aït-Nouri", false, "21", "SUB", "0", false, false],
+        ["285450", "Enzo Fernández", false, "17", "SUB", "0", true, false],
+        ["362211", "Abdukodir Khusanov", false, "45", "SUB", "0", true, false],
+        ["273292", "Antoine Semenyo", false, "42", "SUB", "0", true, false],
+        ["238472", "Elliot Anderson", false, "5", "SUB", "0", true, false],
+        ["382966", "Allan Elias", false, "37", "SUB", "0", false, false],
+        ["299910", "Josko Gvardiol", false, "24", "SUB", "0", true, false],
+        ["298008", "Rayan Cherki", false, "10", "SUB", "0", false, false]
+      ]
+    },
+    {
+      "event": "401879259",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879259",
+      "readAt": "2026-10-18T02:12:11.895Z",
+      "status": {
+        "type": {
+          "id": "28",
+          "name": "STATUS_FULL_TIME",
+          "state": "post",
+          "completed": true,
+          "description": "Full Time",
+          "detail": "FT",
+          "shortDetail": "FT"
+        }
+      },
+      "competitors": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "382"
+          }
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "373"
+          }
+        }
+      ],
+      "sides": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "382"
+          },
+          "formation": "4-2-3-1",
+          "starters": 11,
+          "substitutes": 9
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "373"
+          },
+          "formation": "3-4-2-1",
+          "starters": 11,
+          "substitutes": 9
+        }
+      ]
+    },
+    {
+      "event": "401879262",
+      "side": "away",
+      "teamId": "364",
+      "formation": "4-2-3-1",
+      "statNames": ["appearances", "foulsCommitted", "foulsSuffered", "ownGoals", "redCards", "subIns", "yellowCards", "goalsConceded", "saves", "shotsFaced", "goalAssists", "shotsOnTarget", "totalGoals", "totalShots", "offsides"],
+      "columns": ["id", "name", "starter", "jersey", "position", "formationPlace", "subbedIn", "subbedOut"],
+      "players": [
+        ["196876", "Alisson Becker", true, "1", "G", "1", false, false],
+        ["157892", "Virgil van Dijk", true, "4", "CD-L", "6", false, false],
+        ["355980", "Jérémy Jacquet", true, "5", "CD-R", "5", false, false],
+        ["323110", "Milos Kerkez", true, "6", "LB", "3", false, false],
+        ["270821", "Ronald Araújo", true, "33", "RB", "2", false, true],
+        ["303748", "Florian Wirtz", true, "7", "AM", "10", false, false],
+        ["257206", "Dominik Szoboszlai", true, "8", "LM", "4", false, true],
+        ["249299", "Alexis Mac Allister", true, "10", "RM", "8", false, false],
+        ["235662", "Alexander Isak", true, "9", "F", "9", false, true],
+        ["328238", "Bradley Barcola", true, "29", "AM-L", "11", false, false],
+        ["397545", "Víctor Muñoz", true, "23", "AM-R", "7", false, true],
+        ["249524", "Cody Gakpo", false, "18", "SUB", "0", false, false],
+        ["379588", "Rio Ngumoha", false, "73", "SUB", "0", true, false],
+        ["281119", "Jeremie Frimpong", false, "30", "SUB", "0", true, true],
+        ["102053", "Joe Gomez", false, "2", "SUB", "0", true, false],
+        ["356075", "Trey Nyoni", false, "42", "SUB", "0", true, false],
+        ["350661", "Lewis Koumas", false, "67", "SUB", "0", true, false],
+        ["274742", "Giorgi Mamardashvili", false, "25", "SUB", "0", false, false],
+        ["152479", "Wataru Endo", false, "3", "SUB", "0", false, false],
+        ["226177", "Kostas Tsimikas", false, "21", "SUB", "0", false, false]
+      ]
+    },
+    {
+      "event": "401879262",
+      "side": "home",
+      "teamId": "337",
+      "formation": "4-2-3-1",
+      "statNames": ["appearances", "foulsCommitted", "foulsSuffered", "ownGoals", "redCards", "subIns", "yellowCards", "goalsConceded", "saves", "shotsFaced", "goalAssists", "shotsOnTarget", "totalGoals", "totalShots", "offsides"],
+      "columns": ["id", "name", "starter", "jersey", "position", "formationPlace", "subbedIn", "subbedOut"],
+      "players": [
+        ["275599", "Caoimhín Kelleher", true, "1", "G", "1", false, false],
+        ["206173", "Kristoffer Ajer", true, "20", "CD-L", "6", false, false],
+        ["270507", "Sepp van den Berg", true, "4", "CD-R", "5", false, true],
+        ["284490", "Keane Lewis-Potter", true, "23", "LB", "3", false, true],
+        ["356640", "Michael Kayode", true, "33", "RB", "2", false, false],
+        ["227472", "Mathias Jensen", true, "8", "AM", "10", false, true],
+        ["225564", "Vitaly Janelt", true, "27", "LM", "4", false, false],
+        ["342029", "Yehor Yarmoliuk", true, "6", "RM", "8", false, false],
+        ["301894", "Igor Thiago", true, "9", "F", "9", false, false],
+        ["307657", "Jaidon Anthony", true, "19", "AM-L", "11", false, true],
+        ["315530", "Dango Ouattara", true, "11", "AM-R", "7", false, true],
+        ["231049", "Fábio Carvalho", false, "14", "SUB", "0", false, false],
+        ["279780", "Nathan Collins", false, "22", "SUB", "0", false, false],
+        ["308932", "Mikkel Damsgaard", false, "24", "SUB", "0", true, false],
+        ["311527", "Hákon Valdimarsson", false, "12", "SUB", "0", false, false],
+        ["283940", "Aaron Hickey", false, "2", "SUB", "0", true, false],
+        ["228547", "Mamadou Sangare", false, "18", "SUB", "0", true, false],
+        ["310958", "Kevin Schade", false, "7", "SUB", "0", true, false],
+        ["138924", "Callum Wilson", false, "13", "SUB", "0", false, false],
+        ["359796", "El Hadji Malick Diouf", false, "25", "SUB", "0", true, false]
+      ]
+    },
+    {
+      "event": "401879262",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=401879262",
+      "readAt": "2026-10-18T02:12:11.728Z",
+      "status": {
+        "type": {
+          "id": "28",
+          "name": "STATUS_FULL_TIME",
+          "state": "post",
+          "completed": true,
+          "description": "Full Time",
+          "detail": "FT",
+          "shortDetail": "FT"
+        }
+      },
+      "competitors": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "337"
+          }
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "364"
+          }
+        }
+      ],
+      "sides": [
+        {
+          "homeAway": "home",
+          "team": {
+            "id": "337"
+          },
+          "formation": "4-2-3-1",
+          "starters": 11,
+          "substitutes": 9
+        },
+        {
+          "homeAway": "away",
+          "team": {
+            "id": "364"
+          },
+          "formation": "4-2-3-1",
+          "starters": 11,
+          "substitutes": 9
+        }
+      ]
+    }
+  ]
+}

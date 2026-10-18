@@ -123,13 +123,12 @@ test('team logos leave the server https-only, matching the rule already in produ
 });
 
 test('unverified fields are declared absent rather than guessed', () => {
-  // Rule 2: never promise what the integration does not cover. Report 12.5
-  // established that statistics, lineups and h2h shapes are unverified, and
-  // that ESPN has no player ratings at all.
-  for (const field of ['lineups', 'ratings', 'seasonComparison', 'seasonSample']) {
+  // Ratings and season comparisons remain outside the verified integration.
+  for (const field of ['ratings', 'seasonComparison', 'seasonSample']) {
     assert.match(source, new RegExp(`'${field}'\\s*=>\\s*null`), `${field} must be sent as null`);
   }
-  assert.ok(source.includes('ESPN لا يوفّر تقييمات لاعبين إطلاقاً'), 'the permanent ratings limit is documented in the file');
+  assert.match(source, /'lineups'\s*=>\s*\$lineups/);
+  assert.match(source, /sm_summary_lineups\(\$summaryRaw, \$binding\['event'\], \$binding\['league'\]/);
   // Events default to an empty list outside detail states; the UI suppresses
   // an empty tab. Statistics likewise stay null until the source returns values.
   assert.match(source, /if \(\$isDetail\) \{\s*\$events\s+= mc_read_events\(\$summaryRaw, \$header\['competitors'\]\);/);
@@ -161,8 +160,7 @@ test('binding picks the event by id alone, never by team name or kickoff time', 
 
 test('the detail read is gated on the source state, not on elapsed time', () => {
   // Rule 6: the clock must not push a match into a state. Rule 11: do not
-  // request what cannot be there - before kickoff the probe found lineups and
-  // h2h empty, so fetching summary then is pure waste.
+  // gate events/statistics on source state; the shared summary also supplies pre-match XI.
   assert.match(source, /const MC_DETAIL_STATUS_NAMES = \[/);
   assert.match(source, /in_array\(\$stateName, MC_DETAIL_STATUS_NAMES, true\)/);
   assert.match(source, /in_array\(\$stateCode, \['in', 'post'\], true\)/);

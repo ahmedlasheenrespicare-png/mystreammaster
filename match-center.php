@@ -1394,6 +1394,7 @@ $events     = [];
 $form       = null;
 $h2h        = [];
 $statistics = null;
+$lineups    = null;
 {
     $summaryResult = sm_summary_load($binding['league'], $binding['event'], static function () use ($binding): array {
         return mc_fetch(mc_upstream_summary($binding['league'], $binding['event']), 'espn-summaries/' . $binding['league'] . '-' . $binding['event'] . '.json');
@@ -1408,6 +1409,12 @@ $statistics = null;
         $cacheHit = 'MISS';
     }
     if (is_array($summaryRaw)) {
+        $lineupTeamIds = [];
+        foreach ($header['competitors'] as $competitor) {
+            $lineupTeamIds[$competitor['homeAway']] = (string) ($competitor['team']['id'] ?? '');
+        }
+        $lineups = sm_summary_lineups($summaryRaw, $binding['event'], $binding['league'],
+            $lineupTeamIds['home'] ?? '', $lineupTeamIds['away'] ?? '');
         $form = mc_read_form($summaryRaw, $header['competitors']);
         $h2h  = mc_read_h2h($summaryRaw);
         if ($isDetail) {
@@ -1441,11 +1448,10 @@ $payload = [
        P1/P3). غيابهما `null`/`[]` فيعرضان «غير متاح» — لا يُستكملان. */
     'form'             => $form,
     'h2h'              => $h2h,
-    /* البند 2 و§12.5: هذه لم تُتحقق بنيتها من المصدر، فتُعلن غائبة صراحةً.
-       `null` هنا يعني «غير متاح» في الواجهة، ولا يتحول صفراً ولا كائناً فارغاً. */
+    /* التشكيلة من أعلام starter الصريحة في summary نفسها؛ الغائب يبقى null. */
     'statistics'       => $statistics,
-    'lineups'          => null,
-    'ratings'          => null, /* ESPN لا يوفّر تقييمات لاعبين إطلاقاً */
+    'lineups'          => $lineups,
+    'ratings'          => null, /* لم يُعتمد مصدر تقييمات لهذا التنفيذ */
     'seasonComparison' => null,
     'seasonSample'     => null,
 ];

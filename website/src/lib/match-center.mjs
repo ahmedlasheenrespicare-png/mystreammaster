@@ -1453,7 +1453,7 @@ export function activeEventFilterCount(filters = {}) {
 export function unavailableDataNotes(snapshot) {
   const notes = [];
   if (confirmedLineupSides(snapshot?.lineups ?? null).length === 0) {
-    notes.push({ id: 'lineups', text: 'التشكيلات: لا تصل في الربط الحالي للمصدر، فلا تُعرض قائمة أساسيين ولا بدلاء ولا تُخمَّن.' });
+    notes.push({ id: 'lineups', text: 'التشكيلات: لا توجد تشكيلة أساسية مؤكدة في القراءة الحالية؛ لا تُخمَّن أسماء أو مراكز.' });
   }
   if (displayableRatings(snapshot?.ratings ?? null).length === 0) {
     notes.push({ id: 'ratings', text: 'تقييمات اللاعبين: لا يوردها المصدر؛ لا تُعرض ولا تُستبدل بأرقام تُحسب محلياً.' });
@@ -1530,4 +1530,52 @@ function toFiniteOrNull(value) {
     return Number.isFinite(parsed) ? parsed : null;
   }
   return null;
+}
+
+// Explicit source position codes only. Row grouping is schematic, not tracking data.
+const PITCH_ROLES = new Map([
+  ['حارس المرمى', ['G']], ['الدفاع', ['CD', 'CD-L', 'CD-R', 'LB', 'RB']],
+  ['الوسط', ['LM', 'RM', 'CM', 'CM-L', 'CM-R', 'DM', 'DM-L', 'DM-R']],
+  ['الوسط الهجومي', ['AM', 'AM-L', 'AM-R']], ['الهجوم', ['F', 'CF', 'CF-L', 'CF-R']],
+]);
+
+/** All placement, linking and filtering live here, never in presentation components. */
+export function lineupPitchSides({ match, snapshot }) {
+  const lineups = snapshot?.lineups;
+  if (snapshot?.provider !== 'espn' || lineups?.provider !== 'espn'
+      || !lineups.eventId || String(lineups.eventId) !== String(match?.externalIds?.espn)) return [];
+  const usedIds = new Set();
+  const result = [];
+  for (const side of ['home', 'away']) {
+    const squad = lineups[side];
+    if (squad?.confirmed !== true) continue;
+    if (!squad.teamId || String(squad.teamId) !== String(match?.[side]?.externalIds?.espn)
+        || !Array.isArray(squad.starters) || squad.starters.length !== 11 || !Array.isArray(squad.substitutes)) return [];
+    const players = [...squad.starters, ...squad.substitutes];
+    for (const player of players) {
+      if (!player?.id || !player.name || usedIds.has(String(player.id))) return [];
+      usedIds.add(String(player.id));
+    }
+    const events = (snapshot?.status?.phase === 'live' || snapshot?.status?.phase === 'post')
+      ? [...new Map(renderableEvents(snapshot.events).filter(eventOnTimeline)
+        .filter(event => event.type !== 'other')
+        .map(event => [eventKey(match.id, event), event])).values()] : [];
+    const decorate = (player) => ({ ...player, badges: events.flatMap(event => {
+      if (event.teamSide !== side || (event.sourceTeamId != null && String(event.sourceTeamId) !== String(squad.teamId))) return [];
+      const isPlayer = String(event.player?.id ?? '') === String(player.id);
+      const isOutgoing = event.type === 'substitution' && String(event.relatedPlayer?.id ?? '') === String(player.id);
+      if (!isPlayer && !isOutgoing) return [];
+      return [{ event, label: describeEvent(event), minute: eventMinuteLabel(event), typeLabel: eventTypeName(event, 'حدث'),
+        role: event.type === 'substitution' ? (isOutgoing ? 'خروج' : 'دخول') : null }];
+    }) });
+    const rows = [...PITCH_ROLES].map(([label, positions]) => ({ label,
+      players: squad.starters.filter(player => positions.includes(player.positionCode)).map(decorate),
+    })).filter(row => row.players.length);
+    // An unknown position must not silently invent a slot or drop a starter.
+    if (rows.reduce((count, row) => count + row.players.length, 0) !== 11) continue;
+    result.push({ side, teamName: match[side].name, formation: squad.formation ?? null, rows,
+      substitutes: squad.substitutes.map(decorate).filter(player => player.badges.length),
+    });
+  }
+  return result;
 }

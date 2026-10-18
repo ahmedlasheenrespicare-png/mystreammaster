@@ -20,6 +20,10 @@ const fixtureEvents = [
 const drawnEvents = fixtureEvents.filter(event => !String(event.type).toLowerCase().includes('delay'));
 
 test('events sit on the pitch as symbols by minute and team, with delays filtered and details on focus', async ({ page }) => {
+  /* مهلة الاختبار أوسع من مهلة الانتظار: على آلة مثقلة يسبق الترطيبُ القراءة،
+     والفحص قبل هبوطها يُسقط اختباراً بواجهة سليمة (كما في
+     `match-center-analysis.spec.ts` الذي يضبط 90 ثانية). */
+  test.setTimeout(90_000);
   const requests: string[] = [];
   await page.clock.install({ time: new Date('2026-10-17T15:00:00Z') });
   await page.route('**/*', async route => {

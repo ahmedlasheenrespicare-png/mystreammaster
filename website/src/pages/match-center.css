@@ -555,6 +555,47 @@
 .mc-mini-crest--home { border-color: rgba(207, 196, 255, .7); background: rgba(124, 92, 255, .14); color: #cfc4ff; }
 .mc-mini-crest--away { border-color: rgba(216, 255, 62, .7); background: rgba(216, 255, 62, .1); color: var(--mc-lime); }
 
+/* ── ميزان كل مجموعة: شريط متوسط الحصة + شريط عدّ الصفوف الأعلى رقمياً ──
+   بلا عنوان باسمه: اسم المجموعة في رأسها تسميته. الرقم المطبوع كمية (حصة
+   الطرف من صفوف المجموعة) لا حكم جودة، والأساس معلَن في السطر الأخير. */
+.mc-stat-index { display: grid; gap: 5px; margin: 0 0 11px; padding: 9px 11px; border: 1px solid rgba(216, 255, 62, .20); border-radius: 12px; background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .015)); }
+/* أساس ضيّق (صف واحد قابل للمقارنة): إطار متقطّع يعلن ولا يخفي. */
+.mc-stat-index[data-basis="single"] { border-style: dashed; }
+.mc-stat-index-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 3px 10px; }
+.mc-stat-index-pcts { display: inline-flex; align-items: baseline; gap: 9px; }
+.mc-stat-index-pct { font-family: var(--font-latin, ui-sans-serif); font-size: 1rem; font-weight: 900; line-height: 1; }
+.mc-stat-index-pct[data-side="home"] { color: #cfc4ff; }
+.mc-stat-index-pct[data-side="away"] { color: var(--mc-lime); }
+.mc-stat-index-sep { color: var(--mc-muted); font-size: .64rem; font-weight: 700; }
+.mc-stat-index-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.mc-stat-index-fill { display: block; block-size: 100%; }
+.mc-stat-index-fill[data-side="home"] { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .6)); }
+.mc-stat-index-fill[data-side="away"] { background: linear-gradient(90deg, rgba(216, 255, 62, .55), rgba(216, 255, 62, .95)); }
+/* الشريط الثاني عدّ صفوف: لكل شريحة لونها (مضيف/ضيف/متساويان/غير متاح). */
+.mc-stat-tally-bar { display: flex; height: 6px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .05); }
+.mc-stat-tally-seg { display: block; block-size: 100%; }
+.mc-stat-tally-seg[data-lead="home"] { background: rgba(124, 92, 255, .92); }
+.mc-stat-tally-seg[data-lead="away"] { background: rgba(216, 255, 62, .88); }
+.mc-stat-tally-seg[data-lead="equal"] { background: rgba(223, 230, 242, .45); }
+.mc-stat-tally-seg[data-lead="none"] { background: repeating-linear-gradient(45deg, rgba(255, 154, 162, .55) 0 4px, rgba(255, 154, 162, .12) 4px 8px); }
+.mc-stat-index-note { margin: 0; color: var(--mc-muted); font-size: .66rem; font-weight: 700; }
+
+/* ── لوحة «مؤشرات المجموعات»: الستة في نظرة واحدة، وكل سطر رابط لمجموعته ── */
+.mc-indexboard { display: grid; gap: 9px; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
+.mc-indexboard-head { margin: 0; color: var(--mc-lime); font-size: .84rem; font-weight: 900; }
+.mc-indexboard-sub { margin: 0 0 3px; color: var(--mc-muted); font-size: .68rem; }
+.mc-indexboard-rows { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.mc-indexboard-row { display: grid; grid-template-columns: minmax(84px, 1.05fr) minmax(0, 2.4fr) auto; gap: 9px; align-items: center; }
+.mc-indexboard-row a { color: var(--mc-text); font-size: .74rem; font-weight: 800; text-decoration: none; border-bottom: 1px dashed rgba(255, 255, 255, .22); }
+.mc-indexboard-row a:hover { color: var(--mc-lime); border-color: var(--mc-lime); }
+.mc-indexboard-bar { display: flex; height: 9px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.mc-indexboard-fill { display: block; block-size: 100%; }
+.mc-indexboard-fill[data-side="home"] { background: rgba(124, 92, 255, .92); }
+.mc-indexboard-fill[data-side="away"] { background: rgba(216, 255, 62, .88); }
+.mc-indexboard-pcts { display: inline-flex; gap: 6px; align-items: baseline; font-family: var(--font-latin, ui-sans-serif); font-size: .76rem; font-weight: 900; white-space: nowrap; }
+.mc-indexboard-pcts [data-side="home"] { color: #cfc4ff; }
+.mc-indexboard-pcts [data-side="away"] { color: var(--mc-lime); }
+
 /* «التوثيق والمراجعة»: بطاقات النصوص التفسيرية وسطر المراجعة. */
 .mc-docs-grid { display: grid; gap: 10px; margin: 10px 0 12px; }
 .mc-doc { min-width: 0; padding: 12px 14px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255, 255, 255, .02); }
@@ -574,15 +615,27 @@
   .mc-h2h-cell b { font-size: 1.2rem; }
   .mc-possession-pct { font-size: 1.3rem; }
   .mc-pitch-counter { font-size: .6rem; padding: 1px 5px; }
+  /* الميزان واللوحة: النسبتان فوق الشريط بعرض البطاقة، ولا تمرير أفقي. */
+  .mc-stat-index { padding: 8px 9px; }
+  .mc-stat-index-pct { font-size: .92rem; }
+  .mc-indexboard-row { grid-template-columns: minmax(70px, 1fr) auto; grid-template-areas: "label pcts" "bar bar"; gap: 4px 8px; }
+  .mc-indexboard-row a { grid-area: label; }
+  .mc-indexboard-pcts { grid-area: pcts; justify-self: end; }
+  .mc-indexboard-bar { grid-area: bar; }
 }
 @layer mc-print {
   @media print {
     .mc-pitch-preview-facts > div, .mc-pitch-form, .mc-pitch-form .mc-event, .mc-pitch-form-summary > div, .mc-pitch-counter,
-    .mc-h2h-cell, .mc-possession, .mc-doc { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
+    .mc-h2h-cell, .mc-possession, .mc-doc, .mc-stat-index, .mc-indexboard { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
     .mc-pitch-preview h2, .mc-pitch-form h3, .mc-pitch-form-sub, .mc-pitch-preview-facts dt, .mc-pitch-preview-facts dd,
     .mc-pitch-form .mc-event-body small, .mc-pitch-form .mc-form-score, .mc-pitch-form-summary dt, .mc-pitch-counter em { color: #101218 !important; }
     .mc-possession-fill[data-side="home"] { background: #3b2a7a; }
     .mc-possession-fill[data-side="away"] { background: #1f6b2e; }
+    /* الميزان في الطباعة ألوان صلبة مثل بقية الأشرطة. */
+    .mc-stat-index-fill[data-side="home"], .mc-stat-tally-seg[data-lead="home"], .mc-indexboard-fill[data-side="home"] { background: #3b2a7a; }
+    .mc-stat-index-fill[data-side="away"], .mc-stat-tally-seg[data-lead="away"], .mc-indexboard-fill[data-side="away"] { background: #1f6b2e; }
+    .mc-stat-index-pct[data-side="home"], .mc-indexboard-pcts [data-side="home"] { color: #3b2a7a; }
+    .mc-stat-index-pct[data-side="away"], .mc-indexboard-pcts [data-side="away"] { color: #1f6b2e; }
     .mc-report { display: none !important; }
   }
 }

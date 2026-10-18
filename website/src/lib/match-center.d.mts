@@ -341,12 +341,34 @@ export interface StatComparisonRow {
   bar: { home: number | null; away: number | null };
 }
 
-export interface StatGroup { id: string; label: string; rows: StatComparisonRow[] }
+/**
+ * ميزان المجموعة — كمّيان بلا حكم: متوسط حصة كل طرف من صفوف المجموعة، وعدّ
+ * الصفوف الأعلى رقمياً. `null` إن لم يصل صفٌّ واحد برقمين من المصدر.
+ * لا اسم ظاهر له في الواجهة: اسم المجموعة القائم (في رأسها) هو تسميته.
+ */
+export interface GroupIndex {
+  /** متوسط حصة المضيف 0–1؛ العرض منها، والطرف الآخر مكمّلته. */
+  meanHome: number;
+  meanAway: number;
+  /** العددان الصحيحان المطبوعان؛ مجموعهما 100 دائماً (المكمّل بعد التقريب). */
+  pctHome: number;
+  pctAway: number;
+  /** كم صفاً دخل الحساب، وكم نقص أحد طرفيه، وكم صفر/صفر (نصفان متساويان). */
+  comparable: number;
+  unavailable: number;
+  zeroZero: number;
+  /** صف واحد قابل للمقارنة — أساس ضيّق يُعلن ولا يُخفى. */
+  single: boolean;
+  tally: { home: number; away: number; equal: number };
+}
+
+export interface StatGroup { id: string; label: string; rows: StatComparisonRow[]; index: GroupIndex | null }
 
 export const STAT_GROUPS: { id: string; label: string; keys: string[] }[];
 export const STAT_GROUP_FALLBACK: { id: string; label: string };
 
 export function compareStatRow(stat: StatPair | null | undefined): StatComparisonRow;
+export function groupIndex(rows: StatComparisonRow[] | null | undefined): GroupIndex | null;
 export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
 export function analysisFacts(statistics: StatPair[] | null | undefined): StatComparisonRow[];
 

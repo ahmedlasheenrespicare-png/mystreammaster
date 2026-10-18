@@ -1346,6 +1346,58 @@ export function compareStatRow(stat) {
   };
 }
 
+/**
+ * ميزان المجموعة: مؤشّران كمّيان لكل مجموعة، بلا حكم ولا اشتقاق رقمٍ من رقمين.
+ *
+ * • **متوسط الحصة:** لكل صف قابل للمقارنة (رقمان حقيقيان من المصدر) حصة المضيف
+ *   `home ÷ (home + away)` — حصة بلا وحدة، فلا تُجمع نسبة مئوية مع عدد قط —
+ *   وصفران حقيقيان نصفان متساويان (٠٫٥) كما في شريط الصف نفسه. المؤشر متوسط
+ *   تلك الحصص؛ والطرف الآخر مكمّلته. الطباعة تقرَّب والمكمّل يُطبع `100 − المقرَّب`
+ *   حتى لا يظهر مجموع ٩٩ أو ١٠١ بسبب التقريب، والعرض من القيمة غير المقرَّبة.
+ * • **عدّ الصفوف:** في كم صفٍّ كان كل طرف الأعلى رقمياً، وكم متساويان، وكم صفاً
+ *   نقص أحد طرفيه فلم يدخل المتوسط (الغياب يبقى غياباً ولا يُستكمل صفراً).
+ *
+ * المجموعة بلا أي صف قابل للمقارنة لا ميزان لها (`null`) — لا مؤشر لمجموعة
+ * نصفها اختلاق. وصفٌ للكمية لا للأفضلية: زيادة الأخطاء أو البطاقات ترفع حصة
+ * طرف رقمياً ولا تعني ميزة.
+ */
+export function groupIndex(rows) {
+  const list = Array.isArray(rows) ? rows : [];
+  const comparable = list.filter(row => row?.comparable === true
+    && finiteNumber(row?.home) !== null && finiteNumber(row?.away) !== null);
+  if (comparable.length === 0) return null;
+
+  let shareSum = 0;
+  let zeroZero = 0;
+  const tally = { home: 0, away: 0, equal: 0 };
+  for (const row of comparable) {
+    const home = finiteNumber(row.home);
+    const away = finiteNumber(row.away);
+    const sum = home + away;
+    shareSum += sum > 0 ? home / sum : 0.5;
+    if (home === 0 && away === 0) zeroZero += 1;
+    if (home > away) tally.home += 1;
+    else if (away > home) tally.away += 1;
+    else tally.equal += 1;
+  }
+
+  const meanHome = shareSum / comparable.length;
+  const pctHome = Math.round(meanHome * 100);
+  return {
+    meanHome,
+    meanAway: 1 - meanHome,
+    /** العدد الصحيح المطبوع؛ والضيف مكمّله فلا مجموع ٩٩ ولا ١٠١. */
+    pctHome,
+    pctAway: 100 - pctHome,
+    /** أساس الاحتساب معلَن دائماً: كم صفاً دخل، وكم نقص طرفه، وكم صفر/صفر. */
+    comparable: comparable.length,
+    unavailable: list.length - comparable.length,
+    zeroZero,
+    single: comparable.length === 1,
+    tally,
+  };
+}
+
 /** الأرقام المتاحة مجمَّعة في مجموعات يسهل مسحها؛ والمجموعة الفارغة لا تُنشأ. */
 export function groupStatistics(statistics) {
   const rows = displayableStatistics(statistics);
@@ -1368,11 +1420,14 @@ export function groupStatistics(statistics) {
     const bucket = buckets[index];
     const ordered = def.keys.map(key => bucket.get(key)).filter(Boolean);
     if (ordered.length > 0) {
-      groups.push({ id: def.id, label: def.label, rows: ordered.map(compareStatRow) });
+      const rows = ordered.map(compareStatRow);
+      /* الميزان يُحسب هنا لا في المكوّن: قرار واحد في طبقة العقد تُختبر في Node. */
+      groups.push({ id: def.id, label: def.label, rows, index: groupIndex(rows) });
     }
   });
   if (extra.length > 0) {
-    groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows: extra.map(compareStatRow) });
+    const rows = extra.map(compareStatRow);
+    groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows, index: groupIndex(rows) });
   }
   return groups;
 }

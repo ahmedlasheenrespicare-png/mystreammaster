@@ -191,10 +191,12 @@ test('state A: without a lineup the preview sits on the pitch and the panel poin
   await expect(page.locator('#mc-panel-live')).not.toContainText('غير متاح');
 
   const docs = page.locator('.mc-docs');
-  await expect(docs.locator('.mc-doc')).toHaveCount(6);
+  await expect(docs.locator('.mc-doc')).toHaveCount(7);
   await expect(docs).toContainText('آخر 3 مواجهات');
   await expect(docs).toContainText('آخر 5 مباريات');
   await expect(docs).toContainText('ليست أفضلية');
+  // بطاقة ميزان المجموعة: شرح الشريطين والأساس، في بيت النصوص الوحيد.
+  await expect(docs.locator('.mc-doc[data-doc="group-index"]')).toContainText('متوسط حصة كل طرف');
   await expect(docs.locator('.mc-docs-review')).toContainText('18 أكتوبر 2026');
   await expect(docs.locator('.mc-report')).toHaveAttribute('href', /^mailto:/);
   await expectNoSourceTextOutsideDocs(page);
@@ -266,6 +268,26 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
   await expect(live.locator('.mc-stat-group-title')).toHaveText(['الاستحواذ والتمرير', 'التسديد', 'بناء الهجمة', 'الدفاع', 'حراسة المرمى', 'الانضباط']);
   await expect(live.locator('.mc-stat-group-head .mc-mini-crest--home')).toHaveCount(6);
   await expect(live.locator('.mc-stat-group-head .mc-mini-crest--away')).toHaveCount(6);
+
+  // ميزان كل مجموعة: شريط متوسط الحصة برقميه (مجموعهما ١٠) وشريط عدّ الصفوف،
+  // بلا عنوان باسمه — اسم المجموعة في رأسها تسميته — وأساسه معلَن في سطره.
+  const balances = live.locator('.mc-stat-index');
+  await expect(balances).toHaveCount(6);
+  const first = balances.first();
+  await expect(first).toContainText('٥٨%');
+  await expect(first).toContainText('٤٢%');
+  await expect(first.locator('.mc-stat-index-fill')).toHaveCount(2);
+  await expect(first.locator('.mc-stat-tally-seg[data-lead="home"]')).toHaveCount(1);
+  // «دقة التمرير» وصل طرفها المضيف وحده: خارج المتوسط ومعدودة في الأساس.
+  await expect(first).toContainText('بلا رقمين: ١');
+  // مجموعة بصف واحد قابل للمقارنة أساسها ضيّق معلن بإطار متقطع.
+  await expect(live.locator('.mc-stat-group', { hasText: 'حراسة المرمى' }).locator('.mc-stat-index')).toHaveAttribute('data-basis', 'single');
+  // لوحة «مؤشرات المجموعات»: ستة أسطر، كل سطر رابط إلى مجموعته في التبويب نفسه.
+  const board = live.locator('.mc-indexboard');
+  await expect(board).toBeVisible();
+  await expect(board.locator('.mc-indexboard-row')).toHaveCount(6);
+  await expect(board.locator('.mc-indexboard-row a').first()).toHaveAttribute('href', '#live-statgroup-possession-passing');
+  await expect(live.locator('#live-statgroup-possession-passing')).toHaveCount(1);
   const passing = live.locator('.mc-stat-compare', { hasText: 'دقة التمرير' });
   await expect(passing.locator('.mc-stat-side-none')).toHaveText('غير متاح');
   await expect(passing).not.toContainText('٠%');

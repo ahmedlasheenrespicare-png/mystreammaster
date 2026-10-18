@@ -165,6 +165,14 @@ test.describe('match analysis tab', () => {
     // شريط الاستحواذ البارز: النسبتان وصلتا رقميتين معاً.
     await expect(page.locator('.mc-analysis .mc-possession')).toContainText('٥٨%');
     await expect(page.locator('.mc-analysis .mc-possession')).toContainText('٤٢%');
+    // ميزان المجموعة في «التحليل» أيضاً — المكوّن مشترك فلا نسخة ثانية من العقد.
+    // الاستحواذ هنا بصف واحد قابل للمقارنة («دقة التمرير» طرفها غائب) ⇒ أساس ضيّق معلن.
+    await expect(page.locator('.mc-analysis .mc-stat-index')).toHaveCount(5);
+    const balance = page.locator('.mc-analysis .mc-stat-index').first();
+    await expect(balance).toContainText('٥٨%');
+    await expect(balance).toContainText('٤٢%');
+    await expect(balance).toHaveAttribute('data-basis', 'single');
+    await expect(page.locator('.mc-analysis .mc-indexboard-row')).toHaveCount(5);
     const fouls = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'الأخطاء' });
     await expect(fouls).toContainText('٩');
     await expect(fouls).toContainText('١٤');
@@ -282,6 +290,8 @@ test.describe('match analysis tab', () => {
     await expect(page.locator('.mc-analysis')).toHaveCount(0);
     await expect(page.locator('#mc-tab-live')).toHaveCount(0);
     await expect(page.locator('.mc-analysis, .mc-stat-group')).toHaveCount(0);
+    // لا أرقام ⇒ لا ميزان ولا لوحة مؤشرات: لا مؤشر لمجموعة نصفها اختلاق.
+    await expect(page.locator('.mc-stat-index, .mc-indexboard')).toHaveCount(0);
     await expect(page.locator('#mc-tab-postmatch')).toBeVisible();
     await expect(page.locator('#mc-panel-postmatch')).toContainText('النتيجة النهائية');
     // شريط الدقيقة لا يَرسم أحداثًا ليست موجودة، ولا يَخترع ساعة.

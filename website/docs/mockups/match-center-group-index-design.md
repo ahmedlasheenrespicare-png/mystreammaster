@@ -1,6 +1,30 @@
 # تصور: «مؤشر عام» لكل مجموعة إحصائية في مركز المباراة
 
-**التاريخ:** 19 أكتوبر 2026 · **الفرع:** `arena/70e101da-mystreammaster` · **الحالة:** تصور بانتظار موافقتك — **لم يُكتب أي كود تنفيذي بعد**
+**التاريخ:** 19 أكتوبر 2026 · **الفرع:** `arena/70e101da-mystreammaster` · **الحالة:** **نُفِّذ كاملاً على هذا الفرع** بعد اعتماد القرارات أدناه (القسم ٦) — بانتظار المراجعة في PR، بلا دمج إلى `main` ولا نشر
+
+## ٠) حالة التنفيذ والقرارات المعتمدة
+
+| القرار | ما اعتُمد | أثره في الكود |
+|---|---|---|
+| نوع المؤشر | **(ج) الاثنان معاً**: شريط متوسط الحصة + شريط عدّ الصفوف في رأس كل مجموعة | `GroupIndex` في `MatchCenterStatGroups.tsx` يرسم الشريطين وسطر الأساس |
+| لوحة «مؤشرات المجموعات» | **تُضاف** أعلى اللوحة، كل سطر رابط إلى مجموعته | `IndexBoard` في المكوّن نفسه |
+| صفوف صفر/صفر | **نصفان متساويان وتُذكر** في سطر الأساس | `zeroZero` في `groupIndex` + `منها … صفر/صفر (نصفان متساويان)` |
+| الدقة المطبوعة | عدد صحيح، وحصة الضيف مكمّلة المقرَّب (`100 − x`) | `pctHome`/`pctAway` في `groupIndex` |
+| الاسم الظاهر | **بلا اسم إضافي**: اسم المجموعة القائم (الاستحواذ والتمرير…) هو تسمية مؤشرها | لا عنوان داخل `.mc-stat-index`؛ الشرح في بطاقة «توثيق ومراجعة» |
+
+**الملفات المعدَّلة:** `website/src/lib/match-center.mjs` (`groupIndex` + حقل `index` في `groupStatistics`) ·
+`website/src/lib/match-center.d.mts` (`GroupIndex`) · `website/src/components/MatchCenterStatGroups.tsx` ·
+`website/src/components/MatchCenterDocs.tsx` (بطاقة `data-doc="group-index"`) · `website/src/pages/match-center.css`
+(`.mc-stat-index*` و`.mc-stat-tally-*` و`.mc-indexboard*` + قواعد ‎≤420px والطباعة) · الاختبارات
+`scripts/test-match-center-analysis.mjs` و`tests/match-center-phase-a.spec.ts` و`tests/match-center-analysis.spec.ts` ·
+**لا تعديل على `match-center.php`** (لا حقل جديداً في الحمولة).
+
+**البوابات الأربع بعد التنفيذ:** `npm run typecheck` ✅ · `npm test` ✅ (٤٧٠ اختباراً: ٤٦٩ نجاح و١ تخطٍّ) ·
+`npm run build` ✅ (٦٧٧ مساراً) · `npx playwright test` ✅ (ملفات مركز المباريات الأربعة: ٣٤/٣٤؛ والحزمة الكاملة
+٢٠٧/٢٠٨ مع إخفاق واحد عابر في `match-center-events.spec.ts` نجح منفرداً وضمن المجموعة بعدها).
+
+**لقطات التنفيذ الفعلي** (حمولة معترَضة في المتصفح، ليست قراءة مصدر): `website/docs/match-center-shots/group-index-live-desktop.png`
+و`…-mobile.png` و`…-group-crop.png` و`…-group-crop-mobile.png` — والمجلد مُتجاهَل في git وفق عادة المشروع للقطات.
 
 المرفقات في هذا المجلد:
 
@@ -85,7 +109,7 @@
 البوابات الأربع قبل التسليم: `npm run typecheck` · `npm test` · `npm run build` · `npx playwright test tests/match-center-*.spec.ts`،
 ثم لقطة قبل/بعد. **لا دمج إلى `main` ولا نشر** (البند ١٤).
 
-## ٦) قرارات مطلوبة قبل التنفيذ
+## ٦) قرارات كانت مطلوبة قبل التنفيذ — أُجيب عنها واعْتُمدت (انظر القسم ٠)
 
 1. أي مؤشر في رأس المجموعة: (أ) متوسط الحصة · (ب) عدّ الصفوف · (ج) الاثنان معاً؟
 2. لوحة «مؤشرات المجموعات» أعلى اللوحة: تُضاف أم نكتفي برأس كل مجموعة؟

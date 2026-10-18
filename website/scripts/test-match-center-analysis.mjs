@@ -21,6 +21,7 @@ import {
   eventPeriodLabel,
   eventTypeFacet,
   filterEvents,
+  groupIndex,
   groupStatistics,
   headToHeadFor,
   normalizeEvent,
@@ -111,6 +112,62 @@ test('a stat the grouping does not know is kept in a source bucket, never droppe
   assert.equal(groups.length, 1);
   assert.equal(groups[0].id, 'source-other');
   assert.equal(groups[0].rows[0].label, 'المسافة المقطوعة');
+});
+
+/* ── 1ب) ميزان المجموعة: متوسط الحصة + عدّ الصفوف، بلا حكم ─────────────── */
+
+test('group index is the mean of unit-free row shares, printed as complements of 100', () => {
+  const groups = groupStatistics(STAT_INPUT);
+  const possession = groups.find(group => group.id === 'possession-passing');
+  // حصة المضيف: 58/100 ثم 84/163 ⇒ متوسطهما 0.5476… والعرض 55 مقابل 45.
+  assert.ok(Math.abs(possession.index.meanHome - (0.58 + 84 / 163) / 2) < 1e-12);
+  assert.equal(possession.index.pctHome, 55);
+  assert.equal(possession.index.pctAway, 45);
+  assert.equal(possession.index.pctHome + possession.index.pctAway, 100);
+  // عدّ الصفوف في الانضباط: المضيف أعلى في التسلل وحده، والضيف في الأخطاء والصفراء.
+  const discipline = groups.find(group => group.id === 'discipline');
+  assert.deepEqual(discipline.index.tally, { home: 1, away: 2, equal: 0 });
+  // «بطاقات حمراء» وصل طرفها الآخر وحده ⇒ خارج المتوسط ومعدود في الأساس.
+  assert.equal(discipline.index.comparable, 3);
+  assert.equal(discipline.index.unavailable, 1);
+  assert.equal(discipline.index.pctHome, 44);
+  assert.equal(discipline.index.pctAway, 56);
+  // مجموعة بصف واحد قابل للمقارنة أساسها ضيّق ومُعلن.
+  assert.equal(groups.find(group => group.id === 'goalkeeping').index.single, true);
+  assert.equal(groups.find(group => group.id === 'possession-passing').index.single, false);
+  // المجموعة الاحتياطية لها ميزان كبقية المجموعات.
+  const other = groupStatistics([{ key: 'distanceKm', label: 'المسافة', unit: 'كم', home: 108, away: 104 }]);
+  assert.equal(other[0].index.pctHome, 51);
+  assert.equal(other[0].index.pctAway, 49);
+});
+
+test('group index: real zeros are equal halves and counted, absent sides never enter', () => {
+  const index = groupIndex([
+    compareStatRow({ key: 'a', label: 'أ', unit: '', home: 0, away: 0 }),
+    compareStatRow({ key: 'b', label: 'ب', unit: '', home: 3, away: 1 }),
+    compareStatRow({ key: 'c', label: 'ج', unit: '', home: null, away: 4 }),
+  ]);
+  // صفر/صفر نصف (0.5) لا صفر: 0.5 و0.75 ⇒ 0.625 ⇒ 63 مقابل 37.
+  assert.equal(index.zeroZero, 1);
+  assert.equal(index.meanHome, 0.625);
+  assert.equal(index.pctHome, 63);
+  assert.equal(index.pctAway, 37);
+  assert.equal(index.comparable, 2);
+  assert.equal(index.unavailable, 1);
+  assert.deepEqual(index.tally, { home: 1, away: 0, equal: 1 });
+});
+
+test('group index refuses to speak for a group with no comparable row', () => {
+  assert.equal(groupIndex(null), null);
+  assert.equal(groupIndex([]), null);
+  assert.equal(groupIndex([compareStatRow({ key: 'a', label: 'أ', unit: '', home: 5, away: null })]), null);
+  // المجموعة تُرسم بصفوفها الناقصة لكن بلا ميزان: نصفها اختلاق فلا مؤشر.
+  const groups = groupStatistics([
+    { key: 'totalTackles', label: 'التدخلات', unit: '', home: null, away: 7 },
+    { key: 'interceptions', label: 'الاعتراضات', unit: '', home: 5, away: null },
+  ]);
+  assert.equal(groups.length, 1);
+  assert.equal(groups[0].index, null);
 });
 
 test('an empty or malformed statistic list produces no group at all', () => {

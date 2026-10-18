@@ -988,6 +988,7 @@ test('phase removes postmatch before full time and live after it', () => {
   assert.deepEqual(computeAvailableTabs({ match, snapshot, status: { phase: 'terminal' } }), ['prematch']);
 });
 
+<<<<<<< HEAD
 test('tab lifecycle: before and during the match «قبل المباراة»+«مباشر» only; after the final whistle «مباشر» goes and «بعد المباراة» appears', () => {
   const match = { competitionName: 'League', kickoffUtc: '2026-10-18T15:30:00Z' };
   const prematchSnapshot = { statistics: null, events: [], h2h: [], lineups: null, score: null };
@@ -1007,6 +1008,8 @@ test('tab lifecycle: before and during the match «قبل المباراة»+«�
   assert.equal(tabs.includes(choice) ? choice : defaultTab(finished), 'postmatch');
 });
 
+=======
+>>>>>>> c1d9318 (Merge pull request #66 from ahmedlasheenrespicare-png/arena/cb70c0cb-mystreammaster)
 test('a valid visitor choice survives refresh and an invalid one falls back', () => {
   assert.equal(resolveTab({ phase: 'live' }, 'prematch'), 'prematch');
   assert.equal(resolveTab({ phase: 'live' }, null), 'live');

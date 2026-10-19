@@ -8,7 +8,6 @@ import {
   IconMenu,
   IconPlay,
   IconStar,
-  IconTrophy,
   IconZap,
 } from "./Icons";
 import { leagueIcon } from "../lib/league-icons.mjs";
@@ -46,7 +45,7 @@ interface HeaderProps {
 
    أيقونة البطولة: شعارها من src/lib/league-icons.mjs (مصدر واحد مع هيدر
    الصفحات القديمة) داخل صندوق 32×32 نفسه الذي يحمل الإيموجي — والبطولة بلا
-   شعار موثّق تعرض أيقونة الكأس المحايدة.
+   شعار موثّق يبقى صندوقها فارغاً بلا أيقونة بديلة.
 ========================================================================= */
 
 type GroupKey = NavGroup["key"];
@@ -597,9 +596,8 @@ function DesktopPanel({
 }
 
 /* شعار البطولة داخل صندوق الأيقونة 32×32 (نفس صندوق الإيموجي تماماً).
-   الشعار زخرفي (alt="" + aria-hidden) لأن اسم البطولة مكتوب بجانبه، والبديل
-   المحايد (كأس) مرسوم تحته: فالبطولة بلا شعار موثّق، أو تعذّر تحميله، تُظهر
-   البديل بلا صورة مكسورة ولا فراغ. */
+   الشعار زخرفي (alt="" + aria-hidden) لأن اسم البطولة مكتوب بجانبه، وعند
+   غياب الشعار يبقى الصندوق فارغاً بلا أيقونة بديلة. */
 export function LeagueNavIcon({ league }: { league: string }) {
   const src = leagueIcon(league);
   return (
@@ -607,7 +605,6 @@ export function LeagueNavIcon({ league }: { league: string }) {
       aria-hidden="true"
       className="group-hover/l:bg-white relative w-8 h-8 shrink-0 rounded-xl bg-[#f4f3ef] grid place-items-center overflow-hidden transition"
     >
-      <IconTrophy className="w-4 h-4 text-black/40" />
       {src ? (
         <img
           src={src}
@@ -617,9 +614,8 @@ export function LeagueNavIcon({ league }: { league: string }) {
           loading="lazy"
           decoding="async"
           draggable={false}
-          className="absolute w-5 h-5 object-contain"
+          className="w-5 h-5 object-contain"
           onError={(event) => {
-            /* تعذّر الشعار → يبقى البديل ظاهراً تحته */
             event.currentTarget.style.visibility = "hidden";
           }}
         />

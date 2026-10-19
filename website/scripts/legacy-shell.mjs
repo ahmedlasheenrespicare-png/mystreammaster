@@ -8,15 +8,12 @@ const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const page = (href) => `/${href}`;
 const section = (id) => `/#${id}`;
 const chevron = '<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-/* أيقونة الكأس المحايدة — نفس شكل IconTrophy في React (src/components/Icons.tsx) */
-const TROPHY_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/></svg>';
 
 /* شعار البطولة داخل صندوق الأيقونة نفسه (.sm-dd-icon 32×32) — مصدره src/lib/league-icons.mjs
-   ومثل React: البديل المحايد (كأس) مرسوم تحت الشعار، فالبطولة بلا شعار موثّق
-   أو تعذّر تحميله تظهر الكأس بلا صورة مكسورة ولا فراغ. */
+   وعند غياب الشعار يبقى الصندوق فارغاً بلا أيقونة بديلة. */
 const leagueIconHtml = (league, extraClass = '') => {
   const src = leagueIcon(league);
-  return `<span class="sm-dd-icon sm-dd-league ${extraClass}" aria-hidden="true">${TROPHY_SVG}${src ? `<img src="${esc(src)}" alt="" width="20" height="20" loading="lazy" decoding="async" draggable="false" onerror="this.style.visibility='hidden'">` : ''}</span>`;
+  return `<span class="sm-dd-icon sm-dd-league ${extraClass}" aria-hidden="true">${src ? `<img src="${esc(src)}" alt="" width="20" height="20" loading="lazy" decoding="async" draggable="false" onerror="this.style.visibility='hidden'">` : ''}</span>`;
 };
 
 const item = (href, label, desc = '', icon = '', league = '') =>

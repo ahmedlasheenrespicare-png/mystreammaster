@@ -7,7 +7,7 @@
  *  - network-first للصفحات (مع fallback للكاش ثم offline.html).
  *  - دعم رسالة SKIP_WAITING للتحديث الفوري.
  */
-const VERSION = 'v6-matches-php';
+const VERSION = 'v7-standings-php';
 const STATIC_CACHE  = `stream-master-static-${VERSION}`;
 const RUNTIME_CACHE = `stream-master-runtime-${VERSION}`;
 const MAX_RUNTIME_ITEMS = 60;
@@ -27,7 +27,10 @@ const STATIC_ASSETS = [
 
 // لا تتدخّل في هذه الطلبات إطلاقاً
 const BYPASS_HOSTS = ['site.api.espn.com', 'worldcup26.ir', 'api.frankfurter.app', 'onesignal.com'];
-const BYPASS_PATHS = [/^\/proxy\.php/, /^\/scoreboard\.php/, /^\/admin-dashboard/, /^\/admin\//, /^\/cart/, /^\/search/];
+/* /standings.php مضاف مع /scoreboard.php: ردود البيانات الحيّة لا تُخزَّن ولا تُقدَّم
+   من الكاش — تخزينها يجمّد أرقام الترتيب على قراءة قديمة، ويعرضها بعد أن يتغيّر
+   المصدر. كلا المسارين متروك للشبكة دائماً. */
+const BYPASS_PATHS = [/^\/proxy\.php/, /^\/scoreboard\.php/, /^\/standings\.php/, /^\/admin-dashboard/, /^\/admin\//, /^\/cart/, /^\/search/];
 const NO_CACHE_EXT = /\.(m3u8|m3u|ts|mp4|mpd|key)(\?|$)/i;
 
 self.addEventListener('install', (event) => {

@@ -119,6 +119,84 @@ for (const width of WIDTHS) {
   });
 }
 
+/* أيقونة البطولة داخل كرت التذكرة في رأس صفحة الهبوط — الشعار من الخريطة
+   الموثّقة نفسها (LEAGUE_ICONS) التي يغرف منها شريط /matches/، والكرت تذكرة
+   هولوغرافية مقتبسة من uiverse.io/dexter-st/slippery-bird-76 (MIT) مكیّفة
+   لكرة القدم. الفحص بنيوي لا يعتمد نجاح تحميل الصورة: بيئة الاختبار تحجب
+   الشبكة الخارجية، فالمطلوب عناصر التذكرة + الرابط الصحيح + بديل الكأس تحت
+   الشعار + alt="" الزخرفية + تحميل فوري فوق الطية بأبعاد صريحة. */
+const HERO_ICONS: ReadonlyArray<readonly [url: string, icon: string]> = [
+  ['/matches/دوري-أبطال-أوروبا/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/2.png'],
+  ['/matches/الدوري-الإنجليزي/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/23.png'],
+  ['/matches/الدوري-الإسباني/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/15.png'],
+  ['/matches/الدوري-الألماني/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/10.png'],
+  ['/matches/الدوري-الإيطالي/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/12.png'],
+  ['/matches/الدوري-الفرنسي/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/9.png'],
+  /* السعودي: الشعار يُحلّ بمعرّف المباريات sau.1 — لا معرّف الترتيب ksa.1 */
+  ['/matches/الدوري-السعودي/', 'https://a.espncdn.com/i/leaguelogos/soccer/500/2488.png'],
+];
+
+test('league landing heroes carry the ticket card with the league icon beside the h1', async ({ page }) => {
+  await mockSource(page, {});
+  for (const [url, icon] of HERO_ICONS) {
+    await page.goto(url);
+    /* التذكرة عنصر واحد زخرفي بالكامل — اسم البطولة مكتوب في h1 بجانبها */
+    const ticket = page.locator('.matches-hero-title .league-ticket');
+    await expect(ticket, url).toHaveCount(1);
+    await expect(ticket, url).toHaveAttribute('aria-hidden', 'true');
+    /* عناصر شكل التذكرة الأصلي: اللوح الهولوغرافي، الباركود، ومقصّ القصّ */
+    await expect(ticket.locator('.league-ticket-bg.league-ticket-holographic'), url).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-barcode'), url).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-symbol'), url).toHaveCount(1);
+    /* أبعاد ثابتة صريحة — لا قفز تخطيط فوق الطية */
+    await expect(ticket, url).toHaveCSS('width', '180px');
+    await expect(ticket, url).toHaveCSS('height', '320px');
+    /* التذكرة والعنوان في سطر واحد — العنوان لم يتكرر ولم يخرج من الرأس */
+    await expect(page.locator('.matches-hero-title h1#landing-title'), url).toHaveCount(1);
+
+    /* الأيقونة داخل رأس التذكرة: مكوّن الشارة نفسه بمقاس أكبر (72px) يصل
+       عبر --league-badge-size إلى لوح الشريط — نفس الخلفية بنمط واحد */
+    const badge = ticket.locator('.league-ticket-header .league-carousel-badge');
+    await expect(badge, url).toHaveCount(1);
+    await expect(badge, url).toHaveCSS('width', '72px');
+    await expect(badge, url).toHaveCSS('height', '72px');
+    await expect(badge, url).toHaveCSS('background-color', 'rgb(246, 244, 236)');
+
+    const image = badge.locator('img.league-carousel-logo');
+    await expect(image, url).toHaveCount(1);
+    await expect(image, url).toHaveAttribute('src', icon);
+    await expect(image, url).toHaveAttribute('alt', '');
+    /* فوق الطية: eager لا lazy، وأبعاد صريحة تمنع قفز التخطيط */
+    await expect(image, url).toHaveAttribute('loading', 'eager');
+    await expect(image, url).toHaveAttribute('decoding', 'async');
+    await expect(image, url).toHaveAttribute('width', '64');
+    await expect(image, url).toHaveAttribute('height', '64');
+    /* البديل المحايد مرسوم تحت الشعار — يظهر وحده إن تعذّر التحميل */
+    await expect(badge.locator('.league-carousel-fallback'), url).toHaveCount(1);
+  }
+});
+
+test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
+  await mockSource(page, {});
+  await page.goto('/matches/الدوري-المصري/');
+  const ticket = page.locator('.matches-hero-title .league-ticket');
+  await expect(ticket).toHaveCount(1);
+  const badge = ticket.locator('.league-ticket-header .league-carousel-badge');
+  await expect(badge).toHaveCount(1);
+  await expect(badge.locator('.league-carousel-fallback')).toBeVisible();
+  await expect(badge.locator('img')).toHaveCount(0);
+});
+
+test('team landing pages carry no league ticket or badge at all', async ({ page }) => {
+  await mockSource(page, {});
+  for (const url of ['/world-cup-2026/مصر/', '/world-cup-2026/المغرب/']) {
+    await page.goto(url);
+    await expect(page.locator('.league-ticket'), url).toHaveCount(0);
+    await expect(page.locator('.league-carousel-badge'), url).toHaveCount(0);
+    await expect(page.locator('.matches-hero-title'), url).toHaveCount(0);
+  }
+});
+
 test('FAQ items are keyboard operable', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-السعودي/');
@@ -180,7 +258,10 @@ test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and c
   await page.route('**/*', route => {
     const url = new URL(route.request().url());
     if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
-      if (!/googletagmanager\.com|googlesyndication\.com/.test(url.hostname)) {
+      /* شعار البطولة في الرأس (LEAGUE_ICONS) أصل صور موثّق ومقصود من مخزن
+         ESPN نفسه الذي ترد منه أيقونات الشريط — ليس طلب بيانات خارجياً مفاجئاً */
+      const isLeagueIcon = /^https:\/\/a\.espncdn\.com\/i\/leaguelogos\//.test(url.href);
+      if (!/googletagmanager\.com|googlesyndication\.com/.test(url.hostname) && !isLeagueIcon) {
         unexpectedExternalRequests.push(url.href);
       }
       return route.abort();

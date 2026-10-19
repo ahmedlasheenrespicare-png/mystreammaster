@@ -3,6 +3,19 @@ on:
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
+    inputs:
+      league:
+        description: 'استرجاع بطولة واحدة فقط (فارغ = كل البطولات الاثنتي عشرة)'
+        required: false
+        default: ''
+      window_from:
+        description: 'بداية نافذة الاسترجاع YYYY-MM-DD (فارغ = النافذة المتحركة 45 يوماً)'
+        required: false
+        default: ''
+      window_to:
+        description: 'نهاية نافذة الاسترجاع YYYY-MM-DD'
+        required: false
+        default: ''
   push:
     branches: ['arena/**']
     paths:
@@ -10,6 +23,8 @@ on:
       - 'website/scripts/probe-saudi-fixtures.mjs'
       - 'website/scripts/probe-espn-summary.mjs'
       - 'website/scripts/probe-match-lineups.mjs'
+      - 'website/scripts/fetch-fixtures-archive.mjs'
+      - 'website/.fixtures-backfill-request.json'
 permissions:
   contents: read
 concurrency:
@@ -67,7 +82,10 @@ jobs:
           include-hidden-files: true
           retention-days: 7
   collect:
-    if: github.event_name != 'push'
+    # التشغيل الآلي المعتاد (schedule/dispatch) دائماً، وعلى الدفع
+    # فقط حين تحمل رسالة الالتزام علامة [fixtures-backfill] ويُرتَّك
+    # معها ملف الطلب — لا جمع ضمني على أي دفع آخر أبداً.
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[fixtures-backfill]')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     outputs:
@@ -80,6 +98,22 @@ jobs:
         with:
           node-version: 22
       - run: node --test website/scripts/test-fixtures-archive.mjs
+      - name: Determine collection mode (dispatch inputs or committed backfill request)
+        id: mode
+        run: |
+          set -euo pipefail
+          field() { node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(r[process.argv[2]]??""))' "$1" "$2"; }
+          if [ "${{ github.event_name }}" = "push" ]; then
+            req="website/.fixtures-backfill-request.json"
+            test -f "$req" || { echo "::error::backfill marker without a request file"; exit 1; }
+            echo "league=$(field "$req" league)" >> "$GITHUB_OUTPUT"
+            echo "from=$(field "$req" window_from)" >> "$GITHUB_OUTPUT"
+            echo "to=$(field "$req" window_to)" >> "$GITHUB_OUTPUT"
+          else
+            echo "league=${{ github.event.inputs.league }}" >> "$GITHUB_OUTPUT"
+            echo "from=${{ github.event.inputs.window_from }}" >> "$GITHUB_OUTPUT"
+            echo "to=${{ github.event.inputs.window_to }}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Collect sequentially (failures preserve last success)
         id: fetch
         continue-on-error: true
@@ -88,6 +122,9 @@ jobs:
           HIGHLIGHTLY_PLAN_APPROVED: ${{ vars.HIGHLIGHTLY_PLAN_APPROVED }}
           FIXTURES_STATISTICS: ${{ vars.FIXTURES_STATISTICS }}
           HIGHLIGHTLY_API_KEY: ${{ secrets.HIGHLIGHTLY_API_KEY }}
+          FIXTURES_BACKFILL_LEAGUE: ${{ steps.mode.outputs.league }}
+          FIXTURES_WINDOW_FROM: ${{ steps.mode.outputs.from }}
+          FIXTURES_WINDOW_TO: ${{ steps.mode.outputs.to }}
         run: node website/scripts/fetch-fixtures-archive.mjs
       - name: Report source failures
         if: always()
@@ -147,6 +184,9 @@ jobs:
           last_fetched_at="$(node -e 'const r = JSON.parse(require("fs").readFileSync("/tmp/publish-result.json", "utf8")); process.stdout.write(r.lastFetchedAt || "");')"
           echo "last_fetched_at=${last_fetched_at}" >> "$GITHUB_OUTPUT"
           git add -- website/src/content/fixtures-archive website/src/content/league-averages.json
+          # طلب الاسترجاع الموسمي يُستهلك مع النشر — لا يبقى مطلوباً مفتوحاً
+          rm -f website/.fixtures-backfill-request.json
+          git add -A -- website/.fixtures-backfill-request.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo 'No semantic changes; no commit or deploy.' >> "$GITHUB_STEP_SUMMARY"

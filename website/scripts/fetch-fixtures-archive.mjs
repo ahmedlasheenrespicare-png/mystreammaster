@@ -57,10 +57,25 @@ export function summaryStatistics(raw, match) {
   };
   return { home: read(match.home.id), away: read(match.away.id) };
 }
-export async function collect({ now = new Date(), outDir = path.join(website, '.fixtures-out'), archiveDir = path.join(website, 'src/content/fixtures-archive'), request = fetch, delayMs = 1100, approved = process.env.FIXTURES_SOURCES_APPROVED === 'true', highlightlyApproved = process.env.HIGHLIGHTLY_PLAN_APPROVED === 'true', statistics = process.env.FIXTURES_STATISTICS === 'true', maxHighlightlyRequests = 60 } = {}) {
+/* نافذة استرجاع موسمية (backfill) — أيام مفردة من تاريخ إلى آخر UTC.
+   النافذة المتحركة الافتراضية (45 يوماً) هي الحالة المعتادة؛ الاسترجاع
+   لملء فجوة تاريخية يستلزم نافذة صريحة، وسقف 370 يوماً (موسم + هامش)
+   يمنع طلباً غير مقصود لكامل الأرشيف. */
+export function dayRange(from, to) {
+  const start = Date.parse(`${from}T00:00:00Z`), end = Date.parse(`${to}T00:00:00Z`);
+  assert(Number.isFinite(start) && Number.isFinite(end) && start <= end, 'INVALID_WINDOW');
+  const days = [];
+  for (let t = start; t <= end; t += 86400000) days.push(new Date(t).toISOString().slice(0, 10));
+  assert(days.length >= 1 && days.length <= 370, 'WINDOW_OUT_OF_BOUNDS');
+  return days;
+}
+
+export async function collect({ now = new Date(), outDir = path.join(website, '.fixtures-out'), archiveDir = path.join(website, 'src/content/fixtures-archive'), request = fetch, delayMs = 1100, approved = process.env.FIXTURES_SOURCES_APPROVED === 'true', highlightlyApproved = process.env.HIGHLIGHTLY_PLAN_APPROVED === 'true', statistics = process.env.FIXTURES_STATISTICS === 'true', maxHighlightlyRequests = 60, leagues = ARCHIVE_LEAGUES, windowFrom = null, windowTo = null } = {}) {
+  for (const league of leagues) assert(ARCHIVE_LEAGUES.includes(league), 'INVALID_LEAGUE');
   const report = { fetchedAt: now.toISOString(), leagues: [], statisticsFailures: 0, requests: 0, highlightlyRequests: 0 };
-  const days = Array.from({ length: 45 }, (_, i) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + i - 30)).toISOString().slice(0,10));
-  report.window = { from: days[0], to: days.at(-1) };
+  const days = windowFrom && windowTo ? dayRange(windowFrom, windowTo)
+    : Array.from({ length: 45 }, (_, i) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + i - 30)).toISOString().slice(0,10));
+  report.window = { from: days[0], to: days.at(-1), mode: windowFrom && windowTo ? 'backfill' : 'rolling' };
   const get = async (url, headers = {}) => {
     await new Promise(resolve => setTimeout(resolve, delayMs)); report.requests++;
     let response;
@@ -72,6 +87,9 @@ export async function collect({ now = new Date(), outDir = path.join(website, '.
   // Fresh staging only. Never reuse yesterday's candidate on a failed run.
   await fs.rm(path.join(outDir, 'archive'), { recursive: true, force: true });
   for (const league of ARCHIVE_LEAGUES) {
+    // خارج نطاق الاسترجاع: يُبلَّغ محفوظاً كأي فشل حتى يبقى
+    // تقرير المجمّع مكتملاً (12 بطولة) والناشر يقبله كما هو.
+    if (!leagues.includes(league)) { report.leagues.push({ league, ok: false, code: 'OUT_OF_SCOPE_PRESERVED' }); continue; }
     try {
       assert(approved, 'SOURCE_TERMS_REVIEW_REQUIRED');
       const all = []; const ids = new Set();
@@ -144,7 +162,15 @@ export async function collect({ now = new Date(), outDir = path.join(website, '.
   return report;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const report = await collect(); console.log(JSON.stringify(report, null, 2));
+  // استرجاع موسمي اختياري عبر بيئة التشغيل (يُمرَّر من workflow_dispatch):
+  // FIXTURES_BACKFILL_LEAGUE بطولة واحدة، FIXTURES_WINDOW_FROM/TO نطاق الأيام.
+  // فارغة = السلوك المعتاد (كل البطولات، النافذة المتحركة).
+  const scope = (process.env.FIXTURES_BACKFILL_LEAGUE || '').trim();
+  const report = await collect({
+    leagues: scope ? [scope] : undefined,
+    windowFrom: (process.env.FIXTURES_WINDOW_FROM || '').trim() || undefined,
+    windowTo: (process.env.FIXTURES_WINDOW_TO || '').trim() || undefined,
+  }); console.log(JSON.stringify(report, null, 2));
   const okLeagues = report.leagues.filter(l => l.ok);
   const failedLeagues = report.leagues.filter(l => !l.ok);
   for (const failed of failedLeagues) {

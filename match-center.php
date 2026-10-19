@@ -702,6 +702,47 @@ const MC_MATCHES = [
     'la-liga-real-sociedad-vs-villarreal' => ['event' => '401882547', 'league' => 'esp.1', 'day' => '20270530'],
 ];
 
+/* Serie A is bound from the committed local archive so newly collected fixtures
+   become routable without copying a second, drifting event list into PHP. */
+function mc_archive_team_slug(string $name): string
+{
+    if (function_exists('iconv')) {
+        $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        if (is_string($ascii)) $name = $ascii;
+    }
+    $name = strtolower(trim(str_replace('&', ' and ', $name)));
+    $slug = preg_replace('/[^a-z0-9]+/', '-', $name) ?? '';
+    return trim($slug, '-') ?: 'team';
+}
+
+$MC_ITALIAN_MATCHES = [];
+$mcArchivePath = __DIR__ . '/website/src/content/fixtures-archive/ita.1/2026.json';
+$mcArchiveRaw = @file_get_contents($mcArchivePath);
+$mcArchive = is_string($mcArchiveRaw) ? json_decode($mcArchiveRaw, true) : null;
+if (is_array($mcArchive) && ($mcArchive['league'] ?? null) === 'ita.1'
+    && ($mcArchive['season'] ?? null) === '2026' && is_array($mcArchive['matches'] ?? null)) {
+    $mcSlugCounts = [];
+    foreach ($mcArchive['matches'] as $archivedMatch) {
+        $event = $archivedMatch['id'] ?? null;
+        $homeName = $archivedMatch['home']['name'] ?? null;
+        $awayName = $archivedMatch['away']['name'] ?? null;
+        $date = $archivedMatch['date'] ?? null;
+        if (!is_string($event) || !preg_match('/^\\d+$/', $event)
+            || !is_string($homeName) || !is_string($awayName)
+            || !is_string($date) || !preg_match('/^\\d{4}-\\d{2}-\\d{2}T/', $date)) {
+            continue;
+        }
+        $baseSlug = mc_archive_team_slug($homeName) . '-vs-' . mc_archive_team_slug($awayName);
+        $mcSlugCounts[$baseSlug] = ($mcSlugCounts[$baseSlug] ?? 0) + 1;
+        $slug = $mcSlugCounts[$baseSlug] === 1 ? $baseSlug : $baseSlug . '-' . $mcSlugCounts[$baseSlug];
+        $MC_ITALIAN_MATCHES[$slug] = [
+            'event' => $event,
+            'league' => 'ita.1',
+            'day' => str_replace('-', '', substr($date, 0, 10)),
+        ];
+    }
+}
+
 /* أسماء حالات ESPN التي يمكن أن تحمل أحداثاً — وما عداها لا يُطلب له `summary`
    أصلاً، لأن الفحص قبل البداية (تقرير §12.5) أثبت أن `lineups` و`h2h` فارغة
    وأن `boxscore` لا يحمل أرقام مباراة. قائمة واحدة بدل تعبير نمطي مضمّن، فلا
@@ -1387,11 +1428,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
 $slug = mc_str($_GET['match'] ?? null);
 /* البند 11: القائمة مغلقة. سلاج غير معروف يُرفض — فلا يُجلب حدث لم نؤكده،
    ولا يُستخدم هذا الوسيط وكيلًا لمصدر اعتباطي. */
-if ($slug === null || !isset(MC_MATCHES[$slug])) {
+$binding = $slug === null ? null : (MC_MATCHES[$slug] ?? $MC_ITALIAN_MATCHES[$slug] ?? null);
+if (!is_array($binding)) {
     mc_fail(404, 'UNKNOWN_MATCH', 'المباراة المطلوبة ليست من مباريات مركز المباراة.');
 }
-
-$binding = MC_MATCHES[$slug];
 mc_rate_limit();
 
 $responseKey = 'response_' . $slug;

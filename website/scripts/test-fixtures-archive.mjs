@@ -471,5 +471,9 @@ test('committed league-averages.json is re-derivable from the archive and the wo
   assert.equal(content.leagues['egy.1'], undefined);
   const archiveWf = await fs.readFile(path.join(rootDir, '.github/workflows/fixtures-archive.yml'), 'utf8');
   assert.match(archiveWf, /node website\/scripts\/build-league-averages\.mjs/);
+  const averageBuild = archiveWf.indexOf('node website/scripts/build-league-averages.mjs');
+  const publishConsistencyTest = archiveWf.indexOf('node --test website/scripts/test-fixtures-archive.mjs', averageBuild);
+  assert.ok(averageBuild >= 0 && publishConsistencyTest > averageBuild,
+    'derived averages are regenerated before archive consistency tests run');
   assert.match(archiveWf, /git add -- website\/src\/content\/fixtures-archive website\/src\/content\/league-averages\.json/);
 });

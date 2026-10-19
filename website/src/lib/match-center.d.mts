@@ -498,6 +498,8 @@ export interface MatchDefinition {
   sourcesNote?: string;
   /** معرّف التحليل إن وُجد (slug في match-analysis.json) — يُظهر تبويب التحليل. */
   analysisSlug?: string | null;
+  /** لقطة ثابتة مشتقة من أرشيف محلي معتمد؛ عند وجودها لا تُطلب قراءة شبكة. */
+  archivedSnapshot?: MatchSnapshot;
 }
 
 export const MATCH_CODES: MatchCode[];

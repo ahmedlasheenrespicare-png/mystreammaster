@@ -155,9 +155,16 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
   /* `0` قبل التركيب: الرسم على الخادم لا يقرأ ساعة، فلا يختلف HTML المُولَّد
      عن أول رسم في المتصفح (البند 13: لقطة مؤرخة لا تدّعي أنها قراءة حية). */
   const [now, setNow] = useState(0);
-  const [store, setStore] = useState<ReadStore>({});
+  const initialArchiveRead: MatchRead | null = match.archivedSnapshot ? {
+    data: match.archivedSnapshot,
+    failure: null,
+    cache: 'HIT',
+    readAt: match.archivedSnapshot.readAt ?? undefined,
+  } : null;
+  const initialStore: ReadStore = initialArchiveRead ? { [match.id]: initialArchiveRead } : {};
+  const [store, setStore] = useState<ReadStore>(initialStore);
   const [loading, setLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(Boolean(initialArchiveRead));
   const [online, setOnline] = useState(true);
   const [hidden, setHidden] = useState(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -171,7 +178,7 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
     () => (import.meta.env.DEV === true ? devScenario(allowMock) : undefined),
     [allowMock],
   );
-  const storeRef = useRef<ReadStore>({});
+  const storeRef = useRef<ReadStore>(initialStore);
   const knownKeysRef = useRef<string[]>([]);
   const seededRef = useRef(false);
   const refreshRef = useRef<() => void>(() => {});
@@ -281,6 +288,20 @@ export function useMatchCenter(match: MatchDefinition, options: UseMatchCenterOp
   /* ── دورة الطلب الواحدة ─────────────────────────────────────────────── */
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (match.archivedSnapshot) {
+      const archivedRead: MatchRead = {
+        data: match.archivedSnapshot,
+        failure: null,
+        cache: 'HIT',
+        readAt: match.archivedSnapshot.readAt ?? undefined,
+      };
+      const next = { ...storeRef.current, [match.id]: archivedRead };
+      storeRef.current = next;
+      setStore(next);
+      setHasLoaded(true);
+      setLoading(false);
+      return;
+    }
     let disposed = false;
     let controller: AbortController | null = null;
     let timer: number | undefined;

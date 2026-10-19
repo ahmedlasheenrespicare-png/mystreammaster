@@ -17,7 +17,7 @@ import fs from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MATCH_CENTER_ALL_MATCHES, MATCH_CENTER_MATCHES } from '../src/content/match-center.mjs';
+import { MATCH_CENTER_ALL_MATCHES, MATCH_CENTER_MATCHES, MATCH_CENTER_ITALIAN_MATCHES } from '../src/content/match-center.mjs';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -30,6 +30,15 @@ function phpBindings() {
   const out = new Map();
   for (const match of source.matchAll(pattern)) {
     out.set(match[1], { event: match[2], league: match[3], day: match[4] });
+  }
+  // Italian mappings are intentionally generated from the local archived JSON
+  // so an archive publish cannot leave a duplicated PHP allowlist stale.
+  for (const fixture of MATCH_CENTER_ITALIAN_MATCHES) {
+    out.set(fixture.slug, {
+      event: String(fixture.externalIds.espn),
+      league: fixture.leagueId,
+      day: fixture.kickoffUtc.slice(0, 10).replaceAll('-', ''),
+    });
   }
   return out;
 }
@@ -85,7 +94,8 @@ test('the visitor supplies a slug and nothing else: no upstream id, url, league 
   assert.ok(!/\$_REQUEST|\$_POST|\$_COOKIE/.test(source), 'only GET is read');
 
   // The allowlist is closed and an unknown slug is refused before any fetch.
-  assert.match(source, /!isset\(MC_MATCHES\[\$slug\]\)/);
+  assert.match(source, /MC_MATCHES\[\$slug\]\s*\?\?\s*\$MC_ITALIAN_MATCHES\[\$slug\]/);
+  assert.match(source, /fixtures-archive\/ita\.1\/2026\.json/, 'Serie A allowlist is read from the committed archive');
   assert.match(source, /mc_fail\(404, 'UNKNOWN_MATCH'/);
   // The upstream URL is built from constants, never from input.
   assert.match(source, /MC_UPSTREAM_BASE\s*=\s*'https:\/\/site\.api\.espn\.com/);

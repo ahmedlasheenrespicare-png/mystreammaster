@@ -86,6 +86,8 @@ export interface MatchCenterDocumentation {
 export type MatchCenterFixture = MatchDefinition;
 
 export const MATCH_CENTER_COMPETITION: MatchCenterCompetition;
+export const MATCH_CENTER_ITALIAN_COMPETITION: MatchCenterCompetition;
+export const MATCH_CENTER_ITALIAN_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_ENGLISH_MATCHES: MatchCenterFixture[];
 export const MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES: MatchCenterFixture[];

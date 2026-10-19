@@ -126,6 +126,12 @@ jobs:
           FIXTURES_WINDOW_FROM: ${{ steps.mode.outputs.from }}
           FIXTURES_WINDOW_TO: ${{ steps.mode.outputs.to }}
         run: node website/scripts/fetch-fixtures-archive.mjs
+      - name: Emit compact collection metrics
+        if: always()
+        run: |
+          if [ -f website/.fixtures-out/report.json ]; then
+            node -e 'const r=JSON.parse(require("fs").readFileSync("website/.fixtures-out/report.json","utf8"));const ita=r.leagues.find(x=>x.league==="ita.1");console.log("::notice title=Fixtures archive report::"+JSON.stringify({window:r.window,ita1:ita?{ok:ita.ok,code:ita.code??null,matchesInWindow:ita.matchesInWindow??null}:null,statisticsFailures:r.statisticsFailures,requests:r.requests}));'
+          fi
       - name: Report source failures
         if: always()
         run: |
@@ -176,11 +182,17 @@ jobs:
         id: commit
         run: |
           set -euo pipefail
-          node website/scripts/publish-fixtures-archive.mjs > /tmp/publish-result.json
+          trap 'status=$?; echo "::error title=Fixtures publication failed::line ${LINENO}, command ${BASH_COMMAND} (exit ${status})"; exit "$status"' ERR
+          if ! node website/scripts/publish-fixtures-archive.mjs > /tmp/publish-result.json 2>/tmp/publish-error.log; then
+            cat /tmp/publish-error.log
+            error="$(tail -c 1200 /tmp/publish-error.log | tr '\n' ' ')"
+            echo "::error title=Archive validation failed::${error}"
+            exit 1
+          fi
           cat /tmp/publish-result.json
-          node --test website/scripts/test-fixtures-archive.mjs
-          # متوسطات الدوري مشتقة من الأرشيف نفسه؛ تُعاد مع كل نشر حتى لا يتيه الأساس.
+          # أعد بناء المشتقات قبل اختبارات التحقق من تزامنها مع الأرشيف الجديد.
           node website/scripts/build-league-averages.mjs
+          node --test website/scripts/test-fixtures-archive.mjs
           last_fetched_at="$(node -e 'const r = JSON.parse(require("fs").readFileSync("/tmp/publish-result.json", "utf8")); process.stdout.write(r.lastFetchedAt || "");')"
           echo "last_fetched_at=${last_fetched_at}" >> "$GITHUB_OUTPUT"
           git add -- website/src/content/fixtures-archive website/src/content/league-averages.json

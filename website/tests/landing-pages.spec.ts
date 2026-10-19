@@ -6,6 +6,8 @@ import { test, expect, type Page } from '@playwright/test';
    البيانات أدناه بيانات اختبار فقط (fixtures) — لا تُنشر ولا تمثّل مباريات حقيقية.
    ========================================================================== */
 
+test.use({ serviceWorkers: 'block' });
+
 const NOW = new Date('2026-10-13T12:00:00Z');
 
 function event(id: string, date: string, homeName: string, awayName: string, state = 'pre', score = '0') {
@@ -64,7 +66,7 @@ test('league landing page: static guide, live table, official broadcasters and F
   await expect(page.locator('#broadcasters-title')).toContainText('القنوات الناقلة رسمياً');
   await expect(page.getByText('beIN SPORTS', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('حقوق البث تختلف بحسب الدولة', { exact: false }).first()).toBeVisible();
-  await expect(page.getByText('الموقع لا يستضيف المحتوى', { exact: false }).first()).toBeVisible();
+  await expect(page.locator('.landing-service').getByText('الموقع لا يستضيف المحتوى', { exact: false })).toBeVisible();
 
   /* الأسئلة ظاهرة فعلاً (مطابقة لـ FAQPage) */
   await expect(page.locator('.landing-faq details')).toHaveCount(4);
@@ -147,10 +149,14 @@ test('league landing heroes carry the ticket card with the league icon beside th
     /* عناصر شكل التذكرة: اللوح الهولوغرافي ومقصّ القصّ (بلا باركود ولا رمز تقني) */
     await expect(ticket.locator('.league-ticket-bg.league-ticket-holographic'), url).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-symbol'), url).toHaveCount(1);
-    /* أبعاد ثابتة صريحة (150×265 — مصغَّرة عن مقاس التصميم الأصلي) — لا قفز تخطيط فوق الطية */
-    await expect(ticket, url).toHaveCSS('width', '150px');
+    /* الكرت يملأ عرض حاوية الرأس كاملاً (تفاوت ≤1px) وبارتفاع ثابت صريح (265px) */
+    const heroTitle = page.locator('.matches-hero-title');
+    const [ticketBox, titleBox] = await Promise.all([ticket.boundingBox(), heroTitle.boundingBox()]);
+    expect(ticketBox, url).not.toBeNull();
+    expect(titleBox, url).not.toBeNull();
+    expect(Math.abs(ticketBox!.width - titleBox!.width), url).toBeLessThanOrEqual(1);
     await expect(ticket, url).toHaveCSS('height', '265px');
-    /* التذكرة والعنوان في سطر واحد — العنوان لم يتكرر ولم يخرج من الرأس */
+    /* التذكرة والعنوان في حاوية الرأس — العنوان لم يتكرر ولم يخرج من الرأس */
     await expect(page.locator('.matches-hero-title h1#landing-title'), url).toHaveCount(1);
 
     /* الأيقونة داخل رأس التذكرة: مكوّن الشارة نفسه بمقاس أكبر (60px) يصل
@@ -193,6 +199,36 @@ test('team landing pages carry no league ticket or badge at all', async ({ page 
     await expect(page.locator('.league-ticket'), url).toHaveCount(0);
     await expect(page.locator('.league-carousel-badge'), url).toHaveCount(0);
     await expect(page.locator('.matches-hero-title'), url).toHaveCount(0);
+  }
+});
+
+test('league hero hides h1 visually and hides intro while /matches/ and team landings keep both visible', async ({ page }) => {
+  await mockSource(page, {});
+
+  await page.goto('/matches/الدوري-الإنجليزي/');
+  const leagueH1 = page.locator('h1#landing-title');
+  await expect(leagueH1).toHaveCount(1);
+  await expect(leagueH1).toHaveClass(/\bvisually-hidden\b/);
+  await expect(leagueH1).toHaveCSS('width', '1px');
+  await expect(leagueH1).toHaveCSS('height', '1px');
+  await expect(leagueH1).toHaveCSS('clip-path', 'inset(50%)');
+  const leagueH1Box = await leagueH1.boundingBox();
+  expect(leagueH1Box?.width).toBeLessThanOrEqual(1);
+  expect(leagueH1Box?.height).toBeLessThanOrEqual(1);
+  await expect(page.getByRole('heading', { level: 1, name: 'مباريات الدوري الإنجليزي' })).toHaveCount(1);
+  await expect(page.locator('section.matches-page')).toHaveAccessibleName('مباريات الدوري الإنجليزي');
+  await expect(page.locator('.matches-intro')).toHaveCount(1);
+  await expect(page.locator('.matches-intro')).toBeHidden();
+
+  for (const url of ['/matches/', '/world-cup-2026/المغرب/']) {
+    await page.goto(url);
+    const heroH1 = page.locator('.matches-hero h1');
+    await expect(heroH1, url).toHaveCount(1);
+    await expect(heroH1, url).toBeVisible();
+    await expect(heroH1, url).not.toHaveClass(/\bvisually-hidden\b/);
+    const heroH1Box = await heroH1.boundingBox();
+    expect(heroH1Box!.height, url).toBeGreaterThan(20);
+    await expect(page.locator('.matches-intro'), url).toBeVisible();
   }
 });
 

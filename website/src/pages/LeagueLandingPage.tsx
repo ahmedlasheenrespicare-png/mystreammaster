@@ -35,9 +35,9 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
                 `standings.leagueId` — السعودي شعاره تحت sau.1 وترتيبه ksa.1.
                 والأيقونة فوق الطية فتُحمَّل eagerly بلا تأخير ولا قفز تخطيط. */}
             {landing.leagueId ? <LeagueTicketCard leagueId={landing.leagueId} name={landing.shortName} /> : null}
-            <h1 id="landing-title">{landing.h1}</h1>
+            <h1 id="landing-title" className="visually-hidden">{landing.h1}</h1>
           </div>
-          <div className="matches-intro">
+          <div className="matches-intro matches-intro--hidden">
             {landing.intro.map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
             ))}

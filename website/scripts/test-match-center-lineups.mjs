@@ -179,5 +179,6 @@ test('the possession bar needs both numbers; widths are shares of their sum, the
   const rounded = possessionSplit([{ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 60, away: 39 }]);
   assert.deepEqual([rounded.home, rounded.away], [60, 39]);
   assert.ok(Math.abs(rounded.homeShare - 60 / 99) < 1e-9);
-  assert.equal(possessionSplit([{ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 0, away: 0 }]), null);
+  assert.deepEqual(possessionSplit([{ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 0, away: 0 }]),
+    { home: 0, away: 0, homeShare: 0.5, awayShare: 0.5 });
 });

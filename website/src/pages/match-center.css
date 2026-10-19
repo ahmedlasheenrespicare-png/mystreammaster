@@ -191,15 +191,6 @@
 .mc-pitch-event-detail { min-height: 1.5em; margin: 6px 0 0; color: #dfe9dc; font-size: .68rem; font-weight: 700; line-height: 1.55; }
 .mc-pitch-events .mc-pitch-marker:focus-visible { outline: 2px solid var(--mc-lime); outline-offset: 2px; }
 
-/* Service state / refresh */
-.mc-meta { display: flex; justify-content: flex-end; min-width: 0; margin: 12px 2px 0; color: var(--mc-muted); font-size: .76rem; }
-.mc-meta-service { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; min-width: 0; }
-.mc-read { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 7px; min-width: 0; }
-.mc-read[data-level="fresh"] { color: var(--mc-lime); }
-.mc-read[data-level="aging"] { color: #ffd479; }
-.mc-read[data-level="stale"], .mc-read[data-level="failed"], .mc-read[data-level="invalid"] { color: #ff9aa2; }
-.mc-refresh { min-height: 42px; padding: 8px 15px; border: 1px solid rgba(216, 255, 62, .4); border-radius: 999px; background: rgba(216, 255, 62, .1); color: var(--mc-lime); font-size: .78rem; font-weight: 800; }
-.mc-refresh:hover:not(:disabled) { background: rgba(216, 255, 62, .18); }
 .mc-warning, .mc-simulated { margin: 12px 0 0; padding: 11px 14px; border-radius: 12px; font-size: .78rem; }
 .mc-warning { border: 1px solid rgba(239, 51, 64, .35); background: rgba(239, 51, 64, .09); color: #ffd7da; }
 .mc-simulated { border: 1px dashed rgba(216, 255, 62, .45); background: rgba(216, 255, 62, .07); color: #eaf7b6; }
@@ -282,29 +273,41 @@
 .mc-pitch-events-count { display: inline-block; min-width: 1.7em; margin-inline-start: 6px; padding: 1px 6px; border-radius: 999px; background: rgba(216, 255, 62, .16); color: #0b0b0f; font-family: var(--font-latin, ui-sans-serif); font-size: .62rem; font-weight: 900; }
 .mc-pitch-event-pinned { color: var(--mc-lime); font-weight: 900; }
 
-/* Grouped comparison numbers: possession & passing, shots, defence & discipline.
-   Both raw source values are always shown; the bars are a proportion of the
-   larger value in the row, never a verdict of "better". */
+/* Grouped source rows: one possession-style card per received number pair.
+   The very same card also renders group indices on the pitch and in the tabs. */
 .mc-stat-groups { display: grid; gap: 14px; margin-top: 4px; }
 .mc-stat-group { min-width: 0; padding: 12px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
 .mc-stat-group-title { margin: 0 0 9px; color: var(--mc-lime); font-size: .84rem; font-weight: 900; }
 .mc-stat-compares { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.mc-stat-compare { display: grid; gap: 5px; min-width: 0; padding: 10px 11px; border: 1px solid rgba(255, 255, 255, .07); border-radius: 12px; background: rgba(8, 11, 18, .38); }
-.mc-stat-compare-label { margin: 0; color: var(--mc-muted); font-size: .74rem; font-weight: 800; }
-.mc-stat-compare-values { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0; font-size: .76rem; }
-.mc-stat-side { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 5px; min-width: 0; }
-.mc-stat-side-name { color: var(--mc-muted); font-weight: 700; }
-.mc-stat-side[data-side="home"] .mc-stat-side-value { color: #cfc4ff; }
-.mc-stat-side[data-side="away"] .mc-stat-side-value { color: var(--mc-lime); }
-.mc-stat-side-value { font-weight: 900; white-space: nowrap; }
-.mc-stat-side-none { color: #ff9aa2; font-size: .68rem; font-weight: 700; }
-.mc-stat-compare-vs { color: var(--mc-muted); font-size: .68rem; }
-.mc-stat-compare-bars { display: grid; gap: 3px; }
-.mc-stat-bar { display: block; block-size: 6px; min-inline-size: 2px; border-radius: 999px; }
-.mc-stat-bar--home { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .55)); }
-.mc-stat-bar--away { background: linear-gradient(90deg, rgba(216, 255, 62, .92), rgba(216, 255, 62, .5)); }
-.mc-stat-compare-difference { margin: 0; color: var(--mc-muted); font-size: .68rem; }
-.mc-stat-compare[data-difference="equal"] .mc-stat-compare-difference { color: #dfe6f2; }
+
+.mc-stat-card { min-width: 0; padding: 14px; border: 1px solid rgba(216, 255, 62, .22); border-radius: 14px; background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015)); break-inside: avoid; }
+.mc-stat-card-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr) minmax(0, 1fr); gap: 8px; align-items: baseline; font-weight: 900; }
+.mc-stat-card-side { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; font-size: .8rem; line-height: 1.35; }
+.mc-stat-card-side[data-side="home"] { color: #cfc4ff; }
+.mc-stat-card-side[data-side="away"] { color: var(--mc-lime); justify-content: flex-end; }
+.mc-stat-card-name { min-width: 0; overflow-wrap: anywhere; }
+.mc-stat-card-number { font-size: 1.7rem; font-weight: 900; line-height: 1.1; white-space: nowrap; }
+.mc-stat-card-none { color: var(--mc-muted); font-size: .74rem; font-weight: 700; }
+.mc-stat-card-title { min-width: 0; color: var(--mc-muted); font-size: .8rem; font-weight: 800; text-align: center; overflow-wrap: anywhere; }
+.mc-stat-card-title a { color: inherit; text-decoration: underline; text-decoration-style: dashed; text-underline-offset: 4px; }
+.mc-stat-card-title a:hover { color: var(--mc-lime); }
+.mc-stat-card-bar { display: flex; inline-size: 100%; block-size: 14px; margin-block-start: 8px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .06); }
+.mc-stat-card-fill { display: block; flex: 0 0 auto; block-size: 100%; min-inline-size: 0; }
+.mc-stat-card-fill[data-side="home"] { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .6)); }
+.mc-stat-card-fill[data-side="away"] { background: linear-gradient(90deg, rgba(216, 255, 62, .55), rgba(216, 255, 62, .95)); }
+.mc-stat-card-difference { margin: 7px 0 0; color: var(--mc-muted); font-size: .68rem; font-weight: 700; }
+.mc-stat-card[data-difference="equal"] .mc-stat-card-difference { color: #dfe6f2; }
+@media (max-width: 720px) { .mc-stat-card-number { font-size: 1.45rem; } }
+@media (max-width: 520px) {
+  /* At phone widths the label stacks above the two numbers; the split still
+     spans the entire card, never a squeezed third column or horizontal scroller. */
+  .mc-stat-card { padding: 11px; }
+  .mc-stat-card-head { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 10px; }
+  .mc-stat-card-title { grid-column: 1 / -1; grid-row: 1; }
+  .mc-stat-card-side[data-side="home"] { grid-column: 1; grid-row: 2; }
+  .mc-stat-card-side[data-side="away"] { grid-column: 2; grid-row: 2; }
+}
+@media (max-width: 420px) { .mc-stat-card-number { font-size: 1.3rem; } }
 
 /* Analysis tab: facts, filters and the event list. */
 .mc-analysis-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
@@ -347,10 +350,6 @@
 .mc-inline-button { min-height: 38px; padding: 7px 12px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; background: rgba(255, 255, 255, .05); color: var(--mc-text); font-size: .74rem; font-weight: 800; }
 .mc-inline-button:hover { border-color: var(--mc-lime); color: var(--mc-lime); }
 .mc-inline-button[aria-pressed="true"] { background: var(--mc-lime); border-color: var(--mc-lime); color: #0b0b0f; }
-.mc-analysis-absent { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.mc-analysis-absent li { padding: 9px 11px; border: 1px dashed rgba(255, 255, 255, .18); border-radius: 11px; color: var(--mc-muted); font-size: .74rem; line-height: 1.75; }
-
-
 /* Mobile summary follows the same validated score/status as the pitch. */
 .mc-mini { position: fixed; z-index: 45; inset-block-end: 0; inset-inline: 0; display: none; align-items: center; gap: 9px; min-width: 0; padding: 9px 12px; border-block-start: 1px solid var(--mc-line); background: rgba(8, 11, 18, .96); backdrop-filter: blur(10px); }
 .mc-mini-teams { flex: 1 1 auto; min-width: 0; font-size: .74rem; font-weight: 800; }
@@ -389,7 +388,6 @@
   .mc-tab { padding: 8px 2px; font-size: .65rem; }
   .mc-panel { padding: 15px 11px; }
   .mc-comparison-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
-  .mc-stat-compare { grid-template-columns: minmax(0, 1fr); }
 }
 /* LTR is not used by the page today, but the band should not sit half a marker
    off its minute if it is ever reused without `dir="rtl"`. */
@@ -407,8 +405,6 @@
 
 /* Narrow screens: grouped comparisons stay single-column. */
 @media (max-width: 420px) {
-  .mc-stat-compare { padding: 9px 9px; }
-  .mc-stat-compare-values { gap: 3px 8px; font-size: .74rem; }
   .mc-analysis-event-button { grid-template-columns: 24px 40px minmax(0, 1fr); gap: 7px; padding: 8px 9px; }
   .mc-analysis-fact-values { font-size: .76rem; }
 }
@@ -424,7 +420,7 @@
   @media print {
     .mc-page { padding: 0; background: #fff; color: #101218; font-size: 11.5pt; line-height: 1.55; }
     .mc-page { --mc-panel: #fff; --mc-panel-2: #fff; --mc-line: #c9ced8; --mc-text: #101218; --mc-muted: #4a5262; --mc-lime: #1f6b2e; --mc-violet: #3b2a7a; --mc-red: #8a1220; }
-    .mc-crumbs, .mc-mini, .mc-docs, .mc-live-region, .mc-refresh, .mc-analysis-filters, .mc-filter-reset,
+    .mc-crumbs, .mc-mini, .mc-docs, .mc-live-region, .mc-analysis-filters, .mc-filter-reset,
     .mc-analysis-event-actions,
     .mc-pitch-event-detail, .skip-link, header, footer, .floating-actions { display: none !important; }
     .mc-tabs { display: none !important; }
@@ -443,11 +439,8 @@
     .mc-pitch-tick b { color: #4a5262; }
     .mc-pitch-icon, .mc-analysis-event-symbol { filter: grayscale(.2); }
     .mc-match-facts > div, .mc-preview-facts > div, .mc-form-summary > div, .mc-stat-group, .mc-stat-compare,
-    .mc-analysis-fact, .mc-history-item, .mc-event, .mc-analysis-detail-values > div,
-    .mc-analysis-absent li { background: #fff; border-color: #c9ced8; }
-    .mc-analysis-detail, .mc-stat-side[data-side="away"] .mc-stat-side-value { color: #101218; border-color: #1f6b2e; }
-    .mc-stat-bar--home { background: #3b2a7a; }
-    .mc-stat-bar--away { background: #1f6b2e; }
+    .mc-analysis-fact, .mc-history-item, .mc-event, .mc-analysis-detail-values > div { background: #fff; border-color: #c9ced8; }
+    .mc-analysis-detail { color: #101218; border-color: #1f6b2e; }
     .mc-analysis-event { break-inside: avoid; }
     .mc-warning, .mc-simulated { border-style: dashed; border-color: #8a1220; background: #fff; color: #8a1220; }
     .mc-lineup-event-detail { display: none !important; }
@@ -536,19 +529,6 @@
 .mc-h2h-cell[data-side="home"] b { color: #cfc4ff; }
 .mc-h2h-cell[data-side="away"] b { color: var(--mc-lime); }
 
-/* شريط الاستحواذ البارز فوق المجموعات. */
-.mc-possession { padding: 14px; border: 1px solid rgba(216, 255, 62, .22); border-radius: 14px; background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .015)); }
-.mc-possession-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 900; }
-.mc-possession-side { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; font-size: .8rem; }
-.mc-possession-side[data-side="home"] { color: #cfc4ff; }
-.mc-possession-side[data-side="away"] { color: var(--mc-lime); }
-.mc-possession-pct { font-size: 1.7rem; line-height: 1; }
-.mc-possession-title { color: var(--mc-muted); font-size: .8rem; font-weight: 800; }
-.mc-possession-bar { display: flex; height: 14px; margin-top: 8px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .06); }
-.mc-possession-fill { display: block; block-size: 100%; }
-.mc-possession-fill[data-side="home"] { background: linear-gradient(90deg, rgba(124, 92, 255, .95), rgba(124, 92, 255, .6)); }
-.mc-possession-fill[data-side="away"] { background: linear-gradient(90deg, rgba(216, 255, 62, .55), rgba(216, 255, 62, .95)); }
-
 /* رأس كل مجموعة: شعار المضيف · العنوان · شعار الضيف فوق عمودي القيم. */
 .mc-stat-group-head { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 8px; margin-bottom: 9px; }
 .mc-stat-group-head .mc-stat-group-title { margin: 0; text-align: center; }
@@ -581,24 +561,11 @@
 .mc-stat-tally-seg[data-lead="none"] { background: repeating-linear-gradient(45deg, rgba(255, 154, 162, .55) 0 4px, rgba(255, 154, 162, .12) 4px 8px); }
 .mc-stat-index-note { margin: 0; color: var(--mc-muted); font-size: .66rem; font-weight: 700; }
 
-/* ── لوحة «مؤشرات المجموعات»: الستة في نظرة واحدة، وكل سطر رابط لمجموعته ── */
-.mc-indexboard { display: grid; gap: 9px; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
-/* المؤشرات العامة على الملعب: صف كامل تحت بطاقتي الفريقين داخل الإطار، والخلفية
-   أغمق قليلاً لتُقرأ فوق تدرّج العشب. لا أرقام ⇒ المكوّن نفسه لا يُنشئ اللوحة. */
+/* ── لوحة المؤشرات: البطاقات نفسها، لا صف مضغوط باسم وشريط منفصلين. ── */
+.mc-indexboard { display: grid; gap: 9px; min-width: 0; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
+/* صف كامل تحت بطاقتي الفريقين، مشتق من لقطة القراءة نفسها. */
 .mc-indexboard.mc-pitch-index { grid-column: 1 / -1; z-index: 1; background: rgba(4, 12, 8, .78); border-color: rgba(218, 255, 221, .30); }
-.mc-indexboard-head { margin: 0; color: var(--mc-lime); font-size: .84rem; font-weight: 900; }
-.mc-indexboard-sub { margin: 0 0 3px; color: var(--mc-muted); font-size: .68rem; }
-.mc-indexboard-rows { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
-.mc-indexboard-row { display: grid; grid-template-columns: minmax(84px, 1.05fr) minmax(0, 2.4fr) auto; gap: 9px; align-items: center; }
-.mc-indexboard-row a { color: var(--mc-text); font-size: .74rem; font-weight: 800; text-decoration: none; border-bottom: 1px dashed rgba(255, 255, 255, .22); }
-.mc-indexboard-row a:hover { color: var(--mc-lime); border-color: var(--mc-lime); }
-.mc-indexboard-bar { display: flex; height: 9px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .07); }
-.mc-indexboard-fill { display: block; block-size: 100%; }
-.mc-indexboard-fill[data-side="home"] { background: rgba(124, 92, 255, .92); }
-.mc-indexboard-fill[data-side="away"] { background: rgba(216, 255, 62, .88); }
-.mc-indexboard-pcts { display: inline-flex; gap: 6px; align-items: baseline; font-family: var(--font-latin, ui-sans-serif); font-size: .76rem; font-weight: 900; white-space: nowrap; }
-.mc-indexboard-pcts [data-side="home"] { color: #cfc4ff; }
-.mc-indexboard-pcts [data-side="away"] { color: var(--mc-lime); }
+.mc-indexboard-rows { display: grid; gap: 9px; min-width: 0; margin: 0; padding: 0; list-style: none; }
 
 /* ── مقارنة بمتوسط الدوري: قيمة كل طرف مقابل أساس موثق معلن العينات ──
    العبارات كمية («أعلى/أقل من متوسط الدوري بـ…»)، لا حكم جودة. */
@@ -639,31 +606,28 @@
   .mc-h2h-agg { gap: 5px; }
   .mc-h2h-cell { padding: 8px 4px; }
   .mc-h2h-cell b { font-size: 1.2rem; }
-  .mc-possession-pct { font-size: 1.3rem; }
   .mc-pitch-counter { font-size: .6rem; padding: 1px 5px; }
-  /* الميزان واللوحة: النسبتان فوق الشريط بعرض البطاقة، ولا تمرير أفقي. */
   .mc-stat-index { padding: 8px 9px; }
   .mc-stat-index-pct { font-size: .92rem; }
-  .mc-indexboard-row { grid-template-columns: minmax(70px, 1fr) auto; grid-template-areas: "label pcts" "bar bar"; gap: 4px 8px; }
-  .mc-indexboard-row a { grid-area: label; }
-  .mc-indexboard-pcts { grid-area: pcts; justify-self: end; }
-  .mc-indexboard-bar { grid-area: bar; }
 }
 @layer mc-print {
   @media print {
     .mc-pitch-preview-facts > div, .mc-pitch-form, .mc-pitch-form .mc-event, .mc-pitch-form-summary > div, .mc-pitch-counter,
-    .mc-h2h-cell, .mc-possession, .mc-doc, .mc-stat-index, .mc-indexboard, .mc-benchmark, .mc-benchmark-row { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
+    .mc-h2h-cell, .mc-doc, .mc-stat-index, .mc-indexboard, .mc-benchmark, .mc-benchmark-row, .mc-stat-card { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
+    .mc-stat-card-side[data-side="home"], .mc-stat-card-side[data-side="home"] .mc-stat-card-number { color: #3b2a7a !important; }
+    .mc-stat-card-side[data-side="away"], .mc-stat-card-side[data-side="away"] .mc-stat-card-number { color: #1f6b2e !important; }
+    .mc-stat-card-fill[data-side="home"] { background: #3b2a7a !important; }
+    .mc-stat-card-fill[data-side="away"] { background: #1f6b2e !important; }
+    .mc-stat-card-title, .mc-stat-card-title a, .mc-stat-card-difference, .mc-stat-card-none { color: #4a5262 !important; }
     .mc-bench-side[data-side="home"] .mc-bench-value { color: #3b2a7a; }
     .mc-bench-side[data-side="away"] .mc-bench-value { color: #1f6b2e; }
     .mc-pitch-preview h2, .mc-pitch-form h3, .mc-pitch-form-sub, .mc-pitch-preview-facts dt, .mc-pitch-preview-facts dd,
     .mc-pitch-form .mc-event-body small, .mc-pitch-form .mc-form-score, .mc-pitch-form-summary dt, .mc-pitch-counter em { color: #101218 !important; }
-    .mc-possession-fill[data-side="home"] { background: #3b2a7a; }
-    .mc-possession-fill[data-side="away"] { background: #1f6b2e; }
-    /* الميزان في الطباعة ألوان صلبة مثل بقية الأشرطة. */
-    .mc-stat-index-fill[data-side="home"], .mc-stat-tally-seg[data-lead="home"], .mc-indexboard-fill[data-side="home"] { background: #3b2a7a; }
-    .mc-stat-index-fill[data-side="away"], .mc-stat-tally-seg[data-lead="away"], .mc-indexboard-fill[data-side="away"] { background: #1f6b2e; }
-    .mc-stat-index-pct[data-side="home"], .mc-indexboard-pcts [data-side="home"] { color: #3b2a7a; }
-    .mc-stat-index-pct[data-side="away"], .mc-indexboard-pcts [data-side="away"] { color: #1f6b2e; }
+    /* الميزان في الطباعة يحتفظ بحساباته ويكتفي بألوان صلبة. */
+    .mc-stat-index-fill[data-side="home"], .mc-stat-tally-seg[data-lead="home"] { background: #3b2a7a; }
+    .mc-stat-index-fill[data-side="away"], .mc-stat-tally-seg[data-lead="away"] { background: #1f6b2e; }
+    .mc-stat-index-pct[data-side="home"] { color: #3b2a7a; }
+    .mc-stat-index-pct[data-side="away"] { color: #1f6b2e; }
     .mc-report { display: none !important; }
   }
 }

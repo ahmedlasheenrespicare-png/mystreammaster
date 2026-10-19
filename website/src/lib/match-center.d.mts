@@ -337,7 +337,7 @@ export interface StatComparisonRow {
   /** الأوفر رقماً؛ وصف للكمية لا للأفضلية. */
   leadingSide: 'home' | 'away' | null;
   comparable: boolean;
-  /** نسبة كل طرف إلى الأعلى بينهما (0–1) — للتمثيل البصري فقط. */
+  /** حصة كل طرف من مجموع الرقمين (0–1)، أو نصفان في 0/0؛ لا شريط إن غاب طرف. */
   bar: { home: number | null; away: number | null };
 }
 
@@ -371,7 +371,7 @@ export function compareStatRow(stat: StatPair | null | undefined): StatCompariso
 export function groupIndex(rows: StatComparisonRow[] | null | undefined): GroupIndex | null;
 export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
 
-/** شريط الاستحواذ البارز — `null` ما لم تصل النسبتان رقميتين معاً. */
+/** حصة الاستحواذ من المجموع — `null` إن غاب طرف؛ 0/0 نصفان متساويان. */
 export interface PossessionSplit { home: number; away: number; homeShare: number; awayShare: number }
 export function possessionSplit(statistics: StatPair[] | null | undefined): PossessionSplit | null;
 
@@ -441,7 +441,7 @@ export function eventFilterOptions(
 ): EventFilterChoices;
 export function activeEventFilterCount(filters?: EventFilterValues): number;
 
-/** غياب موصوف لا صف: ما لا يصل من المصدر يُقال ولا يُمثَّل. */
+/** ملاحظات تشخيصية عن غياب المصدر؛ لا تتحول إلى صفوف أو أصفار. */
 export function unavailableDataNotes(snapshot: MatchSnapshot | null): { id: string; text: string }[];
 
 /* `MOCK` حالة قائمة لا بديل عن `MISS`: قراءة المحاكاة لم تمر بمخبأ الخادم،

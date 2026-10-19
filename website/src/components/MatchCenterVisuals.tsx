@@ -483,7 +483,8 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
         {/* صف كامل تحت البطاقتين داخل الإطار: لا أرقام ⇒ لا لوحة أصلاً. */}
         <MatchCenterIndexBoard
           statistics={snapshot?.statistics ?? null}
-          Heading="h2"
+          homeName={homeName ?? 'المضيف'}
+          awayName={awayName ?? 'الضيف'}
           linkPrefix={indexLinkPrefix}
           className="mc-pitch-index"
         />

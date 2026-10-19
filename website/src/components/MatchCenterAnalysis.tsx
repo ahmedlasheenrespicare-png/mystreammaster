@@ -16,7 +16,6 @@ import {
   filterEvents,
   renderableEvents,
   summarizeSourceEvents,
-  unavailableDataNotes,
   type MatchEvent,
 } from '../lib/match-center.mjs';
 import EventIcon from './MatchCenterSymbols';
@@ -197,13 +196,6 @@ export default function MatchCenterAnalysis({ match, snapshot, tools }: PanelPro
           <EventDetail event={selected} homeName={homeName} awayName={awayName} />
         </section>
       )}
-
-      <section aria-labelledby="mc-analysis-absent-title">
-        <h3 id="mc-analysis-absent-title">ما لا يصل إلى هذا القسم</h3>
-        <ul className="mc-analysis-absent">
-          {unavailableDataNotes(snapshot).map(note => <li key={note.id}>{note.text}</li>)}
-        </ul>
-      </section>
     </div>
   );
 }

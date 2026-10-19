@@ -181,13 +181,13 @@ test.describe('match analysis tab', () => {
     await expect(fouls).toContainText('١٤');
     await expect(fouls).toContainText('الفارق ٥');
     await expect(fouls).toContainText('الأعلى رقمياً: إيبسويتش تاون');
-    await expect(fouls.locator('.mc-stat-bar')).toHaveCount(2);
+    await expect(fouls.locator('.mc-stat-card-fill')).toHaveCount(2);
 
     // لفظ الحكم ممنوع في الأرقام نفسها (سطر التوضيح يذكر المنع صراحةً، فلا يُفحص معه).
     const verdicts = (await page.locator('.mc-analysis .mc-stat-compare').allTextContents()).join(' ');
     expect(verdicts).not.toMatch(/أفضل|أفضلية|سيطرة|الأقوى|أخطر|لصالح/);
-    // شرح «الشريط ليس حكماً» انتقل إلى «التوثيق والمراجعة» آخر الصفحة.
-    await expect(page.locator('.mc-docs')).toContainText('ليست أفضلية');
+    // شرح «الشريط تزييني» في «التوثيق والمراجعة» آخر الصفحة.
+    await expect(page.locator('.mc-docs')).toContainText('الشريط المقسوم تزييني فقط');
     // الصفر الحقيقي من المصدر يبقى صفرًا، والغياب لا يصير صفرًا.
     const cards = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'بطاقات حمراء' });
     await expect(cards).toContainText('٠');
@@ -275,14 +275,13 @@ test.describe('match analysis tab', () => {
     await expect(untimed.locator('.mc-analysis-detail-values')).toContainText('لا يرسل المصدر دقيقة لهذا الحدث');
   });
 
-  test('sections the provider does not deliver are named, not drawn empty', async ({ page }) => {
+  test('missing provider fields do not create an appendix in postmatch or invented charts', async ({ page }) => {
     await openMatchCenter(page);
     await openTab(page, 'postmatch');
-    const absent = page.locator('.mc-analysis-absent');
-    await expect(absent.getByText('التشكيلات', { exact: false })).toBeVisible();
-    await expect(absent).toContainText('تقييمات اللاعبين');
-    await expect(absent).toContainText('xG');
-    await expect(absent).toContainText('إحداثيات');
+    await expect(page.locator('.mc-analysis-absent, #mc-analysis-absent-title')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'ما لا يصل إلى هذا القسم' })).toHaveCount(0);
+    // يظل شرح حدود بيانات المصدر في التوثيق آخر الصفحة، لا في قسم «بعد المباراة».
+    await expect(page.locator('.mc-doc[data-doc="absent"]')).toBeVisible();
     // لا رادار ولا خريطة ولا canvas: لا أرقام مقارنة موسمية في ربط المصدر الحالي.
     await expect(page.locator('.mc-radar')).toHaveCount(0);
     await expect(page.locator('.mc-page canvas')).toHaveCount(0);

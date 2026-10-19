@@ -53,10 +53,6 @@ export interface PanelProps {
   countdown?: CountdownParts | null;
   /** حالة تفاعلية مشتركة مع شريط الملعب: التحديد والإظهار. */
   tools?: MatchCenterTools;
-  /** نص حداثة القراءة كما تقرّره طبقة العقد — للعرض، لا للاستنتاج. */
-  freshnessText?: string | null;
-  /** وقت القراءة منسَّقاً بالعربية، أو `null` إن لم يصل وقت صالح. */
-  readAtLabel?: string | null;
 }
 
 function text(value: unknown): string | null {
@@ -231,7 +227,7 @@ export function LineupsPanel({ match, snapshot }: PanelProps) {
 
 /* ─────────────────────────── 4) مباشر ─────────────────────────── */
 
-export function LivePanel({ match, snapshot, status, countdown, freshnessText, readAtLabel }: PanelProps) {
+export function LivePanel({ match, snapshot, status, countdown }: PanelProps) {
   const statistics = displayableStatistics(snapshot?.statistics ?? null);
 
   const statusLabel = text(status?.label);
@@ -244,7 +240,6 @@ export function LivePanel({ match, snapshot, status, countdown, freshnessText, r
       {status?.phase === 'pre' && countdown && !countdown.started && (
         <p aria-label="العد التنازلي لموعد المباراة">متبقي على الموعد: <bdi className="mc-num">{numberLabel(countdown.days)} يوم · {numberLabel(countdown.hours)} ساعة · {numberLabel(countdown.minutes)} دقيقة · {numberLabel(countdown.seconds)} ثانية</bdi></p>
       )}
-      {freshnessText && <p>{freshnessText}{readAtLabel && <> · آخر قراءة: {readAtLabel}</>}</p>}
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
       <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} logos={snapshot?.logos ?? null} idPrefix="live" />
       {/* يتحدّث مع كل قراءة حية: مشتق من اللقطة نفسها لا من طلب منفصل. */}

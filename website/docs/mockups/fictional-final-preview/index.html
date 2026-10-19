@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>معاينة مستقلة — مباراة خيالية منتهية</title>
+  <style>
+    :root { color-scheme: dark; --night:#080b12; --panel:#10151e; --ink:#f5f7fb; --muted:#acb4c1; --line:rgba(255,255,255,.13); --violet:#7c5cff; --violet-text:#cfc4ff; --lime:#d8ff3e; }
+    *,*::before,*::after { box-sizing:border-box; }
+    html { scroll-behavior:auto; }
+    body { margin:0; min-width:320px; color:var(--ink); background:radial-gradient(ellipse at 83% 0%,rgba(124,92,255,.21),transparent 40%),radial-gradient(ellipse at 0% 16%,rgba(216,255,62,.065),transparent 31%),var(--night); font-family:Tahoma,Arial,sans-serif; font-size:15px; line-height:1.7; }
+    button,a { font:inherit; }
+    a { color:inherit; }
+    a:focus-visible { outline:3px solid var(--lime); outline-offset:4px; border-radius:5px; }
+    .wrap { width:min(1120px,100% - 32px); margin-inline:auto; }
+    .topline { padding:10px 0; background:#0a0d14; border-bottom:1px solid rgba(216,255,62,.18); }
+    .topline .wrap { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .demo-mark { display:inline-flex; align-items:center; gap:8px; color:var(--lime); font-size:.75rem; font-weight:900; }
+    .demo-mark::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--lime); box-shadow:0 0 14px var(--lime); }
+    .topline small { color:var(--muted); font-size:.72rem; }
+    .intro { padding:43px 0 26px; text-align:center; }
+    .eyebrow { margin:0 0 10px; color:var(--lime); font-size:.78rem; font-weight:900; letter-spacing:.02em; }
+    h1 { margin:0; font-size:clamp(1.65rem,4.3vw,2.85rem); line-height:1.3; letter-spacing:-.035em; }
+    .intro p:last-child { margin:12px 0 0; color:var(--muted); font-size:.84rem; }
+    .intro .home-word { color:var(--violet-text); }
+    .intro .away-word { color:var(--lime); }
+    .pitch { position:relative; isolation:isolate; padding:20px; overflow:hidden; border:1px solid rgba(219,255,226,.34); border-radius:22px; background:repeating-linear-gradient(90deg,rgba(255,255,255,.028) 0 10%,transparent 10% 20%),linear-gradient(135deg,#164b35,#103a2b 50%,#194d38); box-shadow:0 30px 70px -43px #000; }
+    .pitch::before { content:""; position:absolute; inset:13px; z-index:-1; pointer-events:none; border:1px solid rgba(235,255,240,.27); border-radius:12px; }
+    .pitch::after { content:""; position:absolute; top:13px; bottom:13px; inset-inline-start:50%; z-index:-1; width:1px; background:rgba(235,255,240,.28); }
+    /* خطوط ملعب تخطيطية فقط؛ موضع الحدث يعبر عن الدقيقة لا مكان حدوثه. */
+    .field-markings { position:absolute; inset:13px; z-index:-1; pointer-events:none; }
+    .field-markings span { position:absolute; display:block; }
+    .center-circle { top:50%; left:50%; width:clamp(76px,12vw,116px); aspect-ratio:1; transform:translate(-50%,-50%); border:1px solid rgba(235,255,240,.42); border-radius:50%; }
+    .center-spot { top:50%; left:50%; width:6px; height:6px; transform:translate(-50%,-50%); border-radius:50%; background:rgba(235,255,240,.6); }
+    .penalty-box { top:27%; width:12%; height:46%; border:1px solid rgba(235,255,240,.4); }
+    .penalty-box.home { right:0; border-right:0; }
+    .penalty-box.away { left:0; border-left:0; }
+    .goal-outline { top:40%; width:3%; height:20%; border:1px solid rgba(235,255,240,.45); }
+    .goal-outline.home { right:-1px; border-right:0; }
+    .goal-outline.away { left:-1px; border-left:0; }
+    .pitch-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(180px,1.02fr) minmax(0,1fr); align-items:stretch; gap:15px; }
+    .team,.scoreboard { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border:1px solid rgba(255,255,255,.19); border-radius:16px; background:rgba(5,16,13,.76); backdrop-filter:blur(5px); }
+    .team { min-height:215px; padding:15px 8px; }
+    .team .crest { display:grid; place-items:center; width:62px; height:62px; margin-bottom:9px; border-radius:50%; border:1px solid rgba(255,255,255,.27); font-weight:900; font-size:1.4rem; }
+    .team.home .crest { color:#efe9ff; background:radial-gradient(circle at 35% 25%,#8d6eff,#392d7f); }
+    .team.away .crest { color:#1e2c08; background:radial-gradient(circle at 35% 25%,#eaff8e,#a4bf27); }
+    .team strong { font-size:clamp(.86rem,2vw,1.27rem); line-height:1.4; }
+    .team small { color:#dfebe4; font-size:.74rem; }
+    .team-role { margin-top:3px; color:var(--muted); font-size:.68rem; }
+    .scoreboard { gap:6px; padding:15px 12px; background:rgba(7,10,17,.88); }
+    .competition { color:#e2e9e3; font-size:.74rem; font-weight:800; }
+    .finished { display:inline-flex; align-items:center; gap:7px; padding:3px 11px; border:1px solid rgba(216,255,62,.4); border-radius:100px; color:var(--lime); background:rgba(216,255,62,.1); font-size:.73rem; font-weight:900; }
+    .finished::before { content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+    .score { margin:2px 0; direction:rtl; unicode-bidi:isolate; font:900 clamp(2.4rem,6vw,4rem)/1 Arial,sans-serif; letter-spacing:.04em; }
+    .score span { color:#a8b3be; font-weight:400; }
+    .scoreboard small { color:var(--muted); font-size:.68rem; }
+    .pitch-board { margin-top:16px; padding:19px; border:1px solid rgba(218,255,221,.29); border-radius:17px; background:rgba(4,12,8,.84); }
+    .card-list { display:grid; gap:9px; }
+    .stat-card { min-width:0; padding:14px; border:1px solid rgba(216,255,62,.26); border-radius:14px; background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015)); }
+    .card-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.85fr) minmax(0,1fr); align-items:baseline; gap:8px; font-weight:900; }
+    .stat-side { display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; min-width:0; font-size:.81rem; }
+    .stat-side.home { color:var(--violet-text); }
+    .stat-side.away { color:var(--lime); justify-content:flex-end; }
+    .stat-side .name { overflow-wrap:anywhere; }
+    .stat-side .value { font:900 1.7rem/1.1 Tahoma,Arial,sans-serif; white-space:nowrap; }
+    .stat-side .none { color:var(--muted); font-size:.75rem; }
+    .stat-title { min-width:0; color:var(--muted); font-size:.81rem; text-align:center; overflow-wrap:anywhere; }
+    .stat-title a { text-decoration:underline dashed; text-underline-offset:4px; }
+    .stat-title a:hover { color:var(--lime); }
+    .split { display:flex; height:14px; margin-top:9px; overflow:hidden; border-radius:100px; background:rgba(255,255,255,.07); }
+    .split span { display:block; flex:0 0 auto; height:100%; }
+    .split .home { background:linear-gradient(90deg,rgba(124,92,255,.96),rgba(124,92,255,.64)); }
+    .split .away { background:linear-gradient(90deg,rgba(216,255,62,.55),rgba(216,255,62,.98)); }
+    .difference { margin:7px 0 0; color:var(--muted); font-size:.69rem; font-weight:700; }
+    .facts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin:14px 0 0; }
+    .facts div { padding:12px; min-width:0; border:1px solid var(--line); border-radius:12px; background:#11151c; }
+    .facts dt { color:var(--muted); font-size:.68rem; }
+    .facts dd { margin:3px 0 0; font-size:.8rem; font-weight:800; }
+    .tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; margin-top:26px; padding:6px; border:1px solid var(--line); border-radius:100px; background:#161924; }
+    .tabs span { padding:9px 12px; border-radius:100px; text-align:center; color:var(--muted); font-size:.83rem; }
+    .tabs [aria-current="page"] { background:var(--lime); color:#101609; font-weight:900; }
+    .section { margin-top:16px; padding:24px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(160deg,rgba(23,27,40,.97),rgba(12,15,23,.98)); }
+    .section-title { margin-bottom:18px; }
+    .section-title .eyebrow { margin-bottom:3px; font-size:.69rem; }
+    .section-title h2 { margin:0; font-size:1.32rem; }
+    .section-title p { margin:3px 0 0; color:var(--muted); font-size:.76rem; }
+    .featured { margin-bottom:17px; }
+    .tab-board { padding:17px; margin-bottom:20px; border:1px solid var(--line); border-radius:15px; background:rgba(255,255,255,.018); }
+    .groups { display:grid; gap:14px; }
+    .group { padding:15px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.025); scroll-margin-top:20px; }
+    .group h3 { margin:0 0 11px; text-align:center; color:var(--lime); font-size:.91rem; }
+    .balance { margin-bottom:12px; padding:10px 12px; border:1px solid rgba(255,255,255,.1); border-radius:11px; background:rgba(0,0,0,.18); }
+    .balance-top { display:flex; justify-content:space-between; gap:10px; align-items:baseline; font-size:.76rem; font-weight:900; }
+    .balance-top .home { color:var(--violet-text); }
+    .balance-top .away { color:var(--lime); }
+    .balance-top .muted { color:var(--muted); font-weight:700; }
+    .balance .split { height:8px; margin-top:6px; }
+    .balance-note { margin:6px 0 0; color:var(--muted); font-size:.68rem; }
+    .events { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:0; padding:0; list-style:none; }
+    .events li { display:flex; gap:12px; align-items:center; min-width:0; padding:13px; border:1px solid var(--line); border-radius:12px; background:#10151f; }
+    .events .minute { flex:none; color:var(--lime); font-size:1rem; font-weight:900; }
+    .events b { display:block; font-size:.79rem; }
+    .events small { color:var(--muted); font-size:.68rem; }
+    .events .event-list-button { display:flex; align-items:center; gap:12px; width:100%; min-width:0; padding:0; border:0; color:inherit; background:transparent; text-align:start; cursor:pointer; }
+    .events li:has([data-active="true"]) { border-color:var(--lime); }
+    .timeline-box,.lineup-box { position:relative; z-index:1; margin-top:16px; padding:17px; border:1px solid rgba(218,255,221,.29); border-radius:17px; background:rgba(4,12,8,.84); }
+    .timeline-box h2,.lineup-box h2 { margin:0; color:var(--lime); font-size:.96rem; }
+    .timeline-box .context,.lineup-box .context { margin:4px 0 12px; color:#c5d3c9; font-size:.71rem; }
+    .timeline-team { display:flex; align-items:center; gap:7px; margin:5px 0 2px; font-size:.72rem; font-weight:900; }
+    .timeline-team::before { content:""; flex:none; width:8px; height:8px; border-radius:50%; background:currentColor; }
+    .timeline-team.home { color:var(--violet-text); }
+    .timeline-team.away { color:var(--lime); }
+    .timeline-inner { padding-inline:18px; }
+    .timeline-lane { position:relative; height:62px; margin:0; padding:0; list-style:none; }
+    .timeline-item { position:absolute; z-index:1; transform:translateX(50%); }
+    .timeline-lane.home .timeline-item { bottom:18px; }
+    .timeline-lane.away .timeline-item { top:18px; }
+    .event-marker { display:grid; place-items:center; width:30px; height:30px; padding:0; border:1px solid var(--violet-text); border-radius:50%; color:var(--ink); background:#0d1b1d; font-size:1rem; line-height:1; cursor:pointer; }
+    .event-marker[data-side="away"] { border-color:var(--lime); }
+    .event-icon { display:block; flex:none; width:19px; height:19px; }
+    .event-marker:hover,.event-marker[data-active="true"],.player-badge:hover,.player-badge[data-active="true"] { border-color:var(--lime); background:#264331; }
+    .event-marker:focus-visible,.player-badge:focus-visible,.event-list-button:focus-visible { outline:2px solid var(--lime); outline-offset:3px; }
+    .marker-minute { position:absolute; left:50%; width:56px; transform:translateX(-50%); color:#edf3e9; font-size:.59rem; font-weight:900; line-height:1.1; text-align:center; white-space:nowrap; }
+    .timeline-lane.home .marker-minute { top:calc(100% + 4px); }
+    .timeline-lane.away .marker-minute { bottom:calc(100% + 4px); }
+    .timeline-axis { position:relative; height:22px; border-top:1px solid rgba(235,255,240,.55); }
+    .timeline-tick { position:absolute; top:0; display:grid; justify-items:center; transform:translateX(50%); color:#e0e9e1; font-size:.59rem; line-height:1.2; white-space:nowrap; }
+    .timeline-tick::before { content:""; width:1px; height:6px; background:rgba(235,255,240,.65); }
+    .timeline-tick.first { transform:none; justify-items:end; }
+    .timeline-tick.last { transform:translateX(100%); justify-items:start; }
+    .selected-detail { min-height:2.7em; margin:12px 0 0; padding:9px 11px; border:1px solid rgba(255,255,255,.13); border-radius:9px; color:#e9f3ed; background:rgba(2,13,10,.7); font-size:.72rem; }
+    /* الملعب الأفقي: الفريقان على محور واحد، وحارسا المرمى عند طرفيه. */
+    .lineup-field { position:relative; isolation:isolate; overflow:hidden; border:1px solid rgba(229,255,231,.42); border-radius:15px; background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 10%,transparent 10% 20%),linear-gradient(115deg,#174936,#103e2d 50%,#174936); }
+    .lineup-field::before { content:""; position:absolute; inset:8px; border:1px solid rgba(239,255,241,.28); border-radius:9px; pointer-events:none; }
+    .lineup-field::after { content:""; position:absolute; z-index:0; top:8px; bottom:8px; left:50%; width:1px; background:rgba(239,255,241,.34); pointer-events:none; }
+    .lineup-lines { position:absolute; z-index:0; inset:8px; pointer-events:none; }
+    .lineup-lines span { position:absolute; display:block; }
+    .lineup-center { top:50%; left:50%; width:clamp(52px,8vw,90px); aspect-ratio:1; transform:translate(-50%,-50%); border:1px solid rgba(239,255,241,.38); border-radius:50%; }
+    .lineup-penalty { top:32%; width:9%; height:36%; border:1px solid rgba(239,255,241,.35); }
+    .lineup-penalty.home { right:0; border-right:0; }
+    .lineup-penalty.away { left:0; border-left:0; }
+    .squads { position:relative; z-index:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .squad { min-width:0; padding:13px 8px 12px; background:rgba(3,24,18,.31); }
+    .squad[data-side="home"] { border-inline-end:1px solid rgba(239,255,241,.25); }
+    .squad h3 { display:flex; flex-wrap:wrap; justify-content:center; align-items:baseline; gap:6px; margin:0 0 9px; padding:4px; border-radius:7px; background:rgba(4,18,15,.5); text-align:center; font-size:.89rem; }
+    .squad h3 bdi { color:#d9e8da; font-size:.75rem; }
+    .squad h3 .separator { color:#afc4b5; }
+    .lineup-rows { display:grid; grid-template-columns:repeat(var(--lines),minmax(0,1fr)); direction:rtl; }
+    .squad[data-side="away"] .lineup-rows { direction:ltr; }
+    .lineup-row { display:flex; min-width:0; flex-direction:column; padding:3px 3px 8px; direction:rtl; text-align:center; }
+    .squad[data-side="home"] .lineup-row:not(:first-child) { border-right:1px dashed rgba(255,255,255,.2); }
+    .squad[data-side="away"] .lineup-row:not(:first-child) { border-left:1px dashed rgba(255,255,255,.2); }
+    .lineup-row h4,.bench h4 { margin:3px 0 7px; color:#d9e9de; font-size:.65rem; font-weight:700; text-align:center; }
+    .lineup-row h4 { min-height:2.2em; }
+    .players { display:flex; gap:4px; margin:0; padding:0; list-style:none; }
+    .lineup-row .players { min-height:420px; flex-direction:column; justify-content:space-evenly; align-items:center; }
+    .player { display:flex; width:100%; min-width:0; flex-direction:column; align-items:center; gap:3px; text-align:center; }
+    .shirt { display:grid; flex:none; place-items:center; width:30px; height:30px; border:1px solid #e9e0ff; border-radius:8px 8px 12px 12px; color:#fff; background:#412777; font-size:.81rem; font-weight:900; }
+    .squad[data-side="away"] .shirt,.bench[data-side="away"] .shirt { border-color:#f0ffaf; color:#17220b; background:var(--lime); }
+    .player-name { max-width:100%; min-height:2.7em; font-size:.68rem; line-height:1.35; overflow-wrap:anywhere; }
+    .player-badge { display:inline-flex; align-items:center; justify-content:center; gap:3px; max-width:100%; min-height:24px; padding:2px 4px; border:1px solid rgba(255,255,255,.43); border-radius:6px; color:#fff; background:#101e21; font-size:.59rem; font-weight:800; line-height:1.2; white-space:nowrap; cursor:pointer; }
+    .player-badge .event-icon { width:13px; height:13px; }
+    .player-badge[data-kind="yellow"] { color:#ffe09e; }
+    .lineup-benches { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .bench { min-width:0; grid-column:2; margin-top:10px; padding:9px 10px; border:1px solid rgba(255,255,255,.25); border-radius:12px; background:rgba(3,23,18,.8); }
+    .bench[data-side="home"] { grid-column:1; }
+    .bench .players { justify-content:center; }
+    .bench .player { flex:0 1 110px; }
+    .endnote { margin:22px 0 46px; padding:17px 20px; border:1px solid var(--line); border-radius:14px; color:var(--muted); background:rgba(255,255,255,.025); font-size:.76rem; }
+    .endnote strong { color:var(--ink); }
+    .endnote p { margin:5px 0 0; }
+    @media(max-width:767px) { .squad { padding-inline:3px; } .lineup-row { padding-inline:2px; } .lineup-row .players { min-height:340px; } .player-name { font-size:.61rem; } }
+    @media(max-width:720px) { .pitch { padding:11px; } .pitch-head { gap:7px; grid-template-columns:minmax(0,1fr) minmax(96px,1.1fr) minmax(0,1fr); } .team { min-height:168px; padding:9px 3px; } .team .crest { width:40px; height:40px; font-size:.98rem; } .team small,.team-role { font-size:.62rem; } .scoreboard { padding:9px 4px; } .competition,.scoreboard small { font-size:.58rem; } .finished { font-size:.58rem; padding:3px 6px; } .stat-side .value { font-size:1.45rem; } .events { grid-template-columns:repeat(2,minmax(0,1fr)); } .facts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:520px) { .wrap { width:min(100% - 20px,1120px); } .intro { padding-top:30px; } .pitch-board,.section { padding:13px; } .card-head { grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 10px; } .stat-title { grid-column:1/-1; grid-row:1; } .stat-side.home { grid-column:1; grid-row:2; } .stat-side.away { grid-column:2; grid-row:2; } .stat-card { padding:11px; } .stat-side .value { font-size:1.3rem; } .events { grid-template-columns:minmax(0,1fr); } .section-title h2 { font-size:1.12rem; } }
+    @media(max-width:520px) {
+      .timeline-box { padding:13px 9px; }
+      .lineup-box { padding:13px 4px; }
+      .timeline-inner { padding-inline:14px; }
+      .event-marker { width:26px; height:26px; font-size:.86rem; }
+      .timeline-tick.minor { display:none; }
+      /* احجز ارتفاع تفاصيل الحدث؛ تبدّل النص عند التحويم لا يزيح شارة اللاعب قبل النقر. */
+      .selected-detail { min-height:60px; }
+      .squad { padding:7px 1px; }
+      .squad h3 { gap:3px; padding:3px 1px; font-size:.67rem; }
+      .squad h3 bdi { font-size:.63rem; }
+      .lineup-row { padding:1px 1px 7px; }
+      .lineup-row h4 { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+      .lineup-row .players { min-height:292px; gap:2px; }
+      .player { gap:2px; }
+      .player-name { min-height:0; font-size:.52rem; line-height:1.18; }
+      .player-last { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+      .shirt { width:22px; height:22px; font-size:.66rem; }
+      .player-badge { width:22px; min-height:22px; padding:2px; font-size:.54rem; }
+      .player-badge bdi { display:none; }
+      .bench { padding:7px 4px; }
+      .bench h4 { font-size:.6rem; }
+      .bench .player-name { font-size:.66rem; }
+      .bench .player-last { position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; white-space:normal; }
+      .bench .shirt { width:27px; height:27px; }
+      .bench .player-badge { width:auto; min-width:40px; }
+      .bench .player-badge bdi { display:inline; }
+    }
+    @media(max-width:360px) { .pitch-head { grid-template-columns:minmax(0,1fr) 88px minmax(0,1fr); gap:4px; } .score { font-size:2.1rem; } .competition { font-size:.53rem; } }
+    @media print { :root { color-scheme:light; --ink:#101218; --muted:#4a5262; --line:#c9ced8; --lime:#1f6b2e; --violet-text:#3b2a7a; } body,.pitch,.pitch-board,.team,.scoreboard,.section,.group,.tab-board,.stat-card,.balance,.facts div,.events li,.endnote,.timeline-box,.lineup-box,.squad,.selected-detail,.event-marker,.player-badge { background:#fff!important; color:#101218!important; box-shadow:none!important; } .stat-side.home { color:#3b2a7a; } .stat-side.away { color:#1f6b2e; } .split .home { background:#3b2a7a; } .split .away { background:#1f6b2e; } .tabs,.topline { display:none; } .stat-card { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="topline"><div class="wrap"><span class="demo-mark">معاينة تصميمية مستقلّة · مباراة خيالية منتهية</span><small>لا رابط بصفحة الموقع أو بمصدر بيانات حقيقي</small></div></div>
+  <main class="wrap">
+    <header class="intro">
+      <p class="eyebrow">مركز المباراة · نموذج توضيحي مستقل</p>
+      <h1><span class="home-word">السديم</span> <span aria-hidden="true">×</span> <span class="away-word">الشهاب</span></h1>
+      <p>دوري المدن المتخيلة · الجولة التاسعة · نتيجة نهائية</p>
+    </header>
+    <section class="pitch" aria-label="ملعب المباراة الخيالية">
+      <div class="field-markings" aria-hidden="true"><span class="center-circle"></span><span class="center-spot"></span><span class="penalty-box home"></span><span class="penalty-box away"></span><span class="goal-outline home"></span><span class="goal-outline away"></span></div>
+      <div class="pitch-head">
+        <div class="team home"><span class="crest" aria-hidden="true">سد</span><strong>السديم</strong><small>مدينة الغيم</small><span class="team-role">المضيف</span></div>
+        <div class="scoreboard"><span class="competition">دوري المدن المتخيلة</span><span class="finished">انتهت المباراة</span><p class="score" aria-label="السديم اثنان، الشهاب واحد">٢<span>–</span>١</p><small>٩٠+٤′ · ١٩ أكتوبر ٢٠٢٦</small></div>
+        <div class="team away"><span class="crest" aria-hidden="true">شه</span><strong>الشهاب</strong><small>مدينة الضوء</small><span class="team-role">الضيف</span></div>
+      </div>
+      <section class="pitch-board" aria-label="بطاقات المجموعات على الملعب"><div class="card-list" id="pitch-cards"></div></section>
+      <section class="timeline-box" aria-labelledby="timeline-title">
+        <h2 id="timeline-title">شريط أحداث المباراة</h2>
+        <p class="context">الرموز حسب الدقيقة وجهة الفريق، لا حسب مكان وقوع الحدث على أرض الملعب. اضغط الرمز لعرض التفاصيل.</p>
+        <p class="timeline-team home">السديم · المضيف</p>
+        <div class="timeline-inner">
+          <ol class="timeline-lane home" id="timeline-home" aria-label="أحداث السديم على الشريط"></ol>
+          <div class="timeline-axis" id="timeline-axis" aria-hidden="true"></div>
+          <ol class="timeline-lane away" id="timeline-away" aria-label="أحداث الشهاب على الشريط"></ol>
+        </div>
+        <p class="timeline-team away">الشهاب · الضيف</p>
+        <p class="selected-detail" id="timeline-detail" aria-live="polite">مرّر المؤشر فوق الرمز أو ركّز عليه لقراءة الحدث، واضغط لتثبيته.</p>
+      </section>
+      <section class="lineup-box" aria-labelledby="lineup-title">
+        <h2 id="lineup-title">التشكيلة الأساسية على الملعب</h2>
+        <p class="context">الحارسان عند طرفي الصفحة، ثم خطوط الفريقين باتجاه الوسط. البدلاء أسفل جهة فريقهم كما هم، والشارات مرتبطة بالشريط أعلاه.</p>
+        <div class="lineup-field">
+          <div class="lineup-lines" aria-hidden="true"><span class="lineup-center"></span><span class="lineup-penalty home"></span><span class="lineup-penalty away"></span></div>
+          <div class="squads" id="lineup-squads"></div>
+        </div>
+        <div class="lineup-benches" id="lineup-benches"></div>
+        <p class="selected-detail" id="lineup-detail" aria-live="polite">اضغط شارة اللاعب لإظهار حدثه هنا وفي الشريط الزمني.</p>
+      </section>
+    </section>
+    <dl class="facts"><div><dt>الملعب</dt><dd>ملعب الغيمة</dd></div><div><dt>المسابقة</dt><dd>دوري المدن المتخيلة</dd></div><div><dt>التاريخ</dt><dd>١٩ أكتوبر ٢٠٢٦</dd></div><div><dt>الحالة</dt><dd>انتهت · أرقام نهائية</dd></div></dl>
+    <nav class="tabs" aria-label="مرحلة المباراة"><span>قبل المباراة</span><span aria-current="page">بعد المباراة</span></nav>
+    <section class="section" aria-labelledby="stats-title">
+      <div class="section-title"><p class="eyebrow">بعد المباراة</p><h2 id="stats-title">إحصائيات الفريقين</h2><p>الكروت والشريط من أرقام توضيحية لمباراة خيالية؛ ليست أرقام مصدر فعلي.</p></div>
+      <div id="featured" class="featured"></div>
+      <section class="tab-board" aria-label="بطاقات المجموعات في تفاصيل الإحصائيات"><div class="card-list" id="tab-cards"></div></section>
+      <div class="groups" id="stat-groups"></div>
+    </section>
+    <section class="section" aria-labelledby="events-title"><div class="section-title"><p class="eyebrow">سجل توضيحي</p><h2 id="events-title">أحداث المباراة</h2><p>الأحداث الخيالية نفسها المرتبطة بالشريط والتشكيلة أعلاه.</p></div><ul class="events" id="events-list"></ul></section>
+    <aside class="endnote" role="note"><strong>عن هذه المعاينة</strong><p>هذه صفحة مستقلة بأسماء فرق ولاعبين ومسابقة ونتيجة وإحصائيات خيالية بالكامل. خطوط الملعب وتوزيع التشكيلة تخطيطيان؛ موضع رمز الحدث على الشريط يمثل دقيقته فقط، وليس إحداثياته داخل الملعب. الأرقام المطبوعة هي المرجع؛ أشرطة الإحصائيات للعرض فقط. الغياب لا يُستكمل بصفر، والصفر الحقيقي يظل ظاهراً. لا تعرض هذه المعاينة الموقع الفعلي ولا تتصل بأي واجهة بيانات.</p></aside>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const teams = { home:'السديم', away:'الشهاب' };
+      const groups = [
+        { id:'possession-passing', label:'الاستحواذ والتمرير', rows:[
+          { key:'possessionPct', label:'الاستحواذ', unit:'%', home:54.5, away:45.5 },
+          { key:'totalPasses', label:'التمريرات', home:537, away:464 },
+          { key:'passPct', label:'دقة التمرير', unit:'%', home:86.75, away:81.5 },
+        ] },
+        { id:'shots', label:'التسديد', rows:[
+          { key:'totalShots', label:'التسديدات', home:15, away:9 },
+          { key:'shotsOnTarget', label:'على المرمى', home:7, away:4 },
+          { key:'blockedShots', label:'تسديدات تم اعتراضها', home:3, away:2 },
+        ] },
+        { id:'build-up', label:'بناء الهجمة', rows:[
+          { key:'wonCorners', label:'الركنيات', home:7, away:3 },
+          { key:'totalCrosses', label:'العرضيات', home:19, away:16 },
+          { key:'accurateLongBalls', label:'كرات طويلة دقيقة', home:26, away:null },
+        ] },
+        { id:'defense', label:'الدفاع', rows:[
+          { key:'totalTackles', label:'التدخلات', home:17, away:22 },
+          { key:'interceptions', label:'الاعتراضات', home:10, away:8 },
+        ] },
+        { id:'goalkeeping', label:'حراسة المرمى', rows:[{ key:'saves', label:'التصديات', home:3, away:5 }] },
+        { id:'discipline', label:'الانضباط', rows:[
+          { key:'foulsCommitted', label:'الأخطاء', home:11, away:14 },
+          { key:'yellowCards', label:'البطاقات الصفراء', home:2, away:3 },
+          { key:'redCards', label:'البطاقات الحمراء', home:0, away:0 },
+        ] },
+      ];
+      // بيانات التشكيلة والأحداث اختُرعت لهذه المعاينة فقط؛ لا قراءات أو طلبات شبكة.
+      const squads = {
+        home: { formation:'4-3-3', rows:[
+          ['حراسة المرمى', [[1,'فارس الغيم']]],
+          ['الدفاع', [[2,'باسل الوادي'],[4,'ماهر الديم'],[5,'جواد السحاب'],[3,'سراج الندى']]],
+          ['الوسط', [[6,'نادر السهل'],[8,'عادل الضباب'],[10,'أدهم السحاب']]],
+          ['الهجوم', [[7,'يونس المطر'],[9,'عامر البرق'],[11,'بدر النسيم']]],
+        ], bench:[] },
+        away: { formation:'4-2-3-1', rows:[
+          ['حراسة المرمى', [[1,'عمران الضوء']]],
+          ['الدفاع', [[2,'ليث البرق'],[4,'سليم البرق'],[5,'نديم الفجر'],[3,'قيس الشفق']]],
+          ['الارتكاز', [[6,'جابر النور'],[8,'كرم الشعاع']]],
+          ['خلف المهاجم', [[7,'ورد السنا'],[10,'رامي النور'],[11,'فادي الرعد']]],
+          ['الهجوم', [[9,'مازن الوميض']]],
+        ], bench:[[17,'لؤي الفجر']] },
+      };
+      const roster = Object.fromEntries(Object.entries(squads).flatMap(([side,squad]) =>
+        [...squad.rows.flatMap(([,players])=>players),...squad.bench].map(([number,name])=>[`${side}-${number}`,{number,name}])));
+      const matchEvents = [
+        { id:'h18', minute:18, side:'home', kind:'goal', title:'هدف', playerId:'home-10' },
+        { id:'a38', minute:38, side:'away', kind:'yellow', title:'بطاقة صفراء', playerId:'away-4' },
+        { id:'h53', minute:53, side:'home', kind:'yellow', title:'بطاقة صفراء', playerId:'home-4' },
+        { id:'a61', minute:61, side:'away', kind:'goal', title:'هدف', playerId:'away-10' },
+        { id:'h77', minute:77, side:'home', kind:'goal', title:'هدف', playerId:'home-7' },
+        { id:'a83', minute:83, side:'away', kind:'sub', title:'تبديل', playerId:'away-17', outId:'away-11' },
+      ];
+      const format = n => new Intl.NumberFormat('ar-EG', { maximumFractionDigits:2 }).format(n);
+      const make = (tag, className, content) => { const el=document.createElement(tag); if(className) el.className=className; if(content!==undefined) el.textContent=content; return el; };
+      const labelValue = (value,unit) => value === null ? 'غير متاح' : `${format(value)}${unit === '%' ? '%' : unit ? ` ${unit}` : ''}`;
+      const share = (home,away) => home+away > 0 ? home/(home+away) : .5;
+      function card({label,home,away,unit='',fraction=null,href=null,key=null}) {
+        if(home === null && away === null) return null;
+        const el=make('article','stat-card'); if(key) el.dataset.statKey=key;
+        const head=make('div','card-head');
+        const homeSide=make('span','stat-side home'); homeSide.dataset.side='home';
+        homeSide.append(make('bdi','name',teams.home),make(home===null?'span':'bdi',home===null?'none':'value',labelValue(home,unit)));
+        const title=make('span','stat-title');
+        if(href) { const link=make('a','',label); link.href=href; title.append(link); } else title.textContent=label;
+        const awaySide=make('span','stat-side away'); awaySide.dataset.side='away';
+        awaySide.append(make(away===null?'span':'bdi',away===null?'none':'value',labelValue(away,unit)),make('bdi','name',teams.away));
+        head.append(homeSide,title,awaySide); el.append(head);
+        if(home!==null && away!==null) {
+          const part=fraction??share(home,away);
+          const bar=make('div','split'); bar.setAttribute('aria-hidden','true');
+          const a=make('span','home'); a.style.width=`${Math.round(part*1000)/10}%`;
+          const b=make('span','away'); b.style.width=`${100-Math.round(part*1000)/10}%`;
+          bar.append(a,b); el.append(bar);
+          const higher=home>away ? teams.home : away>home ? teams.away : null;
+          const difference=higher ? `الفارق ${format(Math.abs(home-away))}${unit==='%'?' نقطة مئوية':unit?` ${unit}`:''} — الأعلى رقمياً: ${higher}` : 'متساويان';
+          el.append(make('p','difference',difference));
+        }
+        return el;
+      }
+      function indexFor(rows) {
+        const comparable=rows.filter(row=>row.home!==null&&row.away!==null);
+        if(!comparable.length) return null;
+        const average=comparable.reduce((sum,row)=>sum+share(row.home,row.away),0)/comparable.length;
+        const pctHome=Math.round(average*100);
+        return { average, home:pctHome, away:100-pctHome, comparable:comparable.length, unavailable:rows.length-comparable.length,
+          homeHigher:comparable.filter(row=>row.home>row.away).length, awayHigher:comparable.filter(row=>row.away>row.home).length,
+          equal:comparable.filter(row=>row.home===row.away).length };
+      }
+      for(const group of groups) {
+        const index=indexFor(group.rows);
+        if(index) {
+          for(const target of ['pitch-cards','tab-cards']) {
+            const row=card({ label:group.label, home:index.home, away:index.away, unit:'%', fraction:index.average, href:`#stats-${group.id}` });
+            document.getElementById(target).append(row);
+          }
+        }
+        const section=make('section','group'); section.id=`stats-${group.id}`;
+        section.append(make('h3','',group.label));
+        if(index) {
+          const balance=make('div','balance');
+          const top=make('div','balance-top'); top.append(make('span','home',`${format(index.home)}% ${teams.home}`),make('span','muted','مقابل'),make('span','away',`${format(index.away)}% ${teams.away}`));
+          const bar=make('div','split'); bar.setAttribute('aria-hidden','true');
+          const left=make('span','home'); left.style.width=`${Math.round(index.average*100)}%`;
+          const right=make('span','away'); right.style.width=`${100-Math.round(index.average*100)}%`; bar.append(left,right);
+          balance.append(top,bar,make('p','balance-note',`متوسط حصة ${format(index.comparable)} صفوف قابلة للمقارنة · صفوف أعلى رقمياً: ${teams.home} (${format(index.homeHigher)}) · ${teams.away} (${format(index.awayHigher)}) · متساويان (${format(index.equal)})${index.unavailable ? ` · طرف غائب في ${format(index.unavailable)} صف` : ''}`));
+          section.append(balance);
+        }
+        const list=make('div','card-list');
+        for(const row of group.rows) {
+          if(row.key==='possessionPct') { document.getElementById('featured').append(card(row)); continue; }
+          const item=card(row); if(item) list.append(item);
+        }
+        if(list.childElementCount) section.append(list);
+        document.getElementById('stat-groups').append(section);
+      }
+
+      // أيقونات مرسومة داخلياً حتى لا تتحول الكرة/التبديل إلى مربعات في الخطوط التي لا تدعم الإيموجي.
+      function eventIcon(kind) {
+        const ns='http://www.w3.org/2000/svg';
+        const svg=document.createElementNS(ns,'svg');
+        svg.setAttribute('viewBox','0 0 24 24'); svg.setAttribute('class','event-icon');
+        svg.setAttribute('aria-hidden','true'); svg.setAttribute('focusable','false');
+        const shape=(tag,attributes) => {
+          const el=document.createElementNS(ns,tag);
+          for(const [key,value] of Object.entries(attributes)) el.setAttribute(key,value);
+          svg.append(el);
+        };
+        if(kind==='goal') {
+          shape('circle',{cx:'12',cy:'12',r:'9',fill:'none',stroke:'currentColor','stroke-width':'1.5'});
+          shape('path',{d:'M12 3v5M3.7 9 8 10.5M20.3 9 16 10.5M6.4 19 9.5 15M17.6 19 14.5 15',fill:'none',stroke:'currentColor','stroke-width':'1.2'});
+          shape('polygon',{points:'12,8 16,10.5 14.5,15 9.5,15 8,10.5',fill:'currentColor'});
+        } else if(kind==='yellow') {
+          shape('rect',{x:'6',y:'3',width:'12',height:'18',rx:'2',fill:'#ffce62'});
+        } else {
+          shape('path',{d:'M4 8h15m0 0-4-4m4 4-4 4M20 16H5m0 0 4-4m-4 4 4 4',fill:'none',stroke:'currentColor','stroke-width':'1.9','stroke-linecap':'round','stroke-linejoin':'round'});
+        }
+        return svg;
+      }
+      const eventDescription = event => `${format(event.minute)}′ · ${event.title} · ${teams[event.side]} · ${event.kind==='sub'
+        ? `${roster[event.playerId].name} بدلاً من ${roster[event.outId].name}` : roster[event.playerId].name}`;
+      const control = (el,event,detailId) => {
+        el.type='button'; el.dataset.eventId=event.id; el.setAttribute('aria-label',eventDescription(event));
+        el.setAttribute('aria-controls',detailId); el.setAttribute('aria-pressed','false');
+        return el;
+      };
+      // من اليمين إلى اليسار: صف للمضيف، محور للدقائق، وصف للضيف.
+      const totalMinutes=94;
+      for(const minute of [0,15,30,45,60,75,94]) {
+        const tick=make('span',`timeline-tick${minute===0?' first':minute===totalMinutes?' last':minute===45?'':' minor'}`,
+          minute===totalMinutes ? '٩٠+٤′' : `${format(minute)}′`);
+        tick.style.insetInlineStart=`${minute/totalMinutes*100}%`;
+        document.getElementById('timeline-axis').append(tick);
+      }
+      for(const event of matchEvents) {
+        const item=make('li','timeline-item');
+        item.style.insetInlineStart=`${event.minute/totalMinutes*100}%`;
+        const marker=control(make('button','event-marker'),event,'timeline-detail');
+        marker.dataset.side=event.side; marker.dataset.kind=event.kind;
+        marker.append(eventIcon(event.kind));
+        item.append(marker,make('span','marker-minute',`${format(event.minute)}′`));
+        document.getElementById(`timeline-${event.side}`).append(item);
+
+        const entry=make('li');
+        const entryButton=control(make('button','event-list-button'),event,'timeline-detail');
+        const summary=make('span');
+        summary.append(make('b','',`${event.title} · ${teams[event.side]}`),
+          make('small','',event.kind==='sub' ? `${roster[event.playerId].name} بدلاً من ${roster[event.outId].name}` : roster[event.playerId].name));
+        entryButton.append(make('span','minute',`${format(event.minute)}′`),summary);
+        entry.append(entryButton); document.getElementById('events-list').append(entry);
+      }
+      function playerList(side,players) {
+        const list=make('ul','players');
+        for(const [number,name] of players) {
+          const id=`${side}-${number}`;
+          const item=make('li','player');
+          for(const event of matchEvents.filter(event=>event.playerId===id || event.outId===id)) {
+            const label=event.kind==='sub' ? event.outId===id ? 'خروج' : 'دخول' : event.title;
+            const badge=control(make('button','player-badge'),event,'lineup-detail');
+            badge.dataset.kind=event.kind;
+            badge.setAttribute('aria-label',`${name} · ${label} · ${eventDescription(event)}`);
+            const minute=make('bdi','',`${format(event.minute)}′`); minute.dir='ltr';
+            badge.append(eventIcon(event.kind),minute);
+            item.append(badge);
+          }
+          const shirt=make('span','shirt',format(number));
+          shirt.setAttribute('aria-label',`رقم القميص ${format(number)}`);
+          item.setAttribute('aria-label',`${name} · رقم القميص ${format(number)}`);
+          const [first,...rest]=name.split(' ');
+          const fullName=make('span','player-name');
+          fullName.append(make('span','player-first',first));
+          if(rest.length) fullName.append(document.createTextNode(' '),make('span','player-last',rest.join(' ')));
+          item.append(shirt,fullName);
+          list.append(item);
+        }
+        return list;
+      }
+      for(const side of ['home','away']) {
+        const squad=squads[side];
+        const section=make('section','squad');
+        section.dataset.side=side;
+        section.setAttribute('aria-label',`تشكيلة ${teams[side]}`);
+        const heading=make('h3');
+        const formation=make('bdi','',squad.formation); formation.dir='ltr';
+        heading.append(make('span','',teams[side]),make('span','separator','·'),formation);
+        section.append(heading);
+        const lines=make('div','lineup-rows');
+        lines.style.setProperty('--lines',squad.rows.length);
+        for(const [label,players] of squad.rows) {
+          const row=make('div','lineup-row');
+          row.setAttribute('aria-label',label);
+          row.append(make('h4','',label),playerList(side,players));
+          lines.append(row);
+        }
+        section.append(lines);
+        document.getElementById('lineup-squads').append(section);
+        if(squad.bench.length) {
+          const bench=make('section','bench');
+          bench.dataset.side=side;
+          bench.setAttribute('aria-label',`بدلاء ${teams[side]} المرتبطون بأحداث`);
+          bench.append(make('h4','','البدلاء المرتبطون بأحداث — خارج توزيع الأساسيين'),playerList(side,squad.bench));
+          document.getElementById('lineup-benches').append(bench);
+        }
+      }
+      // اختيار واحد مشترك للشريط والتشكيلة وقائمة الأحداث، تماماً داخل هذه المعاينة المستقلة.
+      const defaultDetail={
+        'timeline-detail':'مرّر المؤشر فوق الرمز أو ركّز عليه لقراءة الحدث، واضغط لتثبيته.',
+        'lineup-detail':'اضغط شارة اللاعب لإظهار حدثه هنا وفي الشريط الزمني.',
+      };
+      const eventById=new Map(matchEvents.map(event=>[event.id,event]));
+      const buttons=Array.from(document.querySelectorAll('[data-event-id]'));
+      let pinned=null, hovered=null;
+      function refreshSelection() {
+        for(const button of buttons) {
+          const active=button.dataset.eventId===pinned;
+          button.dataset.active=String(active);
+          button.setAttribute('aria-pressed',String(active));
+        }
+        for(const [id,prompt] of Object.entries(defaultDetail)) {
+          document.getElementById(id).textContent=hovered||pinned
+            ? `${eventDescription(eventById.get(hovered||pinned))}${pinned&&!hovered?' · مثبّت':''}` : prompt;
+        }
+      }
+      for(const button of buttons) {
+        button.addEventListener('mouseenter',()=>{ hovered=button.dataset.eventId; refreshSelection(); });
+        button.addEventListener('mouseleave',()=>{ hovered=null; refreshSelection(); });
+        button.addEventListener('focus',()=>{ hovered=button.dataset.eventId; refreshSelection(); });
+        button.addEventListener('blur',()=>{ hovered=null; refreshSelection(); });
+        button.addEventListener('click',()=>{ pinned=pinned===button.dataset.eventId ? null : button.dataset.eventId; refreshSelection(); });
+      }
+      refreshSelection();
+    })();
+  </script>
+</body>
+</html>

@@ -22,28 +22,25 @@ const drawnEvents = fixtureEvents.filter(event => !String(event.type).toLowerCas
 test('events sit on the pitch as symbols by minute and team, with delays filtered and details on focus', async ({ page }) => {
   const requests: string[] = [];
   await page.clock.install({ time: new Date('2026-10-17T15:00:00Z') });
-  await page.route('**/*', async route => {
-    const url = new URL(route.request().url());
-    if (!['localhost', '127.0.0.1'].includes(url.hostname)) return route.abort();
-    if (url.pathname === '/match-center.php') {
-      requests.push(url.pathname + url.search);
-      return route.fulfill({
-        status: 200,
-        headers: { 'X-Matches-Cache': 'HIT', 'X-Cache-Age': '3' },
-        json: {
-          provider: 'espn', match: MATCH, event: '401879259', readAt: '2026-10-17T14:32:11Z', cache: 'HIT',
-          status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false }, displayClock: '62:00' },
-          score: { home: 1, away: 2 }, events: fixtureEvents,
-          statistics: null, lineups: null, ratings: null, h2h: [], form: null, venue: null,
-        },
-      });
-    }
-    return route.continue();
+  // Route on the context, before navigating: hydration may request the reading
+  // before a page-scoped catch-all route is ready (and the static server replies 501).
+  await page.context().route('**/match-center.php*', route => {
+    requests.push(new URL(route.request().url()).search);
+    return route.fulfill({
+      status: 200,
+      headers: { 'X-Matches-Cache': 'HIT', 'X-Cache-Age': '3', 'Content-Type': 'application/json' },
+      json: {
+        provider: 'espn', match: MATCH, event: '401879259', readAt: '2026-10-17T14:32:11Z', cache: 'HIT',
+        status: { type: { name: 'STATUS_IN_PROGRESS', state: 'in', completed: false }, displayClock: '62:00' },
+        score: { home: 1, away: 2 }, events: fixtureEvents,
+        statistics: null, lineups: null, ratings: null, h2h: [], form: null, venue: null,
+      },
+    });
   });
 
-  await page.goto(`/matches/الدوري-الإنجليزي/${MATCH}/`);
+  await page.goto(`/matches/الدوري-الإنجليزي/${MATCH}/`, { waitUntil: 'domcontentloaded' });
   const timeline = page.locator('.mc-pitch-events');
-  await expect(timeline).toBeVisible();
+  await expect(timeline).toBeVisible({ timeout: 30_000 });
   // The band lives inside the pitch frame, not in a separate list below it.
   await expect(page.locator('.mc-pitch-frame .mc-pitch-events')).toHaveCount(1);
   await expect(page.locator('.mc-event-rail')).toHaveCount(0);

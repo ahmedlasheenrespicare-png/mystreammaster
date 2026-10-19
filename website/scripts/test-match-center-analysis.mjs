@@ -251,12 +251,17 @@ test('two real zeros are equal, and are not normalised into full bars', () => {
   assert.deepEqual(row.bar, { home: 0.5, away: 0.5 });
 });
 
-test('the bar is a share of the larger value in the same row, not a score out of 100', () => {
+test('every source-row split uses the possession formula: each side divided by their sum', () => {
   const shots = compareStatRow({ key: 'shotsOnTarget', label: 'على المرمى', home: 4, away: 2 });
-  assert.deepEqual(shots.bar, { home: 1, away: 0.5 });
+  assert.deepEqual(shots.bar, { home: 4 / 6, away: 2 / 6 });
   const possession = compareStatRow({ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 58, away: 42 });
   assert.equal(possession.unitIsPercent, true);
-  assert.ok(possession.bar.home > 0.99 && possession.bar.home <= 1);
+  assert.deepEqual(possession.bar, { home: 0.58, away: 0.42 });
+  const rounded = compareStatRow({ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 60, away: 39 });
+  assert.deepEqual(rounded.bar, { home: 60 / 99, away: 39 / 99 });
+  const missing = compareStatRow({ key: 'saves', label: 'التصديات', home: 0, away: null });
+  assert.deepEqual(missing.bar, { home: null, away: null });
+  assert.equal(missing.home, 0, 'a real zero is not absence');
 });
 
 /* ── 2) أحداث المصدر: الوصف والعدّ والفلاتر ───────────────────────── */

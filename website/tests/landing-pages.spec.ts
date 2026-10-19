@@ -144,22 +144,21 @@ test('league landing heroes carry the ticket card with the league icon beside th
     const ticket = page.locator('.matches-hero-title .league-ticket');
     await expect(ticket, url).toHaveCount(1);
     await expect(ticket, url).toHaveAttribute('aria-hidden', 'true');
-    /* عناصر شكل التذكرة الأصلي: اللوح الهولوغرافي، الباركود، ومقصّ القصّ */
+    /* عناصر شكل التذكرة: اللوح الهولوغرافي ومقصّ القصّ (بلا باركود ولا رمز تقني) */
     await expect(ticket.locator('.league-ticket-bg.league-ticket-holographic'), url).toHaveCount(1);
-    await expect(ticket.locator('.league-ticket-barcode'), url).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-symbol'), url).toHaveCount(1);
-    /* أبعاد ثابتة صريحة — لا قفز تخطيط فوق الطية */
-    await expect(ticket, url).toHaveCSS('width', '180px');
-    await expect(ticket, url).toHaveCSS('height', '320px');
+    /* أبعاد ثابتة صريحة (150×265 — مصغَّرة عن مقاس التصميم الأصلي) — لا قفز تخطيط فوق الطية */
+    await expect(ticket, url).toHaveCSS('width', '150px');
+    await expect(ticket, url).toHaveCSS('height', '265px');
     /* التذكرة والعنوان في سطر واحد — العنوان لم يتكرر ولم يخرج من الرأس */
     await expect(page.locator('.matches-hero-title h1#landing-title'), url).toHaveCount(1);
 
-    /* الأيقونة داخل رأس التذكرة: مكوّن الشارة نفسه بمقاس أكبر (72px) يصل
+    /* الأيقونة داخل رأس التذكرة: مكوّن الشارة نفسه بمقاس أكبر (60px) يصل
        عبر --league-badge-size إلى لوح الشريط — نفس الخلفية بنمط واحد */
     const badge = ticket.locator('.league-ticket-header .league-carousel-badge');
     await expect(badge, url).toHaveCount(1);
-    await expect(badge, url).toHaveCSS('width', '72px');
-    await expect(badge, url).toHaveCSS('height', '72px');
+    await expect(badge, url).toHaveCSS('width', '60px');
+    await expect(badge, url).toHaveCSS('height', '60px');
     await expect(badge, url).toHaveCSS('background-color', 'rgb(246, 244, 236)');
 
     const image = badge.locator('img.league-carousel-logo');
@@ -169,8 +168,8 @@ test('league landing heroes carry the ticket card with the league icon beside th
     /* فوق الطية: eager لا lazy، وأبعاد صريحة تمنع قفز التخطيط */
     await expect(image, url).toHaveAttribute('loading', 'eager');
     await expect(image, url).toHaveAttribute('decoding', 'async');
-    await expect(image, url).toHaveAttribute('width', '64');
-    await expect(image, url).toHaveAttribute('height', '64');
+    await expect(image, url).toHaveAttribute('width', '52');
+    await expect(image, url).toHaveAttribute('height', '52');
     /* البديل المحايد مرسوم تحت الشعار — يظهر وحده إن تعذّر التحميل */
     await expect(badge.locator('.league-carousel-fallback'), url).toHaveCount(1);
   }

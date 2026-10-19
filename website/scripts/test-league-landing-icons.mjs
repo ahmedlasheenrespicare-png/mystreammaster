@@ -58,12 +58,11 @@ test('every league landing hero carries its ticket card with the badge beside th
     assert.equal(title.find('h1#landing-title').length, 1, `${slug}: العنوان داخل سطر الرأس`);
 
     /* كرت التذكرة (uiverse slippery-bird-76 — MIT، مكیّف لكرة القدم):
-       زخرفي بالكامل، بلوحه الهولوغرافي وباركوده ومقصّه ومرشّح نتوءاته */
+       زخرفي بالكامل، بلوحه الهولوغرافي ومقصّه ومرشّح نتوءاته */
     const ticket = title.find('.league-ticket');
     assert.equal(ticket.length, 1, `${slug}: تذكرة واحدة في الرأس`);
     assert.equal(ticket.attr('aria-hidden'), 'true', `${slug}: التذكرة زخرفية`);
     assert.equal(ticket.find('.league-ticket-bg.league-ticket-holographic').length, 1, `${slug}: اللوح الهولوغرافي`);
-    assert.equal(ticket.find('.league-ticket-barcode').length, 1, `${slug}: الباركود`);
     assert.equal(ticket.find('.league-ticket-symbol').length, 1, `${slug}: مقصّ القصّ`);
     assert.equal(ticket.find('filter#league-ticket-bump').length, 1, `${slug}: مرشّح النتوءات بمعرّف مسمّى باسم الكرت`);
 

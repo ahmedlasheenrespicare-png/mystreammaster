@@ -5,10 +5,10 @@
      https://uiverse.io/dexter-st/slippery-bird-76 — المؤلف dexter-st —
      رخصة MIT (Uiverse.io). الشكل الأصلي تذكرة حفلة هولوغرافية (180×320):
      حواف مثقّبة، شقّان جانبيان وخط قصّ ✁، تدرّج هولوغرافي متحرك، طفو، وباركود.
-   • التكييف لكرة القدم (بلا نوتات موسيقى ولا نصوص حفلات): أيقونة البطولة
-     (LeagueIconBadge — المصدر الواحد للشعار وبديله) مكان عنوان TICKET،
-     واسم البطولة ووصف الصفحة في المتن، ورمز البطولة (leagueId من مصدر
-     البيانات) مع الباركود في التذييل.
+   • التكييف لكرة القدم (بلا نوتات موسيقى ولا نصوص حفلات ولا باركود ولا
+     رموز تقنية): أيقونة البطولة (LeagueIconBadge — المصدر الواحد للشعار
+     وبديله) مكان عنوان TICKET، واسم البطولة ووصف الصفحة في المتن. والكرت
+     مصغَّر عن المقاس الأصلي إلى 150×265 ليلائم رأس الصفحة.
    • الكرت زخرفي بالكامل (aria-hidden): اسم البطولة مكتوب في h1 بجانبه،
      وكل نص داخله معاد أو تقني — لا يُخفي معلومة ولا يكرّرها لقارئ الشاشة.
    • الحركة (الطفو + لمعان الهولوغرافي) تُعطَّل لمن يفعّل تقليل الحركة.
@@ -18,27 +18,26 @@
 ========================================================================== */
 
 .league-ticket {
-  --width: 180px;
-  --height: 320px;
+  --width: 150px;
+  --height: 265px;
   --perforation-size: 12px;
-  /* ارتفاع صف الأيقونة (12px حشو + 72px شارة) — يفصل القصّ الرأس عن المتن */
-  --cutouts-adjust: 90px;
+  /* ارتفاع صف الأيقونة (12px حشو + 60px شارة + هامش) — يفصل القصّ الرأس عن المتن */
+  --cutouts-adjust: 78px;
 
   position: relative;
   flex: 0 0 auto;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   gap: 1rem;
   grid-template-areas:
     "header"
-    "body"
-    "footer";
+    "body";
 
   width: var(--width);
   height: var(--height);
   padding: var(--perforation-size) 0;
 
-  font-size: .78rem;
+  font-size: .72rem;
   line-height: 1.7;
   color: #0b0b0f;
   user-select: none;
@@ -163,7 +162,7 @@
   }
 }
 
-/* الرأس: شارة أيقونة البطولة (مكوّن LeagueIconBadge نفسه — 72px) مكان كلمة
+/* الرأس: شارة أيقونة البطولة (مكوّن LeagueIconBadge نفسه — 60px) مكان كلمة
    TICKET الأصلية، ومقصّ القصّ ✁ عند الطرف كما في التصميم */
 .league-ticket-header {
   position: relative;
@@ -188,6 +187,8 @@
 
 .league-ticket-body {
   grid-area: body;
+  /* يتمركز عمودياً في ما تبقّى من اللوح (لا تذييل بعد حذف الباركود والرمز) */
+  align-self: center;
   margin: 0 1em;
   padding: .5em;
   font-weight: 600;
@@ -200,59 +201,6 @@
   font-weight: 800;
   font-size: .9rem;
   overflow-wrap: anywhere;
-}
-
-.league-ticket-footer {
-  grid-area: footer;
-  z-index: 1;
-  margin: 0 1em 1em 1em;
-  /* شبكة حتى يتوسّط الباركود صفري العرض توسيطاً منطقياً في RTL — الظلال
-     المربّعة تمتد فيزيائياً يميناً من نقطة الصفر، فنزيحها نصف عرضها يساراً
-     لتتمركز (في LTR يُعكس اتجاه الإزاحة فقط) */
-  display: grid;
-}
-
-.league-ticket-code {
-  margin-bottom: .75rem;
-  text-align: center;
-  border-radius: 999px 0;
-  color: #000;
-  font-weight: 400;
-}
-.league-ticket-code .bold {
-  font-family: var(--font-latin);
-  font-weight: 700;
-}
-
-/* الباركود الأصلي: عنصر صفري العرض وظلاله المربّعة ترسم القضبان */
-.league-ticket-barcode {
-  justify-self: center;
-  width: 0;
-  height: 32px;
-  box-shadow:
-    0px 0 0 1px #000,
-    5px 0 0 1px #000,
-    7px 0 0 1px #000,
-    11px 0 0 1px #000,
-    15px 0 0 1px #000,
-    16px 0 0 1px #000,
-    22px 0 0 1px #000,
-    27px 0 0 1px #000,
-    30px 0 0 1px #000,
-    35px 0 0 1px #000,
-    36px 0 0 1px #000,
-    39px 0 0 1px #000,
-    43px 0 0 1px #000,
-    47px 0 0 1px #000,
-    50px 0 0 1px #000,
-    55px 0 0 1px #000,
-    59px 0 0 1px #000,
-    60px 0 0 1px #000,
-    64px 0 0 1px #000,
-    69px 0 0 1px #000,
-    70px 0 0 1px #000,
-    74px 0 0 1px #000;
-  transform: translateX(-37px);
 }
 
 /* احترام «تقليل الحركة»: التذكرة تبقى بشكلها وألوانها بلا طفو ولا لمعان */

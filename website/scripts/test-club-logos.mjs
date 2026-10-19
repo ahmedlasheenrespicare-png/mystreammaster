@@ -5,8 +5,8 @@ import {createHash} from 'node:crypto';
 import {load} from 'cheerio';
 const website=new URL('../',import.meta.url);
 const manifest=JSON.parse(await fs.readFile(new URL('src/assets/club-logos/manifest.json',website),'utf8'));
-const clubs=['as-roma','real-madrid','manchester-city','paris-saint-germain','atletico-madrid','manchester-united','galatasaray','barcelona'];
-test('all eight club crests have pinned source files and retained distribution notices',async()=>{
+const clubs=['as-roma','real-madrid','manchester-city','paris-saint-germain','atletico-madrid','manchester-united','galatasaray','barcelona','as-monaco','sc-freiburg','internazionale','al-qadsiah','pyramids-fc'];
+test('all thirteen club crests have pinned source files and retained distribution notices',async()=>{
  assert.deepEqual(manifest.logos.map(l=>l.slug),clubs);
  assert.match(manifest.revision,/^[a-f0-9]{40}$/);assert.equal(manifest.license,'MIT');
  const license=await fs.readFile(new URL('src/assets/club-logos/LICENSE.txt',website),'utf8');
@@ -19,7 +19,10 @@ test('all eight club crests have pinned source files and retained distribution n
   const $=load(svg.toString(),{xmlMode:true});assert.ok($('svg path').length>0,'actual vector crest, not a letter-only monogram');
   assert.doesNotMatch(svg.toString(),/<script|<foreignObject|\son\w+\s*=|(?:href|src)\s*=\s*["'](?:https?:|\/\/)/i);
   const webp=await fs.readFile(new URL(`public/images/teams/${logo.slug}-club-badge.webp`,website));
-  assert.equal(webp.subarray(0,4).toString(),'RIFF');assert.equal(webp.subarray(8,12).toString(),'WEBP');assert.ok(webp.length>4000);
+  assert.equal(webp.subarray(0,4).toString(),'RIFF');assert.equal(webp.subarray(8,12).toString(),'WEBP');
+  /* الشعارات الهندسية البسيطة (درع القادسية) تُضغط إلى نحو 3 كيلوبايت؛ الحد
+     يحمي من ملف فارغ أو مبتور، لا من تفاوت تعقيد الشعارات. */
+  assert.ok(webp.length>1000,`${logo.slug}: ملف WebP صغير بشكل غير معقول`);
  }
 });
 test('the season cards and every match report use local club crests with descriptive alternative text',async()=>{

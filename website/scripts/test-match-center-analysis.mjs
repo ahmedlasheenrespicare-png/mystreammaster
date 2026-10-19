@@ -5,7 +5,6 @@ import {
   EVENT_TYPE_LABELS,
   STAT_GROUPS,
   activeEventFilterCount,
-  analysisFacts,
   analysisIsAvailable,
   compareStatRow,
   computeAvailableTabs,
@@ -258,15 +257,6 @@ test('the bar is a share of the larger value in the same row, not a score out of
   const possession = compareStatRow({ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 58, away: 42 });
   assert.equal(possession.unitIsPercent, true);
   assert.ok(possession.bar.home > 0.99 && possession.bar.home <= 1);
-});
-
-test('the numeric summary is only said when both sides are present', () => {
-  const facts = analysisFacts([...STAT_INPUT, { key: 'tackles', label: 'التدخلات', home: 12, away: null }]);
-  assert.ok(facts.length > 0);
-  assert.equal(facts.every(row => row.both), true, 'no one-sided row may be phrased as "X مقابل Y"');
-  assert.equal(facts.some(row => row.key === 'tackles'), false);
-  assert.equal(facts.some(row => row.key === 'redCards'), false, 'one side has no number, so the pair is not said');
-  assert.ok(facts.some(row => row.key === 'shotsOnTarget'), 'the shots-on-target pair is exactly what a reader asked to see');
 });
 
 /* ── 2) أحداث المصدر: الوصف والعدّ والفلاتر ───────────────────────── */

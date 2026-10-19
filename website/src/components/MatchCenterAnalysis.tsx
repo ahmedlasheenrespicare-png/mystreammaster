@@ -3,7 +3,6 @@ import {
   EVENT_FILTER_ALL,
   EVENT_FILTER_DEFAULTS,
   activeEventFilterCount,
-  analysisFacts,
   analysisIsAvailable,
   describeEvent,
   displayableStatistics,
@@ -35,6 +34,9 @@ import type { PanelProps } from './MatchCenterPanels';
    • الفلاتر تُشتق من الأحداث الموجودة، فتطابق المصدر دائماً؛ ولا خيار ميت.
    • الحدث المختار يُحدَّد هنا وفي شريط الملعب معاً بنفس المفتاح — موضع واحد
      للحالة، فلا تتباعد اللوحتان عن بعضهما.
+   • الترتيب قرار تحريري مثبت: «إحصائيات الفريقين» تفتح التبويب، ولا «ملخص
+     وقائع» ولا «ملخص أرقام» قبلها — الجدول نفسه هو الملخص، ولا نسخة ثانية
+     من الأرقام تتباعد عنه. عدّ الأحداث يبقى في قسم الأحداث حيث يُفحص.
 ========================================================================== */
 
 function cleanText(value: unknown): string | null {
@@ -68,7 +70,7 @@ function FilterSelect({ id, label, value, onChange, options, allLabel }: {
   );
 }
 
-export default function MatchCenterAnalysis({ match, snapshot, status, tools }: PanelProps) {
+export default function MatchCenterAnalysis({ match, snapshot, tools }: PanelProps) {
   const [filters, setFilters] = useState(EVENT_FILTER_DEFAULTS);
   const events = useMemo(() => renderableEvents(snapshot?.events ?? null), [snapshot]);
   const statistics = useMemo(() => displayableStatistics(snapshot?.statistics ?? null), [snapshot]);
@@ -76,7 +78,6 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
   const awayName = cleanText(match.away.name) ?? cleanText(match.away.sourceName) ?? 'الضيف';
   const summary = useMemo(() => summarizeSourceEvents(events), [events]);
   const choices = useMemo(() => eventFilterOptions(events, { homeName, awayName }), [events, homeName, awayName]);
-  const facts = useMemo(() => analysisFacts(statistics), [statistics]);
   const visible = useMemo(() => filterEvents(events, filters), [events, filters]);
   const activeCount = activeEventFilterCount(filters);
 
@@ -86,35 +87,31 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
   const selected = tools?.selectedEvent ?? null;
   const setFilter = (key: 'team' | 'period' | 'type') => (next: string) =>
     setFilters(current => ({ ...current, [key]: next }));
-  const clock = cleanText(status?.clock);
-  const statusLabel = cleanText(status?.label);
 
   return (
     <div className="mc-analysis">
-      <h3>ملخص الوقائع</h3>
-      <p>
-        الوقائع الواردة من المصدر فقط: {numberLabel(summary.total)} حدثاً
-        {statistics.length > 0 ? ` و${numberLabel(statistics.length)} رقماً للفريقين` : ''}
-        {statusLabel ? ` — ${statusLabel}` : ''}
-        {clock ? <> · <span className="mc-num" dir="ltr">{clock}</span></> : null}
-      </p>
-
-      {facts.length > 0 && (
-        <section aria-labelledby="mc-analysis-facts-title">
-          <h3 id="mc-analysis-facts-title">ملخص الأرقام</h3>
-          <ul className="mc-analysis-facts">
-            {facts.map(row => (
-              <li className="mc-analysis-fact" key={row.key || row.label}>
-                <span className="mc-analysis-fact-label">{row.label}</span>
-                <span className="mc-analysis-fact-values">
-                  <bdi className="mc-num">{numberLabel(row.home as number)}{row.unitIsPercent ? '%' : row.unit ? ` ${row.unit}` : ''}</bdi>
-                  <span className="mc-analysis-fact-vs">مقابل</span>
-                  <bdi className="mc-num">{numberLabel(row.away as number)}{row.unitIsPercent ? '%' : row.unit ? ` ${row.unit}` : ''}</bdi>
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mc-note">لا يُشتق من هذه الأرقام حكم: لا «سيطرة»، ولا «فرصة أخطر»، ولا وصف تكتيكي.</p>
+      {/* إحصائيات الفريقين تفتح التبويب: الجدول ومقارنة بمتوسط الدوري أولاً،
+          والأرقام الختامية نفسها التي ثبتت بعد صافرة النهاية. */}
+      {statistics.length > 0 && (
+        <section aria-labelledby="mc-analysis-stats-title">
+          <h3 id="mc-analysis-stats-title">إحصائيات الفريقين</h3>
+          <MatchCenterStatGroups
+            statistics={statistics}
+            homeName={homeName}
+            awayName={awayName}
+            logos={snapshot?.logos ?? null}
+            idPrefix="analysis"
+            headingLevel="h4"
+          />
+          {/* بعد المباراة تثبت هذه القراءة أرشيفاً ختامياً بالأرقام نفسها. */}
+          <MatchCenterLeagueBenchmark
+            statistics={statistics}
+            homeName={homeName}
+            awayName={awayName}
+            leagueId={match.leagueId}
+            competitionName={match.competitionName}
+            headingLevel="h4"
+          />
         </section>
       )}
 
@@ -191,29 +188,6 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
               ))}
             </ul>
           )}
-        </section>
-      )}
-
-      {statistics.length > 0 && (
-        <section aria-labelledby="mc-analysis-stats-title">
-          <h3 id="mc-analysis-stats-title">إحصائيات الفريقين</h3>
-          <MatchCenterStatGroups
-            statistics={statistics}
-            homeName={homeName}
-            awayName={awayName}
-            logos={snapshot?.logos ?? null}
-            idPrefix="analysis"
-            headingLevel="h4"
-          />
-          {/* بعد المباراة تثبت هذه القراءة أرشيفاً ختامياً بالأرقام نفسها. */}
-          <MatchCenterLeagueBenchmark
-            statistics={statistics}
-            homeName={homeName}
-            awayName={awayName}
-            leagueId={match.leagueId}
-            competitionName={match.competitionName}
-            headingLevel="h4"
-          />
         </section>
       )}
 

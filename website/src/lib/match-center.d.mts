@@ -370,7 +370,6 @@ export const STAT_GROUP_FALLBACK: { id: string; label: string };
 export function compareStatRow(stat: StatPair | null | undefined): StatComparisonRow;
 export function groupIndex(rows: StatComparisonRow[] | null | undefined): GroupIndex | null;
 export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
-export function analysisFacts(statistics: StatPair[] | null | undefined): StatComparisonRow[];
 
 /** شريط الاستحواذ البارز — `null` ما لم تصل النسبتان رقميتين معاً. */
 export interface PossessionSplit { home: number; away: number; homeShare: number; awayShare: number }

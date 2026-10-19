@@ -1516,17 +1516,6 @@ export function pitchCounters(statistics, side) {
   });
 }
 
-/**
- * ملخص رقمي موجز: صفّان حاضران فقط. لا «سيطرة»، ولا «أفضلية»، ولا جودة
- * فرص — هذه أرقام Source لا تُثبت شيئاً منها، والبند 6 يمنع استنتاجاً من
- * أرقام لا تحتمله.
- */
-export function analysisFacts(statistics) {
-  return displayableStatistics(statistics)
-    .map(compareStatRow)
-    .filter(row => row.both);
-}
-
 /* ───────────────────────── عدد أحداث المصدر كما وردت ───────────────────────── */
 
 /** وقائع معدودة لا استنتاجات: كم حدثاً وصل، وكيف توزّع، وكم ملغى. */

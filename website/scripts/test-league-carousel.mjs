@@ -102,28 +102,120 @@ test('the matches hub renders the league stats bar with prerendered numbers for 
   assert.equal(bar.find('.league-carousel-dot').length, 1);
 });
 
-test('leader banners are prerendered with local-only crests and a permanent initials fallback', async () => {
+test('leader banners take crests from the live match-card source, with local then initials fallback', async () => {
   const { leagueStandingsByLeague } = await import('../src/lib/standings.mjs');
   const { cleanTeamName } = await import('../src/lib/fixtures-archive.mjs');
   const snapshot = JSON.parse(await fs.readFile(new URL('src/content/standings-snapshot.json', website), 'utf8'));
   const ids = ['uefa.champions', 'eng.1', 'fra.1', 'esp.1', 'ger.1', 'ita.1', 'ksa.1', 'egy.1'];
+  /* الخريطة المركزية في StandingsRatesCard.tsx — الشعار المحلي البديل بعد فشل
+     صورة المصدر. مفتاحها الاسم بعد cleanTeamName وتصغيره. */
+  const LOCAL = {
+    'paris saint-germain': 'paris-saint-germain',
+    'manchester city': 'manchester-city',
+    'as monaco': 'as-monaco',
+    'barcelona': 'barcelona',
+    'sc freiburg': 'sc-freiburg',
+    'internazionale': 'internazionale',
+    'al qadsiah': 'al-qadsiah',
+    'al assiouty sport': 'pyramids-fc',
+  };
+  /* مضيفا الشعارات المعتمدان فقط: ESPN (بطاقات المباريات الحيّة) وHighlightly */
+  const LIVE = /^https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/[1-9]\d{0,11}\.png$/;
+  const HIGHLIGHTLY = /^https:\/\/highlightly\.net\/soccer\/images\/teams\/[1-9]\d{0,11}\.png$/;
   const cards = matchesPage('.matches-league-links .league-carousel-item');
+  assert.equal(cards.length, 8);
   for (const [index, card] of cards.toArray().entries()) {
     const scope = matchesPage(card);
-    const leader = leagueStandingsByLeague(snapshot, ids[index]).entries.find(team => team.rank === 1);
-    assert.ok(scope.find('.league-carousel-leader').text().includes(cleanTeamName(leader.name)));
+    const table = leagueStandingsByLeague(snapshot, ids[index]);
+    const leader = table.entries.find(team => team.rank === 1);
+    const name = cleanTeamName(leader.name);
+    const key = name.toLowerCase();
+    const localSrc = `/images/teams/${LOCAL[key]}-club-badge.webp`;
+    assert.ok(LOCAL[key], `متصدّر بلا شعار محلي بديل: ${key}`);
+    assert.ok(scope.find('.league-carousel-leader').text().includes(name));
+    /* البديل مرسوم دائماً تحت الصورة، لا يُستبدل بها */
     assert.equal(scope.find('.league-carousel-monogram').length, 1);
+    assert.equal(
+      scope.find('.league-carousel-monogram > span').first().text(),
+      name.split(/\s+/).slice(0, 2).map(word => word[0].toUpperCase()).join(''),
+    );
     assert.equal(scope.find('.league-carousel-monogram small').text(), '#1');
-    for (const image of scope.find('.league-carousel-leader-logo').toArray()) {
+
+    /* شعار المزوّد نفسه: ESPN لبطولاته، وHighlightly (الدوري المصري) من
+       مضيف صور الفرق الرسمي للمزوّد — بلا تركيب عنوان ESPN لمعرّف ليس ESPN. */
+    const expected = table.provider === 'ESPN'
+      ? `https://a.espncdn.com/i/teamlogos/soccer/500/${leader.teamId}.png`
+      : `https://highlightly.net/soccer/images/teams/${leader.teamId}.png`;
+
+    const images = scope.find('.league-carousel-banner img');
+    assert.equal(images.length, 1, `${key}: شعار واحد في البانر`);
+    for (const image of images.toArray()) {
       const img = matchesPage(image);
-      assert.match(img.attr('src'), /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/);
-      await fs.access(new URL(`..${img.attr('src')}`, website));
+      const src = img.attr('src');
+      assert.equal(src, expected, `${key}: مصدر الشعار غير مطابق`);
+      assert.equal(img.attr('data-crest-source'), table.provider === 'ESPN' ? 'espn' : 'highlightly');
+      /* المضيفان المسموحان وحدهما: ESPN (بطاقات المباريات الحيّة) وHighlightly */
+      if (/^https?:/.test(src)) {
+        assert.match(src, table.provider === 'ESPN' ? LIVE : HIGHLIGHTLY, `${key}: مضيف شعار غير معتمد: ${src}`);
+      } else {
+        assert.match(src, /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/, `${key}: مسار محلي غير معتمد`);
+      }
+      /* الملف المحلي البديل موجود في مصدر النشر وفي الشجرة المنشورة معاً */
+      for (const base of [new URL('public/', website), new URL('../', website)]) {
+        const file = await fs.readFile(new URL(`.${localSrc}`, base));
+        assert.equal(file.subarray(0, 4).toString(), 'RIFF', `${key}: ${localSrc} ليس WebP`);
+        assert.equal(file.subarray(8, 12).toString(), 'WEBP', `${key}: ${localSrc} ليس WebP`);
+        assert.ok(file.length > 1000, `${key}: ${localSrc} صغير بشكل غير معقول`);
+      }
       assert.equal(img.attr('alt'), '');
       assert.equal(img.attr('aria-hidden'), 'true');
       assert.equal(img.attr('loading'), 'lazy');
       assert.equal(img.attr('draggable'), 'false');
       assert.ok(Number(img.attr('width')) > 0 && Number(img.attr('height')) > 0);
     }
+    /* لا مضيف ثالث داخل البانر */
+    for (const image of scope.find('.league-carousel-banner img').toArray()) {
+      const src = matchesPage(image).attr('src') || '';
+      if (/^(?:https?:)?\/\//.test(src)) assert.match(src, new RegExp(`${LIVE.source}|${HIGHLIGHTLY.source}`), `${key}: مصدر خارجي غير معتمد: ${src}`);
+    }
   }
-  assert.equal(cards.find('.league-carousel-leader-logo').length, 3);
+  assert.equal(cards.find('.league-carousel-leader-logo').length, 8);
+});
+
+test('the temporary provider crest bridge is limited to the two approved logo hosts', async () => {
+  const { liveCardsTeamLogo, highlightlyTeamLogo, providerTeamLogo, isApprovedCrestUrl, LEADER_CREST_SOURCE } = await import('../src/lib/leader-logo.mjs');
+  assert.equal(LEADER_CREST_SOURCE, 'live-cards', 'جسر المزوّد المؤقت مفعّل بطلب المالك');
+
+  // ESPN — بطاقات المباريات الحيّة
+  assert.equal(liveCardsTeamLogo({ teamId: '160', provider: 'ESPN' }), 'https://a.espncdn.com/i/teamlogos/soccer/500/160.png');
+  assert.equal(liveCardsTeamLogo({ teamId: '22022', provider: 'ESPN' }), 'https://a.espncdn.com/i/teamlogos/soccer/500/22022.png');
+  assert.equal(liveCardsTeamLogo({ teamId: '882420', provider: 'Highlightly' }), null);
+  assert.equal(liveCardsTeamLogo({ teamId: '..\/evil', provider: 'ESPN' }), null);
+  assert.equal(liveCardsTeamLogo({ teamId: '0', provider: 'ESPN' }), null);
+  assert.equal(liveCardsTeamLogo({ teamId: '', provider: 'ESPN' }), null);
+  assert.equal(liveCardsTeamLogo({ provider: 'ESPN' }), null);
+
+  // Highlightly — الدوري المصري
+  assert.equal(highlightlyTeamLogo({ teamId: '882420', provider: 'Highlightly' }), 'https://highlightly.net/soccer/images/teams/882420.png');
+  assert.equal(highlightlyTeamLogo({ teamId: '160', provider: 'ESPN' }), null);
+  assert.equal(highlightlyTeamLogo({ teamId: '882420/../1', provider: 'Highlightly' }), null);
+  assert.equal(highlightlyTeamLogo({ teamId: '0', provider: 'Highlightly' }), null);
+
+  // الموزّع: يفضّل حقلاً صريحاً معتمداً، وإلا مضيف المزوّد، وإلا لا شيء
+  assert.equal(providerTeamLogo({ teamId: '160', provider: 'ESPN' }), 'https://a.espncdn.com/i/teamlogos/soccer/500/160.png');
+  assert.equal(providerTeamLogo({ teamId: '882420', provider: 'Highlightly' }), 'https://highlightly.net/soccer/images/teams/882420.png');
+  assert.equal(
+    providerTeamLogo({ teamId: '882420', provider: 'Highlightly', logo: 'https://highlightly.net/soccer/images/teams/882420.png' }),
+    'https://highlightly.net/soccer/images/teams/882420.png',
+  );
+  assert.equal(providerTeamLogo({ teamId: '882420', provider: 'Highlightly', logo: 'https://evil.example/crest.png' }), 'https://highlightly.net/soccer/images/teams/882420.png');
+  assert.equal(providerTeamLogo({ teamId: '882420', provider: 'Other' }), null);
+  assert.equal(providerTeamLogo({ provider: 'Highlightly' }), null);
+
+  // قائمة المضيفين المعتمدين
+  assert.equal(isApprovedCrestUrl('https://a.espncdn.com/i/teamlogos/soccer/500/160.png'), true);
+  assert.equal(isApprovedCrestUrl('https://highlightly.net/soccer/images/teams/882420.png'), true);
+  assert.equal(isApprovedCrestUrl('http://highlightly.net/soccer/images/teams/882420.png'), false);
+  assert.equal(isApprovedCrestUrl('https://highlightly.net.evil.example/soccer/images/teams/882420.png'), false);
+  assert.equal(isApprovedCrestUrl('https://cdn.example/team.png'), false);
 });

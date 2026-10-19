@@ -42,6 +42,31 @@
       "slug": "barcelona",
       "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/spain/Barcelona.svg",
       "sha": "6a3f91ba246425fdd18a0283b566d00ce200b84f"
+    },
+    {
+      "slug": "as-monaco",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/france/AS_Monaco.svg",
+      "sha": "c95ef076f79a561aca2168c2c7de1f285e47a23d"
+    },
+    {
+      "slug": "sc-freiburg",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/germany/Freiburg.svg",
+      "sha": "015d023de9d08b70253a965fb851ddbc8f81caa0"
+    },
+    {
+      "slug": "internazionale",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/italy/Inter.svg",
+      "sha": "23fb71686fc2852b1229605ac8dc1957c05fd0d9"
+    },
+    {
+      "slug": "al-qadsiah",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/saudi-arabia/Al_Qadsiah.svg",
+      "sha": "073e3f502662a909374ee6ca734f18ed37e33afe"
+    },
+    {
+      "slug": "pyramids-fc",
+      "source": "https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/egypt/Pyramids_FC.svg",
+      "sha": "930dd618520cfbb68a071bc51611ea6e5e331c21"
     }
   ]
 }

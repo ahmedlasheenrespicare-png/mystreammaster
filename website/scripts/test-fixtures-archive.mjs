@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { ARCHIVE_LEAGUES, validateArchive, mergeArchive, archiveTeamStats, cleanTeamName, standingsRates, TACTIC_LABELS, computeLeagueAverages } from '../src/lib/fixtures-archive.mjs';
-import { normalizeEspn, normalizeHighlightly, summaryStatistics, collect } from './fetch-fixtures-archive.mjs';
+import { normalizeEspn, normalizeHighlightly, summaryStatistics, collect, dayRange } from './fetch-fixtures-archive.mjs';
 import { publish, buildArchiveDeployReport } from './publish-fixtures-archive.mjs';
 import { judgeEspnSummary, probeEspnSummary } from './probe-espn-summary.mjs';
 const now = '2026-10-17T12:00:00.000Z';
@@ -339,10 +339,23 @@ test('terms gate makes no network requests and produces a report for all leagues
   const r = await collect({ outDir: dir, approved: false, delayMs: 0, request: () => { throw new Error('must not call'); } });
   assert.equal(r.requests, 0); assert.equal(r.leagues.length, 12); assert(r.leagues.every(l => !l.ok && l.preserved));
 });
+test('dayRange is inclusive UTC and bounds the backfill window', () => {
+  assert.deepEqual(dayRange('2026-08-21', '2026-08-23'), ['2026-08-21', '2026-08-22', '2026-08-23']);
+  assert.throws(() => dayRange('2026-08-23', '2026-08-21'), /INVALID_WINDOW/);
+  assert.throws(() => dayRange('2025-01-01', '2027-01-01'), /WINDOW_OUT_OF_BOUNDS/);
+});
+test('backfill window override scopes one league and preserves the rest', async t => {
+  const dir = await temporary(t); let n = 0;
+  const r = await collect({ now: new Date(now), outDir: dir, archiveDir: path.join(dir, 'existing'), approved: true, highlightlyApproved: false, delayMs: 0, leagues: ['eng.1'], windowFrom: '2026-08-21', windowTo: '2026-08-23', request: async () => { const raw = espn(); raw.events[0].id = String(++n); return response(raw); } });
+  assert.deepEqual(r.window, { from: '2026-08-21', to: '2026-08-23', mode: 'backfill' });
+  assert.equal(r.leagues.length, 12);
+  assert.equal(r.leagues[0].ok, true); assert.equal(r.leagues[0].matchesInWindow, 3);
+  assert.equal(r.leagues.filter(l => l.code === 'OUT_OF_SCOPE_PRESERVED').length, 11);
+});
 test('whole-league failure never stages partial data; window is inclusive UTC 45 days', async t => {
   const dir = await temporary(t); let calls = 0;
   const r = await collect({ now: new Date(now), outDir: dir, archiveDir: path.join(dir, 'existing'), approved: true, highlightlyApproved: false, delayMs: 0, request: async () => { calls++; return calls === 1 ? response(espn()) : { ok: false, status: 429 }; } });
-  assert.deepEqual(r.window, { from: '2026-09-17', to: '2026-10-31' });
+  assert.deepEqual(r.window, { from: '2026-09-17', to: '2026-10-31', mode: 'rolling' });
   assert(r.leagues.every(l => !l.ok)); await assert.rejects(fs.access(path.join(dir, 'archive/eng.1/2026.json')));
 });
 test('collector uses source season, merges history; publisher revalidates and preserves failed leagues', async t => {

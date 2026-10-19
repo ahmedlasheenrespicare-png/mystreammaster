@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-19T00:08:20.343Z",
+  "generatedAt": "2026-10-19T05:46:36.232Z",
   "source": "content/fixtures-archive (verified provider records only)",
   "definition": "متوسط لكل فريق في المباراة الواحدة، من مباريات منتهية حملت أرقام الطرفين معاً؛ عينة أدنى من 10 مباريات تُسقط البطولة.",
   "leagues": {
     "eng.1": {
       "season": "2026",
-      "matches": 25,
+      "matches": 65,
       "possession": 50,
-      "shots": 14.2,
-      "passAccuracy": 81.2
+      "shots": 13.8,
+      "passAccuracy": 81.6
     },
     "esp.1": {
       "season": "2026",

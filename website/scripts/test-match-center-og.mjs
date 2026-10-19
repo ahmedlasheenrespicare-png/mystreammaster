@@ -45,8 +45,8 @@ test('النهائية ترفض غير المنتهية والنتيجة الن�
 });
 
 test('كل مباراة مسجلة لها صورتها التمهيدية على القرص بأبعاد PNG صحيحة', async () => {
-  const { MATCH_CENTER_ALL_MATCHES } = await import('../src/content/match-center.mjs');
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  const { MATCH_CENTER_ALL_MATCHES, MATCH_CENTER_ITALIAN_MATCHES } = await import('../src/content/match-center.mjs');
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
   for (const match of MATCH_CENTER_ALL_MATCHES) {
     const file = path.join(website, `public/images/og/match-${match.slug}.png`);
     const buf = fs.readFileSync(file);

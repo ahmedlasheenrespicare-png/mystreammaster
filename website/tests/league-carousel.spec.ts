@@ -134,3 +134,27 @@ test('dragging the bar never opens a league page, and a swipe advances the page'
   await expect(page).toHaveURL(/\/matches\/$/);
   await expect(nav.locator('.league-carousel-dot').nth(1)).toHaveClass(/is-active/);
 });
+
+for (const width of [1440, 390]) {
+  test(`leader banners retain initials and geometry when crests fail (${width}px)`, async ({ page }) => {
+    await openHub(page, { width, height: 1000 });
+    const nav = page.locator('.matches-league-links.league-carousel');
+    const card = nav.locator('.league-carousel-item').first();
+    const banner = card.locator('.league-carousel-banner');
+    const image = banner.locator('img');
+    await card.scrollIntoViewIfNeeded();
+    await expect(card.locator('.league-carousel-leader')).toContainText('Paris Saint-Germain');
+    await expect(nav.locator('.league-carousel-banner')).toHaveCount(8);
+    await expect(nav.locator('.league-carousel-leader-logo')).toHaveCount(3);
+    await expect(image).toHaveAttribute('draggable', 'false');
+    await expect(image).toHaveCSS('object-fit', 'contain');
+    const before = (await banner.boundingBox())!;
+    expect(before.height).toBe(104);
+    expect(Math.abs(before.width - (await card.boundingBox())!.width)).toBeLessThanOrEqual(2);
+    await image.evaluate(element => element.dispatchEvent(new Event('error')));
+    await expect(image).toHaveCSS('visibility', 'hidden');
+    await expect(banner.locator('.league-carousel-monogram')).toBeVisible();
+    await expect(banner.locator('.league-carousel-monogram')).toContainText('PS');
+    expect((await banner.boundingBox())!.height).toBe(before.height);
+  });
+}

@@ -78,11 +78,10 @@
 .league-carousel-item {
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 186px;
-  min-height: 58px;
-  padding: 9px 13px;
+  flex-direction: column;
+  width: 268px;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid #e4e1d8;
   border-radius: 14px;
   background: #fff;
@@ -208,4 +207,63 @@
   .league-carousel-item {
     transition: none;
   }
+}
+
+/* لوحة المتصدّر: البديل موجود دائماً، والشعار المحلي يغطيه عند نجاح التحميل. */
+.league-carousel-banner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 104px;
+  flex: 0 0 auto;
+  background: linear-gradient(125deg, #edf5f3, #e3ebf8);
+  border-bottom: 1px solid #dce5ec;
+}
+
+.league-carousel-monogram {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 80px;
+  border: 1px solid #b7c9cf;
+  border-radius: 18px 18px 26px 26px;
+  background: linear-gradient(145deg, #fff, #d8e7eb);
+  color: #244859;
+  box-shadow: 0 5px 14px #24485912;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.league-carousel-monogram small {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.league-carousel-leader-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  object-fit: contain;
+  background: linear-gradient(125deg, #edf5f3, #e3ebf8);
+}
+
+.league-carousel-leader {
+  width: 100%;
+  padding: 9px 12px 0;
+  color: #526571;
+  font-size: 0.66rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.league-carousel-caption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px 12px;
+  margin-top: auto;
 }

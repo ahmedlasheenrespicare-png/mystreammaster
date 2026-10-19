@@ -81,7 +81,7 @@ function matchWord(n: number): string {
 }
 
 /* درع/مونوغرام أنيق: الأحرف الأولى لحدٍّ أقصى كلمتين + المركز في الجدول */
-function teamInitials(name: string): string {
+export function teamInitials(name: string): string {
   const words = name.split(/\s+/).filter(Boolean);
   const out = words.slice(0, 2).map((w) => (w[0] ?? '').toUpperCase()).join('');
   return out || '؟';

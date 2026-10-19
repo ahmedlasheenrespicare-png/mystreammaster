@@ -367,7 +367,7 @@ function Team({ match, snapshot, side, flash }: {
       <span className="mc-pitch-team-role">{side === 'home' ? 'المضيف' : 'الضيف'}</span>
       {/* صفراء/حمراء/ركنيات من جدول الإحصائيات نفسه؛ الحبّة بلا قيمة تُحذف، وبلا أي قيمة لا صف. */}
       {counters.length > 0 && (
-        <ul className="mc-pitch-counters" aria-label={`بطاقات وركنيات ${side === 'home' ? 'المضيف' : 'الضيف'}`}>
+        <ul className="mc-pitch-counters" aria-label={`بطاقات ${side === 'home' ? 'المضيف' : 'الضيف'}`}>
           {counters.map(counter => (
             <li className="mc-pitch-counter" data-counter={counter.id} key={counter.id}>
               <i aria-hidden="true" />

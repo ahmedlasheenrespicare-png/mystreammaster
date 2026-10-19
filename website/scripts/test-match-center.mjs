@@ -51,6 +51,7 @@ import {
   MATCH_CENTER_COMPETITION,
   MATCH_CENTER_MATCHES,
   MATCH_CENTER_ALL_MATCHES,
+  MATCH_CENTER_ITALIAN_MATCHES,
   MATCH_CENTER_ENGLISH_MATCHES,
   MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES,
   MATCH_CENTER_ENGLISH_20261018_20261023_RANGES,
@@ -1283,7 +1284,7 @@ test('all verified fixtures have independent stable routes with no state, score 
   // from preview to live to the final report.
   const routes = matchCenterRoutes();
   assert.equal(routes.length, MATCH_CENTER_ALL_MATCHES.length);
-  assert.equal(routes.length, 624);
+  assert.equal(routes.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
   assert.equal(new Set(routes).size, routes.length, 'unique');
   const stateWords = ['preview', 'live', 'report', 'halftime', 'finished', 'scheduled', 'postponed', 'lineups', 'history'];
   for (const route of routes) {
@@ -1357,8 +1358,8 @@ test('the English Oct 18–23 output is source-bound by event, team IDs, sides, 
   assert.equal(MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES.length, 6);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320, 'the five Oct 17 fixtures stay alongside the three hundred fifteen received fixtures');
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1414,8 +1415,8 @@ test('the English Oct 24–30 output binds all nine event IDs, team sides, venue
   assert.equal(MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES.length, 6);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320, 'the five Oct 17 and three hundred fifteen received fixtures remain in the league set');
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1474,8 +1475,8 @@ test('the English Oct 31–Nov 6 output binds all eleven event IDs, team sides, 
   assert.equal(MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES.length, 6);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1533,8 +1534,8 @@ test('the English Nov 7–13 output binds all nine event IDs, team sides, venues
   assert.equal(MATCH_CENTER_ENGLISH_20261018_20261023_MATCHES.length, 6);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1568,7 +1569,7 @@ test('the empty English Nov 14–20 output is audit-only and does not infer seas
     return start <= day && day <= end;
   }), [], 'an empty output creates no English fixture or indexed page');
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 });
 
 test('the English Nov 21–27 output binds all eleven event IDs, team sides, venues and UTC kickoffs before indexing', () => {
@@ -1638,8 +1639,8 @@ test('the English Nov 21–27 output binds all eleven event IDs, team sides, ven
   assert.equal(MATCH_CENTER_ENGLISH_20261121_20261127_MATCHES.length, 11);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1718,8 +1719,8 @@ test('the English Nov 28–Dec 4 output binds all nineteen event IDs, team sides
   assert.equal(MATCH_CENTER_ENGLISH_20261128_20261204_MATCHES.length, 19);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1789,8 +1790,8 @@ test('the English Dec 5–11 output binds all ten event IDs and distinguishes th
   assert.equal(MATCH_CENTER_ENGLISH_20261205_20261211_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1871,8 +1872,8 @@ test('the English Dec 12–18 output binds all ten event IDs and stays separate 
   assert.equal(MATCH_CENTER_ENGLISH_20261212_20261218_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -1953,8 +1954,8 @@ test('the English Dec 19–25 output binds all ten event IDs and stays separate 
   assert.equal(MATCH_CENTER_ENGLISH_20261219_20261225_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source ids remain unique');
 });
 
@@ -2073,8 +2074,8 @@ test('all received English follow-up weeks bind source identities, fixtures and 
   assert.equal(totalReceived, 220);
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'all 320 English and 300 Spanish source IDs remain unique');
 });
 
@@ -2144,8 +2145,8 @@ test('empty English weeks stay audit-only, separate from esp.1, and do not imply
 
   assert.equal(MATCH_CENTER_ENGLISH_MATCHES.length, 320);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length);
 });
 
 test('the eight received esp.1 windows match fixture IDs, home/away IDs and names before indexing', () => {
@@ -2167,11 +2168,11 @@ test('the eight received esp.1 windows match fixture IDs, home/away IDs and name
   assert.equal(verification.receivedTeams.length, 140);
   assert.equal(MATCH_CENTER_SPANISH_20261017_20261211_MATCHES.length, 70);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const eventIds = verification.receivedEvents.map(event => event.id);
   assert.equal(new Set(eventIds).size, 70, 'event ids are unique in the received batch');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620, 'no event id is shared across competitions');
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length, 'no event id is shared across competitions');
   const receivedByEvent = new Map(verification.receivedEvents.map(event => [event.id, event]));
   const teamsByEvent = new Map();
   const canonicalTeamNames = new Map();
@@ -2245,13 +2246,13 @@ test('the complete December 12–18 and reconstructed December 19–25 ranges ma
   assert.equal(verification.receivedTeams.length, 140);
   assert.equal(MATCH_CENTER_SPANISH_20261212_20270205_MATCHES.length, 70);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
   assert.deepEqual(
     MATCH_CENTER_SPANISH_20261212_20270205_MATCHES.map(match => match.externalIds.espn),
     verification.receivedEvents.map(event => event.id),
     'fixture IDs are the exact IDs from the visible source objects, in received order',
   );
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'the visible source event IDs do not collide with any existing fixture');
 
   const receivedByEvent = new Map(verification.receivedEvents.map(event => [event.id, event]));
@@ -2325,7 +2326,7 @@ test('the complete February 6–12 esp.1 output maps all ten received event and 
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270206_20270212_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882706', '401882705', '401882700', '401882703', '401882702',
@@ -2334,7 +2335,7 @@ test('the complete February 6–12 esp.1 output maps all ten received event and 
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270206_20270212_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the received event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'the ten new IDs do not collide with an existing fixture');
 
   const sourceTeams = [
@@ -2399,7 +2400,7 @@ test('the complete February 13–19 esp.1 output matches the ten received event 
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270213_20270219_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882696', '401882695', '401882694', '401882693', '401882692',
@@ -2408,7 +2409,7 @@ test('the complete February 13–19 esp.1 output matches the ten received event 
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270213_20270219_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the newly received IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'the new IDs do not collide with an existing fixture');
 
   const sourceTeams = [
@@ -2474,7 +2475,7 @@ test('the complete February 20–26 esp.1 output binds all ten received events a
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270220_20270226_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882686', '401882685', '401882684', '401882681', '401882683',
@@ -2483,7 +2484,7 @@ test('the complete February 20–26 esp.1 output binds all ten received events a
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270220_20270226_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'new event IDs are unique within the received week');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs collides with a previously indexed event');
 
   const sourceTeams = [
@@ -2550,7 +2551,7 @@ test('the complete February 27–March 5 esp.1 output matches each received even
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270227_20270305_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882676', '401882674', '401882673', '401882672', '401882671',
@@ -2559,7 +2560,7 @@ test('the complete February 27–March 5 esp.1 output matches each received even
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270227_20270305_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const sourceTeams = [
@@ -2627,7 +2628,7 @@ test('the complete March 6–12 esp.1 output matches each received event, venue 
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270306_20270312_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882666', '401882665', '401882661', '401882664', '401882663',
@@ -2636,7 +2637,7 @@ test('the complete March 6–12 esp.1 output matches each received event, venue 
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270306_20270312_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const sourceTeams = [
@@ -2705,7 +2706,7 @@ test('the complete March 13–19 esp.1 output matches each received event, venue
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270313_20270319_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882656', '401882655', '401882652', '401882653', '401882651',
@@ -2714,7 +2715,7 @@ test('the complete March 13–19 esp.1 output matches each received event, venue
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270313_20270319_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const sourceTeams = [
@@ -2784,7 +2785,7 @@ test('the complete March 20–26 esp.1 output matches each received event, venue
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270320_20270326_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882646', '401882645', '401882644', '401882643', '401882642',
@@ -2793,7 +2794,7 @@ test('the complete March 20–26 esp.1 output matches each received event, venue
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270320_20270326_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const sourceTeams = [
@@ -2869,7 +2870,7 @@ test('the complete April 3–9 esp.1 output matches each received event, venue a
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270403_20270409_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882636', '401882632', '401882634', '401882633', '401882631',
@@ -2878,7 +2879,7 @@ test('the complete April 3–9 esp.1 output matches each received event, venue a
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270403_20270409_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const sourceTeams = [
@@ -2963,7 +2964,7 @@ test('the complete April 10–16 esp.1 output matches each received event, venue
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270410_20270416_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882626', '401882625', '401882624', '401882623', '401882622',
@@ -2972,7 +2973,7 @@ test('the complete April 10–16 esp.1 output matches each received event, venue
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270410_20270416_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const sourceTeams = [
@@ -3056,7 +3057,7 @@ test('the complete April 17–23 esp.1 output matches all twenty received events
   assert.equal(verification.receivedTeams.length, 40);
   assert.equal(MATCH_CENTER_SPANISH_20270417_20270423_MATCHES.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882616', '401882615', '401882611', '401882613', '401882612',
@@ -3067,7 +3068,7 @@ test('the complete April 17–23 esp.1 output matches all twenty received events
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270417_20270423_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 20, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
 
   const expectedDates = [
@@ -3157,7 +3158,7 @@ test('the complete May 1–7 esp.1 output matches each received event, venue and
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270501_20270507_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   const expectedEventIds = [
     '401882596', '401882591', '401882594', '401882593', '401882592',
@@ -3166,7 +3167,7 @@ test('the complete May 1–7 esp.1 output matches each received event, venue and
   assert.deepEqual(verification.receivedEvents.map(event => event.id), expectedEventIds);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270501_20270507_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the new source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new IDs overlaps an existing fixture');
   assert.deepEqual(verification.receivedEvents.map(event => event.date), Array(10).fill('2027-05-02T18:00Z'));
 
@@ -3256,7 +3257,7 @@ test('the complete May 8–14 esp.1 output matches every event, venue, team id a
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270508_20270514_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   // Exact values copied from the user's output, in its source order:
   // [event, UTC date, event name, venue, home ID/name, away ID/name].
@@ -3285,7 +3286,7 @@ test('the complete May 8–14 esp.1 output matches every event, venue, team id a
   const expectedEventIds = expected.map(([id]) => id);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270508_20270514_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new event IDs overlaps another fixture');
   assert.deepEqual(verification.receivedEvents.map(event => event.date), Array(10).fill('2027-05-09T18:00Z'));
 
@@ -3365,7 +3366,7 @@ test('the complete May 15–21 esp.1 output matches every event, venue, team id 
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270515_20270521_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   // Exact values copied from the user's output, in its source order:
   // [event, UTC date, event name, venue, home ID/name, away ID/name].
@@ -3394,7 +3395,7 @@ test('the complete May 15–21 esp.1 output matches every event, venue, team id 
   const expectedEventIds = expected.map(([id]) => id);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270515_20270521_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new event IDs overlaps another fixture');
   assert.deepEqual(verification.receivedEvents.map(event => event.date), Array(10).fill('2027-05-16T18:00Z'));
 
@@ -3469,7 +3470,7 @@ test('the complete May 22–28 esp.1 output matches every event, venue, team id 
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270522_20270528_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   // Exact values copied from the user's output, in its source order:
   // [event, UTC date, event name, venue, home ID/name, away ID/name].
@@ -3498,7 +3499,7 @@ test('the complete May 22–28 esp.1 output matches every event, venue, team id 
   const expectedEventIds = expected.map(([id]) => id);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270522_20270528_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new event IDs overlaps another fixture');
   assert.deepEqual(verification.receivedEvents.map(event => event.date), Array(10).fill('2027-05-23T18:00Z'));
 
@@ -3573,7 +3574,7 @@ test('the complete May 29–June 4 esp.1 output matches every event, venue, team
   assert.equal(verification.receivedTeams.length, 20);
   assert.equal(MATCH_CENTER_SPANISH_20270529_20270604_MATCHES.length, 10);
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 
   // Exact values copied from the user's output, in its source order:
   // [event, UTC date, event name, venue, home ID/name, away ID/name].
@@ -3602,7 +3603,7 @@ test('the complete May 29–June 4 esp.1 output matches every event, venue, team
   const expectedEventIds = expected.map(([id]) => id);
   assert.deepEqual(MATCH_CENTER_SPANISH_20270529_20270604_MATCHES.map(match => match.externalIds.espn), expectedEventIds);
   assert.equal(new Set(expectedEventIds).size, 10, 'the source event IDs are unique');
-  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620,
+  assert.equal(new Set(MATCH_CENTER_ALL_MATCHES.filter(m => m.externalIds.espn != null).map(m => m.externalIds.espn)).size, 620 + MATCH_CENTER_ITALIAN_MATCHES.length,
     'none of the new event IDs overlaps another fixture');
   assert.deepEqual(verification.receivedEvents.map(event => event.date), Array(10).fill('2027-05-30T18:00Z'));
 
@@ -3964,7 +3965,7 @@ test('the empty March 27–April 2 esp.1 window is recorded without inferring th
     match.kickoffUtc >= '2027-03-27T00:00:00Z' && match.kickoffUtc < '2027-04-03T00:00:00Z');
   assert.deepEqual(noFixtures, [], 'an empty output creates no fixture or indexed page');
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 });
 
 
@@ -3994,7 +3995,7 @@ test('the empty April 24–30 esp.1 window is recorded without inferring the sea
     match.kickoffUtc >= '2027-04-24T00:00:00Z' && match.kickoffUtc < '2027-05-01T00:00:00Z');
   assert.deepEqual(noFixtures, [], 'an empty output creates no fixture or indexed page');
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 });
 
 test('the empty June 5–7 esp.1 window bridges the scheduled and already-recorded empty ranges without inferring the season end', () => {
@@ -4029,7 +4030,7 @@ test('the empty June 5–7 esp.1 window bridges the scheduled and already-record
     match.kickoffUtc >= '2027-06-05T00:00:00Z' && match.kickoffUtc < '2027-06-08T00:00:00Z');
   assert.deepEqual(noFixtures, [], 'an empty output creates no fixture or indexed page');
   assert.equal(MATCH_CENTER_SPANISH_MATCHES.length, 300);
-  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624);
+  assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
 });
 
 

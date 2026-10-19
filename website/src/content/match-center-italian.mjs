@@ -76,11 +76,16 @@ function snapshotFromArchive(match, matchId) {
   };
 }
 
+const slugCounts = new Map();
 export const MATCH_CENTER_ITALIAN_MATCHES = archive.matches.map(match => {
   const id = `ita1-${match.id}`;
+  const baseSlug = `${teamSlug(match.home.name)}-vs-${teamSlug(match.away.name)}`;
+  const count = (slugCounts.get(baseSlug) ?? 0) + 1;
+  slugCounts.set(baseSlug, count);
+  const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`;
   return {
     id,
-    slug: `${teamSlug(match.home.name)}-vs-${teamSlug(match.away.name)}-${match.id}`,
+    slug,
     competitionSlug: MATCH_CENTER_ITALIAN_COMPETITION.slug,
     competitionName: MATCH_CENTER_ITALIAN_COMPETITION.name,
     leagueId: MATCH_CENTER_ITALIAN_COMPETITION.leagueId,

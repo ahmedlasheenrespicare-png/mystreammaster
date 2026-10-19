@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import archive from '../src/content/fixtures-archive/ita.1/2026.json' with { type: 'json' };
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   MATCH_CENTER_ITALIAN_COMPETITION,
   MATCH_CENTER_ITALIAN_MATCHES,
@@ -10,7 +12,18 @@ import {
   matchCenterPath,
 } from '../src/content/match-center.mjs';
 
+const archivePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src/content/fixtures-archive/ita.1/2026.json');
+const archive = JSON.parse(fs.readFileSync(archivePath, 'utf8'));
 const byId = new Map(archive.matches.map(match => [String(match.id), match]));
+
+test('archived Serie A pages consume their local snapshot and skip live polling', () => {
+  const hookPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src/components/useMatchCenter.ts');
+  const hook = fs.readFileSync(hookPath, 'utf8');
+  const archiveBranch = hook.indexOf('if (match.archivedSnapshot)');
+  const liveRead = hook.indexOf('fetchMatchSnapshot(match');
+  assert.ok(archiveBranch >= 0 && archiveBranch < liveRead, 'archive branch precedes the live transport');
+  assert.ok(hook.slice(archiveBranch, liveRead).includes('return;'), 'archive branch exits before transport');
+});
 
 test('Serie A Match Center bindings are a one-to-one projection of the local archive', () => {
   assert.equal(MATCH_CENTER_ITALIAN_COMPETITION.leagueId, 'ita.1');

@@ -20,7 +20,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 250px;
+  /* احسب عرض الكرت من مساحة المقاييس اللازمة، ثم دع الدوّارة تحدد عدد الكروت الظاهرة. */
+  width: 360px;
   padding: 12px 14px;
   border: 1px solid #eae7dd;
   border-radius: 14px;
@@ -54,14 +55,24 @@
   white-space: nowrap;
 }
 
-/* ثلاثة مقاييس في صف واحد: الرقم كبير ووحدته أصغر تحته، واسم الفريق بجانبه */
+/* ثلاثة مقاييس متجاورة أفقياً؛ داخل كل خلية الوسم ثم الرقم والوحدة ثم اسم الفريق. */
 .league-stats-metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  align-items: start;
+  gap: 10px;
   margin: 0;
   padding-top: 10px;
   border-top: 1px solid #eceadf;
+}
+
+.league-stats-metric {
+  min-width: 0;
+}
+
+.league-stats-metric + .league-stats-metric {
+  border-inline-start: 1px solid #eceadf;
+  padding-inline-start: 8px;
 }
 
 .league-stats-metric dt {
@@ -109,9 +120,15 @@
   overflow-wrap: anywhere;
 }
 
+@media (max-width: 900px) {
+  .league-stats-card {
+    width: min(340px, calc(100vw - 96px));
+  }
+}
+
 @media (max-width: 640px) {
   .league-stats-card {
-    width: calc(50vw - 40px);
+    width: min(320px, calc(100vw - 80px));
   }
 }
 

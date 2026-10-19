@@ -20,9 +20,11 @@ import {
   eventPeriodInfo,
   eventPeriodLabel,
   eventTypeFacet,
+  benchmarkDirection,
   filterEvents,
   groupIndex,
   groupStatistics,
+  leagueBenchmark,
   headToHeadFor,
   normalizeEvent,
   normalizeStatus,
@@ -155,6 +157,46 @@ test('group index: real zeros are equal halves and counted, absent sides never e
   assert.equal(index.comparable, 2);
   assert.equal(index.unavailable, 1);
   assert.deepEqual(index.tally, { home: 1, away: 0, equal: 1 });
+});
+
+/* ── 1ج) مقارنة بمتوسط الدوري: كمية مقابل أساس معلن، لا حكم ───────────── */
+
+const LEAGUE_AVERAGES = { matches: 25, possession: 50, shots: 14.2, passAccuracy: 81.2 };
+
+test('league benchmark compares each side with the documented average, side by side', () => {
+  const benchmark = leagueBenchmark([
+    { key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 41.8, away: 58.2 },
+    { key: 'totalShots', label: 'التسديدات', unit: '', home: 9, away: 17 },
+    { key: 'passPct', label: 'دقة التمرير', unit: '%', home: 76.1, away: null },
+  ], LEAGUE_AVERAGES);
+  assert.equal(benchmark.matches, 25);
+  assert.deepEqual(benchmark.rows.map(row => row.key), ['possessionPct', 'totalShots', 'passPct']);
+  const possession = benchmark.rows[0];
+  assert.equal(possession.average, 50);
+  assert.equal(possession.home.value, 41.8);
+  // الفارق دقيق قبل التقريب؛ والتقريب مهمة العرض وحده.
+  assert.ok(Math.abs(possession.home.delta - (41.8 - 50)) < 1e-12);
+  assert.equal(benchmarkDirection(possession.home.delta), 'below');
+  assert.equal(benchmarkDirection(possession.away.delta), 'above');
+  // طرف بلا رقم يبقى «غير متاح» ولا يُستكمل صفراً ولا يُحسب فرقه.
+  const passing = benchmark.rows[2];
+  assert.equal(passing.home.value, 76.1);
+  assert.equal(passing.away, null);
+  // مقياس بلا رقم عند الطرفين لا يدخل المقارنة أصلاً.
+  const silent = leagueBenchmark([{ key: 'totalShots', label: 'التسديدات', unit: '', home: null, away: null }], LEAGUE_AVERAGES);
+  assert.equal(silent, null);
+});
+
+test('league benchmark refuses to speak without a documented base', () => {
+  assert.equal(leagueBenchmark(STAT_INPUT, null), null);
+  assert.equal(leagueBenchmark(STAT_INPUT, {}), null);
+  assert.equal(leagueBenchmark(STAT_INPUT, { matches: 0, possession: 50 }), null);
+  // اتجاه الفارق المقرّب منزلة واحدة: فرق أصغر من ٠٫٠٥ «عند المتوسط تقريباً».
+  assert.equal(benchmarkDirection(0), 'equal');
+  assert.equal(benchmarkDirection(0.04), 'equal');
+  assert.equal(benchmarkDirection(-0.1), 'below');
+  assert.equal(benchmarkDirection(2.96), 'above');
+  assert.equal(benchmarkDirection(null), null);
 });
 
 test('group index refuses to speak for a group with no comparable row', () => {

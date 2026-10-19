@@ -28,6 +28,7 @@ import type { MatchCenterTools } from './useMatchCenterTools';
 import MatchCenterRadar from './MatchCenterRadar';
 import FormSide from './MatchCenterForm';
 import MatchCenterStatGroups from './MatchCenterStatGroups';
+import MatchCenterLeagueBenchmark from './MatchCenterLeagueBenchmark';
 import MatchCenterAnalysis from './MatchCenterAnalysis';
 import MatchCenterAnalysisTab from './MatchCenterAnalysisTab';
 
@@ -246,6 +247,14 @@ export function LivePanel({ match, snapshot, status, countdown, freshnessText, r
       {freshnessText && <p>{freshnessText}{readAtLabel && <> · آخر قراءة: {readAtLabel}</>}</p>}
       {(statusLabel || clock) && <p>{statusLabel}{clock && <> · <span className="mc-num" dir="ltr">{clock}</span></>}</p>}
       <MatchCenterStatGroups statistics={statistics} homeName={homeName} awayName={awayName} logos={snapshot?.logos ?? null} idPrefix="live" />
+      {/* يتحدّث مع كل قراءة حية: مشتق من اللقطة نفسها لا من طلب منفصل. */}
+      <MatchCenterLeagueBenchmark
+        statistics={statistics}
+        homeName={homeName}
+        awayName={awayName}
+        leagueId={match.leagueId}
+        competitionName={match.competitionName}
+      />
     </div>
   );
 }

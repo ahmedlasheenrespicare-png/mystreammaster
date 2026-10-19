@@ -1433,6 +1433,58 @@ export function groupStatistics(statistics) {
 }
 
 /**
+ * مقارنة أرقام المباراة بمتوسط الدوري الموثّق — كمية مقابل أساس معلن، لا حكم.
+ *
+ * الأساس يأتي من أرشيف المباريات المتحقَّق منها (`content/fixtures-archive`)
+ * لا من مزوّد جديد: متوسط لكل فريق في المباراة الواحدة، بعدد مباريات معلَن.
+ * لكل مقياس صفّ واحد: قيمة كل طرف كما وصلت (أو غيابها)، ومتوسط الدوري،
+ * والفارق الدقيق قبل التقريب (`delta`)؛ والاتجاه («أعلى/أقل/عند المتوسط»)
+ * يُقرأ من الفارق المقرّب منزلة واحدة عبر `benchmarkDirection`.
+ *
+ * لا أساس موثقاً لهذه البطولة، أو لا رقم عند الطرفين في كل المقاييس ⇒ `null`:
+ * لا مقارنة بلا أساس معلن، ولا صفر يُستكمل.
+ */
+export const LEAGUE_BENCHMARKS = [
+  { key: 'possessionPct', averageKey: 'possession', label: 'الاستحواذ', unit: '%' },
+  { key: 'totalShots', averageKey: 'shots', label: 'التسديدات', unit: '' },
+  { key: 'passPct', averageKey: 'passAccuracy', label: 'دقة التمرير', unit: '%' },
+];
+
+export function leagueBenchmark(statistics, averages) {
+  const matches = finiteNumber(averages?.matches);
+  if (matches === null || matches <= 0) return null;
+  const rows = displayableStatistics(statistics);
+  const out = [];
+  for (const def of LEAGUE_BENCHMARKS) {
+    const average = finiteNumber(averages?.[def.averageKey]);
+    if (average === null) continue;
+    const row = rows.find(item => item.key === def.key);
+    const home = finiteNumber(row?.home);
+    const away = finiteNumber(row?.away);
+    if (home === null && away === null) continue;
+    out.push({
+      key: def.key,
+      label: def.label,
+      unit: def.unit,
+      average,
+      home: home === null ? null : { value: home, delta: home - average },
+      away: away === null ? null : { value: away, delta: away - average },
+    });
+  }
+  if (out.length === 0) return null;
+  return { matches, rows: out };
+}
+
+/** اتجاه الفارق المقرّب منزلة واحدة: أعلى/أقل/عند المتوسط تقريباً — وصف كمية. */
+export function benchmarkDirection(delta) {
+  const value = finiteNumber(delta);
+  if (value === null) return null;
+  const step = Math.round(value * 10) / 10;
+  if (step === 0) return 'equal';
+  return step > 0 ? 'above' : 'below';
+}
+
+/**
  * شريط الاستحواذ البارز: يُرسم فقط إذا وصلت نسبتا الطرفين رقميتين معاً.
  * النسبة المكتوبة رقم المصدر كما هو، وعرض الشريط منسوب إلى مجموعهما — حرس
  * بصري وحده إن لم يبلغ المجموع 100 بسبب التقريب، لا تعديل على الرقم.
@@ -1447,11 +1499,12 @@ export function possessionSplit(statistics) {
 }
 
 /* عدّادات بطاقة الفريق على الملعب: من جدول الإحصائيات نفسه لا من الأحداث،
-   حتى يبقى الرقم على الملعب هو الرقم في الجدول. الحبّة بلا قيمة تُحذف. */
+   حتى يبقى الرقم على الملعب هو الرقم في الجدول. الحبّة بلا قيمة تُحذف،
+   والصفراء والحمراء تُخفيان تماماً ما دامت القيمة صفراً: لا يظهر العدّاد إلا
+   حين يرسل المصدر أول بطاقة (> 0). الركنيات لم تعد من عدّادات الملعب. */
 export const PITCH_COUNTERS = [
   { id: 'yellow', key: 'yellowCards', label: 'صفراء' },
   { id: 'red', key: 'redCards', label: 'حمراء' },
-  { id: 'corners', key: 'wonCorners', label: 'ركنيات' },
 ];
 
 export function pitchCounters(statistics, side) {
@@ -1459,7 +1512,7 @@ export function pitchCounters(statistics, side) {
   const rows = displayableStatistics(statistics);
   return PITCH_COUNTERS.flatMap(({ id, key, label }) => {
     const value = finiteNumber(rows.find(stat => stat.key === key)?.[side]);
-    return value === null ? [] : [{ id, label, value }];
+    return value === null || value <= 0 ? [] : [{ id, label, value }];
   });
 }
 

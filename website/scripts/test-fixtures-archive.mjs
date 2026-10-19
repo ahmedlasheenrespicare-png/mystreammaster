@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { ARCHIVE_LEAGUES, validateArchive, mergeArchive, archiveTeamStats, cleanTeamName, standingsRates, TACTIC_LABELS } from '../src/lib/fixtures-archive.mjs';
+import { ARCHIVE_LEAGUES, validateArchive, mergeArchive, archiveTeamStats, cleanTeamName, standingsRates, TACTIC_LABELS, computeLeagueAverages } from '../src/lib/fixtures-archive.mjs';
 import { normalizeEspn, normalizeHighlightly, summaryStatistics, collect } from './fetch-fixtures-archive.mjs';
 import { publish, buildArchiveDeployReport } from './publish-fixtures-archive.mjs';
 import { judgeEspnSummary, probeEspnSummary } from './probe-espn-summary.mjs';
@@ -418,4 +418,45 @@ test('workflow delivery path connects archive changes to deploy.yml with loop pr
   assert.match(deployWf, /workflow_call:/, 'deploy.yml must accept workflow_call from fixtures-archive.yml');
   assert.match(deployWf, /npm run typecheck && npm test && npm run build/, 'deploy.yml must keep all build and test gates');
   assert.match(deployWf, /group:\s*deploy-hostinger/, 'deploy.yml must keep concurrency lock');
+});
+
+/* ── متوسطات الدوري: مشتقة من الأرشيف وحده، بعينة معلنة ─────────────────── */
+test('computeLeagueAverages: finished full-stat matches only, percent scale unified, small sample null', () => {
+  const stats = (possession, shots, pass) => ({
+    home: { possession, shots, passAccuracy: pass },
+    away: { possession: 100 - possession, shots: shots + 4, passAccuracy: pass + 0.1 },
+  });
+  const finished = extra => match(extra);
+  const rows = Array.from({ length: 10 }, (_, i) => finished({ id: `m${i}`, statistics: stats(50 + i, 10 + i, 0.8) }));
+  const averages = computeLeagueAverages(rows);
+  assert.equal(averages.matches, 10);
+  // الكسر 0.8 نقاط مئوية (80)، والامتلاك كما وصل (0–100).
+  assert.equal(averages.passAccuracy, 85);
+  assert.equal(averages.possession, 50);
+  // كل مباراة تسهم بطرفين: (10+i) و(14+i) ⇒ 330 ÷ 20 طرفاً.
+  assert.equal(averages.shots, 16.5);
+  // عينة أصغر من الحد ⇒ لا متوسط يُعلن؛ ومباريات غير منتهية أو ناقصة الأرقام لا تُحتسب.
+  assert.equal(computeLeagueAverages(rows.slice(0, 9)), null);
+  assert.equal(computeLeagueAverages([...rows, finished({ id: 'live1', status: 'live', statistics: stats(60, 10, 0.8) })]).matches, 10);
+  assert.equal(computeLeagueAverages([...rows, finished({ id: 'bad1', statistics: { home: { possession: 120, shots: 1, passAccuracy: 0.8 }, away: { possession: 10, shots: 1, passAccuracy: 0.8 } } })]).matches, 10);
+  assert.equal(computeLeagueAverages(null), null);
+});
+
+test('committed league-averages.json is re-derivable from the archive and the workflow regenerates it', async () => {
+  const rootDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
+  const content = JSON.parse(await fs.readFile(path.join(rootDir, 'website/src/content/league-averages.json'), 'utf8'));
+  assert.equal(content.schemaVersion, 1);
+  for (const [league, entry] of Object.entries(content.leagues)) {
+    const file = path.join(rootDir, 'website/src/content/fixtures-archive', league, `${entry.season}.json`);
+    const data = JSON.parse(await fs.readFile(file, 'utf8'));
+    assert.deepEqual(computeLeagueAverages(data.matches), {
+      matches: entry.matches, possession: entry.possession, shots: entry.shots, passAccuracy: entry.passAccuracy,
+    }, `${league} averages must equal a fresh recomputation from the archive`);
+    assert.ok(entry.matches >= 10, `${league} sample must be declared and sufficient`);
+  }
+  // بطولة بلا أرشيف أرقام كافٍ لا تدخل الملف (لا متوسط مختلَق).
+  assert.equal(content.leagues['egy.1'], undefined);
+  const archiveWf = await fs.readFile(path.join(rootDir, '.github/workflows/fixtures-archive.yml'), 'utf8');
+  assert.match(archiveWf, /node website\/scripts\/build-league-averages\.mjs/);
+  assert.match(archiveWf, /git add -- website\/src\/content\/fixtures-archive website\/src\/content\/league-averages\.json/);
 });

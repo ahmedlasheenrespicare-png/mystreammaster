@@ -150,17 +150,23 @@ test('head-to-head summary counts only what the rows say and hides itself on any
   assert.equal(headToHeadSummary(sourceRows, forest, { ...arsenal, externalIds: { espn: '393' } }), null);
 });
 
-test('pitch counters come from the statistics table only; null hides the pill, no statistics hides the row', () => {
+test('pitch counters: cards only, hidden until above zero, corners removed, null hides the pill', () => {
   const statistics = [
     { key: 'yellowCards', label: 'بطاقات صفراء', unit: '', home: 2, away: null },
     { key: 'redCards', label: 'بطاقات حمراء', unit: '', home: 0, away: 1 },
     { key: 'wonCorners', label: 'الركنيات', unit: '', home: 4, away: 7 },
   ];
-  assert.deepEqual(pitchCounters(statistics, 'home').map(c => [c.id, c.value]), [['yellow', 2], ['red', 0], ['corners', 4]]);
-  assert.deepEqual(pitchCounters(statistics, 'away').map(c => [c.id, c.value]), [['red', 1], ['corners', 7]]);
+  // الصفراء تظهر (> 0)، والحمراء صفرُ المضيف مخفية تماماً، والركنيات لم تعد عدّاداً.
+  assert.deepEqual(pitchCounters(statistics, 'home').map(c => [c.id, c.value]), [['yellow', 2]]);
+  assert.deepEqual(pitchCounters(statistics, 'away').map(c => [c.id, c.value]), [['red', 1]]);
   assert.deepEqual(pitchCounters(null, 'home'), []);
   assert.deepEqual(pitchCounters([{ key: 'totalShots', label: 'x', home: 1, away: 2 }], 'home'), []);
   assert.deepEqual(pitchCounters(statistics, 'unknown'), []);
+  // فريق بلا بطاقات ⇒ لا عدّادات إطلاقاً (لا أصفار معروضة).
+  assert.deepEqual(pitchCounters([
+    { key: 'yellowCards', label: 'بطاقات صفراء', unit: '', home: 0, away: 0 },
+    { key: 'redCards', label: 'بطاقات حمراء', unit: '', home: 0, away: 0 },
+  ], 'home'), []);
 });
 
 test('the possession bar needs both numbers; widths are shares of their sum, the figures stay as sent', () => {

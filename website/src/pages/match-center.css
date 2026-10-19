@@ -596,6 +596,28 @@
 .mc-indexboard-pcts [data-side="home"] { color: #cfc4ff; }
 .mc-indexboard-pcts [data-side="away"] { color: var(--mc-lime); }
 
+/* ── مقارنة بمتوسط الدوري: قيمة كل طرف مقابل أساس موثق معلن العينات ──
+   العبارات كمية («أعلى/أقل من متوسط الدوري بـ…»)، لا حكم جودة. */
+.mc-benchmark { display: grid; gap: 8px; margin-top: 14px; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
+.mc-benchmark-title { margin: 0; color: var(--mc-lime); font-size: .84rem; font-weight: 900; }
+.mc-benchmark-sample { margin: 0; color: var(--mc-muted); font-size: .68rem; }
+.mc-benchmark-rows { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.mc-benchmark-row { display: grid; gap: 4px; padding: 9px 10px; border: 1px solid rgba(255, 255, 255, .07); border-radius: 12px; background: rgba(8, 11, 18, .38); }
+.mc-benchmark-row-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 3px 10px; margin: 0; }
+.mc-benchmark-label { color: var(--mc-muted); font-size: .74rem; font-weight: 800; }
+.mc-benchmark-average { color: var(--mc-muted); font-size: .68rem; font-weight: 700; }
+.mc-benchmark-average .mc-num { color: var(--mc-text); font-weight: 900; }
+.mc-benchmark-sides { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; font-size: .72rem; }
+.mc-bench-side { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px; min-width: 0; }
+.mc-bench-side-name { color: var(--mc-muted); font-weight: 700; }
+.mc-bench-value { font-weight: 900; white-space: nowrap; }
+.mc-bench-side[data-side="home"] .mc-bench-value { color: #cfc4ff; }
+.mc-bench-side[data-side="away"] .mc-bench-value { color: var(--mc-lime); }
+.mc-bench-phrase { color: var(--mc-muted); font-size: .66rem; font-weight: 700; }
+.mc-bench-phrase[data-direction="above"]::before { content: "▲ "; }
+.mc-bench-phrase[data-direction="below"]::before { content: "▼ "; }
+.mc-bench-none { color: #ff9aa2; font-size: .68rem; font-weight: 700; }
+
 /* «التوثيق والمراجعة»: بطاقات النصوص التفسيرية وسطر المراجعة. */
 .mc-docs-grid { display: grid; gap: 10px; margin: 10px 0 12px; }
 .mc-doc { min-width: 0; padding: 12px 14px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(255, 255, 255, .02); }
@@ -626,7 +648,9 @@
 @layer mc-print {
   @media print {
     .mc-pitch-preview-facts > div, .mc-pitch-form, .mc-pitch-form .mc-event, .mc-pitch-form-summary > div, .mc-pitch-counter,
-    .mc-h2h-cell, .mc-possession, .mc-doc, .mc-stat-index, .mc-indexboard { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
+    .mc-h2h-cell, .mc-possession, .mc-doc, .mc-stat-index, .mc-indexboard, .mc-benchmark, .mc-benchmark-row { background: #fff !important; border-color: #c9ced8 !important; color: #101218 !important; }
+    .mc-bench-side[data-side="home"] .mc-bench-value { color: #3b2a7a; }
+    .mc-bench-side[data-side="away"] .mc-bench-value { color: #1f6b2e; }
     .mc-pitch-preview h2, .mc-pitch-form h3, .mc-pitch-form-sub, .mc-pitch-preview-facts dt, .mc-pitch-preview-facts dd,
     .mc-pitch-form .mc-event-body small, .mc-pitch-form .mc-form-score, .mc-pitch-form-summary dt, .mc-pitch-counter em { color: #101218 !important; }
     .mc-possession-fill[data-side="home"] { background: #3b2a7a; }

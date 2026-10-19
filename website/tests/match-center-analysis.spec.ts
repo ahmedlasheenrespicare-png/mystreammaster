@@ -173,6 +173,12 @@ test.describe('match analysis tab', () => {
     await expect(balance).toContainText('٤٢%');
     await expect(balance).toHaveAttribute('data-basis', 'single');
     await expect(page.locator('.mc-analysis .mc-indexboard-row')).toHaveCount(5);
+    // مقارنة بمتوسط الدوري في «التحليل» أيضاً: أساس معلن وكمية لا حكم.
+    const benchmark = page.locator('.mc-analysis .mc-benchmark');
+    await expect(benchmark).toBeVisible();
+    await expect(benchmark).toContainText('مباراة موثقة');
+    await expect(benchmark).toContainText('أعلى من متوسط الدوري بـ ٨');
+    await expect(benchmark.locator('.mc-bench-none')).toHaveCount(1);
     const fouls = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'الأخطاء' });
     await expect(fouls).toContainText('٩');
     await expect(fouls).toContainText('١٤');
@@ -290,8 +296,8 @@ test.describe('match analysis tab', () => {
     await expect(page.locator('.mc-analysis')).toHaveCount(0);
     await expect(page.locator('#mc-tab-live')).toHaveCount(0);
     await expect(page.locator('.mc-analysis, .mc-stat-group')).toHaveCount(0);
-    // لا أرقام ⇒ لا ميزان ولا لوحة مؤشرات: لا مؤشر لمجموعة نصفها اختلاق.
-    await expect(page.locator('.mc-stat-index, .mc-indexboard')).toHaveCount(0);
+    // لا أرقام ⇒ لا ميزان ولا لوحة مؤشرات ولا مقارنة بمتوسط الدوري.
+    await expect(page.locator('.mc-stat-index, .mc-indexboard, .mc-benchmark')).toHaveCount(0);
     await expect(page.locator('#mc-tab-postmatch')).toBeVisible();
     await expect(page.locator('#mc-panel-postmatch')).toContainText('النتيجة النهائية');
     // شريط الدقيقة لا يَرسم أحداثًا ليست موجودة، ولا يَخترع ساعة.

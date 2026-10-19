@@ -22,6 +22,7 @@ import {
 } from '../lib/match-center.mjs';
 import EventIcon from './MatchCenterSymbols';
 import MatchCenterStatGroups from './MatchCenterStatGroups';
+import MatchCenterLeagueBenchmark from './MatchCenterLeagueBenchmark';
 import type { PanelProps } from './MatchCenterPanels';
 
 /* ==========================================================================
@@ -202,6 +203,15 @@ export default function MatchCenterAnalysis({ match, snapshot, status, tools }: 
             awayName={awayName}
             logos={snapshot?.logos ?? null}
             idPrefix="analysis"
+            headingLevel="h4"
+          />
+          {/* بعد المباراة تثبت هذه القراءة أرشيفاً ختامياً بالأرقام نفسها. */}
+          <MatchCenterLeagueBenchmark
+            statistics={statistics}
+            homeName={homeName}
+            awayName={awayName}
+            leagueId={match.leagueId}
+            competitionName={match.competitionName}
             headingLevel="h4"
           />
         </section>

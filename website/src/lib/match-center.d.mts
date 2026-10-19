@@ -376,10 +376,31 @@ export function analysisFacts(statistics: StatPair[] | null | undefined): StatCo
 export interface PossessionSplit { home: number; away: number; homeShare: number; awayShare: number }
 export function possessionSplit(statistics: StatPair[] | null | undefined): PossessionSplit | null;
 
-/** عدّادات بطاقة الفريق على الملعب (صفراء/حمراء/ركنيات) من جدول الإحصائيات نفسه. */
-export interface PitchCounter { id: 'yellow' | 'red' | 'corners'; label: string; value: number }
-export const PITCH_COUNTERS: { id: 'yellow' | 'red' | 'corners'; key: string; label: string }[];
+/** عدّادات بطاقة الفريق على الملعب (صفراء/حمراء) من جدول الإحصائيات نفسه؛
+    تُخفى تماماً ما دامت القيمة صفراً، ولا تظهر إلا بأول بطاقة (> 0). */
+export interface PitchCounter { id: 'yellow' | 'red'; label: string; value: number }
+export const PITCH_COUNTERS: { id: 'yellow' | 'red'; key: string; label: string }[];
 export function pitchCounters(statistics: StatPair[] | null | undefined, side: 'home' | 'away'): PitchCounter[];
+
+/** مقارنة بمتوسط الدوري الموثّق: صف لكل مقياس بقيمة كل طرف وفارقها عن الأساس. */
+export interface LeagueBenchmarkSide { value: number; delta: number }
+export interface LeagueBenchmarkRow {
+  key: string;
+  label: string;
+  unit: string;
+  /** متوسط الدوري لكل فريق في المباراة، من الأرشيف المتحقَّق منه. */
+  average: number;
+  home: LeagueBenchmarkSide | null;
+  away: LeagueBenchmarkSide | null;
+}
+export interface LeagueBenchmark { matches: number; rows: LeagueBenchmarkRow[] }
+export const LEAGUE_BENCHMARKS: { key: string; averageKey: string; label: string; unit: string }[];
+export function leagueBenchmark(
+  statistics: StatPair[] | null | undefined,
+  averages: { matches?: number; possession?: number; shots?: number; passAccuracy?: number } | null | undefined,
+): LeagueBenchmark | null;
+/** اتجاه الفارق المقرّب منزلة واحدة — وصف كمية لا حكم جودة. */
+export function benchmarkDirection(delta: number | null | undefined): 'above' | 'below' | 'equal' | null;
 
 /** مجمل المواجهات من الصفوف المعروضة نفسها، أو `null` إن تعذّرت نسبة صف. */
 export interface HeadToHeadSummary { homeWins: number; draws: number; awayWins: number; total: number }

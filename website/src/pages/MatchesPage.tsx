@@ -159,6 +159,7 @@ export default function MatchesPage() {
           href: `/matches/${landing.slug}/`,
           label: landing.shortName,
           leagueId: landing.leagueId,
+          standingsLeagueId: landing.standings?.leagueId ?? null,
         }))}
       />
 

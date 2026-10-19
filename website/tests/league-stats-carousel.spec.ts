@@ -76,10 +76,35 @@ test('stats bar renders a card per league with numbers already in the HTML', asy
   await expect(values).toHaveCount(24);
   await expect(values.filter({ hasText: 'غير متاح' })).toHaveCount(0);
   // Same paging controls as the links bar above it.
-  await expect(bar.locator('.league-carousel-dot')).toHaveCount(2);
+  await expect(bar.locator('.league-carousel-dot')).toHaveCount(3);
   await expect(bar.locator('.league-carousel-dot').first()).toHaveClass(/is-active/);
   await bar.getByLabel('البطولات التالية').click();
   await expect(bar.locator('.league-carousel-dot').nth(1)).toHaveClass(/is-active/);
+});
+
+test('three stat cells stay side by side without horizontal text clipping', async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await openHub(page, { width, height: 1000 });
+    const card = page.locator('.league-stats-card').first();
+    const metrics = card.locator('.league-stats-metric');
+    await expect(metrics).toHaveCount(3);
+    const boxes = await metrics.evaluateAll(elements => elements.map(element => {
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width };
+    }));
+    expect(boxes.every(box => Math.abs(box.y - boxes[0].y) < 1), `metrics share one row at ${width}px`).toBe(true);
+    const sorted = [...boxes].sort((a, b) => a.x - b.x);
+    expect(sorted[0].x + sorted[0].width).toBeLessThanOrEqual(sorted[1].x + 1);
+    expect(sorted[1].x + sorted[1].width).toBeLessThanOrEqual(sorted[2].x + 1);
+    expect(Math.min(...boxes.map(box => box.width)), JSON.stringify({ width, boxes })).toBeGreaterThanOrEqual(60);
+    const textNodes = card.locator('.league-stats-metric dt, .league-stats-value, .league-stats-unit, .league-stats-team');
+    const clipping = await textNodes.evaluateAll(elements => elements.map(element => ({
+      text: element.textContent?.trim(),
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    })).filter(item => item.scrollWidth > item.clientWidth + 1));
+    expect(clipping, `no clipped metric text at ${width}px`).toEqual([]);
+  }
 });
 
 test('standings are requested only after the bar reaches the viewport', async ({ page }) => {

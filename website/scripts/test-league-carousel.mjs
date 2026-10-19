@@ -92,8 +92,11 @@ test('the matches hub renders the league stats bar with prerendered numbers for 
   for (const metric of ['best-attack', 'best-defence', 'total-goals']) {
     assert.equal(bar.find(`[data-stat-metric="${metric}"]`).length, 8, `مقياس ${metric} في كل كرت`);
   }
-  /* سطر القراءة: وقت آخر قراءة مؤكَّدة ظاهر، لا «جارٍ القراءة» في HTML ثابت */
-  assert.equal(bar.find('[data-stat-foot]').filter((_, el) => matchesPage(el).text().includes('آخر قراءة')).length, 8);
+  /* لا سطر قراءة تحت الكرت: الكرت مختصر يعرض المقاييس وحدها، وحالة القراءة
+     (قديمة/فاشلة) محمولة في خاصية على الكرت لا في نص ظاهر. */
+  assert.equal(bar.find('.league-stats-foot').length, 0);
+  assert.doesNotMatch(bar.text(), /آخر قراءة|جارٍ قراءة الترتيب|بيانات قديمة/);
+  assert.equal(bar.find('.league-stats-card[data-stat-stale]').length, 8);
   /* نفس أدوات تنقّل شريط الروابط: سهمان ومؤشر نقطي واحد قبل القياس */
   assert.equal(bar.find('.league-carousel-nav').length, 2);
   assert.equal(bar.find('.league-carousel-dot').length, 1);

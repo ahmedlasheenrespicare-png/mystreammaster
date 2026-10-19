@@ -109,35 +109,6 @@
   overflow-wrap: anywhere;
 }
 
-/* سطر القراءة أسفل الكرت: وقت آخر قراءة مؤكَّدة أو سبب التعذّر بصراحة */
-.league-stats-foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: auto 0 0;
-  padding-top: 8px;
-  border-top: 1px solid #eceadf;
-  color: #8a8578;
-  font-size: 0.64rem;
-  font-weight: 700;
-  line-height: 1.6;
-}
-
-.league-stats-error {
-  color: #b0431f;
-}
-
-.league-stats-reason {
-  color: #8a6a3a;
-}
-
-.league-stats-stale {
-  padding: 1px 7px;
-  border-radius: 999px;
-  background: #fff3cd;
-  color: #7a5a00;
-}
-
 @media (max-width: 640px) {
   .league-stats-card {
     width: calc(50vw - 40px);

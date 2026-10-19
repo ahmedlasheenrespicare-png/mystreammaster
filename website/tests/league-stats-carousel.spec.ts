@@ -162,10 +162,11 @@ test('a fresh standings reading replaces the prerendered numbers and names the l
   await expect(defence.locator('[data-stat-value]')).toContainText('0.00');
   // Total goals: 8 + 19 × 1 = 27
   await expect(bar.locator('[data-league="eng.1"] [data-stat-metric="total-goals"] [data-stat-value]')).toContainText('27');
-  await expect(bar.locator('[data-league="eng.1"] [data-stat-foot]')).toContainText('آخر قراءة');
+  // No reading line under the card: the numbers carry the value, nothing else.
+  await expect(bar.locator('.league-stats-foot')).toHaveCount(0);
 });
 
-test('a failing standings reading keeps the last confirmed numbers and says why', async ({ page }) => {
+test('a failing standings reading keeps the last confirmed numbers and marks them stale', async ({ page }) => {
   await page.clock.install({ time: NOW });
   await page.route('**/*', route => {
     const url = new URL(route.request().url());
@@ -181,8 +182,9 @@ test('a failing standings reading keeps the last confirmed numbers and says why'
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/matches/');
   const card = page.locator('.league-stats-card[data-league="eng.1"]');
-  // The prerendered numbers survive a failed refresh, flagged as stale, with the reason shown.
+  // The prerendered numbers survive a failed refresh; "stale" is carried on the
+  // card as an attribute, not spelled out in a line under the numbers.
   await expect(card.locator('[data-stat-metric="best-attack"] [data-stat-value]')).not.toHaveText('غير متاح');
-  await expect(card.locator('[data-stat-foot]')).toContainText('تأخر المصدر');
-  await expect(card.locator('[data-stat-foot] .league-stats-stale')).toHaveCount(1);
+  await expect(card).toHaveAttribute('data-stat-stale', 'true');
+  await expect(card.locator('.league-stats-foot')).toHaveCount(0);
 });

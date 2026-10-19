@@ -5,9 +5,6 @@ import { useCarousel } from "./useCarousel";
 import snapshot from "../content/standings-snapshot.json";
 import { standingsRates } from "../lib/fixtures-archive.mjs";
 import {
-  STALE_BADGE_TEXT,
-  describeStandingsFailure,
-  formatStandingsTime,
   leagueStandingsByLeague,
   standingsUrl,
   validateStandings,
@@ -28,8 +25,10 @@ import "./league-stats.css";
    • الجلب **حيّ عند الظهور**: لا يُطلب /standings.php إلا حين يصل الزائر إلى
      القسم فعلاً (IntersectionObserver)، ويُعاد كل REFRESH_MS ما دام القسم
      ظاهراً والصفحة مفتوحة ومتصلة.
-   • لا تُستبدل قراءة أحدث بقراءة أقدم، والفشل يُعلن بسببه (رمز تشخيص) مع
-     وسم «بيانات قديمة» بدل إخفاء المشكلة أو ترك أرقام قديمة بلا تنبيه.
+   • لا تُستبدل قراءة أحدث بقراءة أقدم، والفشل يُبقي آخر أرقام مؤكَّدة؛
+     وحالة القراءة (قديمة/فاشلة) محمولة في خصائص `data-stat-*` على الكرت لا
+     في سطر نصي تحته — الكرت مختصر، والمقاييس نفسها تعرض «غير متاح» حين لا
+     تتوفّر قراءة صحيحة أصلاً.
 ========================================================================== */
 
 /* تحديث الترتيب أبطأ من المباريات: خمس دقائق تكفي ولا تُنهِك الوسيط */
@@ -125,7 +124,6 @@ export default function LeagueStatsCarousel({
   const sectionRef = useRef<HTMLElement | null>(null);
   const carousel = useCarousel({ count: items.length, label });
   const [visible, setVisible] = useState(false);
-  const [online, setOnline] = useState(true);
   const [stats, setStats] = useState<Record<string, LeagueStat>>(() => {
     const initial: Record<string, LeagueStat> = {};
     for (const item of items) {
@@ -156,17 +154,6 @@ export default function LeagueStatsCarousel({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const update = () => setOnline(navigator.onLine);
-    update();
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
-    return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
-    };
   }, []);
 
   const leagues = items
@@ -259,8 +246,6 @@ export default function LeagueStatsCarousel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, leagues.join(",")]);
 
-  const pending = leagues.filter((league) => !stats[league] || stats[league].status === "idle");
-
   return (
     <section
       ref={sectionRef}
@@ -287,6 +272,9 @@ export default function LeagueStatsCarousel({
                 className="league-stats-card"
                 data-league={item.standingsLeagueId ?? ""}
                 data-stat-status={stat?.status ?? "idle"}
+                /* حالة القراءة تُحمل في خاصية لا في نص: الكرت مختصر بلا سطر
+                   قراءة، والقديم يُمَيَّز آلياً (اختبارات/تشخيص) بلا إطالة. */
+                data-stat-stale={stat?.stale ? "true" : "false"}
               >
                 <a
                   className="league-stats-link"
@@ -353,33 +341,6 @@ export default function LeagueStatsCarousel({
                     </dd>
                   </div>
                 </dl>
-
-                <p className="league-stats-foot" data-stat-foot>
-                  {stat?.status === "failed" ? (
-                    <span className="league-stats-error">
-                      {describeStandingsFailure(stat.code ?? "UNAVAILABLE", online)}
-                    </span>
-                  ) : stat?.fetchedAt ? (
-                    <>
-                      <span>آخر قراءة: {formatStandingsTime(stat.fetchedAt)}</span>
-                      {stat.stale ? (
-                        <span className="league-stats-stale">{STALE_BADGE_TEXT}</span>
-                      ) : null}
-                      {/* سبب التعذّر يُقال بصراحة ولو بقيت أرقام قديمة ظاهرة:
-                          الأرقام القديمة المعلَنة خير من فراغ، والسبب المعلن
-                          خير من رقم قديم يبدو جديداً. */}
-                      {stat.code ? (
-                        <span className="league-stats-reason">
-                          {describeStandingsFailure(stat.code, online)}
-                        </span>
-                      ) : null}
-                    </>
-                  ) : pending.length ? (
-                    <span>جارٍ قراءة الترتيب…</span>
-                  ) : (
-                    <span>غير متاح</span>
-                  )}
-                </p>
               </article>
             );
           })}

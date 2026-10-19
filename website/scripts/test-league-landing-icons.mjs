@@ -19,12 +19,14 @@ const website = new URL('../', import.meta.url);
 const root = new URL('../../', import.meta.url);
 const competitions = await fs.readFile(new URL('src/content/competitions.ts', website), 'utf8');
 
-/* القيم تُقرأ من المصدر الواحد (competitions.ts) — لا تُنسخ في الاختبار */
-const iconsBlock = competitions.match(/export const LEAGUE_ICONS[^\n]*=\s*\{([\s\S]*?)\n\};/);
-assert.ok(iconsBlock, 'LEAGUE_ICONS معرَّفة في content/competitions.ts');
-const LEAGUE_ICONS = Object.fromEntries(
-  [...iconsBlock[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g)].map((m) => [m[1], m[2]]),
+/* القيم تُقرأ من المصدر الواحد (src/lib/league-icons.mjs) — لا تُنسخ في الاختبار.
+   competitions.ts يعيد تصديرها ولا يعرّفها من جديد. */
+assert.match(
+  competitions,
+  /export \{ LEAGUE_ICONS, leagueIcon \} from "\.\.\/lib\/league-icons\.mjs";/,
+  'competitions.ts يعيد تصدير LEAGUE_ICONS من league-icons.mjs',
 );
+const { LEAGUE_ICONS } = await import('../src/lib/league-icons.mjs');
 
 const landingsBlock = competitions.match(/export const LEAGUE_LANDINGS[^\n]*=\s*\[([\s\S]*?)\n\];/);
 assert.ok(landingsBlock, 'LEAGUE_LANDINGS معرَّفة في content/competitions.ts');

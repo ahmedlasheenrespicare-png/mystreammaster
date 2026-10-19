@@ -28,6 +28,11 @@ export interface NavLink {
   label: string;
   desc?: string;
   icon?: string;
+  /**
+   * معرّف البطولة في مصدر المباريات (مثل "eng.1") — إن وُجد يُعرض شعار البطولة
+   * من src/lib/league-icons.mjs بدل الإيموجي، وإلا بديل محايد (كأس).
+   */
+  league?: string;
 }
 
 export interface NavGroup {

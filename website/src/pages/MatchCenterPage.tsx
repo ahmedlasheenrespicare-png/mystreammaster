@@ -33,7 +33,7 @@ function validDate(value: unknown): value is string {
    لذلك تُركت النصوص عامة بلا أرقام: الأرقام تتغيّر مع كل قراءة. */
 const TAB_HINTS: Partial<Record<import('../lib/match-center.mjs').TabId, string>> = {
   prematch: 'المواجهات السابقة، والمعاينة ومستوى الفريقين بعد أن تحل التشكيلة محلها على الملعب',
-  live: 'العد التنازلي وآخر قراءة وأرقام الفريقين من المصدر',
+  live: 'العد التنازلي وأرقام الفريقين من المصدر',
   analysis: 'تحليل المباراة المكتوب — الأحداث والإحصائيات والمصادر',
   postmatch: 'إحصائيات الفريقين أولاً، ثم فلاتر الأحداث وتقرير ما بعد المباراة',
 };
@@ -57,7 +57,6 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
     announcements,
     correction,
     chooseTab,
-    refreshNow,
     clearAnnouncements,
   } = state;
 
@@ -135,19 +134,6 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
           tools={tools}
         />
 
-        {/* حداثة القراءة والاتصال حالة خدمة فقط، وليسا بديلاً عن حقول المباراة. */}
-        <div className="mc-meta" aria-label="حالة خدمة تحديث المباراة">
-          <div className="mc-meta-service">
-            <span className="mc-read" data-level={freshness.level}>
-              <span aria-hidden="true">●</span>
-              {readAtLabel ? `${freshness.text} — ${readAtLabel} بتوقيت القاهرة` : freshness.text}
-            </span>
-            <button type="button" className="mc-refresh" onClick={refreshNow} disabled={state.loading || !state.online}>
-              {state.loading ? 'جارٍ القراءة…' : '↻ تحديث الآن'}
-            </button>
-          </div>
-        </div>
-
         {!state.online && (
           <p className="mc-warning" role="status">
             لا يوجد اتصال — التحديث التلقائي متوقف. تبقى آخر قراءة مؤكدة بوقتها إن وُجدت، ولا تُعرض على أنها قراءة حالية.
@@ -193,8 +179,6 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
                     now={state.now}
                     countdown={state.countdown}
                     tools={tools}
-                    freshnessText={freshness.text}
-                    readAtLabel={readAtLabel}
                   />
                 </div>
               );
@@ -212,7 +196,7 @@ export default function MatchCenterPage({ match }: { match: MatchCenterFixture }
         <section className="mc-docs" aria-labelledby="mc-docs-title">
           <h2 id="mc-docs-title">التوثيق والمراجعة</h2>
           {/* البيت الوحيد لنصوص المصدر وطريقة قراءة الأرقام؛ أعلى الصفحة للأرقام فقط. */}
-          <MatchCenterDocs match={match} readAtLabel={readAtLabel} freshnessText={freshness.text} />
+          <MatchCenterDocs match={match} readAtLabel={readAtLabel} />
           <p>{MATCH_CENTER_DOCUMENTATION.rightsNote}</p>
           <ul>
             {MATCH_CENTER_DOCUMENTATION.providers.map(provider => (

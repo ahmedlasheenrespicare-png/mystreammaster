@@ -199,7 +199,7 @@ test('state A: without a lineup the preview sits on the pitch and the panel poin
   await expect(docs.locator('.mc-doc')).toHaveCount(8);
   await expect(docs).toContainText('آخر 3 مواجهات');
   await expect(docs).toContainText('آخر 5 مباريات');
-  await expect(docs).toContainText('ليست أفضلية');
+  await expect(docs).toContainText('الشريط المقسوم تزييني فقط');
   // بطاقة ميزان المجموعة: شرح الشريطين والأساس، في بيت النصوص الوحيد.
   await expect(docs.locator('.mc-doc[data-doc="group-index"]')).toContainText('متوسط حصة كل طرف');
   await expect(docs.locator('.mc-docs-review')).toContainText('18 أكتوبر 2026');
@@ -284,7 +284,7 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
   await expect(possession).toBeVisible();
   await expect(possession).toContainText('٥٨%');
   await expect(possession).toContainText('٤٢%');
-  const widths = await possession.locator('.mc-possession-fill').evaluateAll(nodes => nodes.map(node => (node as HTMLElement).getBoundingClientRect().width));
+  const widths = await possession.locator('.mc-stat-card-fill').evaluateAll(nodes => nodes.map(node => (node as HTMLElement).getBoundingClientRect().width));
   expect(widths.length).toBe(2);
   expect(widths[0] / (widths[0] + widths[1])).toBeCloseTo(0.58, 1);
 
@@ -311,15 +311,18 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
   // لوحة «مؤشرات المجموعات»: ستة أسطر، كل سطر رابط إلى مجموعته في التبويب نفسه.
   const board = live.locator('.mc-indexboard');
   await expect(board).toBeVisible();
+  // أزيل العنوان والشرح المطوّل فقط؛ تبقى البطاقات وروابطها وميزان كل مجموعة.
+  await expect(page.locator('.mc-indexboard-head, .mc-indexboard-sub')).toHaveCount(0);
+  await expect(board).not.toContainText('متوسط حصة كل طرف من صفوف كل مجموعة');
   await expect(board.locator('.mc-indexboard-row')).toHaveCount(6);
   await expect(board.locator('.mc-indexboard-row a').first()).toHaveAttribute('href', '#live-statgroup-possession-passing');
   await expect(live.locator('#live-statgroup-possession-passing')).toHaveCount(1);
   const passing = live.locator('.mc-stat-compare', { hasText: 'دقة التمرير' });
-  await expect(passing.locator('.mc-stat-side-none')).toHaveText('غير متاح');
+  await expect(passing.locator('.mc-stat-card-none')).toHaveText('غير متاح');
   await expect(passing).not.toContainText('٠%');
   // البطاقة الحمراء الغائبة للمضيف كلمة لا صفر، وبطاقة الضيف رقمها كما وصل.
   const red = live.locator('.mc-stat-compare', { hasText: 'بطاقات حمراء' });
-  await expect(red.locator('.mc-stat-side-none')).toHaveCount(1);
+  await expect(red.locator('.mc-stat-card-none')).toHaveCount(1);
   await expect(red).toContainText('١');
 
   await expectNoSourceTextOutsideDocs(page);
@@ -336,6 +339,9 @@ test('after the final whistle «مباشر» disappears and «بعد المبا�
   await expect(page.locator('#mc-tab-live')).toHaveCount(0);
   await expect(page.locator('#mc-panel-postmatch')).toBeVisible();
   await expect(page.locator('#mc-panel-postmatch .mc-possession')).toBeVisible();
+  await expect(page.locator('#mc-panel-postmatch .mc-indexboard-row')).toHaveCount(6);
+  await expect(page.locator('#mc-panel-postmatch .mc-indexboard-head, #mc-panel-postmatch .mc-indexboard-sub')).toHaveCount(0);
+  await expect(page.locator('#mc-panel-postmatch .mc-analysis-absent')).toHaveCount(0);
   // بعد النهاية تثبت المقارنة بمتوسط الدوري أرشيفاً ختامياً بالأرقام نفسها.
   await expect(page.locator('#mc-panel-postmatch .mc-benchmark')).toBeVisible();
   await expect(page.locator('#mc-panel-postmatch .mc-benchmark')).toContainText('مباراة موثقة');

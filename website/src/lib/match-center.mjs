@@ -1310,20 +1310,24 @@ export const STAT_GROUPS = [
    يُرمى ولا يُجمَع قسراً مع جيران لا علاقة له بهم. */
 export const STAT_GROUP_FALLBACK = { id: 'source-other', label: 'أرقام أخرى من المصدر' };
 
+/** حصة كل طرف من المجموع، كالشريط البارز الأصلي؛ 0/0 نصفان حقيقيان. */
+function statShares(home, away) {
+  if (home === null || away === null || home < 0 || away < 0) return null;
+  const total = home + away;
+  if (total === 0) return { home: 0.5, away: 0.5 };
+  return { home: home / total, away: away / total };
+}
+
 /**
- * صف مقارنة واحد: القيمتان كما وردتا، الفارق، ونسبة كل طرف إلى الأعلى بينهما.
- *
- * • `home`/`away` رقم أو `null` — الغياب يبقى غياباً ولا يُستكمل صفراً.
- * • `bar` نسب 0–1 من الأكبر بين الطرفين، للتمثيل البصري فقط؛ لا تُجمع ولا
- *   تُقرأ منها «أفضلية»، صفران حقيقيان يعطيان نصفين متساويين.
- * • `difference` عدد مطلق بلا حكم: من يقرأ «الأخطاء: ٩ مقابل ١٤» لا يحتاج من
- *   يقول له إن ٩ أفضل — بل قد يعكسه.
+ * صف مقارنة واحد: القيمتان كما وردتا، الفارق، وحصة كل طرف من مجموعهما.
+ * الغياب يبقى غياباً، و0/0 نصفان متساويان؛ `bar` للزينة وحدها. ميزان
+ * المجموعة (`groupIndex`) مستقل ولا تتغير طريقة احتسابه أو عدّ صفوفه.
  */
 export function compareStatRow(stat) {
   const home = finiteNumber(stat?.home);
   const away = finiteNumber(stat?.away);
   const both = home !== null && away !== null;
-  const peak = both ? Math.max(Math.abs(home), Math.abs(away)) : 0;
+  const shares = statShares(home, away);
   const unit = filledText(stat?.unit);
   return {
     key: filledText(stat?.key) ?? filledText(stat?.label) ?? '',
@@ -1338,11 +1342,8 @@ export function compareStatRow(stat) {
     /** الطرف الأوفر رقماً — وصفٌ للكمية لا للأفضلية. */
     leadingSide: both && home !== away ? (home > away ? 'home' : 'away') : null,
     comparable: both,
-    /* طرف بلا رقم ⇒ لا مقارنة، فلا يُرسم شريطٌ لصفّ نصفُه اختلاق. */
-    bar: {
-      home: both ? (peak > 0 ? Math.abs(home) / peak : 0.5) : null,
-      away: both ? (peak > 0 ? Math.abs(away) / peak : 0.5) : null,
-    },
+    /* طرف بلا رقم ⇒ لا شريط ولا صفر مُختلَق. */
+    bar: { home: shares?.home ?? null, away: shares?.away ?? null },
   };
 }
 
@@ -1484,18 +1485,13 @@ export function benchmarkDirection(delta) {
   return step > 0 ? 'above' : 'below';
 }
 
-/**
- * شريط الاستحواذ البارز: يُرسم فقط إذا وصلت نسبتا الطرفين رقميتين معاً.
- * النسبة المكتوبة رقم المصدر كما هو، وعرض الشريط منسوب إلى مجموعهما — حرس
- * بصري وحده إن لم يبلغ المجموع 100 بسبب التقريب، لا تعديل على الرقم.
- */
+/** حصة الاستحواذ من المجموع كغيره من الصفوف؛ صفر/صفر نصفان متساويان. */
 export function possessionSplit(statistics) {
   const row = displayableStatistics(statistics).find(stat => stat.key === 'possessionPct');
   const home = finiteNumber(row?.home);
   const away = finiteNumber(row?.away);
-  if (home === null || away === null || home < 0 || away < 0 || home + away <= 0) return null;
-  const total = home + away;
-  return { home, away, homeShare: home / total, awayShare: away / total };
+  const shares = statShares(home, away);
+  return shares && { home, away, homeShare: shares.home, awayShare: shares.away };
 }
 
 /* عدّادات بطاقة الفريق على الملعب: من جدول الإحصائيات نفسه لا من الأحداث،
@@ -1626,11 +1622,11 @@ export function activeEventFilterCount(filters = {}) {
   }, 0);
 }
 
-/* ─────────────────── الغياب الموصوف: ما لا يصل من المصدر ─────────────────── */
+/* ─────────────────── ملاحظات تشخيصية عن غياب بيانات المصدر ─────────────────── */
 
 /**
- * أقسام لا تُعرض لأن بياناتها لا تصل. تُقال بصريح العبارة بدل مصفوفة
- * فارغة أو أصفار — «لا يتوفر» جواب، وليس فشلاً يُخفى.
+ * أقسام لا تُعرض لأن بياناتها لا تصل. لا تُرسم هذه الملاحظات كقسم إضافي
+ * في «بعد المباراة»، ولا تتحول البيانات الغائبة إلى أصفار أو عناصر فارغة.
  */
 export function unavailableDataNotes(snapshot) {
   const notes = [];

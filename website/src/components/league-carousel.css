@@ -102,23 +102,26 @@
 }
 
 /* شارة الأيقونة: البديل المحايد (أيقونة كرة/كأس) يظهر دائماً، وصورة الشعار
-   تُركّب فوقه — فإن تعذّر تحميلها بقي البديل ظاهراً بلا صورة مكسورة. */
+   تُركّب فوقه — فإن تعذّر تحميلها بقي البديل ظاهراً بلا صورة مكسورة.
+   المقاس يُقرأ من خاصية `--league-badge-size` (مكوّن LeagueIconBadge يمرّرها
+   لرأس صفحة البطولة) والافتراضي 36px للشريط — القيم المحسوبة للشريط لا
+   تتغيّر، والبديل والزوايا يتناسبان مع المقاس حتى يبقى النمط واحداً. */
 .league-carousel-badge {
   position: relative;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: var(--league-badge-size, 36px);
+  height: var(--league-badge-size, 36px);
   border: 1px solid #ece9df;
-  border-radius: 11px;
+  border-radius: calc(var(--league-badge-size, 36px) * 11 / 36);
   background: #f6f4ec;
   overflow: hidden;
 }
 
 .league-carousel-fallback {
-  width: 17px;
-  height: 17px;
+  width: calc(var(--league-badge-size, 36px) * 17 / 36);
+  height: calc(var(--league-badge-size, 36px) * 17 / 36);
   color: #b8b3a4;
 }
 

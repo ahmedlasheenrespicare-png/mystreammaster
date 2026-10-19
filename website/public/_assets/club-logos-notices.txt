@@ -32,3 +32,8 @@ atletico-madrid: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a55
 manchester-united: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/england/Manchester_United.svg
 galatasaray: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/turkey/Galatasaray.svg
 barcelona: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/spain/Barcelona.svg
+as-monaco: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/france/AS_Monaco.svg
+sc-freiburg: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/germany/Freiburg.svg
+internazionale: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/italy/Inter.svg
+al-qadsiah: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/saudi-arabia/Al_Qadsiah.svg
+pyramids-fc: https://github.com/JoseArroyave/football-logos/blob/1b0a81b0a5538131a2867b3c28a19a459a51d987/logos/egypt/Pyramids_FC.svg

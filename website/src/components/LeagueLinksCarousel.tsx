@@ -2,6 +2,7 @@ import snapshot from "../content/standings-snapshot.json";
 import { leagueStandingsByLeague } from "../lib/standings.mjs";
 import { cleanTeamName } from "../lib/fixtures-archive.mjs";
 import { resolveApprovedTeamLogo, teamInitials } from "./StandingsRatesCard";
+import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import CarouselControls from "./CarouselControls";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { useCarousel } from "./useCarousel";
@@ -34,13 +35,22 @@ export interface LeagueLinkItem {
 /** لقطة البناء فقط: لا طلب شبكي جديد، ولا استنتاج للمتصدّر عند غياب الترتيب. */
 function LeagueLeader({ league }: { league: string | null }) {
   let leader;
+  let provider: string | undefined;
   try {
-    leader = league ? leagueStandingsByLeague(snapshot, league).entries.find((team) => team.rank === 1) : null;
+    const table = league ? leagueStandingsByLeague(snapshot, league) : null;
+    leader = table ? table.entries.find((team) => team.rank === 1) : null;
+    provider = table?.provider;
   } catch {
     leader = null;
   }
   const name = leader ? cleanTeamName(leader.name) : "";
-  const logo = name ? resolveApprovedTeamLogo({ name }) : null;
+  const localLogo = name ? resolveApprovedTeamLogo({ name }) : null;
+  /* مؤقت بطلب المالك: شعار من مزوّد ترتيب البطولة (ESPN لبطولاتها، وHighlightly
+     للدوري المصري). الشعار المحلي يبقى بديلاً فورياً إن فشل تحميل صورة المصدر،
+     ثم بديل الأحرف. */
+  const providerCrest = leader ? providerTeamLogo({ teamId: leader.teamId, provider }) : null;
+  const logo = providerCrest ?? localLogo;
+  const fallbackLogo = providerCrest && localLogo && localLogo !== providerCrest ? localLogo : null;
   return (
     <>
       <span className="league-carousel-banner" aria-hidden="true">
@@ -59,7 +69,18 @@ function LeagueLeader({ league }: { league: string | null }) {
             loading="lazy"
             decoding="async"
             draggable={false}
-            onError={(event) => { event.currentTarget.style.visibility = "hidden"; }}
+            data-crest-source={providerCrest ? providerCrest.includes("highlightly.net") ? "highlightly" : "espn" : "local"}
+            onError={(event) => {
+              const image = event.currentTarget;
+              /* خطأ واحد على صورة المصدر ينزل إلى الشعار المحلي؛ وخطأ ثانٍ
+                 يُخفي الصورة وحدها فيبقى بديل الأحرف ظاهراً. */
+              if (fallbackLogo && image.getAttribute("src") !== fallbackLogo) {
+                image.setAttribute("src", fallbackLogo);
+                image.dataset.crestSource = "local";
+                return;
+              }
+              image.style.visibility = "hidden";
+            }}
           />
         )}
       </span>

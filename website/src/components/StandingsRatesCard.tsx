@@ -21,6 +21,16 @@ const APPROVED_LOCAL_LOGOS: Record<string, string> = {
   'manchester united': '/images/teams/manchester-united-club-badge.webp',
   'as roma': '/images/teams/as-roma-club-badge.webp',
   'galatasaray': '/images/teams/galatasaray-club-badge.webp',
+  'as monaco': '/images/teams/as-monaco-club-badge.webp',
+  'sc freiburg': '/images/teams/sc-freiburg-club-badge.webp',
+  'internazionale': '/images/teams/internazionale-club-badge.webp',
+  'al qadsiah': '/images/teams/al-qadsiah-club-badge.webp',
+  /* بيانات المصدر ما زالت تحمل الاسم التاريخي «Al Assiouty Sport»، وهو النادي
+     نفسه الذي صار Pyramids FC سنة 2018 (نفس الكيان، نُقل إلى القاهرة وغُيّر
+     اسمه)؛ الشعار المعتمد في المكتبة المحلية لبيراميدز. */
+  'al assiouty sport': '/images/teams/pyramids-fc-club-badge.webp',
+  /* الاسم الحديث للنادي نفسه، كي لا يعود البديل الحرفي إن حدّث المزود التسمية. */
+  'pyramids fc': '/images/teams/pyramids-fc-club-badge.webp',
 };
 
 export function resolveApprovedTeamLogo(team: { name?: string; logo?: string | null }): string | null {

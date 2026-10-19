@@ -8,8 +8,10 @@ import {
   IconMenu,
   IconPlay,
   IconStar,
+  IconTrophy,
   IconZap,
 } from "./Icons";
+import { leagueIcon } from "../lib/league-icons.mjs";
 import { CURRENCIES, getWhatsAppUrl } from "../data";
 import { to } from "../config";
 import { counterpartPath } from "../i18n";
@@ -41,6 +43,10 @@ interface HeaderProps {
    • القنوات والبث ▾      — القنوات، مشغّل الويب الذكي، كأس العالم، التوقعات…
    • المقالات ▾           — المدونة وأهم الدلائل
    • المساعدة ▾           — الأسئلة، حالة الخدمة، البحث، من نحن، السياسات
+
+   أيقونة البطولة: شعارها من src/lib/league-icons.mjs (مصدر واحد مع هيدر
+   الصفحات القديمة) داخل صندوق 32×32 نفسه الذي يحمل الإيموجي — والبطولة بلا
+   شعار موثّق تعرض أيقونة الكأس المحايدة.
 ========================================================================= */
 
 type GroupKey = NavGroup["key"];
@@ -351,7 +357,11 @@ export default function Header({
                           onClick={() => setMobileOpen(false)}
                           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-bold hover:bg-black/[0.05] transition"
                         >
-                          {l.icon && <span aria-hidden="true" className="w-6 text-center">{l.icon}</span>}
+                          {l.league ? (
+                            <LeagueNavIcon league={l.league} />
+                          ) : (
+                            l.icon && <span aria-hidden="true" className="w-6 text-center">{l.icon}</span>
+                          )}
                           <span>{l.label}</span>
                         </a>
                       ))}
@@ -381,7 +391,7 @@ export default function Header({
 }
 
 /* روابط مجموعة واحدة بصيغة مسطّحة — لقائمة الجوال */
-function mobileLinks(group: NavGroup): { href: string; label: string; icon?: string }[] {
+function mobileLinks(group: NavGroup): { href: string; label: string; icon?: string; league?: string }[] {
   if (group.key === "home") {
     return [
       { href: to(""), label: "الصفحة الرئيسية", icon: "🏠" },
@@ -397,7 +407,7 @@ function mobileLinks(group: NavGroup): { href: string; label: string; icon?: str
   }
   if (group.key === "matches") {
     /* قسم المباريات: مواعيد + القنوات + البطولات + المنتخبات */
-    return group.links.map((l) => ({ href: pageHref(l), label: l.label, icon: l.icon }));
+    return group.links.map((l) => ({ href: pageHref(l), label: l.label, icon: l.icon, league: l.league }));
   }
   return [...group.links, ...(group.legal ?? [])].map((l) => ({ href: pageHref(l), label: l.label }));
 }
@@ -540,7 +550,7 @@ function DesktopPanel({
         <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1 mt-2 px-3">البطولات</p>
         <div className="grid grid-cols-3 gap-1">
           {leagueLinks.map((l) => (
-            <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />
+            <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} league={l.league} onNavigate={onNavigate} />
           ))}
         </div>
         {/* المنتخبات */}
@@ -586,17 +596,51 @@ function DesktopPanel({
   );
 }
 
+/* شعار البطولة داخل صندوق الأيقونة 32×32 (نفس صندوق الإيموجي تماماً).
+   الشعار زخرفي (alt="" + aria-hidden) لأن اسم البطولة مكتوب بجانبه، والبديل
+   المحايد (كأس) مرسوم تحته: فالبطولة بلا شعار موثّق، أو تعذّر تحميله، تُظهر
+   البديل بلا صورة مكسورة ولا فراغ. */
+export function LeagueNavIcon({ league }: { league: string }) {
+  const src = leagueIcon(league);
+  return (
+    <span
+      aria-hidden="true"
+      className="group-hover/l:bg-white relative w-8 h-8 shrink-0 rounded-xl bg-[#f4f3ef] grid place-items-center overflow-hidden transition"
+    >
+      <IconTrophy className="w-4 h-4 text-black/40" />
+      {src ? (
+        <img
+          src={src}
+          alt=""
+          width={20}
+          height={20}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="absolute w-5 h-5 object-contain"
+          onError={(event) => {
+            /* تعذّر الشعار → يبقى البديل ظاهراً تحته */
+            event.currentTarget.style.visibility = "hidden";
+          }}
+        />
+      ) : null}
+    </span>
+  );
+}
+
 function PanelLink({
   href,
   label,
   desc,
   icon,
+  league,
   onNavigate,
 }: {
   href: string;
   label: string;
   desc?: string;
   icon?: string;
+  league?: string;
   onNavigate: () => void;
 }) {
   return (
@@ -605,13 +649,17 @@ function PanelLink({
       onClick={onNavigate}
       className="group/l flex items-start gap-2.5 rounded-2xl px-3 py-2.5 hover:bg-[#f4f3ef] transition"
     >
-      {icon && (
-        <span
-          aria-hidden="true"
-          className="w-8 h-8 shrink-0 rounded-xl bg-[#f4f3ef] group-hover/l:bg-white grid place-items-center text-[15px] transition"
-        >
-          {icon}
-        </span>
+      {league ? (
+        <LeagueNavIcon league={league} />
+      ) : (
+        icon && (
+          <span
+            aria-hidden="true"
+            className="w-8 h-8 shrink-0 rounded-xl bg-[#f4f3ef] group-hover/l:bg-white grid place-items-center text-[15px] transition"
+          >
+            {icon}
+          </span>
+        )
       )}
       <span className="min-w-0">
         <span className="block text-[13.5px] font-black leading-snug">{label}</span>

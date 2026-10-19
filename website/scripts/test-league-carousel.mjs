@@ -14,10 +14,14 @@ const leagueIds = LEAGUES.map((league) => league.id);
 /* مخزن شعارات المصدر نفسه (ESPN CDN) — لا مخزن صور مجهول ولا رابط مختصر */
 const ICON_HOST = /^https:\/\/a\.espncdn\.com\/i\/leaguelogos\/soccer\/500\/\d+\.png$/;
 
-test('every league icon key is a real league id from the matches source', () => {
-  const block = competitions.match(/export const LEAGUE_ICONS[^\n]*=\s*\{([\s\S]*?)\n\};/);
-  assert.ok(block, 'LEAGUE_ICONS معرَّفة في content/competitions.ts');
-  const keys = [...block[1].matchAll(/^\s*"([^"]+)":/gm)].map((match) => match[1]);
+test('league icons have one source (src/lib/league-icons.mjs) re-exported by competitions.ts', async () => {
+  assert.match(competitions, /export \{ LEAGUE_ICONS, leagueIcon \} from "\.\.\/lib\/league-icons\.mjs";/);
+  assert.doesNotMatch(competitions, /export const LEAGUE_ICONS/, 'لا تعريف ثانٍ للخريطة في competitions.ts');
+});
+
+test('every league icon key is a real league id from the matches source', async () => {
+  const { LEAGUE_ICONS } = await import('../src/lib/league-icons.mjs');
+  const keys = Object.keys(LEAGUE_ICONS);
   assert.ok(keys.length > 0, 'قائمة الأيقونات ليست فارغة');
   for (const key of keys) {
     assert.ok(leagueIds.includes(key), `مفتاح أيقونة ليس معرّف بطولة لدى المصدر: ${key}`);
@@ -25,10 +29,10 @@ test('every league icon key is a real league id from the matches source', () => 
   assert.equal(new Set(keys).size, keys.length, 'لا مفتاح مكرر في قائمة الأيقونات');
 });
 
-test('every league icon is a full https URL on the source asset host', () => {
-  const block = competitions.match(/export const LEAGUE_ICONS[^\n]*=\s*\{([\s\S]*?)\n\};/);
-  const values = [...block[1].matchAll(/:\s*"([^"]+)"/g)].map((match) => match[1]);
-  assert.equal(values.length, [...block[1].matchAll(/^\s*"([^"]+)":/gm)].length);
+test('every league icon is a full https URL on the source asset host', async () => {
+  const { LEAGUE_ICONS } = await import('../src/lib/league-icons.mjs');
+  const values = Object.values(LEAGUE_ICONS);
+  assert.ok(values.length > 0);
   for (const value of values) {
     assert.match(value, ICON_HOST, `رابط أيقونة ليس من مخزن شعارات المصدر: ${value}`);
   }

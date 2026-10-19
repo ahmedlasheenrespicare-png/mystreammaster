@@ -28,6 +28,7 @@ body.sm-page{background:var(--sm-cream)!important;color:var(--sm-ink)!important;
 @keyframes smFade{from{opacity:0;translate:0 -4px}to{opacity:1;translate:0 0}}
 .sm-dd-box{background:#fff;border:1px solid #0b0b0f1a;border-radius:24px;box-shadow:0 30px 80px -20px #0000004d;padding:12px;width:300px}
 .sm-dd-home .sm-dd-box{width:640px}
+.sm-dd-matches .sm-dd-box{width:640px}
 .sm-dd-servers .sm-dd-box{width:560px}
 .sm-dd-grid{display:grid;gap:2px}
 .sm-dd-grid-3{grid-template-columns:repeat(3,1fr)}
@@ -37,6 +38,14 @@ body.sm-page{background:var(--sm-cream)!important;color:var(--sm-ink)!important;
 .sm-dd-link small{display:block;font-size:11.5px;font-weight:500;color:#0b0b0f80;margin-top:2px}
 .sm-dd-icon{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:12px;background:#f4f3ef;font-size:15px}
 .sm-dd-link:hover .sm-dd-icon{background:#fff}
+/* شعار البطولة داخل صندوق الأيقونة نفسه: الكأس البديل تحت الشعار (مثل LeagueNavIcon في React) */
+.sm-dd-league{position:relative;overflow:hidden;color:#0b0b0fa6}
+.sm-dd-league svg{width:16px;height:16px}
+.sm-dd-league img{position:absolute;width:20px;height:20px;object-fit:contain}
+.sm-dd-link:hover .sm-dd-league{background:#fff}
+.sm-mobile a.sm-m-row{display:flex;align-items:center;gap:10px}
+.sm-m-emoji{width:24px;text-align:center;flex:none}
+.sm-m-league{width:32px;height:32px}
 .sm-dd-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
 .sm-header .sm-dd-card{display:block;border:1px solid #0b0b0f1a;border-radius:16px;overflow:hidden;line-height:1.3}
 .sm-dd-card:hover{border-color:var(--sm-ink)}

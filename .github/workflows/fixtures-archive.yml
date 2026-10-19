@@ -196,9 +196,11 @@ jobs:
           last_fetched_at="$(node -e 'const r = JSON.parse(require("fs").readFileSync("/tmp/publish-result.json", "utf8")); process.stdout.write(r.lastFetchedAt || "");')"
           echo "last_fetched_at=${last_fetched_at}" >> "$GITHUB_OUTPUT"
           git add -- website/src/content/fixtures-archive website/src/content/league-averages.json
-          # طلب الاسترجاع الموسمي يُستهلك مع النشر — لا يبقى مطلوباً مفتوحاً
+          # طلب الاسترجاع الموسمي يُستهلك مع النشر — لا يبقى مطلوباً مفتوحاً.
+          # git rm --ignore-unmatch ينجح حتى لو لم يكن الملف موجوداً أصلاً
+          # (كما في التشغيل المجدول اليومي)، بعكس git add الذي يفشل بـ exit 128.
+          git rm -f --ignore-unmatch -- website/.fixtures-backfill-request.json
           rm -f website/.fixtures-backfill-request.json
-          git add -A -- website/.fixtures-backfill-request.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo 'No semantic changes; no commit or deploy.' >> "$GITHUB_STEP_SUMMARY"

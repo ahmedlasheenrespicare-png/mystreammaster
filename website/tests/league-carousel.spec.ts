@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 
 // The league bar is a carousel (slider) over real landing-page links: it must
 // page without hiding links from crawlers, keyboard users, or no-JS visitors.
@@ -19,8 +19,21 @@ async function openHub(page: Page, viewport: { width: number; height: number }) 
   await page.goto('/matches/');
 }
 
-const offset = (page: Page) =>
-  page.locator('.league-carousel-track').evaluate(el => {
+
+/* الصفحة تمرّر نفسها إلى التقويم بعد وصول البيانات، فتتحرّك العناصر تحت
+   الإحداثيات المحسوبة. تُنتظر هنا استقرار موضع التمرير قبل أي سحب بالفأرة. */
+async function settleScroll(page: Page) {
+  let last = -1;
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const y = await page.evaluate(() => window.scrollY);
+    if (y === last) return;
+    last = y;
+    await page.waitForTimeout(150);
+  }
+}
+
+const offset = (nav: Locator) =>
+  nav.locator('.league-carousel-track').evaluate(el => {
     const matrix = new DOMMatrix(getComputedStyle(el).transform);
     return Math.round(matrix.m41);
   });
@@ -30,7 +43,7 @@ test('league bar pages by arrows and dots, keeps every link in the DOM, and grow
   page.on('pageerror', error => errors.push(error.message));
   await openHub(page, { width: 1440, height: 1000 });
 
-  const nav = page.locator('.league-carousel');
+  const nav = page.locator('.matches-league-links.league-carousel');
   await expect(nav).toHaveAttribute('data-ready', 'true');
   // All eight landing links stay in the document: the carousel offsets them,
   // it never swaps the list out.
@@ -53,16 +66,16 @@ test('league bar pages by arrows and dots, keeps every link in the DOM, and grow
   const idleWidth = (await second.boundingBox())!.width;
   expect(activeWidth).toBeGreaterThan(idleWidth * 2);
 
-  const start = await offset(page);
+  const start = await offset(nav);
   await nav.getByLabel('البطولات التالية').click();
   await expect(second).toHaveClass(/is-active/);
   await expect(first).not.toHaveAttribute('aria-current', 'true');
-  expect(Math.abs((await offset(page)) - start)).toBeGreaterThan(100);
+  expect(Math.abs((await offset(nav)) - start)).toBeGreaterThan(100);
   await expect(nav.locator('.league-carousel-viewport')).toHaveAttribute('aria-label', /صفحة 2 من 2/);
 
   await nav.getByLabel('البطولات السابقة').click();
   await expect(first).toHaveClass(/is-active/);
-  expect(await offset(page)).toBe(start);
+  expect(await offset(nav)).toBe(start);
 
   await second.click();
   await expect(second).toHaveClass(/is-active/);
@@ -74,7 +87,7 @@ test('league bar pages by arrows and dots, keeps every link in the DOM, and grow
 
 test('league bar re-measures on a narrow viewport: two cards per page and four pages', async ({ page }) => {
   await openHub(page, { width: 390, height: 900 });
-  const nav = page.locator('.league-carousel');
+  const nav = page.locator('.matches-league-links.league-carousel');
   await expect(nav).toHaveAttribute('data-ready', 'true');
   await expect(nav.locator('.league-carousel-dot')).toHaveCount(4);
   const items = nav.locator('.league-carousel-item');
@@ -86,7 +99,7 @@ test('league bar re-measures on a narrow viewport: two cards per page and four p
 
 test('keyboard focus reaches a league link and the bar follows it into view', async ({ page }) => {
   await openHub(page, { width: 1440, height: 1000 });
-  const nav = page.locator('.league-carousel');
+  const nav = page.locator('.matches-league-links.league-carousel');
   const last = nav.locator('.league-carousel-item').last();
   await last.focus();
   await expect(last).toBeFocused();
@@ -100,7 +113,17 @@ test('keyboard focus reaches a league link and the bar follows it into view', as
 
 test('dragging the bar never opens a league page, and a swipe advances the page', async ({ page }) => {
   await openHub(page, { width: 1440, height: 1000 });
-  const nav = page.locator('.league-carousel');
+  const nav = page.locator('.matches-league-links.league-carousel');
+  /* يُثبَّت الشريط في منتصف الشاشة قبل حساب إحداثيات السحب: الهيدر مثبَّت
+     أعلى الصفحة فيغطّي الشريط إن صار تحته، فلا تصل أحداث المؤشر أصلاً. */
+  await page.evaluate(() =>
+    document.querySelector('.matches-league-links.league-carousel')!.scrollIntoView({ block: 'center' }),
+  );
+  await settleScroll(page);
+  await page.evaluate(() =>
+    document.querySelector('.matches-league-links.league-carousel')!.scrollIntoView({ block: 'center' }),
+  );
+  await settleScroll(page);
   const box = (await nav.locator('.league-carousel-viewport').boundingBox())!;
   const y = box.y + box.height / 2;
   // RTL: dragging right reveals the cards waiting on the left.

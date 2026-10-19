@@ -3,6 +3,7 @@ import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeD
 import { matchByExternalId, matchCenterPath } from '../content/match-center.mjs';
 import { leagueLandingsInPageOrder } from '../content/competitions';
 import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
+import LeagueStatsCarousel from '../components/LeagueStatsCarousel';
 import { to } from '../config';
 import './matches.css';
 
@@ -158,6 +159,18 @@ export default function MatchesPage() {
           href: `/matches/${landing.slug}/`,
           label: landing.shortName,
           leagueId: landing.leagueId,
+        }))}
+      />
+
+      {/* كروت الإحصائيات بنفس نمط الشريط الذي يعلوها: كرت مختصر لكل بطولة
+          (أقوى هجوم، أقوى دفاع، إجمالي الأهداف) من جدول الترتيب المتحقق منه
+          نفسه الذي تقرأه صفحة البطولة — لا أرقام محسوبة محلياً بلا مصدر. */}
+      <LeagueStatsCarousel
+        items={leagueLandingsInPageOrder().map((landing) => ({
+          href: `/matches/${landing.slug}/`,
+          name: landing.shortName,
+          leagueId: landing.leagueId,
+          standingsLeagueId: landing.standings?.leagueId ?? null,
         }))}
       />
 

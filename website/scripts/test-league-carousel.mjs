@@ -52,18 +52,49 @@ test('the matches hub renders the league carousel with all eight landing links i
 });
 
 test('league icons load lazily with dimensions and empty alt, and no league ships a broken image', () => {
-  const carousel = matchesPage('.league-carousel');
-  const images = carousel.find('img.league-carousel-logo');
-  assert.equal(images.length, 7, 'سبع بطولات لها شعار موثّق لدى المصدر (الدوري المصري بلا شعار موثّق)');
-  for (const image of images.toArray()) {
-    const $img = matchesPage(image);
-    assert.match($img.attr('src'), ICON_HOST);
-    assert.equal($img.attr('alt'), '', 'الأيقونة زخرفية: النص الظاهر بجانبها يكفي');
-    assert.equal($img.attr('loading'), 'lazy');
-    assert.equal($img.attr('decoding'), 'async');
-    assert.ok(Number($img.attr('width')) > 0 && Number($img.attr('height')) > 0, 'أبعاد معلومة تمنع قفز التخطيط');
+  /* الشارة عنصر واحد (LeagueIconBadge) يخدم الشريطين — يُفحَص كل شريط وحده */
+  for (const bar of ['.matches-league-links.league-carousel', '.league-carousel.league-stats']) {
+    const scope = matchesPage(bar);
+    const images = scope.find('img.league-carousel-logo');
+    assert.equal(images.length, 7, `${bar}: سبع بطولات لها شعار موثّق لدى المصدر (الدوري المصري بلا شعار موثّق)`);
+    for (const image of images.toArray()) {
+      const $img = matchesPage(image);
+      assert.match($img.attr('src'), ICON_HOST);
+      assert.equal($img.attr('alt'), '', 'الأيقونة زخرفية: النص الظاهر بجانبها يكفي');
+      assert.equal($img.attr('loading'), 'lazy');
+      assert.equal($img.attr('decoding'), 'async');
+      assert.ok(Number($img.attr('width')) > 0 && Number($img.attr('height')) > 0, 'أبعاد معلومة تمنع قفز التخطيط');
+    }
+    /* البديل المحايد مرسوم في كل بطاقة — يظهر وحده حين لا يتوفّر شعار */
+    assert.equal(scope.find('.league-carousel-badge').length, 8, bar);
+    assert.equal(scope.find('.league-carousel-fallback').length, 8, bar);
   }
-  /* البديل المحايد مرسوم في كل بطاقة — يظهر وحده حين لا يتوفّر شعار */
-  assert.equal(carousel.find('.league-carousel-badge').length, 8);
-  assert.equal(carousel.find('.league-carousel-fallback').length, 8);
+});
+
+test('the matches hub renders the league stats bar with prerendered numbers for every league', () => {
+  const bar = matchesPage('.league-carousel.league-stats');
+  assert.equal(bar.length, 1, 'شريط إحصائيات البطولات موجود في HTML المُسبق رسمه');
+  assert.equal(bar.attr('aria-roledescription'), 'carousel');
+  /* لا طلب يُطلَق من HTML نفسه: الجلب حيّ عند بلوغ القسم، لا عند تحميل الصفحة */
+  assert.equal(bar.attr('data-fetched'), 'false');
+  const cards = bar.find('.league-stats-card');
+  assert.equal(cards.length, 8, 'كرت لكل بطولة');
+  const ids = cards.toArray().map((card) => matchesPage(card).attr('data-league'));
+  assert.deepEqual(ids, ['uefa.champions', 'eng.1', 'fra.1', 'esp.1', 'ger.1', 'ita.1', 'ksa.1', 'egy.1']);
+  /* كل كرت يفتح صفحة بطولته — الشريط مدخل تنقّل لا لوحة أرقام مغلقة */
+  for (const card of cards.toArray()) {
+    assert.match(matchesPage(card).find('a.league-stats-link').attr('href'), /^\/matches\/[^/]+\/$/);
+  }
+  /* الأرقام من لقطة البناء المراجَعة: ثلاثة مقاييس لكل كرت، ولا مقياس فارغ */
+  const values = bar.find('[data-stat-value]');
+  assert.equal(values.length, 24);
+  assert.equal(values.filter((_, el) => matchesPage(el).text().trim() === 'غير متاح').length, 0);
+  for (const metric of ['best-attack', 'best-defence', 'total-goals']) {
+    assert.equal(bar.find(`[data-stat-metric="${metric}"]`).length, 8, `مقياس ${metric} في كل كرت`);
+  }
+  /* سطر القراءة: وقت آخر قراءة مؤكَّدة ظاهر، لا «جارٍ القراءة» في HTML ثابت */
+  assert.equal(bar.find('[data-stat-foot]').filter((_, el) => matchesPage(el).text().includes('آخر قراءة')).length, 8);
+  /* نفس أدوات تنقّل شريط الروابط: سهمان ومؤشر نقطي واحد قبل القياس */
+  assert.equal(bar.find('.league-carousel-nav').length, 2);
+  assert.equal(bar.find('.league-carousel-dot').length, 1);
 });

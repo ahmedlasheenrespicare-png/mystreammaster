@@ -190,11 +190,18 @@ test('state A: without a lineup the preview sits on the pitch and the panel poin
   await expect(page.locator('#mc-panel-live .mc-possession')).toHaveCount(0);
   await expect(page.locator('#mc-panel-live')).not.toContainText('غير متاح');
 
+  // قبل البداية لا أرقام ⇒ لا مقارنة بمتوسط الدوري (لا أساس بلا أرقام مباراة).
+  await expect(page.locator('.mc-benchmark')).toHaveCount(0);
+  // ولا لوحة مؤشرات على الملعب: المجموعة بلا ميزان لا تُخلق من لا شيء.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard')).toHaveCount(0);
+
   const docs = page.locator('.mc-docs');
-  await expect(docs.locator('.mc-doc')).toHaveCount(6);
+  await expect(docs.locator('.mc-doc')).toHaveCount(8);
   await expect(docs).toContainText('آخر 3 مواجهات');
   await expect(docs).toContainText('آخر 5 مباريات');
   await expect(docs).toContainText('ليست أفضلية');
+  // بطاقة ميزان المجموعة: شرح الشريطين والأساس، في بيت النصوص الوحيد.
+  await expect(docs.locator('.mc-doc[data-doc="group-index"]')).toContainText('متوسط حصة كل طرف');
   await expect(docs.locator('.mc-docs-review')).toContainText('18 أكتوبر 2026');
   await expect(docs.locator('.mc-report')).toHaveAttribute('href', /^mailto:/);
   await expectNoSourceTextOutsideDocs(page);
@@ -240,16 +247,37 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
   await expect(page.locator('[role="tab"]')).toHaveText(['قبل المباراة', 'مباشر']);
   await expect(page.locator('#mc-panel-live')).toBeVisible();
 
-  // عدّادات أسفل الشعارين من جدول الإحصاءات وحده: المضيف بلا حمراء (null ⇒ لا قرص)، الضيف ثلاثة أقراص.
+  // عدّادات أسفل الشعارين: صفراء/حمراء فقط، وتُخفى تماماً ما دامت صفراً أو null؛
+  // الركنيات لم تعد من عدّادات الملعب. المضيف صفراء وحدها، والضيف صفراء وحمراء.
   const home = page.locator('.mc-pitch-team[data-side="home"] .mc-pitch-counters, .mc-pitch-team--home .mc-pitch-counters').first();
   const away = page.locator('.mc-pitch-team[data-side="away"] .mc-pitch-counters, .mc-pitch-team--away .mc-pitch-counters').first();
   await expect(page.locator('.mc-pitch-counters')).toHaveCount(2);
-  await expect(home.locator('.mc-pitch-counter')).toHaveCount(2);
+  await expect(home.locator('.mc-pitch-counter')).toHaveCount(1);
   await expect(home.locator('.mc-pitch-counter[data-counter="red"]')).toHaveCount(0);
+  await expect(home.locator('.mc-pitch-counter[data-counter="corners"]')).toHaveCount(0);
   await expect(home.locator('.mc-pitch-counter[data-counter="yellow"] .mc-num')).toHaveText('١');
-  await expect(home.locator('.mc-pitch-counter[data-counter="corners"] .mc-num')).toHaveText('٦');
-  await expect(away.locator('.mc-pitch-counter')).toHaveCount(3);
+  await expect(away.locator('.mc-pitch-counter')).toHaveCount(2);
   await expect(away.locator('.mc-pitch-counter[data-counter="red"] .mc-num')).toHaveText('١');
+
+  // مؤشرات المجموعات على الملعب تحت بطاقتي الفريقين: اللوحة نفسها التي في
+  // لوحة «مباشر»، مشتقة من اللقطة نفسها فتتحدث مع كل قراءة حية.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard')).toBeVisible();
+  // اللوحة على الملعب هي لوحة «مباشر» نفسها: عدد الصفوف والمحتوى واحد.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard-row')).toHaveCount(
+    await page.locator('#mc-panel-live .mc-indexboard-row').count(),
+  );
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard-row').first()).toContainText('الاستحواذ والتمرير');
+
+  // مقارنة بمتوسط الدوري الموثّق: أساس معلن العينات، وكمية لا حكم، والطرف
+  // الناقص «غير متاح». الاستحواذ ٥٨/٤٢ مقابل متوسط ٥٠ ⇒ أعلى وأقل معاً.
+  const benchmark = page.locator('#mc-panel-live .mc-benchmark');
+  await expect(benchmark).toBeVisible();
+  await expect(benchmark).toContainText('مباراة موثقة');
+  await expect(benchmark).toContainText('متوسط الدوري');
+  await expect(benchmark).toContainText('أعلى من متوسط الدوري بـ ٨');
+  await expect(benchmark).toContainText('أقل من متوسط الدوري بـ ٨');
+  await expect(benchmark.locator('.mc-benchmark-row')).toHaveCount(3);
+  await expect(benchmark.locator('.mc-bench-none')).toHaveCount(1);
 
   const live = page.locator('#mc-panel-live');
   const possession = live.locator('.mc-possession');
@@ -266,6 +294,26 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
   await expect(live.locator('.mc-stat-group-title')).toHaveText(['الاستحواذ والتمرير', 'التسديد', 'بناء الهجمة', 'الدفاع', 'حراسة المرمى', 'الانضباط']);
   await expect(live.locator('.mc-stat-group-head .mc-mini-crest--home')).toHaveCount(6);
   await expect(live.locator('.mc-stat-group-head .mc-mini-crest--away')).toHaveCount(6);
+
+  // ميزان كل مجموعة: شريط متوسط الحصة برقميه (مجموعهما ١٠) وشريط عدّ الصفوف،
+  // بلا عنوان باسمه — اسم المجموعة في رأسها تسميته — وأساسه معلَن في سطره.
+  const balances = live.locator('.mc-stat-index');
+  await expect(balances).toHaveCount(6);
+  const first = balances.first();
+  await expect(first).toContainText('٥٨%');
+  await expect(first).toContainText('٤٢%');
+  await expect(first.locator('.mc-stat-index-fill')).toHaveCount(2);
+  await expect(first.locator('.mc-stat-tally-seg[data-lead="home"]')).toHaveCount(1);
+  // «دقة التمرير» وصل طرفها المضيف وحده: خارج المتوسط ومعدودة في الأساس.
+  await expect(first).toContainText('بلا رقمين: ١');
+  // مجموعة بصف واحد قابل للمقارنة أساسها ضيّق معلن بإطار متقطع.
+  await expect(live.locator('.mc-stat-group', { hasText: 'حراسة المرمى' }).locator('.mc-stat-index')).toHaveAttribute('data-basis', 'single');
+  // لوحة «مؤشرات المجموعات»: ستة أسطر، كل سطر رابط إلى مجموعته في التبويب نفسه.
+  const board = live.locator('.mc-indexboard');
+  await expect(board).toBeVisible();
+  await expect(board.locator('.mc-indexboard-row')).toHaveCount(6);
+  await expect(board.locator('.mc-indexboard-row a').first()).toHaveAttribute('href', '#live-statgroup-possession-passing');
+  await expect(live.locator('#live-statgroup-possession-passing')).toHaveCount(1);
   const passing = live.locator('.mc-stat-compare', { hasText: 'دقة التمرير' });
   await expect(passing.locator('.mc-stat-side-none')).toHaveText('غير متاح');
   await expect(passing).not.toContainText('٠%');
@@ -288,4 +336,12 @@ test('after the final whistle «مباشر» disappears and «بعد المبا�
   await expect(page.locator('#mc-tab-live')).toHaveCount(0);
   await expect(page.locator('#mc-panel-postmatch')).toBeVisible();
   await expect(page.locator('#mc-panel-postmatch .mc-possession')).toBeVisible();
+  // بعد النهاية تثبت المقارنة بمتوسط الدوري أرشيفاً ختامياً بالأرقام نفسها.
+  await expect(page.locator('#mc-panel-postmatch .mc-benchmark')).toBeVisible();
+  await expect(page.locator('#mc-panel-postmatch .mc-benchmark')).toContainText('مباراة موثقة');
+  // ومؤشرات الملعب تثبت هناك أيضاً بالأرقام الختامية نفسها: صفوفها صفوف لوحة التحليل.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard')).toBeVisible();
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard-row')).toHaveCount(
+    await page.locator('.mc-analysis .mc-indexboard-row').count(),
+  );
 });

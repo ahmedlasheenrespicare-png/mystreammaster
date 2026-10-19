@@ -341,23 +341,65 @@ export interface StatComparisonRow {
   bar: { home: number | null; away: number | null };
 }
 
-export interface StatGroup { id: string; label: string; rows: StatComparisonRow[] }
+/**
+ * ميزان المجموعة — كمّيان بلا حكم: متوسط حصة كل طرف من صفوف المجموعة، وعدّ
+ * الصفوف الأعلى رقمياً. `null` إن لم يصل صفٌّ واحد برقمين من المصدر.
+ * لا اسم ظاهر له في الواجهة: اسم المجموعة القائم (في رأسها) هو تسميته.
+ */
+export interface GroupIndex {
+  /** متوسط حصة المضيف 0–1؛ العرض منها، والطرف الآخر مكمّلته. */
+  meanHome: number;
+  meanAway: number;
+  /** العددان الصحيحان المطبوعان؛ مجموعهما 100 دائماً (المكمّل بعد التقريب). */
+  pctHome: number;
+  pctAway: number;
+  /** كم صفاً دخل الحساب، وكم نقص أحد طرفيه، وكم صفر/صفر (نصفان متساويان). */
+  comparable: number;
+  unavailable: number;
+  zeroZero: number;
+  /** صف واحد قابل للمقارنة — أساس ضيّق يُعلن ولا يُخفى. */
+  single: boolean;
+  tally: { home: number; away: number; equal: number };
+}
+
+export interface StatGroup { id: string; label: string; rows: StatComparisonRow[]; index: GroupIndex | null }
 
 export const STAT_GROUPS: { id: string; label: string; keys: string[] }[];
 export const STAT_GROUP_FALLBACK: { id: string; label: string };
 
 export function compareStatRow(stat: StatPair | null | undefined): StatComparisonRow;
+export function groupIndex(rows: StatComparisonRow[] | null | undefined): GroupIndex | null;
 export function groupStatistics(statistics: StatPair[] | null | undefined): StatGroup[];
-export function analysisFacts(statistics: StatPair[] | null | undefined): StatComparisonRow[];
 
 /** شريط الاستحواذ البارز — `null` ما لم تصل النسبتان رقميتين معاً. */
 export interface PossessionSplit { home: number; away: number; homeShare: number; awayShare: number }
 export function possessionSplit(statistics: StatPair[] | null | undefined): PossessionSplit | null;
 
-/** عدّادات بطاقة الفريق على الملعب (صفراء/حمراء/ركنيات) من جدول الإحصائيات نفسه. */
-export interface PitchCounter { id: 'yellow' | 'red' | 'corners'; label: string; value: number }
-export const PITCH_COUNTERS: { id: 'yellow' | 'red' | 'corners'; key: string; label: string }[];
+/** عدّادات بطاقة الفريق على الملعب (صفراء/حمراء) من جدول الإحصائيات نفسه؛
+    تُخفى تماماً ما دامت القيمة صفراً، ولا تظهر إلا بأول بطاقة (> 0). */
+export interface PitchCounter { id: 'yellow' | 'red'; label: string; value: number }
+export const PITCH_COUNTERS: { id: 'yellow' | 'red'; key: string; label: string }[];
 export function pitchCounters(statistics: StatPair[] | null | undefined, side: 'home' | 'away'): PitchCounter[];
+
+/** مقارنة بمتوسط الدوري الموثّق: صف لكل مقياس بقيمة كل طرف وفارقها عن الأساس. */
+export interface LeagueBenchmarkSide { value: number; delta: number }
+export interface LeagueBenchmarkRow {
+  key: string;
+  label: string;
+  unit: string;
+  /** متوسط الدوري لكل فريق في المباراة، من الأرشيف المتحقَّق منه. */
+  average: number;
+  home: LeagueBenchmarkSide | null;
+  away: LeagueBenchmarkSide | null;
+}
+export interface LeagueBenchmark { matches: number; rows: LeagueBenchmarkRow[] }
+export const LEAGUE_BENCHMARKS: { key: string; averageKey: string; label: string; unit: string }[];
+export function leagueBenchmark(
+  statistics: StatPair[] | null | undefined,
+  averages: { matches?: number; possession?: number; shots?: number; passAccuracy?: number } | null | undefined,
+): LeagueBenchmark | null;
+/** اتجاه الفارق المقرّب منزلة واحدة — وصف كمية لا حكم جودة. */
+export function benchmarkDirection(delta: number | null | undefined): 'above' | 'below' | 'equal' | null;
 
 /** مجمل المواجهات من الصفوف المعروضة نفسها، أو `null` إن تعذّرت نسبة صف. */
 export interface HeadToHeadSummary { homeWins: number; draws: number; awayWins: number; total: number }

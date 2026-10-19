@@ -35,7 +35,7 @@ const TAB_HINTS: Partial<Record<import('../lib/match-center.mjs').TabId, string>
   prematch: 'المواجهات السابقة، والمعاينة ومستوى الفريقين بعد أن تحل التشكيلة محلها على الملعب',
   live: 'العد التنازلي وآخر قراءة وأرقام الفريقين من المصدر',
   analysis: 'تحليل المباراة المكتوب — الأحداث والإحصائيات والمصادر',
-  postmatch: 'ملخص الوقائع وفلاتر الأحداث والإحصائيات وتقرير ما بعد المباراة',
+  postmatch: 'إحصائيات الفريقين أولاً، ثم فلاتر الأحداث وتقرير ما بعد المباراة',
 };
 function readTimeLabel(value: unknown): string | null {
   if (!validDate(value)) return null;

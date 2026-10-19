@@ -23,6 +23,13 @@ export interface ArchiveTeamStats {
   home: VenueStats; away: VenueStats;
 }
 export function archiveTeamStats(matches: ArchiveMatch[]): ArchiveTeamStats[];
+/** متوسطات الدوري الموثقة (لكل فريق في المباراة) من مباريات منتهية كاملة الأرقام؛
+    عينة أصغر من `minMatches` ⇒ `null` — لا متوسط بلا عينة تُذكر. */
+export interface LeagueAverages { matches: number; possession: number; shots: number; passAccuracy: number }
+export function computeLeagueAverages(
+  matches: ArchiveMatch[] | null | undefined,
+  options?: { minMatches?: number },
+): LeagueAverages | null;
 export type TacticCode = 'elite-balanced' | 'offensive' | 'defensive' | 'struggling';
 export const TACTIC_LABELS: Record<TacticCode, string>;
 type RatedEntry = StandingsEntry & {

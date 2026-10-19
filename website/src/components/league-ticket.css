@@ -14,8 +14,15 @@
      معلومة ولا يكرّرها لقارئ الشاشة.
    • الحركة (الطفو + لمعان الهولوغرافي) تُعطَّل لمن يفعّل تقليل الحركة.
    • قيم التصميم الأصلية محفوظة ما أمكن: الثقب 12px، الشقّ 8px، خطوط القصّ
-     10/15/16/24px، التدرّج المخروطي نفسه، والظلال الخمس نفسها — والأسماء
-     كلها ببادئة league-ticket حتى لا تصطدم ببطاقات الموقع الأخرى.
+     10/15/16/24px، بنية الطبقات الثلاث نفسها (مخروطي + وهج + لمعان متحرك)،
+     والظلال الخمس نفسها — والأسماء كلها ببادئة league-ticket حتى لا تصطدم
+     ببطاقات الموقع الأخرى.
+   • الألوان وحدها معاد ضبطها على هوية الموقع (Stream Master Pro) بدل فوشيا
+     القالب الموسيقي الفاقعة وسيانه (#ff6bfe / #00f9f8 / #01fefb / #f0f):
+     تدرّج فاتح كريمي–فضي مطعّم بلمسات خفيفة من الأزرق الملكي #2b4eff
+     والبنفسجي #7c5cff والليموني #d8ff3e والنعناعي #3effe0 فوق قاعدة كريمية
+     دافئة #f6f4ec — يلائم خلفية الصفحة الكريمية #faf9f6 وشارة الشعار
+     الكريمية، ويبقي نص المتن الداكن مقروءاً على المساحة العريضة (100%×265).
 ========================================================================== */
 
 .league-ticket {
@@ -68,13 +75,14 @@
   overflow: hidden;
 }
 
-/* لوح التذكرة: أبيض مثقّب الحواف — القناع نفسه من التصميم الأصلي
-   (ثقب علوي/سفلي متكرر، شقّان دائريان عند خط القصّ، وشرطة قصّ متقطعة) */
+/* لوح التذكرة: كريمي دافئ مثقّب الحواف — القناع نفسه من التصميم الأصلي
+   (ثقب علوي/سفلي متكرر، شقّان دائريان عند خط القصّ، وشرطة قصّ متقطعة).
+   القاعدة #f6f4ec هي خامة شارة الشعار نفسها فتندمج الشارة مع اللوح */
 .league-ticket-bg {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background-color: #fff;
+  background-color: #f6f4ec;
   filter: url(#league-ticket-bump);
   mask:
     /* top perforations */
@@ -115,42 +123,48 @@
   mask-composite: intersect, exclude, add, add;
 }
 
-/* التدرّج الهولوغرافي الأصلي بطبقاته الثلاث (مخروطي + وهج + لمعان متحرك) */
+/* التدرّج الهولوغرافي بطبقاته الثلاث (مخروطي + وهج + لمعان متحرك) — بنية
+   القالب الأصلي نفسها، بألوان هوية الموقع: قاعدة كريمية–فضية فاتحة مطعّمة
+   بلمسات الأزرق الملكي والبنفسجي والليموني والنعناعي بدل الفوشيا والسيان */
 .league-ticket-holographic {
-  background-image: linear-gradient(to bottom, #fe58, 90%, #0002),
+  background-image: linear-gradient(to bottom, #fff8, 90%, #0b0b0f0d),
     conic-gradient(
       at 60% 50%,
-      #ccc,
-      #ff6bfe,
-      #00f9f8,
-      #ddd,
-      #0081fd,
-      #eef0bc,
-      #0081fd,
-      #ff6bfe,
-      #0002,
-      #0081fd,
-      #ddd,
-      #01fefb,
-      #ccc
+      #e3e0d6,
+      #ded2ff,
+      #cbf2e6,
+      #efeee7,
+      #cfd9ff,
+      #e8ffbe,
+      #cfd9ff,
+      #ded2ff,
+      #0b0b0f14,
+      #cfd9ff,
+      #efeee7,
+      #cbf2e6,
+      #e3e0d6
     );
 }
+/* وهج ناعم من ألوان الهوية بدل الفوشيا الحاد — مزج soft-light خفيف
+   يضيء الخامة المعدنية دون أن يحرقها كما كان يفعل color-burn */
 .league-ticket-holographic::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at 70% 20%, #f0f, #0000),
-    repeating-radial-gradient(circle at 30% 80%, #fff, #f4a 48px, #eeeeee 150px);
-  mix-blend-mode: color-burn;
+  background: radial-gradient(circle at 70% 20%, rgba(43, 78, 255, .14), #0000),
+    repeating-radial-gradient(circle at 30% 80%, #faf9f6, rgba(216, 255, 62, .18) 48px, #f4f3ef 150px);
+  mix-blend-mode: soft-light;
 }
+/* لمعان الهولوغرافي المتحرك (league-ticket-sheen): شريط إضاءة أبيض/ليموني
+   شفاف بدل التدرّج الحاد (أحمر/أخضر مع difference) — الحركة نفسها تماماً */
 .league-ticket-holographic::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(to bottom, #f205, #f00, #0f0, #f205);
-  mix-blend-mode: difference;
+  background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, .55) 48%, rgba(216, 255, 62, .25) 54%, transparent 75%);
+  mix-blend-mode: overlay;
 
   animation: league-ticket-sheen 3s ease-in-out infinite alternate;
   background-position: 0 0;
@@ -176,17 +190,21 @@
   z-index: 1;
 }
 
+/* مقصّ القصّ: حبر داكن شبه شفاف — يُرى بنعومة فوق الخلفية الفاتحة الجديدة
+   (الأبيض القديم كان يختفي عليها) */
 .league-ticket-symbol {
   position: absolute;
   top: 1.3em;
   right: 0px;
   rotate: 185deg;
   font-size: 1.1em;
-  color: #fff;
+  color: #0b0b0f;
   line-height: .5;
-  opacity: .2;
+  opacity: .28;
 }
 
+/* نص المتن: تباين عالٍ فوق الخامة الفاتحة — اسم البطولة بالحبر الداكن
+   #0b0b0f والسطران التوضيحيان بلون داكن مقروء #27272a */
 .league-ticket-body {
   grid-area: body;
   /* يتمركز عمودياً في ما تبقّى من اللوح (لا تذييل بعد حذف الباركود والرمز) */
@@ -194,6 +212,7 @@
   margin: 0 1em;
   padding: .5em;
   font-weight: 600;
+  color: #27272a;
   text-align: center;
   z-index: 1;
 }
@@ -202,6 +221,7 @@
   font-style: normal;
   font-weight: 800;
   font-size: .9rem;
+  color: #0b0b0f;
   overflow-wrap: anywhere;
 }
 

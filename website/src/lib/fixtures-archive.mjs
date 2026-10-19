@@ -197,3 +197,54 @@ export function standingsRates(entries) {
     },
   };
 }
+
+/* ==========================================================================
+   متوسطات الدوري من الأرشيف المتحقَّق منه — أساس «مقارنة بمتوسط الدوري»
+   --------------------------------------------------------------------------
+   تُحسب من مباريات منتهية حملت أرقام الطرفين معاً (possession/shots/passAccuracy)،
+   بمتوسط لكل **فريق في المباراة** (كل مباراة تسهم بطرفين). مقياس النسب يُوحَّد
+   كما في مركز المباراة: الكسر في (0, 1] نقاط مئوية، وما خرج عن [0, 100] يُسقط
+   الصف كله — لا تُقصّ قيمة ولا تُصحَّح. عينة أصغر من `minMatches` ⇒ `null`:
+   لا متوسط موثقاً يُعلن إلا بعينة تُذكر معها.
+========================================================================== */
+const statNumber = value => (typeof value === 'number' && Number.isFinite(value) ? value : null);
+const percentScale = value => {
+  const n = statNumber(value);
+  if (n === null || n < 0 || n > 100) return null;
+  return n > 0 && n <= 1 ? Math.round(n * 1000) / 10 : n;
+};
+const round1 = value => Math.round(value * 10) / 10;
+
+export function computeLeagueAverages(matches, { minMatches = 10 } = {}) {
+  const list = Array.isArray(matches) ? matches : [];
+  const sums = { possession: 0, shots: 0, passAccuracy: 0 };
+  let sides = 0;
+  let counted = 0;
+  for (const match of list) {
+    if (match?.status !== 'finished') continue;
+    const stats = match?.statistics;
+    if (!stats || typeof stats !== 'object') continue;
+    const values = {};
+    let complete = true;
+    for (const key of Object.keys(sums)) {
+      const pair = [percentScale(stats.home?.[key]), percentScale(stats.away?.[key])];
+      if (key === 'shots') {
+        pair[0] = statNumber(stats.home?.shots);
+        pair[1] = statNumber(stats.away?.shots);
+      }
+      if (pair.some(v => v === null)) { complete = false; break; }
+      values[key] = pair;
+    }
+    if (!complete) continue;
+    counted += 1;
+    sides += 2;
+    for (const key of Object.keys(sums)) sums[key] += values[key][0] + values[key][1];
+  }
+  if (counted < minMatches || sides === 0) return null;
+  return {
+    matches: counted,
+    possession: round1(sums.possession / sides),
+    shots: round1(sums.shots / sides),
+    passAccuracy: round1(sums.passAccuracy / sides),
+  };
+}

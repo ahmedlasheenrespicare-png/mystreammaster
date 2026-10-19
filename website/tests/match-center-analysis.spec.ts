@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /* ==========================================================================
-   قسم «بعد المباراة» وملخص الوقائع — اختبار الواجهة
+   قسم «بعد المباراة»: الإحصائيات أولاً وبلا ملخصين — اختبار الواجهة
    --------------------------------------------------------------------------
    كل رقم في هذا الملف مُدخلٌ للاختبار لا بيانات منشورة: يُحقن في
    `match-center.php` ثم يُقرأ كما يقرأه الزائر. الفحوص على ما لا يُغتفر إفساده:
@@ -137,22 +137,19 @@ test.describe('match analysis tab', () => {
     await expect(page.getByText('Start Delay')).toHaveCount(0);
   });
 
-  test('the summary says only what the numbers say: both values, no verdict', async ({ page }) => {
+  test('stats open the tab; the two derived summaries stay hidden', async ({ page }) => {
     await openMatchCenter(page);
     await openTab(page, 'postmatch');
 
-    const shots = page.locator('.mc-analysis-fact', { has: page.getByText('على المرمى') });
-    await expect(shots).toContainText('٤');
-    await expect(shots).toContainText('مقابل');
-    await expect(shots).toContainText('٢');
-    await expect(page.locator('.mc-analysis-facts')).toContainText('الاستحواذ');
-    await expect(page.locator('.mc-analysis-fact').filter({ hasText: 'الاستحواذ' })).toContainText('٥٨%');
-    // نفس الصفوف في لوحة «مباشر» — المجموعة مشتركة، لا نسخة ثانية من العقد.
-    await expect(page.locator('.mc-analysis-fact').filter({ hasText: 'الاستحواذ' })).toContainText('٤٢%');
+    // «إحصائيات الفريقين» تفتح التبويب: لا «ملخص وقائع» ولا «ملخص أرقام» قبلها
+    // ولا بعدها — الجدول نفسه هو الملخص، وعدّ الأحداث يبقى في قسم الأحداث.
+    await expect(page.locator('.mc-analysis h3').first()).toHaveText('إحصائيات الفريقين');
+    await expect(page.getByRole('heading', { name: 'ملخص الوقائع' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'ملخص الأرقام' })).toHaveCount(0);
+    await expect(page.locator('.mc-analysis-facts, .mc-analysis-fact')).toHaveCount(0);
+    // عدّ الوقائع موصول في قسم الأحداث نفسه، لا في ملخص منفصل قبله.
+    await expect(page.locator('.mc-analysis-tally')).toContainText('على الشريط الزمني');
 
-    // دقة التمريرطرفٌ فيها غائب: لا «٨٤ مقابل ٠» في الملخص.
-    await expect(page.locator('.mc-analysis-facts')).not.toContainText('دقة التمرير');
-    // لكنها باقية في جدول الأرقام بوصف الغياب، لا بصفر.
     const passing = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'دقة التمرير' });
     await expect(passing).toContainText('٨٤');
     await expect(passing).toContainText('غير متاح');
@@ -165,6 +162,20 @@ test.describe('match analysis tab', () => {
     // شريط الاستحواذ البارز: النسبتان وصلتا رقميتين معاً.
     await expect(page.locator('.mc-analysis .mc-possession')).toContainText('٥٨%');
     await expect(page.locator('.mc-analysis .mc-possession')).toContainText('٤٢%');
+    // ميزان المجموعة في «التحليل» أيضاً — المكوّن مشترك فلا نسخة ثانية من العقد.
+    // الاستحواذ هنا بصف واحد قابل للمقارنة («دقة التمرير» طرفها غائب) ⇒ أساس ضيّق معلن.
+    await expect(page.locator('.mc-analysis .mc-stat-index')).toHaveCount(5);
+    const balance = page.locator('.mc-analysis .mc-stat-index').first();
+    await expect(balance).toContainText('٥٨%');
+    await expect(balance).toContainText('٤٢%');
+    await expect(balance).toHaveAttribute('data-basis', 'single');
+    await expect(page.locator('.mc-analysis .mc-indexboard-row')).toHaveCount(5);
+    // مقارنة بمتوسط الدوري في «التحليل» أيضاً: أساس معلن وكمية لا حكم.
+    const benchmark = page.locator('.mc-analysis .mc-benchmark');
+    await expect(benchmark).toBeVisible();
+    await expect(benchmark).toContainText('مباراة موثقة');
+    await expect(benchmark).toContainText('أعلى من متوسط الدوري بـ ٨');
+    await expect(benchmark.locator('.mc-bench-none')).toHaveCount(1);
     const fouls = page.locator('.mc-analysis .mc-stat-compare', { hasText: 'الأخطاء' });
     await expect(fouls).toContainText('٩');
     await expect(fouls).toContainText('١٤');
@@ -173,7 +184,7 @@ test.describe('match analysis tab', () => {
     await expect(fouls.locator('.mc-stat-bar')).toHaveCount(2);
 
     // لفظ الحكم ممنوع في الأرقام نفسها (سطر التوضيح يذكر المنع صراحةً، فلا يُفحص معه).
-    const verdicts = (await page.locator('.mc-analysis .mc-stat-compare, .mc-analysis .mc-analysis-fact').allTextContents()).join(' ');
+    const verdicts = (await page.locator('.mc-analysis .mc-stat-compare').allTextContents()).join(' ');
     expect(verdicts).not.toMatch(/أفضل|أفضلية|سيطرة|الأقوى|أخطر|لصالح/);
     // شرح «الشريط ليس حكماً» انتقل إلى «التوثيق والمراجعة» آخر الصفحة.
     await expect(page.locator('.mc-docs')).toContainText('ليست أفضلية');
@@ -282,6 +293,8 @@ test.describe('match analysis tab', () => {
     await expect(page.locator('.mc-analysis')).toHaveCount(0);
     await expect(page.locator('#mc-tab-live')).toHaveCount(0);
     await expect(page.locator('.mc-analysis, .mc-stat-group')).toHaveCount(0);
+    // لا أرقام ⇒ لا ميزان ولا لوحة مؤشرات ولا مقارنة بمتوسط الدوري.
+    await expect(page.locator('.mc-stat-index, .mc-indexboard, .mc-benchmark')).toHaveCount(0);
     await expect(page.locator('#mc-tab-postmatch')).toBeVisible();
     await expect(page.locator('#mc-panel-postmatch')).toContainText('النتيجة النهائية');
     // شريط الدقيقة لا يَرسم أحداثًا ليست موجودة، ولا يَخترع ساعة.

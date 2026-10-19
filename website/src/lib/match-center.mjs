@@ -1346,6 +1346,58 @@ export function compareStatRow(stat) {
   };
 }
 
+/**
+ * ميزان المجموعة: مؤشّران كمّيان لكل مجموعة، بلا حكم ولا اشتقاق رقمٍ من رقمين.
+ *
+ * • **متوسط الحصة:** لكل صف قابل للمقارنة (رقمان حقيقيان من المصدر) حصة المضيف
+ *   `home ÷ (home + away)` — حصة بلا وحدة، فلا تُجمع نسبة مئوية مع عدد قط —
+ *   وصفران حقيقيان نصفان متساويان (٠٫٥) كما في شريط الصف نفسه. المؤشر متوسط
+ *   تلك الحصص؛ والطرف الآخر مكمّلته. الطباعة تقرَّب والمكمّل يُطبع `100 − المقرَّب`
+ *   حتى لا يظهر مجموع ٩٩ أو ١٠١ بسبب التقريب، والعرض من القيمة غير المقرَّبة.
+ * • **عدّ الصفوف:** في كم صفٍّ كان كل طرف الأعلى رقمياً، وكم متساويان، وكم صفاً
+ *   نقص أحد طرفيه فلم يدخل المتوسط (الغياب يبقى غياباً ولا يُستكمل صفراً).
+ *
+ * المجموعة بلا أي صف قابل للمقارنة لا ميزان لها (`null`) — لا مؤشر لمجموعة
+ * نصفها اختلاق. وصفٌ للكمية لا للأفضلية: زيادة الأخطاء أو البطاقات ترفع حصة
+ * طرف رقمياً ولا تعني ميزة.
+ */
+export function groupIndex(rows) {
+  const list = Array.isArray(rows) ? rows : [];
+  const comparable = list.filter(row => row?.comparable === true
+    && finiteNumber(row?.home) !== null && finiteNumber(row?.away) !== null);
+  if (comparable.length === 0) return null;
+
+  let shareSum = 0;
+  let zeroZero = 0;
+  const tally = { home: 0, away: 0, equal: 0 };
+  for (const row of comparable) {
+    const home = finiteNumber(row.home);
+    const away = finiteNumber(row.away);
+    const sum = home + away;
+    shareSum += sum > 0 ? home / sum : 0.5;
+    if (home === 0 && away === 0) zeroZero += 1;
+    if (home > away) tally.home += 1;
+    else if (away > home) tally.away += 1;
+    else tally.equal += 1;
+  }
+
+  const meanHome = shareSum / comparable.length;
+  const pctHome = Math.round(meanHome * 100);
+  return {
+    meanHome,
+    meanAway: 1 - meanHome,
+    /** العدد الصحيح المطبوع؛ والضيف مكمّله فلا مجموع ٩٩ ولا ١٠١. */
+    pctHome,
+    pctAway: 100 - pctHome,
+    /** أساس الاحتساب معلَن دائماً: كم صفاً دخل، وكم نقص طرفه، وكم صفر/صفر. */
+    comparable: comparable.length,
+    unavailable: list.length - comparable.length,
+    zeroZero,
+    single: comparable.length === 1,
+    tally,
+  };
+}
+
 /** الأرقام المتاحة مجمَّعة في مجموعات يسهل مسحها؛ والمجموعة الفارغة لا تُنشأ. */
 export function groupStatistics(statistics) {
   const rows = displayableStatistics(statistics);
@@ -1368,13 +1420,68 @@ export function groupStatistics(statistics) {
     const bucket = buckets[index];
     const ordered = def.keys.map(key => bucket.get(key)).filter(Boolean);
     if (ordered.length > 0) {
-      groups.push({ id: def.id, label: def.label, rows: ordered.map(compareStatRow) });
+      const rows = ordered.map(compareStatRow);
+      /* الميزان يُحسب هنا لا في المكوّن: قرار واحد في طبقة العقد تُختبر في Node. */
+      groups.push({ id: def.id, label: def.label, rows, index: groupIndex(rows) });
     }
   });
   if (extra.length > 0) {
-    groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows: extra.map(compareStatRow) });
+    const rows = extra.map(compareStatRow);
+    groups.push({ id: STAT_GROUP_FALLBACK.id, label: STAT_GROUP_FALLBACK.label, rows, index: groupIndex(rows) });
   }
   return groups;
+}
+
+/**
+ * مقارنة أرقام المباراة بمتوسط الدوري الموثّق — كمية مقابل أساس معلن، لا حكم.
+ *
+ * الأساس يأتي من أرشيف المباريات المتحقَّق منها (`content/fixtures-archive`)
+ * لا من مزوّد جديد: متوسط لكل فريق في المباراة الواحدة، بعدد مباريات معلَن.
+ * لكل مقياس صفّ واحد: قيمة كل طرف كما وصلت (أو غيابها)، ومتوسط الدوري،
+ * والفارق الدقيق قبل التقريب (`delta`)؛ والاتجاه («أعلى/أقل/عند المتوسط»)
+ * يُقرأ من الفارق المقرّب منزلة واحدة عبر `benchmarkDirection`.
+ *
+ * لا أساس موثقاً لهذه البطولة، أو لا رقم عند الطرفين في كل المقاييس ⇒ `null`:
+ * لا مقارنة بلا أساس معلن، ولا صفر يُستكمل.
+ */
+export const LEAGUE_BENCHMARKS = [
+  { key: 'possessionPct', averageKey: 'possession', label: 'الاستحواذ', unit: '%' },
+  { key: 'totalShots', averageKey: 'shots', label: 'التسديدات', unit: '' },
+  { key: 'passPct', averageKey: 'passAccuracy', label: 'دقة التمرير', unit: '%' },
+];
+
+export function leagueBenchmark(statistics, averages) {
+  const matches = finiteNumber(averages?.matches);
+  if (matches === null || matches <= 0) return null;
+  const rows = displayableStatistics(statistics);
+  const out = [];
+  for (const def of LEAGUE_BENCHMARKS) {
+    const average = finiteNumber(averages?.[def.averageKey]);
+    if (average === null) continue;
+    const row = rows.find(item => item.key === def.key);
+    const home = finiteNumber(row?.home);
+    const away = finiteNumber(row?.away);
+    if (home === null && away === null) continue;
+    out.push({
+      key: def.key,
+      label: def.label,
+      unit: def.unit,
+      average,
+      home: home === null ? null : { value: home, delta: home - average },
+      away: away === null ? null : { value: away, delta: away - average },
+    });
+  }
+  if (out.length === 0) return null;
+  return { matches, rows: out };
+}
+
+/** اتجاه الفارق المقرّب منزلة واحدة: أعلى/أقل/عند المتوسط تقريباً — وصف كمية. */
+export function benchmarkDirection(delta) {
+  const value = finiteNumber(delta);
+  if (value === null) return null;
+  const step = Math.round(value * 10) / 10;
+  if (step === 0) return 'equal';
+  return step > 0 ? 'above' : 'below';
 }
 
 /**
@@ -1392,11 +1499,12 @@ export function possessionSplit(statistics) {
 }
 
 /* عدّادات بطاقة الفريق على الملعب: من جدول الإحصائيات نفسه لا من الأحداث،
-   حتى يبقى الرقم على الملعب هو الرقم في الجدول. الحبّة بلا قيمة تُحذف. */
+   حتى يبقى الرقم على الملعب هو الرقم في الجدول. الحبّة بلا قيمة تُحذف،
+   والصفراء والحمراء تُخفيان تماماً ما دامت القيمة صفراً: لا يظهر العدّاد إلا
+   حين يرسل المصدر أول بطاقة (> 0). الركنيات لم تعد من عدّادات الملعب. */
 export const PITCH_COUNTERS = [
   { id: 'yellow', key: 'yellowCards', label: 'صفراء' },
   { id: 'red', key: 'redCards', label: 'حمراء' },
-  { id: 'corners', key: 'wonCorners', label: 'ركنيات' },
 ];
 
 export function pitchCounters(statistics, side) {
@@ -1404,19 +1512,8 @@ export function pitchCounters(statistics, side) {
   const rows = displayableStatistics(statistics);
   return PITCH_COUNTERS.flatMap(({ id, key, label }) => {
     const value = finiteNumber(rows.find(stat => stat.key === key)?.[side]);
-    return value === null ? [] : [{ id, label, value }];
+    return value === null || value <= 0 ? [] : [{ id, label, value }];
   });
-}
-
-/**
- * ملخص رقمي موجز: صفّان حاضران فقط. لا «سيطرة»، ولا «أفضلية»، ولا جودة
- * فرص — هذه أرقام Source لا تُثبت شيئاً منها، والبند 6 يمنع استنتاجاً من
- * أرقام لا تحتمله.
- */
-export function analysisFacts(statistics) {
-  return displayableStatistics(statistics)
-    .map(compareStatRow)
-    .filter(row => row.both);
 }
 
 /* ───────────────────────── عدد أحداث المصدر كما وردت ───────────────────────── */

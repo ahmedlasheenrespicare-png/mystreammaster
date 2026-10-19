@@ -5,7 +5,6 @@ import {
   EVENT_TYPE_LABELS,
   STAT_GROUPS,
   activeEventFilterCount,
-  analysisFacts,
   analysisIsAvailable,
   compareStatRow,
   computeAvailableTabs,
@@ -20,8 +19,11 @@ import {
   eventPeriodInfo,
   eventPeriodLabel,
   eventTypeFacet,
+  benchmarkDirection,
   filterEvents,
+  groupIndex,
   groupStatistics,
+  leagueBenchmark,
   headToHeadFor,
   normalizeEvent,
   normalizeStatus,
@@ -113,6 +115,102 @@ test('a stat the grouping does not know is kept in a source bucket, never droppe
   assert.equal(groups[0].rows[0].label, 'المسافة المقطوعة');
 });
 
+/* ── 1ب) ميزان المجموعة: متوسط الحصة + عدّ الصفوف، بلا حكم ─────────────── */
+
+test('group index is the mean of unit-free row shares, printed as complements of 100', () => {
+  const groups = groupStatistics(STAT_INPUT);
+  const possession = groups.find(group => group.id === 'possession-passing');
+  // حصة المضيف: 58/100 ثم 84/163 ⇒ متوسطهما 0.5476… والعرض 55 مقابل 45.
+  assert.ok(Math.abs(possession.index.meanHome - (0.58 + 84 / 163) / 2) < 1e-12);
+  assert.equal(possession.index.pctHome, 55);
+  assert.equal(possession.index.pctAway, 45);
+  assert.equal(possession.index.pctHome + possession.index.pctAway, 100);
+  // عدّ الصفوف في الانضباط: المضيف أعلى في التسلل وحده، والضيف في الأخطاء والصفراء.
+  const discipline = groups.find(group => group.id === 'discipline');
+  assert.deepEqual(discipline.index.tally, { home: 1, away: 2, equal: 0 });
+  // «بطاقات حمراء» وصل طرفها الآخر وحده ⇒ خارج المتوسط ومعدود في الأساس.
+  assert.equal(discipline.index.comparable, 3);
+  assert.equal(discipline.index.unavailable, 1);
+  assert.equal(discipline.index.pctHome, 44);
+  assert.equal(discipline.index.pctAway, 56);
+  // مجموعة بصف واحد قابل للمقارنة أساسها ضيّق ومُعلن.
+  assert.equal(groups.find(group => group.id === 'goalkeeping').index.single, true);
+  assert.equal(groups.find(group => group.id === 'possession-passing').index.single, false);
+  // المجموعة الاحتياطية لها ميزان كبقية المجموعات.
+  const other = groupStatistics([{ key: 'distanceKm', label: 'المسافة', unit: 'كم', home: 108, away: 104 }]);
+  assert.equal(other[0].index.pctHome, 51);
+  assert.equal(other[0].index.pctAway, 49);
+});
+
+test('group index: real zeros are equal halves and counted, absent sides never enter', () => {
+  const index = groupIndex([
+    compareStatRow({ key: 'a', label: 'أ', unit: '', home: 0, away: 0 }),
+    compareStatRow({ key: 'b', label: 'ب', unit: '', home: 3, away: 1 }),
+    compareStatRow({ key: 'c', label: 'ج', unit: '', home: null, away: 4 }),
+  ]);
+  // صفر/صفر نصف (0.5) لا صفر: 0.5 و0.75 ⇒ 0.625 ⇒ 63 مقابل 37.
+  assert.equal(index.zeroZero, 1);
+  assert.equal(index.meanHome, 0.625);
+  assert.equal(index.pctHome, 63);
+  assert.equal(index.pctAway, 37);
+  assert.equal(index.comparable, 2);
+  assert.equal(index.unavailable, 1);
+  assert.deepEqual(index.tally, { home: 1, away: 0, equal: 1 });
+});
+
+/* ── 1ج) مقارنة بمتوسط الدوري: كمية مقابل أساس معلن، لا حكم ───────────── */
+
+const LEAGUE_AVERAGES = { matches: 25, possession: 50, shots: 14.2, passAccuracy: 81.2 };
+
+test('league benchmark compares each side with the documented average, side by side', () => {
+  const benchmark = leagueBenchmark([
+    { key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 41.8, away: 58.2 },
+    { key: 'totalShots', label: 'التسديدات', unit: '', home: 9, away: 17 },
+    { key: 'passPct', label: 'دقة التمرير', unit: '%', home: 76.1, away: null },
+  ], LEAGUE_AVERAGES);
+  assert.equal(benchmark.matches, 25);
+  assert.deepEqual(benchmark.rows.map(row => row.key), ['possessionPct', 'totalShots', 'passPct']);
+  const possession = benchmark.rows[0];
+  assert.equal(possession.average, 50);
+  assert.equal(possession.home.value, 41.8);
+  // الفارق دقيق قبل التقريب؛ والتقريب مهمة العرض وحده.
+  assert.ok(Math.abs(possession.home.delta - (41.8 - 50)) < 1e-12);
+  assert.equal(benchmarkDirection(possession.home.delta), 'below');
+  assert.equal(benchmarkDirection(possession.away.delta), 'above');
+  // طرف بلا رقم يبقى «غير متاح» ولا يُستكمل صفراً ولا يُحسب فرقه.
+  const passing = benchmark.rows[2];
+  assert.equal(passing.home.value, 76.1);
+  assert.equal(passing.away, null);
+  // مقياس بلا رقم عند الطرفين لا يدخل المقارنة أصلاً.
+  const silent = leagueBenchmark([{ key: 'totalShots', label: 'التسديدات', unit: '', home: null, away: null }], LEAGUE_AVERAGES);
+  assert.equal(silent, null);
+});
+
+test('league benchmark refuses to speak without a documented base', () => {
+  assert.equal(leagueBenchmark(STAT_INPUT, null), null);
+  assert.equal(leagueBenchmark(STAT_INPUT, {}), null);
+  assert.equal(leagueBenchmark(STAT_INPUT, { matches: 0, possession: 50 }), null);
+  // اتجاه الفارق المقرّب منزلة واحدة: فرق أصغر من ٠٫٠٥ «عند المتوسط تقريباً».
+  assert.equal(benchmarkDirection(0), 'equal');
+  assert.equal(benchmarkDirection(0.04), 'equal');
+  assert.equal(benchmarkDirection(-0.1), 'below');
+  assert.equal(benchmarkDirection(2.96), 'above');
+  assert.equal(benchmarkDirection(null), null);
+});
+
+test('group index refuses to speak for a group with no comparable row', () => {
+  assert.equal(groupIndex(null), null);
+  assert.equal(groupIndex([]), null);
+  assert.equal(groupIndex([compareStatRow({ key: 'a', label: 'أ', unit: '', home: 5, away: null })]), null);
+  // المجموعة تُرسم بصفوفها الناقصة لكن بلا ميزان: نصفها اختلاق فلا مؤشر.
+  const groups = groupStatistics([
+    { key: 'totalTackles', label: 'التدخلات', unit: '', home: null, away: 7 },
+    { key: 'interceptions', label: 'الاعتراضات', unit: '', home: 5, away: null },
+  ]);
+  assert.equal(groups.length, 1);
+  assert.equal(groups[0].index, null);
+});
+
 test('an empty or malformed statistic list produces no group at all', () => {
   assert.deepEqual(groupStatistics(null), []);
   assert.deepEqual(groupStatistics([]), []);
@@ -159,15 +257,6 @@ test('the bar is a share of the larger value in the same row, not a score out of
   const possession = compareStatRow({ key: 'possessionPct', label: 'الاستحواذ', unit: '%', home: 58, away: 42 });
   assert.equal(possession.unitIsPercent, true);
   assert.ok(possession.bar.home > 0.99 && possession.bar.home <= 1);
-});
-
-test('the numeric summary is only said when both sides are present', () => {
-  const facts = analysisFacts([...STAT_INPUT, { key: 'tackles', label: 'التدخلات', home: 12, away: null }]);
-  assert.ok(facts.length > 0);
-  assert.equal(facts.every(row => row.both), true, 'no one-sided row may be phrased as "X مقابل Y"');
-  assert.equal(facts.some(row => row.key === 'tackles'), false);
-  assert.equal(facts.some(row => row.key === 'redCards'), false, 'one side has no number, so the pair is not said');
-  assert.ok(facts.some(row => row.key === 'shotsOnTarget'), 'the shots-on-target pair is exactly what a reader asked to see');
 });
 
 /* ── 2) أحداث المصدر: الوصف والعدّ والفلاتر ───────────────────────── */

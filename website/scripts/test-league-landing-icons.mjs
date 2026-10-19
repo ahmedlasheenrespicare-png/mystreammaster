@@ -47,16 +47,26 @@ test('seven league landings have a documented icon and Egypt resolves to the neu
   assert.deepEqual(withoutIcon.map((l) => l.leagueId), ['egy.1'], 'الدوري المصري وحده بلا شعار موثّق');
 });
 
-test('every league landing hero carries its badge beside the h1 in the prerendered HTML', async () => {
+test('every league landing hero carries its ticket card with the badge beside the h1', async () => {
   for (const { slug, leagueId } of landings) {
     const page = load(await fs.readFile(new URL(`matches/${slug}/index.html`, root), 'utf8'));
-    /* الشارة والعنوان في سطر الرأس نفسه — عنوان واحد لا يتكرر */
+    /* التذكرة والعنوان في سطر الرأس نفسه — عنوان واحد لا يتكرر */
     const title = page('.matches-hero-title');
     assert.equal(title.length, 1, `${slug}: سطر عنوان واحد في الرأس`);
     assert.equal(title.find('h1#landing-title').length, 1, `${slug}: العنوان داخل سطر الرأس`);
 
-    const badge = title.find('.league-carousel-badge');
-    assert.equal(badge.length, 1, `${slug}: شارة واحدة`);
+    /* كرت التذكرة (uiverse slippery-bird-76 — MIT، مكیّف لكرة القدم):
+       زخرفي بالكامل، بلوحه الهولوغرافي وباركوده ومقصّه ومرشّح نتوءاته */
+    const ticket = title.find('.league-ticket');
+    assert.equal(ticket.length, 1, `${slug}: تذكرة واحدة في الرأس`);
+    assert.equal(ticket.attr('aria-hidden'), 'true', `${slug}: التذكرة زخرفية`);
+    assert.equal(ticket.find('.league-ticket-bg.league-ticket-holographic').length, 1, `${slug}: اللوح الهولوغرافي`);
+    assert.equal(ticket.find('.league-ticket-barcode').length, 1, `${slug}: الباركود`);
+    assert.equal(ticket.find('.league-ticket-symbol').length, 1, `${slug}: مقصّ القصّ`);
+    assert.equal(ticket.find('filter#league-ticket-bump').length, 1, `${slug}: مرشّح النتوءات بمعرّف مسمّى باسم الكرت`);
+
+    const badge = ticket.find('.league-ticket-header .league-carousel-badge');
+    assert.equal(badge.length, 1, `${slug}: شارة الأيقونة داخل رأس التذكرة`);
     assert.equal(badge.attr('aria-hidden'), 'true', `${slug}: الشارة زخرفية`);
     /* البديل المحايد مرسوم دائماً — وحده يظهر حين لا يتوفّر شعار */
     assert.equal(badge.find('.league-carousel-fallback').length, 1, `${slug}: بديل الكأس تحت الشعار`);
@@ -79,10 +89,11 @@ test('every league landing hero carries its badge beside the h1 in the prerender
   }
 });
 
-test('team landing pages ship no league badge at all', async () => {
+test('team landing pages ship no league ticket or badge at all', async () => {
   for (const slug of teams) {
     const page = load(await fs.readFile(new URL(`world-cup-2026/${slug}/index.html`, root), 'utf8'));
+    assert.equal(page('.league-ticket').length, 0, `${slug}: صفحات المنتخبات بلا تذكرة بطولة`);
     assert.equal(page('.league-carousel-badge').length, 0, `${slug}: صفحات المنتخبات بلا شارة بطولة`);
-    assert.equal(page('.matches-hero-title').length, 0, `${slug}: رأس صفحة المنتخب بلا سطر شارة`);
+    assert.equal(page('.matches-hero-title').length, 0, `${slug}: رأس صفحة المنتخب بلا سطر تذكرة`);
   }
 });

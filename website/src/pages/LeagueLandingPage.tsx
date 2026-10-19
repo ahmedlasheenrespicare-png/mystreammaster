@@ -1,5 +1,5 @@
 import LeagueArchive from '../components/LeagueArchive';
-import LeagueIconBadge from '../components/LeagueIconBadge';
+import LeagueTicketCard from '../components/LeagueTicketCard';
 import LiveMatchesBoard from '../components/LiveMatchesBoard';
 import LeagueStandings, { LeagueStandingsUnavailable } from '../components/LeagueStandings';
 import { BroadcastersSection, FaqSection, LandingBreadcrumb, ServiceStrip } from '../components/LandingSections';
@@ -26,14 +26,15 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
         <header className="matches-hero">
           <p className="matches-eyebrow">صفحة متابعة ثابتة · تُحدَّث البيانات تلقائياً</p>
           <div className="matches-hero-title">
-            {/* شارة البطولة لصفحة بطولة فقط (leagueId موجود) — الدوري المصري
-                بلا شعار موثّق لدى المصدر فيعرض المكوّن بديل الكأس المحايد،
-                وصفحات المنتخبات مكوّن آخر (TeamLandingPage) بلا شارة إطلاقاً:
-                الكأس على صفحة منتخب خطأ في المعنى. الحلّ يعتمد
-                `landing.leagueId` (معرّف المباريات) لا `standings.leagueId` —
-                السعودي شعاره تحت sau.1 بينما ترتيبه ksa.1. والأيقونة فوق
-                الطية فتُحمَّل eagerly بلا تأخير ولا قفز تخطيط. */}
-            {landing.leagueId ? <LeagueIconBadge leagueId={landing.leagueId} size={52} eager /> : null}
+            {/* تذكرة البطولة لصفحة بطولة فقط (leagueId موجود) — الأيقونة داخل
+                الكرت هي LeagueIconBadge نفسه: الدوري المصري بلا شعار موثّق
+                لدى المصدر فيعرض بديل الكأس المحايد، وتعذّر التحميل يُبقي
+                البديل. وصفحات المنتخبات مكوّن آخر (TeamLandingPage) بلا
+                تذكرة ولا شارة إطلاقاً: الكأس على صفحة منتخب خطأ في المعنى.
+                الحلّ يعتمد `landing.leagueId` (معرّف المباريات) لا
+                `standings.leagueId` — السعودي شعاره تحت sau.1 وترتيبه ksa.1.
+                والأيقونة فوق الطية فتُحمَّل eagerly بلا تأخير ولا قفز تخطيط. */}
+            {landing.leagueId ? <LeagueTicketCard leagueId={landing.leagueId} name={landing.shortName} /> : null}
             <h1 id="landing-title">{landing.h1}</h1>
           </div>
           <div className="matches-intro">

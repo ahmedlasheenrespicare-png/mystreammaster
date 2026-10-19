@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, hasCompleteScore, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
 import { matchByExternalId, matchCenterPath } from '../content/match-center.mjs';
 import { leagueLandingsInPageOrder } from '../content/competitions';
+import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
 import { to } from '../config';
 import './matches.css';
 
@@ -151,12 +152,14 @@ export default function MatchesPage() {
 
       {/* القائمة تُبنى من مصدر واحد (LEAGUE_PAGE_ORDER) فلا تنشأ قائمة ثانية
           تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا. */}
-      <nav className="matches-league-links" aria-label="صفحات البطولات">
-        <strong>صفحات البطولات:</strong>
-        {leagueLandingsInPageOrder().map((landing) => (
-          <a key={landing.slug} href={`/matches/${landing.slug}/`}>{landing.h1}</a>
-        ))}
-      </nav>
+      <LeagueLinksCarousel
+        title="صفحات البطولات"
+        items={leagueLandingsInPageOrder().map((landing) => ({
+          href: `/matches/${landing.slug}/`,
+          label: landing.shortName,
+          leagueId: landing.leagueId,
+        }))}
+      />
 
       <section className="matches-featured" aria-labelledby="featured-match-title">
         <div className="matches-featured-copy">

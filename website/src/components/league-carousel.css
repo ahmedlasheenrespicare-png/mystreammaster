@@ -1,0 +1,211 @@
+/* ==========================================================================
+   شريط روابط صفحات البطولات — دوّارة (Carousel / Slider)
+   --------------------------------------------------------------------------
+   • الإطار العام: نمط بطاقة بيضاء بحدود فاتحة كما كان الشريط السابق
+     (`.matches-league-links` في matches.css) مع إلغاء التخطيط المرن القديم.
+   • المنطقة القابلة للعرض قابلة للتمرير أفقياً قبل التشغيل وبعده: فإن لم
+     يعمل JavaScript تمرّرها يدوياً باللمس أو الفأرة بدل أن تُخفى الروابط.
+     بعد القياس (`[data-ready="true"]`) تُدار بالإزاحة ويُمنع التمرير الأصلي
+     لأن الموضع يُحسب بالإزاحة لا بـ `scrollLeft`.
+   • المؤشرات النقطية وأسهم التنقّل بنمط دوّارة «آراء المستخدمين»: النقطة
+     النشطة تتمدّد، والأسهم دوائر بحدود فاتحة تسودّ عند المرور.
+========================================================================== */
+
+.matches-league-links.league-carousel {
+  display: block;
+  padding: 14px 16px 16px;
+}
+
+/* الروابط داخل الدوّارة بطاقات، لا نصاً مسطّراً كما كان الشريط القديم */
+.league-carousel a {
+  color: #0b0b0f;
+  font-weight: 800;
+  text-decoration: none;
+  min-height: 0;
+}
+
+.league-carousel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.82rem;
+}
+
+.league-carousel-head strong {
+  font-weight: 800;
+}
+
+.league-carousel-count {
+  color: #8a8578;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.league-carousel-viewport {
+  margin-top: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.league-carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+/* بعد القياس تُدار الصفحة بالإزاحة: التمرير الأصلي يُلغى لئلا يجتمع
+   مصدران للموضع (التمرير والإزاحة) فيتضاعف الانتقال. */
+.league-carousel[data-ready="true"] .league-carousel-viewport {
+  overflow: hidden;
+}
+
+.league-carousel-track {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: max-content;
+  /*pan-y: التمرير الرأسي للصفحة يبقى طبيعياً، والأفقي تُديره الدوّارة */
+  touch-action: pan-y;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* أثناء السحب لا انتقال: الشريط يتبع الإصبع لحظة بلحظة */
+.league-carousel[data-dragging="true"] .league-carousel-track {
+  transition: none;
+}
+
+.league-carousel-item {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 186px;
+  min-height: 58px;
+  padding: 9px 13px;
+  border: 1px solid #e4e1d8;
+  border-radius: 14px;
+  background: #fff;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.league-carousel-item:hover {
+  transform: translateY(-2px);
+  border-color: #0b0b0f;
+  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.45);
+}
+
+.league-carousel-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* شارة الأيقونة: البديل المحايد (أيقونة كرة/كأس) يظهر دائماً، وصورة الشعار
+   تُركّب فوقه — فإن تعذّر تحميلها بقي البديل ظاهراً بلا صورة مكسورة. */
+.league-carousel-badge {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ece9df;
+  border-radius: 11px;
+  background: #f6f4ec;
+  overflow: hidden;
+}
+
+.league-carousel-fallback {
+  width: 17px;
+  height: 17px;
+  color: #b8b3a4;
+}
+
+.league-carousel-logo {
+  position: absolute;
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  object-fit: contain;
+  background: #f6f4ec;
+}
+
+/* ===== أدوات التنقّل: سهمان + مؤشرات نقطية (نمط دوّارة التقييمات) ===== */
+
+.league-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.league-carousel-nav {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  background: #fff;
+  color: #0b0b0f;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.league-carousel-nav:hover:not(:disabled) {
+  background: #0b0b0f;
+  color: #fff;
+}
+
+.league-carousel-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.league-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.league-carousel-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.league-carousel-dot:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* النقطة النشطة (Active indicator) تتمدّد كما في دوّارة التقييمات */
+.league-carousel-dot.is-active {
+  width: 32px;
+  background: #0b0b0f;
+}
+
+.league-carousel :is(a, button, [tabindex]):focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* شاشة ضيقة: بطاقتان في الصفحة تقريباً */
+@media (max-width: 640px) {
+  .league-carousel-item {
+    width: calc(50vw - 40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .league-carousel-track,
+  .league-carousel-dot,
+  .league-carousel-item {
+    transition: none;
+  }
+}

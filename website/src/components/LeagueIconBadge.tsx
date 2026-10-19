@@ -1,29 +1,54 @@
+import type { CSSProperties } from "react";
 import { leagueIcon } from "../content/competitions";
 import { IconTrophy } from "./Icons";
 
 /* ==========================================================================
-   شارة أيقونة البطولة — مصدر واحد للشعار وبديله في كل الشرائط والبطاقات
+   شارة أيقونة البطولة — مصدر واحد للشعار وبديله في كل الشرائط ورؤوس الصفحات
    --------------------------------------------------------------------------
    • الشعار من مخزن مصدر البيانات نفسه (راجع LEAGUE_ICONS في competitions.ts).
    • البديل المحايد (أيقونة كأس) مرسوم دائماً تحت الشعار: فالبطولة بلا شعار
      موثّق، أو التي يتعذّر تحميل شعارها، تُظهر البديل بلا صورة مكسورة ولا
      فراغ في البطاقة.
    • الأيقونة زخرفية (`aria-hidden` + `alt=""`): اسم البطولة مكتوب بجانبها.
+   • `size` اختيارية: الافتراضي 36px (مقاس الشريط)، ورأس صفحة البطولة يمرّر
+     مقاساً أكبر (44–56px). المقاس يُحمل في خاصية CSS (`--league-badge-size`)
+     تقرأها league-carousel.css فتكبّر اللوح والبديل المحايد معاً — يبقى
+     التنسيق في مصدره الواحد بلا نسخ ولا أسلوب سطري على الأبعاد.
+   • `eager` للأيقونة فوق الطية (رأس الصفحة): `loading="lazy"` هناك يؤخّر
+     الظهور ويسجّل قفز تخطيط؛ الشريط يبقى على الكسول افتراضياً لأنه أسفل
+     الصفحة.
 ========================================================================== */
 
-export default function LeagueIconBadge({ leagueId }: { leagueId: string }) {
+export default function LeagueIconBadge({
+  leagueId,
+  size,
+  eager = false,
+}: {
+  leagueId: string;
+  /** ضلع اللوح المربع بالبكسل — الافتراضي 36px كما في league-carousel.css */
+  size?: number;
+  /** تحميل فوري بدل الكسول — لأيقونة رأس الصفحة لأنها فوق الطية */
+  eager?: boolean;
+}) {
   const icon = leagueIcon(leagueId);
+  /* صندوق الصورة = اللوح ناقص الحشو (4px من كل جانب كما في .league-carousel-logo) */
+  const logoBox = size ? size - 8 : 28;
   return (
-    <span className="league-carousel-badge" aria-hidden="true">
+    <span
+      className="league-carousel-badge"
+      aria-hidden="true"
+      /* خاصية CSS مخصصة (لا أساليب أبعاد سطرية) حتى تبقى القواعد في ملفها */
+      style={size ? ({ "--league-badge-size": `${size}px` } as CSSProperties) : undefined}
+    >
       <IconTrophy className="league-carousel-fallback" />
       {icon ? (
         <img
           className="league-carousel-logo"
           src={icon}
           alt=""
-          width={28}
-          height={28}
-          loading="lazy"
+          width={logoBox}
+          height={logoBox}
+          loading={eager ? "eager" : "lazy"}
           decoding="async"
           draggable={false}
           onError={(event) => {

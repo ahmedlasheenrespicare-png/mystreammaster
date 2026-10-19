@@ -4,7 +4,7 @@ import { LEAGUE_ICONS } from '../src/lib/league-icons.mjs';
 
 /* أيقونات البطولات في القوائم المنسدلة — الشعار داخل صندوق 32×32 بدل الإيموجي.
    الشعارات من مخزن ESPN (مضيف محجوب في بيئة الاختبار، فالصور تُطلب وتفشل بلا أثر
-   مرئي — والبديل المحايد يظهر تحتها). */
+   مرئي). بطولة بلا شعار موثّق يبقى صندوقها فارغاً بلا أيقونة بديلة. */
 
 const matchesGroup = NAV_GROUPS.find(g => g.key === 'matches')!;
 const leagueLinks = matchesGroup.links.filter(l => l.league);
@@ -23,14 +23,14 @@ test('navigation data: exactly the eight league entries carry a league id, natio
     'uefa.champions', 'eng.1', 'fra.1', 'esp.1', 'ger.1', 'ita.1', 'sau.1', 'egy.1',
   ]);
   for (const link of teamLinks) expect(link.league, link.href).toBeUndefined();
-  /* كل معرّف يملك شعاراً موثّقاً إلا الدوري المصري — وهو البديل المحايد */
+  /* كل معرّف يملك شعاراً موثّقاً إلا الدوري المصري — بلا شعار موثّق فيبقى صندوقه فارغاً */
   for (const link of leagueLinks) {
     if (link.league === 'egy.1') expect(Object.keys(LEAGUE_ICONS)).not.toContain('egy.1');
     else expect(Object.keys(LEAGUE_ICONS), link.league).toContain(link.league);
   }
 });
 
-test('desktop «المباريات» dropdown: each league shows its logo in a 32×32 box, Egypt shows the neutral trophy', async ({ page }) => {
+test('desktop «المباريات» dropdown: each league shows its logo in a 32×32 box, Egypt shows an empty box', async ({ page }) => {
   await page.goto('/');
   const nav = page.locator('header nav').first();
   await nav.getByRole('button', { name: 'المباريات', exact: true }).click();
@@ -50,10 +50,11 @@ test('desktop «المباريات» dropdown: each league shows its logo in a 3
       await expect(img, link.label).toHaveAttribute('src', src);
       await expect(img, link.label).toHaveAttribute('alt', '');
       await expect(img, link.label).toHaveAttribute('loading', 'lazy');
+      await expect(box.locator('svg'), link.label).toHaveCount(0);
     } else {
-      /* بديل محايد بلا img: أيقونة الكأس مرسومة داخل الصندوق */
+      /* بلا شعار موثّق: صندوق فارغ بلا img ولا أيقونة بديلة */
       await expect(img, link.label).toHaveCount(0);
-      await expect(box.locator('svg'), link.label).toHaveCount(1);
+      await expect(box.locator('svg'), link.label).toHaveCount(0);
     }
   }
 });
@@ -83,19 +84,19 @@ test('desktop «المباريات» dropdown: logos are not requested until the
   await expect.poll(() => new Set(logoRequests).size).toBe(7);
 });
 
-/* الهيدر القديم (legacy-shell.mjs) — نفس المصدر ونفس الصندوق ونفس البديل */
+/* الهيدر القديم (legacy-shell.mjs) — نفس المصدر ونفس الصندوق، بلا أيقونة بديلة */
 async function expectLegacyLeagueIcons(scope: Locator, count: number) {
   await expect(scope.locator('.sm-dd-league')).toHaveCount(count);
-  /* سبع بطولات لها شعار، والدوري المصري بالكأس وحدها */
+  /* سبع بطولات لها شعار، والدوري المصري بصندوق فارغ بلا صورة ولا svg */
   await expect(scope.locator('.sm-dd-league img')).toHaveCount(count - 1);
-  await expect(scope.locator('.sm-dd-league svg')).toHaveCount(count);
+  await expect(scope.locator('.sm-dd-league svg')).toHaveCount(0);
   for (const img of await scope.locator('.sm-dd-league img').all()) {
     await expect(img).toHaveAttribute('alt', '');
     expect(Object.values(LEAGUE_ICONS)).toContain(await img.getAttribute('src'));
   }
 }
 
-test('legacy desktop header: league rows carry logos in .sm-dd-icon boxes; Egypt keeps the trophy only', async ({ page }) => {
+test('legacy desktop header: league rows carry logos in .sm-dd-icon boxes; Egypt shows an empty box', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/about/');
   await page.locator('#sm-dd-btn-matches').click();
@@ -134,6 +135,7 @@ test('React mobile menu: league rows show a logo box instead of the emoji', asyn
     const row = menu.locator('a', { hasText: link.label });
     await expect(row, link.label).toHaveCount(1);
     await expect(row.locator('span[aria-hidden="true"]').first().locator('img')).toHaveCount(LEAGUE_ICONS[link.league as keyof typeof LEAGUE_ICONS] ? 1 : 0);
+    await expect(row.locator('span[aria-hidden="true"]').first().locator('svg'), link.label).toHaveCount(0);
   }
 });
 

@@ -38,9 +38,8 @@ body.sm-page{background:var(--sm-cream)!important;color:var(--sm-ink)!important;
 .sm-dd-link small{display:block;font-size:11.5px;font-weight:500;color:#0b0b0f80;margin-top:2px}
 .sm-dd-icon{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:12px;background:#f4f3ef;font-size:15px}
 .sm-dd-link:hover .sm-dd-icon{background:#fff}
-/* شعار البطولة داخل صندوق الأيقونة نفسه: الكأس البديل تحت الشعار (مثل LeagueNavIcon في React) */
-.sm-dd-league{position:relative;overflow:hidden;color:#0b0b0fa6}
-.sm-dd-league svg{width:16px;height:16px}
+/* شعار البطولة داخل صندوق الأيقونة نفسه — عند غياب الشعار يبقى الصندوق فارغاً */
+.sm-dd-league{position:relative;overflow:hidden}
 .sm-dd-league img{position:absolute;width:20px;height:20px;object-fit:contain}
 .sm-dd-link:hover .sm-dd-league{background:#fff}
 .sm-mobile a.sm-m-row{display:flex;align-items:center;gap:10px}

@@ -1,3 +1,7 @@
+import snapshot from "../content/standings-snapshot.json";
+import { leagueStandingsByLeague } from "../lib/standings.mjs";
+import { cleanTeamName } from "../lib/fixtures-archive.mjs";
+import { resolveApprovedTeamLogo, teamInitials } from "./StandingsRatesCard";
 import CarouselControls from "./CarouselControls";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { useCarousel } from "./useCarousel";
@@ -24,6 +28,44 @@ export interface LeagueLinkItem {
   label: string;
   /** معرّف البطولة لدى مصدر البيانات — مفتاح الأيقونة */
   leagueId: string;
+  standingsLeagueId: string | null;
+}
+
+/** لقطة البناء فقط: لا طلب شبكي جديد، ولا استنتاج للمتصدّر عند غياب الترتيب. */
+function LeagueLeader({ league }: { league: string | null }) {
+  let leader;
+  try {
+    leader = league ? leagueStandingsByLeague(snapshot, league).entries.find((team) => team.rank === 1) : null;
+  } catch {
+    leader = null;
+  }
+  const name = leader ? cleanTeamName(leader.name) : "";
+  const logo = name ? resolveApprovedTeamLogo({ name }) : null;
+  return (
+    <>
+      <span className="league-carousel-banner" aria-hidden="true">
+        <span className="league-carousel-monogram">
+          <span>{name ? teamInitials(name) : "؟"}</span>
+          {leader && <small><bdi dir="ltr">#1</bdi></small>}
+        </span>
+        {logo && (
+          <img
+            className="league-carousel-leader-logo"
+            src={logo}
+            alt=""
+            aria-hidden="true"
+            width={96}
+            height={96}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            onError={(event) => { event.currentTarget.style.visibility = "hidden"; }}
+          />
+        )}
+      </span>
+      <span className="league-carousel-leader">المتصدّر: <bdi>{name || "غير متاح"}</bdi></span>
+    </>
+  );
 }
 
 interface Props {
@@ -67,8 +109,11 @@ export default function LeagueLinksCarousel({
               draggable={false}
               onFocus={() => carousel.goToIndex(index)}
             >
-              <LeagueIconBadge leagueId={item.leagueId} />
-              <span className="league-carousel-label">{item.label}</span>
+              <LeagueLeader league={item.standingsLeagueId} />
+              <span className="league-carousel-caption">
+                <LeagueIconBadge leagueId={item.leagueId} />
+                <span className="league-carousel-label">{item.label}</span>
+              </span>
             </a>
           ))}
         </div>

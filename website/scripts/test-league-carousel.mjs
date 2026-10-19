@@ -101,3 +101,29 @@ test('the matches hub renders the league stats bar with prerendered numbers for 
   assert.equal(bar.find('.league-carousel-nav').length, 2);
   assert.equal(bar.find('.league-carousel-dot').length, 1);
 });
+
+test('leader banners are prerendered with local-only crests and a permanent initials fallback', async () => {
+  const { leagueStandingsByLeague } = await import('../src/lib/standings.mjs');
+  const { cleanTeamName } = await import('../src/lib/fixtures-archive.mjs');
+  const snapshot = JSON.parse(await fs.readFile(new URL('src/content/standings-snapshot.json', website), 'utf8'));
+  const ids = ['uefa.champions', 'eng.1', 'fra.1', 'esp.1', 'ger.1', 'ita.1', 'ksa.1', 'egy.1'];
+  const cards = matchesPage('.matches-league-links .league-carousel-item');
+  for (const [index, card] of cards.toArray().entries()) {
+    const scope = matchesPage(card);
+    const leader = leagueStandingsByLeague(snapshot, ids[index]).entries.find(team => team.rank === 1);
+    assert.ok(scope.find('.league-carousel-leader').text().includes(cleanTeamName(leader.name)));
+    assert.equal(scope.find('.league-carousel-monogram').length, 1);
+    assert.equal(scope.find('.league-carousel-monogram small').text(), '#1');
+    for (const image of scope.find('.league-carousel-leader-logo').toArray()) {
+      const img = matchesPage(image);
+      assert.match(img.attr('src'), /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/);
+      await fs.access(new URL(`..${img.attr('src')}`, website));
+      assert.equal(img.attr('alt'), '');
+      assert.equal(img.attr('aria-hidden'), 'true');
+      assert.equal(img.attr('loading'), 'lazy');
+      assert.equal(img.attr('draggable'), 'false');
+      assert.ok(Number(img.attr('width')) > 0 && Number(img.attr('height')) > 0);
+    }
+  }
+  assert.equal(cards.find('.league-carousel-leader-logo').length, 3);
+});

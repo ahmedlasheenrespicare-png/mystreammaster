@@ -176,7 +176,13 @@ jobs:
         id: commit
         run: |
           set -euo pipefail
-          node website/scripts/publish-fixtures-archive.mjs > /tmp/publish-result.json
+          trap 'status=$?; echo "::error title=Fixtures publication failed::line ${LINENO}, command ${BASH_COMMAND} (exit ${status})"; exit "$status"' ERR
+          if ! node website/scripts/publish-fixtures-archive.mjs > /tmp/publish-result.json 2>/tmp/publish-error.log; then
+            cat /tmp/publish-error.log
+            error="$(tail -c 1200 /tmp/publish-error.log | tr '\n' ' ')"
+            echo "::error title=Archive validation failed::${error}"
+            exit 1
+          fi
           cat /tmp/publish-result.json
           node --test website/scripts/test-fixtures-archive.mjs
           # متوسطات الدوري مشتقة من الأرشيف نفسه؛ تُعاد مع كل نشر حتى لا يتيه الأساس.

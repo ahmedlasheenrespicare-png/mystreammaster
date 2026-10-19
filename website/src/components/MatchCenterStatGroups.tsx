@@ -145,22 +145,26 @@ function GroupIndex({ index, homeName, awayName }: { index: GroupIndex | null; h
 }
 
 /** لوحة «مؤشرات المجموعات»: نظرة المجموعات نفسها مجمّعة للمسح السريع، وكل
-    سطر رابط إلى مجموعته. مجموعة بلا ميزان لا سطر لها — كالمجموعة الفارغة. */
-function IndexBoard({ groups, idPrefix, Heading }: { groups: StatGroup[]; idPrefix: string; Heading: 'h3' | 'h4' }) {
+    سطر رابط إلى مجموعته حيثما رُسمت اللوحة (لوحة المرحلة أو الملعب). مجموعة
+    بلا ميزان لا سطر لها — كالمجموعة الفارغة. */
+function IndexBoard({ groups, Heading, linkPrefix, className }: { groups: StatGroup[]; Heading: 'h2' | 'h3' | 'h4'; linkPrefix: string | null; className?: string }) {
   const rows = groups.filter(group => group.index !== null);
   if (rows.length === 0) return null;
   return (
-    <section className="mc-indexboard" aria-label="مؤشرات المجموعات">
+    <section className={`mc-indexboard${className ? ` ${className}` : ''}`} aria-label="مؤشرات المجموعات">
       <Heading className="mc-indexboard-head">مؤشرات المجموعات</Heading>
       <p className="mc-indexboard-sub">
-        متوسط حصة كل طرف من صفوف كل مجموعة — النظرة نفسها التي في رأس كل مجموعة، مجمّعة للمسح السريع. الضغط على اسم المجموعة ينقلك إليها.
+        متوسط حصة كل طرف من صفوف كل مجموعة — النظرة نفسها التي في رأس كل مجموعة، مجمّعة للمسح السريع.
+        {linkPrefix ? ' الضغط على اسم المجموعة ينقلك إليها.' : ''}
       </p>
       <ul className="mc-indexboard-rows">
         {rows.map(group => {
           const index = group.index as GroupIndex;
           return (
             <li className="mc-indexboard-row" key={group.id}>
-              <a href={`#${idPrefix}-statgroup-${group.id}`}>{group.label}</a>
+              {linkPrefix
+                ? <a href={`#${linkPrefix}-statgroup-${group.id}`}>{group.label}</a>
+                : <span>{group.label}</span>}
               <span className="mc-indexboard-bar" aria-hidden="true">
                 <span className="mc-indexboard-fill" data-side="home" style={{ inlineSize: barWidth(index.meanHome) }} />
                 <span className="mc-indexboard-fill" data-side="away" style={{ inlineSize: barWidth(index.meanAway) }} />
@@ -175,6 +179,17 @@ function IndexBoard({ groups, idPrefix, Heading }: { groups: StatGroup[]; idPref
       </ul>
     </section>
   );
+}
+
+/** اللوحة نفسها لأي موضع: على الملعب أسفل بطاقتي الفريقين أو داخل لوحات
+    المراحل — عقد واحد مشتق من `groupStatistics` فلا تتباعد نسختان. */
+export function MatchCenterIndexBoard({ statistics, Heading, linkPrefix, className }: {
+  statistics: unknown;
+  Heading: 'h2' | 'h3' | 'h4';
+  linkPrefix: string | null;
+  className?: string;
+}) {
+  return <IndexBoard groups={groupStatistics(statistics as never)} Heading={Heading} linkPrefix={linkPrefix} className={className} />;
 }
 
 export default function MatchCenterStatGroups({
@@ -192,7 +207,7 @@ export default function MatchCenterStatGroups({
   return (
     <div className="mc-stat-groups">
       <PossessionBar statistics={statistics} homeName={homeName} awayName={awayName} />
-      <IndexBoard groups={groups} idPrefix={idPrefix} Heading={Heading} />
+      <IndexBoard groups={groups} Heading={Heading} linkPrefix={idPrefix} />
       {groups.map(group => {
         const headingId = `${idPrefix}-statgroup-${group.id}`;
         return (

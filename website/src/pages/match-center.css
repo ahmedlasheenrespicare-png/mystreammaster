@@ -433,6 +433,7 @@
     .mc-page .mc-panel[hidden] { display: block !important; margin-block-start: 14px; break-inside: avoid; }
     .mc-panel { padding: 0; border: 0; background: none; }
     .mc-pitch-frame { min-height: 0; padding: 10px; border: 1px solid #c9ced8; background: #f3f5f8; box-shadow: none; color: #101218; }
+    .mc-indexboard.mc-pitch-index { background: #fff; border-color: #c9ced8; }
     .mc-pitch-team, .mc-pitch-scoreboard { border-color: #c9ced8; background: #fff; }
     .mc-pitch-team-name, .mc-pitch-score, .mc-pitch-status, .mc-pitch-competition { color: #101218; }
     .mc-pitch-status { border-color: #c9ced8; }
@@ -582,6 +583,9 @@
 
 /* ── لوحة «مؤشرات المجموعات»: الستة في نظرة واحدة، وكل سطر رابط لمجموعته ── */
 .mc-indexboard { display: grid; gap: 9px; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
+/* المؤشرات العامة على الملعب: صف كامل تحت بطاقتي الفريقين داخل الإطار، والخلفية
+   أغمق قليلاً لتُقرأ فوق تدرّج العشب. لا أرقام ⇒ المكوّن نفسه لا يُنشئ اللوحة. */
+.mc-indexboard.mc-pitch-index { grid-column: 1 / -1; z-index: 1; background: rgba(4, 12, 8, .78); border-color: rgba(218, 255, 221, .30); }
 .mc-indexboard-head { margin: 0; color: var(--mc-lime); font-size: .84rem; font-weight: 900; }
 .mc-indexboard-sub { margin: 0 0 3px; color: var(--mc-muted); font-size: .68rem; }
 .mc-indexboard-rows { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }

@@ -23,6 +23,7 @@ import {
   type PitchLineupPlayer,
 } from '../lib/match-center.mjs';
 import TeamCrest from './MatchCenterCrest';
+import { MatchCenterIndexBoard } from './MatchCenterStatGroups';
 import FormSide from './MatchCenterForm';
 import EventIcon from './MatchCenterSymbols';
 import type { MatchCenterTools } from './useMatchCenterTools';
@@ -433,6 +434,11 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
      على الملعب نفسه (`PitchPreview`) ولا تُكرَّر تحته مباشرة. */
   const previewOnPitch = previewPlacement({ match, snapshot, status }) === 'pitch';
 
+  /* مؤشرات المجموعات على الملعب أسفل بطاقتي الفريقين: اللوحة نفسها التي في
+     لوحة المرحلة، مشتقة من اللقطة نفسها فتتحدث مع كل قراءة أثناء المباراة
+     وتثبت بعد النهاية. الرابط ينقل إلى مجموعات المرحلة الحالية إن وُجدت. */
+  const indexLinkPrefix = status?.phase === 'post' ? 'analysis' : status?.phase === 'live' ? 'live' : null;
+
   return (
     <section className="mc-match-visual" aria-labelledby="mc-title">
       <h1 id="mc-title" className="mc-match-title">{title}</h1>
@@ -473,6 +479,14 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
         </div>
 
         <Team match={match} snapshot={snapshot} side="away" flash={flash === 'away'} />
+
+        {/* صف كامل تحت البطاقتين داخل الإطار: لا أرقام ⇒ لا لوحة أصلاً. */}
+        <MatchCenterIndexBoard
+          statistics={snapshot?.statistics ?? null}
+          Heading="h2"
+          linkPrefix={indexLinkPrefix}
+          className="mc-pitch-index"
+        />
 
         <PitchEvents snapshot={snapshot} matchId={match.id} tools={tools} />
         <PitchLineups match={match} snapshot={snapshot} tools={tools} />

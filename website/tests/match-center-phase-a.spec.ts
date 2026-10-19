@@ -192,6 +192,8 @@ test('state A: without a lineup the preview sits on the pitch and the panel poin
 
   // قبل البداية لا أرقام ⇒ لا مقارنة بمتوسط الدوري (لا أساس بلا أرقام مباراة).
   await expect(page.locator('.mc-benchmark')).toHaveCount(0);
+  // ولا لوحة مؤشرات على الملعب: المجموعة بلا ميزان لا تُخلق من لا شيء.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard')).toHaveCount(0);
 
   const docs = page.locator('.mc-docs');
   await expect(docs.locator('.mc-doc')).toHaveCount(8);
@@ -256,6 +258,15 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
   await expect(home.locator('.mc-pitch-counter[data-counter="yellow"] .mc-num')).toHaveText('١');
   await expect(away.locator('.mc-pitch-counter')).toHaveCount(2);
   await expect(away.locator('.mc-pitch-counter[data-counter="red"] .mc-num')).toHaveText('١');
+
+  // مؤشرات المجموعات على الملعب تحت بطاقتي الفريقين: اللوحة نفسها التي في
+  // لوحة «مباشر»، مشتقة من اللقطة نفسها فتتحدث مع كل قراءة حية.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard')).toBeVisible();
+  // اللوحة على الملعب هي لوحة «مباشر» نفسها: عدد الصفوف والمحتوى واحد.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard-row')).toHaveCount(
+    await page.locator('#mc-panel-live .mc-indexboard-row').count(),
+  );
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard-row').first()).toContainText('الاستحواذ والتمرير');
 
   // مقارنة بمتوسط الدوري الموثّق: أساس معلن العينات، وكمية لا حكم، والطرف
   // الناقص «غير متاح». الاستحواذ ٥٨/٤٢ مقابل متوسط ٥٠ ⇒ أعلى وأقل معاً.
@@ -328,4 +339,9 @@ test('after the final whistle «مباشر» disappears and «بعد المبا�
   // بعد النهاية تثبت المقارنة بمتوسط الدوري أرشيفاً ختامياً بالأرقام نفسها.
   await expect(page.locator('#mc-panel-postmatch .mc-benchmark')).toBeVisible();
   await expect(page.locator('#mc-panel-postmatch .mc-benchmark')).toContainText('مباراة موثقة');
+  // ومؤشرات الملعب تثبت هناك أيضاً بالأرقام الختامية نفسها: صفوفها صفوف لوحة التحليل.
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard')).toBeVisible();
+  await expect(page.locator('.mc-pitch-frame .mc-indexboard-row')).toHaveCount(
+    await page.locator('.mc-analysis .mc-indexboard-row').count(),
+  );
 });

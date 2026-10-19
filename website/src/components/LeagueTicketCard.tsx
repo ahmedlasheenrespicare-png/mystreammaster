@@ -5,10 +5,11 @@ import "./league-ticket.css";
    كرت «تذكرة المباراة» — أيقونة البطولة داخل تذكرة هولوغرافية
    --------------------------------------------------------------------------
    • التصميم مقتبس من https://uiverse.io/dexter-st/slippery-bird-76
-     (المؤلف dexter-st — رخصة MIT من Uiverse.io)، ومکیّف لكرة القدم:
-     أيقونة البطولة مكان عنوان TICKET، واسم البطولة ووصف الصفحة في المتن،
-     ورمز البطولة (leagueId كما يرد من مصدر البيانات) مع الباركود في
-     التذييل — بلا نوتات موسيقى ولا نصوص حفلات. التفاصيل في league-ticket.css.
+     (المؤلف dexter-st — رخصة MIT من Uiverse.io)، ومکیّف لكرة القدم
+     ومصغَّر عن مقاسه الأصلي: أيقونة البطولة مكان عنوان TICKET، واسم
+     البطولة ووصف الصفحة في المتن — بلا نوتات موسيقى ولا نصوص حفلات ولا
+     باركود ولا رموز تقنية (leagueId يُستخدم داخلياً لحلّ الشعار فقط).
+     التفاصيل في league-ticket.css.
    • الأيقونة هي مكوّن LeagueIconBadge نفسه (المصدر الواحد للشعار وبديله):
      البطولة بلا شعار موثّق — كالدوري المصري — يعرض كأس البديل المحايد،
      وتعذّر التحميل يُخفي الصورة ويبقى البديل. ولا تُنسخ الشارة ولا تُثنّى.
@@ -20,7 +21,7 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
   return (
     <div className="league-ticket" aria-hidden="true">
       <div className="league-ticket-header">
-        <LeagueIconBadge leagueId={leagueId} size={72} eager />
+        <LeagueIconBadge leagueId={leagueId} size={60} eager />
         <div className="league-ticket-symbol">✁</div>
       </div>
       <div className="league-ticket-body">
@@ -29,13 +30,6 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
         <br />
         يُحدَّث كل دقيقة
       </div>
-      <div className="league-ticket-footer">
-        <div className="league-ticket-code">
-          رمز البطولة <span className="bold">{leagueId}</span>
-        </div>
-        <div className="league-ticket-barcode" />
-      </div>
-
       <div className="league-ticket-bg league-ticket-holographic" />
       {/* مرشّح النتوءات الأصلي (feTurbulence + إضاءة مرآة) — بمعرّف مسمّى
           باسم الكرت حتى لا يصطدم بأي مرشّح SVG آخر في الصفحة */}

@@ -300,8 +300,19 @@
 .league-ticket-player--right { inset-inline-end: auto; right: 4%; }
 .league-ticket-player--left { inset-inline-end: 4%; }
 
+/* أبطال أوروبا: ميسي في طبقة الخلف — أعلى يسار التذكرة خلف رونالدو:
+   مرفوع عن الأرضية، أصغر قليلاً، ومُزاح نحو حافة اليسار حتى يطلّ
+   رأسه وكتفه من وراء رونالدو الذي يُرسَم بعده ضمن نفس ز-index */
+.league-ticket-player--back {
+  bottom: 16%;
+  inset-inline-end: -2%;
+  height: 72%;
+}
+
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {
   .league-ticket-player { height: 70%; opacity: .85; }
+  /* ميسي الخلفي يبقى مطلّاً من وراء رونالدو إلى أعلى اليسار */
+  .league-ticket-player--back { height: 58%; }
 }
 
 /* ── التذكرة الجامعة في صفحة «مواعيد المباريات» ──

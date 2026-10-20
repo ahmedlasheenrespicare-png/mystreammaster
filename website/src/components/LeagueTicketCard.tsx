@@ -39,10 +39,11 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
           موضع الحافة المظلمة ويتلاشى في أسفل الكرت، خلف النص */}
       {leagueId === 'uefa.champions' && (
         <>
-          {/* ميسي يمين التذكرة (موضع فيزيائي صريح) — بجانب نجم البطولة
-              بنمط الثنائي، بنفس الصفة الزخرفية وطريقة الدمج */}
+          {/* ميسي أعلى يسار التذكرة في الخلف — يُرسَم قبل رونالدو فيتراكب
+              رونالدو فوقه (نفس ز-index والأحدث ضمن DOM يعلو)، بنفس الصفة
+              الزخرفية وطريقة الدمج */}
+          <img className="league-ticket-player league-ticket-player--back" src="/images/players/ucl-messi.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
           <img className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
-          <img className="league-ticket-player league-ticket-player--right" src="/images/players/ucl-messi.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
         </>
       )}
       {/* الدوري الإنجليزي: هالاند بنفس طريقة أبطال أوروبا تماماً — نفس

@@ -245,6 +245,16 @@
   display: none;
 }
 
+/* المرحلة والموسم مخفيان بصرياً: تصفير تنسيقات القرص (الحشو والحدود)
+   حتى يبقى صندوقهما 1px فعلًا — القاعدة المركّبة أعلى تحديداً من
+   .ls-phase وحدها، وإلا امتد الصندوق خارج الشاشة بـ9px في RTL */
+.ls-phase.visually-hidden,
+.ls-season.visually-hidden {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
 .ls-bar {
   display: flex;
   flex-wrap: wrap;

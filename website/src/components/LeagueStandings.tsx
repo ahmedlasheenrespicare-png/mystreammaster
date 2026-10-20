@@ -227,16 +227,21 @@ export default function LeagueStandings({ league, title }: { league: string; tit
       <section className="league-standings" aria-labelledby={`${id}-title`} data-league-standings={league}>
         <div className="ls-heading">
           <h2 id={`${id}-title`}>جدول الترتيب — {title}</h2>
+          {/* المرحلة والموسم مخفيان بصرياً بطلب صريح — يبقى وسم
+              «بيانات قديمة» ظاهراً عند التعذّر كما هو */}
           <p className="ls-meta">
-            <span className="ls-phase">{config.phase}</span>
-            <span className="ls-season">موسم <bdi dir="ltr">{season}</bdi></span>
+            <span className="ls-phase visually-hidden">{config.phase}</span>
+            <span className="ls-season visually-hidden">موسم <bdi dir="ltr">{season}</bdi></span>
             <span className="ls-badge" data-standings-badge hidden={!isStale}>{STALE_BADGE_TEXT}</span>
           </p>
         </div>
 
-        <div className="ls-bar">
+        {/* الحالة والتحديث مخفيان بصرياً بطلب صريح: نص الحالة يبقى منطقة
+            إشعار حيّة لقارئات الشاشة (.visually-hidden لا display:none)،
+            والتحديث التلقائي كل دقيقة مستمر دون الزر */}
+        <div className="ls-bar visually-hidden">
           <p className="ls-status" role="status" aria-live="polite" data-standings-status>{statusText}</p>
-          <button type="button" className="ls-refresh" disabled={busy || !online} onClick={() => refreshNow.current()}>
+          <button type="button" className="ls-refresh" hidden disabled={busy || !online} onClick={() => refreshNow.current()}>
             {busy ? 'جارٍ التحقق…' : '↻ تحديث الآن'}
           </button>
         </div>
@@ -249,7 +254,7 @@ export default function LeagueStandings({ league, title }: { league: string; tit
           aria-describedby={`${id}-hint`}
         >
           <table className="ls-table">
-            <caption>{title} · موسم <bdi dir="ltr">{season}</bdi> · جدول الترتيب</caption>
+            <caption className="visually-hidden">{title} · موسم <bdi dir="ltr">{season}</bdi> · جدول الترتيب</caption>
             <thead>
               <tr>
                 <th scope="col" className="ls-rank">المركز</th>

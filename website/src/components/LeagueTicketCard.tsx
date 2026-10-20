@@ -48,7 +48,12 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {/* الدوري الإنجليزي: هالاند بنفس طريقة أبطال أوروبا تماماً — نفس
           الموضع والتلاشٍ والهالة والصفة الزخرفية */}
       {leagueId === 'eng.1' && (
-        <img className="league-ticket-player" src="/images/players/epl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        <>
+          {/* سوبسلاي يمين التذكرة (موضع فيزيائي صريح) — ثنائي مع هالاند
+              يساراً بنمط مبابي/يامال ورونالدو/ميسي، بنفس الصفة الزخرفية */}
+          <img className="league-ticket-player" src="/images/players/epl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+          <img className="league-ticket-player league-ticket-player--right" src="/images/players/eng-szoboszlai.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        </>
       )}
       {/* الدوري الإسباني: الكلاسيكو على تذكرة واحدة — مبابي يمين
           التذكرة ويامال يسارها، بنفس الصفة الزخرفية وطريقة الدمج */}

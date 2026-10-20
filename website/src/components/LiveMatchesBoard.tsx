@@ -20,6 +20,12 @@ import {
    --------------------------------------------------------------------------
    نفس ميكانيزم /matches/: جلب من /scoreboard.php عبر وسيط الخادم، تحديث كل
    دقيقة، وتشخيص واضح عند الأعطال. لا نتائج ولا توقيتات تُحسب محلياً.
+   layout="race" (صفحات البطولات): شبكة كروت أفقية تتحرك تلقائياً من الأقرب
+   موعداً إلى الأبعد (matchesForDay ترتّب تصاعدياً) — تصميم الكرت من قالب
+   uiverse.io/sofiapetushok/jolly-snail-62 مكيّفاً بهوية الموقع، بلا حذف أي
+   محتوى أو نص. الحركة تتوقف عند التحويم/اللمس/التركيز/خروج الشريط من
+   الشاشة، وتُعطَّل كلياً مع prefers-reduced-motion. لوحة /matches/ المركزية
+   وصفحات المنتخبات تبقيان على القائمة الافتراضية layout="list".
    ========================================================================== */
 
 const REFRESH_MS = 60_000;
@@ -69,9 +75,99 @@ export interface LiveMatchesBoardProps {
       نصه إلى قسم «البيانات والمصادر» أسفل الصفحة) وتُبقيه
       صفحات المنتخبات على القيمة الافتراضية */
   dataNote?: boolean;
+  /** list (افتراضي): قائمة شبكية كما في /matches/ وصفحات المنتخبات.
+      race: شريط كروت متحرك تلقائياً بتصميم jolly-snail-62 لصفحات البطولات */
+  layout?: 'list' | 'race';
 }
 
-export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, dataNote = true }: LiveMatchesBoardProps) {
+/* حركة الشريط التلقائية: تتقدّم من الأقرب موعداً إلى الأبعد (ترتيب DOM هو
+   ترتيب matchesForDay التصاعدي) ثم تتوقف لحظة وتعود للبداية. تتوقف عند
+   التحويم أو اللمس أو التركيز أو التمرير اليدوي أو خروج الشريط من الشاشة
+   أو إخفاء التبويب، ولا تعمل إطلاقاً مع prefers-reduced-motion. */
+function useRaceAutoScroll(enabled: boolean) {
+  const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const paused = useRef(false);
+  const visible = useRef(true);
+  const resumeTimer = useRef(0);
+
+  useEffect(() => {
+    if (!el || !enabled) return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const observer = new IntersectionObserver(entries => { visible.current = entries[0]?.isIntersecting ?? true; }, { threshold: 0.15 });
+    observer.observe(el);
+    let raf = 0;
+    let holdUntil = 0;
+    /* متراكم كسري: مواضع التمرير أعداد صحيحة، فـ +0.5 يُقرَّب إلى الصفر في
+       RTL ولا يتحرك أبداً — نراكم ونخطو بكسور صحيحة (1px كل إطارين ≈ 30px/s) */
+    let acc = 0;
+    const stop = () => { paused.current = true; window.clearTimeout(resumeTimer.current); };
+    const resumeSoon = (delay: number) => {
+      window.clearTimeout(resumeTimer.current);
+      resumeTimer.current = window.setTimeout(() => { paused.current = false; }, delay);
+    };
+    const onMouseLeave = () => resumeSoon(0);
+    const onFocusIn = () => stop();
+    const onFocusOut = () => resumeSoon(0);
+    const onPointerDown = () => stop();
+    const onPointerUp = () => resumeSoon(4000);
+    const onWheel = () => resumeSoon(4000);
+    const onTouchMove = () => resumeSoon(4000);
+    const onVisibility = () => { if (document.hidden) stop(); };
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (paused.current || media.matches || document.hidden || !visible.current) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 1) return;
+      /* RTL: التمرير يتقدّم نحو القيم السالبة */
+      const dir = getComputedStyle(el).direction === 'rtl' ? -1 : 1;
+      if (Math.abs(el.scrollLeft) >= max - 1) {
+        if (!holdUntil) { holdUntil = now + 1800; return; }
+        if (now < holdUntil) return;
+        el.scrollLeft = 0;
+        holdUntil = 0;
+        return;
+      }
+      holdUntil = 0;
+      /* مواضع التمرير أعداد صحيحة: +0.5 يُقرَّب إلى الصفر في RTL فلا حركة —
+         نراكم كسرياً ونخطو بكسور صحيحة (1px كل إطارين ≈ 30px/s) */
+      acc += 0.5;
+      const step = Math.floor(acc);
+      if (step >= 1) {
+        el.scrollLeft += dir * step;
+        acc -= step;
+      }
+    };
+    el.addEventListener('mouseenter', stop);
+    el.addEventListener('mouseleave', onMouseLeave);
+    el.addEventListener('focusin', onFocusIn);
+    el.addEventListener('focusout', onFocusOut);
+    el.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointerup', onPointerUp);
+    el.addEventListener('wheel', onWheel, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(resumeTimer.current);
+      observer.disconnect();
+      el.removeEventListener('mouseenter', stop);
+      el.removeEventListener('mouseleave', onMouseLeave);
+      el.removeEventListener('focusin', onFocusIn);
+      el.removeEventListener('focusout', onFocusOut);
+      el.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointerup', onPointerUp);
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [el, enabled]);
+
+  return setEl;
+}
+
+export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, dataNote = true, layout = 'list' }: LiveMatchesBoardProps) {
+  const raceRef = useRaceAutoScroll(layout === 'race');
   // SSR ثابت: التواريخ والتفضيلات تُملأ بعد الترطيب.
   const [zone, setZone] = useState('Asia/Riyadh');
   const [today, setToday] = useState('');
@@ -176,7 +272,7 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
   const timeZones = TIME_ZONES.slice(0, 3).concat(TIME_ZONES.slice(0, 3).some(z => z.id === zone) ? [] : [{ id: zone, name: selectedZoneName }]);
 
   return (
-    <section className="matches-board" aria-labelledby="board-title">
+    <section className={`matches-board${layout === 'race' ? ' matches-board--race' : ''}`} aria-labelledby="board-title">
       <div className="matches-calendar-heading">
         <h2 id="board-title">{heading}</h2>
         <button onClick={() => { setDay(today); }}>العودة إلى اليوم</button>
@@ -259,6 +355,54 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
                 <span>{group.matches.length} مباراة{failed.includes(group.id) ? ' · بيانات قديمة' : ''}</span>
               </div>
             </header>
+            {layout === 'race' ? (
+            <div
+              className="match-race"
+              ref={raceRef}
+              role="group"
+              tabIndex={0}
+              aria-label={`شريط مباريات ${group.name}: يتحرك تلقائياً من الأقرب موعداً إلى الأبعد، ويتوقف عند التحويم أو اللمس`}
+            >
+              <div className="match-race-track">
+              {group.matches.map(match => (
+                <article key={match.id} className={`match-card ${match.state === 'live' ? 'is-live' : ''}`}>
+                  <div className="match-card-top">
+                    <span className={`match-status status-${match.state}`}>{match.state === 'live' ? `● مباشر · ${match.detail}` : match.detail}</span>
+                    {match.venue && <span className="match-venue" dir="auto">{match.venue}</span>}
+                  </div>
+                  {/* كرت jolly-snail-62: لوحا الفريقين المائلان + خطّ التقدّم
+                      النقطي بينهما (زخرفي) — النتيجة/الموعد تحتها كما هي */}
+                  <div className="match-contest">
+                    <Team team={match.home} />
+                    <span className="match-dots" aria-hidden="true"><i className="match-dots-load" /></span>
+                    <Team team={match.away} />
+                  </div>
+                  <div className="match-scoreboard">
+                    <div className="match-score">
+                      {match.state === 'live' || match.state === 'finished' ? (
+                        <strong aria-label={hasCompleteScore(match.home.score, match.away.score) ? `نتيجة المضيف ${match.home.score}، ثم الضيف ${match.away.score}` : 'النتيجة غير مكتملة'}>
+                          {hasCompleteScore(match.home.score, match.away.score) ? <>{match.home.score} <span>:</span> {match.away.score}</> : '—'}
+                        </strong>
+                      ) : (
+                        <><strong>{kickoff(match.date, zone)}</strong><small>موعد البداية</small></>
+                      )}
+                    </div>
+                  </div>
+                  <div className="match-times">
+                    {timeZones.map(z => (
+                      <div key={z.id}>
+                        <span>{z.id === 'Asia/Riyadh' ? 'مكة' : z.id === 'Africa/Cairo' ? 'مصر' : z.name}</span>
+                        <time dateTime={match.date}>{kickoff(match.date, z.id)}</time>
+                        <small>{dayLabel(dayInZone(new Date(match.date), z.id))}</small>
+                      </div>
+                    ))}
+                  </div>
+                  <span className="match-watermark" aria-hidden="true">{group.name}</span>
+                </article>
+              ))}
+              </div>
+            </div>
+            ) : (
             <div>
               {group.matches.map(match => (
                 <article key={match.id} className={`match-card ${match.state === 'live' ? 'is-live' : ''}`}>
@@ -291,6 +435,7 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
                 </article>
               ))}
             </div>
+            )}
           </section>
         ))}
       </div>

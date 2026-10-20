@@ -268,27 +268,14 @@ function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
   const match = useClash(leagueId, clash);
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(false);
-  const [reduced, setReduced] = useState(false);
   const pauseUntil = useRef(0);
 
-  /* توافق تقليل الحركة عبر الواجهتين: addEventListener حديثاً،
-     وaddListener على سفاري iOS القديم */
+  /* التبديل التلقائي كل 5 ثوانٍ — يعمل دائماً (جوالاً وسطح مكتب) ولا
+     يُوقفه تفضيل تقليل الحركة: ذلك التفضيل يُسقط حركة الانزلاق وحدها
+     عبر CSS (@media prefers-reduced-motion) فتصبح الشريحة فورية بلا
+     انتقال، بينما تبقى المعلومة الحيّة تتناوب. إيقاف الدورة يدوياً
+     متاح دوماً بالمؤشر والتركيز والنقاط، وأي إيقاف يتراجع بعد 15 ثانية */
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
-    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
-    if (mq.addEventListener) mq.addEventListener("change", onChange);
-    else if (mq.addListener) mq.addListener(onChange);
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
-      else if (mq.removeListener) mq.removeListener(onChange);
-    };
-  }, []);
-
-  /* التبديل التلقائي كل 5 ثوانٍ — يُعطَّل بتفضيل تقليل الحركة،
-     ويتراجع أيّ إيقاف مؤقت إذا مرّت 15 ثانية على آخر لمس مؤشري */
-  useEffect(() => {
-    if (reduced) return;
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       if (Date.now() < pauseUntil.current) return;
@@ -296,7 +283,7 @@ function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
       setActive(prev => (prev + 1) % 2);
     }, ROTATE_MS);
     return () => window.clearInterval(timer);
-  }, [auto, reduced]);
+  }, [auto]);
 
   /* بدء الحركة بعد أول إطار كامل (تهيئة ضوء القالب والشريط) */
   useEffect(() => {

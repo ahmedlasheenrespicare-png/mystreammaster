@@ -360,3 +360,195 @@
   gap: 10px;
   padding: 0 18px 16px;
 }
+
+/* ==========================================================================
+   منصة أبطال أوروبا المنزلقة — تذكرتان بتصميم واحد، تبديل تلقائي 5 ثوانٍ
+   --------------------------------------------------------------------------
+   المنزلقتان متكدّستان فوق بعضهما داخل مسار بارتفاع التذكرة نفسه،
+   والتبديل تلاشٍ وارتفاع خفيف (الخام) مع احترام تقليل الحركة،
+   والنقاط اليدوية بأسفل شريط التذكرة.
+========================================================================== */
+.league-ticket-carousel {
+  position: relative;
+  flex: 1 1 100%;
+  min-width: 0;
+  width: 100%;
+}
+.league-ticket-track {
+  position: relative;
+  height: 265px;
+}
+.league-ticket-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(8px) scale(0.995);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+.league-ticket-slide.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.league-ticket--in-track { flex: none; height: 100%; }
+
+/* نقاط التبديل — أزرار حقيقية (قابلة للوصول) بأسفل التذكرة */
+.league-ticket-dots {
+  position: absolute;
+  bottom: 10px;
+  inset-inline: 0;
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  z-index: 6;
+}
+.league-ticket-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid #8fae3c;
+  background: #1a1b06;
+  cursor: pointer;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.league-ticket-dot:hover { transform: scale(1.15); }
+.league-ticket-dot:focus-visible {
+  outline: 2px solid #d8ff3e;
+  outline-offset: 2px;
+}
+.league-ticket-dot.is-active {
+  background: #d8ff3e;
+  box-shadow: 0 0 10px rgba(216, 255, 62, 0.7);
+}
+
+/* ── منزلقة «مواجهة الليلة» — نصوص بنوعية كرت لوحة المباريات ── */
+.league-ticket-body--clash {
+  align-self: start;
+  margin-top: -0.35rem;
+}
+.league-ticket-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.3rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.08rem;
+  color: #c7db8a;
+  text-transform: uppercase;
+}
+.league-ticket-clash {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 470px;
+  margin-inline: auto;
+}
+.league-ticket-clash-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.league-ticket-clash-team strong {
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
+}
+.league-ticket-crest {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+}
+.league-ticket-crest--mono {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #3b3d17;
+  background: #141508;
+  color: #d8ff3e;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+.league-ticket-clash-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  min-width: 5.2rem;
+}
+.league-ticket-goals {
+  font-size: 1.5rem;
+  font-weight: 800;
+  direction: ltr;
+  color: #f6f4ec;
+  text-shadow: 0 0 14px rgba(216, 255, 62, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+.league-ticket-goals span { color: #d8ff3e; }
+.league-ticket-kickoff {
+  font-size: 1.05rem;
+  font-weight: 700;
+  direction: ltr;
+  color: #f6f4ec;
+}
+.league-ticket-state {
+  font-size: 0.6rem;
+  color: #aeb3c0;
+  text-align: center;
+}
+.league-ticket-state.is-live {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+.league-ticket-state.is-live::before {
+  content: "●";
+  margin-inline-end: 4px;
+  color: #ff4747;
+}
+
+/* العدّ التنازلي لما قبل بدء المواجهة */
+.league-ticket-countdown {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+  margin-top: 0.35rem;
+  direction: rtl;
+}
+.league-ticket-tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2.5rem;
+  padding: 0.15rem 0.3rem 0.25rem;
+  border: 1px solid #34361c;
+  border-radius: 8px;
+  background: rgba(13, 14, 8, 0.65);
+  font-size: 0.52rem;
+  color: #aeb3c0;
+  line-height: 1.4;
+}
+.league-ticket-tick strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #d8ff3e;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+
+/* الجوال — أرقام أصغر لكن دون تغيير بنية */
+@media (max-width: 700px) {
+  .league-ticket-crest { width: 34px; height: 34px; }
+  .league-ticket-goals { font-size: 1.25rem; }
+  .league-ticket-tick { min-width: 2.1rem; }
+  .league-ticket-tick strong { font-size: 0.85rem; }
+}
+
+/* تقليل الحركة — لا انتقال ولا نزوح، تبديل فوري */
+@media (prefers-reduced-motion: reduce) {
+  .league-ticket-slide { transition: none; transform: none; }
+  .league-ticket-dot, .league-ticket-dot:hover { transition: none; transform: none; }
+}

@@ -216,26 +216,36 @@ function ChampionsTicketCarousel({ name }: { name: string }) {
   const match = useClash();
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(false);
+  const [reduced, setReduced] = useState(false);
   const pauseUntil = useRef(0);
 
-  /* التبديل التلقائي — يُفعَّل فقط بعيداً عن تقليل الحركة، ويتراجع
-     أيّ إيقاف مؤقت إذا مرّت 15 ثانية على آخر لمس من المستخدم */
+  /* توافق تقليل الحركة عبر الواجهتين: addEventListener حديثاً،
+     وaddListener على سفاري iOS القديم — كبرت الواجهة غير المدعومة
+     كانت تكسر تهيئة مؤقّت التبديل نفسه فتسكن المنصّة على الجوال */
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduced.matches) return;
-    const onChange = () => setAuto(false);
-    reduced.addEventListener("change", onChange);
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else if (mq.removeListener) mq.removeListener(onChange);
+    };
+  }, []);
+
+  /* التبديل التلقائي كل 5 ثوانٍ — يُعطَّل بتفضيل تقليل الحركة،
+     ويتراجع أيّ إيقاف مؤقت إذا مرّت 15 ثانية على آخر لمس مؤشري */
+  useEffect(() => {
+    if (reduced) return;
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       if (Date.now() < pauseUntil.current) return;
       if (!auto) return;
       setActive(prev => (prev + 1) % 2);
     }, ROTATE_MS);
-    return () => {
-      reduced.removeEventListener("change", onChange);
-      window.clearInterval(timer);
-    };
-  }, [auto]);
+    return () => window.clearInterval(timer);
+  }, [auto, reduced]);
 
   /* بدء الحركة بعد أول إطار كامل (تهيئة ضوء القالب والشريط) */
   useEffect(() => {
@@ -256,7 +266,11 @@ function ChampionsTicketCarousel({ name }: { name: string }) {
   return (
     <div
       className="league-ticket-carousel"
-      onMouseEnter={() => { pauseUntil.current = Date.now() + MANUAL_PAUSE_MS; }}
+      onPointerEnter={event => {
+        /* الإيقاف بالتحويم للمؤشر فقط — لمسة الجوال لا تُشغّل hover دائماً
+           ناهيك عن «تحوينٍ وهمي» يُرافق أقرب نقرة فيجمّد دورة التبديل */
+        if (event.pointerType === "mouse") pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
+      }}
       onFocusCapture={() => { pauseUntil.current = Date.now() + MANUAL_PAUSE_MS; }}
     >
       <p className="visually-hidden">{clashSummary(match)}</p>

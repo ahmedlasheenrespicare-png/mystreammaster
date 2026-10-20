@@ -40,6 +40,10 @@ export default function AllLeaguesTicket() {
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
       <span className="league-ticket-symbol" />
+      {/* نجوم البطولات السبعة (مولّدة من صورهم المعتمدة) خلف النص —
+          عنقود الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
+      <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      <span className="all-leagues-ticket-veil" aria-hidden="true" />
       <div className="leagues-ticket-icons">
         {TICKET_LEAGUES.map((id) => (
           <LeagueIconBadge key={id} leagueId={id} size={46} eager />

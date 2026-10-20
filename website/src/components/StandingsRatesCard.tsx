@@ -7,6 +7,7 @@ import {
 } from '../lib/fixtures-archive.mjs';
 import { STALE_BADGE_TEXT, formatStandingsTime, seasonText, type StandingsEntry } from '../lib/standings.mjs';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import './standings-rates-card.css';
 
 /* الشعارات المحلية المعتمدة داخل المستودع فقط (src/assets/club-logos/manifest.json).
    لا يُطلب أي شعار من رابط خارجي؛ إن لم يتوفر شعار محلي معتمد يُعرض درع مونوغرام
@@ -81,6 +82,61 @@ function DefenceIcon({ variant }: { variant: 'best' | 'worst' }) {
     </svg>
   );
 }
+
+/* أيقونات المؤشرات الأربعة للملخص التحليلي — أيقونية دلالية تكمّل النص
+   (لا يُعتمد على اللون وحده)، بألوان صفوف القالب الباستيلية عالية التباين */
+function TotalGoalsIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.75" />
+      <path d="M10 6.4l3.3 2.4-1.3 3.9H8l-1.3-3.9L10 6.4Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function AverageIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M5.5 10h9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+      <circle cx="10" cy="5.4" r="1.35" fill="currentColor" />
+      <circle cx="10" cy="14.6" r="1.35" fill="currentColor" />
+    </svg>
+  );
+}
+
+function GoalDiffIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M3 14.2l4.6-4.6 3 3L16.4 7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12.4 6.6h4.2v4.2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PointsIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path
+        d="M10 2.8l2.3 4.6 5.1.75-3.7 3.6.9 5.05L10 14.4l-4.6 2.4.9-5.05-3.7-3.6 5.1-.75L10 2.8Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+const KPI_ICONS: Record<string, ReactNode> = {
+  'total-goals': <TotalGoalsIcon />,
+  'avg-per-team': <AverageIcon />,
+  'top-gd-per-match': <GoalDiffIcon />,
+  'top-ppm': <PointsIcon />,
+};
+
+/* قصاصات القالب الاحتفالية (18 قطعة) — ساكنة ومخفية افتراضياً؛ هندستها
+   وأزمنتها كلها في standings-rates-card.css عبر nth-child، وتعمل مروراً
+   واحداً عند التفاعل فقط. */
+const CONFETTI_PIECES = Array.from({ length: 18 }, (_, i) => i);
 
 /* عدد الكلمات العربية للمباريات: 1 مباراة، 2 مباراتين، 3–10 مباريات، 11+ مباراة */
 function matchWord(n: number): string {
@@ -297,49 +353,75 @@ export default function StandingsRatesCard({
       data-standings-rates={league}
       data-rates-stale={stale ? 'true' : 'false'}
     >
-      <div className="ls-rates-header">
-        <div className="ls-rates-heading">
+      {/* أ) الجزء العلوي المزدوج — Split Summary Hero بهوية القالب المرجعي
+          uiverse.io/sabbircoder07/spotty-firefox-94 (MIT): لوح متدرج +
+          لوح ملخص أبيض، بكل معلومات البطاقة الأصلية دون حذف */}
+      <div className="ls-rates-hero">
+        {/* اللوح المتدرج الرئيسي — روح .results-summary-container__result */}
+        <div className="ls-rates-panel">
+          <div className="ls-rates-confetti" aria-hidden="true">
+            {CONFETTI_PIECES.map((piece) => (
+              <span key={piece} className="ls-rates-confetti-piece" />
+            ))}
+          </div>
+
           <h3 id={`${baseId}-title`} className="ls-rates-title">الهجوم والدفاع — معدلات أهداف الموسم</h3>
+
+          {/* الدائرة الوسطية — المؤشر المحوري للموسم: متوسط أهداف الفريق/مباراة */}
+          <div className="ls-rates-result-box">
+            <strong className={`ls-rates-result-value${leagueSummary.averagePerTeam === null ? ' ls-rates-result-value--na' : ''}`}>
+              <bdi dir="ltr">{fmt2(leagueSummary.averagePerTeam)}</bdi>
+            </strong>
+            <span className="ls-rates-result-label">متوسط أهداف الفريق/مباراة</span>
+          </div>
+
+          <p className="ls-rates-status">قراءة تحليلية من جدول الترتيب</p>
+
           <p className="ls-rates-subtitle">
             محسوبة من جدول الترتيب الحالي فقط، بلا أي بيانات خارجية: المعدل = الأهداف ÷ المباريات الملعوبة،
             والتصنيف التكتيكي يقارن كل فريق بمتوسط المسابقة بالقيمة الدقيقة قبل التقريب.
           </p>
+
+          {(formattedSeason || provider || fetchedAt || stale) && (
+            <p className="ls-rates-meta" data-rates-meta>
+              {formattedSeason && (
+                <span className="ls-rates-pill" data-rates-season>
+                  موسم <bdi dir="ltr">{formattedSeason}</bdi>
+                </span>
+              )}
+              {provider && (
+                <span className="ls-rates-pill" data-rates-provider>
+                  المصدر: <bdi dir="ltr">{provider}</bdi>
+                </span>
+              )}
+              {fetchedAt && (
+                <span className="ls-rates-pill" data-rates-fetched>
+                  آخر قراءة للترتيب: <bdi>{formatStandingsTime(fetchedAt)}</bdi> بتوقيت القاهرة
+                </span>
+              )}
+              <span className="ls-badge ls-rates-stale-badge" data-rates-stale-badge hidden={!stale}>
+                {STALE_BADGE_TEXT} — محسوبة من النسخة القديمة نفسها
+              </span>
+            </p>
+          )}
         </div>
 
-        {(formattedSeason || provider || fetchedAt || stale) && (
-          <p className="ls-rates-meta" data-rates-meta>
-            {formattedSeason && (
-              <span className="ls-rates-pill" data-rates-season>
-                موسم <bdi dir="ltr">{formattedSeason}</bdi>
-              </span>
-            )}
-            {provider && (
-              <span className="ls-rates-pill" data-rates-provider>
-                المصدر: <bdi dir="ltr">{provider}</bdi>
-              </span>
-            )}
-            {fetchedAt && (
-              <span className="ls-rates-pill" data-rates-fetched>
-                آخر قراءة للترتيب: <bdi>{formatStandingsTime(fetchedAt)}</bdi> بتوقيت القاهرة
-              </span>
-            )}
-            <span className="ls-badge ls-rates-stale-badge" data-rates-stale-badge hidden={!stale}>
-              {STALE_BADGE_TEXT} — محسوبة من النسخة القديمة نفسها
-            </span>
-          </p>
-        )}
-      </div>
-
-      <div className="ls-rates-kpis" data-rates-kpis role="list" aria-label="ملخص تحليلي للمسابقة">
-        {kpis.map((kpi) => (
-          <div key={kpi.id} className="ls-rates-kpi" role="listitem" data-rates-kpi={kpi.id}>
-            <span className="ls-rates-kpi-label">{kpi.label}</span>
-            <strong className="ls-rates-kpi-value">
-              <bdi dir="ltr">{kpi.value}</bdi>
-            </strong>
-            <span className="ls-rates-kpi-sub" data-rates-kpi-sub>{kpi.sub}</span>
+        {/* لوح الملخص — روح .results-summary-container__options بعنوان Summary */}
+        <div className="ls-rates-aside">
+          <h4 className="ls-rates-aside-title">الملخص التحليلي للمسابقة</h4>
+          <div className="ls-rates-kpis" data-rates-kpis role="list" aria-label="ملخص تحليلي للمسابقة">
+            {kpis.map((kpi) => (
+              <div key={kpi.id} className="ls-rates-kpi" role="listitem" data-rates-kpi={kpi.id}>
+                <span className="ls-rates-kpi-icon" aria-hidden="true">{KPI_ICONS[kpi.id]}</span>
+                <span className="ls-rates-kpi-label">{kpi.label}</span>
+                <strong className="ls-rates-kpi-value">
+                  <bdi dir="ltr">{kpi.value}</bdi>
+                </strong>
+                <span className="ls-rates-kpi-sub" data-rates-kpi-sub>{kpi.sub}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       <div className="ls-rates-grid" role="list" aria-label="تصنيفات الهجوم والدفاع">
@@ -361,26 +443,26 @@ export default function StandingsRatesCard({
               data-rate-card={card.key}
               aria-labelledby={`${baseId}-${card.key}-title`}
             >
-              <span className="ls-rate-accent" aria-hidden="true"></span>
-
-              <div className="ls-rate-card-top">
-                <span className={`ls-rate-kind ls-rate-kind--${card.domain}`}>
-                  {card.domain === 'attack' ? <AttackIcon variant={card.variant} /> : <DefenceIcon variant={card.variant} />}
-                  <span>{card.badge}</span>
-                </span>
-                {teams.length > 1 && (
-                  <span className="ls-rate-tie-count" data-rate-tie-count>
-                    تعادل <bdi dir="ltr">{teams.length}</bdi> فرق
+              {/* الرأس المتدرج — هوية القالب المصغّرة (تدرج دائرة .result-box) */}
+              <div className="ls-rate-card-head">
+                <div className="ls-rate-card-top">
+                  <span className={`ls-rate-kind ls-rate-kind--${card.domain}`}>
+                    {card.domain === 'attack' ? <AttackIcon variant={card.variant} /> : <DefenceIcon variant={card.variant} />}
+                    <span>{card.badge}</span>
                   </span>
-                )}
-              </div>
+                  {teams.length > 1 && (
+                    <span className="ls-rate-tie-count" data-rate-tie-count>
+                      تعادل <bdi dir="ltr">{teams.length}</bdi> فرق
+                    </span>
+                  )}
+                </div>
 
-              <h4 id={`${baseId}-${card.key}-title`} className="ls-rate-card-title">
-                {card.title}
-              </h4>
+                <h4 id={`${baseId}-${card.key}-title`} className="ls-rate-card-title">
+                  {card.title}
+                </h4>
 
-              <div className="ls-rate-metric" data-rate-metric>
-                <div className="ls-rate-hero">
+                {/* دائرة الرقم الرئيسي + وحدة القياس */}
+                <div className="ls-rate-metric" data-rate-metric>
                   {rateValue !== null ? (
                     <strong className="ls-rate-value" data-rate-value>
                       <bdi dir="ltr">{rateValue.toFixed(2)}</bdi>
@@ -414,7 +496,9 @@ export default function StandingsRatesCard({
                 )}
               </div>
 
-              {rateValue !== null && domainMax !== null && domainMax > 0 && (
+              {/* المتن السفلي الأبيض — صفوف باستيلية بروح .result-option */}
+              <div className="ls-rate-card-body">
+                {rateValue !== null && domainMax !== null && domainMax > 0 && (
                 <div className="ls-rate-bench" data-rate-bench>
                   <div className="ls-rate-bench-track">
                     <span className="ls-rate-bench-fill" style={{ width: `${benchPct(rateValue, domainMax)}%` }} data-rate-bench-fill />
@@ -477,6 +561,7 @@ export default function StandingsRatesCard({
                   غير متاح
                 </p>
               )}
+              </div>
             </article>
           );
         })}

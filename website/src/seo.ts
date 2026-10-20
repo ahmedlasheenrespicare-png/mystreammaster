@@ -21,6 +21,7 @@ import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { allMatchesVerified, matchByRoute } from "./content/match-center.mjs";
 import { dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
+import { keywordsFor } from "./keywords.mjs";
 
 export interface SeoMeta {
   title: string;
@@ -41,6 +42,10 @@ export interface SeoMeta {
    * القيمة العامة هنا، بل تُقرأ من القالب نفسه حتى لا يتباعد تعريفان لها.
    */
   themeColor?: string;
+  /** الكلمة التي تملكها الصفحة. null = صفحة لا تستهدف كلمة (قانونية/وظيفية) */
+  primaryKeyword?: string | null;
+  secondaryKeywords?: string[];
+  intent?: "transactional" | "comparison" | "informational" | "editorial" | "legal" | "navigational";
 }
 
 const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
@@ -281,8 +286,14 @@ export function getSeo(path: string): SeoMeta {
   /* النسخة الإنجليزية (الصفحات التجارية فقط): لغة الصفحة وروابط hreflang
      تُحسب من المسار وحده، فتتوارثها كل الفروع التي تنتشر من base */
   const pair = LOCALE_PAIRS.find((p) => p.ar === clean || p.en === clean);
+  /* الكلمة والقصد من خريطة keywords.mjs الموحَّدة — بيانات وصفية داخلية فقط،
+     لا تُطبَع في HTML ولا تضيف أي وسم. المسارات غير المعلَّنة ترث null/navigational. */
+  const kw = keywordsFor(clean);
   const base: SeoMeta = {
     lang: clean === "/en" || clean.startsWith("/en/") ? "en" : "ar",
+    primaryKeyword: kw.primary,
+    secondaryKeywords: kw.secondary ?? [],
+    intent: kw.intent,
     ...(pair
       ? {
           alternates: [
@@ -312,6 +323,10 @@ export function getSeo(path: string): SeoMeta {
         "راجع الباقات المختارة في سلة المشتريات وأكمل طلب التفعيل والربط التقني مع فريق ستريم ماستر برو عبر واتساب.",
       canonical: absolute("cart"),
       robots: "noindex, follow",
+      /* صفحة وظيفية لا تستهدف كلمة — إعلان صريح لا مجرد غياب حقل */
+      primaryKeyword: null,
+      secondaryKeywords: [],
+      intent: "navigational",
       jsonLd: [],
     };
   }

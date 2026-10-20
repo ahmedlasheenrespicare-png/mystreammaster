@@ -45,6 +45,14 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {leagueId === 'eng.1' && (
         <img className="league-ticket-player" src="/images/players/epl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       )}
+      {/* الدوري الإسباني: الكلاسيكو على تذكرة واحدة — مبابي يمين
+          التذكرة ويامال يسارها، بنفس الصفة الزخرفية وطريقة الدمج */}
+      {leagueId === 'esp.1' && (
+        <>
+          <img className="league-ticket-player league-ticket-player--right" src="/images/players/esp-mbappe.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+          <img className="league-ticket-player league-ticket-player--left" src="/images/players/esp-yamal.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        </>
+      )}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
       </div>

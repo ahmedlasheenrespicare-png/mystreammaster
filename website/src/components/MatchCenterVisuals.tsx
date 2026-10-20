@@ -78,10 +78,13 @@ function LineupPlayer({ player, matchId, tools, onHover }: {
   );
 }
 
-function PitchLineups({ match, snapshot, tools }: {
-  match: MatchDefinition; snapshot: MatchSnapshot | null; tools?: MatchCenterTools;
+function PitchLineups({ match, snapshot, sides, tools }: {
+  match: MatchDefinition; snapshot: MatchSnapshot | null;
+  /** التشكيلات القابلة للرسم — تُحسب في الأب مرة واحدة، فما يقود رسم الملعب هو
+      نفسه بالضبط ما يُرسم هنا (لا حسابان يمكن أن يتباعدا). */
+  sides: ReturnType<typeof lineupPitchSides>;
+  tools?: MatchCenterTools;
 }) {
-  const sides = useMemo(() => lineupPitchSides({ match, snapshot }), [match, snapshot]);
   const [hovered, setHovered] = useState<MatchEvent | null>(null);
   useEffect(() => setHovered(null), [snapshot]);
   if (!sides.length) return null;
@@ -459,11 +462,19 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
      وتثبت بعد النهاية. الرابط ينقل إلى مجموعات المرحلة الحالية إن وُجدت. */
   const indexLinkPrefix = status?.phase === 'post' ? 'analysis' : status?.phase === 'live' ? 'live' : null;
 
-  /* رسم الملعب (العشب وخطوط المستطيل) ديكورٌ للتشكيلة وحدها: يُرسم فقط حين
-     تكون هناك تشكيلة مؤكدة قابلة للرسم على الملعب بالفعل (`lineupPitchSides`)،
-     وإلا بقي الإطار بطاقة داكنة بلا أرضية. الحساب هنا لا في CSS حتى يطابق ما
-     يراه الزائر ما يرسمه المكوّن نفسه. */
-  const lineupsOnPitch = useMemo(() => lineupPitchSides({ match, snapshot }).length > 0, [match, snapshot]);
+  /* أرضية الملعب (العشب وخطوط المستطيل) بشرطين معاً، والحساب هنا لا في CSS
+     حتى يطابق ما يراه الزائر ما يرسمه المكوّن نفسه:
+
+       ١) **قبل انطلاق المباراة وحدها.** بعد الصافرة (مباشر أو منتهية) لا عشب
+          إطلاقاً ولو وُجدت التشكيلة — الملعب هنا بطاقة بيانات لا ملعباً فارغاً.
+       ٢) **تشكيلتان قابلتان للعرض معاً.** فريق واحد لا يكفي: ملعبٌ نصفه لاعبون
+          ونصفه فراغ يوحي ببيانات ناقصة، وهو أسوأ من بطاقة بلا ملعب.
+
+     الحالة قبل أول قراءة (`status` غائبة أو `unknown`) تُعامل كما قبل المباراة،
+     كما في `previewPlacement`. */
+  const lineupSides = useMemo(() => lineupPitchSides({ match, snapshot }), [match, snapshot]);
+  const beforeKickoff = !status?.phase || status.phase === 'pre';
+  const lineupsOnPitch = beforeKickoff && lineupSides.length === 2;
   const progress = matchProgress(status, clock);
 
   return (
@@ -528,7 +539,7 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
         />
 
         <PitchEvents snapshot={snapshot} matchId={match.id} tools={tools} />
-        <PitchLineups match={match} snapshot={snapshot} tools={tools} />
+        <PitchLineups match={match} snapshot={snapshot} sides={lineupSides} tools={tools} />
         <PitchPreview match={match} snapshot={snapshot} status={status} />
       </div>
 

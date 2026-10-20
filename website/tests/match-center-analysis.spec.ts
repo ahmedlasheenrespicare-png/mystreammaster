@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { pitchLineupPayload } from './fixtures/pitch-lineups.mjs';
 
 /* ==========================================================================
    قسم «بعد المباراة»: الإحصائيات أولاً وبلا ملخصين — اختبار الواجهة
@@ -332,6 +333,46 @@ test.describe('printing', () => {
     expect(styles.tabs).toBe('none');
     expect(styles.mini).toBe('none');
   });
+});
+
+/* بلا تشكيلة لا أرضية ملعب: لا `--lineups` ولا خطوط مستطيل، في أي حالة
+   (قبل، أثناء، بعد). اللقطة الافتراضية لهذا الملف لا تحمل تشكيلة. */
+test.describe('the pitch field is drawn only with a confirmed lineup', () => {
+  for (const phase of ['pre', 'live', 'post', 'terminal']) {
+    test(`no field without a lineup (${phase})`, async ({ page }) => {
+      const names = { pre: 'STATUS_SCHEDULED', live: 'STATUS_SECOND_HALF', post: 'STATUS_FULL_TIME', terminal: 'STATUS_CANCELED' };
+      await openMatchCenter(page, {
+        overrides: {
+          events: EVENTS,
+          score: null,
+          status: { type: { name: names[phase], state: phase === 'live' ? 'in' : phase, completed: phase === 'post' } },
+        },
+      });
+      await expect(page.locator('.mc-pitch-frame')).not.toHaveClass(/mc-pitch-frame--lineups/);
+      await expect(page.locator('.mc-pitch-markings')).toHaveCount(0);
+      await expect(page.locator('.mc-pitch-lineups')).toHaveCount(0);
+    });
+  }
+
+  /* ولو وصلت التشكيلة كاملة أثناء المباراة أو بعدها: تُعرض التشكيلة، ولا يُرسم
+     عشب ولا خطوط. الأرضية للفترة السابقة للصافرة وحدها. */
+  for (const phase of ['live', 'post']) {
+    test(`lineups arrive ${phase}: the lineups show, the field stays off`, async ({ page }) => {
+      const lineups = pitchLineupPayload().lineups;
+      await openMatchCenter(page, {
+        overrides: {
+          lineups,
+          events: EVENTS,
+          status: phase === 'live'
+            ? { type: { name: 'STATUS_SECOND_HALF', state: 'in', completed: false }, displayClock: "67'" }
+            : { type: { name: 'STATUS_FULL_TIME', state: 'post', completed: true }, displayClock: "90'" },
+        },
+      });
+      await expect(page.locator('.mc-pitch-frame .mc-pitch-lineups')).toBeVisible();
+      await expect(page.locator('.mc-pitch-frame')).not.toHaveClass(/mc-pitch-frame--lineups/);
+      await expect(page.locator('.mc-pitch-markings')).toHaveCount(0);
+    });
+  }
 });
 
 test.describe('layout at every accepted width', () => {

@@ -45,6 +45,19 @@ async function mockSource(page: Page, options: { fail?: boolean; partial?: boole
   return { get calls() { return calls; }, setScore: (next: number) => { score = next; }, setFailure: (next: boolean, nextCode = code) => { fail = next; code = nextCode; } };
 }
 
+test('matches hub carries the all-leagues ticket above the calendar', async ({ page }) => {
+  await mockSource(page);
+  await page.goto('/matches/');
+  /* التذكرة الجامعة: نفس تصميم تذكرة البطولة — زخرفية وصفّ أيقونات
+     البطولات الثماني والنص المناسب، وفوقها عنوان الصفحة الظاهر */
+  const ticket = page.locator('.matches-hero-ticket .league-ticket');
+  await expect(ticket).toHaveCount(1);
+  await expect(ticket).toHaveAttribute('aria-hidden', 'true');
+  await expect(page.locator('.leagues-ticket-icons .league-carousel-badge')).toHaveCount(8);
+  await expect(ticket.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');
+  await expect(page.locator('h1#matches-title')).toHaveCount(1);
+});
+
 test('calendar has 15 actual dates, localized times, midnight boundaries, filters and persistent zone', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));

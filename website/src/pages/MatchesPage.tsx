@@ -3,6 +3,7 @@ import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeD
 import { matchByExternalId, matchCenterPath } from '../content/match-center.mjs';
 import { leagueLandingsInPageOrder } from '../content/competitions';
 import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
+import AllLeaguesTicket from '../components/AllLeaguesTicket';
 import LeagueStatsCarousel from '../components/LeagueStatsCarousel';
 import { to } from '../config';
 import './matches.css';
@@ -150,6 +151,11 @@ export default function MatchesPage() {
       <header className="matches-hero">
         <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>
+
+      {/* التذكرة الجامعة — كل أيقونات البطولات بنفس تصميم تذكرة البطولة */}
+      <div className="matches-hero-ticket">
+        <AllLeaguesTicket />
+      </div>
 
       {/* القائمة تُبنى من مصدر واحد (LEAGUE_PAGE_ORDER) فلا تنشأ قائمة ثانية
           تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا. */}

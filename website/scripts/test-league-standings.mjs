@@ -167,6 +167,20 @@ test('HTML المنشور: الجدول كامل بلا JavaScript، والحا�
     assert.equal(section.find('[data-standings-badge]').attr('hidden') !== undefined, true, `${file}: الوسم ظاهر في اللقطة الثابتة`);
     /* لا نصوص تشخيص داخلية ولا أسماء مزوّدين خارج المصدر المعلن في الصفحة */
     assert.equal(/UPSTREAM_|SchemaChanged/.test(section.text()), false, `${file}: نص تشخيص داخلي ظاهر`);
+
+    /* أيقونة بجانب اسم كل فريق من مضيف مزوّد المباريات نفسه (leader-logo.mjs):
+       ESPN لبطولاته، وHighlightly للدوري المصري — بعدد الفرق كاملاً */
+    const crestSource = league === 'egy.1' ? 'highlightly' : 'espn';
+    assert.equal(
+      section.find(`th.ls-team img[data-crest-source="${crestSource}"]`).length,
+      count,
+      `${file}: أيقونات الفرق (${crestSource}) في جدول الترتيب ناقصة`,
+    );
+    assert.equal(
+      section.find('th.ls-team .ls-team-cell').length,
+      count,
+      `${file}: خلايا الفريق المركّبة (أيقونة + اسم) ناقصة`,
+    );
   }
   /* المصري أُهِّل بمسبار 2026-10-17 لدى Highlightly (leagueId=199067،
      عشرون فريقاً) — والحقل الذي يعرض «غير متاح» يبقى قائماً في المصدر

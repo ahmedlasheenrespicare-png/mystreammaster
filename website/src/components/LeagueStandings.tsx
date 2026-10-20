@@ -1,7 +1,8 @@
 import { cleanTeamName } from '../lib/fixtures-archive.mjs';
+import { providerTeamLogo } from '../lib/leader-logo.mjs';
 import { useEffect, useRef, useState } from 'react';
 import snapshot from '../content/standings-snapshot.json';
-import StandingsRatesCard from './StandingsRatesCard';
+import StandingsRatesCard, { resolveApprovedTeamLogo } from './StandingsRatesCard';
 import {
   STALE_BADGE_TEXT,
   STANDINGS_HEADINGS,
@@ -33,6 +34,50 @@ import type { StandingsTable } from '../lib/standings.mjs';
 const REFRESH_MS = 60_000;
 const ABORT_MS = 12_000;
 const CACHE_STALE_HEADER = 'X-Standings-Cache';
+
+/* أيقونة الفريق بجانب الاسم في جدول الترتيب — من مضيف مزوّد الترتيب/المباريات
+   نفسه عبر الجسر الموحّد leader-logo.mjs (ESPN لبطولاته، Highlightly للمصري)،
+   وهو المصدر ذاته الذي تعرضه به بطاقات «مباريات اليوم». عند فشل تحميل صورة
+   المصدر يُجرَّب الشعار المحلي المعتمد، وإلا يبقى الاسم وحده (بلا نص بديل
+   داخل الخلية حفاظاً على عقد أسماء المصدر في الاختبارات). */
+function StandingsCrest({ teamId, provider, name }: { teamId: string; provider?: string; name: string }) {
+  const [providerFailed, setProviderFailed] = useState(false);
+  const providerLogo = providerFailed ? null : providerTeamLogo({ teamId, provider });
+  if (providerLogo) {
+    return (
+      <img
+        className="ls-team-crest"
+        src={providerLogo}
+        alt=""
+        aria-hidden="true"
+        width={20}
+        height={20}
+        loading="lazy"
+        decoding="async"
+        data-crest-source={providerLogo.includes('highlightly.net') ? 'highlightly' : 'espn'}
+        onError={() => setProviderFailed(true)}
+      />
+    );
+  }
+  const localLogo = resolveApprovedTeamLogo({ name });
+  if (localLogo) {
+    return (
+      <img
+        className="ls-team-crest"
+        src={localLogo}
+        alt=""
+        aria-hidden="true"
+        width={20}
+        height={20}
+        loading="lazy"
+        onError={e => {
+          e.currentTarget.style.visibility = 'hidden';
+        }}
+      />
+    );
+  }
+  return null;
+}
 
 function readCode(body: unknown, status: number): string {
   const code = (body as { code?: unknown } | null)?.code;
@@ -218,7 +263,12 @@ export default function LeagueStandings({ league, title }: { league: string; tit
               {data.entries.map((row) => (
                 <tr key={row.teamId}>
                   <td className="ls-rank"><bdi dir="ltr">{row.rank}</bdi></td>
-                  <th scope="row" className="ls-team"><bdi dir="auto">{cleanTeamName(row.name)}</bdi></th>
+                  <th scope="row" className="ls-team">
+                    <span className="ls-team-cell">
+                      <StandingsCrest teamId={row.teamId} provider={data.provider} name={row.name} />
+                      <bdi dir="auto">{cleanTeamName(row.name)}</bdi>
+                    </span>
+                  </th>
                   {STANDINGS_FIELDS.map((field) => (
                     <td key={field} className={field === 'points' ? 'ls-points' : undefined}>
                       <bdi dir="ltr">{standingsNumber(row[field], field)}</bdi>

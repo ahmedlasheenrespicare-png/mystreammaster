@@ -337,6 +337,29 @@
   text-align: start;
 }
 
+/* خلية الفريق: الأيقونة (من مضيف مزوّد المباريات نفسه عبر leader-logo.mjs)
+   بجانب الاسم — flex داخلي يبقي الصورة والنص متجاورين بلا كسر */
+.ls-team-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ls-team-crest {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* عند تعذّر أي شعار (شبكة معزولة أو خطأ مصدر): يختفي بصرياً ويبقى الاسم
+   وحده دون إزاحة السطر — نفس سلوك بطاقات «مباريات اليوم» */
+.ls-team-crest[style*='visibility: hidden'],
+.ls-team-crest[style*='visibility:hidden'] {
+  display: none;
+}
+
 .ls-table tbody th {
   font-weight: 700;
   max-width: 220px;

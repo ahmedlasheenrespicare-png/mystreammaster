@@ -60,9 +60,13 @@ test('every league landing hero carries its ticket card with the badge beside th
     /* كرت التذكرة (uiverse moody-owl-18 — MIT، مكيَّف للبطولة بهوية
        الموقع): زخرفي بالكامل، بلوحه الداكن ونقطة ضوئه وشعاعه المائل
        وخطوطه الزخرفية المتقاطعة الأربعة */
-    const ticket = title.find('.league-ticket');
+    /* تذكرة البطولة وحدها — شريحة «مواجهة الليلة» في منصة المنزلقتين
+       تحمل صنف الأساس نفسه فتُستثنى من العدّ */
+    const ticket = title.find('.league-ticket:not(.league-ticket--match)');
     assert.equal(ticket.length, 1, `${slug}: تذكرة واحدة في الرأس`);
-    assert.equal(ticket.attr('aria-hidden'), 'true', `${slug}: التذكرة زخرفية`);
+    /* الزخرفية: على التذكرة ذاتها (البنية المباشرة) أو على مسارة
+       المنزلقتين المحيط (وراثة كاملة للصفة) */
+    assert.equal(ticket.closest('[aria-hidden="true"]').length, 1, `${slug}: التذكرة زخرفية`);
     assert.equal(ticket.find('.league-ticket-bg.league-ticket-holographic').length, 1, `${slug}: لوح التذكرة الداكن`);
     assert.equal(ticket.find('.league-ticket-symbol').length, 1, `${slug}: نقطة الضوء على الحافة`);
     assert.equal(ticket.find('.league-ticket-ray').length, 1, `${slug}: الشعاع الضوئي المموّه`);

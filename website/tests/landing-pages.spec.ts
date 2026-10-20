@@ -229,10 +229,18 @@ test('league landing heroes carry the ticket card with the league icon beside th
   await mockSource(page, {});
   for (const [url, icon] of HERO_ICONS) {
     await page.goto(url);
-    /* التذكرة عنصر واحد زخرفي بالكامل — اسم البطولة مكتوب في h1 بجانبها */
-    const ticket = page.locator('.matches-hero-title .league-ticket');
+    /* تذكرة البطولة عنصر واحد زخرفي بالكامل — اسم البطولة مكتوب في h1
+       بجانبها. منصة المنزلقتين (بنية الكلاسيكو المعمّمة) تضيف شريحة
+       «مواجهة الليلة» بنفس صنف الأساس داخل المسار نفسه، فنستثنيها من
+       عدّ تذكرة البطولة ببادئة league-ticket--match */
+    const ticket = page.locator('.matches-hero-title .league-ticket:not(.league-ticket--match)');
     await expect(ticket, url).toHaveCount(1);
-    await expect(ticket, url).toHaveAttribute('aria-hidden', 'true');
+    /* الزخرفية في البنيتين: التذكرة المباشرة تحمل aria-hidden ذاتها،
+       وفي منصة المنزلقتين تحمِلها المسارة المحيطة (وراثة كاملة) */
+    await expect(
+      page.locator('.matches-hero-title .league-ticket[aria-hidden="true"], .matches-hero-title .league-ticket-track[aria-hidden="true"]'),
+      url,
+    ).toHaveCount(1);
     /* عناصر شكل التذكرة: اللوح الداكن بنقطة الضوء والشعاع (بلا باركود ولا رمز تقني) */
     await expect(ticket.locator('.league-ticket-bg.league-ticket-holographic'), url).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-symbol'), url).toHaveCount(1);

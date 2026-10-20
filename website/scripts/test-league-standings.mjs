@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { load } from 'cheerio';
+import { isApprovedCrestUrl } from '../src/lib/leader-logo.mjs';
 
 /* ==========================================================================
    اختبار عقد «جدول الترتيب» في صفحات هبوط البطولات
@@ -374,7 +375,12 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(card.find('[data-rate-bench-avg]').length, 4, `${file}: علامات متوسط الدوري ناقصة`);
     assert.equal(card.find('[data-rate-sample]').length, 4, `${file}: مقاييس العينة (الأهداف/المباريات) ناقصة`);
     assert.equal(card.find('[data-rate-sort]').length, 9, `${file}: أزرار فرز أعمدة الجدول التحليلي ناقصة`);
-    assert.equal(card.find('[data-rate-crest]').length > 0, true, `${file}: شعارات الفرق/المونوغرامات مفقودة`);
+    /* كل شارة فريق تحمل علامة بصرية: شعار محلي معتمد أو شعار مزوّد الترتيب
+       (نفس مصدر بطاقات المباريات الحيّة) أو درع مونوغرام كاحتياط أخير */
+    card.find('[data-rate-team]').each((_, teamEl) => {
+      const hasMark = $(teamEl).find('img').length > 0 || $(teamEl).find('[data-rate-crest]').length > 0;
+      assert.equal(hasMark, true, `${file}: شارة فريق بلا علامة بصرية`);
+    });
     assert.equal(card.find('[data-rate-team-rank]').length > 0, true, `${file}: مراكز الفرق داخل الشارات مفقودة`);
     assert.equal(card.find('[data-rate-team-goals]').length > 0, true, `${file}: إجمالي الأهداف داخل الشارات مفقودة`);
     assert.equal(card.find('[data-rate-team-mp]').length > 0, true, `${file}: عدد المباريات داخل الشارات مفقودة`);
@@ -402,10 +408,11 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(details.find('tr[data-rate-row]').length, count, `${file}: صفوف جدول المعدلات لا تطابق عدد فرق البطولة`);
     assert.equal(details.find('[data-rate-tactic]').length, count, `${file}: التصنيف التكتيكي لكل فريق مفقود`);
 
-    // الشعارات المعتمدة محلياً فقط، ولا أي طلب خارجي لصورة شعار
+    // الشعارات: محلي معتمد أو من مضيف مزوّد الترتيب المعتمد (ESPN/Highlightly) لا غير
     card.find('img').each((_, img) => {
       const src = $(img).attr('src') || '';
-      assert.match(src, /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/, `${file}: مسار شعار غير محلي: ${src}`);
+      const isLocal = /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/.test(src);
+      assert.ok(isLocal || isApprovedCrestUrl(src), `${file}: مصدر شعار غير معتمد: ${src}`);
     });
   }
 
@@ -419,6 +426,20 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     $eng('[data-standings-rates="eng.1"] [data-rate-card="best-defence"] img[src="/images/teams/manchester-city-club-badge.webp"]').length,
     1,
     'شعار Manchester City المحلي المعتمد غير معروض في البطاقة الفرعية',
+  );
+  /* شعارات الفرق بلا شعار محلي تُجلب من مضيف ESPN نفسه (مصدر مواعيد المباريات
+     وبطاقاتها الحيّة) — مثل Tottenham في تصنيف أضعف هجوم */
+  assert.equal(
+    $eng('[data-standings-rates="eng.1"] img[data-crest-source="espn"]').length > 0,
+    true,
+    'شعارات ESPN (نفس مصدر المباريات) غير ظاهرة في بطاقة المعدلات',
+  );
+  /* الدوري المصري مزوّده Highlightly — فتُجلب شعارات فرقه من مضيفه المعتمد ذاته */
+  const $egy = load(await readRoot('matches/الدوري-المصري/index.html'));
+  assert.equal(
+    $egy('[data-standings-rates="egy.1"] img[data-crest-source="highlightly"]').length > 0,
+    true,
+    'شعارات Highlightly (نفس مصدر مباريات الدوري المصري) غير ظاهرة في بطاقة المعدلات',
   );
 
   for (const rel of ['src/components/StandingsRatesCard.tsx', 'src/components/LeagueStandings.tsx']) {

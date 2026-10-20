@@ -593,8 +593,6 @@
     .mc-panel { padding: 0; border: 0; background: none; }
     .mc-pitch-frame { min-height: 0; padding: 10px; border: 1px solid #c9ced8; background: #f3f5f8; box-shadow: none; color: #101218; }
     .mc-indexboard.mc-pitch-index { background: #fff !important; border-color: #c9ced8 !important; }
-    /* زخارف الشاشة (هالتا الطرفين) لا تُطبع. */
-    .mc-indexboard::before, .mc-indexboard::after { display: none !important; }
     .mc-pitch-team, .mc-pitch-scoreboard { border-color: #c9ced8; background: #fff; }
     .mc-pitch-team-name, .mc-pitch-score, .mc-pitch-status, .mc-pitch-competition { color: #101218; }
     .mc-pitch-status { border-color: #c9ced8; }
@@ -748,29 +746,18 @@
   gap: 10px;
   min-width: 0;
   padding: 12px;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 22px;
+  /* هالتا الطرفين طبقتا خلفية لا عنصران مطلقان: العنصر المطلق خارج الحدود
+     يُحتسب محتوىً قابلاً للتمرير في `scrollWidth` (فسقط اختبار التجاوز عند
+     320px)، أما طبقة الخلفية فلا تُضيف امتداداً. */
   background:
+    radial-gradient(circle at 108% -18%, rgba(0, 202, 255, .26), transparent 42%),
+    radial-gradient(circle at -12% 118%, rgba(204, 157, 0, .22), transparent 44%),
     radial-gradient(120% 90% at 50% -25%, rgba(124, 92, 255, .18), transparent 58%),
     linear-gradient(180deg, #1b1d24, #12141a 72%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 20px 44px -36px rgba(0, 0, 0, .95);
 }
-/* زخرفة فقط: هالتان بلوني الطرفين، بلا نص وبلا بيانات. */
-.mc-indexboard::before,
-.mc-indexboard::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  width: 190px;
-  height: 190px;
-  border-radius: 50%;
-  filter: blur(46px);
-  opacity: .5;
-  pointer-events: none;
-}
-.mc-indexboard::before { inset-block-start: -90px; inset-inline-end: -60px; background: radial-gradient(circle, rgba(0, 202, 255, .30), transparent 68%); }
-.mc-indexboard::after { inset-block-end: -110px; inset-inline-start: -70px; background: radial-gradient(circle, rgba(204, 157, 0, .26), transparent 68%); }
 /* صف كامل تحت بطاقتي الفريقين، مشتق من لقطة القراءة نفسها. */
 .mc-indexboard.mc-pitch-index { grid-column: 1 / -1; z-index: 1; border-color: rgba(255, 255, 255, .12); }
 .mc-indexboard-rows {
@@ -1067,6 +1054,8 @@
 .mc-pitch-frame--lineups .mc-indexboard.mc-pitch-index {
   border-color: rgba(218, 255, 221, .30);
   background:
+    radial-gradient(circle at 108% -18%, rgba(0, 202, 255, .18), transparent 42%),
+    radial-gradient(circle at -12% 118%, rgba(204, 157, 0, .16), transparent 44%),
     radial-gradient(120% 90% at 50% -25%, rgba(216, 255, 62, .12), transparent 58%),
     linear-gradient(180deg, #14402e, #0b2419 72%);
 }

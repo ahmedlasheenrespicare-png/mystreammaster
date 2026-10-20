@@ -89,7 +89,13 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {/* الدوري الإيطالي: لاوتارو مارتينيز يسار التذكرة (موضع فيزيائي
           صريح) — بنفس الصفة الزخرفية وطريقة الدمج */}
       {leagueId === 'ita.1' && (
-        <img className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        <>
+          {/* ديبالا يمين التذكرة (موضع فيزيائي صريح) — ثنائي مع لاوتارو
+              يساراً بنمط الثنائيات السابقة (مبابي/يامال، رونالدو/ميسي،
+              هالاند/سوبسلاي، ديمبلي/غويري، كين/أوليسيه)، بنفس الصفة الزخرفية */}
+          <img className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+          <img className="league-ticket-player league-ticket-player--right" src="/images/players/ita-dybala.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        </>
       )}
       {/* الدوري المصري: إمام عاشور يسار التذكرة (موضع فيزيائي صريح) —
           بنفس الصفة الزخرفية وطريقة الدمج */}

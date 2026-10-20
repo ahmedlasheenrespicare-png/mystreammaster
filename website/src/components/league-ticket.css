@@ -2,235 +2,256 @@
    كرت «تذكرة المباراة» — رأس صفحات هبوط البطولات
    --------------------------------------------------------------------------
    • مقتبس من تصميم مجتمعي مفتوح:
-     https://uiverse.io/dexter-st/slippery-bird-76 — المؤلف dexter-st —
-     رخصة MIT (Uiverse.io). الشكل الأصلي تذكرة حفلة هولوغرافية (180×320):
-     حواف مثقّبة، شقّان جانبيان وخط قصّ ✁، تدرّج هولوغرافي متحرك، طفو، وباركود.
-   • التكييف لكرة القدم (بلا نوتات موسيقى ولا نصوص حفلات ولا باركود ولا
-     رموز تقنية): أيقونة البطولة (LeagueIconBadge — المصدر الواحد للشعار
-     وبديله) مكان عنوان TICKET، واسم البطولة ووصف الصفحة في المتن. والكرت
-     بعرض حاوية المحتوى كاملاً (100%) وارتفاع ثابت 265px ليلائم رأس الصفحة.
-   • الكرت زخرفي بالكامل (aria-hidden): اسم البطولة مكتوب في h1 المخفي بصرياً
-     (visually-hidden) داخل الرأس نفسه، وكل نص داخله معاد أو تقني — لا يُخفي
-     معلومة ولا يكرّرها لقارئ الشاشة.
-   • الحركة تفاعلية فقط (عند التحويم بالماوس أو الضغط بالإصبع) عبر transform/opacity
-     بلا أي حلقات دائمة في السكون، وتُعطَّل بالكامل لمن يفعّل تقليل الحركة.
-   • قيم التصميم الأصلية محفوظة ما أمكن: الثقب 12px، الشقّ 8px، خطوط القصّ
-     10/15/16/24px، بنية الطبقات الثلاث نفسها (مخروطي + وهج + لمعان متحرك)،
-     والظلال الخمس نفسها — والأسماء كلها ببادئة league-ticket حتى لا تصطدم
-     ببطاقات الموقع الأخرى.
-   • الألوان وحدها معاد ضبطها على هوية الموقع (Stream Master Pro) بدل فوشيا
-     القالب الموسيقي الفاقعة وسيانه (#ff6bfe / #00f9f8 / #01fefb / #f0f):
-     تدرّج فاتح كريمي–فضي مطعّم بلمسات خفيفة من الأزرق الملكي #2b4eff
-     والبنفسجي #7c5cff والليموني #d8ff3e والنعناعي #3effe0 فوق قاعدة كريمية
-     دافئة #f6f4ec — يلائم خلفية الصفحة الكريمية #faf9f6 وشارة الشعار
-     الكريمية، ويبقي نص المتن الداكن مقروءاً على المساحة العريضة (100%×265).
+     https://uiverse.io/Spacious74/moody-owl-18 — المؤلف Spacious74 —
+     رخصة MIT (Uiverse.io) — بكل تفاصيل القالب: خارج بحشو 1px وخلفية
+     تدرّج شعاعي من الزاوية العلوية يصنع إطاراً مضيئاً، لوح داكن بحواف
+     9px وحدّ داكن وتدرّج شعاعي 280px من الزاوية نفسها، نقطة ضوء 5px
+     متوهّجة على الحافة (مواضع القالب 10%/10% ومسار الدوران حول المحيط)،
+     شعاع ضوئي مموّه 220×45 ب blur(10px) مائل 40deg من الأعلى، خطوط
+     زخرفية أفقية/عمودية عند 10% بتدرّجات باهتة، ونص معدني بتدرّج
+     45deg مقصوص بـ background-clip: text.
+   • التكييف للبطولة: أيقونة البطولة (LeagueIconBadge — المصدر الواحد
+     للشعار وبديله) في الرأس، واسم البطولة هو النص المعدني، والسطران
+     التوضيحيان تحته — كل المحتوى محفوظ دون حذف. والكرت بعرض حاوية
+     الرأس كاملاً (100%) وارتفاع ثابت 265px كما كان — نفس الحجم.
+   • الكرت زخرفي بالكامل (aria-hidden): اسم البطولة في h1 المخفي بصرياً
+     بجانبه، وكل نص داخله معاد أو تقني — لا يُخفي معلومة ولا يكرّرها.
+   • الألوان معاد ضبطها على هوية الموقع (Stream Master Pro) بدل رمادية
+     القالب (#ffffff/#c7c7c7/#888 على #0c0d0d): توهّج ليموني #d8ff3e
+     للإطار والنقطة والشعاع فوق قاعدة الحبر #0b0b0f، والنص المعدني
+     كريمي #f6f4ec — يلائم خلفية الصفحة الكريمية وشارة الشعار الكريمية
+     التي تبرز على الداكن.
+   • الاختلاف المقصود الوحيد عن القالب: حلقة النقطة اللانهائية
+     (moveDot 6s linear infinite) ملغاة — النقطة ساكنة في السكون،
+     وتقطع محيط الكرت دورة واحدة عند التحويم/الضغط عبر transform
+     (top/right) بلا أي حلقة دائمة، وتُعطَّل الحركة كلياً داخل
+     @media (prefers-reduced-motion: reduce). بلا عرض ثابت: العرض 100%
+     دائماً، والمقاسات الداخلية بالنسبي.
 ========================================================================== */
 
 .league-ticket {
-  --width: 100%;
-  --height: 265px;
-  --perforation-size: 12px;
-  /* ارتفاع صف الأيقونة (12px حشو + 60px شارة + هامش) — يفصل القصّ الرأس عن المتن */
-  --cutouts-adjust: 78px;
-
+  /* الخارج — روح .outer: حشو 1px وخلفية شعاعية تصنع الإطار المضيء */
   position: relative;
   flex: 1 1 100%;
   min-width: 0;
+  width: 100%;
+  height: 265px;
+  padding: 1px;
+  border-radius: 10px;
+  background: radial-gradient(circle 230px at 0% 0%, #d8ff3e, #0b0b0f);
+
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: 1rem;
+  gap: 0.6rem;
   grid-template-areas:
     "header"
     "body";
 
-  width: var(--width);
-  height: var(--height);
-  padding: var(--perforation-size) 0;
-
-  font-size: .72rem;
+  color: #f6f4ec;
+  font-size: 0.78rem;
   line-height: 1.7;
-  color: #0b0b0f;
   user-select: none;
   overflow: hidden;
 
-  filter: drop-shadow(0 2px 1px #00000025) drop-shadow(0 4px 3px #00000025)
-    drop-shadow(0 10px 9px #00000025) drop-shadow(0 20px 20px #00000025)
-    drop-shadow(0 40px 40px #00000025);
-  transition: transform .35s ease-out;
+  box-shadow: 0 14px 34px rgba(11, 11, 15, 0.18);
+  transition: transform 0.35s ease-out;
 }
 
-.league-ticket-filter {
+/* --------------------------------------------------------------------------
+   اللوح — روح .card: داكن بتوهّج من الزاوية العلوية وحدّ داكن رفيع،
+   وعليه طبقات الزينة: الشعاع + اللمعان الزجاجي + الخطوط المتقاطعة
+   -------------------------------------------------------------------------- */
+.league-ticket-bg {
   position: absolute;
-  width: 0;
-  height: 0;
+  inset: 1px;
+  z-index: 0;
+  border-radius: 9px;
+  border: 1px solid #232327;
+  background: radial-gradient(circle 280px at 0% 0%, #2c2c33, #0b0b0f);
   overflow: hidden;
 }
 
-/* لوح التذكرة: كريمي دافئ مثقّب الحواف — القناع نفسه من التصميم الأصلي
-   (ثقب علوي/سفلي متكرر، شقّان دائريان عند خط القصّ، وشرطة قصّ متقطعة).
-   القاعدة #f6f4ec هي خامة شارة الشعار نفسها فتندمج الشارة مع اللوح */
-.league-ticket-bg {
+/* الشعاع الضوئي — روح .ray: شريط مموّه مائل 40deg من الزاوية العلوية
+   بلمعان ليموني من هوية الموقع (بدل الرمادي #c7c7c7) */
+.league-ticket-ray {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background-color: #f6f4ec;
-  filter: url(#league-ticket-bump);
-  mask:
-    /* top perforations */
-    radial-gradient(
-      circle at 50% 0,
-      #fff0 calc(var(--perforation-size) - 5px),
-      #000 calc(var(--perforation-size) - 4px)
-    ),
-    /* bottom perforations */
-      radial-gradient(
-        circle at 50% 100%,
-        #fff0 calc(var(--perforation-size) - 5px),
-        #000 calc(var(--perforation-size) - 4px)
-      ),
-    /* left notch */
-      radial-gradient(circle 8px at left center, #000 98%, #0000 100%),
-    /* right notch */
-      radial-gradient(circle 8px at right center, #000 98%, #0000 100%),
-    /* cut perforation */
-      repeating-linear-gradient(90deg, #000 10px, #000 15px, #0000 16px, #0000 24px);
-
-  mask-repeat: repeat-x, repeat-x, no-repeat, no-repeat, repeat-x;
-
-  mask-size:
-    calc(var(--perforation-size) * 2) 100%,
-    calc(var(--perforation-size) * 2) 100%,
-    16px 16px,
-    16px 16px,
-    10px 2px;
-
-  mask-position:
-    calc(0.5 * var(--perforation-size)) top,
-    calc(0.5 * var(--perforation-size)) bottom,
-    left var(--cutouts-adjust),
-    right var(--cutouts-adjust),
-    0 calc(var(--cutouts-adjust) + 7px);
-
-  mask-composite: intersect, exclude, add, add;
+  width: 220px;
+  height: 45px;
+  border-radius: 100px;
+  background-color: rgba(216, 255, 62, 0.75);
+  opacity: 0.32;
+  box-shadow: 0 0 50px rgba(216, 255, 62, 0.75);
+  filter: blur(10px);
+  transform-origin: 10%;
+  top: 0;
+  left: 0;
+  transform: rotate(40deg);
+  pointer-events: none;
 }
 
-/* التدرّج الهولوغرافي بطبقاته الثلاث (مخروطي + وهج + لمعان متحرك) — بنية
-   القالب الأصلي نفسها، بألوان هوية الموقع: قاعدة كريمية–فضية فاتحة مطعّمة
-   بلمسات الأزرق الملكي والبنفسجي والليموني والنعناعي بدل الفوشيا والسيان */
-.league-ticket-holographic {
-  background-image: linear-gradient(to bottom, #fff8, 90%, #0b0b0f0d),
-    conic-gradient(
-      at 60% 50%,
-      #e3e0d6,
-      #ded2ff,
-      #cbf2e6,
-      #efeee7,
-      #cfd9ff,
-      #e8ffbe,
-      #cfd9ff,
-      #ded2ff,
-      #0b0b0f14,
-      #cfd9ff,
-      #efeee7,
-      #cbf2e6,
-      #e3e0d6
-    );
-}
-/* وهج ناعم من ألوان الهوية بدل الفوشيا الحاد — مزج soft-light خفيف
-   يضيء الخامة المعدنية دون أن يحرقها كما كان يفعل color-burn */
-.league-ticket-holographic::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(circle at 70% 20%, rgba(43, 78, 255, .14), #0000),
-    repeating-radial-gradient(circle at 30% 80%, #faf9f6, rgba(216, 255, 62, .18) 48px, #f4f3ef 150px);
-  mix-blend-mode: soft-light;
-}
-/* لمعان الهولوغرافي (league-ticket-sheen): شريط إضاءة أبيض/ليموني شفاف ساكن
-   ومخفي خارج الرؤية افتراضياً، ويمر مرة واحدة عبر transform/opacity عند التفاعل */
+/* اللمعان الزجاجي — روح .card-1__holo::after في روح القالب: حدّ فاتح
+   شفاف ولمعان أبيض قطري ساكن (جزء من شكل القالب لا حركة) */
 .league-ticket-holographic::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, .55) 48%, rgba(216, 255, 62, .25) 54%, transparent 75%);
-  mix-blend-mode: overlay;
-
-  transform: translate3d(0, 55%, 0);
-  opacity: 0;
+  border: 1px solid rgba(250, 204, 21, 0.14);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012) 45%, rgba(0, 0, 0, 0));
+  opacity: 0.8;
+  pointer-events: none;
 }
 
-@keyframes league-ticket-sheen {
-  0%   { transform: translate3d(0, 55%, 0); opacity: 0; }
-  12%  { opacity: 1; }
-  88%  { opacity: 1; }
-  100% { transform: translate3d(0, -55%, 0); opacity: 0; }
+/* الخطوط الزخرفية المتقاطعة — روح .line/.topl/.bottoml/.leftl/.rightl:
+   أفقية وعمودية عند 10% بتدرّجات باهتة (لمسة ليمونية خفيفة على العلوية) */
+.league-ticket-line {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
 }
 
-/* الرأس: شارة أيقونة البطولة (مكوّن LeagueIconBadge نفسه — 60px) مكان كلمة
-   TICKET الأصلية، ومقصّ القصّ ✁ عند الطرف كما في التصميم */
+.league-ticket-line--top {
+  top: 10%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(216, 255, 62, 0.45) 30%, rgba(255, 255, 255, 0.06) 70%);
+}
+
+.league-ticket-line--bottom {
+  bottom: 10%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.league-ticket-line--left {
+  left: 10%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 30%, rgba(255, 255, 255, 0.05) 70%);
+}
+
+.league-ticket-line--right {
+  right: 10%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 30%, rgba(255, 255, 255, 0.04) 70%);
+}
+
+/* نقطة الضوء — روح .dot: 5px متوهّجة على الحافة (مواضع القالب 10%/10%)،
+   ساكنة في السكون، ودورة واحدة حول المحيط عند التفاعل فقط */
+.league-ticket-symbol {
+  position: absolute;
+  z-index: 2;
+  width: 5px;
+  aspect-ratio: 1;
+  background-color: #d8ff3e;
+  box-shadow: 0 0 10px rgba(216, 255, 62, 0.95);
+  border-radius: 100px;
+  top: 10%;
+  right: 10%;
+  pointer-events: none;
+}
+
+/* الرأس: شارة أيقونة البطولة (مكوّن LeagueIconBadge نفسه — 60px كريمية
+   تبرز على الداكن) في منتصف المساحة بين الخطين */
 .league-ticket-header {
   position: relative;
   grid-area: header;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 22px;
   margin: 0 8px;
   z-index: 1;
 }
 
-/* مقصّ القصّ: حبر داكن شبه شفاف — يُرى بنعومة فوق الخلفية الفاتحة الجديدة
-   (الأبيض القديم كان يختفي عليها) */
-.league-ticket-symbol {
-  position: absolute;
-  top: 1.3em;
-  right: 0px;
-  rotate: 185deg;
-  font-size: 1.1em;
-  color: #0b0b0f;
-  line-height: .5;
-  opacity: .28;
-}
-
-/* نص المتن: تباين عالٍ فوق الخامة الفاتحة — اسم البطولة بالحبر الداكن
-   #0b0b0f والسطران التوضيحيان بلون داكن مقروء #27272a */
+/* نص المتن: الاسم المعدني الكبير + السطران التوضيحيان بلون فاتح مقروء */
 .league-ticket-body {
   grid-area: body;
-  /* يتمركز عمودياً في ما تبقّى من اللوح (لا تذييل بعد حذف الباركود والرمز) */
   align-self: center;
   margin: 0 1em;
-  padding: .5em;
+  padding: 0.5em;
   font-weight: 600;
-  color: #27272a;
+  color: #b9b9c3;
   text-align: center;
   z-index: 1;
 }
+
+/* اسم البطولة — روح .text: تدرّج معدني 45deg مقصوص بالنص (داكن ← فاتح
+   ← داكن) بخط عناوين الموقع، بنفس روح القالب وبحجم يلائم العرض الكامل */
 .league-ticket-body em {
   display: block;
   font-style: normal;
-  font-weight: 800;
-  font-size: .9rem;
-  color: #0b0b0f;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+  line-height: 1.35;
+  letter-spacing: 0.3px;
+  background: linear-gradient(45deg, #0b0b0f 4%, #f6f4ec 50%, #0b0b0f 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   overflow-wrap: anywhere;
 }
 
-/* الحركة عند اللمس فقط: الماوس يرفع الكرت ويمرر لمعة واحدة عند التحويم،
-   واللمس بالإصبع يحركه أثناء الضغط وحده — بلا أي حلقة تعمل من تلقاء نفسها */
-@media (hover: hover) and (pointer: fine) {
-  .league-ticket:hover { transform: translateY(-6px) scale(1.01); }
-  .league-ticket:hover .league-ticket-holographic::after {
-    animation: league-ticket-sheen 1.1s ease-in-out 1;
+/* دورة النقطة حول المحيط — مسار القالب moveDot نفسه (أركان 10%/10%)،
+   تُشغَّل مرة واحدة عند التفاعل فقط عبر animation-iteration-count: 1 */
+@keyframes league-ticket-dot-tour {
+  0%,
+  100% {
+    top: 10%;
+    right: 10%;
   }
-}
-@media (hover: none) {
-  .league-ticket:active { transform: translateY(-4px) scale(1.005); }
-  .league-ticket:active .league-ticket-holographic::after {
-    animation: league-ticket-sheen 1.1s ease-in-out 1;
+
+  25% {
+    top: 10%;
+    right: calc(100% - 35px);
+  }
+
+  50% {
+    top: calc(100% - 30px);
+    right: calc(100% - 35px);
+  }
+
+  75% {
+    top: calc(100% - 30px);
+    right: 10%;
   }
 }
 
-/* احترام «تقليل الحركة»: التذكرة تبقى بشكلها وألوانها بلا أي حركة أو انتقال */
+/* الحركة عند التفاعل فقط: الماوس يرفع الكرت وتقطع النقطة المحيط دورة
+   واحدة ويزيد توهّج الشعاع، واللمس يحرك أثناء الضغط وحده — بلا أي حلقة
+   تعمل من تلقاء نفسها */
+@media (hover: hover) and (pointer: fine) {
+  .league-ticket:hover {
+    transform: translateY(-6px) scale(1.01);
+  }
+
+  .league-ticket:hover .league-ticket-symbol {
+    animation: league-ticket-dot-tour 3.4s ease-in-out 1;
+  }
+
+  .league-ticket:hover .league-ticket-ray {
+    opacity: 0.5;
+    transition: opacity 0.5s ease-out;
+  }
+}
+
+@media (hover: none) {
+  .league-ticket:active {
+    transform: translateY(-4px) scale(1.005);
+  }
+
+  .league-ticket:active .league-ticket-symbol {
+    animation: league-ticket-dot-tour 3.4s ease-in-out 1;
+  }
+}
+
+/* احترام «تقليل الحركة»: التذكرة تبقى بشكلها الثابت بلا أي حركة أو انتقال */
 @media (prefers-reduced-motion: reduce) {
   .league-ticket,
   .league-ticket:hover,
@@ -239,11 +260,18 @@
     transition: none;
     transform: none;
     will-change: auto;
-    filter: drop-shadow(0 4px 8px #00000025);
   }
-  .league-ticket-holographic::after,
-  .league-ticket:hover .league-ticket-holographic::after,
-  .league-ticket:active .league-ticket-holographic::after {
+
+  .league-ticket-symbol,
+  .league-ticket:hover .league-ticket-symbol,
+  .league-ticket:active .league-ticket-symbol {
     animation: none;
+    top: 10%;
+    right: 10%;
+  }
+
+  .league-ticket-ray {
+    opacity: 0.32;
+    transition: none;
   }
 }

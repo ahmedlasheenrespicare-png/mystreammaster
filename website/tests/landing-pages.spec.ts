@@ -146,7 +146,7 @@ test('league landing heroes carry the ticket card with the league icon beside th
     const ticket = page.locator('.matches-hero-title .league-ticket');
     await expect(ticket, url).toHaveCount(1);
     await expect(ticket, url).toHaveAttribute('aria-hidden', 'true');
-    /* عناصر شكل التذكرة: اللوح الهولوغرافي ومقصّ القصّ (بلا باركود ولا رمز تقني) */
+    /* عناصر شكل التذكرة: اللوح الداكن بنقطة الضوء والشعاع (بلا باركود ولا رمز تقني) */
     await expect(ticket.locator('.league-ticket-bg.league-ticket-holographic'), url).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-symbol'), url).toHaveCount(1);
     /* الكرت يملأ عرض حاوية الرأس كاملاً (تفاوت ≤1px) وبارتفاع ثابت صريح (265px) */

@@ -2,27 +2,41 @@ import LeagueIconBadge from "./LeagueIconBadge";
 import "./league-ticket.css";
 
 /* ==========================================================================
-   كرت «تذكرة المباراة» — أيقونة البطولة داخل تذكرة هولوغرافية
+   كرت «تذكرة المباراة» — رأس صفحات هبوط البطولات
    --------------------------------------------------------------------------
-   • التصميم مقتبس من https://uiverse.io/dexter-st/slippery-bird-76
-     (المؤلف dexter-st — رخصة MIT من Uiverse.io)، ومکیّف لكرة القدم
-     ومصغَّر عن مقاسه الأصلي: أيقونة البطولة مكان عنوان TICKET، واسم
-     البطولة ووصف الصفحة في المتن — بلا نوتات موسيقى ولا نصوص حفلات ولا
-     باركود ولا رموز تقنية (leagueId يُستخدم داخلياً لحلّ الشعار فقط).
-     التفاصيل في league-ticket.css.
-   • الأيقونة هي مكوّن LeagueIconBadge نفسه (المصدر الواحد للشعار وبديله):
-     البطولة بلا شعار موثّق — كالدوري المصري — يعرض كأس البديل المحايد،
-     وتعذّر التحميل يُخفي الصورة ويبقى البديل. ولا تُنسخ الشارة ولا تُثنّى.
-   • الكرت كله زخرفي (aria-hidden): اسم البطولة في h1 بجانبه، فلا يتكرر
-     النص لقارئ الشاشة، ولا تُخفى عنه معلومة — كل محتوى الكرت شكلي.
+   • التصميم مقتبس من https://uiverse.io/Spacious74/moody-owl-18
+     (المؤلف Spacious74 — رخصة MIT من Uiverse.io) بكل تفاصيله: إطار مضيء
+     بتدرّج شعاعي من الزاوية العلوية (خارج بحشو 1px)، لوح داكن بتوهّج
+     علوي، نقطة ضوء متوهّجة على الحافة، شعاع ضوئي مموّه مائل 40deg،
+     خطوط زخرفية متقاطعة عند 10%، ونص معدني بتدرّج مقصوص.
+   • التكييف للبطولة: أيقونة البطولة (LeagueIconBadge — المصدر الواحد
+     للشعار وبديله) في الرأس، واسم البطولة (النص المعدني) والسطران
+     التوضيحيان في المتن — كل المحتوى السابق محفوظ دون حذف. البطولة بلا
+     شعار موثّق (كالمصري) تعرض كأس البديل المحايد، وتعذّر التحميل يُخفي
+     الصورة ويبقى البديل.
+   • الكرت زخرفي بالكامل (aria-hidden): اسم البطولة في h1 بجانبه، فلا
+     يتكرر النص لقارئ الشاشة ولا تُخفى عنه معلومة.
+   • الحلقة اللانهائية للنقطة في القالب (moveDot 6s infinite) أُلغيت
+     وفق سياسة الموقع: النقطة ساكنة متوهّجة في السكون، وتقطع محيط الكرت
+     دورة واحدة فقط عند التحويم/الضغط، وتُعطَّل الحركة كلياً لمن يفعّل
+     تقليل الحركة. التفاصيل في league-ticket.css.
 ========================================================================== */
 
 export default function LeagueTicketCard({ leagueId, name }: { leagueId: string; name: string }) {
   return (
     <div className="league-ticket" aria-hidden="true">
+      {/* لوح التذكرة الداكن + الشعاع الضوئي والخطوط الزخرفية المتقاطعة */}
+      <div className="league-ticket-bg league-ticket-holographic">
+        <span className="league-ticket-ray" />
+        <span className="league-ticket-line league-ticket-line--top" />
+        <span className="league-ticket-line league-ticket-line--bottom" />
+        <span className="league-ticket-line league-ticket-line--left" />
+        <span className="league-ticket-line league-ticket-line--right" />
+      </div>
+      {/* نقطة الضوء — عنصر «مقصّ القصّ» سابقاً؛ صارت نقطة القالب المتوهّجة */}
+      <span className="league-ticket-symbol" />
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
-        <div className="league-ticket-symbol">✁</div>
       </div>
       <div className="league-ticket-body">
         <em>{name}</em>
@@ -30,26 +44,6 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
         <br />
         يُحدَّث كل دقيقة
       </div>
-      <div className="league-ticket-bg league-ticket-holographic" />
-      {/* مرشّح النتوءات الأصلي (feTurbulence + إضاءة مرآة) — بمعرّف مسمّى
-          باسم الكرت حتى لا يصطدم بأي مرشّح SVG آخر في الصفحة */}
-      <svg className="league-ticket-filter" focusable="false">
-        <filter id="league-ticket-bump">
-          <feTurbulence result="noise" numOctaves={3} baseFrequency={0.7} type="fractalNoise" />
-          <feSpecularLighting
-            in="noise"
-            result="specular"
-            lightingColor="#fffffc"
-            specularExponent={25}
-            specularConstant={0.8}
-            surfaceScale={0.15}
-          >
-            <fePointLight z={210} y={100} x={100} />
-          </feSpecularLighting>
-          <feComposite result="noise2" operator="in" in="specular" in2="SourceGraphic" />
-          <feBlend mode="screen" in2="noise2" in="SourceGraphic" />
-        </filter>
-      </svg>
     </div>
   );
 }

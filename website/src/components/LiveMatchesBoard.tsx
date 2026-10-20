@@ -445,7 +445,10 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
         {groups.map(group => (
           <section key={group.id} className="match-league" aria-labelledby={`board-league-${group.id}`}>
             <header>
-              <h3 id={`board-league-${group.id}`}>{group.name}</h3>
+              {/* اسم البطولة فوق الشريط يُخفى بصرياً بطلب صريح (نمط race
+                  فقط) — يبقى في المحتوى لعنوان القسم aria-labelledby،
+                  بنفس أسلوب h1 الرأس المخفي */}
+              <h3 id={`board-league-${group.id}`} className={layout === 'race' ? 'visually-hidden' : undefined}>{group.name}</h3>
               <div className="match-league-meta">
                 <a href="/watch-legal.html" className="match-official-link" title="القنوات والمنصات الناقلة الرسمية">القنوات الناقلة الرسمية ↗</a>
                 <span>{group.matches.length} مباراة{failed.includes(group.id) ? ' · بيانات قديمة' : ''}</span>
@@ -463,13 +466,8 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
             </header>
             {layout === 'race' ? (
             <div className="match-race-shell">
-              {/* تجميع الساعة (uiverse calm-bobcat-35 مُدار 90°): السواران
-                  خلف الهيكل والتاج وزر الإجراء زخرفيان خارجه — الزجاج هو
-                  منطقة التمرير نفسها */}
-              <span className="match-race-strap match-race-strap--start" aria-hidden="true" />
-              <span className="match-race-strap match-race-strap--end" aria-hidden="true" />
-              <span className="match-race-crown" aria-hidden="true" />
-              <span className="match-race-trigger" aria-hidden="true" />
+              {/* تجميع الساعة (uiverse calm-bobcat-35 مُدار 90°): الهيكل
+                  التيتانيومي فقط — والزجاج هو منطقة التمرير نفسها */}
               <div
                 className="match-race"
                 ref={race.ref}

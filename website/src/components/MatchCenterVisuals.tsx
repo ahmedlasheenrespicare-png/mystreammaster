@@ -360,26 +360,46 @@ function Team({ match, snapshot, side, flash }: {
   const logo = snapshot?.logos?.[side] ?? team.logo;
   const counters = pitchCounters(snapshot?.statistics ?? null, side);
 
+  /* اللوح المائل (skew) يحمل الخلفية والتوهّج وحده، والمحتوى في غلاف قائم
+     فوقه بلا ميل. لا يُحذف عنصر من البطاقة القديمة: الشعار والاسم والمختصر
+     والدور والعدّادات كلها هنا. */
   return (
     <div className={`mc-pitch-team mc-pitch-team--${side}${flash ? ' mc-pitch-team--flash' : ''}`}>
-      <Crest logo={logo} name={sourceName ?? name} side={side} />
-      <span className="mc-pitch-team-name">{name}</span>
-      {shortName && shortName !== name && <span className="mc-pitch-team-short">{shortName}</span>}
-      <span className="mc-pitch-team-role">{side === 'home' ? 'المضيف' : 'الضيف'}</span>
-      {/* صفراء/حمراء/ركنيات من جدول الإحصائيات نفسه؛ الحبّة بلا قيمة تُحذف، وبلا أي قيمة لا صف. */}
-      {counters.length > 0 && (
-        <ul className="mc-pitch-counters" aria-label={`بطاقات ${side === 'home' ? 'المضيف' : 'الضيف'}`}>
-          {counters.map(counter => (
-            <li className="mc-pitch-counter" data-counter={counter.id} key={counter.id}>
-              <i aria-hidden="true" />
-              <span className="mc-num">{new Intl.NumberFormat('ar-EG').format(counter.value)}</span>
-              <em>{counter.label}</em>
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* لوح مائل منفصل عن المحتوى: يحمل الخلفية والتوهّج وحده، فلا يُقصّ نص
+          ولا يُمال اسم. الشكل المائل من التصميم المرجعي يبقى كما هو. */}
+      <span className="mc-pitch-team-board" aria-hidden="true" />
+      <div className="mc-pitch-team-info">
+        <Crest logo={logo} name={sourceName ?? name} side={side} />
+        <span className="mc-pitch-team-name">{name}</span>
+        {shortName && shortName !== name && <span className="mc-pitch-team-short">{shortName}</span>}
+        <span className="mc-pitch-team-role">{side === 'home' ? 'المضيف' : 'الضيف'}</span>
+        {/* صفراء/حمراء من جدول الإحصائيات نفسه؛ الحبّة بلا قيمة تُحذف، وبلا أي قيمة لا صف. */}
+        {counters.length > 0 && (
+          <ul className="mc-pitch-counters" aria-label={`بطاقات ${side === 'home' ? 'المضيف' : 'الضيف'}`}>
+            {counters.map(counter => (
+              <li className="mc-pitch-counter" data-counter={counter.id} key={counter.id}>
+                <i aria-hidden="true" />
+                <span className="mc-num">{new Intl.NumberFormat('ar-EG').format(counter.value)}</span>
+                <em>{counter.label}</em>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
+}
+
+/* مؤشّر تقدّم الشوط على شريط التصميم: الدقيقة من ساعة المصدر نفسها، ولا يُخترع
+   رقم عند غيابها — يُترك الشريط متحركاً بلا نسبة حين تكون القراءة جارية فقط. */
+function matchProgress(status: MatchStatus | null, clock: string | null): { state: string; width: string | null } {
+  const phase = status?.phase ?? 'pre';
+  if (phase === 'post') return { state: 'post', width: '100%' };
+  if (phase !== 'live') return { state: 'pre', width: '0%' };
+  const found = clock ? /^(\d{1,3})/.exec(clock.trim()) : null;
+  const minute = found ? Number(found[1]) : Number.NaN;
+  if (!Number.isFinite(minute)) return { state: 'live', width: null };
+  return { state: 'live', width: `${Math.min(100, Math.max(0, (minute / 90) * 100)).toFixed(1)}%` };
 }
 
 export interface MatchCenterVisualsProps {
@@ -439,46 +459,64 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
      وتثبت بعد النهاية. الرابط ينقل إلى مجموعات المرحلة الحالية إن وُجدت. */
   const indexLinkPrefix = status?.phase === 'post' ? 'analysis' : status?.phase === 'live' ? 'live' : null;
 
+  /* رسم الملعب (العشب وخطوط المستطيل) ديكورٌ للتشكيلة وحدها: يُرسم فقط حين
+     تكون هناك تشكيلة مؤكدة قابلة للرسم على الملعب بالفعل (`lineupPitchSides`)،
+     وإلا بقي الإطار بطاقة داكنة بلا أرضية. الحساب هنا لا في CSS حتى يطابق ما
+     يراه الزائر ما يرسمه المكوّن نفسه. */
+  const lineupsOnPitch = useMemo(() => lineupPitchSides({ match, snapshot }).length > 0, [match, snapshot]);
+  const progress = matchProgress(status, clock);
+
   return (
     <section className="mc-match-visual" aria-labelledby="mc-title">
       <h1 id="mc-title" className="mc-match-title">{title}</h1>
 
-      <div className="mc-pitch-frame">
-        <div className="mc-pitch-markings" aria-hidden="true">
-          <span className="mc-pitch-halfway" />
-          <span className="mc-pitch-center-circle" />
-          <span className="mc-pitch-center-spot" />
-          <span className="mc-pitch-box mc-pitch-box--home" />
-          <span className="mc-pitch-box mc-pitch-box--away" />
-          <span className="mc-pitch-goal mc-pitch-goal--home" />
-          <span className="mc-pitch-goal mc-pitch-goal--away" />
+      <div className={`mc-pitch-frame${lineupsOnPitch ? ' mc-pitch-frame--lineups' : ''}`}>
+        {lineupsOnPitch && (
+          <div className="mc-pitch-markings" aria-hidden="true">
+            <span className="mc-pitch-halfway" />
+            <span className="mc-pitch-center-circle" />
+            <span className="mc-pitch-center-spot" />
+            <span className="mc-pitch-box mc-pitch-box--home" />
+            <span className="mc-pitch-box mc-pitch-box--away" />
+            <span className="mc-pitch-goal mc-pitch-goal--home" />
+            <span className="mc-pitch-goal mc-pitch-goal--away" />
+          </div>
+        )}
+
+        {/* بطاقات الفريقين والنتيجة في صفّ واحد داخل بطاقة واحدة. */}
+        <div className="mc-pitch-teams" data-status={status?.code ?? 'unknown'}>
+          <Team match={match} snapshot={snapshot} side="home" flash={flash === 'home'} />
+
+          <div className="mc-pitch-scoreboard" aria-live="off">
+            <div className="mc-pitch-score-container">
+              {competitionLine && <span className="mc-pitch-competition">{competitionLine}</span>}
+              {(statusLabel || clock) && (
+                <p className="mc-pitch-statusline">
+                  {statusLabel && <span className="mc-pitch-status" data-code={status?.code ?? 'unknown'} data-fresh={fresh ? 'true' : 'false'}>{statusLabel}</span>}
+                  {clock && <span className="mc-pitch-clock" dir="ltr">{clock}</span>}
+                </p>
+              )}
+              {/* شريط تقدّم الشوط من التصميم الأصلي: النسبة من دقيقة القراءة. */}
+              <span className="mc-pitch-progress" data-state={progress.state} data-unknown={progress.width ? undefined : 'true'} aria-hidden="true">
+                <span className="mc-pitch-progress-load" style={progress.width ? { inlineSize: progress.width } : undefined} />
+              </span>
+              {showScore && score ? (
+                <p className="mc-pitch-score" aria-label={`نتيجة المضيف ${score.home}، ثم الضيف ${score.away}`}>
+                  <span className="mc-score-order">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
+                </p>
+              ) : (
+                <span className="mc-pitch-vs" aria-label="مواجهة بين الفريقين">VS</span>
+              )}
+              {cairoKickoff && (
+                <span className="mc-pitch-kickoff">
+                  {cairoKickoff}{cairoDay ? ` · ${cairoDay}` : ''}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <Team match={match} snapshot={snapshot} side="away" flash={flash === 'away'} />
         </div>
-
-        <Team match={match} snapshot={snapshot} side="home" flash={flash === 'home'} />
-
-        <div className="mc-pitch-scoreboard" aria-live="off">
-          {competitionLine && <span className="mc-pitch-competition">{competitionLine}</span>}
-          {(statusLabel || clock) && (
-            <p className="mc-pitch-statusline">
-              {statusLabel && <span className="mc-pitch-status" data-code={status?.code ?? 'unknown'} data-fresh={fresh ? 'true' : 'false'}>{statusLabel}</span>}
-              {clock && <span className="mc-pitch-clock" dir="ltr">{clock}</span>}
-            </p>
-          )}
-          {showScore && score ? (
-            <p className="mc-pitch-score" aria-label={`نتيجة المضيف ${score.home}، ثم الضيف ${score.away}`}>
-              <span className="mc-score-order">{score.home}<span aria-hidden="true">–</span>{score.away}</span>
-            </p>
-          ) : (
-            <span className="mc-pitch-vs" aria-label="مواجهة بين الفريقين">VS</span>
-          )}
-          {cairoKickoff && (
-            <span className="mc-pitch-kickoff">
-              {cairoKickoff}{cairoDay ? ` · ${cairoDay}` : ''}
-            </span>
-          )}
-        </div>
-
-        <Team match={match} snapshot={snapshot} side="away" flash={flash === 'away'} />
 
         {/* صف كامل تحت البطاقتين داخل الإطار: لا أرقام ⇒ لا لوحة أصلاً. */}
         <MatchCenterIndexBoard

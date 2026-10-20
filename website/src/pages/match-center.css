@@ -36,23 +36,31 @@
 /* Shared match visual: illustrative pitch, with no player/event coordinates. */
 .mc-match-visual { min-width: 0; }
 .mc-match-title { margin: 0 0 12px; text-align: center; font-size: clamp(1rem, 3.2vw, 1.35rem); font-weight: 900; line-height: 1.5; }
+/* البطاقة واحدة: بطاقتا الفريقين والنتيجة في صفّ واحد بدل ثلاث بطاقات
+   منفصلة. الأرضية الداكنة هي الأساس؛ والعشب وخطوط المستطيل ديكورٌ لا يُرسم
+   إلا حين ترسم `lineupPitchSides` تشكيلةً فعلية (الصنف `--lineups`). */
 .mc-pitch-frame {
   position: relative;
   isolation: isolate;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(140px, 1.15fr) minmax(0, 1fr);
-  grid-template-rows: auto auto;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  align-items: center;
-  min-height: 270px;
-  padding: 22px 18px;
+  min-height: 0;
+  padding: 16px 14px;
   overflow: hidden;
-  border: 1px solid rgba(218, 255, 221, .38);
+  border: 1px solid rgba(255, 255, 255, .10);
   border-radius: var(--mc-radius);
   background:
+    radial-gradient(ellipse at 50% -12%, rgba(124, 92, 255, .18), transparent 62%),
+    linear-gradient(180deg, #1d1d21, #131316 62%, #101014);
+  box-shadow: 0 22px 48px -30px rgba(0, 0, 0, .85), inset 0 0 54px rgba(0, 0, 0, .22);
+}
+.mc-pitch-frame--lineups {
+  border-color: rgba(218, 255, 221, .34);
+  background:
     repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 8.333%, transparent 8.333% 16.666%),
-    linear-gradient(135deg, #155b3b, #0d482f 48%, #176342);
-  box-shadow: 0 22px 48px -30px rgba(0, 0, 0, .85), inset 0 0 54px rgba(0, 0, 0, .18);
+    radial-gradient(ellipse at 50% -12%, rgba(124, 92, 255, .12), transparent 60%),
+    linear-gradient(135deg, #134a32, #0b3524 48%, #14523a);
 }
 .mc-pitch-markings { position: absolute; z-index: 0; inset: 12px; border: 1px solid rgba(239, 255, 241, .52); border-radius: 10px; pointer-events: none; }
 .mc-pitch-halfway { position: absolute; inset-block: 0; inset-inline-start: 50%; width: 1px; background: rgba(239, 255, 241, .46); transform: translateX(50%); }
@@ -64,21 +72,108 @@
 .mc-pitch-goal { position: absolute; inset-block-start: 39%; width: 3%; height: 22%; border: 1px solid rgba(239, 255, 241, .48); }
 .mc-pitch-goal--home { inset-inline-start: -1px; border-inline-start: 0; }
 .mc-pitch-goal--away { inset-inline-end: -1px; border-inline-end: 0; }
+/* ── الصفّ الموحّد: فريق، نتيجة، فريق ─────────────────────────────
+   البنية من التصميم المرجعي (uiverse/sofiapetushok — jolly-snail-62):
+   شريط داكن متلاشي الأطراف، لوحان مائلان بتوهّج سماوي وأزرق للمضيف
+   وذهبي وأحمر للضيف، ومركز زجاجي للنتيجة وشريط تقدّم متدرّج.
+   كل عنصر كان في البطاقات الثلاث السابقة ما زال هنا: الشعار، الاسم،
+   المختصر، الدور، عدّادات البطاقات، المسابقة، الحالة، الساعة، النتيجة أو
+   VS، وموعد الانطلاق. */
+.mc-pitch-teams {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+  padding: 10px 2px;
+  background: linear-gradient(90deg, transparent, #111 16%, #111 84%, transparent);
+  /* الميل (skew) يمدّ صندوق اللوح أفقياً خارج مكانه، فيصير للإطار محتوى
+     أوسع منه ويُحسب تمريراً أفقياً وإن كان مقصوصاً بصرياً. القصّ هنا عند
+     الشريط نفسه يوقف هذا الامتداد قبل أن يصل إلى الإطار. `contain: paint`
+     يضمن القصّ حتى في المتصفحات التي لا تعامل `overflow` وحدها بهذا المعنى. */
+  overflow: hidden;
+  contain: paint;
+}
+.mc-pitch-teams > * { flex: 1 1 0; min-width: 0; }
 .mc-pitch-team, .mc-pitch-scoreboard { min-width: 0; text-align: center; }
-.mc-pitch-team { z-index: 1; display: flex; min-height: 150px; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 12px 7px; border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px; background: rgba(5, 16, 13, .42); backdrop-filter: blur(4px); }
+.mc-pitch-team {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px clamp(14px, 3.4vw, 34px);
+  background: transparent;
+}
+/* اللوح المائل: الشكل والتوهّج فقط، والمحتوى فوقه قائم بلا ميل. */
+.mc-pitch-team-board {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 10px 10px 10px 30px;
+  background: rgba(20, 22, 28, .78);
+}
+.mc-pitch-team--home .mc-pitch-team-board { transform: skew(41deg, 0deg); }
+.mc-pitch-team--away .mc-pitch-team-board { transform: skew(-41deg, 0deg); border-radius: 10px 10px 30px 10px; }
+.mc-pitch-team-board::before, .mc-pitch-team-board::after { content: ""; position: absolute; pointer-events: none; }
+.mc-pitch-team--home .mc-pitch-team-board::after {
+  top: -3px; left: -20px; width: 20px; height: 23px; border-radius: 27px;
+  background: #00caff; filter: blur(2px); transform: rotate(208deg); box-shadow: 0 0 32px #00ffed;
+}
+.mc-pitch-team--home .mc-pitch-team-board::before {
+  bottom: -15px; right: 0; width: 80%; height: 17px; border-radius: 80px;
+  background: #0048ff; filter: blur(1px); transform: translate(-50%, 0); box-shadow: 0 0 32px #0026ff;
+}
+.mc-pitch-team--away .mc-pitch-team-board::after {
+  top: -3px; right: -20px; width: 20px; height: 23px; border-radius: 27px;
+  background: #cc9d00; filter: blur(2px); transform: rotate(208deg); box-shadow: 0 0 32px #cc3700;
+}
+.mc-pitch-team--away .mc-pitch-team-board::before {
+  bottom: -15px; left: 0; width: 80%; height: 17px; border-radius: 80px;
+  background: #ff0000; filter: blur(1px); transform: translate(50%, 0); box-shadow: 0 0 32px #d50000;
+}
+/* المحتوى فوق اللوح، وفي المنتصف دائماً. */
+.mc-pitch-team-info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+.mc-pitch-team--flash .mc-pitch-team-board { animation: mc-flash 1500ms ease-out 1; }
 .mc-pitch-team--home .mc-pitch-crest { color: #efeaff; background: radial-gradient(circle at 32% 26%, rgba(124, 92, 255, .5), rgba(124, 92, 255, .12)); }
 .mc-pitch-team--away .mc-pitch-crest { color: var(--mc-lime); background: radial-gradient(circle at 32% 26%, rgba(216, 255, 62, .34), rgba(216, 255, 62, .07)); }
 .mc-pitch-crest { display: grid; place-items: center; flex: 0 0 auto; width: clamp(42px, 7vw, 62px); height: clamp(42px, 7vw, 62px); border: 1px solid rgba(255, 255, 255, .25); border-radius: 50%; object-fit: contain; padding: 4px; font-family: var(--font-latin, ui-sans-serif); font-size: clamp(.9rem, 2.7vw, 1.2rem); font-weight: 900; }
 .mc-pitch-team-name { max-width: 100%; color: #fff; font-size: clamp(.72rem, 2.8vw, 1.05rem); font-weight: 900; line-height: 1.35; }
 .mc-pitch-team-short { color: rgba(255, 255, 255, .84); font-size: .72rem; line-height: 1.3; }
 .mc-pitch-team-role { color: rgba(255, 255, 255, .78); font-size: .65rem; font-weight: 700; }
-.mc-pitch-team--flash { animation: mc-flash 1500ms ease-out 1; }
 @keyframes mc-flash {
   0% { box-shadow: 0 0 0 0 rgba(216, 255, 62, 0); }
   22% { box-shadow: 0 0 0 3px rgba(216, 255, 62, .55); background-color: rgba(216, 255, 62, .12); }
   100% { box-shadow: 0 0 0 0 rgba(216, 255, 62, 0); }
 }
-.mc-pitch-scoreboard { z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; max-width: 270px; justify-self: center; padding: 14px 10px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 15px; background: rgba(7, 10, 17, .76); box-shadow: 0 12px 32px rgba(0, 0, 0, .24); backdrop-filter: blur(8px); }
+.mc-pitch-scoreboard { z-index: 2; display: flex; flex: 0 1 auto; align-items: center; justify-content: center; padding-inline: 4px; }
+.mc-pitch-score-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: fit-content;
+  max-width: min(100%, 300px);
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: linear-gradient(#1e1e1e 0%, #0c0c0c8e 4%, #1a1419);
+  box-shadow: inset 0 0 1px 0 #2c2c2c, 0 0 20px 0 #1313139c;
+}
+.mc-pitch-score-container > :is(.mc-pitch-competition, .mc-pitch-score, .mc-pitch-kickoff) { width: 100%; }
 .mc-pitch-competition { color: #f2f7e7; font-size: clamp(.62rem, 2.1vw, .78rem); font-weight: 800; line-height: 1.4; }
 .mc-pitch-status { display: inline-flex; align-items: center; justify-content: center; min-height: 25px; padding: 3px 10px; border: 1px solid var(--mc-line); border-radius: 999px; background: rgba(255, 255, 255, .05); color: #eff3f7; font-size: .7rem; font-weight: 900; }
 .mc-pitch-status[data-code="live"] { color: var(--mc-lime); border-color: rgba(216, 255, 62, .42); background: rgba(216, 255, 62, .10); }
@@ -88,11 +183,45 @@
 .mc-pitch-status[data-code="live"][data-fresh="true"]::before { content: ""; width: 7px; height: 7px; margin-inline-end: 6px; border-radius: 50%; background: currentColor; animation: mc-pulse 2600ms ease-in-out infinite; }
 @keyframes mc-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
 .mc-pitch-score { margin: 0; font-family: var(--font-latin, ui-sans-serif); color: #fff; font-size: clamp(1.85rem, 7vw, 3.2rem); font-weight: 950; line-height: 1; letter-spacing: .02em; }
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .mc-pitch-score {
+    background: linear-gradient(90deg, #3a3dff, #ff2929);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .mc-pitch-score span[aria-hidden] { -webkit-text-fill-color: rgba(255, 255, 255, .55); color: rgba(255, 255, 255, .55); }
+}
 .mc-pitch-score .mc-score-order { white-space: nowrap; }
-.mc-pitch-score span[aria-hidden] { color: var(--mc-muted); font-weight: 400; }
 .mc-pitch-vs { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; letter-spacing: .06em; }
 .mc-pitch-clock { color: var(--mc-lime); font-family: var(--font-latin, ui-sans-serif); font-size: .82rem; font-weight: 800; }
 .mc-pitch-kickoff { color: #dce9df; text-align: center; font-size: .66rem; line-height: 1.5; }
+/* شريط تقدّم الشوط: العرض من دقيقة القراءة، والتوهّج يتحرك ما دام اللقاء جارياً.
+   عند غياب الدقيقة يبقى شريطاً متحركاً بلا نسبة — لا رقم مخترع. */
+.mc-pitch-progress { position: relative; display: block; width: min(100%, 120px); height: 3px; border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, .14); }
+.mc-pitch-progress-load {
+  position: absolute; inset-block: 0; inset-inline-start: 0;
+  display: block; height: 100%; min-width: 3px; border-radius: 999px;
+  background: linear-gradient(90deg, #3a3dff, #ff2929);
+  box-shadow: 0 0 10px rgba(58, 61, 255, .7);
+  transition: inline-size .5s ease;
+}
+.mc-pitch-progress[data-state="live"] .mc-pitch-progress-load {
+  background-image: linear-gradient(90deg, #3a3dff, #ff2929, #3a3dff);
+  background-size: 200% 100%;
+  animation: mc-progress-sheen 1.9s linear infinite;
+}
+.mc-pitch-progress[data-unknown="true"] .mc-pitch-progress-load {
+  width: 34%;
+  animation: mc-progress-scan 2.4s ease-in-out infinite;
+}
+@keyframes mc-progress-sheen { from { background-position: 0 0; } to { background-position: -200% 0; } }
+@keyframes mc-progress-scan {
+  0% { inset-inline-start: 0; width: 12%; }
+  50% { inset-inline-start: 60%; width: 40%; }
+  100% { inset-inline-start: 100%; width: 12%; }
+}
 .mc-match-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr)); gap: 9px; margin: 12px 0 0; padding: 0; }
 .mc-match-facts > div { min-width: 0; padding: 9px 12px; border: 1px solid var(--mc-line); border-radius: 12px; background: rgba(16, 19, 27, .72); }
 .mc-match-facts dt { color: var(--mc-muted); font-size: .68rem; }
@@ -359,21 +488,28 @@
 
 @media (max-width: 720px) {
   .mc-page { padding: 112px 12px 104px; }
-  .mc-pitch-frame { grid-template-columns: minmax(0, 1fr) minmax(102px, 1.15fr) minmax(0, 1fr); gap: 6px; min-height: 238px; padding: 15px 8px; }
-  .mc-pitch-team { min-height: 140px; padding: 9px 4px; }
-  .mc-pitch-scoreboard { padding: 11px 7px; }
+  .mc-pitch-frame { gap: 8px; padding: 13px 9px; }
+  .mc-pitch-teams { padding: 8px 0; }
+  .mc-pitch-team { padding: 12px 8px; }
+  .mc-pitch-team--home .mc-pitch-team-board { transform: skew(30deg, 0deg); }
+  .mc-pitch-team--away .mc-pitch-team-board { transform: skew(-30deg, 0deg); }
+  .mc-pitch-score-container { gap: 6px; padding: 10px 9px; }
   .mc-pitch-events { --mc-marker-size: 22px; padding: 8px 9px 7px; }
   .mc-match-facts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); }
   .mc-mini { display: flex; }
 }
 @media (max-width: 420px) {
   .mc-page { padding-inline: 10px; }
-  .mc-pitch-frame { grid-template-columns: minmax(0, .95fr) minmax(90px, 1.1fr) minmax(0, .95fr); gap: 4px; min-height: 218px; padding: 12px 5px; }
+  .mc-pitch-frame { gap: 6px; padding: 11px 6px; }
   .mc-pitch-markings { inset: 8px; }
-  .mc-pitch-team { min-height: 132px; padding: 8px 3px; }
+  .mc-pitch-teams { padding: 6px 0; }
+  .mc-pitch-team { padding: 10px 6px; }
+  .mc-pitch-team--home .mc-pitch-team-board,
+  .mc-pitch-team--away .mc-pitch-team-board { transform: none; border-radius: 10px 10px 10px 18px; }
+  .mc-pitch-team--away .mc-pitch-team-board { border-radius: 10px 10px 18px 10px; }
   .mc-pitch-team-name { font-size: clamp(.62rem, 2.7vw, .78rem); }
   .mc-pitch-team-short, .mc-pitch-team-role { font-size: .6rem; }
-  .mc-pitch-scoreboard { gap: 5px; padding: 9px 5px; }
+  .mc-pitch-score-container { gap: 5px; padding: 9px 6px; }
   .mc-pitch-competition { font-size: .58rem; }
   .mc-pitch-status { min-height: 22px; padding: 2px 7px; font-size: .62rem; }
   .mc-pitch-kickoff { font-size: .59rem; }
@@ -399,7 +535,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .mc-page *, .mc-page *::before, .mc-page *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
-  .mc-pitch-team--flash { background-color: rgba(216, 255, 62, .12); }
+  .mc-pitch-team--flash .mc-pitch-team-board { background-color: rgba(216, 255, 62, .12); }
   .mc-pitch-status[data-code="live"]::before { animation: none; opacity: 1; transform: none; }
 }
 
@@ -435,6 +571,13 @@
     .mc-pitch-status { border-color: #c9ced8; }
     .mc-pitch-clock { color: #1f6b2e; }
     .mc-pitch-markings { border-color: #a9b1c0; }
+    .mc-pitch-teams { background: #fff !important; }
+    .mc-pitch-team { padding-inline: 8px !important; }
+    .mc-pitch-team-board { display: none !important; }
+    .mc-pitch-score-container { background: #fff !important; box-shadow: none !important; border: 1px solid #c9ced8; }
+    .mc-pitch-score, .mc-pitch-score span[aria-hidden] { background: none !important; color: #101218 !important; -webkit-text-fill-color: #101218 !important; }
+    .mc-pitch-team-name, .mc-pitch-team-short, .mc-pitch-team-role, .mc-pitch-kickoff { color: #101218 !important; }
+    .mc-pitch-progress { background: #d5d9e1; box-shadow: none; }
     .mc-pitch-lane, .mc-pitch-axis { color: #101218; }
     .mc-pitch-tick b { color: #4a5262; }
     .mc-pitch-icon, .mc-analysis-event-symbol { filter: grayscale(.2); }

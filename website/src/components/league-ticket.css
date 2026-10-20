@@ -275,3 +275,25 @@
     transition: none;
   }
 }
+
+/* ── نموذج تجريبي: نجم البطولة داخل التذكرة (أبطال أوروبا فقط حالياً) ──
+   صورة مقصوصة من خلفيتها السوداء، تنگرز أسفل الحافة المظلمة للكرت
+   (الزاوية البعيدة عن توهّج القالب) وتتلاشى في الأسفل، خلف النص بلا
+   أي تأثير على الوصولية أو التفاعل — والاسم المعدني يظل مقروءاً. */
+.league-ticket-player {
+  position: absolute;
+  bottom: 0;
+  inset-inline-end: 4%;
+  height: 84%;
+  width: auto;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 26px rgba(216, 255, 62, 0.16));
+  mask-image: linear-gradient(180deg, #000 72%, transparent 99%);
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 99%);
+}
+
+@media (prefers-reduced-motion: reduce), (max-width: 700px) {
+  .league-ticket-player { height: 70%; opacity: .85; }
+}

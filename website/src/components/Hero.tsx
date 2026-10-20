@@ -357,7 +357,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                 <span key={heroWord} className="inline-block animate-word-in">
                   {HERO_TITLE_WORDS[heroWord]}
                 </span>
-                {" كل ما تحب"}
+                {" كل ما تحب "}
               </>,
               <>
                 بجودة 4K{" "}

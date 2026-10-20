@@ -372,10 +372,22 @@ const PLAYER_MAP: Record<string, ReactElement | ReactElement[]> = {
     <img key="a" className="league-ticket-player league-ticket-player--right" src="/images/players/esp-mbappe.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
     <img key="b" className="league-ticket-player league-ticket-player--left" src="/images/players/esp-yamal.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
-  "fra.1": <img className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-  "ger.1": <img className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-  "ita.1": <img className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-  "egy.1": <img className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  "fra.1": [
+    <img key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <img key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/fra-gouiri.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  ],
+  "ger.1": [
+    <img key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <img key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/ger-olise.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  ],
+  "ita.1": [
+    <img key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <img key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/ita-dybala.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  ],
+  "egy.1": [
+    <img key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <img key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/egy-elsaid.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  ],
 };
 
 /* أبطال أوروبا: ميسي في خلفية التكوين خلف رونالدو أعلى يسار التذكرة — يُرسَم

@@ -66,7 +66,13 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {/* الدوري الفرنسي: ديمبلي يسار التذكرة (موضع فيزيائي صريح) —
           بنفس الصفة الزخرفية وطريقة الدمج */}
       {leagueId === 'fra.1' && (
-        <img className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        <>
+          {/* غويري يمين التذكرة (موضع فيزيائي صريح) — ثنائي مع ديمبلي
+              يساراً بنمط الثنائيات السابقة (مبابي/يامال، رونالدو/ميسي،
+              هالاند/سوبسلاي)، بنفس الصفة الزخرفية */}
+          <img className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+          <img className="league-ticket-player league-ticket-player--right" src="/images/players/fra-gouiri.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        </>
       )}
       {/* الدوري الألماني: كين يسار التذكرة (موضع فيزيائي صريح) —
           بنفس الصفة الزخرفية وطريقة الدمج */}

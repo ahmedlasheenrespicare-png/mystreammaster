@@ -462,12 +462,19 @@ export default function MatchCenterVisuals({ match, snapshot, status, flash = nu
      وتثبت بعد النهاية. الرابط ينقل إلى مجموعات المرحلة الحالية إن وُجدت. */
   const indexLinkPrefix = status?.phase === 'post' ? 'analysis' : status?.phase === 'live' ? 'live' : null;
 
-  /* رسم الملعب (العشب وخطوط المستطيل) ديكورٌ للتشكيلة وحدها: يُرسم فقط حين
-     تكون هناك تشكيلة مؤكدة قابلة للرسم على الملعب بالفعل (`lineupPitchSides`)،
-     وإلا بقي الإطار بطاقة داكنة بلا أرضية. الحساب هنا لا في CSS حتى يطابق ما
-     يراه الزائر ما يرسمه المكوّن نفسه. */
+  /* أرضية الملعب (العشب وخطوط المستطيل) بشرطين معاً، والحساب هنا لا في CSS
+     حتى يطابق ما يراه الزائر ما يرسمه المكوّن نفسه:
+
+       ١) **قبل انطلاق المباراة وحدها.** بعد الصافرة (مباشر أو منتهية) لا عشب
+          إطلاقاً ولو وُجدت التشكيلة — الملعب هنا بطاقة بيانات لا ملعباً فارغاً.
+       ٢) **تشكيلتان قابلتان للعرض معاً.** فريق واحد لا يكفي: ملعبٌ نصفه لاعبون
+          ونصفه فراغ يوحي ببيانات ناقصة، وهو أسوأ من بطاقة بلا ملعب.
+
+     الحالة قبل أول قراءة (`status` غائبة أو `unknown`) تُعامل كما قبل المباراة،
+     كما في `previewPlacement`. */
   const lineupSides = useMemo(() => lineupPitchSides({ match, snapshot }), [match, snapshot]);
-  const lineupsOnPitch = lineupSides.length > 0;
+  const beforeKickoff = !status?.phase || status.phase === 'pre';
+  const lineupsOnPitch = beforeKickoff && lineupSides.length === 2;
   const progress = matchProgress(status, clock);
 
   return (

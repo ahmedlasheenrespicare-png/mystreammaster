@@ -220,9 +220,10 @@ test('state B: the official lineup replaces the preview on the pitch and the pre
   await expect(page.locator('[role="tab"]')).toHaveText(['قبل المباراة', 'مباشر']);
   const pitch = page.locator('.mc-pitch-frame .mc-pitch-lineups');
   await expect(pitch).toBeVisible();
-  /* التشكيلة وحدها تُظهر أرضية الملعب وخطوطها. */
+  /* أرضية الملعب تُرسم قبل الصافرة فقط، وبوجود تشكيلتي الفريقين معاً. */
   await expect(page.locator('.mc-pitch-frame')).toHaveClass(/mc-pitch-frame--lineups/);
   await expect(page.locator('.mc-pitch-markings')).toHaveCount(1);
+  await expect(page.locator('.mc-pitch-lineup-squad')).toHaveCount(2);
   await expect(page.locator('.mc-pitch-preview')).toHaveCount(0);
   // شريط الحقائق المختصر أسفل الملعب يعود كما كان (التصور المعتمد)؛ يُخفى فقط حين تكون الحقائق على الملعب نفسه.
   await expect(page.locator('.mc-match-facts')).toHaveCount(1);
@@ -254,6 +255,12 @@ test('live: pitch counters, possession bar, crest headers, and «غير متاح
 
   await expect(page.locator('[role="tab"]')).toHaveText(['قبل المباراة', 'مباشر']);
   await expect(page.locator('#mc-panel-live')).toBeVisible();
+
+  // أثناء المباراة لا أرضية ملعب إطلاقاً ولو وصلت التشكيلة كاملة: العشب
+  // وخطوط المستطيل للفترة السابقة للصافرة وحدها. التشكيلة نفسها تبقى معروضة.
+  await expect(page.locator('.mc-pitch-frame')).not.toHaveClass(/mc-pitch-frame--lineups/);
+  await expect(page.locator('.mc-pitch-markings')).toHaveCount(0);
+  await expect(page.locator('.mc-pitch-frame .mc-pitch-lineups')).toBeVisible();
 
   // عدّادات أسفل الشعارين: صفراء/حمراء فقط، وتُخفى تماماً ما دامت صفراً أو null؛
   // الركنيات لم تعد من عدّادات الملعب. المضيف صفراء وحدها، والضيف صفراء وحمراء.

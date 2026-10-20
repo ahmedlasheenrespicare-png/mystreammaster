@@ -1009,33 +1009,46 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* شريط نسبي صغير بجانب معدلات الهجوم والدفاع في الجدول */
+/* شريط نسبي صغير بجانب معدلات الهجوم والدفاع في الجدول — كبسولة 6px
+   بمسار محايد وحد داخلي رفيع، والتعبئة بتدرج توقيع البطاقة تتدرج نحو
+   طرف النمو بلمعة خفيفة (الطول النسبي محسوب من البيانات ولا يُغيَّر) */
 .ls-minibar {
   display: block;
   width: 100%;
-  max-width: 64px;
-  margin-top: 4px;
-  height: 3px;
+  max-width: 72px;
+  margin-top: 5px;
+  height: 6px;
   border-radius: 999px;
-  background: #f0eaf6;
+  background: #f3eef5;
+  box-shadow: inset 0 0 0 1px rgba(97, 4, 95, 0.10);
   overflow: hidden;
 }
 
 .ls-minibar > span {
   display: block;
   height: 100%;
+  min-width: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #aa076b, #61045f);
+  background-image: linear-gradient(90deg, #ff8ac9 0%, #d24fa4 45%, #aa076b 75%, #61045f 100%);
+  box-shadow: 0 0 5px rgba(170, 7, 107, 0.28);
 }
 
-/* التصنيف التكتيكي التلقائي — لون + نص + نقطة دلالية (لا يُعتمد على اللون وحده) */
+/* التصنيف التكتيكي التلقائي — شارة بحافة لونية بادئة ومعيّن صغير:
+   النص هو الحامل الأساسي للمعنى (لا يُعتمد على اللون وحده)، وكل فئة
+   لها لوحة ألوان من ثلاثة متغيرات (حافة/خلفية/حد) مضبوطة التباين */
 .ls-tactic {
+  --tc-accent: #8b8b96;
+  --tc-bg: #f6f5f1;
+  --tc-border: #e7e3d9;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid transparent;
+  padding: 2px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--tc-border);
+  border-inline-start: 4px solid var(--tc-accent);
+  background-image: linear-gradient(180deg, var(--tc-bg), #ffffff);
+  color: var(--tc-accent);
   font-size: 0.72rem;
   font-weight: 800;
   line-height: 1.5;
@@ -1044,45 +1057,42 @@
 
 .ls-tactic::before {
   content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: currentColor;
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  transform: rotate(45deg);
+  background: var(--tc-accent);
   flex-shrink: 0;
 }
 
 .ls-tactic--elite-balanced {
-  background: hsl(234, 85%, 95%);
-  color: hsl(234, 85%, 34%);
-  border-color: hsl(234, 85%, 87%);
+  --tc-accent: #6d28d9;
+  --tc-bg: #f4f0fe;
+  --tc-border: #e3d9fc;
 }
 
 .ls-tactic--offensive {
-  background: hsl(166, 100%, 95%);
-  color: hsl(166, 100%, 22%);
-  border-color: hsl(166, 100%, 84%);
+  --tc-accent: #0f7a4a;
+  --tc-bg: #ecf9f1;
+  --tc-border: #c9ecda;
 }
 
 .ls-tactic--defensive {
-  background: #e6f3fa;
-  color: #0c4a6e;
-  border-color: #c2e2f1;
+  --tc-accent: #0369a1;
+  --tc-bg: #edf6fc;
+  --tc-border: #c9e4f5;
 }
 
 .ls-tactic--struggling {
-  background: hsl(0, 100%, 95%);
-  color: #7c2d12;
-  border-color: hsl(0, 100%, 88%);
+  --tc-accent: #c22a2a;
+  --tc-bg: #fdf1f0;
+  --tc-border: #f6d7d4;
 }
 
 .ls-tactic--na {
-  background: #f4f3ee;
-  color: #71717a;
-  border-color: #e4e1d8;
-}
-
-.ls-tactic--na::before {
-  background: #d6d2c6;
+  --tc-accent: #8b8b96;
+  --tc-bg: #f6f5f1;
+  --tc-border: #e7e3d9;
 }
 
 /* --------------------------------------------------------------------------

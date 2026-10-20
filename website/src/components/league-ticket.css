@@ -309,6 +309,13 @@
    الثماني مكان شارة البطولة الواحدة، وغلاف بمسافة فوق التهية */
 .matches-hero-ticket { margin: 18px 0 4px; }
 
+/* صف الأيقونات أسفل التذكرة بطلب صريح: المتن (الاسم المعدني) يملأ
+   الصف الأول والأيقونات في السطر الأخير — بإسناد صفوف الشبكة صراحةً
+   دون إعادة ترتيب DOM */
+.all-leagues-ticket { grid-template-rows: 1fr auto; }
+.all-leagues-ticket .league-ticket-body { grid-row: 1; }
+.all-leagues-ticket .leagues-ticket-icons { grid-row: 2; }
+
 .all-leagues-ticket-players {
   bottom: 0;
   left: 50%;
@@ -340,5 +347,5 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  padding: 22px 18px 0;
+  padding: 0 18px 16px;
 }

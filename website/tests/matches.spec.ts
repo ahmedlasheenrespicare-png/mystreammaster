@@ -54,6 +54,13 @@ test('matches hub carries the all-leagues ticket above the calendar', async ({ p
   await expect(ticket).toHaveCount(1);
   await expect(ticket).toHaveAttribute('aria-hidden', 'true');
   await expect(page.locator('.leagues-ticket-icons .league-carousel-badge')).toHaveCount(8);
+  /* الصف أسفل التذكرة: حافته السفلية قريبة من حافة التذكرة السفلية */
+  const gap = await page.evaluate(() => {
+    const t = document.querySelector('.matches-hero-ticket .league-ticket')!.getBoundingClientRect();
+    const i = document.querySelector('.leagues-ticket-icons')!.getBoundingClientRect();
+    return Math.round(t.bottom - i.bottom);
+  });
+  expect(gap).toBeLessThanOrEqual(24);
   await expect(ticket.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');
   await expect(page.locator('h1#matches-title')).toHaveCount(1);
 });

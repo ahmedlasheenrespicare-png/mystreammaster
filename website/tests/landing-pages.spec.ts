@@ -293,10 +293,14 @@ test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and c
   await page.route('**/*', route => {
     const url = new URL(route.request().url());
     if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
-      /* شعار البطولة في الرأس (LEAGUE_ICONS) أصل صور موثّق ومقصود من مخزن
-         ESPN نفسه الذي ترد منه أيقونات الشريط — ليس طلب بيانات خارجياً مفاجئاً */
+      /* شعار البطولة في الرأس (LEAGUE_ICONS) وشعارات الفرق في بطاقة المعدلات
+         (leader-logo.mjs: teamlogos من ESPN، وHighlightly للدوري المصري) أصول
+         صور موثّقة ومقصودة من مخازن مزوّدي البيانات أنفسهم — ليست طلبات بيانات
+         خارجية مفاجئة (تُبتر الشبكة هنا فتتحول الشارة لدورع المونوغرام تلقائياً) */
       const isLeagueIcon = /^https:\/\/a\.espncdn\.com\/i\/leaguelogos\//.test(url.href);
-      if (!/googletagmanager\.com|googlesyndication\.com/.test(url.hostname) && !isLeagueIcon) {
+      const isTeamCrest = /^https:\/\/a\.espncdn\.com\/i\/teamlogos\//.test(url.href)
+        || /^https:\/\/highlightly\.net\/soccer\/images\/teams\//.test(url.href);
+      if (!/googletagmanager\.com|googlesyndication\.com/.test(url.hostname) && !isLeagueIcon && !isTeamCrest) {
         unexpectedExternalRequests.push(url.href);
       }
       return route.abort();

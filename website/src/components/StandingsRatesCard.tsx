@@ -6,12 +6,18 @@ import {
   validateArchive,
 } from '../lib/fixtures-archive.mjs';
 import { STALE_BADGE_TEXT, formatStandingsTime, seasonText, type StandingsEntry } from '../lib/standings.mjs';
+import { providerTeamLogo } from '../lib/leader-logo.mjs';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import './standings-rates-card.css';
 
-/* الشعارات المحلية المعتمدة داخل المستودع فقط (src/assets/club-logos/manifest.json).
-   لا يُطلب أي شعار من رابط خارجي؛ إن لم يتوفر شعار محلي معتمد يُعرض درع مونوغرام
-   يحمل الأحرف الأولى للفريق مع مركزه في الجدول. */
+/* الشعارات المحلية المعتمدة داخل المستودع (src/assets/club-logos/manifest.json)
+   تظهر أولاً. ومن لا شعار محلي معتمد له تُجلب أيقونته من مضيف مزوّد الترتيب
+   نفسه — المصدر ذاته الذي تُجلب منه مواعيد المباريات وبطاقاتها الحيّة:
+   ESPN (https://a.espncdn.com/i/teamlogos/soccer/500/<teamId>.png) لبطولاته
+   السبع، وHighlightly للدوري المصري — عبر الجسر الموحّد src/lib/leader-logo.mjs
+   (providerTeamLogo) نفسه المستخدم في شعارات المتصدّرين. ودرع المونوغرام
+   (الأحرف الأولى + المركز) يبقى بديلاً أخيراً عند غياب الشعارين أو فشل تحميل
+   صورة المصدر (onError) كي لا تظهر شارة بلا علامة بصرية أبداً. */
 const APPROVED_LOCAL_LOGOS: Record<string, string> = {
   'paris saint-germain': '/images/teams/paris-saint-germain-club-badge.webp',
   'barcelona': '/images/teams/barcelona-club-badge.webp',
@@ -153,18 +159,52 @@ export function teamInitials(name: string): string {
   return out || '؟';
 }
 
-function TeamCrest({ team, accent, size = 'md' }: { team: { name?: string; logo?: string | null; rank?: number | null }; accent: string; size?: 'sm' | 'md' }) {
-  const logo = resolveApprovedTeamLogo(team);
-  if (logo) {
+function TeamCrest({
+  team,
+  provider,
+  accent,
+  size = 'md',
+}: {
+  team: { name?: string; logo?: string | null; rank?: number | null; teamId?: string | null };
+  provider?: string;
+  accent: string;
+  size?: 'sm' | 'md';
+}) {
+  /* التسلسل: شعار محلي معتمد ← شعار مزوّد الترتيب (ESPN/Highlightly من
+     leader-logo.mjs — نفس مصدر بطاقات المباريات الحيّة) ← درع المونوغرام
+     كاحتياط أخير عند غياب المصدرين أو فشل تحميل صورة المصدر. */
+  const [remoteFailed, setRemoteFailed] = useState(false);
+  const localLogo = resolveApprovedTeamLogo(team);
+  const providerLogo =
+    localLogo || remoteFailed
+      ? null
+      : providerTeamLogo({ teamId: team.teamId ?? undefined, provider, logo: team.logo });
+  if (localLogo) {
     return (
       <img
-        src={logo}
+        src={localLogo}
         alt=""
         aria-hidden="true"
         width={size === 'sm' ? 18 : 22}
         height={size === 'sm' ? 18 : 22}
         loading="lazy"
         className={`ls-rate-team-logo${size === 'sm' ? ' ls-rate-team-logo--sm' : ''}`}
+      />
+    );
+  }
+  if (providerLogo) {
+    return (
+      <img
+        src={providerLogo}
+        alt=""
+        aria-hidden="true"
+        width={size === 'sm' ? 18 : 22}
+        height={size === 'sm' ? 18 : 22}
+        loading="lazy"
+        decoding="async"
+        className={`ls-rate-team-logo${size === 'sm' ? ' ls-rate-team-logo--sm' : ''}`}
+        data-crest-source={providerLogo.includes('highlightly.net') ? 'highlightly' : 'espn'}
+        onError={() => setRemoteFailed(true)}
       />
     );
   }
@@ -529,7 +569,7 @@ export default function StandingsRatesCard({
                         className="ls-rate-team"
                         data-rate-team={team.teamId ?? displayName}
                       >
-                        <TeamCrest team={team} accent={card.accent} />
+                        <TeamCrest team={team} provider={provider} accent={card.accent} />
                         <span className="ls-rate-team-body">
                           <span className="ls-rate-team-name" data-rate-team-name>
                             <bdi dir="auto">{displayName}</bdi>
@@ -621,7 +661,7 @@ export default function StandingsRatesCard({
                         <span className="ls-an-rank" data-rate-row-rank>
                           <bdi dir="ltr">{teamRank === null ? '—' : `#${teamRank}`}</bdi>
                         </span>
-                        <TeamCrest team={row} accent="neutral" size="sm" />
+                        <TeamCrest team={row} provider={provider} accent="neutral" size="sm" />
                         <span className="ls-an-name">
                           <bdi dir="auto">{displayName}</bdi>
                         </span>
@@ -688,3 +728,4 @@ export default function StandingsRatesCard({
     </section>
   );
 }
+

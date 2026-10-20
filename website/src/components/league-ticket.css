@@ -294,6 +294,12 @@
   -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 99%);
 }
 
+/* الإسباني: لاعبان على الجناحين — مواضع فيزيائية صريحة (يمين/يسار)
+   بمعزل عن اتجاه الصفحة، وكلٌّ منهما بنفس القواعد الأساسية للتلاشٍ
+   والهالة والصفة الزخرفية */
+.league-ticket-player--right { inset-inline-end: auto; right: 4%; }
+.league-ticket-player--left { inset-inline-end: 4%; }
+
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {
   .league-ticket-player { height: 70%; opacity: .85; }
 }

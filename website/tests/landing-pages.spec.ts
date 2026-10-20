@@ -124,6 +124,12 @@ test('race strip: navigation arrows scroll the cards and verified match ids link
 
   /* اسم البطولة فوق الشريط مخفي بصرياً — يبقى في المحتوى للوصولية */
   await expect(page.locator('.match-league > header h3.visually-hidden')).toHaveCount(1);
+  /* السطر التمهيدي للهيرو مخفي بصرياً */
+  await expect(page.locator('.matches-eyebrow.visually-hidden')).toHaveCount(1);
+  /* شريط الأدوات: الحالة وزر التحديث مخفيان — والمنطقة الزمنية باقية */
+  await expect(page.locator('.matches-toolbar .matches-status.visually-hidden')).toHaveCount(1);
+  await expect(page.locator('.matches-refresh')).toBeHidden();
+  await expect(page.locator('.matches-toolbar select')).toBeVisible();
 
   /* حاوية التجميع (uiverse calm-bobcat-35 مكيَّفاً): هيكل الساعة وزجاجه
      فقط — التاج وزر الإجراء والسواران أُزيلت بطلب صريح */

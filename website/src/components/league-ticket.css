@@ -303,3 +303,18 @@
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {
   .league-ticket-player { height: 70%; opacity: .85; }
 }
+
+/* ── التذكرة الجامعة في صفحة «مواعيد المباريات» ──
+   نفس تصميم تذكرة البطولة حرفياً؛ الجديد فقط صفّ أيقونات البطولات
+   الثماني مكان شارة البطولة الواحدة، وغلاف بمسافة فوق التهية */
+.matches-hero-ticket { margin: 18px 0 4px; }
+
+.all-leagues-ticket .leagues-ticket-icons {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 22px 18px 0;
+}

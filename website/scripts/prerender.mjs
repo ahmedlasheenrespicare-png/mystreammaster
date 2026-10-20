@@ -15,22 +15,43 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { assertKeywordInTitle, assertTitleShape, findDuplicateKeywords } from "./seo-guard.mjs";
+import {
+  assertKeywordInTitle,
+  assertTitleLength,
+  findDuplicateKeywords,
+  noteBrandInTitle,
+} from "./seo-guard.mjs";
+import { hasKeywordEntry } from "../src/keywords.mjs";
 
 const DIST = "dist";
 const SSR_ENTRY = "dist-ssr/entry-server.js";
 const SEO_REPORT = path.join("docs", "seo-report.txt");
 
-/* كتابة تقرير المخالفات بلا طوابع زمنية حتى يبقى الناتج حتمياً (git status نظيف) */
-async function writeSeoReport(sections) {
+/* كتابة تقرير المخالفات بلا طوابع زمنية حتى يبقى الناتج حتمياً (git status نظيف).
+   المخالفات وحدها تُفشل SEO_STRICT=1؛ التحذيرات وملاحظات البراند معلوماتية. */
+async function writeSeoReport(stats) {
   await fs.mkdir("docs", { recursive: true });
-  const header = [
+  const lines = [
     "# تقرير حرّاس SEO — مولَّد تلقائياً في كل بناء",
-    "# الوضع الافتراضي تحذير فقط؛ SEO_STRICT=1 يحوّل المخالفة إلى فشل بناء.",
+    "# الوضع الافتراضي تحذير فقط؛ SEO_STRICT=1 يحوّل المخالفات المانعة إلى فشل بناء.",
     "# هذا التقرير حوكمة يمنع تكرار الخطأ، وليس وعداً بتحسّن ترتيب.",
-  ].join("\n");
-  const body = sections.length ? sections.join("\n\n") : "✅ لا مخالفات مسجَّلة بين الصفحات المرسومة مسبقاً.";
-  await fs.writeFile(SEO_REPORT, `${header}\n\n${body}\n`, "utf8");
+    "#",
+    `# ملخص ${stats.phase}: ${stats.totalRoutes} مساراً | ${stats.indexable} مفهرساً مفحوصاً | ${stats.skippedNoindex} مستثنى (noindex)`,
+    `# مخالفات مانعة: ${stats.violations.length} (كلمة غائبة ${stats.keywordMisses} · طول >60: ${stats.lengthBlocking} · تكرار: ${stats.duplicates} · تغطية ناقصة: ${stats.coverageGaps})`,
+    `# ملاحظات غير مانعة: تحذير طول 55–60: ${stats.warnings.length} · براند في العنوان (سياسة): ${stats.brandNotes.length}`,
+    "",
+  ];
+  const sections = [
+    ["## مخالفات مانعة (تُفشل SEO_STRICT=1)", stats.violations],
+    ["## تحذيرات طول العنوان (55–60 حرفاً بدون اللاحقة، غير مانعة)", stats.warnings],
+    ["## ملاحظات سياسية — البراند في العنوان (غير مانعة)", stats.brandNotes],
+  ];
+  for (const [heading, items] of sections) {
+    lines.push(heading, "");
+    lines.push(items.length ? items.join("\n\n") : "✅ لا شيء.");
+    lines.push("", "");
+  }
+  await fs.writeFile(SEO_REPORT, `${lines.join("\n").replace(/\n+$/, "")}\n`, "utf8");
 }
 
 const SITE_URL = (process.env.VITE_SITE_URL || "https://streammasterstore.com").replace(/\/+$/, "");
@@ -191,18 +212,46 @@ async function main() {
   const routes = getAllRoutes();
   const indexableRoutes = [];
 
-  /* حرّاس SEO: تُجمَع المخالفات وتُكتب في تقرير، والبناء يفشل فقط مع SEO_STRICT=1 */
+  /* حرّاس SEO على الصفحات المفهرسة فقط: صفحات noindex (تفاصيل المباريات
+     والصفحات الوظيفية) لا تظهر في نتائج البحث فلا تُفرض عليها قواعد العناوين.
+     تُجمَع المخالفات المانعة في تقرير، والبناء يفشل بها فقط مع SEO_STRICT=1. */
   const strict = process.env.SEO_STRICT === "1";
   const violations = [];
+  const warnings = [];
+  const brandNotes = [];
   const entries = [];
+  let indexableGuarded = 0;
+  let skippedNoindex = 0;
+  let keywordMisses = 0;
+  let lengthBlocking = 0;
+  let coverageGaps = 0;
 
   let count = 0;
   for (const route of routes) {
     const { html, seo } = renderPage(route);
-    entries.push({ route, primary: seo.primaryKeyword ?? null, intent: seo.intent });
-    const keywordViolation = assertKeywordInTitle(route, seo.title, seo.primaryKeyword ?? null);
-    if (keywordViolation) violations.push(keywordViolation);
-    violations.push(...assertTitleShape(route, seo.title));
+    const noindex = String(seo.robots ?? "").startsWith("noindex");
+    if (noindex) {
+      skippedNoindex++;
+    } else {
+      indexableGuarded++;
+      entries.push({ route, primary: seo.primaryKeyword ?? null, intent: seo.intent });
+      /* حارس التغطية: كل صفحة قابلة للفهرسة يجب أن يكون لها مدخل في الخريطة */
+      if (!hasKeywordEntry(route)) {
+        violations.push(`صفحة قابلة للفهرسة بلا مدخل في خريطة الكلمات → ${route}`);
+        coverageGaps++;
+      }
+      const keywordViolation = assertKeywordInTitle(route, seo.title, seo.primaryKeyword ?? null);
+      if (keywordViolation) {
+        violations.push(keywordViolation);
+        keywordMisses++;
+      }
+      const length = assertTitleLength(route, seo.title);
+      violations.push(...length.violations);
+      lengthBlocking += length.violations.length;
+      warnings.push(...length.warnings);
+      const brandNote = noteBrandInTitle(route, seo.title);
+      if (brandNote) brandNotes.push(brandNote);
+    }
     const headed = applyHead(template, seo);
     const withAds = NO_ADS_ROUTES.has(route) ? stripAdsense(headed, route) : headed;
     /* الصفحات الإنجليزية تُسلَّم بـ lang="en" dir="ltr" بدل قالب العربية */
@@ -227,17 +276,30 @@ async function main() {
     notFoundHtml.replace('<div id="root"></div>', `<div id="root">${notFound.html}</div>`)
   );
 
-  /* الحرّاس الثلاثة: شكل العنوان، الكلمة داخل العنوان، تكرار الكلمات/القصد التجاري.
+  /* حارس التكرار: كلمة واحدة لا يملكها مساران (والقصد التجاري لا يتكرر).
      صفحة 404 noindex لا تُفحَص ولا تُدرَج في الخريطة. */
-  violations.push(...findDuplicateKeywords(entries));
-  await writeSeoReport(violations);
+  const duplicateViolations = findDuplicateKeywords(entries);
+  violations.push(...duplicateViolations);
+  await writeSeoReport({
+    phase: "صفحات React (prerender)",
+    totalRoutes: routes.length,
+    indexable: indexableGuarded,
+    skippedNoindex,
+    violations,
+    warnings,
+    brandNotes,
+    keywordMisses,
+    lengthBlocking,
+    duplicates: duplicateViolations.length,
+    coverageGaps,
+  });
   if (violations.length) {
     console.error(
-      `\n⚠️  ${violations.length} مخالفة SEO — التقرير في website/docs/seo-report.txt`
+      `\n⚠️  ${violations.length} مخالفة SEO مانعة (الصفحات المفهرسة) — التقرير في website/docs/seo-report.txt`
     );
-    if (strict) throw new Error(`SEO strict: ${violations.length} مخالفة`);
+    if (strict) throw new Error(`SEO strict: ${violations.length} مخالفة مانعة`);
   } else {
-    console.log("\n✅ حرّاس SEO: لا مخالفات في الصفحات المرسومة مسبقاً");
+    console.log("\n✅ حرّاس SEO: لا مخالفات مانعة في الصفحات المفهرسة المرسومة مسبقاً");
   }
 
   /* خريطة الموقع */

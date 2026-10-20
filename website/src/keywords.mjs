@@ -122,3 +122,11 @@ export function normalizeRoute(route) {
 export function keywordsFor(route) {
   return KEYWORDS[normalizeRoute(route)] ?? { primary: null, intent: "navigational" };
 }
+
+/**
+ * هل المسار مُغطّى صراحةً في الخريطة؟ يفصل «صفحة بلا استهداف (primary: null)»
+ * عن «صفحة نُسيت من الخريطة» — تستخدمه حرّاسات التغطية وقت البناء.
+ */
+export function hasKeywordEntry(route) {
+  return Object.prototype.hasOwnProperty.call(KEYWORDS, normalizeRoute(route));
+}

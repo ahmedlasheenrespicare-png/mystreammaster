@@ -1,10 +1,18 @@
 /* ==========================================================================
-   حرّاس SEO وقت البناء — ثلاث قواعد تمنع تكرار أخطاء حوكمة الكلمات
+   حرّاس SEO وقت البناء — قواعد تمنع تكرار أخطاء حوكمة الكلمات
    --------------------------------------------------------------------------
-   1) assertKeywordInTitle: الكلمة الأساسية يجب أن تظهر في العنوان.
-   2) assertTitleShape: عنوان بلا اسم البراند وطوله ≤ 60 حرفاً.
-   3) findDuplicateKeywords: كلمة واحدة لا يملكها مساران (والقصد التجاري
+   1) assertKeywordInTitle: الكلمة الأساسية يجب أن تظهر في العنوان (مانع).
+   2) assertTitleLength: الطول يُقاس على جزء العنوان قبل لاحقة البراند
+      (أول «|») — مخالفة مانعة فوق 60 حرفاً، وتحذير معلوماتي بين 55 و60.
+      وجود البراند في نهاية العنوان سياسة تحريرية مسموح بها لا خطأ تقني،
+      لذلك لا يُحسب في عداد المخالفات المانعة.
+   3) noteBrandInTitle: ملاحظة معلوماتية غير مانعة باسم البراند في العنوان.
+   4) findDuplicateKeywords: كلمة واحدة لا يملكها مساران (والقصد التجاري
       transactional لا يتكرر على كلمتين).
+
+   كل الحرّاس تُستدعى على الصفحات القابلة للفهرسة فقط؛ صفحات noindex
+   (صفحات المباريات التفصيلية والصفحات الوظيفية) مستثناة من طرف سكربتات
+   البناء لأن عناوينها لا تُعرض في نتائج البحث أصلاً.
 
    الدوال كلها خالصة: تستقبل المدخلات وتعيد نصوص المخالفات، فتُستدعى من
    prerender.mjs (صفحات React) ومن publish-static.mjs (الصفحات القديمة)
@@ -26,12 +34,38 @@ export function assertKeywordInTitle(route, title, primary) {
   return `العنوان لا يخدم كلمته → ${route}\n  الكلمة: ${primary}\n  العنوان: ${title}`;
 }
 
-/** عنوان بلا اسم البراند وبطول ≤ 60 حرفاً */
-export function assertTitleShape(route, title) {
-  const problems = [];
-  if (title.includes("ستريم ماستر")) problems.push(`اسم البراند داخل العنوان → ${route} :: ${title}`);
-  if (title.length > 60) problems.push(`عنوان ${title.length} حرفاً (> 60) → ${route}`);
-  return problems;
+/** الجزء الدلالي من العنوان قبل لاحقة البراند (أول فاصلة عمودية) */
+export function titleWithoutBrand(title) {
+  return String(title).split("|")[0].trim();
+}
+
+/**
+ * طول العنوان بدون اللاحقة:
+ * • > 60 حرفاً: مخالفة مانعة تدخل عداد SEO_STRICT.
+ * • 55–60 حرفاً: تحذير معلوماتي غير مانع.
+ */
+export function assertTitleLength(route, title) {
+  const core = titleWithoutBrand(title);
+  const violations = [];
+  const warnings = [];
+  if (core.length > 60) {
+    violations.push(`عنوان ${core.length} حرفاً بدون اللاحقة (> 60) → ${route}`);
+  } else if (core.length > 55) {
+    warnings.push(`عنوان ${core.length} حرفاً بدون اللاحقة (55–60) → ${route}`);
+  }
+  return { violations, warnings };
+}
+
+/**
+ * ملاحظة سياسة غير مانعة: وجود اسم البراند في العنوان قرار تحريري
+ * (قاعدتنا: ≈55 حرفاً بدون اسم الموقع، ووجوده في النهاية مسموح).
+ * تُعرض في التقرير تحت «ملاحظات سياسية» ولا تُفشل البناء الصارم.
+ */
+export function noteBrandInTitle(route, title) {
+  if (title.includes("ستريم ماستر")) {
+    return `اسم البراند داخل العنوان → ${route} :: ${title}`;
+  }
+  return null;
 }
 
 /** كلمة واحدة لا يملكها مساران — وحراسة إضافية على تكرار القصد التجاري */

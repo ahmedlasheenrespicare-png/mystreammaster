@@ -65,7 +65,12 @@
      حرفي ودون أي دوران/حركة: اللوح الداكن بالتوهّج الذهبي العلوي واللمعان
      المائل، عنوان الجدول بتدرّج الذهب وحدّه، مراكز الفرق `[data-rate-row-rank]`
      كأرقام ذهبية متدرجة متوهجة (نفس روح الرقم «1» في القالب)، الأشرطة
-     المصغّرة والفرز والشارات بهوية ذهبية/زجاجية داكنة. القالب الأصلي يستخدم
+     المصغّرة والفرز والشارات بهوية ذهبية/زجاجية داكنة. ثم صارت شارات
+     التصنيف التكتيكي `[data-rate-tactic]` الخمس نفسها بطاقة هولوغرامية
+     مصغّرة بكل تفاصيل القالب (طبقة خلفية شفافة بحدّ فقط عبر data-holo +
+     نص أمامي بتدرّج معدن بلون الفئة + توهّج + لمعان زجاجي قطري + ميل
+     تفاعلي واحد عند التحويم) — بنفس مساحة الشارة السابقة ودون أي حركة
+     في السكون. القالب الأصلي يستخدم
      `animation: card1-wobble 6.2s ease-in-out infinite` — أُلغيت تماماً
      (ممنوعة في موقعنا حتى مع prefers-reduced-motion، وقد عطّلها القالب
      نفسه هناك). كل القواعد معزولة بـ `.ls-rates-details` / `.ls-rates-analyst-table`
@@ -1050,61 +1055,134 @@
   box-shadow: 0 0 6px rgba(250, 204, 21, 0.45);
 }
 
-/* التصنيف التكتيكي التلقائي — شارة بحافة لونية بادئة ومعيّن صغير:
-   النص هو الحامل الأساسي للمعنى (لا يُعتمد على اللون وحده)، وكل فئة
-   لها لوحة ألوان من ثلاثة متغيرات (حافة/خلفية/حد) مضبوطة التباين */
+/* --------------------------------------------------------------------------
+   التصنيف التكتيكي — بطاقة هولوغرامية مصغّرة بكل تفاصيل قالب
+   uiverse.io/Thomas-Cabrit/mighty-squid-78 (MIT): لوح زجاجي داكن بتوهّج
+   لون الفئة، طبقة نص خلفية شفافة بحدّ فقط (نسخة زخرفية عبر data-holo —
+   مع Alternative Text فارغ كي لا تُقرأ مرتين)، نص أمامي بتدرّج معدن
+   بلون الفئة نفسها وحدّ وتوهّج، ولمعان زجاجي قطري فوق الكل — بنفس
+   مساحة الشارة السابقة تماماً (2px 9px / 0.72rem)، وبلا أي حركة في
+   السكون: ميل ثلاثي الأبعاد واحد تفاعلي عند التحويم فقط (يُعطَّل مع
+   prefers-reduced-motion). النص هو حامل المعنى الأساسي — لون الفئة
+   الغلاف لا أكثر.
+   -------------------------------------------------------------------------- */
 .ls-tactic {
-  --tc-accent: #a1a1aa;
-  --tc-bg: rgba(255, 255, 255, 0.045);
-  --tc-border: rgba(161, 161, 170, 0.35);
+  --h-pale: #e4e4e7;
+  --h-vivid: #a1a1aa;
+  --h-deep: #71717a;
+  --h-stroke: rgba(161, 161, 170, 0.5);
+  --h-glow: rgba(113, 113, 122, 0.28);
+  --h-border: rgba(161, 161, 170, 0.32);
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 9px;
+  padding: 3px 9px;
   border-radius: 8px;
-  border: 1px solid var(--tc-border);
-  border-inline-start: 4px solid var(--tc-accent);
-  background-color: var(--tc-bg);
-  color: var(--tc-accent);
+  background-color: rgba(12, 12, 16, 0.74);
+  background-image: radial-gradient(110px 46px at 38% 28%, var(--h-glow), rgba(0, 0, 0, 0) 72%);
   font-size: 0.72rem;
   font-weight: 800;
   line-height: 1.5;
+  letter-spacing: 0.2px;
   white-space: nowrap;
+  transition: transform 0.55s ease-out;
 }
 
+/* الطبقة الخلفية — روح .card-1__layer--back: نسخة شفافة بحدّ فقط من
+   نص الفئة (blur + stroke بلا تعبئة) خلف النص الأمامي */
 .ls-tactic::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 1.5px;
-  transform: rotate(45deg);
-  background: var(--tc-accent);
-  flex-shrink: 0;
+  content: attr(data-holo);
+  content: attr(data-holo) / "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: transparent;
+  -webkit-text-stroke: 0.6px var(--h-stroke);
+  filter: blur(1px);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
+/* الطبقة الأمامية — روح .card-1__layer--front: النص نفسه بتدرّج معدن
+   بلون الفئة وحدّه وتوهّجه، مع منتصف العمق عبر text-shadow */
+.ls-tactic-label {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-style: normal;
+  background-image: linear-gradient(90deg, var(--h-pale) 0%, var(--h-vivid) 38%, var(--h-deep) 62%, var(--h-pale) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0.5px var(--h-stroke);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 9px var(--h-glow);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+}
+
+/* الإطار الزجاجي واللمعان القطري — روح .card-1__holo::after */
+.ls-tactic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  border: 1px solid var(--h-border);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.02) 45%, rgba(0, 0, 0, 0));
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* لوحات ألوان الفئات الخمس — كل فئة بهويّتها (تدرّج/حدّ/توهّج من لونها) */
 .ls-tactic--elite-balanced {
-  --tc-accent: #c4b5fd;
-  --tc-border: rgba(196, 181, 253, 0.40);
+  --h-pale: #ddd6fe;
+  --h-vivid: #a78bfa;
+  --h-deep: #7c3aed;
+  --h-stroke: rgba(167, 139, 250, 0.55);
+  --h-glow: rgba(139, 92, 246, 0.32);
+  --h-border: rgba(167, 139, 250, 0.38);
 }
 
 .ls-tactic--offensive {
-  --tc-accent: #6ee7b7;
-  --tc-border: rgba(110, 231, 183, 0.35);
+  --h-pale: #d1fae5;
+  --h-vivid: #34d399;
+  --h-deep: #059669;
+  --h-stroke: rgba(52, 211, 153, 0.55);
+  --h-glow: rgba(16, 185, 129, 0.30);
+  --h-border: rgba(52, 211, 153, 0.35);
 }
 
 .ls-tactic--defensive {
-  --tc-accent: #7dd3fc;
-  --tc-border: rgba(125, 211, 252, 0.35);
+  --h-pale: #e0f2fe;
+  --h-vivid: #38bdf8;
+  --h-deep: #0284c7;
+  --h-stroke: rgba(56, 189, 248, 0.55);
+  --h-glow: rgba(14, 165, 233, 0.30);
+  --h-border: rgba(56, 189, 248, 0.35);
 }
 
 .ls-tactic--struggling {
-  --tc-accent: #fca5a5;
-  --tc-border: rgba(252, 165, 165, 0.35);
+  --h-pale: #fee2e2;
+  --h-vivid: #f87171;
+  --h-deep: #dc2626;
+  --h-stroke: rgba(248, 113, 113, 0.55);
+  --h-glow: rgba(239, 68, 68, 0.30);
+  --h-border: rgba(248, 113, 113, 0.35);
 }
 
 .ls-tactic--na {
-  --tc-accent: #a1a1aa;
-  --tc-border: rgba(161, 161, 170, 0.35);
+  --h-pale: #e4e4e7;
+  --h-vivid: #a1a1aa;
+  --h-deep: #71717a;
+  --h-stroke: rgba(161, 161, 170, 0.5);
+  --h-glow: rgba(113, 113, 122, 0.26);
+  --h-border: rgba(161, 161, 170, 0.32);
 }
 
 /* --------------------------------------------------------------------------
@@ -1172,6 +1250,12 @@
      (transform فقط، بلا حلقات، وتُعطَّل مع prefers-reduced-motion) */
   .ls-rate-subcard:hover .ls-rate-blob {
     transform: translate(-18px, 16px);
+  }
+
+  /* ميل هولوغرامي واحد لشارة الفئة عند التحويم — روح دوران
+     card-1__holo في القالب كحركة تفاعلية واحدة بلا أي حلقة */
+  .ls-rates-analyst-table .ls-tactic:hover {
+    transform: perspective(260px) rotateX(9deg) rotateY(-11deg);
   }
 
   .ls-rates-summary:hover {

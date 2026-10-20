@@ -713,8 +713,15 @@ export default function StandingsRatesCard({
                     <td><bdi dir="ltr">{fmt2(numOrNull(row.ppm))}</bdi></td>
                     <td><bdi dir="ltr">{fmtPct(numOrNull(row.winPct))}</bdi></td>
                     <td>
-                      <span className={`ls-tactic${row.tactic ? ` ls-tactic--${row.tactic}` : ' ls-tactic--na'}`} data-rate-tactic={row.tactic ?? 'na'}>
-                        {row.tactic ? TACTIC_LABELS[row.tactic] : 'غير متاح'}
+                      {/* شارة الفئة الهولوغرامية: data-holo يحمل نص الفئة للطبقة
+                          الخلفية الشفافة (زخرفية)، والنص الفعلي داخل الغلاف —
+                          المحتوى نفسه دون أي تغيير */}
+                      <span
+                        className={`ls-tactic${row.tactic ? ` ls-tactic--${row.tactic}` : ' ls-tactic--na'}`}
+                        data-rate-tactic={row.tactic ?? 'na'}
+                        data-holo={row.tactic ? TACTIC_LABELS[row.tactic] : 'غير متاح'}
+                      >
+                        <i className="ls-tactic-label">{row.tactic ? TACTIC_LABELS[row.tactic] : 'غير متاح'}</i>
                       </span>
                     </td>
                     {hasArchive && (

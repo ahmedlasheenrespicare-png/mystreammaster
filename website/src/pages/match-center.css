@@ -89,6 +89,12 @@
   min-width: 0;
   padding: 10px 2px;
   background: linear-gradient(90deg, transparent, #111 16%, #111 84%, transparent);
+  /* الميل (skew) يمدّ صندوق اللوح أفقياً خارج مكانه، فيصير للإطار محتوى
+     أوسع منه ويُحسب تمريراً أفقياً وإن كان مقصوصاً بصرياً. القصّ هنا عند
+     الشريط نفسه يوقف هذا الامتداد قبل أن يصل إلى الإطار. `contain: paint`
+     يضمن القصّ حتى في المتصفحات التي لا تعامل `overflow` وحدها بهذا المعنى. */
+  overflow: hidden;
+  contain: paint;
 }
 .mc-pitch-teams > * { flex: 1 1 0; min-width: 0; }
 .mc-pitch-team, .mc-pitch-scoreboard { min-width: 0; text-align: center; }

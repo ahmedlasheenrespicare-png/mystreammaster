@@ -78,7 +78,13 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {/* الدوري الألماني: كين يسار التذكرة (موضع فيزيائي صريح) —
           بنفس الصفة الزخرفية وطريقة الدمج */}
       {leagueId === 'ger.1' && (
-        <img className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        <>
+          {/* أوليسيه يمين التذكرة (موضع فيزيائي صريح) — ثنائي مع كين
+              يساراً بنمط الثنائيات السابقة (مبابي/يامال، رونالدو/ميسي،
+              هالاند/سوبسلاي، ديمبلي/غويري)، بنفس الصفة الزخرفية */}
+          <img className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+          <img className="league-ticket-player league-ticket-player--right" src="/images/players/ger-olise.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+        </>
       )}
       {/* الدوري الإيطالي: لاوتارو مارتينيز يسار التذكرة (موضع فيزيائي
           صريح) — بنفس الصفة الزخرفية وطريقة الدمج */}

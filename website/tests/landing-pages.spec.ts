@@ -62,6 +62,16 @@ test('league landing page: static guide, live table, official broadcasters and F
   await expect(page.locator('.match-card')).toHaveCount(2);
   await expect(page.locator('.match-card').first()).toContainText('Arsenal');
 
+  /* شريط الكروت المتحرك (uiverse jolly-snail-62 المكيَّف): شريط واحد يرتب
+     المباريات من الأقرب موعداً إلى الأبعد، وكل كرت بعناصر القالب كاملة
+     (خطّ التقدّم النقطي، لوح النتيجة/الموعد، العلامة المائية) */
+  await expect(page.locator('.match-race')).toHaveCount(1);
+  await expect(page.locator('.match-card .match-dots')).toHaveCount(2);
+  await expect(page.locator('.match-card .match-score')).toHaveCount(2);
+  await expect(page.locator('.match-card .match-watermark')).toHaveCount(2);
+  /* الترتيب: الأقرب موعداً أولاً (١٦:٠٠ أرسنال قبل ١٨:٣٠ ليفربول) */
+  await expect(page.locator('.match-card').nth(1)).toContainText('Liverpool');
+
   /* الناقل الرسمي + التنويه + الخدمة المعتمدة */
   await expect(page.locator('#broadcasters-title')).toContainText('القنوات الناقلة رسمياً');
   await expect(page.getByText('beIN SPORTS', { exact: true }).first()).toBeVisible();
@@ -146,7 +156,7 @@ test('league landing heroes carry the ticket card with the league icon beside th
     const ticket = page.locator('.matches-hero-title .league-ticket');
     await expect(ticket, url).toHaveCount(1);
     await expect(ticket, url).toHaveAttribute('aria-hidden', 'true');
-    /* عناصر شكل التذكرة: اللوح الهولوغرافي ومقصّ القصّ (بلا باركود ولا رمز تقني) */
+    /* عناصر شكل التذكرة: اللوح الداكن بنقطة الضوء والشعاع (بلا باركود ولا رمز تقني) */
     await expect(ticket.locator('.league-ticket-bg.league-ticket-holographic'), url).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-symbol'), url).toHaveCount(1);
     /* الكرت يملأ عرض حاوية الرأس كاملاً (تفاوت ≤1px) وبارتفاع ثابت صريح (265px) */

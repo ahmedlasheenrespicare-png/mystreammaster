@@ -158,3 +158,147 @@
    بلا صفحة مكررة. يظهر فقط للمباريات المطابقة بمعرّف المصدر. */
 .match-center-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 9px 15px; min-height: 42px; border-radius: 999px; background: #0b0b0f; color: #d8ff3e; font-size: .78rem; font-weight: 800; text-decoration: none; border: 1px solid #0b0b0f; transition: transform .18s ease, background .18s ease; }
 .match-center-link:hover { transform: translateY(-1px); background: #171b28; }
+
+/* ==========================================================================
+   شريط كروت «جدول المباريات والنتائج» في صفحات البطولات (layout="race")
+   قالب: uiverse.io/sofiapetushok/jolly-snail-62 — sofiapetushok — MIT
+   بكل تفاصيله مكيّفاً بهوية الموقع: لوحا الفريقين المائلان skew ±41deg
+   بزوايا متوهّجة (ليموني للمضيف وذهبي للضيف كما في جدول المعدلات)، خطّ
+   تقدّم نقطي بينهما (نبضة واحدة عند التحويم — لا حلقات لانهائية)، لوح
+   نتيجة بتدرّج نصّي مقصوص، مناطق زمنية باهتة، وعلامة مائية شفافة.
+   الحركة التلقائية مقدَّمة من useRaceAutoScroll في المكوّن: من الأقرب
+   موعداً إلى الأبعد ثم تعود للبداية، وتتوقف عند التحويم/اللمس/التركيز/
+   التمرير اليدوي/خروج الشريط من الشاشة، وتُعطَّل مع prefers-reduced-motion.
+   كل نصوص الكرت وأدوات اللوحة كما هي — لا محتوى محذوف.
+   ========================================================================== */
+.matches-board--race .match-league > .match-race {
+  display: block;
+  background: linear-gradient(180deg, #141418, #0e0e12);
+  border: 1px solid #232327;
+  border-radius: 16px;
+  padding: 14px 0 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* تلاشٍ خفيف عند الحافتين لإحساس حلقة مستمرة */
+  mask-image: linear-gradient(90deg, transparent 0, #000 26px, #000 calc(100% - 26px), transparent 100%);
+}
+.matches-board--race .match-league > .match-race::-webkit-scrollbar { display: none; }
+.match-race-track { display: flex; gap: 14px; width: max-content; padding: 0 16px; }
+
+/* الكرت — لوح القالب الداكن بهوية الموقع */
+.matches-board--race .match-card {
+  position: relative;
+  width: min(400px, 84vw);
+  flex-shrink: 0;
+  background: linear-gradient(165deg, #131318, #0b0b0f);
+  border: 1px solid #232327;
+  border-radius: 14px;
+  padding: 14px 16px 26px;
+  color: #f6f4ec;
+  min-width: 0;
+}
+.matches-board--race .match-card.is-live { border-color: rgba(216, 255, 62, .55); box-shadow: 0 0 22px rgba(216, 255, 62, .12); }
+.matches-board--race .match-status { background: #1b1b21; color: #a1a1aa; }
+.matches-board--race .status-live { background: rgba(216, 255, 62, .14); color: #d8ff3e; }
+.matches-board--race .status-other { background: rgba(226, 197, 138, .12); color: #e2c58a; }
+.matches-board--race .match-venue { color: #71717a; }
+
+/* صف الفريقين — بنية القالب: شريط داكن متلاشٍ الطرفين ولوحان مائلان */
+.matches-board--race .match-contest {
+  display: flex; flex-wrap: nowrap; align-items: center; justify-content: center;
+  background: linear-gradient(90deg, transparent, #15151a, transparent);
+  border-radius: 12px;
+  padding: 6px 0;
+  margin-top: 12px;
+}
+.matches-board--race .match-contest > .match-team:first-child,
+.matches-board--race .match-contest > .match-team:last-child {
+  flex: 1; text-align: center; position: relative;
+  padding: 15px 24px; overflow: hidden; min-width: 0;
+}
+.matches-board--race .match-contest > .match-team:first-child { border-radius: 10px 10px 10px 30px; transform: skew(41deg); }
+.matches-board--race .match-contest > .match-team:last-child { border-radius: 10px 10px 30px 10px; transform: skew(-41deg); }
+/* عكس الميلان على المحتوى حتى يبقى الشعار والاسم مستقيمين */
+.matches-board--race .match-contest > .match-team:first-child > * { transform: skew(-41deg); }
+.matches-board--race .match-contest > .match-team:last-child > * { transform: skew(41deg); }
+.matches-board--race .match-contest .match-team { gap: 8px; font-size: .8rem; }
+.matches-board--race .match-contest .match-team img { width: 34px; height: 34px; }
+.matches-board--race .match-contest .match-team span {
+  color: #f6f4ec; font-weight: 600; max-width: 116px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.matches-board--race .team-placeholder { font-size: 1.3rem; height: 34px; color: #55555e; }
+/* توهّجات الزوايا الأربع — ليمونية للمضيف وذهبية للضيف */
+.matches-board--race .match-contest > .match-team:first-child::after {
+  position: absolute; top: -3px; background: #d8ff3e; content: ""; height: 23px; border-radius: 27px;
+  left: -20px; filter: blur(2px); transform: rotate(208deg); width: 20px; box-shadow: 0 0 32px #b8e62e;
+}
+.matches-board--race .match-contest > .match-team:first-child::before {
+  position: absolute; bottom: -15px; background: #7da316; content: ""; height: 17px; border-radius: 80px;
+  right: 0; filter: blur(1px); transform: translate(-50%, 0%); width: 80%; box-shadow: 0 0 32px #5c7d12;
+}
+.matches-board--race .match-contest > .match-team:last-child::after {
+  position: absolute; top: -3px; background: #e2c58a; content: ""; height: 23px; border-radius: 27px;
+  right: -20px; filter: blur(2px); transform: rotate(208deg); width: 20px; box-shadow: 0 0 32px #caa558;
+}
+.matches-board--race .match-contest > .match-team:last-child::before {
+  position: absolute; bottom: -15px; background: #b3541e; content: ""; height: 17px; border-radius: 80px;
+  left: 0; filter: blur(1px); transform: translate(50%, 0%); width: 80%; box-shadow: 0 0 32px #8a3c12;
+}
+
+/* خطّ التقدّم النقطي بين الفريقين — ثابت، وينبض دورة واحدة عند التحويم */
+.matches-board--race .match-dots {
+  height: 3px; position: relative; width: 60px; display: block; overflow: hidden;
+  margin: 0; border-radius: 10px; background: rgba(246, 244, 236, .08); flex-shrink: 0;
+}
+.matches-board--race .match-dots .match-dots-load {
+  background: linear-gradient(90deg, #d8ff3e, #e2c58a); display: block; height: 1.5px; width: 3px;
+  bottom: 0; position: absolute; transform: translateX(0);
+}
+.matches-board--race .match-card:hover .match-dots-load,
+.matches-board--race .match-card:active .match-dots-load { animation: match-dots-run 2.5s ease 1 both; }
+@keyframes match-dots-run {
+  0% { width: 3px; transform: translateX(0); }
+  40% { width: 3px; transform: translateX(57px); }
+  75% { width: 100%; transform: translateX(0); }
+  100% { width: 3px; transform: translateX(0); }
+}
+
+/* لوح النتيجة/الموعد — الظل الداخلي والخارجي للقالب بنصّ متدرّج مقصوص */
+.matches-board--race .match-scoreboard { display: flex; justify-content: center; }
+.matches-board--race .match-score {
+  display: flex; flex-wrap: wrap; padding: 10px; border-radius: 10px; width: fit-content;
+  background: linear-gradient(#1e1e24 0%, #0c0c0f8e 4%, #17141a);
+  box-shadow: inset 0 0 1px 0 #2c2c33, 0 0 20px 0 #1313139c;
+  margin: 10px 0; text-align: center;
+}
+.matches-board--race .match-score strong {
+  font-size: 24px; width: 100%; white-space: nowrap;
+  background: linear-gradient(90deg, #d8ff3e, #e2c58a);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.matches-board--race .match-score strong > span { color: #71717a; padding: 0 2px; -webkit-text-fill-color: #71717a; }
+.matches-board--race .match-score small { width: 100%; color: #a1a1aa; font-size: .68rem; margin-top: 3px; }
+
+/* مناطق التوقيت الثلاث — صفّ الساعة الباهت في القالب */
+.matches-board--race .match-times { padding-top: 12px; border-top: 1px solid #232327; }
+.matches-board--race .match-times span { color: #8f8f98; }
+.matches-board--race .match-times time { color: #f6f4ec; font-weight: 500; }
+.matches-board--race .match-times small { color: #71717a; }
+
+/* العلامة المائية أسفل الكرت — نص المجموعة بشفافية القالب */
+.matches-board--race .match-watermark {
+  position: absolute; right: 12px; bottom: 5px;
+  color: rgba(246, 244, 236, .2); font-size: .68rem; font-weight: 700; pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matches-board--race .match-dots-load { animation: none !important; }
+}
+@media (max-width: 700px) {
+  .matches-board--race .match-card { width: min(330px, 82vw); padding: 12px 12px 24px; }
+  .matches-board--race .match-contest > .match-team:first-child,
+  .matches-board--race .match-contest > .match-team:last-child { padding: 12px 14px; }
+  .matches-board--race .match-contest .match-team span { max-width: 92px; }
+}

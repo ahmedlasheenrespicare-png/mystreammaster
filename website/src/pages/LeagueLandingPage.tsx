@@ -49,6 +49,7 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
           heading="جدول المباريات والنتائج"
           note="تغطّي هذه الصفحة مباريات هذه البطولة فقط ضمن التواريخ المختارة من التقويم."
           dataNote={false}
+          layout="race"
         />
 
         {/* قسم جدول الترتيب — مباشرة بعد لوحة المباريات كما اتُّفق. بطولة لم

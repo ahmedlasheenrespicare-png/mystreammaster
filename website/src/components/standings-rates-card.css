@@ -1,0 +1,1131 @@
+/* ==========================================================================
+   بطاقة «الهجوم والدفاع — معدلات أهداف الموسم» — StandingsRatesCard
+   إعادة تصميم بهوية قالب Uiverse المرجعي
+   --------------------------------------------------------------------------
+   • مقتبس من تصميم مجتمعي مفتوح:
+     https://uiverse.io/sabbircoder07/spotty-firefox-94 — المؤلف
+     sabbircoder07 — رخصة MIT (Uiverse.io). القالب الأصلي بطاقة نتيجة اختبار
+     مزدوجة (Results Summary Card): لوح جانبي متدرج `#aa076b → #61045f`
+     بزوايا `30px/10px` ودائرة نتيجة `.result-box` وعنوان حالة ووصف، ولوح
+     ملخص أبيض يحمل أربعة صفوف باستيلية `.result-option` بالدرجات
+     `hsl(0,100%,95%)` / `hsl(39,100%,95%)` / `hsl(166,100%,95%)` /
+     `hsl(234,85%,95%)` بأيقونات دلالية عالية التباين، وزر عريض متدرج
+     `.btn` أسفل البطاقة، وظل ناعم بنفسجي `rgba(120, 87, 255, .16…3)`،
+     وقصاصات احتفالية (confetti) بألوان القالب.
+   • التكييف لبطاقة معدلات الهجوم والدفاع: اللوح المتدرج يحمل العنوان
+     الحرفي + دائرة المؤشر المحوري للموسم + شارات البيانات التعريفية، ولوح
+     الملخص يضم المؤشرات الأربعة `[data-rates-kpi]` على هيئة الصفوف
+     الباستيلية الأربع نفسها، والبطاقات الفرعية الأربع `[data-rate-card]`
+     تتبنّى الهوية المصغّرة نفسها (رأس متدرج + دائرة معدل + متن أبيض
+     بصفوف باستيلية)، وزر القالب يصبح رأس `<details>` لفتح الجدول
+     التحليلي الكامل. لا تُحذف أي معلومة من البطاقة الأصلية.
+   • كل الكلاسات معزولة ببادئة `.ls-rates-*` / `.ls-rate-*` (وبقواعد الجدول
+     التحليلي `.ls-an-*` / `.ls-sort` / `.ls-minibar` / `.ls-tactic` المخصصة
+     لهذه البطاقة وحدها) — لا تُستخدم كلاسات القالب العامة مثل
+     `.btn` / `.icon` / `.paragraph` / `.heading-primary` تجنّباً لأي تصادم.
+   • الخطوط: خطوط الموقع المحمّلة محلياً فقط (`var(--font-display)` للعناوين
+     والعائلة الافتراضية للمتن) — لا استيراد لخط خارجي مثل Hanken Grotesk.
+   • الأداء (اختلاف مقصود عن القالب الأصلي):
+     - لا عرض ثابت: قالب `width: 550px` وحجم الصفوف `210px×36px` استُبدل
+       كله بـ `width: 100%` و `min-width: 0` و `min-height` مرنة و
+       `overflow-wrap: anywhere` — لا تمرير أفقي عند 320/390/768/1440.
+     - لا حلقات لا نهائية: حركتا `gradient 10s linear infinite` و
+       `makeItRain 3000ms infinite` في القالب مُلغيتان. التدرجات ساكنة
+       (لا تحريك لـ background-image / background-position)، والقصاصات
+       مخفية ساكنة (opacity: 0) ولا تعمل مروراً واحداً إلا عند التفاعل
+       (hover في أجهزة المؤشر الدقيق، active في اللمس) عبر transform/opacity
+       فقط، وبدون `will-change` دائم.
+     - كل الحركات والانتقالات تُعطَّل بالكامل داخل
+       `@media (prefers-reduced-motion: reduce)`.
+   • شبكة التجاوب للبطاقات الفرعية محفوظة: 4 أعمدة ≥1024px، عمودان بين
+     600–1023.98px، عمود واحد أقل من 600px.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1) الحاوية الخارجية — بظل القالب الناعم البنفسجي وزواياه الدائرية
+   -------------------------------------------------------------------------- */
+.ls-rates-card {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 28px;
+  border: 1px solid #e7e1ee;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(120, 87, 255, 0.16);
+}
+
+.ls-rates-card--stale {
+  border-color: #e2c58a;
+}
+
+/* --------------------------------------------------------------------------
+   2) الجزء العلوي المزدوج — Split Summary Hero
+   (محاكاة .results-summary-container: لوح متدرج + لوح ملخص أبيض)
+   -------------------------------------------------------------------------- */
+.ls-rates-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 12px;
+  min-width: 0;
+}
+
+/* 2أ) اللوح المتدرج الرئيسي — روح .results-summary-container__result
+   بتدرّج القالب `#aa076b → #61045f` وزواياه 30px/10px */
+.ls-rates-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 24px 20px;
+  border-radius: 30px 12px;
+  background-image: linear-gradient(to bottom, #aa076b, #61045f);
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* العنوان الرئيسي — بروح .heading-primary (نص متدرج دافئ فوق التدرج الغامق) */
+.ls-rates-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.12rem, 2vw, 1.42rem);
+  font-weight: 900;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  background-image: linear-gradient(to right, #ffe3b8, #ffc7e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* الدائرة الوسطية — روح .result-box: المؤشر المحوري للموسم */
+.ls-rates-result-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 148px;
+  height: 148px;
+  padding: 10px;
+  border-radius: 50%;
+  background-image: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.10) 62%, rgba(255, 255, 255, 0.18));
+  box-shadow:
+    inset 0 0 0 6px rgba(255, 255, 255, 0.16),
+    0 14px 30px rgba(10, 2, 20, 0.32);
+}
+
+.ls-rates-result-value {
+  font-family: var(--font-display);
+  font-size: 2.35rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.ls-rates-result-label {
+  max-width: 12em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: hsl(241, 100%, 89%);
+  overflow-wrap: anywhere;
+}
+
+/* حين لا يتوفر متوسط المسابقة يُصغَّر نص «غير متاح» ليبقى داخل الدائرة */
+.ls-rates-result-value--na {
+  font-size: 1.02rem;
+  color: hsl(241, 100%, 89%);
+}
+
+/* عنوان الحالة — روح .heading-secondary (أبيض عريض) */
+.ls-rates-status {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+/* الفقرة التوضيحية — روح .paragraph بلون القالب الفاتح */
+.ls-rates-subtitle {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.9;
+  color: hsl(221, 100%, 96%);
+  overflow-wrap: anywhere;
+}
+
+/* شارات البيانات التعريفية — أقراص شبه شفافة فوق التدرج */
+.ls-rates-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 2px 0 0;
+}
+
+.ls-rates-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.ls-rates-stale-badge {
+  font-size: 0.72rem;
+  /* تباين أعلى فوق التدرج الغامق: خلفية كهرمانية فاتحة ونص داكن */
+  color: #7a3d00;
+  background: #fff4d6;
+  border-color: #e8cfa0;
+}
+
+/* القصاصات الاحتفالية — روح .confetti في القالب: ساكنة ومخفية افتراضياً،
+   تعمل مروراً واحداً عند التفاعل فقط (راجع الوسم 7 أدناه) */
+.ls-rates-confetti {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ls-rates-confetti-piece {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 20px;
+  border-radius: 2px;
+  background-color: hsl(39, 100%, 56%);
+  opacity: 0;
+  transform: translateY(-14px) rotate(var(--rot, 0deg));
+}
+
+/* هندسة القصاصات: مواضع وأزمنة من القالب الأصلي (بلا حلقات) */
+.ls-rates-confetti-piece:nth-child(1) { left: 7%;  --rot: -10deg; --del: 120ms; --dur: 2000ms; }
+.ls-rates-confetti-piece:nth-child(2) { left: 14%; --rot: 20deg;  --del: 161ms; --dur: 2076ms; }
+.ls-rates-confetti-piece:nth-child(3) { left: 21%; --rot: -51deg; --del: 481ms; --dur: 2103ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(4) { left: 28%; --rot: 61deg;  --del: 334ms; --dur: 1008ms; width: 6px; height: 14px; background-color: #c33764; }
+.ls-rates-confetti-piece:nth-child(5) { left: 35%; --rot: -52deg; --del: 302ms; --dur: 1776ms; width: 3px; height: 10px; background-color: #b06ab3; }
+.ls-rates-confetti-piece:nth-child(6) { left: 42%; --rot: 38deg;  --del: 180ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(7) { left: 49%; --rot: 11deg;  --del: 395ms; --dur: 1200ms; }
+.ls-rates-confetti-piece:nth-child(8) { left: 56%; --rot: 49deg;  --del: 14ms;  --dur: 1887ms; width: 6px; height: 14px; background-color: #c33764; }
+.ls-rates-confetti-piece:nth-child(9) { left: 63%; --rot: -72deg; --del: 149ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(10) { left: 70%; --rot: 10deg; --del: 351ms; --dur: 2059ms; }
+.ls-rates-confetti-piece:nth-child(11) { left: 77%; --rot: 4deg;  --del: 307ms; --dur: 1132ms; }
+.ls-rates-confetti-piece:nth-child(12) { left: 84%; --rot: 42deg; --del: 464ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(13) { left: 91%; --rot: -72deg; --del: 429ms; --dur: 1818ms; }
+.ls-rates-confetti-piece:nth-child(14) { left: 94%; --rot: -72deg; --del: 429ms; --dur: 818ms; width: 6px; height: 14px; background-color: #c33764; }
+.ls-rates-confetti-piece:nth-child(15) { left: 96%; --rot: -72deg; --del: 429ms; --dur: 2818ms; width: 3px; height: 10px; background-color: #b06ab3; }
+.ls-rates-confetti-piece:nth-child(16) { left: 98%; --rot: -72deg; --del: 429ms; --dur: 2818ms; width: 6px; height: 14px; background-color: #c33764; }
+.ls-rates-confetti-piece:nth-child(17) { left: 50%; --rot: -72deg; --del: 429ms; --dur: 2818ms; }
+.ls-rates-confetti-piece:nth-child(18) { left: 60%; --rot: -72deg; --del: 429ms; --dur: 1818ms; }
+
+.ls-rates-confetti-piece:nth-child(odd) {
+  background-color: hsl(0, 100%, 67%);
+}
+
+/* 2ب) لوح الملخص — روح .results-summary-container__options (أبيض بعنوان أزرق داكن) */
+.ls-rates-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 18px 16px;
+  border-radius: 12px 30px;
+  background: #ffffff;
+  border: 1px solid #efeaf6;
+}
+
+.ls-rates-aside-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: hsl(224, 30%, 27%);
+  letter-spacing: 0.01em;
+}
+
+/* --------------------------------------------------------------------------
+   3) المؤشرات الأربعة — صفوف .result-option الباستيلية الأربع نفسها
+   (بلا عرض ثابت: 100% وmin-height مرنة بدل 210px×36px)
+   -------------------------------------------------------------------------- */
+.ls-rates-kpis {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ls-rates-kpi {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "icon label value"
+    "icon sub sub";
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: var(--row-bg, hsl(0, 100%, 95%));
+  border: 1px solid var(--row-border, hsl(0, 100%, 88%));
+}
+
+.ls-rates-kpi:nth-child(4n + 1) { --row-bg: hsl(0, 100%, 95%);   --row-border: hsl(0, 100%, 88%); }
+.ls-rates-kpi:nth-child(4n + 2) { --row-bg: hsl(39, 100%, 95%);  --row-border: hsl(39, 100%, 86%); }
+.ls-rates-kpi:nth-child(4n + 3) { --row-bg: hsl(166, 100%, 95%); --row-border: hsl(166, 100%, 84%); }
+.ls-rates-kpi:nth-child(4n + 4) { --row-bg: hsl(234, 85%, 95%);  --row-border: hsl(234, 85%, 87%); }
+
+/* ألوان الأيقونات الدلالية عالية التباين — درجات القالب نفسها مُغمَّقة لتبقى مقروءة فوق الباستيل */
+.ls-rates-kpi:nth-child(4n + 1) .ls-rates-kpi-icon { color: hsl(0, 84%, 44%); }
+.ls-rates-kpi:nth-child(4n + 2) .ls-rates-kpi-icon { color: hsl(39, 100%, 34%); }
+.ls-rates-kpi:nth-child(4n + 3) .ls-rates-kpi-icon { color: hsl(166, 100%, 24%); }
+.ls-rates-kpi:nth-child(4n + 4) .ls-rates-kpi-icon { color: hsl(234, 85%, 45%); }
+
+.ls-rates-kpi-icon {
+  grid-area: icon;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ls-rates-kpi-label {
+  grid-area: label;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: hsl(224, 30%, 27%);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.ls-rates-kpi-value {
+  grid-area: value;
+  font-family: var(--font-display);
+  font-size: 1.06rem;
+  font-weight: 900;
+  color: hsl(224, 30%, 27%);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ls-rates-kpi-sub {
+  grid-area: sub;
+  grid-column: 2 / -1;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #52525c;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   4) شبكة البطاقات الفرعية الأربع — 4 / 2 / 1 (شبكة التجاوب محفوظة حرفياً)
+   -------------------------------------------------------------------------- */
+.ls-rates-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+@media (min-width: 600px) and (max-width: 1023.98px) {
+  .ls-rates-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ls-rates-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* البطاقة الفرعية — الهوية المصغّرة للقالب: رأس متدرج + متن أبيض */
+.ls-rate-subcard {
+  --head-from: #aa076b;
+  --head-to: #61045f;
+  --fill-a: #aa076b;
+  --fill-b: #61045f;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid #efe9f6;
+  box-shadow: 0 10px 26px rgba(76, 29, 149, 0.10);
+  overflow: hidden;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+/* ألوان الفئات الأربع — تدرجات عميقة متناغمة مع فئة القالب + ألوان الأشرطة */
+.ls-rate-subcard--atk-best {
+  --head-from: #0f8a52;
+  --head-to: #0a4f33;
+  --fill-a: #0f8a52;
+  --fill-b: #34d399;
+}
+
+.ls-rate-subcard--atk-worst {
+  --head-from: #c0392b;
+  --head-to: #7f1d1d;
+  --fill-a: #c0392b;
+  --fill-b: #f87171;
+}
+
+.ls-rate-subcard--def-best {
+  --head-from: #2b4eff;
+  --head-to: #17206b;
+  --fill-a: #2b4eff;
+  --fill-b: #93c5fd;
+}
+
+.ls-rate-subcard--def-worst {
+  --head-from: #d97706;
+  --head-to: #7c2d12;
+  --fill-a: #d97706;
+  --fill-b: #fdba74;
+}
+
+/* الرأس المتدرج العلوي */
+.ls-rate-card-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 12px 16px;
+  background-image: linear-gradient(to bottom, var(--head-from), var(--head-to));
+  color: #ffffff;
+  text-align: center;
+}
+
+.ls-rate-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.ls-rate-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+}
+
+.ls-rate-icon {
+  flex-shrink: 0;
+}
+
+.ls-rate-tie-count {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rate-card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.04rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+/* دائرة المعدل — روح .result-box المصغّرة داخل كل بطاقة فرعية */
+.ls-rate-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: clamp(116px, 60%, 136px);
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+  padding: 10px;
+  border-radius: 50%;
+  background-image: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.10) 62%, rgba(255, 255, 255, 0.20));
+  box-shadow:
+    inset 0 0 0 5px rgba(255, 255, 255, 0.18),
+    0 10px 22px rgba(10, 2, 20, 0.26);
+}
+
+.ls-rate-value {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.ls-rate-value--na {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.ls-rate-unit {
+  max-width: 11em;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.88);
+  overflow-wrap: anywhere;
+}
+
+/* شارة المقارنة بمتوسط الدوري — قرص أبيض عالي التباين فوق التدرج */
+.ls-rate-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: center;
+  max-width: 100%;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid transparent;
+  color: #3f3f46;
+  overflow-wrap: anywhere;
+}
+
+.ls-rate-delta--good { color: #14532d; }
+
+.ls-rate-delta--bad { color: #7c2d12; }
+
+.ls-rate-delta--neutral { color: #3f3f46; }
+
+.ls-rate-delta--na {
+  color: #52525c;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px dashed rgba(255, 255, 255, 0.72);
+}
+
+.ls-rate-delta-glyph {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.ls-rate-sample {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* المتن السفلي الأبيض */
+.ls-rate-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 14px 14px 16px;
+  background: #ffffff;
+}
+
+/* شريط المعيار المرجعي: موقع المعدل بين 0 وأعلى معدل، مع علامة المتوسط */
+.ls-rate-bench {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ls-rate-bench-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: #f0eaf6;
+}
+
+.ls-rate-bench-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 0;
+  min-width: 4px;
+  border-radius: 999px;
+  background-image: linear-gradient(90deg, var(--fill-a), var(--fill-b));
+}
+
+.ls-rate-bench-avg {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  border-radius: 2px;
+  background: #2b1a3d;
+  opacity: 0.55;
+}
+
+.ls-rate-bench-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #6d6a7a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* قائمة الفرق — صفوف .result-option الباستيلية (بدون عرض ثابت، تُدار بالفهرس) */
+.ls-rate-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.ls-rate-team {
+  --row-bg: hsl(0, 100%, 95%);
+  --row-border: hsl(0, 100%, 88%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background-color: var(--row-bg);
+  border: 1px solid var(--row-border);
+  color: hsl(224, 30%, 27%);
+}
+
+.ls-rate-team:nth-child(4n + 1) { --row-bg: hsl(0, 100%, 95%);   --row-border: hsl(0, 100%, 88%); }
+.ls-rate-team:nth-child(4n + 2) { --row-bg: hsl(39, 100%, 95%);  --row-border: hsl(39, 100%, 86%); }
+.ls-rate-team:nth-child(4n + 3) { --row-bg: hsl(166, 100%, 95%); --row-border: hsl(166, 100%, 84%); }
+.ls-rate-team:nth-child(4n + 4) { --row-bg: hsl(234, 85%, 95%);  --row-border: hsl(234, 85%, 87%); }
+
+.ls-rate-team-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.ls-rate-team-logo--sm {
+  width: 18px;
+  height: 18px;
+}
+
+/* درع المونوغرام: الأحرف الأولى + المركز، يُعرض حين لا يتوفر شعار محلي معتمد */
+.ls-rate-crest {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: #52525c;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+}
+
+.ls-rate-crest--atk-best { background: var(--head-from, #0f8a52); }
+.ls-rate-crest--atk-worst { background: var(--head-from, #c0392b); }
+.ls-rate-crest--def-best { background: var(--head-from, #2b4eff); }
+.ls-rate-crest--def-worst { background: var(--head-from, #d97706); }
+.ls-rate-crest--neutral { background: #52525c; }
+
+.ls-rate-crest--sm {
+  width: 20px;
+  height: 22px;
+  font-size: 0.5rem;
+}
+
+.ls-rate-crest-rank {
+  position: absolute;
+  bottom: -5px;
+  inset-inline-end: -8px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: #2b1a3d;
+  color: #ffe3b8;
+  font-size: 0.55rem;
+  font-weight: 900;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rate-crest--sm .ls-rate-crest-rank {
+  font-size: 0.5rem;
+  bottom: -4px;
+  inset-inline-end: -6px;
+  padding: 0 3px;
+}
+
+.ls-rate-team-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ls-rate-team-name {
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.45;
+  color: hsl(224, 30%, 27%);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.ls-rate-team-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #52525c;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rate-team-rank {
+  color: hsl(234, 85%, 45%);
+  font-weight: 900;
+}
+
+.ls-rate-empty {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: hsl(0, 100%, 95%);
+  border: 1px solid hsl(0, 100%, 88%);
+  color: hsl(224, 30%, 27%);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   5) الملاحظة التفسيرية + زر الجدول التحليلي — روح زر .btn المتدرج
+   -------------------------------------------------------------------------- */
+.ls-rates-note {
+  margin: 14px 0 0;
+  color: #5b5866;
+  font-size: 0.8rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.ls-rates-details {
+  margin-top: 14px;
+  background: #ffffff;
+  border: 1px solid #efe9f6;
+  border-radius: 18px;
+  padding: 10px;
+}
+
+.ls-rates-details[open] {
+  padding-bottom: 16px;
+}
+
+/* الزر العريض المتدرج أسفل قالب spotty-firefox-94:
+   linear-gradient(to right, #aa076b, #61045f) — حواف دائرية ونص أبيض */
+.ls-rates-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  list-style: none;
+  background-image: linear-gradient(to right, #aa076b, #61045f);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  text-align: center;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.ls-rates-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ls-rates-summary::after {
+  content: "▾";
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: transform 0.3s ease-out;
+}
+
+.ls-rates-details[open] .ls-rates-summary::after {
+  transform: rotate(180deg);
+}
+
+.ls-rates-summary:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   6) الجدول التحليلي الكامل — أنماط منقول من landing.css (خاصة بهذه البطاقة)
+   -------------------------------------------------------------------------- */
+.ls-rates-analyst-table {
+  min-width: 1180px;
+  font-size: 0.8rem;
+}
+
+.ls-rates-analyst-table th,
+.ls-rates-analyst-table td {
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.ls-rates-analyst-table tbody th.ls-an-team {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  min-width: 190px;
+  max-width: 250px;
+}
+
+.ls-an-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ls-an-rank {
+  min-width: 32px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: #6d6a7a;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-an-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  font-weight: 700;
+}
+
+.ls-an-team-col {
+  text-align: start;
+}
+
+.ls-an-head-text {
+  font-size: 0.78rem;
+}
+
+.ls-an-head-gloss {
+  font-weight: 800;
+}
+
+.ls-sort {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 3px 5px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.ls-sort:hover {
+  color: #61045f;
+}
+
+.ls-sort:focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 2px;
+}
+
+.ls-col-gloss {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #6d6a7a;
+  letter-spacing: 0.05em;
+}
+
+.ls-sort-caret {
+  font-size: 0.64rem;
+  color: #a1a1aa;
+}
+
+.ls-rates-analyst-table th[aria-sort="ascending"] .ls-sort,
+.ls-rates-analyst-table th[aria-sort="descending"] .ls-sort {
+  color: #61045f;
+}
+
+.ls-rates-analyst-table th[aria-sort="ascending"] .ls-sort-caret,
+.ls-rates-analyst-table th[aria-sort="descending"] .ls-sort-caret {
+  color: #61045f;
+}
+
+.ls-an-rate {
+  font-variant-numeric: tabular-nums;
+}
+
+/* شريط نسبي صغير بجانب معدلات الهجوم والدفاع في الجدول */
+.ls-minibar {
+  display: block;
+  width: 100%;
+  max-width: 64px;
+  margin-top: 4px;
+  height: 3px;
+  border-radius: 999px;
+  background: #f0eaf6;
+  overflow: hidden;
+}
+
+.ls-minibar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #aa076b, #61045f);
+}
+
+/* التصنيف التكتيكي التلقائي — لون + نص + نقطة دلالية (لا يُعتمد على اللون وحده) */
+.ls-tactic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.ls-tactic::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.ls-tactic--elite-balanced {
+  background: hsl(234, 85%, 95%);
+  color: hsl(234, 85%, 34%);
+  border-color: hsl(234, 85%, 87%);
+}
+
+.ls-tactic--offensive {
+  background: hsl(166, 100%, 95%);
+  color: hsl(166, 100%, 22%);
+  border-color: hsl(166, 100%, 84%);
+}
+
+.ls-tactic--defensive {
+  background: #e6f3fa;
+  color: #0c4a6e;
+  border-color: #c2e2f1;
+}
+
+.ls-tactic--struggling {
+  background: hsl(0, 100%, 95%);
+  color: #7c2d12;
+  border-color: hsl(0, 100%, 88%);
+}
+
+.ls-tactic--na {
+  background: #f4f3ee;
+  color: #71717a;
+  border-color: #e4e1d8;
+}
+
+.ls-tactic--na::before {
+  background: #d6d2c6;
+}
+
+/* --------------------------------------------------------------------------
+   7) التجاوب والحركة — رفعة تفاعلية فقط، قصاصات بمرور واحد، وتعطيل كامل
+      لمن يفعّل تقليل الحركة
+   -------------------------------------------------------------------------- */
+@media (max-width: 859.98px) {
+  .ls-rates-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ls-rates-panel {
+    border-radius: 26px 14px;
+  }
+
+  .ls-rates-aside {
+    border-radius: 14px 26px;
+  }
+}
+
+@media (max-width: 560px) {
+  .ls-rates-card {
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  .ls-rates-panel {
+    padding: 20px 14px;
+  }
+
+  .ls-rates-result-box {
+    width: 128px;
+    height: 128px;
+  }
+
+  .ls-rates-result-value {
+    font-size: 2rem;
+  }
+
+  .ls-rate-value {
+    font-size: 1.6rem;
+  }
+
+  .ls-rates-kpi {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .ls-rates-kpi-value {
+    font-size: 0.98rem;
+  }
+}
+
+/* رفعة ناعمة عند التحويم (أجهزة المؤشر الدقيق فقط) */
+@media (hover: hover) and (pointer: fine) {
+  .ls-rate-subcard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 34px rgba(76, 29, 149, 0.16);
+  }
+
+  .ls-rate-subcard:active {
+    transform: translateY(-1px);
+  }
+
+  .ls-rates-summary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(120, 87, 255, 0.30);
+  }
+
+  .ls-rates-summary:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  /* القصاصات: مرور واحد عند التحويم — transform/opacity فقط، بلا حلقات */
+  .ls-rates-panel:hover .ls-rates-confetti-piece {
+    animation: ls-rates-rain var(--dur, 2000ms) linear 1 both;
+    animation-delay: var(--del, 0ms);
+  }
+}
+
+/* اللمس: نفس المرور الواحد عند الضغط */
+@media (hover: none) {
+  .ls-rates-panel:active .ls-rates-confetti-piece {
+    animation: ls-rates-rain var(--dur, 2000ms) linear 1 both;
+    animation-delay: var(--del, 0ms);
+  }
+}
+
+@keyframes ls-rates-rain {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) rotate(var(--rot, 0deg));
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(250px) rotate(calc(var(--rot, 0deg) + 140deg));
+  }
+}
+
+/* تعطيل كل الحركات والانتقالات بالكامل لمن يفضّل تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  .ls-rates-card,
+  .ls-rates-card *,
+  .ls-rates-card *::before,
+  .ls-rates-card *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .ls-rates-confetti-piece {
+    opacity: 0 !important;
+  }
+}

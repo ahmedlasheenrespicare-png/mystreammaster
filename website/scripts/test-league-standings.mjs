@@ -438,6 +438,10 @@ test('StandingsRatesCard: استقلالية صلاحية الهجوم عن ال
     format: 'esm',
     platform: 'node',
     write: false,
+    /* المكوّن يستورد ورقة أنماطه المستقلة (standings-rates-card.css) كما هو
+       متّبع في league-ticket.css — في سياق Node/إس‌إس‌آر نُفرغها بالغافل
+       «empty» دون أي مساس بمنطق المكوّن أو تأكيدات هذا الاختبار. */
+    loader: { '.css': 'empty' },
     /* نُبقي React خارج الحزمة كي تشترك مع مُصيِّر الاختبار في نسخة React واحدة
        (لكن نسختين مستقلتين تطلّان خطأ "Invalid hook call"). */
     external: ['react', 'react/jsx-runtime'],

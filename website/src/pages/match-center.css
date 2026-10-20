@@ -241,7 +241,7 @@
   padding: 9px 12px 8px;
   border: 1px solid rgba(255, 255, 255, .18);
   border-radius: 13px;
-  background: rgba(5, 14, 11, .74);
+  background: rgba(10, 12, 18, .74);
   backdrop-filter: blur(6px);
 }
 .mc-pitch-events-title { margin: 0 0 5px; color: #eaf3e6; font-size: .72rem; font-weight: 900; line-height: 1.4; }
@@ -306,12 +306,12 @@
   white-space: nowrap;
   pointer-events: none;
 }
-.mc-pitch-axis { position: relative; height: 19px; margin-inline: 2px; border-top: 1px solid rgba(239, 255, 241, .4); }
+.mc-pitch-axis { position: relative; height: 19px; margin-inline: 2px; border-top: 1px solid rgba(255, 255, 255, .22); }
 .mc-pitch-tick { position: absolute; top: 0; display: grid; justify-items: center; transform: translateX(50%); }
 /* طرفا الشريط: الرقم يبقى داخل الإطار بدل قصّه عند الحافة. */
 .mc-pitch-tick--first { transform: translateX(100%); justify-items: end; }
 .mc-pitch-tick--last { transform: none; justify-items: start; }
-.mc-pitch-tick i { display: block; width: 1px; height: 5px; background: rgba(239, 255, 241, .55); }
+.mc-pitch-tick i { display: block; width: 1px; height: 5px; background: rgba(255, 255, 255, .30); }
 .mc-pitch-tick b { color: rgba(255, 255, 255, .72); font-family: var(--font-latin, ui-sans-serif); font-size: .52rem; font-weight: 700; line-height: 1.1; white-space: nowrap; }
 [dir="ltr"] .mc-pitch-tick--first { transform: none; justify-items: start; }
 [dir="ltr"] .mc-pitch-tick--last { transform: translateX(-100%); justify-items: end; }
@@ -658,7 +658,7 @@
 
 /* عدّادات بطاقة الفريق على الملعب: صفراء/حمراء/ركنيات من جدول الإحصائيات. */
 .mc-pitch-counters { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 2px 0 0; padding: 0; list-style: none; }
-.mc-pitch-counter { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; background: rgba(5, 16, 13, .55); color: #fff; font-size: .66rem; font-weight: 800; }
+.mc-pitch-counter { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; background: rgba(16, 18, 24, .66); color: #fff; font-size: .66rem; font-weight: 800; }
 .mc-pitch-counter i { display: inline-block; width: 8px; height: 11px; border-radius: 2px; background: #ffd34d; }
 .mc-pitch-counter[data-counter="red"] i { background: #ff4d5e; }
 .mc-pitch-counter[data-counter="corners"] i { width: 9px; height: 9px; border-radius: 50%; background: #dfe9dc; }
@@ -668,25 +668,25 @@
 .mc-player-pos-code { white-space: nowrap; unicode-bidi: isolate; }
 
 /* المعاينة على الملعب — الموضع نفسه الذي تشغله التشكيلة حين تصدر. */
-.mc-pitch-preview { grid-column: 1 / -1; z-index: 1; min-width: 0; width: 100%; padding-top: 16px; border-top: 1px solid #ffffff40; }
+.mc-pitch-preview { grid-column: 1 / -1; z-index: 1; min-width: 0; width: 100%; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .14); }
 .mc-pitch-preview h2 { margin: 0; text-align: center; font-size: 1rem; }
 .mc-pitch-preview-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; margin: 12px 0 0; padding: 0; }
-.mc-pitch-preview-facts > div { min-width: 0; padding: 7px 10px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 11px; background: rgba(5, 16, 13, .5); text-align: center; backdrop-filter: blur(4px); }
+.mc-pitch-preview-facts > div { min-width: 0; padding: 7px 10px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 11px; background: rgba(13, 15, 21, .64); text-align: center; backdrop-filter: blur(4px); }
 .mc-pitch-preview-facts dt { color: rgba(255, 255, 255, .72); font-size: .64rem; }
 .mc-pitch-preview-facts dd { margin: 1px 0 0; color: #fff; font-size: .78rem; font-weight: 800; }
 .mc-pitch-forms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; margin-top: 14px; }
-.mc-pitch-form { min-width: 0; border: 1px solid #ffffff40; border-radius: 14px; padding: 12px 10px; background: #062b1d45; }
+.mc-pitch-form { min-width: 0; border: 1px solid rgba(255, 255, 255, .14); border-radius: 14px; padding: 12px 10px; background: rgba(13, 15, 21, .64); }
 .mc-pitch-form h3 { margin: 0 0 4px; text-align: center; color: #fff; font-size: .9rem; }
 .mc-pitch-form-sub { margin: 0 0 10px; text-align: center; color: #d5e7dd; font-size: .66rem; }
 .mc-pitch-form .mc-events { gap: 6px; }
-.mc-pitch-form .mc-event { padding: 6px 9px; border-color: rgba(255, 255, 255, .16); background: rgba(5, 16, 13, .55); font-size: .76rem; }
+.mc-pitch-form .mc-event { padding: 6px 9px; border-color: rgba(255, 255, 255, .12); background: rgba(16, 18, 24, .66); font-size: .76rem; }
 .mc-pitch-form .mc-event-body small { color: #cfe0d4; font-size: .64rem; }
 .mc-pitch-form .mc-form-score { color: #fff; font-weight: 900; font-size: .8rem; }
 .mc-form-result { display: inline-grid; place-items: center; min-width: 48px; min-height: 22px; padding-inline: 6px; border: 1px solid rgba(255, 255, 255, .3); border-radius: 999px; background: rgba(255, 255, 255, .08); color: #e8eef5; font-family: inherit; font-size: .66rem; font-weight: 900; }
 .mc-form-result[data-r="W"] { border-color: rgba(216, 255, 62, .5); background: rgba(216, 255, 62, .18); color: var(--mc-lime); }
 .mc-form-result[data-r="L"] { border-color: rgba(239, 51, 64, .5); background: rgba(239, 51, 64, .18); color: #ffb1b7; }
 .mc-pitch-form-summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 10px 0 0; padding: 0; }
-.mc-pitch-form-summary > div { display: inline-flex; align-items: baseline; gap: 4px; padding: 2px 9px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; background: rgba(5, 16, 13, .55); color: #fff; font-size: .66rem; font-weight: 800; }
+.mc-pitch-form-summary > div { display: inline-flex; align-items: baseline; gap: 4px; padding: 2px 9px; border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; background: rgba(16, 18, 24, .66); color: #fff; font-size: .66rem; font-weight: 800; }
 .mc-pitch-form-summary dt { color: rgba(255, 255, 255, .72); font-weight: 700; }
 .mc-pitch-form-summary dd { margin: 0; }
 .mc-prematch-pointer { margin: 0 0 14px; color: var(--mc-muted); font-size: .82rem; }
@@ -734,7 +734,7 @@
 /* ── لوحة المؤشرات: البطاقات نفسها، لا صف مضغوط باسم وشريط منفصلين. ── */
 .mc-indexboard { display: grid; gap: 9px; min-width: 0; padding: 13px; border: 1px solid var(--mc-line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
 /* صف كامل تحت بطاقتي الفريقين، مشتق من لقطة القراءة نفسها. */
-.mc-indexboard.mc-pitch-index { grid-column: 1 / -1; z-index: 1; background: rgba(4, 12, 8, .78); border-color: rgba(218, 255, 221, .30); }
+.mc-indexboard.mc-pitch-index { grid-column: 1 / -1; z-index: 1; background: rgba(13, 15, 21, .80); border-color: rgba(255, 255, 255, .12); }
 .mc-indexboard-rows { display: grid; gap: 9px; min-width: 0; margin: 0; padding: 0; list-style: none; }
 
 /* ── مقارنة بمتوسط الدوري: قيمة كل طرف مقابل أساس موثق معلن العينات ──
@@ -912,3 +912,24 @@
   transition: background .2s;
 }
 .mc-analysis-full-link:hover { background: #1a3ae0; }
+
+/* ==========================================================================
+   أرضية الملعب لا تظهر إلا مع التشكيلة
+   --------------------------------------------------------------------------
+   العشب وخطوط المستطيل ديكورٌ للتشكيلة وحدها؛ وبلا تشكيلة كان الإطار داكنًا
+   لكن **الأشرطة الداخلية** (شريط الأحداث، لوحة المجموعات، المعاينة، بطاقات
+   مستوى الفريقين، عدّادات البطاقات) بقيت بدرجات خضراء، فيبدو الإطار ملعبًا
+   أثناء المباراة وبعدها ولو لم تُرسم تشكيلة. هنا تُحيَّد تلك الدرجات كلها،
+   وتُعاد الخضراء وحدها تحت `--lineups` — أي حين تُرسم التشكيلة فعلًا.
+   ========================================================================== */
+
+.mc-pitch-frame--lineups .mc-pitch-events { border-color: rgba(255, 255, 255, .18); background: rgba(5, 14, 11, .74); }
+.mc-pitch-frame--lineups .mc-indexboard.mc-pitch-index { border-color: rgba(218, 255, 221, .30); background: rgba(4, 12, 8, .78); }
+.mc-pitch-frame--lineups .mc-pitch-preview { border-top-color: #ffffff40; }
+.mc-pitch-frame--lineups .mc-pitch-preview-facts > div { border-color: rgba(255, 255, 255, .2); background: rgba(5, 16, 13, .5); }
+.mc-pitch-frame--lineups .mc-pitch-form { border-color: #ffffff40; background: #062b1d45; }
+.mc-pitch-frame--lineups .mc-pitch-form .mc-event { border-color: rgba(255, 255, 255, .16); background: rgba(5, 16, 13, .55); }
+.mc-pitch-frame--lineups .mc-pitch-counter,
+.mc-pitch-frame--lineups .mc-pitch-form-summary > div { border-color: rgba(255, 255, 255, .22); background: rgba(5, 16, 13, .55); }
+.mc-pitch-frame--lineups .mc-pitch-axis { border-top-color: rgba(239, 255, 241, .4); }
+.mc-pitch-frame--lineups .mc-pitch-tick i { background: rgba(239, 255, 241, .55); }

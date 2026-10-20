@@ -158,6 +158,11 @@ test('state A: without a lineup the preview sits on the pitch and the panel poin
 
   const preview = page.locator('.mc-pitch-frame .mc-pitch-preview');
   await expect(preview).toBeVisible();
+  /* بلا تشكيلة لا أرضية ملعب إطلاقًا: لا صنف `--lineups` ولا خطوط مستطيل.
+     كان الإطار قبل ذلك أخضر أثناء المباراة وبعدها ولو لم تُرسم تشكيلة، لأن
+     الأشرطة الداخلية حملت درجات العشب. */
+  await expect(page.locator('.mc-pitch-frame')).not.toHaveClass(/mc-pitch-frame--lineups/);
+  await expect(page.locator('.mc-pitch-markings')).toHaveCount(0);
   await expect(preview.locator('h2')).toHaveText('المعاينة');
   const facts = preview.locator('.mc-pitch-preview-facts');
   await expect(facts).toContainText('المسابقة');
@@ -215,6 +220,9 @@ test('state B: the official lineup replaces the preview on the pitch and the pre
   await expect(page.locator('[role="tab"]')).toHaveText(['قبل المباراة', 'مباشر']);
   const pitch = page.locator('.mc-pitch-frame .mc-pitch-lineups');
   await expect(pitch).toBeVisible();
+  /* التشكيلة وحدها تُظهر أرضية الملعب وخطوطها. */
+  await expect(page.locator('.mc-pitch-frame')).toHaveClass(/mc-pitch-frame--lineups/);
+  await expect(page.locator('.mc-pitch-markings')).toHaveCount(1);
   await expect(page.locator('.mc-pitch-preview')).toHaveCount(0);
   // شريط الحقائق المختصر أسفل الملعب يعود كما كان (التصور المعتمد)؛ يُخفى فقط حين تكون الحقائق على الملعب نفسه.
   await expect(page.locator('.mc-match-facts')).toHaveCount(1);

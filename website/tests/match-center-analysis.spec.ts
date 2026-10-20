@@ -334,6 +334,26 @@ test.describe('printing', () => {
   });
 });
 
+/* بلا تشكيلة لا أرضية ملعب: لا `--lineups` ولا خطوط مستطيل، في أي حالة
+   (قبل، أثناء، بعد). اللقطة الافتراضية لهذا الملف لا تحمل تشكيلة. */
+test.describe('the pitch field is drawn only with a confirmed lineup', () => {
+  for (const phase of ['pre', 'live', 'post', 'terminal']) {
+    test(`no field without a lineup (${phase})`, async ({ page }) => {
+      const names = { pre: 'STATUS_SCHEDULED', live: 'STATUS_SECOND_HALF', post: 'STATUS_FULL_TIME', terminal: 'STATUS_CANCELED' };
+      await openMatchCenter(page, {
+        overrides: {
+          events: EVENTS,
+          score: null,
+          status: { type: { name: names[phase], state: phase === 'live' ? 'in' : phase, completed: phase === 'post' } },
+        },
+      });
+      await expect(page.locator('.mc-pitch-frame')).not.toHaveClass(/mc-pitch-frame--lineups/);
+      await expect(page.locator('.mc-pitch-markings')).toHaveCount(0);
+      await expect(page.locator('.mc-pitch-lineups')).toHaveCount(0);
+    });
+  }
+});
+
 test.describe('layout at every accepted width', () => {
   for (const width of [320, 390, 768, 1200, 1440]) {
     test(`no horizontal overflow or overlap at ${width}px`, async ({ page }) => {

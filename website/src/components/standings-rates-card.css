@@ -39,6 +39,22 @@
        `@media (prefers-reduced-motion: reduce)`.
    • شبكة التجاوب للبطاقات الفرعية محفوظة: 4 أعمدة ≥1024px، عمودان بين
      600–1023.98px، عمود واحد أقل من 600px.
+   ==========================================================================
+
+   • تحديث لاحق — لوح الأرقام داخل البطاقات الفرعية (الثلاثة أرقام + شريط
+     المعيار) مقتبس من تصميم مجتمعي مفتوح ثانٍ:
+     https://uiverse.io/vinodjangid07/grumpy-mule-23 — المؤلف vinodjangid07 —
+     رخصة MIT (Uiverse.io). القالب الأصلي كارت طقس زجاجي (Glassmorphism):
+     لوح شبه شفاف `rgba(65, 65, 65, .308)` مع `backdrop-filter: blur(30px)`
+     وحدود `rgba(255,255,255,.089)` وزوايا 10px، رقم رئيسي كبير أبيض (`.temp`)
+     فوقه سطر رمادي فاتح (`.weather`)، وصف `minmaxContainer` من نصفين يفصل
+     بينهما خط أبيض عمودي 2px (عنوان أبيض فوق قيمة رمادية)، ودائرة لونية
+     خلف الزجاج (`.cardContainer::before`) تنزلق عند التحويم. التكييف هنا:
+     اللوح الزجاجي يحمل معدل البطاقة الفرعية + وحدته + الفارق عن متوسط
+     الدوري وحجم العيّنة في الصف المقسوم + شريط المعيار المرجعي، والدائرة
+     اللونية بلون فئة البطاقة (`.ls-rate-blob`). القواعد كلها ببادئة
+     `.ls-rate-*`، بلا عرض ثابت (بديل 220×250px: عرض 100%)، وبلا أي حلقة
+     حركة لا نهائية — الدائرة ساكنة ولا تتحرك إلا تفاعلياً.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -409,8 +425,9 @@
   --fill-b: #fdba74;
 }
 
-/* الرأس المتدرج العلوي */
+/* الرأس المتدرج العلوي — يحتضن لوح الأرقام الزجاجي */
 .ls-rate-card-head {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -420,6 +437,33 @@
   background-image: linear-gradient(to bottom, var(--head-from), var(--head-to));
   color: #ffffff;
   text-align: center;
+  overflow: hidden;
+}
+
+/* محتوى الرأس فوق الدائرة اللونية الزخرفية */
+.ls-rate-card-top,
+.ls-rate-card-title,
+.ls-rate-metric {
+  position: relative;
+  z-index: 1;
+}
+
+/* الدائرة اللونية خلف الزجاج — روح .cardContainer::before في قالب
+   uiverse.io/vinodjangid07/grumpy-mule-23 (MIT): ساكنة في وضع السكون،
+   وتنزلق حركة تفاعلية واحدة عند التحويم/الضغط فقط عبر transform */
+.ls-rate-blob {
+  position: absolute;
+  top: -30px;
+  inset-inline-end: -34px;
+  z-index: 0;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--fill-b, rgb(144, 161, 255));
+  opacity: 0.85;
+  filter: saturate(1.05);
+  pointer-events: none;
+  transition: transform 1s ease-out;
 }
 
 .ls-rate-card-top {
@@ -470,32 +514,35 @@
   line-height: 1.4;
 }
 
-/* دائرة المعدل — روح .result-box المصغّرة داخل كل بطاقة فرعية */
+/* لوح الأرقام الزجاجي — هوية قالب uiverse.io/vinodjangid07/grumpy-mule-23
+   (MIT): زجاج معتم شبه شفاف rgba(65,65,65,.308) مع backdrop-filter: blur(30px)
+   وحدود شفافة rgba(255,255,255,.089) وزوايا 10px — بلا عرض ثابت (100%) */
 .ls-rate-metric {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: clamp(116px, 60%, 136px);
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
   min-width: 0;
-  aspect-ratio: 1 / 1;
-  margin-inline: auto;
-  padding: 10px;
-  border-radius: 50%;
-  background-image: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.10) 62%, rgba(255, 255, 255, 0.20));
-  box-shadow:
-    inset 0 0 0 5px rgba(255, 255, 255, 0.18),
-    0 10px 22px rgba(10, 2, 20, 0.26);
+  padding: 14px 12px;
+  border-radius: 10px;
+  background-color: rgba(65, 65, 65, 0.308);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.089);
 }
 
+/* الرقم الرئيسي — روح .temp: أبيض كبير بمنتصف اللوح */
 .ls-rate-value {
   font-family: var(--font-display);
-  font-size: 1.9rem;
+  font-size: 1.85rem;
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.01em;
   color: #ffffff;
+  text-align: center;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -505,55 +552,81 @@
   color: rgba(255, 255, 255, 0.92);
 }
 
+/* وحدة القياس — روح .weather: سطر رمادي فاتح صغير بعد الرقم */
 .ls-rate-unit {
-  max-width: 11em;
-  font-size: 0.62rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 600;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.06em;
+  color: rgb(197, 197, 197);
+  text-align: center;
+  margin-inline: auto;
+  max-width: 14em;
   overflow-wrap: anywhere;
 }
 
-/* شارة المقارنة بمتوسط الدوري — قرص أبيض عالي التباين فوق التدرج */
+/* صف القيمتين — روح .minmaxContainer: نصفان يفصل بينهما خط أبيض عمودي */
+.ls-rate-minmax {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  margin-top: 4px;
+}
+
+.ls-rate-mm {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 2px 10px 0;
+  text-align: start;
+}
+
+.ls-rate-mm:first-child {
+  padding-inline-start: 2px;
+}
+
+/* الفاصل الأبيض العمودي بين النصفين — روح .max { border-left } */
+.ls-rate-mm + .ls-rate-mm {
+  border-inline-start: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.ls-rate-mm-heading {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* قيمة الفارق عن المتوسط — روح .minTemp/.maxTemp: رمادي فاتح فوق الزجاج */
 .ls-rate-delta {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  align-self: center;
+  gap: 4px;
   max-width: 100%;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 700;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid transparent;
-  color: #3f3f46;
+  color: rgb(197, 197, 197);
   overflow-wrap: anywhere;
 }
 
-.ls-rate-delta--good { color: #14532d; }
-
-.ls-rate-delta--bad { color: #7c2d12; }
-
-.ls-rate-delta--neutral { color: #3f3f46; }
-
-.ls-rate-delta--na {
-  color: #52525c;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px dashed rgba(255, 255, 255, 0.72);
-}
-
 .ls-rate-delta-glyph {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   line-height: 1;
 }
 
+/* قيمة حجم العيّنة — نفس روح قيم صف القيمتين */
 .ls-rate-sample {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgb(197, 197, 197);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -569,18 +642,20 @@
   background: #ffffff;
 }
 
-/* شريط المعيار المرجعي: موقع المعدل بين 0 وأعلى معدل، مع علامة المتوسط */
+/* شريط المعيار المرجعي داخل اللوح الزجاجي: موقع المعدل بين 0 وأعلى معدل،
+   مع علامة المتوسط — بألوان فاتحة تُقرأ فوق الزجاج المعتم */
 .ls-rate-bench {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-top: 6px;
 }
 
 .ls-rate-bench-track {
   position: relative;
   height: 8px;
   border-radius: 999px;
-  background: #f0eaf6;
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .ls-rate-bench-fill {
@@ -590,7 +665,7 @@
   inset-inline-start: 0;
   min-width: 4px;
   border-radius: 999px;
-  background-image: linear-gradient(90deg, var(--fill-a), var(--fill-b));
+  background-image: linear-gradient(90deg, var(--fill-a), #ffffff);
 }
 
 .ls-rate-bench-avg {
@@ -599,8 +674,8 @@
   bottom: -3px;
   width: 2px;
   border-radius: 2px;
-  background: #2b1a3d;
-  opacity: 0.55;
+  background: #ffffff;
+  opacity: 0.9;
 }
 
 .ls-rate-bench-legend {
@@ -610,8 +685,8 @@
   justify-content: space-between;
   gap: 2px 8px;
   font-size: 0.66rem;
-  font-weight: 700;
-  color: #6d6a7a;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1069,6 +1144,12 @@
 
   .ls-rate-subcard:active {
     transform: translateY(-1px);
+  }
+
+  /* انزلاق الدائرة اللونية خلف الزجاج — روح :hover::before في القالب
+     (transform فقط، بلا حلقات، وتُعطَّل مع prefers-reduced-motion) */
+  .ls-rate-subcard:hover .ls-rate-blob {
+    transform: translate(-18px, 16px);
   }
 
   .ls-rates-summary:hover {

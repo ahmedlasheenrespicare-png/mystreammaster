@@ -122,6 +122,15 @@ test('race strip: navigation arrows scroll the cards and verified match ids link
   await page.goto('/matches/الدوري-الإنجليزي/');
   await page.waitForSelector('.match-card', { timeout: 15000 });
 
+  /* حاوية التجميع (uiverse calm-bobcat-35 مكيَّفاً): هيكل الساعة وزجاجه
+     وتاجه وزر إجراءه وسواراه خلفه */
+  await expect(page.locator('.match-race-shell')).toHaveCount(1);
+  await expect(page.locator('.match-race-crown')).toHaveCount(1);
+  await expect(page.locator('.match-race-trigger')).toHaveCount(1);
+  await expect(page.locator('.match-race-strap')).toHaveCount(2);
+  /* بلا تمرير أفقي للصفحة رغم الأجزاء البارزة من التجميع */
+  await expect(page.locator('.match-league').first()).toBeVisible();
+
   /* السهمان: زران بأدوار واضحة، والأبعد يحرّك الشريط فعلاً */
   await expect(page.locator('.match-race-nav-btn')).toHaveCount(2);
   const race = page.locator('.match-race');

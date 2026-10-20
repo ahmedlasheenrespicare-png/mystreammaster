@@ -66,7 +66,8 @@
 .match-league-meta { display: flex; align-items: center; gap: 10px; }
 .match-official-link { display: inline-flex; align-items: center; gap: 4px; background: #0b0b0f; color: #d8ff3e; font-size: .72rem; font-weight: 800; padding: 4px 10px; border-radius: 9999px; text-decoration: none; transition: background .15s, color .15s, transform .15s; }
 .match-official-link:hover { background: #2b4eff; color: white; transform: translateY(-1px); }
-.match-league > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; background: #f2f0eb; border-radius: 0 0 16px 16px; }
+/* :not(.match-race-shell): غلاف تجميع الساعة في نمط الشريط ليس حاوية قائمة */
+.match-league > div:not(.match-race-shell) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; background: #f2f0eb; border-radius: 0 0 16px 16px; }
 .match-card { background: white; border: 1px solid #e5e1d9; border-radius: 14px; padding: 16px; min-width: 0; }
 .match-card.is-live { border-color: #a2c243; }
 .match-card-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
@@ -106,7 +107,7 @@
   .matches-calendar button { flex-basis: 92px; }
   .matches-filters { gap: 5px; }
   .matches-filters button { padding: 10px 13px; }
-  .match-league > div { grid-template-columns: 1fr; padding: 8px; }
+  .match-league > div:not(.match-race-shell) { grid-template-columns: 1fr; padding: 8px; }
   .match-league > header { padding: 14px; }
   .match-contest { grid-template-columns: minmax(0, 1fr) 76px minmax(0, 1fr); }
 }
@@ -171,18 +172,89 @@
    التمرير اليدوي/خروج الشريط من الشاشة، وتُعطَّل مع prefers-reduced-motion.
    كل نصوص الكرت وأدوات اللوحة كما هي — لا محتوى محذوف.
    ========================================================================== */
-.matches-board--race .match-league > .match-race {
+/* الحاوية = تجميع ساعة Ultra (uiverse.io/chase2k25/calm-bobcat-35 —
+   chase2k25 — MIT، مُدار 90° ليناسب الشريط الأفقي وبحوية الموقع):
+   الهيكل التيتانيومي بتدرّجه وحدّ الإبراز الداخلي وظلّه، والزجاج
+   (منطقة التمرير) بحبر الموقع وظلّه الداخلي، والتاج وزر الإجراء
+   بخطّ ليموني متوهّج بدل برتقالي القالب، والسواران خلف الهيكل.
+   بلا أي حركة لانهائية (توهّج التاج ثابت). */
+.matches-board--race .match-race-shell {
+  position: relative;
+  z-index: 10;
+  padding: 10px;
+  background: linear-gradient(135deg, #d1d1d6 0%, #8e8e93 50%, #48484a 100%);
+  border-radius: 48px;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.45),
+    inset 0 2px 2px rgba(255, 255, 255, 0.5);
+}
+.matches-board--race .match-race {
   display: block;
-  background: linear-gradient(180deg, #141418, #0e0e12);
-  border: 1px solid #232327;
-  border-radius: 16px;
-  padding: 14px 0 8px;
+  background: #050507;
+  border-radius: 38px;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 1);
+  padding: 14px 0 10px;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   /* تلاشٍ خفيف عند الحافتين لإحساس حلقة مستمرة */
   mask-image: linear-gradient(90deg, transparent 0, #000 26px, #000 calc(100% - 26px), transparent 100%);
 }
+
+/* التاج (أعلى اليمين كما في القالب مُداراً) بخطّه الليموني المتوهّج */
+.match-race-crown {
+  position: absolute;
+  top: -10px;
+  right: 75px;
+  width: 55px;
+  height: 22px;
+  background: linear-gradient(to right, #8e8e93, #48484a, #8e8e93);
+  border-radius: 8px;
+  z-index: 15;
+  border-top: 2px solid #000;
+}
+.match-race-crown::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 6px;
+  background: #d8ff3e;
+  transform: translateX(-50%);
+  filter: blur(1px);
+  box-shadow: 0 0 10px #d8ff3e;
+}
+
+/* زر الإجراء (أسفل اليسار) — ليموني بحدّ أسود كما في القالب */
+.match-race-trigger {
+  position: absolute;
+  bottom: -5px;
+  left: 130px;
+  width: 90px;
+  height: 8px;
+  background: #d8ff3e;
+  border-radius: 6px;
+  z-index: 12;
+  border: 1.5px solid #000;
+}
+
+/* السواران خلف الهيكل (يظهر منهما طرفهما فقط) */
+.match-race-strap {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 64px;
+  height: 150px;
+  background: #111;
+  border-radius: 24px;
+  z-index: 1;
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.8),
+    0 20px 40px rgba(0, 0, 0, 0.35);
+}
+.match-race-strap--start { right: -24px; background: linear-gradient(270deg, #1a1a1a 0%, #2a2a2a 100%); }
+.match-race-strap--end { left: -24px; background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%); }
 .matches-board--race .match-league > .match-race::-webkit-scrollbar { display: none; }
 .match-race-track { display: flex; gap: 14px; width: max-content; padding: 0 16px; }
 
@@ -329,6 +401,9 @@
   .match-race-nav-btn:hover { transform: none; }
 }
 @media (max-width: 700px) {
+  .matches-board--race .match-race-shell { border-radius: 34px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 2px 2px rgba(255, 255, 255, 0.5); }
+  .matches-board--race .match-race { border-radius: 25px; }
+  .match-race-strap { display: none; }
   .matches-board--race .match-card { width: min(330px, 82vw); padding: 12px 12px 24px; }
   .matches-board--race .match-contest > .match-team:first-child,
   .matches-board--race .match-contest > .match-team:last-child { padding: 12px 14px; }

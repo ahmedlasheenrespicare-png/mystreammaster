@@ -462,17 +462,26 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
               </div>
             </header>
             {layout === 'race' ? (
-            <div
-              className="match-race"
-              ref={race.ref}
-              role="group"
-              tabIndex={0}
-              aria-label={`شريط مباريات ${group.name}: يتحرك تلقائياً من الأقرب موعداً إلى الأبعد، ويتوقف عند التحويم أو اللمس`}
-            >
+            <div className="match-race-shell">
+              {/* تجميع الساعة (uiverse calm-bobcat-35 مُدار 90°): السواران
+                  خلف الهيكل والتاج وزر الإجراء زخرفيان خارجه — الزجاج هو
+                  منطقة التمرير نفسها */}
+              <span className="match-race-strap match-race-strap--start" aria-hidden="true" />
+              <span className="match-race-strap match-race-strap--end" aria-hidden="true" />
+              <span className="match-race-crown" aria-hidden="true" />
+              <span className="match-race-trigger" aria-hidden="true" />
+              <div
+                className="match-race"
+                ref={race.ref}
+                role="group"
+                tabIndex={0}
+                aria-label={`شريط مباريات ${group.name}: يتحرك تلقائياً من الأقرب موعداً إلى الأبعد، ويتوقف عند التحويم أو اللمس`}
+              >
               <div className="match-race-track">
               {group.matches.map(match => (
                 <RaceCard key={match.id} match={match} groupName={group.name} zone={zone} timeZones={timeZones} />
               ))}
+              </div>
               </div>
             </div>
             ) : (

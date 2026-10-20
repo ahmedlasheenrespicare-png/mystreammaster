@@ -18,3 +18,4 @@ export interface KeywordEntry {
 export declare const KEYWORDS: Record<string, KeywordEntry>;
 export declare function normalizeRoute(route: string): string;
 export declare function keywordsFor(route: string): KeywordEntry;
+export declare function hasKeywordEntry(route: string): boolean;

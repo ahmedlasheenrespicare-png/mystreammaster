@@ -12,13 +12,20 @@ import { renderRomaMadridReport } from './render-roma-madrid.mjs';
 import { renderMatchAnalysis } from './render-match-analysis.mjs';
 import { applyLegacyAnalysisSeo } from './apply-legacy-analysis-seo.mjs';
 import { getLegacyAnalysisSeo } from '../dist-ssr/entry-server.js';
-import { keywordsFor } from '../src/keywords.mjs';
-import { assertKeywordInTitle, assertTitleShape } from './seo-guard.mjs';
+import { keywordsFor, hasKeywordEntry } from '../src/keywords.mjs';
+import { assertKeywordInTitle, assertTitleLength, noteBrandInTitle } from './seo-guard.mjs';
 
-/* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — تحذير في التقرير،
-   وتحوّل إلى فشل بناء فقط عند SEO_STRICT=1 (PR لاحق بعد إصلاح العناوين). */
+/* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — الصفحات المفهرسة
+   فقط، وتحوّل المخالفات المانعة إلى فشل بناء عند SEO_STRICT=1. */
 const strict = process.env.SEO_STRICT === '1';
 const seoViolations = [];
+const seoWarnings = [];
+const seoBrandNotes = [];
+let legacyIndexed = 0;
+let legacySkippedNoindex = 0;
+let legacyKeywordMisses = 0;
+let legacyLengthBlocking = 0;
+let legacyCoverageGaps = 0;
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -165,13 +172,32 @@ for (const file of await files(path.join(website, 'legacy'))) {
 
   /* فحص SEO للصفحة القديمة بصيغتها النهائية: نحوّل مسار الملف إلى مسار تطبيع
      (about/index.html → /about، watch-legal.html → /watch-legal.html) ثم
-     نقرأ كلمته من الخريطة الموحَّدة ونفحص العنوان الفعلي المشحون. */
+     نقرأ كلمته من الخريطة الموحَّدة ونفحص العنوان الفعلي المشحون.
+     الصفحات noindex مستثناة مثل مثيلاتها في prerender تماماً. */
   const legacyRoute = "/" + relative.replace(/(^|\/)index\.html$/, "$1").replace(/\/+$/, "");
-  const legacyKeyword = keywordsFor(legacyRoute);
+  const legacyRobots = ($('meta[name="robots"]').attr('content') || '').trim();
   const legacyTitle = $('title').first().text().trim();
-  seoViolations.push(...assertTitleShape(legacyRoute, legacyTitle));
-  const legacyKeywordViolation = assertKeywordInTitle(legacyRoute, legacyTitle, legacyKeyword.primary);
-  if (legacyKeywordViolation) seoViolations.push(legacyKeywordViolation);
+  if (legacyRobots.startsWith('noindex')) {
+    legacySkippedNoindex++;
+  } else {
+    legacyIndexed++;
+    const legacyKeyword = keywordsFor(legacyRoute);
+    if (!hasKeywordEntry(legacyRoute)) {
+      seoViolations.push(`صفحة قابلة للفهرسة بلا مدخل في خريطة الكلمات → ${legacyRoute}`);
+      legacyCoverageGaps++;
+    }
+    const legacyKeywordViolation = assertKeywordInTitle(legacyRoute, legacyTitle, legacyKeyword.primary);
+    if (legacyKeywordViolation) {
+      seoViolations.push(legacyKeywordViolation);
+      legacyKeywordMisses++;
+    }
+    const length = assertTitleLength(legacyRoute, legacyTitle);
+    seoViolations.push(...length.violations);
+    legacyLengthBlocking += length.violations.length;
+    seoWarnings.push(...length.warnings);
+    const brandNote = noteBrandInTitle(legacyRoute, legacyTitle);
+    if (brandNote) seoBrandNotes.push(brandNote);
+  }
 
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
@@ -186,16 +212,42 @@ await fs.writeFile(path.join(root, 'sitemap-index.xml'), `<?xml version="1.0" en
   <sitemap><loc>https://streammasterstore.com/sitemap.xml</loc></sitemap>
 </sitemapindex>\n`);
 
-// إلحاق مخالفات الصفحات القديمة بتقرير prerender (ترتيب أبجدي/نقطي ثابت
-// حتى يبقى الناتج حتمياً مع اختلاف ترتيب readdir بين الأجهزة).
-if (seoViolations.length) {
-  const sorted = [...seoViolations].sort();
+// إلحاق نتائج فحص الصفحات القديمة بتقرير prerender (ترتيب أبجدي/نقطي ثابت
+// حتى يبقى الناتج حتمياً مع اختلاف ترتيب readdir بين الأجهزة). المخالفات
+// وحدها مانعة؛ التحذيرات وملاحظات البراند معلوماتية.
+{
+  const sortedViolations = [...seoViolations].sort();
+  const sortedWarnings = [...seoWarnings].sort();
+  const sortedBrand = [...seoBrandNotes].sort();
   const reportPath = path.join(website, 'docs', 'seo-report.txt');
   const existing = await fs.readFile(reportPath, 'utf8').catch(() => '');
-  const section = `\n## الصفحات القديمة (legacy) — ${sorted.length} مخالفة\n\n${sorted.join('\n\n')}\n`;
+  const section = [
+    '',
+    '# ─────────────────────────────────────────────────────────────',
+    `# ملخص الصفحات القديمة (legacy): ${legacyIndexed} مفهرساً مفحوصاً | ${legacySkippedNoindex} مستثنى (noindex)`,
+    `# مخالفات مانعة: ${sortedViolations.length} (كلمة غائبة ${legacyKeywordMisses} · طول >60: ${legacyLengthBlocking} · تغطية ناقصة: ${legacyCoverageGaps})`,
+    `# ملاحظات غير مانعة: تحذير طول 55–60: ${sortedWarnings.length} · براند في العنوان (سياسة): ${sortedBrand.length}`,
+    '',
+    '## مخالفات مانعة — الصفحات القديمة (تُفشل SEO_STRICT=1)',
+    '',
+    sortedViolations.length ? sortedViolations.join('\n\n') : '✅ لا شيء.',
+    '',
+    '',
+    '## تحذيرات طول العنوان (55–60 حرفاً بدون اللاحقة، غير مانعة) — الصفحات القديمة',
+    '',
+    sortedWarnings.length ? sortedWarnings.join('\n\n') : '✅ لا شيء.',
+    '',
+    '',
+    '## ملاحظات سياسية — البراند في العنوان (غير مانعة) — الصفحات القديمة',
+    '',
+    sortedBrand.length ? sortedBrand.join('\n\n') : '✅ لا شيء.',
+    '',
+  ].join('\n');
   await fs.writeFile(reportPath, existing + section, 'utf8');
-  console.error(`⚠️  ${sorted.length} مخالفة SEO في الصفحات القديمة — أُلحقت بـ website/docs/seo-report.txt`);
-  if (strict) throw new Error(`SEO strict (legacy): ${sorted.length} مخالفة`);
+  if (sortedViolations.length) {
+    console.error(`⚠️  ${sortedViolations.length} مخالفة SEO مانعة في الصفحات القديمة — أُلحقت بـ website/docs/seo-report.txt`);
+    if (strict) throw new Error(`SEO strict (legacy): ${sortedViolations.length} مخالفة مانعة`);
+  }
 }
 
 console.log(`Published redesigned storefront and ${count} retained pages. Backend/admin/data were not replaced.`);

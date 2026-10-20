@@ -35,6 +35,11 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       </div>
       {/* نقطة الضوء — عنصر «مقصّ القصّ» سابقاً؛ صارت نقطة القالب المتوهّجة */}
       <span className="league-ticket-symbol" />
+      {/* نموذج تجريبي (أبطال أوروبا فقط): نجم البطولة بلا خلفية —
+          موضع الحافة المظلمة ويتلاشى في أسفل الكرت، خلف النص */}
+      {leagueId === 'uefa.champions' && (
+        <img className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
       </div>

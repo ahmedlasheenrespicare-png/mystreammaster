@@ -293,8 +293,40 @@
   color: rgba(246, 244, 236, .2); font-size: .68rem; font-weight: 700; pointer-events: none;
 }
 
+/* أزرار السهمين في رأس المجموعة: خطوة كرت في اتّجاه السهم، والالتفاف عند
+   الطرفين داخل المكوّن (useRaceAutoScroll → nudge) */
+.match-race-nav { display: inline-flex; gap: 6px; }
+.match-race-nav-btn {
+  width: 30px; height: 30px; padding: 0; border-radius: 9999px;
+  border: 1px solid #2c2c33; background: #141418; color: #d8ff3e;
+  display: grid; place-items: center; cursor: pointer;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.match-race-nav-btn svg {
+  width: 16px; height: 16px; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.match-race-nav-btn:hover { border-color: #d8ff3e; background: #1b2210; transform: translateY(-1px); }
+.match-race-nav-btn:active { transform: scale(.94); }
+.match-race-nav-btn:focus-visible { outline: 2px solid #d8ff3e; outline-offset: 2px; }
+
+/* كرت مرتبط بمركز مباراة موثّق: الكرت كله رابط — بلا كسر للتصميم،
+   مع شارة إضافية تظهر عند التحويم/التركيز (إضافة لا بديل لأي نص) */
+.matches-board--race a.match-card { display: block; text-decoration: none; color: inherit; }
+.matches-board--race a.match-card:hover,
+.matches-board--race a.match-card:focus-visible { border-color: rgba(216, 255, 62, .45); }
+.match-center-chip {
+  position: absolute; left: 12px; bottom: 5px; pointer-events: none;
+  color: #d8ff3e; opacity: .5; font-size: .62rem; font-weight: 700;
+  transition: opacity .15s;
+}
+.matches-board--race a.match-card:hover .match-center-chip,
+.matches-board--race a.match-card:focus-visible .match-center-chip { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) {
   .matches-board--race .match-dots-load { animation: none !important; }
+  .match-race-nav-btn, .match-center-chip { transition: none; }
+  .match-race-nav-btn:hover { transform: none; }
 }
 @media (max-width: 700px) {
   .matches-board--race .match-card { width: min(330px, 82vw); padding: 12px 12px 24px; }

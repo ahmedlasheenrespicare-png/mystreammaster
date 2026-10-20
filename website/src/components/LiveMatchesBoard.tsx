@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { matchByFixtureId } from '../lib/match-center.mjs';
+import { matchCenterPath, MATCH_CENTER_ALL_MATCHES } from '../content/match-center.mjs';
 import {
   TIME_ZONES,
   classifyFetchError,
@@ -53,6 +55,71 @@ function Team({ team }: { team: MatchTeam }) {
   );
 }
 
+/* كرت الشريط (jolly-snail-62): عند وجود مركز مباراة موثّق يطابق معرّف
+   المصدر (espn event id عبر matchByFixtureId — الطريق الوحيد المقبول
+   للربط) يصبح الكرت كله رابطاً إلى صفحة المركز، مع شارة إضافية لا بديل؛
+   ولا رابط حين لا يوجد مركز فلا يُخمَّن مسار. */
+function RaceCard({ match, groupName, zone, timeZones }: {
+  match: Match;
+  groupName: string;
+  zone: string;
+  timeZones: { id: string; name: string }[];
+}) {
+  /* معرّف المباراة الحيّ مركّب «league.id:eventId» — فالربط بمعرّف
+     المصدر الخام بعد نزع البادئة، والفاصل نقطة واحدة لأن معرّفات
+     الدورات لا تحوي نقطتين. */
+  const sourceEventId = match.id.includes(':') ? match.id.slice(match.id.indexOf(':') + 1) : match.id;
+  const center = matchByFixtureId(MATCH_CENTER_ALL_MATCHES, 'espn', sourceEventId);
+  const cls = `match-card ${match.state === 'live' ? 'is-live' : ''}${center ? ' has-center' : ''}`;
+  const body = (
+    <>
+      <div className="match-card-top">
+        <span className={`match-status status-${match.state}`}>{match.state === 'live' ? `● مباشر · ${match.detail}` : match.detail}</span>
+        {match.venue && <span className="match-venue" dir="auto">{match.venue}</span>}
+      </div>
+      {/* لوحا الفريقين المائلان + خطّ التقدّم النقطي بينهما (زخرفي) —
+          النتيجة/الموعد تحتها كما هي */}
+      <div className="match-contest">
+        <Team team={match.home} />
+        <span className="match-dots" aria-hidden="true"><i className="match-dots-load" /></span>
+        <Team team={match.away} />
+      </div>
+      <div className="match-scoreboard">
+        <div className="match-score">
+          {match.state === 'live' || match.state === 'finished' ? (
+            <strong aria-label={hasCompleteScore(match.home.score, match.away.score) ? `نتيجة المضيف ${match.home.score}، ثم الضيف ${match.away.score}` : 'النتيجة غير مكتملة'}>
+              {hasCompleteScore(match.home.score, match.away.score) ? <>{match.home.score} <span>:</span> {match.away.score}</> : '—'}
+            </strong>
+          ) : (
+            <><strong>{kickoff(match.date, zone)}</strong><small>موعد البداية</small></>
+          )}
+        </div>
+      </div>
+      <div className="match-times">
+        {timeZones.map(z => (
+          <div key={z.id}>
+            <span>{z.id === 'Asia/Riyadh' ? 'مكة' : z.id === 'Africa/Cairo' ? 'مصر' : z.name}</span>
+            <time dateTime={match.date}>{kickoff(match.date, z.id)}</time>
+            <small>{dayLabel(dayInZone(new Date(match.date), z.id))}</small>
+          </div>
+        ))}
+      </div>
+      <span className="match-watermark" aria-hidden="true">{groupName}</span>
+      {center && <span className="match-center-chip" aria-hidden="true">مركز المباراة</span>}
+    </>
+  );
+  if (center) {
+    return (
+      <a
+        className={cls}
+        href={matchCenterPath(center)}
+        aria-label={`${match.home.name} ضد ${match.away.name} — انتقل إلى مركز المباراة`}
+      >{body}</a>
+    );
+  }
+  return <article className={cls}>{body}</article>;
+}
+
 /** مطابقة اسم الفريق كما يرسله المصدر مع أسماء المنتخب المعتمدة */
 export function matchesTeamFilter(match: Match, aliases: string[]): boolean {
   const names = [match.home.name, match.away.name].map(n => n.trim().toLocaleLowerCase());
@@ -86,9 +153,43 @@ export interface LiveMatchesBoardProps {
    أو إخفاء التبويب، ولا تعمل إطلاقاً مع prefers-reduced-motion. */
 function useRaceAutoScroll(enabled: boolean) {
   const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const elRef = useRef<HTMLDivElement | null>(null);
   const paused = useRef(false);
   const visible = useRef(true);
   const resumeTimer = useRef(0);
+
+  /* إيقاف/استئناف مشترك بين الحركة التلقائية وأزرار السهمين */
+  const stopAuto = () => { paused.current = true; window.clearTimeout(resumeTimer.current); };
+  const resumeSoon = (delay: number) => {
+    window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => { paused.current = false; }, delay);
+  };
+
+  /* خطوة سهم واحدة: كرت واحد في اتّجاه السهم، وعند الطرفين تلتفّ للطرف
+     الآخر كما تفعل الحركة التلقائية. تقليل الحركة يجعل القفز فورياً. */
+  const nudge = (dir: 1 | -1) => {
+    const node = elRef.current;
+    if (!node) return;
+    const max = node.scrollWidth - node.clientWidth;
+    if (max <= 1) return;
+    const rtl = getComputedStyle(node).direction === 'rtl';
+    const towardEnd = dir === -1;
+    const atEnd = Math.abs(node.scrollLeft) >= max - 1;
+    const atStart = Math.abs(node.scrollLeft) <= 1;
+    stopAuto();
+    if (towardEnd && atEnd) node.scrollTo({ left: 0, behavior: 'auto' });
+    else if (!towardEnd && atStart) node.scrollTo({ left: rtl ? -max : max, behavior: 'auto' });
+    else {
+      const card = node.querySelector('.match-card');
+      const step = (card ? card.getBoundingClientRect().width : 400) + 14;
+      const sign = towardEnd ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      node.scrollBy({ left: sign * step, behavior: reduced ? 'auto' : 'smooth' });
+    }
+    resumeSoon(4000);
+  };
+
+  const ref = (node: HTMLDivElement | null) => { elRef.current = node; setEl(node); };
 
   useEffect(() => {
     if (!el || !enabled) return;
@@ -100,15 +201,10 @@ function useRaceAutoScroll(enabled: boolean) {
     /* متراكم كسري: مواضع التمرير أعداد صحيحة، فـ +0.5 يُقرَّب إلى الصفر في
        RTL ولا يتحرك أبداً — نراكم ونخطو بكسور صحيحة (1px كل إطارين ≈ 30px/s) */
     let acc = 0;
-    const stop = () => { paused.current = true; window.clearTimeout(resumeTimer.current); };
-    const resumeSoon = (delay: number) => {
-      window.clearTimeout(resumeTimer.current);
-      resumeTimer.current = window.setTimeout(() => { paused.current = false; }, delay);
-    };
     const onMouseLeave = () => resumeSoon(0);
     const onFocusIn = () => stop();
     const onFocusOut = () => resumeSoon(0);
-    const onPointerDown = () => stop();
+    const onPointerDown = () => stopAuto();
     const onPointerUp = () => resumeSoon(4000);
     const onWheel = () => resumeSoon(4000);
     const onTouchMove = () => resumeSoon(4000);
@@ -137,7 +233,7 @@ function useRaceAutoScroll(enabled: boolean) {
         acc -= step;
       }
     };
-    el.addEventListener('mouseenter', stop);
+    el.addEventListener('mouseenter', stopAuto);
     el.addEventListener('mouseleave', onMouseLeave);
     el.addEventListener('focusin', onFocusIn);
     el.addEventListener('focusout', onFocusOut);
@@ -151,7 +247,7 @@ function useRaceAutoScroll(enabled: boolean) {
       cancelAnimationFrame(raf);
       window.clearTimeout(resumeTimer.current);
       observer.disconnect();
-      el.removeEventListener('mouseenter', stop);
+      el.removeEventListener('mouseenter', stopAuto);
       el.removeEventListener('mouseleave', onMouseLeave);
       el.removeEventListener('focusin', onFocusIn);
       el.removeEventListener('focusout', onFocusOut);
@@ -163,11 +259,11 @@ function useRaceAutoScroll(enabled: boolean) {
     };
   }, [el, enabled]);
 
-  return setEl;
+  return { ref, nudge };
 }
 
 export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, dataNote = true, layout = 'list' }: LiveMatchesBoardProps) {
-  const raceRef = useRaceAutoScroll(layout === 'race');
+  const race = useRaceAutoScroll(layout === 'race');
   // SSR ثابت: التواريخ والتفضيلات تُملأ بعد الترطيب.
   const [zone, setZone] = useState('Asia/Riyadh');
   const [today, setToday] = useState('');
@@ -353,52 +449,29 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
               <div className="match-league-meta">
                 <a href="/watch-legal.html" className="match-official-link" title="القنوات والمنصات الناقلة الرسمية">القنوات الناقلة الرسمية ↗</a>
                 <span>{group.matches.length} مباراة{failed.includes(group.id) ? ' · بيانات قديمة' : ''}</span>
+                {layout === 'race' && (
+                  <div className="match-race-nav">
+                    <button type="button" className="match-race-nav-btn" aria-label="انتقل إلى المباريات الأقرب موعداً" onClick={() => race.nudge(1)}>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18" /></svg>
+                    </button>
+                    <button type="button" className="match-race-nav-btn" aria-label="انتقل إلى المباريات الأبعد موعداً" onClick={() => race.nudge(-1)}>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 6 9 12 15 18" /></svg>
+                    </button>
+                  </div>
+                )}
               </div>
             </header>
             {layout === 'race' ? (
             <div
               className="match-race"
-              ref={raceRef}
+              ref={race.ref}
               role="group"
               tabIndex={0}
               aria-label={`شريط مباريات ${group.name}: يتحرك تلقائياً من الأقرب موعداً إلى الأبعد، ويتوقف عند التحويم أو اللمس`}
             >
               <div className="match-race-track">
               {group.matches.map(match => (
-                <article key={match.id} className={`match-card ${match.state === 'live' ? 'is-live' : ''}`}>
-                  <div className="match-card-top">
-                    <span className={`match-status status-${match.state}`}>{match.state === 'live' ? `● مباشر · ${match.detail}` : match.detail}</span>
-                    {match.venue && <span className="match-venue" dir="auto">{match.venue}</span>}
-                  </div>
-                  {/* كرت jolly-snail-62: لوحا الفريقين المائلان + خطّ التقدّم
-                      النقطي بينهما (زخرفي) — النتيجة/الموعد تحتها كما هي */}
-                  <div className="match-contest">
-                    <Team team={match.home} />
-                    <span className="match-dots" aria-hidden="true"><i className="match-dots-load" /></span>
-                    <Team team={match.away} />
-                  </div>
-                  <div className="match-scoreboard">
-                    <div className="match-score">
-                      {match.state === 'live' || match.state === 'finished' ? (
-                        <strong aria-label={hasCompleteScore(match.home.score, match.away.score) ? `نتيجة المضيف ${match.home.score}، ثم الضيف ${match.away.score}` : 'النتيجة غير مكتملة'}>
-                          {hasCompleteScore(match.home.score, match.away.score) ? <>{match.home.score} <span>:</span> {match.away.score}</> : '—'}
-                        </strong>
-                      ) : (
-                        <><strong>{kickoff(match.date, zone)}</strong><small>موعد البداية</small></>
-                      )}
-                    </div>
-                  </div>
-                  <div className="match-times">
-                    {timeZones.map(z => (
-                      <div key={z.id}>
-                        <span>{z.id === 'Asia/Riyadh' ? 'مكة' : z.id === 'Africa/Cairo' ? 'مصر' : z.name}</span>
-                        <time dateTime={match.date}>{kickoff(match.date, z.id)}</time>
-                        <small>{dayLabel(dayInZone(new Date(match.date), z.id))}</small>
-                      </div>
-                    ))}
-                  </div>
-                  <span className="match-watermark" aria-hidden="true">{group.name}</span>
-                </article>
+                <RaceCard key={match.id} match={match} groupName={group.name} zone={zone} timeZones={timeZones} />
               ))}
               </div>
             </div>

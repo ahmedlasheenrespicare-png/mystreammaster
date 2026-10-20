@@ -89,6 +89,65 @@ test('league landing page: static guide, live table, official broadcasters and F
   expect(errors).toEqual([]);
 });
 
+test('race strip: navigation arrows scroll the cards and verified match ids link to their match center', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  /* أربع مباريات في يوم الرياض الحالي → الشريط يفيض فتعمل الأسهم.
+     المباراة الثالثة تحمل معرّف ESPN موثّقاً في عقد مراكز المباريات
+     (مانشستر سيتي ضد إيبسويتش) → كرتها رابط، والبقية بلا مراكز. */
+  const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Riyadh' }).format(new Date());
+  const ev = (id: string, time: string, home: string, away: string, state = 'pre', score = '0') => ({
+    id, date: `${day}T${time}:00Z`,
+    competitions: [{ competitors: [
+      { homeAway: 'home', score, team: { displayName: home } },
+      { homeAway: 'away', score: '0', team: { displayName: away } },
+    ], status: { displayClock: state === 'in' ? "67′" : '', type: { state, completed: state === 'post', name: state === 'in' ? 'STATUS_IN_PROGRESS' : state === 'post' ? 'STATUS_FULL_TIME' : 'STATUS_SCHEDULED' } } }],
+  });
+  await page.route('**/*', route => {
+    const url = new URL(route.request().url());
+    if (['localhost', '127.0.0.1'].includes(url.hostname) && url.pathname === '/scoreboard.php') {
+      return route.fulfill({
+        status: 200,
+        headers: { 'X-Matches-Cache': 'HIT', 'X-Cache-Age': '5', 'X-Diagnostic-Code': 'OK' },
+        json: { events: [
+          ev('x1', '08:00', 'Arsenal', 'Chelsea'),
+          ev('x2', '10:00', 'Liverpool', 'Everton'),
+          ev('401879259', '12:00', 'Manchester City', 'Ipswich Town', 'in', '1'),
+          ev('x4', '14:00', 'Tottenham Hotspur', 'Brighton & Hove Albion', 'post', '2'),
+        ] },
+      });
+    }
+    return ['localhost', '127.0.0.1'].includes(url.hostname) ? route.continue() : route.abort();
+  });
+  await page.goto('/matches/الدوري-الإنجليزي/');
+  await page.waitForSelector('.match-card', { timeout: 15000 });
+
+  /* السهمان: زران بأدوار واضحة، والأبعد يحرّك الشريط فعلاً */
+  await expect(page.locator('.match-race-nav-btn')).toHaveCount(2);
+  const race = page.locator('.match-race');
+  const before = await race.evaluate(el => Math.abs(el.scrollLeft));
+  await page.getByRole('button', { name: 'انتقل إلى المباريات الأبعد موعداً' }).click();
+  await page.waitForTimeout(700);
+  const after = await race.evaluate(el => Math.abs(el.scrollLeft));
+  expect(after, 'سهم «الأبعد» يحرّك الشريط').toBeGreaterThan(before);
+  await page.getByRole('button', { name: 'انتقل إلى المباريات الأقرب موعداً' }).click();
+
+  /* الربط بمعرّف المصدر فقط: كرت واحد رابط إلى مركزه، والبقية كروت عادية */
+  const linked = page.locator('a.match-card');
+  await expect(linked).toHaveCount(1);
+  await expect(linked).toHaveAttribute('href', '/matches/الدوري-الإنجليزي/manchester-city-ipswich-town/');
+  await expect(linked).toContainText('Manchester City');
+  await expect(page.locator('.match-card:not(a)')).toHaveCount(3);
+  await expect(page.locator('.match-center-chip')).toHaveCount(1);
+
+  /* الضغط على الكرت يوصل فعلاً إلى صفحة مركز المباراة (المتصفح يرمّز
+     الجزء العربي من المسار — نطابق المقطع اللاتيني الفريد ثم بعد فك الترميز) */
+  await linked.click();
+  await expect(page).toHaveURL(/manchester-city-ipswich-town\/$/);
+  expect(decodeURIComponent(page.url())).toContain('/matches/الدوري-الإنجليزي/manchester-city-ipswich-town/');
+  expect(errors).toEqual([]);
+});
+
 test('team landing page: group facts, team-filtered live table and official broadcaster', async ({ page }) => {
   await mockSource(page, {
     'fifa.friendly': [

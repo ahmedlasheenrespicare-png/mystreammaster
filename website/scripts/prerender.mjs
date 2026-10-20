@@ -15,9 +15,23 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { assertKeywordInTitle, assertTitleShape, findDuplicateKeywords } from "./seo-guard.mjs";
 
 const DIST = "dist";
 const SSR_ENTRY = "dist-ssr/entry-server.js";
+const SEO_REPORT = path.join("docs", "seo-report.txt");
+
+/* كتابة تقرير المخالفات بلا طوابع زمنية حتى يبقى الناتج حتمياً (git status نظيف) */
+async function writeSeoReport(sections) {
+  await fs.mkdir("docs", { recursive: true });
+  const header = [
+    "# تقرير حرّاس SEO — مولَّد تلقائياً في كل بناء",
+    "# الوضع الافتراضي تحذير فقط؛ SEO_STRICT=1 يحوّل المخالفة إلى فشل بناء.",
+    "# هذا التقرير حوكمة يمنع تكرار الخطأ، وليس وعداً بتحسّن ترتيب.",
+  ].join("\n");
+  const body = sections.length ? sections.join("\n\n") : "✅ لا مخالفات مسجَّلة بين الصفحات المرسومة مسبقاً.";
+  await fs.writeFile(SEO_REPORT, `${header}\n\n${body}\n`, "utf8");
+}
 
 const SITE_URL = (process.env.VITE_SITE_URL || "https://streammasterstore.com").replace(/\/+$/, "");
 
@@ -177,9 +191,18 @@ async function main() {
   const routes = getAllRoutes();
   const indexableRoutes = [];
 
+  /* حرّاس SEO: تُجمَع المخالفات وتُكتب في تقرير، والبناء يفشل فقط مع SEO_STRICT=1 */
+  const strict = process.env.SEO_STRICT === "1";
+  const violations = [];
+  const entries = [];
+
   let count = 0;
   for (const route of routes) {
     const { html, seo } = renderPage(route);
+    entries.push({ route, primary: seo.primaryKeyword ?? null, intent: seo.intent });
+    const keywordViolation = assertKeywordInTitle(route, seo.title, seo.primaryKeyword ?? null);
+    if (keywordViolation) violations.push(keywordViolation);
+    violations.push(...assertTitleShape(route, seo.title));
     const headed = applyHead(template, seo);
     const withAds = NO_ADS_ROUTES.has(route) ? stripAdsense(headed, route) : headed;
     /* الصفحات الإنجليزية تُسلَّم بـ lang="en" dir="ltr" بدل قالب العربية */
@@ -203,6 +226,19 @@ async function main() {
     path.join(DIST, "404.html"),
     notFoundHtml.replace('<div id="root"></div>', `<div id="root">${notFound.html}</div>`)
   );
+
+  /* الحرّاس الثلاثة: شكل العنوان، الكلمة داخل العنوان، تكرار الكلمات/القصد التجاري.
+     صفحة 404 noindex لا تُفحَص ولا تُدرَج في الخريطة. */
+  violations.push(...findDuplicateKeywords(entries));
+  await writeSeoReport(violations);
+  if (violations.length) {
+    console.error(
+      `\n⚠️  ${violations.length} مخالفة SEO — التقرير في website/docs/seo-report.txt`
+    );
+    if (strict) throw new Error(`SEO strict: ${violations.length} مخالفة`);
+  } else {
+    console.log("\n✅ حرّاس SEO: لا مخالفات في الصفحات المرسومة مسبقاً");
+  }
 
   /* خريطة الموقع */
   await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(indexableRoutes));

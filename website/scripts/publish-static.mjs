@@ -12,6 +12,13 @@ import { renderRomaMadridReport } from './render-roma-madrid.mjs';
 import { renderMatchAnalysis } from './render-match-analysis.mjs';
 import { applyLegacyAnalysisSeo } from './apply-legacy-analysis-seo.mjs';
 import { getLegacyAnalysisSeo } from '../dist-ssr/entry-server.js';
+import { keywordsFor } from '../src/keywords.mjs';
+import { assertKeywordInTitle, assertTitleShape } from './seo-guard.mjs';
+
+/* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — تحذير في التقرير،
+   وتحوّل إلى فشل بناء فقط عند SEO_STRICT=1 (PR لاحق بعد إصلاح العناوين). */
+const strict = process.env.SEO_STRICT === '1';
+const seoViolations = [];
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -155,6 +162,17 @@ for (const file of await files(path.join(website, 'legacy'))) {
   // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.
   if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#faf9f6');
   $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261013b"><script src="/_assets/storefront.js?v=20261013b" defer></script>');
+
+  /* فحص SEO للصفحة القديمة بصيغتها النهائية: نحوّل مسار الملف إلى مسار تطبيع
+     (about/index.html → /about، watch-legal.html → /watch-legal.html) ثم
+     نقرأ كلمته من الخريطة الموحَّدة ونفحص العنوان الفعلي المشحون. */
+  const legacyRoute = "/" + relative.replace(/(^|\/)index\.html$/, "$1").replace(/\/+$/, "");
+  const legacyKeyword = keywordsFor(legacyRoute);
+  const legacyTitle = $('title').first().text().trim();
+  seoViolations.push(...assertTitleShape(legacyRoute, legacyTitle));
+  const legacyKeywordViolation = assertKeywordInTitle(legacyRoute, legacyTitle, legacyKeyword.primary);
+  if (legacyKeywordViolation) seoViolations.push(legacyKeywordViolation);
+
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
   await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));
@@ -167,4 +185,17 @@ await fs.writeFile(path.join(root, 'sitemap-index.xml'), `<?xml version="1.0" en
   <sitemap><loc>https://streammasterstore.com/sitemap-0.xml</loc></sitemap>
   <sitemap><loc>https://streammasterstore.com/sitemap.xml</loc></sitemap>
 </sitemapindex>\n`);
+
+// إلحاق مخالفات الصفحات القديمة بتقرير prerender (ترتيب أبجدي/نقطي ثابت
+// حتى يبقى الناتج حتمياً مع اختلاف ترتيب readdir بين الأجهزة).
+if (seoViolations.length) {
+  const sorted = [...seoViolations].sort();
+  const reportPath = path.join(website, 'docs', 'seo-report.txt');
+  const existing = await fs.readFile(reportPath, 'utf8').catch(() => '');
+  const section = `\n## الصفحات القديمة (legacy) — ${sorted.length} مخالفة\n\n${sorted.join('\n\n')}\n`;
+  await fs.writeFile(reportPath, existing + section, 'utf8');
+  console.error(`⚠️  ${sorted.length} مخالفة SEO في الصفحات القديمة — أُلحقت بـ website/docs/seo-report.txt`);
+  if (strict) throw new Error(`SEO strict (legacy): ${sorted.length} مخالفة`);
+}
+
 console.log(`Published redesigned storefront and ${count} retained pages. Backend/admin/data were not replaced.`);

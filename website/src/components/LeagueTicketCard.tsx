@@ -20,40 +20,87 @@ import "./league-ticket.css";
      خطوط زخرفية متقاطعة عند 10%، ونص معدني بتدرّج مقصوص.
    • التكييف للبطولة: أيقونة البطولة (LeagueIconBadge — المصدر الواحد
      للشعار وبديله) في الرأس، واسم البطولة (النص المعدني) والسطران
-     التوضيحيان في المتن — كل المحتوى السابق محفوظ دون حذف.
-   • دوري أبطال أوروبا: المنصّة منزلقتان — التذكرة الأصلية أولاً،
-     ثم «بطاقة مواجهة الليلة» بنفس التصميم: باريس × برشلونة بأيقونتي
-     الفريقين وخط الكرت المعتاد من لوحة المباريات، ومعهما لامين يامال
-     وديمبلي بقاعدة اللاعبين نفسها. النتيجة من /scoreboard.php
-     (ESPN عبر الوسيط، تحديث كل دقيقة) — لا نتائج مُحاكاة محلياً:
-     إن بدأت مسجَّلة تُظهر نتيجتها الفعلية مقابل التفصيل، وإن لم تبدأ
-     تُعرض ساعة عكسية تتحدّث كل ثانية لموعدها الحقيقي، وإن لم تكن على
-     جدول اليوم أصلاً تُعرض صيغة الانتظار الصريحة بلا أرقام مخترعة.
-     التبديل بين المنزلقتين تلقائي كل 5 ثوانٍ، يتوقف مع الخفاء/التحويم/
-     التركيز/تقليل الحركة، وتبقى النقاط يدوية متاحة دائماً.
+     التوضيحيان في المتن.
+   • المنصّات المنزلقة — تذكرتان بتصميم واحد بتبديل تلقائي 5 ثوانٍ:
+     الشريحة الأساسية للبطولة، وشريحة «مواجهة الليلة» بأيقونتي فريقَي
+     القمة واللاعبين بقاعدة التذكرة نفسها، بأرقامٍ لا تُحاكى محلياً
+     أبداً: نتيجة ESPN الفعلية ودقيقة المباراة أثناء اللعب، والنهائية
+     بعدها، وعداد ثانيةٍ ثانية لموعدها الحقيقي قبلها، وصيغة الانتظار
+     الصريحة إن لم تكن مُدرجة على جدول اليوم. الإيقاف بتحويم المؤشر
+     الحقيقي فطحف (ليف يخسر الجوال المكلمة أولمبيا من تأثير)، وبالتركيز،
+     والنقاط، وخفاء الصفحة، وتقليل الحركة.
 ========================================================================== */
 
 const REFRESH_MS = 60_000;
 const ROTATE_MS = 5_000;
 const MANUAL_PAUSE_MS = 15_000;
 const CLASH_ZONE = "Africa/Cairo";
-const UCL_ENTRY = { id: "uefa.champions", name: "دوري أبطال أوروبا" };
 
-/* سداسية مطابقة اسمية لمواجهة باريس × برشلونة داخل جدول البطولة —
-   الأسماء تصل كما يرسلها المصدر؛ تكفي الرموز العربية والإنجليزية معاً. */
-const PARIS_TOKENS = ["paris", "psg", "باريس"];
-const BARÇA_TOKENS = ["barcelona", "برشلونة", "بارسلونة"];
+interface ClashTeamSide {
+  name: string;
+  crest: string;
+  mono: string;
+  tokens: string[];
+}
 
-function isClash(match: Match | null | undefined): match is Match {
+interface FeaturedClash {
+  eyebrow: string;
+  home: ClashTeamSide;
+  away: ClashTeamSide;
+  homePlayer: string;
+  awayPlayer: string;
+}
+
+/* ── المواجهات المميّزة — فريقا القمة بأيقونتيهما ولاعبيهما لكل بطولة ──
+   باريس × برشلونة للأبطال (الليلة المعتادة)، والكلاسيكو للإسباني:
+   أصلٌ واللاعب يطابق الوجه: مبابي مقاول ريال، ويامال مقاول برشلونة */
+const FEATURED_CLASHES: Record<string, FeaturedClash> = {
+  "uefa.champions": {
+    eyebrow: "مواجهة الليلة",
+    home: {
+      name: "باريس سان جيرمان",
+      crest: "/images/teams/paris-saint-germain-badge.webp",
+      mono: "باريس",
+      tokens: ["paris", "psg", "باريس"],
+    },
+    away: {
+      name: "برشلونة",
+      crest: "/images/teams/barcelona-badge.webp",
+      mono: "برم",
+      tokens: ["barcelona", "برشلونة", "بارسلونة"],
+    },
+    homePlayer: "/images/players/fra-dembele.png",
+    awayPlayer: "/images/players/esp-yamal.png",
+  },
+  "esp.1": {
+    eyebrow: "مواجهة الكلاسيكو",
+    home: {
+      name: "ريال مدريد",
+      crest: "/images/teams/real-madrid-badge.webp",
+      mono: "ريم",
+      tokens: ["real madrid", "realmadrid", "r madrid", "ريال مدريد", "مادريد"],
+    },
+    away: {
+      name: "برشلونة",
+      crest: "/images/teams/barcelona-badge.webp",
+      mono: "برم",
+      tokens: ["barcelona", "برشلونة", "بارسلونة"],
+    },
+    homePlayer: "/images/players/esp-mbappe.png",
+    awayPlayer: "/images/players/esp-yamal.png",
+  },
+};
+
+function isClash(match: Match | null | undefined, clash: FeaturedClash): match is Match {
   if (!match) return false;
   const text = `${match.home.name} ${match.away.name}`.toLowerCase();
-  const hasParis = PARIS_TOKENS.some(t => text.includes(t));
-  const hasBarça = BARÇA_TOKENS.some(t => text.includes(t));
-  return hasParis && hasBarça;
+  const hasHome = clash.home.tokens.some(t => text.includes(t));
+  const hasAway = clash.away.tokens.some(t => text.includes(t));
+  return hasHome && hasAway;
 }
 
 /* ── جلب مواجهة اليوم من لوحة البطولة عبر وسيط الموقع نفسه، وتحديث دقيق ── */
-function useClash() {
+function useClash(leagueId: string, clash: FeaturedClash) {
   const [match, setMatch] = useState<Match | null>(null);
   useEffect(() => {
     let alive = true;
@@ -61,14 +108,13 @@ function useClash() {
     const load = async () => {
       try {
         const day = dayInZone(new Date(), CLASH_ZONE);
-        const response = await fetch(scoreboardUrl(UCL_ENTRY.id, day), {
+        const response = await fetch(scoreboardUrl(leagueId, day), {
           signal: controller.signal,
           cache: "no-store",
         });
-        const result = await readScoreboardResponse(response, UCL_ENTRY);
+        const result = await readScoreboardResponse(response, { id: leagueId, name: leagueId });
         if (!alive) return;
-        const clash = (result.matches as Match[]).find(isClash);
-        setMatch(clash ?? null);
+        setMatch((result.matches as Match[]).find(m => isClash(m, clash)) ?? null);
       } catch {
         /* الصمت مقصود: بطاقة «في انتظار الجدولة» هي حالة الفشل المصمّمة */
       }
@@ -80,7 +126,7 @@ function useClash() {
       controller.abort();
       window.clearInterval(timer);
     };
-  }, []);
+  }, [leagueId, clash]);
   return match;
 }
 
@@ -125,7 +171,7 @@ function TeamCrest({ src, monogram }: { src: string; monogram: string }) {
   return <span className="league-ticket-crest league-ticket-crest--mono" aria-hidden="true">{monogram}</span>;
 }
 
-/* الإطار الزخرفي المشترك بين منزلقتَي الأبطال: خلفية نقطة قالب وخطوط */
+/* الإطار الزخرفي المشترك بين منزلقتَي البطولة: خلفية نقطة قالب وخطوط */
 function TicketShell() {
   return (
     <>
@@ -141,8 +187,8 @@ function TicketShell() {
   );
 }
 
-/* منزلقة «مواجهة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
-function ClashSlide({ match }: { match: Match | null }) {
+/* منزلقة «مواجهة الليلة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
+function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClash }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
   const finished = match ? match.state === "finished" : false;
@@ -156,19 +202,19 @@ function ClashSlide({ match }: { match: Match | null }) {
   return (
     <>
       <TicketShell />
-      {/* الثنائي بقاعدة اللاعبين نفسها — يامال يساراً وديمبلي يميناً،
-          أقصى الأطراف كما بالإسباني، خلف نص البطاقة وبتلاشيا سفلياً */}
-      <img className="league-ticket-player league-ticket-player--left" src="/images/players/esp-yamal.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <img className="league-ticket-player league-ticket-player--right" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      {/* اللاعبان بقاعدة التذكرة نفسها — لاعب الضيف يساراً ولاعب المضيف
+          يميناً، أقصى الأطراف خلف نص البطاقة وبتلاشيا سفلياً */}
+      <img className="league-ticket-player league-ticket-player--left" src={clash.awayPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      <img className="league-ticket-player league-ticket-player--right" src={clash.homePlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId="uefa.champions" size={60} eager />
       </div>
       <div className="league-ticket-body league-ticket-body--clash">
-        <span className="league-ticket-eyebrow">مواجهة الليلة</span>
+        <span className="league-ticket-eyebrow">{clash.eyebrow}</span>
         <div className="league-ticket-clash">
           <div className="league-ticket-clash-team">
-            <TeamCrest src="/images/teams/paris-saint-germain-badge.webp" monogram="باريس" />
-            <strong dir="auto">باريس سان جيرمان</strong>
+            <TeamCrest src={clash.home.crest} monogram={clash.home.mono} />
+            <strong dir="auto">{clash.home.name}</strong>
           </div>
           <div className="league-ticket-clash-score">
             {match && (live || finished) && withScore ? (
@@ -185,8 +231,8 @@ function ClashSlide({ match }: { match: Match | null }) {
             </small>
           </div>
           <div className="league-ticket-clash-team">
-            <TeamCrest src="/images/teams/barcelona-badge.webp" monogram="برم" />
-            <strong dir="auto">برشلونة</strong>
+            <TeamCrest src={clash.away.crest} monogram={clash.away.mono} />
+            <strong dir="auto">{clash.away.name}</strong>
           </div>
         </div>
         {countdown ? (
@@ -203,25 +249,30 @@ function ClashSlide({ match }: { match: Match | null }) {
 }
 
 /* نص مقروء لقارئ الشاشة يلخّص حالة المواجهة — التذكرة نفسها زخرفية */
-function clashSummary(match: Match | null): string {
-  if (!match) return "بطاقة مواجهة باريس سان جيرمان وبرشلونة: يُعرض الموعد والنتيجة بمجرد تثبّت الجدولة رسمياً.";
-  if (match.state === "scheduled") return `مواجهة باريس سان جيرمان وبرشلونة لم تبدأ بعد، موعد البداية ${kickoff(match.date, CLASH_ZONE)} بتوقيت القاهرة.`;
-  if (match.state === "finished") return `انتهت مواجهة باريس سان جيرمان وبرشلونة بالنتيجة ${match.home.score} إلى ${match.away.score}.`;
-  if (match.state === "live") return `مواجهة باريس سان جيرمان وبرشلونة مباشرة الآن — ${match.detail}${hasCompleteScore(match.home.score, match.away.score) ? `، النتيجة ${match.home.score} إلى ${match.away.score}` : ""}.`;
-  return `مواجهة باريس سان جيرمان وبرشلونة — ${match.detail}.`;
+function clashSummary(match: Match | null, clash: FeaturedClash): string {
+  const pairing = `${clash.home.name} و${clash.away.name}`;
+  if (!match) return `بطاقة ${clash.eyebrow} بين ${pairing}: يُعرض الموعد والنتيجة بمجرد تثبّت الجدولة رسمياً.`;
+  if (match.state === "scheduled") return `${clash.eyebrow} بين ${pairing} لم تبدأ بعد — موعد البداية ${kickoff(match.date, CLASH_ZONE)} بتوقيت القاهرة.`;
+  if (match.state === "finished") return `انتهت ${clash.eyebrow} بين ${pairing} بالنتيجة ${match.home.score} إلى ${match.away.score}.`;
+  if (match.state === "live") return `${clash.eyebrow} بين ${pairing} مباشرة الآن — ${match.detail}${hasCompleteScore(match.home.score, match.away.score) ? `، النتيجة ${match.home.score} إلى ${match.away.score}` : ""}.`;
+  return `${clash.eyebrow} بين ${pairing} — ${match.detail}.`;
 }
 
-/* منصة الأبطال المنزلقة — تبديل تلقائي 5 ثوانٍ مع وقفة إنسانية كاملة */
-function ChampionsTicketCarousel({ name }: { name: string }) {
-  const match = useClash();
+/* منصة المنزلقتين — تبديل تلقائي 5 ثوانٍ مع وقفة إنسانية كاملة */
+function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
+  leagueId: string;
+  name: string;
+  clash: FeaturedClash;
+  basePlayers: ReactElement[];
+}) {
+  const match = useClash(leagueId, clash);
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(false);
   const [reduced, setReduced] = useState(false);
   const pauseUntil = useRef(0);
 
   /* توافق تقليل الحركة عبر الواجهتين: addEventListener حديثاً،
-     وaddListener على سفاري iOS القديم — كبرت الواجهة غير المدعومة
-     كانت تكسر تهيئة مؤقّت التبديل نفسه فتسكن المنصّة على الجوال */
+     وaddListener على سفاري iOS القديم */
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduced(mq.matches);
@@ -259,29 +310,27 @@ function ChampionsTicketCarousel({ name }: { name: string }) {
   };
 
   const slides = [
-    { key: "base", label: "تذكرة دوري أبطال أوروبا" },
-    { key: "clash", label: "بطاقة مواجهة الليلة — باريس × برشلونة" },
+    { key: "base", label: `تذكرة ${name}` },
+    { key: "clash", label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}` },
   ];
 
   return (
     <div
       className="league-ticket-carousel"
       onPointerEnter={event => {
-        /* الإيقاف بالتحويم للمؤشر فقط — لمسة الجوال لا تُشغّل hover دائماً
-           ناهيك عن «تحوينٍ وهمي» يُرافق أقرب نقرة فيجمّد دورة التبديل */
+        /* الإيقاف بالتحويم للمؤشر فقط — لمسة الجوال لا توقف الدورة */
         if (event.pointerType === "mouse") pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
       }}
       onFocusCapture={() => { pauseUntil.current = Date.now() + MANUAL_PAUSE_MS; }}
     >
-      <p className="visually-hidden">{clashSummary(match)}</p>
+      <p className="visually-hidden">{clashSummary(match, clash)}</p>
       <div className="league-ticket-track" aria-hidden="true">
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
           <div className="league-ticket league-ticket--in-track">
             <TicketShell />
-            <img className="league-ticket-player league-ticket-player--back" src="/images/players/ucl-messi.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
-            <img className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+            {basePlayers}
             <div className="league-ticket-header">
-              <LeagueIconBadge leagueId="uefa.champions" size={60} eager />
+              <LeagueIconBadge leagueId={leagueId} size={60} eager />
             </div>
             <div className="league-ticket-body">
               <em>{name}</em>
@@ -293,7 +342,7 @@ function ChampionsTicketCarousel({ name }: { name: string }) {
         </div>
         <div className={`league-ticket-slide${active === 1 ? " is-active" : ""}`}>
           <div className="league-ticket league-ticket--match league-ticket--in-track">
-            <ClashSlide match={match} />
+            <ClashSlide match={match} clash={clash} />
           </div>
         </div>
       </div>
@@ -329,9 +378,27 @@ const PLAYER_MAP: Record<string, ReactElement | ReactElement[]> = {
   "egy.1": <img className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
 };
 
+/* أبطال أوروبا: ميسي في خلفية التكوين خلف رونالدو أعلى يسار التذكرة — يُرسَم
+   قبل رونالدو فيتراكب الثاني فوقه (نفس ز-index والأحدث ضمن DOM يعلو) */
+const UCL_BASE_PLAYERS = [
+  <img key="back" className="league-ticket-player league-ticket-player--back" src="/images/players/ucl-messi.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  <img key="star" className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+];
+
 export default function LeagueTicketCard({ leagueId, name }: { leagueId: string; name: string }) {
-  if (leagueId === "uefa.champions") {
-    return <ChampionsTicketCarousel name={name} />;
+  const clash = FEATURED_CLASHES[leagueId];
+  if (clash) {
+    const basePlayers = leagueId === "uefa.champions"
+      ? UCL_BASE_PLAYERS
+      : (PLAYER_MAP[leagueId] ?? []);
+    return (
+      <LeagueTicketCarousel
+        leagueId={leagueId}
+        name={name}
+        clash={clash}
+        basePlayers={Array.isArray(basePlayers) ? basePlayers : [basePlayers]}
+      />
+    );
   }
   return (
     <div className="league-ticket" aria-hidden="true">

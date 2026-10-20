@@ -58,6 +58,11 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {leagueId === 'fra.1' && (
         <img className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       )}
+      {/* الدوري الألماني: كين يسار التذكرة (موضع فيزيائي صريح) —
+          بنفس الصفة الزخرفية وطريقة الدمج */}
+      {leagueId === 'ger.1' && (
+        <img className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
       </div>

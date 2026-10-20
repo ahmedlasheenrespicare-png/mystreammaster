@@ -40,6 +40,11 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {leagueId === 'uefa.champions' && (
         <img className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       )}
+      {/* الدوري الإنجليزي: هالاند بنفس طريقة أبطال أوروبا تماماً — نفس
+          الموضع والتلاشٍ والهالة والصفة الزخرفية */}
+      {leagueId === 'eng.1' && (
+        <img className="league-ticket-player" src="/images/players/epl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
       </div>

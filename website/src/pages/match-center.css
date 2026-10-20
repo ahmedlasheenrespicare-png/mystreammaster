@@ -486,31 +486,58 @@
 .mc-mini-status { flex: 0 1 auto; min-width: 0; color: var(--mc-muted); font-size: .7rem; }
 .mc-mini-link { flex: 0 0 auto; padding: 6px 10px; border: 1px solid var(--mc-line); border-radius: 999px; color: var(--mc-text); font-size: .72rem; font-weight: 800; text-decoration: none; }
 
+/* على الشاشات المتوسطة يبقى الصفّ واحداً بميلٍ أخفّ وحشو أضيق: الميل الكبير
+   يأكل عرض الاسم العربي الطويل، و29px حشواً في كل جهة يضيّق البطاقة بلا داعٍ. */
+@media (max-width: 900px) {
+  .mc-pitch-team { padding: 13px clamp(10px, 2vw, 18px); }
+  .mc-pitch-team--home .mc-pitch-team-board { transform: skew(28deg, 0deg); }
+  .mc-pitch-team--away .mc-pitch-team-board { transform: skew(-28deg, 0deg); }
+  .mc-pitch-score-container { max-width: min(100%, 250px); padding: 11px 10px; }
+}
+
 @media (max-width: 720px) {
   .mc-page { padding: 112px 12px 104px; }
   .mc-pitch-frame { gap: 8px; padding: 13px 9px; }
-  .mc-pitch-teams { padding: 8px 0; }
-  .mc-pitch-team { padding: 12px 8px; }
-  .mc-pitch-team--home .mc-pitch-team-board { transform: skew(30deg, 0deg); }
-  .mc-pitch-team--away .mc-pitch-team-board { transform: skew(-30deg, 0deg); }
-  .mc-pitch-score-container { gap: 6px; padding: 10px 9px; }
+  /* تحت 720px لا يتّسع صفٌّ واحد لثلاثة: بطاقتا الفريقين كانتا تُسحقان إلى
+     شرائح ضيقة بينما يحتفظ مركز النتيجة بعرضه (flex-basis: auto مقابل 0)،
+     فيتكسّر الاسم حرفاً حرفاً ويخرج الشعار عن حدّه. هنا يتحوّل الصفّ شبكة:
+     الفريقان جنباً إلى جنب في الأعلى، وبطاقة النتيجة تحتهما بعرض كامل.
+     لم يُحذف عنصر ولم يُقصّ نص — تغيّر ترتيب الفراغ فقط. */
+  .mc-pitch-teams {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "home away" "score score";
+    gap: 8px;
+    padding: 0;
+    background: none;
+  }
+  .mc-pitch-team--home { grid-area: home; }
+  .mc-pitch-team--away { grid-area: away; }
+  .mc-pitch-scoreboard { grid-area: score; padding: 0; }
+  .mc-pitch-score-container { width: 100%; max-width: 100%; gap: 7px; padding: 11px 12px; }
+  .mc-pitch-team { padding: 13px 10px; }
+  /* الميل يُلغى هنا: بطاقتان بعرض نصف الشاشة بميلٍ متعاكس تتراكب حافتاهما
+     المائلتان داخل الفراغ بينهما. يبقى من التصميم الحواف غير المتماثلة والتوهّج. */
+  .mc-pitch-team--home .mc-pitch-team-board { transform: none; border-radius: 10px 10px 10px 22px; }
+  .mc-pitch-team--away .mc-pitch-team-board { transform: none; border-radius: 10px 10px 22px 10px; }
+  .mc-pitch-team-name { font-size: clamp(.82rem, 2.4vw, 1rem); text-wrap: balance; }
+  .mc-pitch-team-short { font-size: clamp(.66rem, 1.9vw, .72rem); }
+  .mc-pitch-crest { width: 46px; height: 46px; }
   .mc-pitch-events { --mc-marker-size: 22px; padding: 8px 9px 7px; }
   .mc-match-facts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); }
   .mc-mini { display: flex; }
 }
 @media (max-width: 420px) {
   .mc-page { padding-inline: 10px; }
-  .mc-pitch-frame { gap: 6px; padding: 11px 6px; }
+  .mc-pitch-frame { gap: 6px; padding: 10px 7px; }
   .mc-pitch-markings { inset: 8px; }
-  .mc-pitch-teams { padding: 6px 0; }
-  .mc-pitch-team { padding: 10px 6px; }
-  .mc-pitch-team--home .mc-pitch-team-board,
-  .mc-pitch-team--away .mc-pitch-team-board { transform: none; border-radius: 10px 10px 10px 18px; }
-  .mc-pitch-team--away .mc-pitch-team-board { border-radius: 10px 10px 18px 10px; }
-  .mc-pitch-team-name { font-size: clamp(.62rem, 2.7vw, .78rem); }
+  .mc-pitch-teams { gap: 6px; }
+  .mc-pitch-team { padding: 11px 6px; }
+  .mc-pitch-team-name { font-size: .76rem; }
   .mc-pitch-team-short, .mc-pitch-team-role { font-size: .6rem; }
-  .mc-pitch-score-container { gap: 5px; padding: 9px 6px; }
-  .mc-pitch-competition { font-size: .58rem; }
+  .mc-pitch-crest { width: 40px; height: 40px; }
+  .mc-pitch-score-container { gap: 6px; padding: 10px 9px; }
+  .mc-pitch-competition { font-size: .64rem; }
   .mc-pitch-status { min-height: 22px; padding: 2px 7px; font-size: .62rem; }
   .mc-pitch-kickoff { font-size: .59rem; }
   .mc-pitch-events { --mc-marker-size: 18px; padding: 7px 7px 6px; }

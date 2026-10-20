@@ -122,6 +122,9 @@ test('race strip: navigation arrows scroll the cards and verified match ids link
   await page.goto('/matches/الدوري-الإنجليزي/');
   await page.waitForSelector('.match-card', { timeout: 15000 });
 
+  /* اسم البطولة فوق الشريط مخفي بصرياً — يبقى في المحتوى للوصولية */
+  await expect(page.locator('.match-league > header h3.visually-hidden')).toHaveCount(1);
+
   /* حاوية التجميع (uiverse calm-bobcat-35 مكيَّفاً): هيكل الساعة وزجاجه
      فقط — التاج وزر الإجراء والسواران أُزيلت بطلب صريح */
   await expect(page.locator('.match-race-shell')).toHaveCount(1);

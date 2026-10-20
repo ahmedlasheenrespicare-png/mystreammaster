@@ -177,6 +177,9 @@
    الهيكل التيتانيومي بتدرّجه وحدّ الإبراز الداخلي وظلّه، والزجاج
    (منطقة التمرير) بحبر الموقع وظلّه الداخلي. التاج وزر الإجراء
    والسواران من القالب أُزيلت بطلب صريح — بقي الهيكل والزجاج وحدهما. */
+/* عنوان البطولة فوق الشريط مخفي بصرياً (.visually-hidden من TSX) —
+   تبقى الأدوات والسهمان في موضعَيهما الأصليين عند نهاية السطر */
+.matches-board--race .match-league > header { justify-content: flex-end; }
 .matches-board--race .match-race-shell {
   position: relative;
   z-index: 10;
@@ -350,7 +353,10 @@
   .match-race-nav-btn:hover { transform: none; }
 }
 @media (max-width: 700px) {
-  .matches-board--race .match-race-shell { border-radius: 34px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 2px 2px rgba(255, 255, 255, 0.5); }
+  /* عنوان البطولة فوق الشريط مخفي بصرياً (.visually-hidden من TSX) —
+   تبقى الأدوات والسهمان في موضعَيهما الأصليين عند نهاية السطر */
+.matches-board--race .match-league > header { justify-content: flex-end; }
+.matches-board--race .match-race-shell { border-radius: 34px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 2px 2px rgba(255, 255, 255, 0.5); }
   .matches-board--race .match-race { border-radius: 25px; }
   .matches-board--race .match-card { width: min(330px, 82vw); padding: 12px 12px 24px; }
   .matches-board--race .match-contest > .match-team:first-child,

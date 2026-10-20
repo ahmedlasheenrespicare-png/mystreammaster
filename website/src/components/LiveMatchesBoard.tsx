@@ -374,8 +374,11 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
         <button onClick={() => { setDay(today); }}>العودة إلى اليوم</button>
       </div>
 
+      {/* نمط الشريط: نصّ الحالة ومؤشّرها وزر التحديث مخفيان بطلب صريح —
+          نصّ الحالة يبقى في المحتوى، والتحديث التلقائي كل دقيقة مستمر
+          دون الزر، ويبقى محدِّد المنطقة الزمنية ظاهراً وعاملاً */}
       <div className="matches-toolbar" aria-label="أدوات التحديث والمنطقة الزمنية">
-        <div className="matches-status">
+        <div className={`matches-status${layout === 'race' ? ' visually-hidden' : ''}`}>
           <span className={`update-indicator ${online ? 'active' : ''}`} aria-hidden="true" />
           <div className="matches-status-text">
             <strong>{online ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف مؤقتًا — لا يوجد اتصال'}</strong>
@@ -388,7 +391,7 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
             {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
           </select>
         </label>
-        <button className="matches-refresh" disabled={loading || !online} onClick={() => refreshNow.current()}>
+        <button className="matches-refresh" hidden={layout === 'race'} disabled={loading || !online} onClick={() => refreshNow.current()}>
           {loading ? 'جارٍ التحديث…' : '↻ تحديث الآن'}
         </button>
       </div>

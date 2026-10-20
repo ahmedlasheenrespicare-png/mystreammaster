@@ -23,6 +23,11 @@
 .update-indicator.active { background: #d8ff3e; box-shadow: 0 0 0 4px #d8ff3e22; }
 .matches-toolbar { position: sticky; top: 126px; z-index: 40; display: grid; grid-template-columns: minmax(230px, 1.35fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(190px, 1.2fr) auto; align-items: end; gap: 12px; margin-top: 16px; padding: 12px 14px; border-radius: 20px; background: rgba(255, 255, 255, .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(0, 0, 0, .08); box-shadow: 0 12px 40px -14px rgba(0, 0, 0, .22); }
 .matches-status { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 4px 6px; }
+/* الحالة المخفية بصرياً: تصفير الحشو حتى يبقى صندوقها 1px فعلاً (حشو
+   القاعدة الأصلية يتأخر في الترتيب فيغلب تساوي_ SPEC للإخفاء) */
+.matches-status.visually-hidden { padding: 0; }
+/* نمط الشريط: بقيت المنطقة الزمنية وحدها — عمود ضيّق عند بداية السطر */
+.matches-board--race .matches-toolbar { grid-template-columns: minmax(170px, 260px); justify-content: start; }
 .matches-status > .update-indicator { flex-shrink: 0; }
 .matches-status-text { min-width: 0; flex: 1; }
 .matches-status-text strong { display: block; font-size: .85rem; font-weight: 800; white-space: nowrap; }

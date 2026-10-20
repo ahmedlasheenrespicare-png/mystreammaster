@@ -24,7 +24,9 @@ export default function LeagueLandingPage({ landing }: { landing: LeagueLanding 
         />
 
         <header className="matches-hero">
-          <p className="matches-eyebrow">صفحة متابعة ثابتة · تُحدَّث البيانات تلقائياً</p>
+          {/* السطر التمهيدي مخفي بصرياً بطلب صريح — يبقى في المحتوى
+              للفهرسة والوصولية، ولا يشمل /matches/ ولا صفحات المنتخبات */}
+          <p className="matches-eyebrow visually-hidden">صفحة متابعة ثابتة · تُحدَّث البيانات تلقائياً</p>
           <div className="matches-hero-title">
             {/* تذكرة البطولة لصفحة بطولة فقط (leagueId موجود) — الأيقونة داخل
                 الكرت هي LeagueIconBadge نفسه: الدوري المصري بلا شعار موثّق

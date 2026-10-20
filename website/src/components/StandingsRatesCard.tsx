@@ -483,8 +483,11 @@ export default function StandingsRatesCard({
               data-rate-card={card.key}
               aria-labelledby={`${baseId}-${card.key}-title`}
             >
-              {/* الرأس المتدرج — هوية القالب المصغّرة (تدرج دائرة .result-box) */}
+              {/* الرأس المتدرج — هوية قالب spotty-firefox-94 المصغّرة */}
               <div className="ls-rate-card-head">
+                {/* الدائرة اللونية خلف الزجاج — روح .cardContainer::before في
+                    قالب grumpy-mule-23: ساكنة، ولا تتحرك إلا عند التفاعل */}
+                <span className="ls-rate-blob" aria-hidden="true"></span>
                 <div className="ls-rate-card-top">
                   <span className={`ls-rate-kind ls-rate-kind--${card.domain}`}>
                     {card.domain === 'attack' ? <AttackIcon variant={card.variant} /> : <DefenceIcon variant={card.variant} />}
@@ -501,7 +504,11 @@ export default function StandingsRatesCard({
                   {card.title}
                 </h4>
 
-                {/* دائرة الرقم الرئيسي + وحدة القياس */}
+                {/* لوح الأرقام الزجاجي — بهوية قالب Uiverse
+                    uiverse.io/vinodjangid07/grumpy-mule-23 (MIT): زجاج معتم
+                    backdrop-filter بحدود شفافة، الرقم الرئيسي الكبير (.temp)،
+                    وصف مقسوم بخط أبيض عمودي (.minmaxContainer): الفارق عن
+                    متوسط الدوري / حجم العيّنة — وشريط المعيار داخل الزجاج */}
                 <div className="ls-rate-metric" data-rate-metric>
                   {rateValue !== null ? (
                     <strong className="ls-rate-value" data-rate-value>
@@ -515,47 +522,58 @@ export default function StandingsRatesCard({
                   <span className="ls-rate-unit" data-rate-unit>
                     {card.unit}
                   </span>
-                </div>
 
-                <span className={`ls-rate-delta ls-rate-delta--${deltaState}`} data-rate-delta>
-                  {delta !== null ? (
-                    <>
-                      <span className="ls-rate-delta-glyph" aria-hidden="true">{delta > 0 ? '▲' : delta < 0 ? '▼' : '◆'}</span>
-                      <bdi dir="ltr">{fmtSigned2(delta)}</bdi> عن متوسط الدوري
-                    </>
-                  ) : (
-                    <>متوسط الدوري: غير متاح</>
+                  <div className="ls-rate-minmax">
+                    <div className="ls-rate-mm">
+                      <span className="ls-rate-mm-heading">عن متوسط الدوري</span>
+                      <span className={`ls-rate-delta ls-rate-delta--${deltaState}`} data-rate-delta>
+                        {delta !== null ? (
+                          <>
+                            <span className="ls-rate-delta-glyph" aria-hidden="true">{delta > 0 ? '▲' : delta < 0 ? '▼' : '◆'}</span>
+                            <bdi dir="ltr">{fmtSigned2(delta)}</bdi>
+                          </>
+                        ) : (
+                          <>غير متاح</>
+                        )}
+                      </span>
+                    </div>
+                    <div className="ls-rate-mm">
+                      <span className="ls-rate-mm-heading">حجم العيّنة</span>
+                      <span className="ls-rate-sample" data-rate-sample>
+                        {lead && leadGoals !== null && leadPlayed !== null ? (
+                          <>
+                            <bdi dir="ltr">{leadGoals}</bdi> {card.domain === 'attack' ? 'هدفاً' : 'هدفاً مستقبلاً'} في{' '}
+                            <bdi dir="ltr">{leadPlayed}</bdi> {matchWord(leadPlayed)}
+                          </>
+                        ) : (
+                          <>غير متاح</>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  {rateValue !== null && domainMax !== null && domainMax > 0 && (
+                    <div className="ls-rate-bench" data-rate-bench>
+                      <div className="ls-rate-bench-track">
+                        <span className="ls-rate-bench-fill" style={{ width: `${benchPct(rateValue, domainMax)}%` }} data-rate-bench-fill />
+                        {leagueAvg !== null && leagueAvg <= domainMax && (
+                          <span className="ls-rate-bench-avg" style={{ insetInlineStart: `${benchPct(leagueAvg, domainMax)}%` }} data-rate-bench-avg aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="ls-rate-bench-legend">
+                        <span><bdi dir="ltr">0</bdi></span>
+                        {leagueAvg !== null && (
+                          <span data-rate-bench-avg-label>المتوسط <bdi dir="ltr">{leagueAvg.toFixed(2)}</bdi></span>
+                        )}
+                        <span>أعلى المسابقة <bdi dir="ltr">{domainMax.toFixed(2)}</bdi></span>
+                      </div>
+                    </div>
                   )}
-                </span>
-
-                {lead && leadGoals !== null && leadPlayed !== null && (
-                  <span className="ls-rate-sample" data-rate-sample>
-                    <bdi dir="ltr">{leadGoals}</bdi> {card.domain === 'attack' ? 'هدفاً' : 'هدفاً مستقبلاً'} في{' '}
-                    <bdi dir="ltr">{leadPlayed}</bdi> {matchWord(leadPlayed)}
-                  </span>
-                )}
+                </div>
               </div>
 
               {/* المتن السفلي الأبيض — صفوف باستيلية بروح .result-option */}
               <div className="ls-rate-card-body">
-                {rateValue !== null && domainMax !== null && domainMax > 0 && (
-                <div className="ls-rate-bench" data-rate-bench>
-                  <div className="ls-rate-bench-track">
-                    <span className="ls-rate-bench-fill" style={{ width: `${benchPct(rateValue, domainMax)}%` }} data-rate-bench-fill />
-                    {leagueAvg !== null && leagueAvg <= domainMax && (
-                      <span className="ls-rate-bench-avg" style={{ insetInlineStart: `${benchPct(leagueAvg, domainMax)}%` }} data-rate-bench-avg aria-hidden="true" />
-                    )}
-                  </div>
-                  <div className="ls-rate-bench-legend">
-                    <span><bdi dir="ltr">0</bdi></span>
-                    {leagueAvg !== null && (
-                      <span data-rate-bench-avg-label>المتوسط <bdi dir="ltr">{leagueAvg.toFixed(2)}</bdi></span>
-                    )}
-                    <span>أعلى المسابقة <bdi dir="ltr">{domainMax.toFixed(2)}</bdi></span>
-                  </div>
-                </div>
-              )}
-
               {teams.length > 0 ? (
                 <ul className="ls-rate-teams" data-rate-teams aria-label={`الفرق في تصنيف ${card.title}`}>
                   {teams.map((team, idx) => {

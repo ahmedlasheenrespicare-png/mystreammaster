@@ -85,8 +85,12 @@ export default function LeagueArchive({ league }: { league: string }) {
   const stats = archive ? archiveTeamStats(archive.matches) : [];
   const id = `archive-${league.replace(/\./g, '-')}`;
 
+  /* القسم مخفي بطلب صريح (hidden = display:none): لأنه تفاعلي (محدّد
+     موسم وجداول بروابط) فالإخفاء البصري يترك روابطه قابلة للتركيز
+     خفيةً — والسمة تُبقي محتواه وبياناته في HTML (حِمل الأرشيف
+     data-archive-payload الذي تغذّى منه بطاقة المعدلات سليم). */
   return (
-    <section className="landing-section league-standings" aria-labelledby={`${id}-title`} data-league-archive={league}>
+    <section className="landing-section league-standings" hidden aria-labelledby={`${id}-title`} data-league-archive={league}>
       {available.length > 0 && (
         <script
           type="application/json"

@@ -223,7 +223,7 @@ test('state B: the official lineup replaces the preview on the pitch and the pre
   /* أرضية الملعب تُرسم قبل الصافرة فقط، وبوجود تشكيلتي الفريقين معاً. */
   await expect(page.locator('.mc-pitch-frame')).toHaveClass(/mc-pitch-frame--lineups/);
   await expect(page.locator('.mc-pitch-markings')).toHaveCount(1);
-  await expect(page.locator('.mc-pitch-lineup-squad')).toHaveCount(2);
+  await expect(page.locator('.mc-pitch-lineups .mc-lineup-squad')).toHaveCount(2);
   await expect(page.locator('.mc-pitch-preview')).toHaveCount(0);
   // شريط الحقائق المختصر أسفل الملعب يعود كما كان (التصور المعتمد)؛ يُخفى فقط حين تكون الحقائق على الملعب نفسه.
   await expect(page.locator('.mc-match-facts')).toHaveCount(1);

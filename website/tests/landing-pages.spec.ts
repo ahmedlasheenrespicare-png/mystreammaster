@@ -123,11 +123,11 @@ test('race strip: navigation arrows scroll the cards and verified match ids link
   await page.waitForSelector('.match-card', { timeout: 15000 });
 
   /* حاوية التجميع (uiverse calm-bobcat-35 مكيَّفاً): هيكل الساعة وزجاجه
-     وتاجه وزر إجراءه وسواراه خلفه */
+     فقط — التاج وزر الإجراء والسواران أُزيلت بطلب صريح */
   await expect(page.locator('.match-race-shell')).toHaveCount(1);
-  await expect(page.locator('.match-race-crown')).toHaveCount(1);
-  await expect(page.locator('.match-race-trigger')).toHaveCount(1);
-  await expect(page.locator('.match-race-strap')).toHaveCount(2);
+  await expect(page.locator('.match-race-crown')).toHaveCount(0);
+  await expect(page.locator('.match-race-trigger')).toHaveCount(0);
+  await expect(page.locator('.match-race-strap')).toHaveCount(0);
   /* بلا تمرير أفقي للصفحة رغم الأجزاء البارزة من التجميع */
   await expect(page.locator('.match-league').first()).toBeVisible();
 

@@ -463,13 +463,8 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
             </header>
             {layout === 'race' ? (
             <div className="match-race-shell">
-              {/* تجميع الساعة (uiverse calm-bobcat-35 مُدار 90°): السواران
-                  خلف الهيكل والتاج وزر الإجراء زخرفيان خارجه — الزجاج هو
-                  منطقة التمرير نفسها */}
-              <span className="match-race-strap match-race-strap--start" aria-hidden="true" />
-              <span className="match-race-strap match-race-strap--end" aria-hidden="true" />
-              <span className="match-race-crown" aria-hidden="true" />
-              <span className="match-race-trigger" aria-hidden="true" />
+              {/* تجميع الساعة (uiverse calm-bobcat-35 مُدار 90°): الهيكل
+                  التيتانيومي فقط — والزجاج هو منطقة التمرير نفسها */}
               <div
                 className="match-race"
                 ref={race.ref}

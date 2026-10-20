@@ -68,6 +68,11 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       {leagueId === 'ita.1' && (
         <img className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       )}
+      {/* الدوري المصري: إمام عاشور يسار التذكرة (موضع فيزيائي صريح) —
+          بنفس الصفة الزخرفية وطريقة الدمج */}
+      {leagueId === 'egy.1' && (
+        <img className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
       </div>

@@ -309,6 +309,30 @@
    الثماني مكان شارة البطولة الواحدة، وغلاف بمسافة فوق التهية */
 .matches-hero-ticket { margin: 18px 0 4px; }
 
+.all-leagues-ticket-players {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 92%;
+  z-index: 1;
+  filter: drop-shadow(0 0 26px rgba(216, 255, 62, 0.14));
+  mask-image: linear-gradient(180deg, #000 68%, transparent 99%);
+  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 99%);
+}
+
+/* غطاء معتم فوق العنقود وتحت النص — يحمي تباين الاسم المعدني وسط اللاعبين */
+.all-leagues-ticket-veil {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 58%;
+  height: 84%;
+  background: radial-gradient(ellipse at 50% 62%, rgba(5, 5, 7, 0.94) 32%, rgba(5, 5, 7, 0) 72%);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .all-leagues-ticket .leagues-ticket-icons {
   position: relative;
   z-index: 2;

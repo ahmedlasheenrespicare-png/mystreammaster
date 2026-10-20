@@ -55,6 +55,22 @@
      اللونية بلون فئة البطاقة (`.ls-rate-blob`). القواعد كلها ببادئة
      `.ls-rate-*`، بلا عرض ثابت (بديل 220×250px: عرض 100%)، وبلا أي حلقة
      حركة لا نهائية — الدائرة ساكنة ولا تتحرك إلا تفاعلياً.
+
+   • تحديث لاحق — لوح جدول «عرض معدلات جميع الفرق» مستوحى من تصميم مجتمعي
+     مفتوح ثالث: https://uiverse.io/Thomas-Cabrit/mighty-squid-78 — المؤلف
+     Thomas-Cabrit — رخصة MIT (Uiverse.io). القالب الأصلي بطاقة هولوغرامية
+     ثلاثية الأبعاد: طبقات نصية ذهبية بحدّ `-webkit-text-stroke` وتدرّج
+     `background-clip: text` وتوهّج radial على خلفية داكنة #1f1f1f، بإطار
+     زجاجي `rgba(250,204,21,.16)` ولمعان أبيض مائل. الاستلهام هنا دون نسخ
+     حرفي ودون أي دوران/حركة: اللوح الداكن بالتوهّج الذهبي العلوي واللمعان
+     المائل، عنوان الجدول بتدرّج الذهب وحدّه، مراكز الفرق `[data-rate-row-rank]`
+     كأرقام ذهبية متدرجة متوهجة (نفس روح الرقم «1» في القالب)، الأشرطة
+     المصغّرة والفرز والشارات بهوية ذهبية/زجاجية داكنة. القالب الأصلي يستخدم
+     `animation: card1-wobble 6.2s ease-in-out infinite` — أُلغيت تماماً
+     (ممنوعة في موقعنا حتى مع prefers-reduced-motion، وقد عطّلها القالب
+     نفسه هناك). كل القواعد معزولة بـ `.ls-rates-details` / `.ls-rates-analyst-table`
+     ولا تلمس `.ls-table` / `.ls-scroll` المشتركتين، وبنفس المساحة الحالية:
+     لا عرض ثابت جديداً ولا تغيير في الحشوات أو min-width.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -1009,9 +1025,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* شريط نسبي صغير بجانب معدلات الهجوم والدفاع في الجدول — كبسولة 6px
-   بمسار محايد وحد داخلي رفيع، والتعبئة بتدرج توقيع البطاقة تتدرج نحو
-   طرف النمو بلمعة خفيفة (الطول النسبي محسوب من البيانات ولا يُغيَّر) */
+/* شريط نسبي صغير بجانب معدلات الهجوم والدفاع في الجدول — روح الطبقات
+   الذهبية في قالب mighty-squid-78: مسار زجاجي داكن وحد ذهبي شفاف،
+   والتعبئة بتدرج الذهب الهولوغرامي تتوهج نحو طرف النمو (الطول النسبي
+   محسوب من البيانات ولا يُغيَّر) */
 .ls-minibar {
   display: block;
   width: 100%;
@@ -1019,8 +1036,8 @@
   margin-top: 5px;
   height: 6px;
   border-radius: 999px;
-  background: #f3eef5;
-  box-shadow: inset 0 0 0 1px rgba(97, 4, 95, 0.10);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.16);
   overflow: hidden;
 }
 
@@ -1029,17 +1046,17 @@
   height: 100%;
   min-width: 3px;
   border-radius: 999px;
-  background-image: linear-gradient(90deg, #ff8ac9 0%, #d24fa4 45%, #aa076b 75%, #61045f 100%);
-  box-shadow: 0 0 5px rgba(170, 7, 107, 0.28);
+  background-image: linear-gradient(90deg, rgba(250, 204, 21, 0.55) 0%, #facc14 55%, #fde047 82%, #fef9c3 100%);
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.45);
 }
 
 /* التصنيف التكتيكي التلقائي — شارة بحافة لونية بادئة ومعيّن صغير:
    النص هو الحامل الأساسي للمعنى (لا يُعتمد على اللون وحده)، وكل فئة
    لها لوحة ألوان من ثلاثة متغيرات (حافة/خلفية/حد) مضبوطة التباين */
 .ls-tactic {
-  --tc-accent: #8b8b96;
-  --tc-bg: #f6f5f1;
-  --tc-border: #e7e3d9;
+  --tc-accent: #a1a1aa;
+  --tc-bg: rgba(255, 255, 255, 0.045);
+  --tc-border: rgba(161, 161, 170, 0.35);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1047,7 +1064,7 @@
   border-radius: 8px;
   border: 1px solid var(--tc-border);
   border-inline-start: 4px solid var(--tc-accent);
-  background-image: linear-gradient(180deg, var(--tc-bg), #ffffff);
+  background-color: var(--tc-bg);
   color: var(--tc-accent);
   font-size: 0.72rem;
   font-weight: 800;
@@ -1066,33 +1083,28 @@
 }
 
 .ls-tactic--elite-balanced {
-  --tc-accent: #6d28d9;
-  --tc-bg: #f4f0fe;
-  --tc-border: #e3d9fc;
+  --tc-accent: #c4b5fd;
+  --tc-border: rgba(196, 181, 253, 0.40);
 }
 
 .ls-tactic--offensive {
-  --tc-accent: #0f7a4a;
-  --tc-bg: #ecf9f1;
-  --tc-border: #c9ecda;
+  --tc-accent: #6ee7b7;
+  --tc-border: rgba(110, 231, 183, 0.35);
 }
 
 .ls-tactic--defensive {
-  --tc-accent: #0369a1;
-  --tc-bg: #edf6fc;
-  --tc-border: #c9e4f5;
+  --tc-accent: #7dd3fc;
+  --tc-border: rgba(125, 211, 252, 0.35);
 }
 
 .ls-tactic--struggling {
-  --tc-accent: #c22a2a;
-  --tc-bg: #fdf1f0;
-  --tc-border: #f6d7d4;
+  --tc-accent: #fca5a5;
+  --tc-border: rgba(252, 165, 165, 0.35);
 }
 
 .ls-tactic--na {
-  --tc-accent: #8b8b96;
-  --tc-bg: #f6f5f1;
-  --tc-border: #e7e3d9;
+  --tc-accent: #a1a1aa;
+  --tc-border: rgba(161, 161, 170, 0.35);
 }
 
 /* --------------------------------------------------------------------------
@@ -1205,6 +1217,127 @@
     opacity: 0;
     transform: translateY(250px) rotate(calc(var(--rot, 0deg) + 140deg));
   }
+}
+
+/* --------------------------------------------------------------------------
+   8) لوح جدول «عرض معدلات جميع الفرق» — الهوية الهولوغرامية الذهبية
+      (مستوحى من uiverse.io/Thomas-Cabrit/mighty-squid-78 — MIT — دون نسخ
+      حرفي ودون أي حركة: توهّج ولمعان وحدود ذهبية على لوح داكن، وبنفس
+      المساحة: نفس الحشوات وmin-width وارتفاع الصفوف)
+   -------------------------------------------------------------------------- */
+.ls-rates-details .ls-scroll {
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: 20px;
+  background-color: #17171b;
+  background-image:
+    radial-gradient(560px 220px at 15% 0%, rgba(250, 204, 21, 0.12), rgba(0, 0, 0, 0) 62%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015) 45%, rgba(0, 0, 0, 0));
+  box-shadow: 0 14px 34px rgba(24, 20, 2, 0.18);
+}
+
+.ls-rates-details .ls-scroll:focus-visible {
+  outline-color: #fde047;
+}
+
+/* عنوان الجدول — طبقة ذهبية بتدرّج وحدّ وتوهّج خفيف (نصه الحرفي كما هو) */
+.ls-rates-details .ls-rates-analyst-table caption {
+  padding: 14px 16px 8px;
+  background-image: linear-gradient(90deg, rgba(250, 204, 21, 0.40) 0%, #fde047 35%, #fef08a 58%, rgba(250, 204, 21, 0.30) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0.5px rgba(250, 204, 21, 0.45);
+  text-shadow: 0 0 22px rgba(250, 204, 21, 0.14);
+  letter-spacing: 0.2px;
+}
+
+/* الصفوف: نص فاتح على الداكن، حدود زجاجية، وتظليل متناوب خافت */
+.ls-rates-details .ls-rates-analyst-table th,
+.ls-rates-details .ls-rates-analyst-table td {
+  color: #dcdce2;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease-out;
+}
+
+.ls-rates-details .ls-rates-analyst-table thead th {
+  color: #f3e8c8;
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.08), rgba(250, 204, 21, 0.02));
+  border-bottom: 1px solid rgba(250, 204, 21, 0.24);
+}
+
+.ls-rates-details .ls-rates-analyst-table tbody tr:nth-child(even) th,
+.ls-rates-details .ls-rates-analyst-table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.022);
+}
+
+.ls-rates-details .ls-rates-analyst-table tbody tr:hover th,
+.ls-rates-details .ls-rates-analyst-table tbody tr:hover td {
+  background: rgba(250, 204, 21, 0.055);
+}
+
+/* خلية الفريق: الاسم فاتح والمركز رقم ذهبي متدرج متوهّج — روح طبقة
+   الرقم الأمامية في القالب (font/stroke/gradient/glow) بلا 3D */
+.ls-rates-details .ls-rates-analyst-table .ls-an-name {
+  color: #f4f4f5;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-an-head-gloss {
+  color: #fde047;
+}
+
+.ls-rates-details .ls-rates-analyst-table [data-rate-row-rank] {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  background-image: linear-gradient(180deg, #fef9c3 0%, #fde047 45%, #facc14 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0.5px rgba(250, 204, 21, 0.55);
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.35));
+}
+
+/* أزرار الفرز: نص الورقة الذهبية الفاتحة، وتوهّج ذهبي عند التحويم والعمود النشط */
+.ls-rates-details .ls-rates-analyst-table .ls-sort {
+  color: inherit;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-sort:hover {
+  color: #fde047;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-sort:focus-visible {
+  outline-color: #fde047;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-col-gloss {
+  color: rgba(255, 255, 255, 0.50);
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-sort-caret {
+  color: rgba(250, 204, 21, 0.50);
+}
+
+.ls-rates-details .ls-rates-analyst-table th[aria-sort="ascending"] .ls-sort,
+.ls-rates-details .ls-rates-analyst-table th[aria-sort="descending"] .ls-sort {
+  color: #fde047;
+}
+
+.ls-rates-details .ls-rates-analyst-table th[aria-sort="ascending"] .ls-sort-caret,
+.ls-rates-details .ls-rates-analyst-table th[aria-sort="descending"] .ls-sort-caret {
+  color: #fde047;
+}
+
+.ls-rates-details .ls-rates-analyst-table th[aria-sort] {
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.10), rgba(250, 204, 21, 0.02));
+  box-shadow: inset 0 -2px 0 rgba(250, 204, 21, 0.60);
+}
+
+/* قيم المعدلات أوضح قليلاً من بقية الأرقام */
+.ls-rates-details .ls-rates-analyst-table .ls-an-rate {
+  color: #f5f5f7;
 }
 
 /* تعطيل كل الحركات والانتقالات بالكامل لمن يفضّل تقليل الحركة */

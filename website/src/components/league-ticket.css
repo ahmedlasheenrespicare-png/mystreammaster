@@ -324,6 +324,60 @@
   filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.55));
 }
 
+/* ── تذكرة الدوري الفرنسي: أيقونة البطولة + خط رأسي + علامة ستريم ماستر ──
+   بطلب المالك تجتمع الترويسة على اليمين (flex-start في RTL) بدل التوسيط،
+   فتتكوّن مجموعة: أيقونة البطولة ثم خط رأسي ليموني متدرج ثم علامة نصية
+   مُصغّرة ومطابقة لشعار الفوتر حرفياً — مربّع #d8ff3e مستدير يحمل مثلث
+   التشغيل الأسود والاسم بخط العناوين الأبيض الثقيل، بمقاسات تلائم الكرت */
+.league-ticket-header--brand { justify-content: flex-start; }
+
+.league-ticket-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-inline-start: 11px;
+  pointer-events: none;
+}
+
+.league-ticket-wordmark-line {
+  width: 1.5px;
+  height: 36px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, rgba(216, 255, 62, 0) 0%, rgba(216, 255, 62, 0.95) 50%, rgba(216, 255, 62, 0) 100%);
+  /* وهج خفيف يجاري خطوط القالب المضيئة فيبقى الفاصل مقروءاً على الداكن */
+  box-shadow: 0 0 7px rgba(216, 255, 62, 0.45);
+}
+
+.league-ticket-wordmark-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: #d8ff3e;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  box-shadow: 0 2px 8px rgba(216, 255, 62, 0.35);
+}
+
+.league-ticket-wordmark-badge svg {
+  width: 10px;
+  height: 10px;
+  color: #0b0b0f;
+  /* مثلث التشغيل يُزاح شعرة نحو اتجاهه ليتوسّط بصرياً داخل المربّع */
+  margin-inline-start: 1px;
+}
+
+.league-ticket-wordmark-text {
+  font-family: var(--font-display, "Tajawal", "Cairo", ui-sans-serif, sans-serif);
+  font-weight: 900;
+  font-size: 14.5px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+
 /* الإسباني: لاعبان على الجناحين — مواضع فيزيائية صريحة (يمين/يسار)
    بمعزل عن اتجاه الصفحة، وكلٌّ منهما بنفس القواعد الأساسية للتلاشٍ
    والهالة والصفة الزخرفية */
@@ -658,6 +712,11 @@
 /* الجوال — مطابق تضييق الشريط المسطّح السابق (وحدات أضيق وأرقام أصغر) */
 @media (max-width: 700px) {
   .league-ticket-crest { width: 34px; height: 34px; }
+  .league-ticket-wordmark { gap: 7px; margin-inline-start: 9px; }
+  .league-ticket-wordmark-line { height: 26px; }
+  .league-ticket-wordmark-badge { width: 18px; height: 18px; border-radius: 6px; }
+  .league-ticket-wordmark-badge svg { width: 8.5px; height: 8.5px; }
+  .league-ticket-wordmark-text { font-size: 12px; }
   .league-ticket-goals { font-size: 1.25rem; }
   .league-ticket-countdown { gap: 0.3rem; }
   .ticket-flip__pair { gap: 0.1rem; }

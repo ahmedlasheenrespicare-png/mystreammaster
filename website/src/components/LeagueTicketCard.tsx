@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
+import { IconPlay } from "./Icons";
 import {
   dayInZone,
   hasCompleteScore,
@@ -302,9 +303,24 @@ export function NovaTicketBrand() {
 }
 
 /* لوجو «X» المقصوص من نصّه IPTV (اختيار المالك للأيقونة الداكنة) — يجلس
-   بجانب نوفا مباشرة في تذكرة الدوري الفرنسي فقط وبمساحتها نفسها */
+   بجانب نوفا مباشرة أينما ظهرت بعد التعميم في #163 وبمساحتها نفسها */
 export function XtvTicketBrand() {
   return <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+}
+
+/* علامة «ستريم ماستر» النصية بتذكرة الدوري الفرنسي — مصغّرٌ وفيٌّ لشعار
+   الفوتر حرفياً (مربّع ليموني مستدير يحمل مثلث التشغيل IconPlay الأسود
+   بالمرجع ذاته + الاسم بخط العناوين الأبيض الثقيل) يجلس يميناً بجانب
+   أيقونة البطولة ويفصل بينهما خط رأسي ليموني متدرج — فرنسا فقط بطلب
+   المالك، وبمقاسات تلائم ارتفاع التذكرة */
+export function StreamMasterTicketWordmark() {
+  return (
+    <span className="league-ticket-wordmark" aria-hidden="true">
+      <span className="league-ticket-wordmark-line" />
+      <span className="league-ticket-wordmark-badge"><IconPlay /></span>
+      <span className="league-ticket-wordmark-text">ستريم ماستر</span>
+    </span>
+  );
 }
 
 /* زوج الأعلام الزخرفية أعلى يسار التذكرة: نوفا وفق حزمة التوزيع وX
@@ -666,8 +682,12 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       <span className="league-ticket-symbol" />
       <TicketBrandPair leagueId={leagueId} scope="static" />
       {PLAYER_MAP[leagueId]}
-      <div className="league-ticket-header">
+      {/* تذكرة الدوري الفرنسي وحدها تنزاح مجموعة ترويسَتها يميناً لتجمع
+          أيقونة البطولة وبعدها الخط الرأسي ثم علامة ستريم ماستر المصغّرة
+          من الفوتر (بطلب المالك)؛ باقي البطولات تبقى متوسّطة كما كانت */}
+      <div className={`league-ticket-header${leagueId === "fra.1" ? " league-ticket-header--brand" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
+        {leagueId === "fra.1" ? <StreamMasterTicketWordmark /> : null}
       </div>
       <div className="league-ticket-body">
         <em>{name}</em>

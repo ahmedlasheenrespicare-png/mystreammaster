@@ -52,44 +52,67 @@ interface FeaturedClash {
   awayPlayer: string;
 }
 
-/* ── المواجهات المميّزة — فريقا القمة بأيقونتيهما ولاعبيهما لكل بطولة ──
-   باريس × برشلونة للأبطال (الليلة المعتادة)، والكلاسيكو للإسباني:
-   أصلٌ واللاعب يطابق الوجه: مبابي مقاول ريال، ويامال مقاول برشلونة */
-const FEATURED_CLASHES: Record<string, FeaturedClash> = {
-  "uefa.champions": {
-    eyebrow: "قمة الجولة",
-    home: {
-      name: "باريس سان جيرمان",
-      crest: "/images/teams/paris-saint-germain-badge.webp",
-      mono: "باريس",
-      tokens: ["paris", "psg", "باريس"],
+/* ── المواجهات المميّزة — شرائح القمم لكل بطولة بترتيب عرضها بعد
+     الشريحة الأساسية: مقاتلو الأبطال «قمة الجولة» (باريس × برشلونة)
+     و«مباراة الليلة» (بايرن × أرسنال)، والكلاسيكو للإسباني. شعارا
+     بايرن/أرسنال من مصدر أيقونات الموقع نفسه (ESPN CDN كما في بطاقات
+     المباريات) مع بديل الحرفين المحلي إن تعذّر التحميل */
+const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
+  "uefa.champions": [
+    {
+      eyebrow: "قمة الجولة",
+      home: {
+        name: "باريس سان جيرمان",
+        crest: "/images/teams/paris-saint-germain-badge.webp",
+        mono: "باريس",
+        tokens: ["paris", "psg", "باريس"],
+      },
+      away: {
+        name: "برشلونة",
+        crest: "/images/teams/barcelona-badge.webp",
+        mono: "برم",
+        tokens: ["barcelona", "برشلونة", "بارسلونة"],
+      },
+      homePlayer: "/images/players/fra-dembele.png",
+      awayPlayer: "/images/players/esp-yamal.png",
     },
-    away: {
-      name: "برشلونة",
-      crest: "/images/teams/barcelona-badge.webp",
-      mono: "برم",
-      tokens: ["barcelona", "برشلونة", "بارسلونة"],
+    {
+      eyebrow: "مباراة الليلة",
+      home: {
+        name: "بايرن ميونخ",
+        crest: "https://a.espncdn.com/i/teamlogos/soccer/500/132.png",
+        mono: "باي",
+        tokens: ["bayern", "bayern munich", "bayern münchen", "munchen", "münchen", "بايرن", "ميونخ", "ميونيخ"],
+      },
+      away: {
+        name: "أرسنال",
+        crest: "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
+        mono: "أرس",
+        tokens: ["arsenal", "ارسنال", "أرسنال", "الأرسنال"],
+      },
+      homePlayer: "/images/players/ger-kane.png",
+      awayPlayer: "/images/players/eng-saka.png",
     },
-    homePlayer: "/images/players/fra-dembele.png",
-    awayPlayer: "/images/players/esp-yamal.png",
-  },
-  "esp.1": {
-    eyebrow: "مواجهة الكلاسيكو",
-    home: {
-      name: "ريال مدريد",
-      crest: "/images/teams/real-madrid-badge.webp",
-      mono: "ريم",
-      tokens: ["real madrid", "realmadrid", "r madrid", "ريال مدريد", "مادريد"],
+  ],
+  "esp.1": [
+    {
+      eyebrow: "مواجهة الكلاسيكو",
+      home: {
+        name: "ريال مدريد",
+        crest: "/images/teams/real-madrid-badge.webp",
+        mono: "ريم",
+        tokens: ["real madrid", "realmadrid", "r madrid", "ريال مدريد", "مادريد"],
+      },
+      away: {
+        name: "برشلونة",
+        crest: "/images/teams/barcelona-badge.webp",
+        mono: "برم",
+        tokens: ["barcelona", "برشلونة", "بارسلونة"],
+      },
+      homePlayer: "/images/players/esp-mbappe.png",
+      awayPlayer: "/images/players/esp-yamal.png",
     },
-    away: {
-      name: "برشلونة",
-      crest: "/images/teams/barcelona-badge.webp",
-      mono: "برم",
-      tokens: ["barcelona", "برشلونة", "بارسلونة"],
-    },
-    homePlayer: "/images/players/esp-mbappe.png",
-    awayPlayer: "/images/players/esp-yamal.png",
-  },
+  ],
 };
 
 function isClash(match: Match | null | undefined, clash: FeaturedClash): match is Match {
@@ -121,8 +144,11 @@ function selectClash(list: Match[], clash: FeaturedClash): Match | null {
   return clashes.find(m => m.state === "scheduled" || m.state === "other") ?? null;
 }
 
-function useClash(leagueId: string, clash: FeaturedClash) {
-  const [match, setMatch] = useState<Match | null>(null);
+/* جلب واحد بنطاق المواعيد نفسه يغذّي كل شرائح القمم — لكل مواجهة
+   اختيارها الخاص من القائمة ذاتها */
+function useClashes(leagueId: string, clashes: FeaturedClash[]) {
+  const [matches, setMatches] = useState<(Match | null)[]>(() => clashes.map(() => null));
+  const clashesKey = clashes.map(c => `${c.eyebrow}:${c.home.name}:${c.away.name}`).join("|");
   useEffect(() => {
     let alive = true;
     const controller = new AbortController();
@@ -146,9 +172,9 @@ function useClash(leagueId: string, clash: FeaturedClash) {
         const seen = new Set<string>();
         const unique = list.filter(m => (seen.has(m.id) ? false : (seen.add(m.id), true)));
         if (!alive) return;
-        setMatch(selectClash(unique, clash));
+        setMatches(clashes.map(clash => selectClash(unique, clash)));
       } catch {
-        /* الصمت مقصود: بطاقة «في انتظار الجدولة» هي حالة الفشل المصمّمة */
+        /* الصمت مقصود: بطاقة الانتظار هي حالة الفشل المصمّمة */
       }
     };
     load();
@@ -158,8 +184,9 @@ function useClash(leagueId: string, clash: FeaturedClash) {
       controller.abort();
       window.clearInterval(timer);
     };
-  }, [leagueId, clash]);
-  return match;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leagueId, clashesKey]);
+  return matches;
 }
 
 /* ── نبضة ثانية واحدة لعداد البداية فقط (لا تكلفة عند عدم الحاجة) ── */
@@ -219,8 +246,8 @@ function TicketShell() {
   );
 }
 
-/* منزلقة «قمة الجولة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
-function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClash }) {
+/* منزلقة «قمة الجولة/الكلاسيكو/مباراة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
+function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: FeaturedClash; leagueId: string }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
   const finished = match ? match.state === "finished" : false;
@@ -253,7 +280,7 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
       <img className="league-ticket-player league-ticket-player--left" src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       <img className="league-ticket-player league-ticket-player--right" src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       <div className="league-ticket-header">
-        <LeagueIconBadge leagueId="uefa.champions" size={60} eager />
+        <LeagueIconBadge leagueId={leagueId} size={60} eager />
       </div>
       <div className="league-ticket-body league-ticket-body--clash">
         <span className="league-ticket-eyebrow">{clash.eyebrow}</span>
@@ -320,17 +347,19 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
   return `${clash.eyebrow} بين ${pairing} — ${match.detail}.`;
 }
 
-/* منصة المنزلقتين — تبديل تلقائي 5 ثوانٍ مع وقفة إنسانية كاملة */
-function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
+/* منصة الشرائح — شريحة أساسية + شريحة لكل مواجهة مميّزة، تبديل تلقائي
+   5 ثوانٍ مع وقفة إنسانية كاملة */
+function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers }: {
   leagueId: string;
   name: string;
-  clash: FeaturedClash;
+  clashes: FeaturedClash[];
   basePlayers: ReactElement[];
 }) {
-  const match = useClash(leagueId, clash);
+  const matches = useClashes(leagueId, clashes);
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(false);
   const pauseUntil = useRef(0);
+  const count = 1 + clashes.length;
 
   /* التبديل التلقائي كل 5 ثوانٍ — يعمل دائماً (جوالاً وسطح مكتب) ولا
      يُوقفه تفضيل تقليل الحركة: ذلك التفضيل يُسقط حركة الانزلاق وحدها
@@ -342,10 +371,10 @@ function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
       if (document.hidden) return;
       if (Date.now() < pauseUntil.current) return;
       if (!auto) return;
-      setActive(prev => (prev + 1) % 2);
+      setActive(prev => (prev + 1) % count);
     }, ROTATE_MS);
     return () => window.clearInterval(timer);
-  }, [auto]);
+  }, [auto, count]);
 
   /* بدء الحركة بعد أول إطار كامل (تهيئة ضوء القالب والشريط) */
   useEffect(() => {
@@ -360,7 +389,10 @@ function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
 
   const slides = [
     { key: "base", label: `تذكرة ${name}` },
-    { key: "clash", label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}` },
+    ...clashes.map(clash => ({
+      key: `clash-${clash.eyebrow}`,
+      label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}`,
+    })),
   ];
 
   return (
@@ -372,7 +404,9 @@ function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
       }}
       onFocusCapture={() => { pauseUntil.current = Date.now() + MANUAL_PAUSE_MS; }}
     >
-      <p className="visually-hidden">{clashSummary(match, clash)}</p>
+      {clashes.map((clash, i) => (
+        <p key={clash.eyebrow} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
+      ))}
       <div className="league-ticket-track" aria-hidden="true">
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
           <div className="league-ticket league-ticket--in-track">
@@ -389,11 +423,13 @@ function LeagueTicketCarousel({ leagueId, name, clash, basePlayers }: {
             </div>
           </div>
         </div>
-        <div className={`league-ticket-slide${active === 1 ? " is-active" : ""}`}>
-          <div className="league-ticket league-ticket--match league-ticket--in-track">
-            <ClashSlide match={match} clash={clash} />
+        {clashes.map((clash, i) => (
+          <div key={clash.eyebrow} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
+            <div className="league-ticket league-ticket--match league-ticket--in-track">
+              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={leagueId} />
+            </div>
           </div>
-        </div>
+        ))}
       </div>
       <div className="league-ticket-dots">
         {slides.map((slide, i) => (
@@ -454,8 +490,8 @@ const UCL_BASE_PLAYERS = [
 ];
 
 export default function LeagueTicketCard({ leagueId, name }: { leagueId: string; name: string }) {
-  const clash = FEATURED_CLASHES[leagueId];
-  if (clash) {
+  const clashes = FEATURED_CLASHES[leagueId];
+  if (clashes && clashes.length > 0) {
     const basePlayers = leagueId === "uefa.champions"
       ? UCL_BASE_PLAYERS
       : (PLAYER_MAP[leagueId] ?? []);
@@ -463,7 +499,7 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       <LeagueTicketCarousel
         leagueId={leagueId}
         name={name}
-        clash={clash}
+        clashes={clashes}
         basePlayers={Array.isArray(basePlayers) ? basePlayers : [basePlayers]}
       />
     );

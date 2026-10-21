@@ -290,9 +290,14 @@ function TeamCrest({ src, monogram }: { src: string; monogram: string }) {
   return <span className="league-ticket-crest league-ticket-crest--mono" aria-hidden="true">{monogram}</span>;
 }
 
-/* شعار «نوفا» المقصوص (بدون شريط IPTV) — زخرفة زاوية تذكرة الدوري
-   الفرنسي فقط: أصل من هيدر موقع نوفا، أعلى اليسار الفيزيائي، صغير ومرئي */
-function NovaTicketBrand() {
+/* شعار «نوفا» المقصوص (بدون شريط IPTV) — زخرفة زاوية التذاكر:
+   تذاكر fra/ger/ita/egy/sau كلها + أول شريحة من تذاكر eng/esp/uefa
+   + تذكرة مواعيد المباريات الجامعة بالكامل (leagueId="matches"، وكذلك
+   ظهورها في هيرو الرئيسية باعتبارها الوحدة نفسها) — أعلى اليسار
+   الفيزيائي، صغير ومرئي */
+const NOVA_BRAND_WHOLE = new Set(["fra.1", "ger.1", "ita.1", "egy.1", "sau.1"]);
+const NOVA_BRAND_BASE = new Set(["eng.1", "esp.1", "uefa.champions"]);
+export function NovaTicketBrand() {
   return <img className="league-ticket-brand-nova" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
@@ -457,12 +462,15 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
   basePlayers: ReactElement[];
   base?: ReactElement;
+  /* تذكرة مواعيد المباريات الجامعة: اللوجو على كل شرائحها (الأساس
+     الجامع + شرائح القمم) بتوجيه المالك */
+  showNovaBrand?: boolean;
 }) {
   const matches = useClashes(leagueId, clashes);
   const [active, setActive] = useState(0);
@@ -524,7 +532,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           {base ?? (
             <div className="league-ticket league-ticket--in-track">
               <TicketShell />
-              {leagueId === "fra.1" ? <NovaTicketBrand /> : null}
+              {NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand ? <NovaTicketBrand /> : null}
               {basePlayers}
               <div className="league-ticket-header">
                 <LeagueIconBadge leagueId={leagueId} size={60} eager />
@@ -541,7 +549,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         {clashes.map((clash, i) => (
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
-              {leagueId === "fra.1" ? <NovaTicketBrand /> : null}
+              {NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand ? <NovaTicketBrand /> : null}
               <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} />
             </div>
           </div>
@@ -631,7 +639,7 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       </div>
       {/* نقطة الضوء — عنصر «مقصّ القصّ» سابقاً؛ صارت نقطة القالب المتوهّجة */}
       <span className="league-ticket-symbol" />
-      {leagueId === "fra.1" ? <NovaTicketBrand /> : null}
+      {NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) ? <NovaTicketBrand /> : null}
       {PLAYER_MAP[leagueId]}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />

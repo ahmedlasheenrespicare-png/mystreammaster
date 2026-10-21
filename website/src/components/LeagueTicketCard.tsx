@@ -23,7 +23,7 @@ import "./league-ticket.css";
      للشعار وبديله) في الرأس، واسم البطولة (النص المعدني) والسطران
      التوضيحيان في المتن.
    • المنصّات المنزلقة — تذكرتان بتصميم واحد بتبديل تلقائي 5 ثوانٍ:
-     الشريحة الأساسية للبطولة، وشريحة «مواجهة الليلة» بأيقونتي فريقَي
+     الشريحة الأساسية للبطولة، وشريحة «قمة الجولة» بأيقونتي فريقَي
      القمة واللاعبين بقاعدة التذكرة نفسها، بأرقامٍ لا تُحاكى محلياً
      أبداً: نتيجة ESPN الفعلية ودقيقة المباراة أثناء اللعب، والنهائية
      بعدها، وعداد ثانيةٍ ثانية لموعدها الحقيقي قبلها، وصيغة الانتظار
@@ -57,7 +57,7 @@ interface FeaturedClash {
    أصلٌ واللاعب يطابق الوجه: مبابي مقاول ريال، ويامال مقاول برشلونة */
 const FEATURED_CLASHES: Record<string, FeaturedClash> = {
   "uefa.champions": {
-    eyebrow: "مواجهة الليلة",
+    eyebrow: "قمة الجولة",
     home: {
       name: "باريس سان جيرمان",
       crest: "/images/teams/paris-saint-germain-badge.webp",
@@ -210,7 +210,7 @@ function TicketShell() {
   );
 }
 
-/* منزلقة «مواجهة الليلة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
+/* منزلقة «قمة الجولة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
 function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClash }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
@@ -227,13 +227,22 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
     ? hasCompleteScore(match.home.score, match.away.score)
     : false;
 
+  /* اتجاه عرض الفريقين/النتيجة يطابق كرت صفحة المواعيد حرفاً: المضيف
+     الفعلي عند ESPN يميناً (RTL أولاً) والضيف يساراً، لا الترتيب الثابت
+     للإعداد — فيلتصق رقم كل فريق بجانبه الصحيح مهما دار الضيافة */
+  const homeIsConfigHome = !match || clash.home.tokens.some(t => match.home.name.toLowerCase().includes(t));
+  const rightSide = homeIsConfigHome ? clash.home : clash.away;
+  const leftSide = homeIsConfigHome ? clash.away : clash.home;
+  const rightPlayer = homeIsConfigHome ? clash.homePlayer : clash.awayPlayer;
+  const leftPlayer = homeIsConfigHome ? clash.awayPlayer : clash.homePlayer;
+
   return (
     <>
       <TicketShell />
-      {/* اللاعبان بقاعدة التذكرة نفسها — لاعب الضيف يساراً ولاعب المضيف
-          يميناً، أقصى الأطراف خلف نص البطاقة وبتلاشيا سفلياً */}
-      <img className="league-ticket-player league-ticket-player--left" src={clash.awayPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <img className="league-ticket-player league-ticket-player--right" src={clash.homePlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
+          ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد */}
+      <img className="league-ticket-player league-ticket-player--left" src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      <img className="league-ticket-player league-ticket-player--right" src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId="uefa.champions" size={60} eager />
       </div>
@@ -241,8 +250,8 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
         <span className="league-ticket-eyebrow">{clash.eyebrow}</span>
         <div className="league-ticket-clash">
           <div className="league-ticket-clash-team">
-            <TeamCrest src={clash.home.crest} monogram={clash.home.mono} />
-            <strong dir="auto">{clash.home.name}</strong>
+            <TeamCrest src={rightSide.crest} monogram={rightSide.mono} />
+            <strong dir="auto">{rightSide.name}</strong>
           </div>
           <div className="league-ticket-clash-score">
             {match && (live || finished) && withScore ? (
@@ -261,8 +270,8 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
             </small>
           </div>
           <div className="league-ticket-clash-team">
-            <TeamCrest src={clash.away.crest} monogram={clash.away.mono} />
-            <strong dir="auto">{clash.away.name}</strong>
+            <TeamCrest src={leftSide.crest} monogram={leftSide.mono} />
+            <strong dir="auto">{leftSide.name}</strong>
           </div>
         </div>
         {countdown ? (

@@ -513,6 +513,38 @@ test('matches index ticket hosts the five clash slides with their league feature
   }
 });
 
+/* ── الرئيسية: التذكرة الجامعة نفسها بشرائحها الحيّة واردة أيضاً في
+     هيرو الصفحة بعد الشارة العلوية — الاختبار يقطع باتصالها بخصائصها ── */
+test('home hero hosts the matches index ticket with all six live slides', async ({ page }) => {
+  await mockSource(page, {
+    'uefa.champions': [
+      indexClashMock('h-ucl-psg-bar', '2026-10-13T19:00:00Z', 'Paris Saint-Germain', 'Barcelona', '4', '2'),
+      indexClashMock('h-ucl-bay-ars', '2026-10-13T20:00:00Z', 'Bayern München', 'Arsenal', '2', '1'),
+    ],
+    'esp.1': [indexClashMock('h-esp-real-bar', '2026-10-13T18:30:00Z', 'Real Madrid', 'Barcelona', '3', '1')],
+    'eng.1': [
+      indexClashMock('h-eng-che-tot', '2026-10-13T16:30:00Z', 'Chelsea', 'Tottenham Hotspur', '3', '2'),
+      indexClashMock('h-eng-ars-eve', '2026-10-13T15:00:00Z', 'Arsenal', 'Everton', '2', '0'),
+    ],
+  });
+  await page.goto('/');
+  const homeTicket = page.locator('#hero .league-ticket-carousel');
+  await expect(homeTicket).toHaveCount(1);
+  await expect(homeTicket.locator('.league-ticket-dot'), 'home hero dots').toHaveCount(6);
+  /* الأساسية: عنوان «كل البطولات الكبرى» كما في صفحة المواعيد */
+  const baseSlide = homeTicket.locator('.league-ticket-slide').first();
+  await expect(baseSlide.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');
+  /* وشريحة حيّه واحد بينها على الأقل تثبّت الخصائص: «قمة الجولة»
+     الأبطال تُعرض بنتيجة المضيف يمين النقطتين RTL */
+  const firstClash = homeTicket.locator('.league-ticket-slide').nth(1);
+  await expect(firstClash.locator('.league-ticket-eyebrow')).toHaveText('قمة الجولة');
+  const goals = firstClash.locator('.league-ticket-goals');
+  await expect(goals).toBeVisible();
+  await expect(goals).toHaveText(/4\s*:\s*2/);
+  const dir = await goals.evaluate(el => getComputedStyle(el).direction);
+  expect(dir).toBe('rtl');
+});
+
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-المصري/');

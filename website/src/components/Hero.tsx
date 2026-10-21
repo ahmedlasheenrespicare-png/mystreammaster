@@ -16,6 +16,7 @@ import {
 import { getWhatsAppUrl, LOWEST_PLAN_PRICE_USD } from "../data";
 import { ALL_BRANDS } from "./ContentTicker";
 import { LineReveal, MouseParallax, Parallax, Reveal, RevealImage } from "./motion";
+import AllLeaguesTicket from "./AllLeaguesTicket";
 
 /* =========================================================================
    شرائح البث — تُستخدم داخل شاشة الماكيت مع تدوير تلقائي
@@ -344,6 +345,15 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             </span>
             — رياضة وسينما على جميع شاشاتك
             <IconArrow className="w-3.5 h-3.5 shrink-0" />
+          </div>
+        </Reveal>
+
+        {/* تذكرة مواعيد المباريات الجامعة بعد الشارة مباشرةً — نفس مكوّن
+            صفحة «مواعيد المباريات» بشرائحها الست (الأساسية + قمم
+            الأبطال والكلاسيكو والإنجليزي) وكل وظائفها الحيّة */}
+        <Reveal variant="up" delay={140} className="mt-7">
+          <div className="home-matches-ticket mx-auto w-full max-w-[1120px]">
+            <AllLeaguesTicket />
           </div>
         </Reveal>
 

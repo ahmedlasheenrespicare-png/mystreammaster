@@ -545,6 +545,39 @@ test('home hero hosts the matches index ticket with all six live slides', async 
   expect(dir).toBe('rtl');
 });
 
+/* ── عدّاد الفليب الجديد: مواجهة مثبتة بعد يومين وخمس ساعات ودقيقتين
+     وسبع ثوانٍ من الساعة المجمدة — يُقرأ على الشرائح من صفحة المواعيد
+     ومن الرئيسية بنفس البنية وبروح التذاكر ── */
+test('ticket clash slides show the flip countdown in ticket spirit for scheduled clashes', async ({ page }) => {
+  const preEvent = (id: string, dateIso: string, home: string, away: string) => ({
+    id,
+    date: dateIso,
+    competitions: [{ competitors: [
+      { homeAway: 'home', score: '', team: { displayName: home } },
+      { homeAway: 'away', score: '', team: { displayName: away } },
+    ], status: { displayClock: '', type: { state: 'pre', completed: false, name: 'STATUS_SCHEDULED' } } }],
+  });
+  await mockSource(page, {
+    'eng.1': [preEvent('flip-ars-eve', '2026-10-15T17:03:07Z', 'Arsenal', 'Everton')],
+  });
+  await page.goto('/matches/الدوري-الإنجليزي/');
+  const strip = page.locator('.league-ticket-slide').nth(2).locator('.league-ticket-countdown.ticket-flip');
+  await expect(strip).toBeVisible();
+  /* أربع خلايا بترتيب عربي: يوم ← ساعة ← دقيقة ← ثانية */
+  const labels = await strip.locator('.ticket-flip__label').allTextContents();
+  expect(labels).toEqual(['يوم', 'ساعة', 'دقيقة', 'ثانية']);
+  /* القيم المجمدة محسوبة من فترق الموعد: 02 يوم / 05 ساعة / 03 دقيقة /
+     07 ثانية — القراءة من الأنصاف العلوية لأن كل خانة تضاعف قيمتها
+     في النصفين ما دامت ساكنة */
+  const tops = await strip.locator('.ticket-flip__half--top').allTextContents();
+  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تحمّل سعة دقيقة */
+  expect(tops.slice(0, 6)).toEqual(['0', '2', '0', '5', '0', '3']);
+  expect(tops.slice(6, 7)).toEqual(['0']);
+  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تسامح رقمي على الوحدة */
+  expect(tops[7]).toMatch(/^\d$/);
+  await expect(strip.locator('.ticket-flip__digit')).toHaveCount(8);
+});
+
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-المصري/');

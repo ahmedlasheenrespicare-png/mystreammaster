@@ -513,45 +513,137 @@
   color: #ff4747;
 }
 
-/* العدّ التنازلي لما قبل بدء المواجهة */
+/* ── عدّاد الفليب (بطاقات منقلبة بروح التذاكر) ─────────────────────────
+   تنفيذ أصلي لهذه التذاكر بإلهام من ساعات split-flap (uiverse.io/
+   whoisyourdeadie/friendly-dingo-90 المتفرّعة عن Carlos-vargs/pink-bat-84):
+   كل خانة بطاقة داكنة مقسومة بدرزة أفقية، وعند تبدّل الرقم يسقط
+   رفرفٌ يحمل القديم في نصفه العلوي فتنكشف الجديدة — بألوان التذكرة:
+   لوح فحمي، أرقام معدنية ذهبية، خط فاصل ليموني خافت، وظل سقوط رقيق */
 .league-ticket-countdown {
   display: flex;
-  gap: 0.45rem;
+  gap: 0.55rem;
   justify-content: center;
-  margin-top: 0.35rem;
+  margin-top: 0.3rem;
   direction: rtl;
 }
-.league-ticket-tick {
+.ticket-flip__group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 2.5rem;
-  padding: 0.15rem 0.3rem 0.25rem;
-  border: 1px solid #34361c;
-  border-radius: 8px;
-  background: rgba(13, 14, 8, 0.65);
-  font-size: 0.52rem;
-  color: #aeb3c0;
-  line-height: 1.4;
+  gap: 0.18rem;
 }
-.league-ticket-tick strong {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #d8ff3e;
+.ticket-flip__pair {
+  display: flex;
+  gap: 0.22rem;
+}
+.ticket-flip__sep {
+  align-self: center;
+  margin: 0 0.12rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(216, 255, 62, 0.55);
+  transform: translateY(-0.42rem); /* يظهر بجانب البطاقات لا تحتها */
+}
+.ticket-flip__digit {
+  position: relative;
+  display: inline-block;
+  width: clamp(26px, 2.7vw, 40px);
+  height: clamp(32px, 3.4vw, 50px);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #1b1d26 0%, #12141b 52%, #0c0e13 100%);
+  border: 1px solid rgba(216, 255, 62, 0.18);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font-size: clamp(15px, 1.8vw, 24px);
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
   direction: ltr;
+  color: #ffe9a8;
+  text-shadow: 0 0 6px rgba(255, 233, 168, 0.25);
+  overflow: hidden;
+}
+/* الدرزة الأفقية في منتصف البطاقة */
+.ticket-flip__digit::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(216, 255, 62, 0.32);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.7);
+  z-index: 3;
+}
+.ticket-flip__half {
+  position: absolute;
+  inset: 0 0 50% 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #22242e 0%, #171923 100%);
+  border-radius: 7px 7px 0 0;
+}
+.ticket-flip__half--bottom {
+  inset: 50% 0 0 0;
+  background: linear-gradient(180deg, #101218 0%, #0a0c10 100%);
+  border-radius: 0 0 7px 7px;
+}
+/* نص الرقم بارتفاع البطاقة كاملة داخل كل نصف قاطع —
+   النصف العلوي يظهر أعلىه والسفلي يظهر سفله */
+.ticket-flip__txt {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 200%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ticket-flip__half--bottom .ticket-flip__txt {
+  top: auto;
+  bottom: 0;
+}
+.ticket-flip__flap {
+  position: absolute;
+  inset: 0 0 50% 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #22242e 0%, #171923 100%);
+  color: #ffe9a8;
+  transform-origin: bottom center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  animation: ticket-flip-fall 0.48s ease-in both;
+  z-index: 4;
+  border-radius: 7px 7px 0 0;
+}
+.ticket-flip__flap .ticket-flip__txt { height: 200%; }
+.ticket-flip__flap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+@keyframes ticket-flip-fall {
+  0%   { transform: rotateX(0deg);   box-shadow: 0 0 0 rgba(0,0,0,0); }
+  60%  { transform: rotateX(-96deg); }
+  100% { transform: rotateX(-104deg); box-shadow: 0 14px 18px rgba(0,0,0,0.5); }
+}
+.ticket-flip__label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #aeb3c0;
+  letter-spacing: 0.02em;
+  line-height: 1;
 }
 
-/* الجوال — أرقام أصغر لكن دون تغيير بنية */
+/* الجوال — بطاقات أضيق تبقى كاملة في عرض التذكرة */
 @media (max-width: 700px) {
   .league-ticket-crest { width: 34px; height: 34px; }
   .league-ticket-goals { font-size: 1.25rem; }
-  .league-ticket-tick { min-width: 2.1rem; }
-  .league-ticket-tick strong { font-size: 0.85rem; }
+  .league-ticket-countdown { gap: 0.34rem; }
+  .ticket-flip__pair { gap: 0.14rem; }
 }
 
-/* تقليل الحركة — لا انتقال ولا نزوح، تبديل فوري */
+/* تقليل الحركة — لا انتقال ولا نزوح: الأرقام تتبدّل فوراً بلا رفرف */
 @media (prefers-reduced-motion: reduce) {
   .league-ticket-slide { transition: none; transform: none; }
   .league-ticket-dot, .league-ticket-dot:hover { transition: none; transform: none; }
+  .ticket-flip__flap { display: none; }
 }

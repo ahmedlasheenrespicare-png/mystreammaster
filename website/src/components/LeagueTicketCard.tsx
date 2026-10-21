@@ -306,6 +306,54 @@ function TicketShell() {
   );
 }
 
+/* ── عدّاد الفليب — بطاقات أرقام منقلبة بروح تذاكر البطولات ──────────────
+   الإلهام التصميمي: ساعة split-flap الكلاسيكية (البطاقة مقسومة نصفين
+   ورفرف ساقط عند كل تبديل) كما في uiverse.io/whoisyourdeadie/friendly-dingo-90
+   المتفرّعة أصلاً عن Carlos-vargs/pink-bat-84 — تنفيذ أصلي معاد تصميمه
+   لهذه التذاكر: القيم تصل من نبضة React كل ثانية، فتُعرض الجديدة في
+   النصفين ساكنةً ورفرف يحمل الخانة القديمة في نصفه العلوي يدور ساقطاً
+   180 درجة خلال 480ms ثم يُزال، فتُقرأ القفزة بلا قطع ولا طبقات مزمنة */
+function FlipDigit({ value }: { value: string }) {
+  const [prev, setPrev] = useState(value);
+  const flipping = prev !== value;
+  useEffect(() => {
+    if (!flipping) return;
+    const timer = window.setTimeout(() => setPrev(value), 480);
+    return () => window.clearTimeout(timer);
+  }, [flipping, value]);
+  return (
+    <span className="ticket-flip__digit">
+      <span className="ticket-flip__half ticket-flip__half--top"><span className="ticket-flip__txt">{value}</span></span>
+      <span className="ticket-flip__half ticket-flip__half--bottom"><span className="ticket-flip__txt">{flipping ? prev : value}</span></span>
+      {flipping ? <span className="ticket-flip__flap"><span className="ticket-flip__txt">{prev}</span></span> : null}
+    </span>
+  );
+}
+
+export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof splitCountdown> }) {
+  const cells: { label: string; value: string }[] = [
+    ...(countdown.days > 0 ? [{ label: "يوم", value: String(countdown.days).padStart(2, "0") }] : []),
+    { label: "ساعة", value: countdown.hours },
+    { label: "دقيقة", value: countdown.minutes },
+    { label: "ثانية", value: countdown.seconds },
+  ];
+  return (
+    <div className="league-ticket-countdown ticket-flip" role="presentation">
+      {cells.map((cell, index) => (
+        <span key={cell.label} className="ticket-flip__group">
+          {index > 0 ? <span className="ticket-flip__sep" aria-hidden="true">:</span> : null}
+          <span className="ticket-flip__pair">
+            {cell.value.split("").map((digit, i) => (
+              <FlipDigit key={i} value={digit} />
+            ))}
+          </span>
+          <small className="ticket-flip__label">{cell.label}</small>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 /* منزلقة «قمة الجولة/الكلاسيكو/مباراة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
 function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: FeaturedClash; leagueId: string }) {
   const pre = match ? match.state === "scheduled" : false;
@@ -374,14 +422,7 @@ function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: Fe
             <strong dir="auto">{leftSide.name}</strong>
           </div>
         </div>
-        {countdown ? (
-          <div className="league-ticket-countdown" role="presentation">
-            <span className="league-ticket-tick"><strong>{countdown.hours}</strong>ساعة</span>
-            <span className="league-ticket-tick"><strong>{countdown.minutes}</strong>دقيقة</span>
-            <span className="league-ticket-tick"><strong>{countdown.seconds}</strong>ثانية</span>
-            {countdown.days > 0 ? <span className="league-ticket-tick league-ticket-tick--days"><strong>{countdown.days}</strong>يوم</span> : null}
-          </div>
-        ) : null}
+        {countdown ? <FlipCountdown countdown={countdown} /> : null}
       </div>
     </>
   );

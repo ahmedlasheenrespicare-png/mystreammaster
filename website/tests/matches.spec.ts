@@ -48,15 +48,18 @@ async function mockSource(page: Page, options: { fail?: boolean; partial?: boole
 test('matches hub carries the all-leagues ticket above the calendar', async ({ page }) => {
   await mockSource(page);
   await page.goto('/matches/');
-  /* التذكرة الجامعة: نفس تصميم تذكرة البطولة — زخرفية وصفّ أيقونات
-     البطولات الثماني والنص المناسب، وفوقها عنوان الصفحة الظاهر */
-  const ticket = page.locator('.matches-hero-ticket .league-ticket');
+  /* التذكرة الجامعة بعدما صارت منزلقة (PR #151): الشريحة الأساسية
+     الزخرفية بنفس تصميمها القديم — صفّ أيقونات البطولات الثماني والنص
+     المناسب، وفوقها عنوان الصفحة الظاهر؛ وسلوك شرائح القمم الحيّة
+     يغطّيه حارس landing-pages المخصّص لتذكرة المواعيد */
+  const ticket = page.locator('.matches-hero-ticket .all-leagues-ticket');
   await expect(ticket).toHaveCount(1);
-  await expect(ticket).toHaveAttribute('aria-hidden', 'true');
+  /* إخفاء القارئات يقام من مسار المنزلقة نفسه لا من التذكرة الداخلية */
+  await expect(page.locator('.matches-hero-ticket .league-ticket-track')).toHaveAttribute('aria-hidden', 'true');
   await expect(page.locator('.leagues-ticket-icons .league-carousel-badge')).toHaveCount(8);
-  /* الصف أسفل التذكرة: حافته السفلية قريبة من حافة التذكرة السفلية */
+  /* صف الأيقونات أسفل الشريحة الأساسية: حافته السفلية قريبة من حافتها السفلية */
   const gap = await page.evaluate(() => {
-    const t = document.querySelector('.matches-hero-ticket .league-ticket')!.getBoundingClientRect();
+    const t = document.querySelector('.matches-hero-ticket .all-leagues-ticket')!.getBoundingClientRect();
     const i = document.querySelector('.leagues-ticket-icons')!.getBoundingClientRect();
     return Math.round(t.bottom - i.bottom);
   });

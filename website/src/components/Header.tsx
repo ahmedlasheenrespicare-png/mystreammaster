@@ -11,7 +11,7 @@ import {
   IconZap,
 } from "./Icons";
 import { leagueIcon } from "../lib/league-icons.mjs";
-import { CURRENCIES, getWhatsAppUrl } from "../data";
+import { CURRENCIES, getWhatsAppUrl, LOWEST_PLAN_PRICE_USD } from "../data";
 import { to } from "../config";
 import { counterpartPath } from "../i18n";
 import { useRouter } from "../router";
@@ -294,7 +294,7 @@ export default function Header({
                 rel="noopener noreferrer"
                 className="btn-slide slide-royal hidden sm:inline-flex items-center gap-2 bg-[#0b0b0f] text-white text-[13.5px] font-black px-5 py-2.5 rounded-full"
               >
-                اطلب التفعيل — من $25 <IconArrow className="w-4 h-4" />
+                اطلب التفعيل — من ${LOWEST_PLAN_PRICE_USD} <IconArrow className="w-4 h-4" />
               </a>
 
               {/* زر قائمة الجوال */}

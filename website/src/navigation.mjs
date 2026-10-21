@@ -14,7 +14,7 @@
 export const HOME_SECTIONS = [
   { id: "live-player", label: "دليل المشاهدة الرسمية", desc: "روابط القنوات والمنصات الرسمية", icon: "📡" },
   { id: "xtream", label: "مشغّل الاشتراك", desc: "شغّل باقتك من المتصفح", icon: "▶️" },
-  { id: "pricing", label: "الباقات والأسعار", desc: "نوفا وإيستار وموكا", icon: "💳" },
+  { id: "pricing", label: "الباقات والأسعار", desc: "نوفا وإيستار وموكا وX", icon: "💳" },
   { id: "server-finder", label: "مساعد الاختيار", desc: "أي سيرفر يناسبك؟", icon: "🧭" },
   { id: "servers-compare", label: "مقارنة السيرفرات", desc: "الفروق بالتفصيل", icon: "⚖️" },
   { id: "channels", label: "القنوات والمنصات", desc: "+15,000 قناة حية", icon: "📺" },
@@ -47,6 +47,7 @@ export const SERVER_PAGES = [
   { code: "nova", label: "سيرفر نوفا", desc: "الأقوى للمباريات", emoji: "⚽", grad: "from-[#2b4eff] to-[#7c5cff]" },
   { code: "istar", label: "سيرفر إيستار", desc: "أفلام ومسلسلات 4K", emoji: "🎬", grad: "from-[#7c5cff] to-[#3effe0]" },
   { code: "moka", label: "سيرفر موكا", desc: "اقتصادي وثابت", emoji: "⚡", grad: "from-[#d8ff3e] to-[#3effe0]" },
+  { code: "x", label: "سيرفر X", desc: "باقة سنوية جديدة", emoji: "✕", grad: "from-[#ed1c24] to-[#ff5c4d]" },
 ];
 
 /**
@@ -67,7 +68,7 @@ export const NAV_GROUPS = [
   {
     key: "servers",
     label: "السيرفرات والباقات",
-    match: ["servers", "store", "cart", "trial", "nova", "istar", "moka"],
+    match: ["servers", "store", "cart", "trial", "nova", "istar", "moka", "x"],
     links: [
       { href: "servers/", label: "كل السيرفرات", desc: "الباقات مع جدول المقارنة" },
       { href: "store/", label: "المتجر", desc: "اختر باقتك وأضفها للسلة" },
@@ -167,6 +168,7 @@ export const EN_PAGES = [
   { href: "en/nova/", label: "Nova Server", desc: "Activation package for matches & sports" },
   { href: "en/istar/", label: "iStar Pro Server", desc: "Activation package for movies & series" },
   { href: "en/moka/", label: "Moka Server", desc: "Activation package for limited speeds" },
+  { href: "en/x/", label: "X Server", desc: "12-month activation package" },
   { href: "en/faq/", label: "FAQ", desc: "Activation, payment, devices & renewals" },
 ];
 

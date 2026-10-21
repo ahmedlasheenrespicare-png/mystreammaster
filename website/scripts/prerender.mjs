@@ -4,7 +4,7 @@
    يحوّل كل مسار في الموقع إلى ملف HTML ثابت يحتوي المحتوى كاملاً:
      dist/index.html            ← /
      dist/channels/index.html   ← /channels
-     dist/nova/index.html       ← /nova   (وكذلك istar و moka)
+     dist/nova/index.html            ← /nova   (وكذلك istar و moka و x)
      dist/blog/index.html       ← /blog
      dist/blog/<slug>/index.html← كل مقال
      dist/404.html              ← أي مسار غير موجود (GitHub Pages يستخدمه تلقائياً)

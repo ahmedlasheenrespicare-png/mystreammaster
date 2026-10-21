@@ -265,10 +265,10 @@
         "name": "Smouha SC"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -276,7 +276,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-19&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372034044",
@@ -290,10 +290,10 @@
         "name": "Abu Qair Semad"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -301,7 +301,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-19&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372034895",
@@ -315,10 +315,10 @@
         "name": "El Mokawloon"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -326,7 +326,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-19&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372035746",
@@ -340,10 +340,10 @@
         "name": "Zamalek SC"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -351,7 +351,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-20&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372039150",
@@ -365,10 +365,10 @@
         "name": "Coca-Cola"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -376,11 +376,11 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-20&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372036597",
-      "date": "2026-10-20T15:00:00.000Z",
+      "date": "2026-10-20T17:00:00.000Z",
       "home": {
         "id": "890930",
         "name": "Wadi Degla"
@@ -390,10 +390,10 @@
         "name": "National Bank of Egypt"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -401,7 +401,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-20&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372037448",
@@ -415,10 +415,10 @@
         "name": "Al Assiouty Sport"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 4
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -426,7 +426,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-20&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "1372038299",

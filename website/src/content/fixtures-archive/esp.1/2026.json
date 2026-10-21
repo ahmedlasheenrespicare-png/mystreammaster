@@ -904,18 +904,29 @@
         "name": "Racing Santander"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 43.6,
+          "shots": 20,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 56.4,
+          "shots": 9,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401882845",
@@ -929,18 +940,29 @@
         "name": "Alavés"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 19568,
+      "statistics": {
+        "home": {
+          "possession": 47.8,
+          "shots": 6,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 52.2,
+          "shots": 20,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401882841",
@@ -954,18 +976,29 @@
         "name": "Real Sociedad"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 5
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 45.3,
+          "shots": 17,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 54.7,
+          "shots": 21,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401882839",
@@ -979,18 +1012,29 @@
         "name": "Sevilla"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 73907,
+      "statistics": {
+        "home": {
+          "possession": 65,
+          "shots": 15,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 35,
+          "shots": 11,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401882842",
@@ -1004,18 +1048,29 @@
         "name": "Rayo Vallecano"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 7674,
+      "statistics": {
+        "home": {
+          "possession": 31.6,
+          "shots": 12,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 68.4,
+          "shots": 21,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261019&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401882870",
@@ -1516,6 +1571,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261101&limit=500"
       },
       "fetchedAt": "2026-10-18T08:03:24.305Z"
+    },
+    {
+      "id": "401882824",
+      "date": "2026-11-02T20:00:00.000Z",
+      "home": {
+        "id": "90",
+        "name": "Deportivo"
+      },
+      "away": {
+        "id": "97",
+        "name": "Osasuna"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261102&limit=500"
+      },
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     }
   ]
 }

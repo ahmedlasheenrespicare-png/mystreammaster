@@ -807,18 +807,29 @@
         "name": "Marseille"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 5
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 41.7,
+          "shots": 11,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 58.3,
+          "shots": 21,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401876433",
@@ -832,18 +843,29 @@
         "name": "Stade Rennais"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 52.7,
+          "shots": 19,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 47.3,
+          "shots": 12,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401876435",
@@ -857,18 +879,29 @@
         "name": "AS Monaco"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 42.2,
+          "shots": 9,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 57.8,
+          "shots": 15,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401876438",
@@ -882,18 +915,29 @@
         "name": "AJ Auxerre"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 51.8,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 48.2,
+          "shots": 13,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401876434",
@@ -907,18 +951,29 @@
         "name": "Nice"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 47.6,
+          "shots": 8,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 52.4,
+          "shots": 12,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401876428",

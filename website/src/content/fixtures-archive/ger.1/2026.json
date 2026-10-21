@@ -915,18 +915,29 @@
         "name": "SC Freiburg"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 48.9,
+          "shots": 12,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 51.1,
+          "shots": 11,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401884768",
@@ -940,18 +951,29 @@
         "name": "TSG Hoffenheim"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 47.5,
+          "shots": 9,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 52.5,
+          "shots": 14,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261018&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-21T08:36:15.809Z"
     },
     {
       "id": "401884761",

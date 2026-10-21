@@ -618,17 +618,19 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(xtvBox!.x - ticketBox!.x).toBeLessThanOrEqual(60);
 });
 
-test('nova brand is distributed by the owner rollout rule across every ticket', async ({ page }) => {
+test('nova + X brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
   await mockSource(page, {});
-  /* 1) تذكرة مواعيد المباريات الجامعة: اللوجو على كل شرائحها —
+  /* 1) تذكرة مواعيد المباريات الجامعة: اللوجوان على كل شرائحها —
      الأساس الجامع + شرائح القمم (= عدد النقاط نفسه) */
   await page.goto('/matches/');
   const indexCarousel = page.locator('.league-ticket-carousel');
   await expect(indexCarousel).toHaveCount(1);
   const dots = await indexCarousel.locator('button.league-ticket-dot').count();
   expect(dots).toBeGreaterThanOrEqual(6);
-  await expect(indexCarousel.locator('img.league-ticket-brand-nova'), 'index: brand on every slide').toHaveCount(dots);
+  await expect(indexCarousel.locator('img.league-ticket-brand-nova'), 'index: nova on every slide').toHaveCount(dots);
+  await expect(indexCarousel.locator('img.league-ticket-brand-xtv'), 'index: X on every slide').toHaveCount(dots);
   await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-nova').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-xtv').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
 
   /* 2) الإنجليزي والإسباني وأبطال أوروبا: الشريحة الأولى (القاعدة)
      فقط — شرائح القمم بلا لوجو حتى لا تزاحم محتواها الغني */
@@ -638,10 +640,12 @@ test('nova brand is distributed by the owner rollout rule across every ticket', 
     await expect(carousel).toHaveCount(1);
     const slideCount = await carousel.locator('.league-ticket-slide').count();
     expect(slideCount).toBeGreaterThanOrEqual(2);
-    await expect(carousel.locator('img.league-ticket-brand-nova'), `${slug}: brand only on base`).toHaveCount(1);
-    await expect(carousel.locator('.league-ticket-slide').first().locator('img.league-ticket-brand-nova'), `${slug}: brand on base slide`).toHaveCount(1);
-    for (let i = 1; i < slideCount; i++) {
-      await expect(carousel.locator('.league-ticket-slide').nth(i).locator('img.league-ticket-brand-nova'), `${slug}: clash slide ${i} brand-free`).toHaveCount(0);
+    for (const sel of ['img.league-ticket-brand-nova', 'img.league-ticket-brand-xtv']) {
+      await expect(carousel.locator(sel), `${slug}: ${sel} only on base`).toHaveCount(1);
+      await expect(carousel.locator('.league-ticket-slide').first().locator(sel), `${slug}: ${sel} on base slide`).toHaveCount(1);
+      for (let i = 1; i < slideCount; i++) {
+        await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
+      }
     }
   }
 
@@ -651,14 +655,16 @@ test('nova brand is distributed by the owner rollout rule across every ticket', 
   for (const slug of ['الدوري-الفرنسي', 'الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
-    const brand = page.locator('.matches-hero-title img.league-ticket-brand-nova');
-    if (slideCount > 0) {
-      await expect(brand, `${slug}: brand on all slides`).toHaveCount(slideCount);
-    } else {
-      await expect(page.locator('.matches-hero-title .league-ticket')).toHaveCount(1);
-      await expect(brand, `${slug}: single brand`).toHaveCount(1);
+    for (const sel of ['img.league-ticket-brand-nova', 'img.league-ticket-brand-xtv']) {
+      const brand = page.locator(`.matches-hero-title ${sel}`);
+      if (slideCount > 0) {
+        await expect(brand, `${slug}: ${sel} on all slides`).toHaveCount(slideCount);
+      } else {
+        await expect(page.locator('.matches-hero-title .league-ticket')).toHaveCount(1);
+        await expect(brand, `${slug}: single ${sel}`).toHaveCount(1);
+      }
+      await expect(brand.first(), `${slug}: ${sel} visible`).toBeVisible();
     }
-    await expect(brand.first(), `${slug}: brand visible`).toBeVisible();
   }
 });
 

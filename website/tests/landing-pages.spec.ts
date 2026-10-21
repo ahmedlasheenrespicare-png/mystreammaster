@@ -276,71 +276,105 @@ test('league landing heroes carry the ticket card with the league icon beside th
   }
 });
 
-/* شريحة «قمة الجولة» في تذكرة الأبطال: النتيجة تُرسم بنفس اتجاه كرت
-   صفحة المواعيد (RTL مع اتجاه الصفحة) — رقم المضيف يلاصق جانب مضيفه
-   الحقيقي، لا LTR مفروض يقلب الرقمين. المباراة المرجعية: منتهية
-   باريس (مضيف ESPN) 4 × برشلونة (ضيف) 2 */
-test('ucl ticket clash slide renders the score rtl like the schedule card, home number beside house team', async ({ page }) => {
-  await mockSource(page, {
-    /* منتهية 20 أكتوبر: باريس مضيف ESPN 4 × برشلونة 2 — الحدث ببناء
-       مباشر لأن مُنشئ event يثبّت الضيف على 0 */
-    'uefa.champions': [{
-      id: 'psg-bar',
-      date: '2026-10-13T19:00:00Z',
-      competitions: [{
-        competitors: [
-          { homeAway: 'home', score: '4', team: { displayName: 'Paris Saint-Germain' } },
-          { homeAway: 'away', score: '2', team: { displayName: 'Barcelona' } },
-        ],
-        status: { displayClock: '90', type: { state: 'post', completed: true, name: 'STATUS_FULL_TIME' } },
+/* شرائح المواجهات في تذاكر البطولات (الأبطال + الإسباني وأي تذكرة
+   قادمة): النتيجة تُرسم بنفس اتجاه كرت صفحة المواعيد (RTL وراثة
+   الصفحة) — رقم المضيف يلاصق جانب فريقه الحقيقي، لا LTR مفروض يقلب
+   الرقمين. المرجعية: باريس (مضيف) 4×2 برشلونة، وريال (مضيف) 3×1
+   برشلونة — قياس مواضع الحروف الفعلية */
+const clashScoreCases: ReadonlyArray<{
+  url: string;
+  league: string;
+  eyebrow: string;
+  home: string;
+  away: string;
+  homeName: string;
+  awayName: string;
+  homeScore: string;
+  awayScore: string;
+}> = [
+  {
+    url: '/matches/دوري-أبطال-أوروبا/',
+    league: 'uefa.champions',
+    eyebrow: 'قمة الجولة',
+    home: 'Paris Saint-Germain',
+    away: 'Barcelona',
+    homeName: 'باريس',
+    awayName: 'برشلونة',
+    homeScore: '4',
+    awayScore: '2',
+  },
+  {
+    url: '/matches/الدوري-الإسباني/',
+    league: 'esp.1',
+    eyebrow: 'مواجهة الكلاسيكو',
+    home: 'Real Madrid',
+    away: 'Barcelona',
+    homeName: 'ريال مدريد',
+    awayName: 'برشلونة',
+    homeScore: '3',
+    awayScore: '1',
+  },
+];
+for (const c of clashScoreCases) {
+  test(`${c.league} ticket clash slide renders the score rtl like the schedule card, home number beside house team`, async ({ page }) => {
+    await mockSource(page, {
+      [c.league]: [{
+        id: `${c.league}-clash`,
+        date: '2026-10-13T19:00:00Z',
+        competitions: [{
+          competitors: [
+            { homeAway: 'home', score: c.homeScore, team: { displayName: c.home } },
+            { homeAway: 'away', score: c.awayScore, team: { displayName: c.away } },
+          ],
+          status: { displayClock: '90', type: { state: 'post', completed: true, name: 'STATUS_FULL_TIME' } },
+        }],
       }],
-    }],
-  });
-  await page.goto('/matches/دوري-أبطال-أوروبا/');
-  const slide = page.locator('.league-ticket-slide').nth(1);
-  await expect(slide.locator('.league-ticket-eyebrow')).toHaveText('قمة الجولة');
-  const goals = slide.locator('.league-ticket-goals');
-  await expect(goals).toBeVisible();
-  await expect(goals).toHaveText(/4\s*:\s*2/);
-  /* الاتجاه وراثة عربية (rtl) لا ltr مفروض — نفس خاصية كرت المواعيد */
-  await expect(async () => {
+    });
+    await page.goto(c.url);
+    const slide = page.locator('.league-ticket-slide').nth(1);
+    await expect(slide.locator('.league-ticket-eyebrow')).toHaveText(c.eyebrow);
+    const goals = slide.locator('.league-ticket-goals');
+    await expect(goals).toBeVisible();
+    await expect(goals).toHaveText(new RegExp(`${c.homeScore}\\s*:\\s*${c.awayScore}`));
+    /* الاتجاه وراثة عربية (rtl) لا ltr مفروض — خاصية كرت المواعيد نفسها */
     const dir = await goals.evaluate(el => getComputedStyle(el).direction);
     expect(dir).toBe('rtl');
-  }).toPass();
-  /* يمين الشبكة (RTL أولاً) يحمل المضيف الحقيقي باريس ورقم 4 يلاصق
-     النقطتين من جهته — قياس المواضع الفعلية للحروف */
-  const layout = await slide.evaluate(root => {
-    const strong = root.querySelector('.league-ticket-goals')!;
-    const rects: { ch: string; x: number }[] = [];
-    const walk = document.createTreeWalker(strong, NodeFilter.SHOW_TEXT);
-    let node: Node | null;
-    while ((node = walk.nextNode())) {
-      const text = node.textContent ?? '';
-      for (let i = 0; i < text.length; i++) {
-        const range = document.createRange();
-        range.setStart(node, i);
-        range.setEnd(node, i + 1);
-        const r = range.getBoundingClientRect();
-        if (r.width > 0) rects.push({ ch: text[i], x: r.x });
+    /* المضيف (بلوحته ESPn) يمين شبكة التذكرة — ورقمه يمين النقطتين — مطابقاً لقياس كرت /matches/ */
+    const layout = await slide.evaluate(root => {
+      const strong = root.querySelector('.league-ticket-goals')!;
+      const rects: { ch: string; x: number }[] = [];
+      const walk = document.createTreeWalker(strong, NodeFilter.SHOW_TEXT);
+      let node: Node | null;
+      while ((node = walk.nextNode())) {
+        const text = node.textContent ?? '';
+        for (let i = 0; i < text.length; i++) {
+          const range = document.createRange();
+          range.setStart(node, i);
+          range.setEnd(node, i + 1);
+          const r = range.getBoundingClientRect();
+          if (r.width > 0) rects.push({ ch: text[i], x: r.x });
+        }
       }
-    }
-    const four = rects.find(r => r.ch === '4');
-    const two = rects.find(r => r.ch === '2');
-    const colon = rects.find(r => r.ch === ':');
-    const teamXs = [...root.querySelectorAll('.league-ticket-clash-team')].map(t => ({
-      name: (t as HTMLElement).textContent?.trim() ?? '',
-      x: (t as HTMLElement).getBoundingClientRect().x,
-    }));
-    const paris = teamXs.find(t => t.name.includes('باريس'));
-    const barca = teamXs.find(t => t.name.includes('برشلونة'));
-    return { four: four?.x ?? -1, two: two?.x ?? -1, colon: colon?.x ?? -1, paris: paris?.x ?? -1, barca: barca?.x ?? -1 };
+      const first = rects.find(r => r.ch.trim());
+      const colon = rects.find(r => r.ch === ':');
+      /* آخر حرف ظاهر في السطر — في RTL بعد النقطتين مباشرةً هو رقم الضيف */
+      const last = [...rects].reverse().find(r => r.ch.trim());
+      const teamXs = [...root.querySelectorAll('.league-ticket-clash-team')].map(t => ({
+        name: (t as HTMLElement).textContent?.trim() ?? '',
+        x: (t as HTMLElement).getBoundingClientRect().x,
+      }));
+      return { firstX: first?.x ?? -1, colonX: colon?.x ?? -1, lastX: last?.x ?? -1, teamXs };
+    });
+    const homeT = layout.teamXs.find(t => t.name.includes(c.homeName));
+    const awayT = layout.teamXs.find(t => t.name.includes(c.awayName));
+    expect(homeT, c.homeName).toBeTruthy();
+    expect(awayT, c.awayName).toBeTruthy();
+    expect(homeT!.x).toBeGreaterThan(awayT!.x);
+    /* الرقم الأول (المضيف) يمين النقطتين؛ الأخير (الضيف) يسارها */
+    expect(layout.firstX).toBeGreaterThan(layout.colonX);
+    expect(layout.lastX).toBeLessThan(layout.colonX);
   });
-  /* باريس (المضيف ESPN) يمين برشلونة في شبكة التذكرة — والرقم 4 يمين
-     النقطتين والرقم 2 يسارها، مطابقاً لقياس كرت /matches/ */
-  expect(layout.paris).toBeGreaterThan(layout.barca);
-  expect(layout.four).toBeGreaterThan(layout.colon);
-  expect(layout.two).toBeLessThan(layout.colon);
-});
+}
 
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});

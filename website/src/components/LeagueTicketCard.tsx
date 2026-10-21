@@ -339,9 +339,8 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
   ];
   return (
     <div className="league-ticket-countdown ticket-flip" role="presentation">
-      {cells.map((cell, index) => (
+      {cells.map((cell) => (
         <span key={cell.label} className="ticket-flip__group">
-          {index > 0 ? <span className="ticket-flip__sep" aria-hidden="true">:</span> : null}
           <span className="ticket-flip__pair">
             {cell.value.split("").map((digit, i) => (
               <FlipDigit key={i} value={digit} />

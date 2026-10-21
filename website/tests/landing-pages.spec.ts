@@ -578,6 +578,32 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
   await expect(strip.locator('.ticket-flip__digit')).toHaveCount(8);
 });
 
+test('french league ticket carries the small Nova brand in its physical top-left corner', async ({ page }) => {
+  await mockSource(page, {});
+  await page.goto('/matches/الدوري-الفرنسي/');
+  /* تذكرة الفرنسي اليوم يقف وحدة قممها فارغة فتُرسَم بالمسار الساكن
+     (تذكرة واحدة في الهيرو بلا منزلقة) — الحقنات الثلاث تغطي المسارين */
+  const ticket = page.locator('.matches-hero-title .league-ticket');
+  await expect(ticket).toHaveCount(1);
+  const brand = ticket.locator('img.league-ticket-brand-nova');
+  await expect(brand).toHaveCount(1);
+  await expect(brand).toBeVisible();
+  /* الصورة تُقدَّم فعلاً من الموقع لا مسار مكسور */
+  await expect.poll(async () => brand.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  /* صغير كما طُلب: عرض بين 20 و44px مهما كبرت شاشة التذكرة */
+  const box = await brand.boundingBox();
+  expect(box).toBeTruthy();
+  expect(box!.width).toBeGreaterThanOrEqual(20);
+  expect(box!.width).toBeLessThanOrEqual(44);
+  /* أعلى اليسار الفيزيائي: ضمن 30px من ركني التذكرة نفسها (الموضع
+     left صريح لأن التذكرة RTL فلا يقفز مع inline-start). الصندوق
+     في Playwright = {x, y, width, height} لا خصائص left/top له */
+  const ticketBox = await ticket.boundingBox();
+  expect(ticketBox).toBeTruthy();
+  expect(box!.x - ticketBox!.x).toBeLessThanOrEqual(30);
+  expect(box!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+});
+
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-المصري/');

@@ -483,7 +483,9 @@
 .league-ticket-goals {
   font-size: 1.5rem;
   font-weight: 800;
-  direction: ltr;
+  /* النتيجة تُرسم باتجاه الصفحة العربي (RTL وراثة) مثل كرت كرت
+     «مواعيد المباريات» تماماً: رقم المضيف يمين النقطتين بجوار شارة
+     المضيف، ورقم الضيف يسارها — بلا اتجاه ltr مفروض */
   color: #f6f4ec;
   text-shadow: 0 0 14px rgba(216, 255, 62, 0.35);
   font-variant-numeric: tabular-nums;
@@ -492,7 +494,8 @@
 .league-ticket-kickoff {
   font-size: 1.05rem;
   font-weight: 700;
-  direction: ltr;
+  /* وراثة اتجاه الصفحة العربي مثل كرت المواعيد — اليوم باسم يومه والوقت
+     يظهران بالترتيب العربي الصحيح */
   color: #f6f4ec;
 }
 .league-ticket-state {

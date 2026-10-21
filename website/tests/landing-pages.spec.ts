@@ -340,7 +340,7 @@ const clashScoreCases: ReadonlyArray<{
     league: 'eng.1',
     eyebrow: 'قمة الجولة',
     slideIndex: 1,
-    dots: 2,
+    dots: 3,
     home: 'Chelsea',
     away: 'Tottenham Hotspur',
     homeName: 'تشيلسي',
@@ -348,9 +348,23 @@ const clashScoreCases: ReadonlyArray<{
     homeScore: '3',
     awayScore: '2',
   },
+  {
+    /* الشريحة الثالثة لتذكرة الإنجليزي: قمة الجولة الثانية — أرسنال (رايس) × إيفرتون (غريليش) */
+    url: '/matches/الدوري-الإنجليزي/',
+    league: 'eng.1',
+    eyebrow: 'قمة الجولة',
+    slideIndex: 2,
+    dots: 3,
+    home: 'Arsenal',
+    away: 'Everton',
+    homeName: 'أرسنال',
+    awayName: 'إيفرتون',
+    homeScore: '2',
+    awayScore: '0',
+  },
 ];
 for (const c of clashScoreCases) {
-  test(`${c.league} ticket clash slide ${c.eyebrow} renders the score rtl like the schedule card, home number beside house team`, async ({ page }) => {
+  test(`${c.league} ticket clash slide ${c.eyebrow} #${c.slideIndex} renders the score rtl like the schedule card, home number beside house team`, async ({ page }) => {
     await mockSource(page, {
       [c.league]: [{
         id: `${c.league}-clash`,

@@ -114,6 +114,22 @@
      ويمرّ مرة واحدة عند التفاعل مع اللوح (hover/active) بنفس زمني
      القالب (2s وتأخيراته)، ويُعطَّل كليًا مع `prefers-reduced-motion`
      بقاعدة البطاقة الشاملة. كل القواعد ببادئة `.ls-rates-ring*`.
+
+   • تحديث لاحق — مواءمة الملخص التحليلي والبطاقات الفرعية مع هوية
+     التذكرة: صفوف المؤشرات الأربعة ورؤوس البطاقات الفرعية وصفوف فرقها
+     كانت بباستيل القالب الأول وتدرّجات فئات مشبعة تنافر لوح التذكرة
+     الحبري، فأُعيد تلوينها بلوحة البطاقة نفسها (حبر `#0b0b0f` / ليموني
+     `#d8ff3e` / ورق `#f6f4ec`) مع بقاء جوهر التصميم حرفيًا: لوح ملخص
+     فاتح بجانب اللوح الحبري، وصفوف `.result-option` الأربع بعناصرها
+     (أيقونة/وسم/قيمة/سطر فرعي)، وبطاقات فرعية برأس يحتضن اللوح الزجاجي
+     ومتن فاتح بصفوف الفرق. الجديد قشرة فقط: إطار الليموني المضيء من
+     الزاوية بحيلة padding-box/border-box نفسها على اللوح الفاتح
+     والبطاقات الفرعية، أيقونات المؤشرات في دوائر حبرية بليموني (كشارة
+     مركز الدرع)، رؤوس فرعية بتوهّج الحبر الشعاعي نفسه ولون فئتها
+     مخفَّفًا لدائرة التوهّج وأيقونة الشارة ودرع الفرق فقط، شريط المعيار
+     بتدرّج ليموني، قيمة الفارق عن المتوسط بلون دلالي يرافق رمزها
+     وإشارتها (لا يحلّ محلهما)، ومركز الفريق قرصًا حبريًا بليموني —
+     بلا تغيير في معلومة أو تخطيط أو مقاس أو شبكة تجاوب.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -490,19 +506,21 @@
   background-color: #d8ff3e;
 }
 
-/* 2ب) لوح الملخص — روح .results-summary-container__options (أبيض بعنوان
-   حبري بلون التذكرة وغسلة ليمونية من الزاوية توازي توهّج اللوح الرئيسي) */
+/* 2ب) لوح الملخص — روح .results-summary-container__options: الوجه الفاتح
+   من التذكرة (ورق #f6f4ec بعنوان حبري) وبنفس إطار الليموني المضيء من
+   الزاوية بحيلة padding-box/border-box كي يزاوج اللوح الرئيسي الحبري */
 .ls-rates-aside {
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
   padding: 18px 16px;
+  border: 1px solid transparent;
   border-radius: 14px;
   background:
-    radial-gradient(circle 200px at 0% 0%, rgba(216, 255, 62, 0.10), rgba(216, 255, 62, 0) 62%),
-    #ffffff;
-  border: 1px solid #e9e4d8;
+    radial-gradient(circle 200px at 0% 0%, rgba(216, 255, 62, 0.12), rgba(216, 255, 62, 0) 62%) padding-box,
+    linear-gradient(#f6f4ec, #f6f4ec) padding-box,
+    radial-gradient(circle 230px at 0% 0%, #d8ff3e, rgba(11, 11, 15, 0.12)) border-box;
 }
 
 .ls-rates-aside-title {
@@ -515,8 +533,10 @@
 }
 
 /* --------------------------------------------------------------------------
-   3) المؤشرات الأربعة — صفوف .result-option الباستيلية الأربع نفسها
-   (بلا عرض ثابت: 100% وmin-height مرنة بدل 210px×36px)
+   3) المؤشرات الأربعة — صفوف .result-option الأربع نفسها ببنيتها وعناصرها،
+   مُلوَّنة بلوحة التذكرة بدل باستيل القالب: صف أبيض على لوح الورق بحافة
+   بداية ليمونية (صدى إطار التذكرة المضيء) وأيقونة ليمونية في دائرة حبرية
+   (كشارة مركز الدرع)، والنصوص حبرية (بلا عرض ثابت كما كانت)
    -------------------------------------------------------------------------- */
 .ls-rates-kpis {
   display: flex;
@@ -539,32 +559,32 @@
   min-height: 40px;
   padding: 8px 12px;
   border-radius: 10px;
-  background-color: var(--row-bg, hsl(0, 100%, 95%));
-  border: 1px solid var(--row-border, hsl(0, 100%, 88%));
+  background-color: #ffffff;
+  border: 1px solid rgba(11, 11, 15, 0.09);
+  border-inline-start: 3px solid #d8ff3e;
+  box-shadow: 0 1px 2px rgba(11, 11, 15, 0.04);
 }
 
-.ls-rates-kpi:nth-child(4n + 1) { --row-bg: hsl(0, 100%, 95%);   --row-border: hsl(0, 100%, 88%); }
-.ls-rates-kpi:nth-child(4n + 2) { --row-bg: hsl(39, 100%, 95%);  --row-border: hsl(39, 100%, 86%); }
-.ls-rates-kpi:nth-child(4n + 3) { --row-bg: hsl(166, 100%, 95%); --row-border: hsl(166, 100%, 84%); }
-.ls-rates-kpi:nth-child(4n + 4) { --row-bg: hsl(234, 85%, 95%);  --row-border: hsl(234, 85%, 87%); }
-
-/* ألوان الأيقونات الدلالية عالية التباين — درجات القالب نفسها مُغمَّقة لتبقى مقروءة فوق الباستيل */
-.ls-rates-kpi:nth-child(4n + 1) .ls-rates-kpi-icon { color: hsl(0, 84%, 44%); }
-.ls-rates-kpi:nth-child(4n + 2) .ls-rates-kpi-icon { color: hsl(39, 100%, 34%); }
-.ls-rates-kpi:nth-child(4n + 3) .ls-rates-kpi-icon { color: hsl(166, 100%, 24%); }
-.ls-rates-kpi:nth-child(4n + 4) .ls-rates-kpi-icon { color: hsl(234, 85%, 45%); }
-
+/* أيقونة المؤشر في دائرة حبرية بليموني — التمييز بين المؤشرات بالشكل
+   والوسم، واللون الموحّد يربط الصفوف بهوية التذكرة (لا لون وحده يعني) */
 .ls-rates-kpi-icon {
   grid-area: icon;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0b0b0f;
+  color: #d8ff3e;
+  flex-shrink: 0;
 }
 
 .ls-rates-kpi-label {
   grid-area: label;
   font-size: 0.78rem;
   font-weight: 800;
-  color: hsl(224, 30%, 27%);
+  color: #141419;
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
@@ -613,7 +633,9 @@
   }
 }
 
-/* البطاقة الفرعية — رأس بتوهّج الزاوية + متن أبيض، بظل حبري كالتذكرة */
+/* البطاقة الفرعية — رأس بتوهّج الزاوية + متن أبيض، بظل حبري وإطار ليموني
+   مضيء من الزاوية بحيلة padding-box/border-box كلوحي التذكرة، وزوايا
+   الألواح نفسها (14px) — متغيرات الفئة تبقى لدائرة التوهّج والدرع فقط */
 .ls-rate-subcard {
   --head-from: #aa076b;
   --head-to: #61045f;
@@ -623,15 +645,19 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid #ece7da;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    radial-gradient(circle 200px at 0% 0%, #d8ff3e, rgba(11, 11, 15, 0.12)) border-box;
   box-shadow: 0 10px 26px rgba(11, 11, 15, 0.10);
   overflow: hidden;
   transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
 }
 
-/* ألوان الفئات الأربع — تدرجات عميقة متناغمة مع فئة القالب + ألوان الأشرطة */
+/* ألوان الفئات الأربع — لم تعد خلفية الرأس (صارت حبر التذكرة)، وبقيت
+   لهجات خفيفة تميّز الفئة: دائرة التوهّج خلف الزجاج، وأيقونة شارة
+   الفئة، ودرع المونوغرام في صفوف الفرق — يرافقها دائماً نص الشارة */
 .ls-rate-subcard--atk-best {
   --head-from: #0f8a52;
   --head-to: #0a4f33;
@@ -660,9 +686,10 @@
   --fill-b: #fdba74;
 }
 
-/* الرأس المتدرج العلوي — يحتضن لوح الأرقام الزجاجي. التدرّج شعاعي من
-   الزاوية العلوية بروح لوح التذكرة (`circle 280px at 0% 0%`) لكن
-   بألوان فئة البطاقة، وفوقه لمعانها الزجاجي القطري (::after) */
+/* الرأس العلوي — يحتضن لوح الأرقام الزجاجي، وبتوهّج لوح التذكرة الحبري
+   نفسه (`circle … at 0% 0%`: #2c2c33 ← #0b0b0f) بدل تدرّجات الفئات
+   المشبعة، وفوقه لمعانه الزجاجي القطري (::after)؛ هوية الفئة تبقى في
+   دائرة التوهّج وأيقونة الشارة والدرع (مع نص الشارة دائماً) */
 .ls-rate-card-head {
   position: relative;
   display: flex;
@@ -671,8 +698,8 @@
   gap: 10px;
   min-width: 0;
   padding: 14px 12px 16px;
-  background-image: radial-gradient(circle 240px at 0% 0%, var(--head-from), var(--head-to));
-  color: #ffffff;
+  background-image: radial-gradient(circle 240px at 0% 0%, #2c2c33, #0b0b0f);
+  color: #f6f4ec;
   text-align: center;
   overflow: hidden;
 }
@@ -708,8 +735,10 @@
   height: 110px;
   border-radius: 50%;
   background: var(--fill-b, rgb(144, 161, 255));
-  opacity: 0.85;
-  filter: saturate(1.05);
+  /* فوق حبر الرأس تصبح توهّج فئة خفيفاً لا قرصاً مشبعاً — تمييز يرافق
+     نص شارة الفئة وأيقونتها، ولا يحمل معلومة وحده */
+  opacity: 0.35;
+  filter: saturate(1.05) blur(6px);
   pointer-events: none;
   transition: transform 1s ease-out;
 }
@@ -742,6 +771,12 @@
   flex-shrink: 0;
 }
 
+/* أيقونة شارة الفئة بدرجة فئتها الفاتحة فوق الزجاج الأبيض الخفيف —
+   لهجة لونية ترافق نص الشارة وشكل الأيقونة معاً */
+.ls-rate-kind .ls-rate-icon {
+  color: var(--fill-b, #d8ff3e);
+}
+
 .ls-rate-tie-count {
   font-size: 0.7rem;
   font-weight: 800;
@@ -758,7 +793,7 @@
   font-family: var(--font-display);
   font-size: 1.04rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #f6f4ec;
   line-height: 1.4;
 }
 
@@ -872,6 +907,21 @@
   line-height: 1;
 }
 
+/* دلالة الفارق بلون الهوية — الأفضل ليموني التذكرة، والأسوأ وردي خفيف
+   يُقرأ فوق الزجاج الحبري، والتعادل ورقي؛ اللون يرافق الرمز ▲▼◆
+   والإشارة الرقمية دائماً ولا يحمل المعنى وحده («غير متاح» رمادي) */
+.ls-rate-delta--good {
+  color: #d8ff3e;
+}
+
+.ls-rate-delta--bad {
+  color: #fda4af;
+}
+
+.ls-rate-delta--neutral {
+  color: #f6f4ec;
+}
+
 /* قيمة حجم العيّنة — نفس روح قيم صف القيمتين */
 .ls-rate-sample {
   font-size: 0.8rem;
@@ -915,7 +965,8 @@
   inset-inline-start: 0;
   min-width: 4px;
   border-radius: 999px;
-  background-image: linear-gradient(90deg, var(--fill-a), #ffffff);
+  /* تدرّج الليموني من شفافيته إلى كثافته — هوية التذكرة بدل لون الفئة */
+  background-image: linear-gradient(90deg, rgba(216, 255, 62, 0.45), #d8ff3e);
 }
 
 .ls-rate-bench-avg {
@@ -940,7 +991,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* قائمة الفرق — صفوف .result-option الباستيلية (بدون عرض ثابت، تُدار بالفهرس) */
+/* قائمة الفرق — صفوف .result-option نفسها ببنيتها، موحّدة اللون على ورق
+   التذكرة بدل دورة الباستيل الرباعية (بدون عرض ثابت، تُدار بالمحتوى) */
 .ls-rate-teams {
   display: flex;
   flex-direction: column;
@@ -952,8 +1004,6 @@
 }
 
 .ls-rate-team {
-  --row-bg: hsl(0, 100%, 95%);
-  --row-border: hsl(0, 100%, 88%);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -962,15 +1012,10 @@
   min-width: 0;
   padding: 8px 10px;
   border-radius: 12px;
-  background-color: var(--row-bg);
-  border: 1px solid var(--row-border);
-  color: hsl(224, 30%, 27%);
+  background-color: #f8f6ef;
+  border: 1px solid rgba(11, 11, 15, 0.08);
+  color: #232329;
 }
-
-.ls-rate-team:nth-child(4n + 1) { --row-bg: hsl(0, 100%, 95%);   --row-border: hsl(0, 100%, 88%); }
-.ls-rate-team:nth-child(4n + 2) { --row-bg: hsl(39, 100%, 95%);  --row-border: hsl(39, 100%, 86%); }
-.ls-rate-team:nth-child(4n + 3) { --row-bg: hsl(166, 100%, 95%); --row-border: hsl(166, 100%, 84%); }
-.ls-rate-team:nth-child(4n + 4) { --row-bg: hsl(234, 85%, 95%);  --row-border: hsl(234, 85%, 87%); }
 
 .ls-rate-team-logo {
   width: 22px;
@@ -1048,7 +1093,7 @@
   font-size: 0.85rem;
   font-weight: 800;
   line-height: 1.45;
-  color: hsl(224, 30%, 27%);
+  color: #141419;
   overflow-wrap: anywhere;
   word-break: break-word;
   white-space: normal;
@@ -1065,18 +1110,23 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* مركز الفريق قرص حبري بليموني — كشارة مركز الدرع فوق المونوغرام نفسها */
 .ls-rate-team-rank {
-  color: hsl(234, 85%, 45%);
+  background: #0b0b0f;
+  color: #d8ff3e;
   font-weight: 900;
+  border-radius: 999px;
+  padding: 1px 7px;
+  line-height: 1.5;
 }
 
 .ls-rate-empty {
   margin: 0;
   padding: 8px 10px;
   border-radius: 12px;
-  background: hsl(0, 100%, 95%);
-  border: 1px solid hsl(0, 100%, 88%);
-  color: hsl(224, 30%, 27%);
+  background: #f8f6ef;
+  border: 1px dashed rgba(11, 11, 15, 0.28);
+  color: #52525c;
   font-size: 0.82rem;
   font-weight: 700;
 }

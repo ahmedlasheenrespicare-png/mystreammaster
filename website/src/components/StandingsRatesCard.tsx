@@ -92,7 +92,7 @@ function DefenceIcon({ variant }: { variant: 'best' | 'worst' }) {
 }
 
 /* أيقونات المؤشرات الأربعة للملخص التحليلي — أيقونية دلالية تكمّل النص
-   (لا يُعتمد على اللون وحده)، بألوان صفوف القالب الباستيلية عالية التباين */
+   (لا يُعتمد على اللون وحده)، تتلوّن في CSS بليموني التذكرة على حبرها */
 function TotalGoalsIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -630,7 +630,7 @@ export default function StandingsRatesCard({
                 </div>
               </div>
 
-              {/* المتن السفلي الأبيض — صفوف باستيلية بروح .result-option */}
+              {/* المتن السفلي الأبيض — صفوف .result-option بورق التذكرة وأقراص مراكز حبرية */}
               <div className="ls-rate-card-body">
               {teams.length > 0 ? (
                 <ul className="ls-rate-teams" data-rate-teams aria-label={`الفرق في تصنيف ${card.title}`}>

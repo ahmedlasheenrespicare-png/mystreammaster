@@ -308,11 +308,22 @@ export function XtvTicketBrand() {
   return <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
-/* علامة «ستريم ماستر» النصية بتذكرة الدوري الفرنسي — مصغّرٌ وفيٌّ لشعار
-   الفوتر حرفياً (مربّع ليموني مستدير يحمل مثلث التشغيل IconPlay الأسود
-   بالمرجع ذاته + الاسم بخط العناوين الأبيض الثقيل) يجلس يميناً بجانب
-   أيقونة البطولة ويفصل بينهما خط رأسي ليموني متدرج — فرنسا فقط بطلب
-   المالك، وبمقاسات تلائم ارتفاع التذكرة */
+/* علامة «ستريم ماستر» النصية بتوسّط رأس التذاكر — مصغّرٌ وفيٌّ لشعار
+   الفوتر حرفياً (مربّع ليموني مستدير بمثلث تشغيل دوّار كل ثانية بنفس
+   إيقاع loader «nice-panda-34» + الاسم بخط العناوين الأبيض الثقيل)
+   يجلس يميناً بجانب أيقونة البطولة ويفصل بينهما خط رأسي ليموني متدرج.
+   وتوزيعها مطابقٌ لتوزيع أعلام نوفا/X حرفياً بطلب المالك المثبّت:
+   تذاكر fra/ger/ita/egy/sau **كاملة** (وهي ثابتة بلا شرائح) + تذكرة
+   مواعيد المباريات الجامعة **كاملة** (الجامع أساساً وقمماً، وإن حملت
+   قمتها أيقونة بطولةٍ وردت) + **الشريحة الأولى فقط** من eng/esp/uefa
+   فتبقى قممهم نقيةً — وبمقاسات تلائم ارتفاع التذكرة */
+const WORDMARK_WHOLE = new Set(["fra.1", "ger.1", "ita.1", "egy.1", "sau.1"]);
+const WORDMARK_BASE = new Set(["eng.1", "esp.1", "uefa.champions"]);
+function ticketWordmark(leagueId: string, scope: "static" | "base" | "clash"): boolean {
+  if (leagueId === "matches") return true;
+  if (scope === "clash") return WORDMARK_WHOLE.has(leagueId);
+  return WORDMARK_WHOLE.has(leagueId) || WORDMARK_BASE.has(leagueId);
+}
 export function StreamMasterTicketWordmark() {
   return (
     <span className="league-ticket-wordmark" aria-hidden="true">
@@ -406,7 +417,7 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
 }
 
 /* منزلقة «قمة الجولة/الكلاسيكو/مباراة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
-function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: FeaturedClash; leagueId: string }) {
+function ClashSlide({ match, clash, leagueId, showWordmark = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
   const finished = match ? match.state === "finished" : false;
@@ -438,8 +449,12 @@ function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: Fe
           ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد */}
       <img className="league-ticket-player league-ticket-player--left" src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       <img className="league-ticket-player league-ticket-player--right" src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <div className="league-ticket-header">
+      {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
+          بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي
+          تُبدي أيقونتها هنا — وقمم eng/esp/uefa تبقى نقيةً بطلبه */}
+      <div className={`league-ticket-header${showWordmark ? " league-ticket-header--brand" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
+        {showWordmark ? <StreamMasterTicketWordmark /> : null}
       </div>
       <div className="league-ticket-body league-ticket-body--clash">
         <span className="league-ticket-eyebrow">{clash.eyebrow}</span>
@@ -575,8 +590,11 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
               <TicketShell />
               <TicketBrandPair leagueId={leagueId} scope="base" showNovaBrand={showNovaBrand} />
               {basePlayers}
-              <div className="league-ticket-header">
+              {/* الشريحة الأولى — الثلاثية المتوسّطة هنا في حِزم «الكل»
+                  و«الأساس» معاً (فرنسا ورفاقها + eng/esp/uefa) */}
+              <div className={`league-ticket-header${ticketWordmark(leagueId, "base") ? " league-ticket-header--brand" : ""}`}>
                 <LeagueIconBadge leagueId={leagueId} size={60} eager />
+                {ticketWordmark(leagueId, "base") ? <StreamMasterTicketWordmark /> : null}
               </div>
               <div className="league-ticket-body">
                 <em>{name}</em>
@@ -591,7 +609,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
               <TicketBrandPair leagueId={leagueId} scope="clash" showNovaBrand={showNovaBrand} />
-              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} />
+              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} />
             </div>
           </div>
         ))}
@@ -682,13 +700,12 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       <span className="league-ticket-symbol" />
       <TicketBrandPair leagueId={leagueId} scope="static" />
       {PLAYER_MAP[leagueId]}
-      {/* تذكرة الدوري الفرنسي وحدها تحمل بتوسّط ترويسَتها مجموعةً من
-          ثلاثة: أيقونة البطولة ثم الخط الرأسي ثم علامة ستريم ماستر
-          المصغّرة من الفوتر (بطلب المالك) بمركز تذكرةٍ = مركز المجموعة؛
-          باقي البطولات تبقى صفاً مفرداً متوسّطاً كما كانت */}
-      <div className={`league-ticket-header${leagueId === "fra.1" ? " league-ticket-header--brand" : ""}`}>
+      {/* الثلاثية المتوسّطة (أيقونة البطولة فالخط فعلامة ستريم ماستر)
+          تجلس في رأس كل التذاكر الثابتة حاملةِ حزمة «الكل» — فرنسا
+          وألمانيا وإيطاليا ومصر والسعودية (تعميم المالك بعد #166) */}
+      <div className={`league-ticket-header${ticketWordmark(leagueId, "static") ? " league-ticket-header--brand" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
-        {leagueId === "fra.1" ? <StreamMasterTicketWordmark /> : null}
+        {ticketWordmark(leagueId, "static") ? <StreamMasterTicketWordmark /> : null}
       </div>
       <div className="league-ticket-body">
         <em>{name}</em>

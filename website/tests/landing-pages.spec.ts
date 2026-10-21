@@ -687,8 +687,8 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
         await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
       }
     }
-    /* علامة ستريم ماستر النصية فرنسية التذكرة فقط — لا تتسرّب لغيرها */
-    await expect(carousel.locator('.league-ticket-wordmark'), `${slug}: no stream-master wordmark`).toHaveCount(0);
+    /* (علامة ستريم ماستر صارت معمّمة بقاعدة التوزيع نفسها — حراستها
+       كلها في الاختبار التالي المخصّص لها) */
   }
 
   /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: كامل التذكرة —
@@ -708,6 +708,67 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
       await expect(brand.first(), `${slug}: ${sel} visible`).toBeVisible();
     }
   }
+});
+
+test('stream-master wordmark trio is distributed by the owner rollout rule across every ticket', async ({ page }) => {
+  await mockSource(page, {});
+  /* تعميم المالك بقاعدة التوزيع المطابقة لنوڤا/X حرفاً: الثلاثية
+     المتوسّطة (أيقونة البطولة + الخط الرأسي + المربع الدوّار و«ستريم
+     ماستر») على التذاكر الخمس كاملةً وتذكرة الجامعة كاملةً، وأول
+     شريحة فقط من الثلاثة المنزلقة */
+
+  /* 1) تذكرة مواعيد المباريات الجامعة: ثلاثية على كل شرائحها — الأساس
+     الجامع (بأيقونة الكأس المحايدة) والقمم الواردة كلها */
+  await page.goto('/matches/');
+  const indexCarousel = page.locator('.league-ticket-carousel');
+  await expect(indexCarousel).toHaveCount(1);
+  const dots = await indexCarousel.locator('button.league-ticket-dot').count();
+  expect(dots).toBeGreaterThanOrEqual(6);
+  await expect(indexCarousel.locator('.league-ticket-wordmark'), 'index: trio on every slide').toHaveCount(dots);
+  await expect(indexCarousel.locator('.league-ticket-wordmark-text').first()).toHaveText('ستريم ماستر');
+  await expect(indexCarousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark-line'), 'index base: divider').toHaveCount(1);
+  await expect(indexCarousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark-badge'), 'index base: tumbling badge').toHaveCount(1);
+  /* وقمتها الأولى (شريحة رقم 2) تحملها أيضاً بجوار أيقونة بطولتها */
+  await expect(indexCarousel.locator('.league-ticket-slide').nth(1).locator('.league-ticket-wordmark'), 'index clash 1: trio').toHaveCount(1);
+
+  /* 2) الألماني والإيطالي والمصري والسعودي: تذاكر ثابتة وحيدة بثلاثية */
+  for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
+    await page.goto(`/matches/${slug}/`);
+    const ticket = page.locator('.matches-hero-title .league-ticket');
+    await expect(ticket, `${slug}: single static ticket`).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-wordmark'), `${slug}: trio`).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-wordmark-text'), `${slug}: exact text`).toHaveText('ستريم ماستر');
+    await expect(ticket.locator('.league-ticket-wordmark-line'), `${slug}: divider`).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-wordmark-badge'), `${slug}: tumbling badge`).toHaveCount(1);
+  }
+
+  /* 3) الإنجليزي والإسباني والأبطال: الشريحة الأولى فقط — القمم نقية */
+  for (const slug of ['الدوري-الإنجليزي', 'الدوري-الإسباني', 'دوري-أبطال-أوروبا']) {
+    await page.goto(`/matches/${slug}/`);
+    const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
+    await expect(carousel, `${slug}: carousel`).toHaveCount(1);
+    const slideCount = await carousel.locator('.league-ticket-slide').count();
+    expect(slideCount).toBeGreaterThanOrEqual(2);
+    await expect(carousel.locator('.league-ticket-wordmark'), `${slug}: trio on base only`).toHaveCount(1);
+    await expect(carousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark'), `${slug}: base slide trio`).toHaveCount(1);
+    for (let i = 1; i < slideCount; i++) {
+      await expect(carousel.locator('.league-ticket-slide').nth(i).locator('.league-ticket-wordmark'), `${slug}: clash ${i} trio-free`).toHaveCount(0);
+    }
+  }
+
+  /* 4) هندسة التوسيط تُقاس على الألماني الثابتة أيضاً: مركز المجموعة
+     الأفقي = مركز التذكرة (±30px) كما فُرض على الفرنسية */
+  await page.goto('/matches/الدوري-الألماني/');
+  const gerTicket = page.locator('.matches-hero-title .league-ticket');
+  const gerBox = await gerTicket.boundingBox();
+  const gerIconBox = await gerTicket.locator('.league-ticket-header .league-carousel-badge').boundingBox();
+  const gerTextBox = await gerTicket.locator('.league-ticket-wordmark-text').boundingBox();
+  expect(gerBox).toBeTruthy();
+  expect(gerIconBox).toBeTruthy();
+  expect(gerTextBox).toBeTruthy();
+  const gerGroupCenter = (gerTextBox!.x + gerIconBox!.x + gerIconBox!.width) / 2;
+  const gerTicketCenter = gerBox!.x + gerBox!.width / 2;
+  expect(Math.abs(gerGroupCenter - gerTicketCenter)).toBeLessThanOrEqual(30);
 });
 
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {

@@ -290,6 +290,12 @@ function TeamCrest({ src, monogram }: { src: string; monogram: string }) {
   return <span className="league-ticket-crest league-ticket-crest--mono" aria-hidden="true">{monogram}</span>;
 }
 
+/* شعار «نوفا» المقصوص (بدون شريط IPTV) — زخرفة زاوية تذكرة الدوري
+   الفرنسي فقط: أصل من هيدر موقع نوفا، أعلى اليسار الفيزيائي، صغير ومرئي */
+function NovaTicketBrand() {
+  return <img className="league-ticket-brand-nova" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+}
+
 /* الإطار الزخرفي المشترك بين منزلقتَي البطولة: خلفية نقطة قالب وخطوط */
 function TicketShell() {
   return (
@@ -518,6 +524,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           {base ?? (
             <div className="league-ticket league-ticket--in-track">
               <TicketShell />
+              {leagueId === "fra.1" ? <NovaTicketBrand /> : null}
               {basePlayers}
               <div className="league-ticket-header">
                 <LeagueIconBadge leagueId={leagueId} size={60} eager />
@@ -534,6 +541,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         {clashes.map((clash, i) => (
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
+              {leagueId === "fra.1" ? <NovaTicketBrand /> : null}
               <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} />
             </div>
           </div>
@@ -623,6 +631,7 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       </div>
       {/* نقطة الضوء — عنصر «مقصّ القصّ» سابقاً؛ صارت نقطة القالب المتوهّجة */}
       <span className="league-ticket-symbol" />
+      {leagueId === "fra.1" ? <NovaTicketBrand /> : null}
       {PLAYER_MAP[leagueId]}
       <div className="league-ticket-header">
         <LeagueIconBadge leagueId={leagueId} size={60} eager />

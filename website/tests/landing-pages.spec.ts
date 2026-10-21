@@ -616,6 +616,39 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(xtvBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
   expect(xtvBox!.x).toBeGreaterThan(box!.x + box!.width * 0.5);
   expect(xtvBox!.x - ticketBox!.x).toBeLessThanOrEqual(60);
+
+  /* علامة «ستريم ماستر» النصية (مصغّر شعار الفوتر بطلب المالك) يمين
+     التذكرة بجانب أيقونة البطولة بعد خط رأسي: مجموعة واحدة ظاهرة نصها
+     بالضبط، وخط شعرة ≤2px عرضاً و≥20px ارتفاعاً، ومربّعها بلون الفوتر
+     الليموني نفسه #d8ff3e يحمل مثلث تشغيل، والترتيب الفيزيائي RTL:
+     الأيقونة أقصى اليمين ثم الخط ثم المربّع ثم النص — والكل داخل
+     حدود التذكرة وبمقاسٍ يليق بالكرت */
+  const wordmark = ticket.locator('.league-ticket-wordmark');
+  await expect(wordmark).toHaveCount(1);
+  await expect(wordmark).toBeVisible();
+  await expect(wordmark.locator('.league-ticket-wordmark-text')).toHaveText('ستريم ماستر');
+  const wmLine = wordmark.locator('.league-ticket-wordmark-line');
+  const wmBadge = wordmark.locator('.league-ticket-wordmark-badge');
+  await expect(wmLine).toHaveCount(1);
+  await expect(wmBadge).toHaveCount(1);
+  await expect(wmBadge.locator('svg')).toHaveCount(1);
+  await expect(wmBadge).toHaveCSS('background-color', 'rgb(216, 255, 62)');
+  const iconBox = await ticket.locator('.league-ticket-header .league-carousel-badge').boundingBox();
+  const lineBox = await wmLine.boundingBox();
+  const textBox = await wordmark.locator('.league-ticket-wordmark-text').boundingBox();
+  expect(iconBox).toBeTruthy();
+  expect(lineBox).toBeTruthy();
+  expect(textBox).toBeTruthy();
+  expect(lineBox!.width).toBeLessThanOrEqual(2);
+  expect(lineBox!.height).toBeGreaterThanOrEqual(20);
+  /* الترتيب الفيزيائي: الأيقونة يميناً فالخط ثم النص — والمجموعة منزوية
+     يمين التذكرة (يمين الأيقونة ضمن 40px من يمين الكرت بفضل flex-start) */
+  expect(lineBox!.x + lineBox!.width).toBeLessThanOrEqual(iconBox!.x + 1);
+  expect(textBox!.x).toBeLessThan(lineBox!.x);
+  expect(ticketBox!.x + ticketBox!.width - (iconBox!.x + iconBox!.width)).toBeLessThanOrEqual(40);
+  expect(textBox!.x).toBeGreaterThanOrEqual(ticketBox!.x);
+  expect(textBox!.height).toBeGreaterThanOrEqual(10);
+  expect(textBox!.height).toBeLessThanOrEqual(24);
 });
 
 test('nova + X brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
@@ -647,6 +680,8 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
         await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
       }
     }
+    /* علامة ستريم ماستر النصية فرنسية التذكرة فقط — لا تتسرّب لغيرها */
+    await expect(carousel.locator('.league-ticket-wordmark'), `${slug}: no stream-master wordmark`).toHaveCount(0);
   }
 
   /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: كامل التذكرة —

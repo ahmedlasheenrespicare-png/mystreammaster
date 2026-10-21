@@ -604,6 +604,50 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(box!.y - ticketBox!.y).toBeLessThanOrEqual(30);
 });
 
+test('nova brand is distributed by the owner rollout rule across every ticket', async ({ page }) => {
+  await mockSource(page, {});
+  /* 1) تذكرة مواعيد المباريات الجامعة: اللوجو على كل شرائحها —
+     الأساس الجامع + شرائح القمم (= عدد النقاط نفسه) */
+  await page.goto('/matches/');
+  const indexCarousel = page.locator('.league-ticket-carousel');
+  await expect(indexCarousel).toHaveCount(1);
+  const dots = await indexCarousel.locator('button.league-ticket-dot').count();
+  expect(dots).toBeGreaterThanOrEqual(6);
+  await expect(indexCarousel.locator('img.league-ticket-brand-nova'), 'index: brand on every slide').toHaveCount(dots);
+  await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-nova').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+
+  /* 2) الإنجليزي والإسباني وأبطال أوروبا: الشريحة الأولى (القاعدة)
+     فقط — شرائح القمم بلا لوجو حتى لا تزاحم محتواها الغني */
+  for (const slug of ['الدوري-الإنجليزي', 'الدوري-الإسباني', 'دوري-أبطال-أوروبا']) {
+    await page.goto(`/matches/${slug}/`);
+    const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
+    await expect(carousel).toHaveCount(1);
+    const slideCount = await carousel.locator('.league-ticket-slide').count();
+    expect(slideCount).toBeGreaterThanOrEqual(2);
+    await expect(carousel.locator('img.league-ticket-brand-nova'), `${slug}: brand only on base`).toHaveCount(1);
+    await expect(carousel.locator('.league-ticket-slide').first().locator('img.league-ticket-brand-nova'), `${slug}: brand on base slide`).toHaveCount(1);
+    for (let i = 1; i < slideCount; i++) {
+      await expect(carousel.locator('.league-ticket-slide').nth(i).locator('img.league-ticket-brand-nova'), `${slug}: clash slide ${i} brand-free`).toHaveCount(0);
+    }
+  }
+
+  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: كامل التذكرة —
+     ساكنة اليوم (شريحة واحدة) فيُثبت عدد 1، مستقبل-احتمائي لو
+     أُثرقت بالقمم */
+  for (const slug of ['الدوري-الفرنسي', 'الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
+    await page.goto(`/matches/${slug}/`);
+    const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
+    const brand = page.locator('.matches-hero-title img.league-ticket-brand-nova');
+    if (slideCount > 0) {
+      await expect(brand, `${slug}: brand on all slides`).toHaveCount(slideCount);
+    } else {
+      await expect(page.locator('.matches-hero-title .league-ticket')).toHaveCount(1);
+      await expect(brand, `${slug}: single brand`).toHaveCount(1);
+    }
+    await expect(brand.first(), `${slug}: brand visible`).toBeVisible();
+  }
+});
+
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-المصري/');

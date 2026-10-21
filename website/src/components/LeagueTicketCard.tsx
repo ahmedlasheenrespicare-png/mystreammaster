@@ -44,12 +44,17 @@ interface ClashTeamSide {
   tokens: string[];
 }
 
-interface FeaturedClash {
+export interface FeaturedClash {
   eyebrow: string;
   home: ClashTeamSide;
   away: ClashTeamSide;
   homePlayer: string;
   awayPlayer: string;
+  /* مصدر البطولة المغذِّية لهذه المواجهة (مفتاح ESPN نفسه): في تذكرة
+     البطولة يُورَّث من التذكرة نفسها ولا يُذكر، وفي التذكرة الجامعة
+     بصفحة «مواعيد المباريات» يُثبَّت صراحةً على بطولة المواجهة فيُرسَم
+     أيقونتها الصحيحة وتُجلَب مواعيدها من نافذتها هي دون سواها */
+  source?: string;
 }
 
 /* ── المواجهات المميّزة — شرائح القمم لكل بطولة بترتيب عرضها بعد
@@ -59,7 +64,7 @@ interface FeaturedClash {
      بايرن/أرسنال/تشيلسي/توتنهام/إيفرتون من مصدر أيقونات الموقع نفسه
      (ESPN CDN كما في بطاقات المباريات) مع بديل الحرفين المحلي
      إن تعذّر التحميل */
-const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
+export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
   "uefa.champions": [
     {
       eyebrow: "قمة الجولة",
@@ -188,11 +193,13 @@ function selectClash(list: Match[], clash: FeaturedClash): Match | null {
   return clashes.find(m => m.state === "scheduled" || m.state === "other") ?? null;
 }
 
-/* جلب واحد بنطاق المواعيد نفسه يغذّي كل شرائح القمم — لكل مواجهة
-   اختيارها الخاص من القائمة ذاتها */
+/* جلب نطاقات المصادر المطلوبة — طلب واحد بنطاق المواعيد لكل بطولة
+   مغذِّية (نافذتان: أسبوع للوراء + أسبوع للأمام)، ولكل مواجهة
+   اختيارها الخاص من قائمة بطولتها هي دون سواها: تغذية واحدة كما كان
+   في تذاكر البطولات، وعدّة تغذيات في التذكرة الجامعة بصفحة المواعيد */
 function useClashes(leagueId: string, clashes: FeaturedClash[]) {
   const [matches, setMatches] = useState<(Match | null)[]>(() => clashes.map(() => null));
-  const clashesKey = clashes.map(c => `${c.eyebrow}:${c.home.name}:${c.away.name}`).join("|");
+  const clashesKey = clashes.map(c => `${c.source ?? leagueId}:${c.eyebrow}:${c.home.name}:${c.away.name}`).join("|");
   useEffect(() => {
     let alive = true;
     const controller = new AbortController();
@@ -200,23 +207,32 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
       try {
         const day = dayInZone(new Date(), CLASH_ZONE);
         const compact = (iso: string) => iso.replace(/-/g, "");
+        /* المصادر المطلوبة لهذه الشرائح حصراً — تذكرة البطولة تعطي
+           مصدراً واحداً، والتذكرة الجامعة تعطي بطولات مواجهاتها */
+        const sources = Array.from(new Set(clashes.map(c => c.source ?? leagueId)));
         /* نطاق صفحة المواعيد نفسه: [اليوم−7 … اليوم] و[اليوم … +7] —
            MAX_SPAN_DAYS=7 لكل طلب عبر الوسيط */
-        const urls = [
-          `/scoreboard.php?league=${encodeURIComponent(leagueId)}&dates=${compact(shiftDay(day, -WINDOW_DAYS))}-${compact(day)}`,
-          `/scoreboard.php?league=${encodeURIComponent(leagueId)}&dates=${compact(day)}-${compact(shiftDay(day, WINDOW_DAYS))}`,
-        ];
-        const responses = await Promise.all(urls.map(url => fetch(url, { signal: controller.signal, cache: "no-store" })));
-        const list: Match[] = [];
-        for (const response of responses) {
-          const result = await readScoreboardResponse(response, { id: leagueId, name: leagueId });
-          list.push(...(result.matches as Match[]));
-        }
-        /* اليوم مشترك بين النافذتين — إزالة التكرار حسب تعريف المباراة */
-        const seen = new Set<string>();
-        const unique = list.filter(m => (seen.has(m.id) ? false : (seen.add(m.id), true)));
+        const dayCompact = compact(day);
+        const fromCompact = compact(shiftDay(day, -WINDOW_DAYS));
+        const toCompact = compact(shiftDay(day, WINDOW_DAYS));
+        const feeds = await Promise.all(sources.map(async source => {
+          const urls = [
+            `/scoreboard.php?league=${encodeURIComponent(source)}&dates=${fromCompact}-${dayCompact}`,
+            `/scoreboard.php?league=${encodeURIComponent(source)}&dates=${dayCompact}-${toCompact}`,
+          ];
+          const responses = await Promise.all(urls.map(url => fetch(url, { signal: controller.signal, cache: "no-store" })));
+          const list: Match[] = [];
+          for (const response of responses) {
+            const result = await readScoreboardResponse(response, { id: source, name: source });
+            list.push(...(result.matches as Match[]));
+          }
+          /* اليوم مشترك بين النافذتين — إزالة التكرار */
+          const seen = new Set<string>();
+          return list.filter(m => (seen.has(m.id) ? false : (seen.add(m.id), true)));
+        }));
         if (!alive) return;
-        setMatches(clashes.map(clash => selectClash(unique, clash)));
+        const bySource = new Map(sources.map((source, i) => [source, feeds[i]]));
+        setMatches(clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)));
       } catch {
         /* الصمت مقصود: بطاقة الانتظار هي حالة الفشل المصمّمة */
       }
@@ -392,12 +408,15 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
 }
 
 /* منصة الشرائح — شريحة أساسية + شريحة لكل مواجهة مميّزة، تبديل تلقائي
-   5 ثوانٍ مع وقفة إنسانية كاملة */
-function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers }: {
+   5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
+   تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
+   المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
   basePlayers: ReactElement[];
+  base?: ReactElement;
 }) {
   const matches = useClashes(leagueId, clashes);
   const [active, setActive] = useState(0);
@@ -456,24 +475,26 @@ function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers }: {
       ))}
       <div className="league-ticket-track" aria-hidden="true">
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
-          <div className="league-ticket league-ticket--in-track">
-            <TicketShell />
-            {basePlayers}
-            <div className="league-ticket-header">
-              <LeagueIconBadge leagueId={leagueId} size={60} eager />
+          {base ?? (
+            <div className="league-ticket league-ticket--in-track">
+              <TicketShell />
+              {basePlayers}
+              <div className="league-ticket-header">
+                <LeagueIconBadge leagueId={leagueId} size={60} eager />
+              </div>
+              <div className="league-ticket-body">
+                <em>{name}</em>
+                مواعيد · نتائج · ترتيب
+                <br />
+                يُحدَّث كل دقيقة
+              </div>
             </div>
-            <div className="league-ticket-body">
-              <em>{name}</em>
-              مواعيد · نتائج · ترتيب
-              <br />
-              يُحدَّث كل دقيقة
-            </div>
-          </div>
+          )}
         </div>
         {clashes.map((clash, i) => (
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
-              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={leagueId} />
+              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} />
             </div>
           </div>
         ))}

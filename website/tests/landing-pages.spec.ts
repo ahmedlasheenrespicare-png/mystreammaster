@@ -426,6 +426,93 @@ for (const c of clashScoreCases) {
   });
 }
 
+/* ── التذكرة الجامعة في صفحة «مواعيد المباريات» الآن منزلقة: الأساسية
+     + خمس شرائح قمم بخصائصها الحيّة كما في تذاكر بطولاتها (قمتا
+     الأبطال + كلاسيكو الإسباني + قمتا الإنجليزي)، بجلب منفصل لكل بطولة ── */
+const indexClashMock = (id: string, dateIso: string, home: string, away: string, homeScore: string, awayScore: string) => ({
+  id,
+  date: dateIso,
+  competitions: [{
+    competitors: [
+      { homeAway: 'home', score: homeScore, team: { displayName: home } },
+      { homeAway: 'away', score: awayScore, team: { displayName: away } },
+    ],
+    status: { displayClock: '90', type: { state: 'post', completed: true, name: 'STATUS_FULL_TIME' } },
+  }],
+});
+
+test('matches index ticket hosts the five clash slides with their league features', async ({ page }) => {
+  await mockSource(page, {
+    'uefa.champions': [
+      indexClashMock('ucl-psg-bar', '2026-10-13T19:00:00Z', 'Paris Saint-Germain', 'Barcelona', '4', '2'),
+      indexClashMock('ucl-bay-ars', '2026-10-13T20:00:00Z', 'Bayern München', 'Arsenal', '2', '1'),
+    ],
+    'esp.1': [indexClashMock('esp-real-bar', '2026-10-13T18:30:00Z', 'Real Madrid', 'Barcelona', '3', '1')],
+    'eng.1': [
+      indexClashMock('eng-che-tot', '2026-10-13T16:30:00Z', 'Chelsea', 'Tottenham Hotspur', '3', '2'),
+      indexClashMock('eng-ars-eve', '2026-10-13T15:00:00Z', 'Arsenal', 'Everton', '2', '0'),
+    ],
+  });
+  await page.goto('/matches/');
+  /* ست نقاط: الأساسية + القمم الخمس */
+  await expect(page.locator('.league-ticket-dot'), 'index dots').toHaveCount(6);
+  const indexSlides: ReadonlyArray<{
+    n: number; eyebrow: string; homeName: string; awayName: string; homeScore: string; awayScore: string; fullCheck?: boolean;
+  }> = [
+    { n: 1, eyebrow: 'قمة الجولة', homeName: 'باريس', awayName: 'برشلونة', homeScore: '4', awayScore: '2', fullCheck: true },
+    { n: 2, eyebrow: 'مباراة الليلة', homeName: 'بايرن', awayName: 'أرسنال', homeScore: '2', awayScore: '1' },
+    { n: 3, eyebrow: 'مواجهة الكلاسيكو', homeName: 'ريال مدريد', awayName: 'برشلونة', homeScore: '3', awayScore: '1' },
+    { n: 4, eyebrow: 'قمة الجولة', homeName: 'تشيلسي', awayName: 'توتنهام', homeScore: '3', awayScore: '2' },
+    { n: 5, eyebrow: 'قمة الجولة', homeName: 'أرسنال', awayName: 'إيفرتون', homeScore: '2', awayScore: '0' },
+  ];
+  for (const c of indexSlides) {
+    const slide = page.locator('.league-ticket-slide').nth(c.n);
+    await expect(slide.locator('.league-ticket-eyebrow'), `slide ${c.n} eyebrow`).toHaveText(c.eyebrow);
+    /* صور اللاعبين وأسماء الفريقين من خصائص الشريحة الأصلية نفسها */
+    await expect(slide.locator('.league-ticket-player'), `slide ${c.n} players`).toHaveCount(2);
+    await expect(slide.locator('.league-ticket-clash-team', { hasText: c.homeName })).toHaveCount(1);
+    await expect(slide.locator('.league-ticket-clash-team', { hasText: c.awayName })).toHaveCount(1);
+    const goals = slide.locator('.league-ticket-goals');
+    await expect(goals).toBeVisible();
+    await expect(goals).toHaveText(new RegExp(`${c.homeScore}\\s*:\\s*${c.awayScore}`));
+    const dir = await goals.evaluate(el => getComputedStyle(el).direction);
+    expect(dir).toBe('rtl');
+    if (c.fullCheck) {
+      /* قياس المواقع مرة واحدة يكفي: المضيف يمين والضيف يسار ورقم
+         المضيف يمين النقطتين — نفس بنية كرت تذكرة البطولة الأم */
+      const layout = await slide.evaluate(root => {
+        const strong = root.querySelector('.league-ticket-goals')!;
+        const rects: { ch: string; x: number }[] = [];
+        const walk = document.createTreeWalker(strong, NodeFilter.SHOW_TEXT);
+        let node: Node | null;
+        while ((node = walk.nextNode())) {
+          const text = node.textContent ?? '';
+          for (let i = 0; i < text.length; i++) {
+            const range = document.createRange();
+            range.setStart(node, i);
+            range.setEnd(node, i + 1);
+            const r = range.getBoundingClientRect();
+            if (r.width > 0) rects.push({ ch: text[i], x: r.x });
+          }
+        }
+        const first = rects.find(r => r.ch.trim());
+        const colon = rects.find(r => r.ch === ':');
+        const last = [...rects].reverse().find(r => r.ch.trim());
+        const teamXs = [...root.querySelectorAll('.league-ticket-clash-team')].map(t => ({
+          name: (t as HTMLElement).textContent?.trim() ?? '',
+          x: (t as HTMLElement).getBoundingClientRect().x,
+        }));
+        return { firstX: first?.x ?? -1, colonX: colon?.x ?? -1, lastX: last?.x ?? -1, teamXs };
+      });
+      const homeT = layout.teamXs.find(t => t.name.includes(c.homeName));
+      const awayT = layout.teamXs.find(t => t.name.includes(c.awayName));
+      expect(homeT!.x).toBeGreaterThan(awayT!.x);
+      expect(layout.firstX).toBeGreaterThan(layout.colonX);
+      expect(layout.lastX).toBeLessThan(layout.colonX);
+    }
+  }
+});
+
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-المصري/');

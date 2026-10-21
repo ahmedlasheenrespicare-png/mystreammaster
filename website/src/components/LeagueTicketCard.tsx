@@ -5,7 +5,8 @@ import {
   hasCompleteScore,
   kickoff,
   readScoreboardResponse,
-  scoreboardUrl,
+  shiftDay,
+  dayLabel,
   type Match,
 } from "../lib/matches.mjs";
 import "./league-ticket.css";
@@ -99,7 +100,27 @@ function isClash(match: Match | null | undefined, clash: FeaturedClash): match i
   return hasHome && hasAway;
 }
 
-/* ── جلب مواجهة اليوم من لوحة البطولة عبر وسيط الموقع نفسه، وتحديث دقيق ── */
+/* ── جلب المواجهة من لوحة البطولة عبر وسيط الموقع نفسه — نفس مسار
+     صفحة «مواعيد المباريات» حرفاً (/scoreboard.php ← ESPN) — لكن بنافذة
+     الأمامية إلى 7 أيام (أقصى مدى يقبله الوسيط) فيُثبَّت موعد المواجهة
+     القادمة ويُعَدُّ لها ثانيةً ثانية، ثم تتحوّل الحالة وحدها: عدّاد قبل
+     البداية ← نتيجة ودقيقة مباشرة ← نهائية، بتحديث كل دقيقة دون تدخّل ── */
+const LOOKAHEAD_DAYS = 7;
+
+function selectClash(list: Match[], clash: FeaturedClash): Match | null {
+  const today = dayInZone(new Date(), CLASH_ZONE);
+  const clashes = list
+    .filter(m => isClash(m, clash))
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+  /* مباشرة أولاً، فنهائية اليوم (يبقى عرضها بقية يومها)، فأقرب قادمة مثبّتة */
+  const live = clashes.find(m => m.state === "live");
+  if (live) return live;
+  const finishedToday = [...clashes].reverse()
+    .find(m => m.state === "finished" && dayInZone(new Date(m.date), CLASH_ZONE) === today);
+  if (finishedToday) return finishedToday;
+  return clashes.find(m => m.state === "scheduled" || m.state === "other") ?? null;
+}
+
 function useClash(leagueId: string, clash: FeaturedClash) {
   const [match, setMatch] = useState<Match | null>(null);
   useEffect(() => {
@@ -108,13 +129,15 @@ function useClash(leagueId: string, clash: FeaturedClash) {
     const load = async () => {
       try {
         const day = dayInZone(new Date(), CLASH_ZONE);
-        const response = await fetch(scoreboardUrl(leagueId, day), {
+        const compact = (iso: string) => iso.replace(/-/g, "");
+        const url = `/scoreboard.php?league=${encodeURIComponent(leagueId)}&dates=${compact(day)}-${compact(shiftDay(day, LOOKAHEAD_DAYS - 1))}`;
+        const response = await fetch(url, {
           signal: controller.signal,
           cache: "no-store",
         });
         const result = await readScoreboardResponse(response, { id: leagueId, name: leagueId });
         if (!alive) return;
-        setMatch((result.matches as Match[]).find(m => isClash(m, clash)) ?? null);
+        setMatch(selectClash(result.matches as Match[], clash));
       } catch {
         /* الصمت مقصود: بطاقة «في انتظار الجدولة» هي حالة الفشل المصمّمة */
       }
@@ -194,6 +217,11 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
   const finished = match ? match.state === "finished" : false;
   const now = useNow(pre);
   const kick = match ? kickoff(match.date, CLASH_ZONE) : null;
+  /* موعد المواجهة كما يظهر في صفحة المواعيد: وقت القاهرة دائماً، ويُسبَق
+     بتاريخ اليوم العربي حين تكون المثبَّتة في يومٍ قادم لا اليوم نفسه */
+  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : null;
+  const isToday = matchDay != null && matchDay === dayInZone(new Date(), CLASH_ZONE);
+  const kickLabel = kick && !isToday ? `${dayLabel(matchDay!, { weekday: "long" })} · ${kick}` : kick;
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
   const withScore = match && match.home.score != null && match.away.score != null
     ? hasCompleteScore(match.home.score, match.away.score)
@@ -222,12 +250,14 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
                 {match.home.score} <span>:</span> {match.away.score}
               </strong>
             ) : match && pre ? (
-              <strong className="league-ticket-kickoff">{kick}</strong>
+              <strong className="league-ticket-kickoff">{kickLabel}</strong>
+            ) : match ? (
+              <strong className="league-ticket-kickoff">{isToday ? "اليوم" : dayLabel(matchDay!, { weekday: "long" })}</strong>
             ) : (
-              <strong className="league-ticket-kickoff">اليوم</strong>
+              <strong className="league-ticket-kickoff">قريباً</strong>
             )}
             <small className={`league-ticket-state${live ? " is-live" : ""}`}>
-              {match ? match.detail : "جدولها رسمياً عبر ESPN فور تثبّتها"}
+              {match ? match.detail : "أقرب مواجهة رسمية مجدولة خلال 7 أيام تظهر هنا فور تثبّتها"}
             </small>
           </div>
           <div className="league-ticket-clash-team">
@@ -251,8 +281,13 @@ function ClashSlide({ match, clash }: { match: Match | null; clash: FeaturedClas
 /* نص مقروء لقارئ الشاشة يلخّص حالة المواجهة — التذكرة نفسها زخرفية */
 function clashSummary(match: Match | null, clash: FeaturedClash): string {
   const pairing = `${clash.home.name} و${clash.away.name}`;
-  if (!match) return `بطاقة ${clash.eyebrow} بين ${pairing}: يُعرض الموعد والنتيجة بمجرد تثبّت الجدولة رسمياً.`;
-  if (match.state === "scheduled") return `${clash.eyebrow} بين ${pairing} لم تبدأ بعد — موعد البداية ${kickoff(match.date, CLASH_ZONE)} بتوقيت القاهرة.`;
+  if (!match) return `بطاقة ${clash.eyebrow} بين ${pairing}: تُعرض أقرب مواجهة رسمية مجدولة خلال الأيام السبعة القادمة بمجرد تثبّتها، مع عدّ تنازلي ثم النتيجة مباشرة فالنهائية.`;
+  if (match.state === "scheduled") {
+    const day = dayInZone(new Date(match.date), CLASH_ZONE);
+    const today = dayInZone(new Date(), CLASH_ZONE);
+    const when = day === today ? `اليوم ${kickoff(match.date, CLASH_ZONE)}` : `${dayLabel(day, { weekday: "long" })} ${kickoff(match.date, CLASH_ZONE)}`;
+    return `${clash.eyebrow} بين ${pairing} لم تبدأ بعد — موعد البداية ${when} بتوقيت القاهرة.`;
+  }
   if (match.state === "finished") return `انتهت ${clash.eyebrow} بين ${pairing} بالنتيجة ${match.home.score} إلى ${match.away.score}.`;
   if (match.state === "live") return `${clash.eyebrow} بين ${pairing} مباشرة الآن — ${match.detail}${hasCompleteScore(match.home.score, match.away.score) ? `، النتيجة ${match.home.score} إلى ${match.away.score}` : ""}.`;
   return `${clash.eyebrow} بين ${pairing} — ${match.detail}.`;

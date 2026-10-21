@@ -54,9 +54,11 @@ interface FeaturedClash {
 
 /* ── المواجهات المميّزة — شرائح القمم لكل بطولة بترتيب عرضها بعد
      الشريحة الأساسية: مقاتلو الأبطال «قمة الجولة» (باريس × برشلونة)
-     و«مباراة الليلة» (بايرن × أرسنال)، والكلاسيكو للإسباني. شعارا
-     بايرن/أرسنال من مصدر أيقونات الموقع نفسه (ESPN CDN كما في بطاقات
-     المباريات) مع بديل الحرفين المحلي إن تعذّر التحميل */
+     و«مباراة الليلة» (بايرن × أرسنال)، والكلاسيكو للإسباني، وقمتان
+     للإنجليزي (تشيلسي × توتنهام ثم أرسنال × إيفرتون). شعارات
+     بايرن/أرسنال/تشيلسي/توتنهام/إيفرتون من مصدر أيقونات الموقع نفسه
+     (ESPN CDN كما في بطاقات المباريات) مع بديل الحرفين المحلي
+     إن تعذّر التحميل */
 const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
   "uefa.champions": [
     {
@@ -133,6 +135,26 @@ const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
       },
       homePlayer: "/images/players/chelsea-palmer.png",
       awayPlayer: "/images/players/eng-marmoush.png",
+    },
+    {
+      /* الشريحة الثالثة لتذكرة الدوري الإنجليزي — قمة الجولة الثانية:
+         أرسنال × إيفرتون بصورتَي رايس وغريليش من مكتبة اللاعبين
+         بقمصان 25-26؛ الشعاران من مصدر أيقونات بطاقات المباريات نفسه */
+      eyebrow: "قمة الجولة",
+      home: {
+        name: "أرسنال",
+        crest: "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
+        mono: "أرس",
+        tokens: ["arsenal", "ارسنال", "أرسنال", "الأرسنال"],
+      },
+      away: {
+        name: "إيفرتون",
+        crest: "https://a.espncdn.com/i/teamlogos/soccer/500/368.png",
+        mono: "إيف",
+        tokens: ["everton", "إيفرتون", "الإيفرتون"],
+      },
+      homePlayer: "/images/players/eng-rice.png",
+      awayPlayer: "/images/players/eng-grealish.png",
     },
   ],
 };
@@ -409,10 +431,13 @@ function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers }: {
     setActive(index);
   };
 
+  /* مفتاح الشريحة يجمع الحاجب بأسماء الفريقين — قد تتقاسم قمّتان
+     الحاجب نفسه («قمة الجولة») في البطولة الواحدة */
+  const clashKey = (clash: FeaturedClash) => `clash-${clash.eyebrow}-${clash.home.name}-${clash.away.name}`;
   const slides = [
     { key: "base", label: `تذكرة ${name}` },
     ...clashes.map(clash => ({
-      key: `clash-${clash.eyebrow}`,
+      key: clashKey(clash),
       label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}`,
     })),
   ];
@@ -427,7 +452,7 @@ function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers }: {
       onFocusCapture={() => { pauseUntil.current = Date.now() + MANUAL_PAUSE_MS; }}
     >
       {clashes.map((clash, i) => (
-        <p key={clash.eyebrow} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
+        <p key={clashKey(clash)} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
       ))}
       <div className="league-ticket-track" aria-hidden="true">
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
@@ -446,7 +471,7 @@ function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers }: {
           </div>
         </div>
         {clashes.map((clash, i) => (
-          <div key={clash.eyebrow} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
+          <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
               <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={leagueId} />
             </div>

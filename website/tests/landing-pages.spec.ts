@@ -285,6 +285,8 @@ const clashScoreCases: ReadonlyArray<{
   url: string;
   league: string;
   eyebrow: string;
+  slideIndex: number;
+  dots: number;
   home: string;
   away: string;
   homeName: string;
@@ -296,6 +298,8 @@ const clashScoreCases: ReadonlyArray<{
     url: '/matches/دوري-أبطال-أوروبا/',
     league: 'uefa.champions',
     eyebrow: 'قمة الجولة',
+    slideIndex: 1,
+    dots: 3,
     home: 'Paris Saint-Germain',
     away: 'Barcelona',
     homeName: 'باريس',
@@ -304,9 +308,25 @@ const clashScoreCases: ReadonlyArray<{
     awayScore: '2',
   },
   {
+    /* الشريحة الثالثة: مباراة الليلة — بايرن (كين) × أرسنال (ساكا) */
+    url: '/matches/دوري-أبطال-أوروبا/',
+    league: 'uefa.champions',
+    eyebrow: 'مباراة الليلة',
+    slideIndex: 2,
+    dots: 3,
+    home: 'Bayern München',
+    away: 'Arsenal',
+    homeName: 'بايرن',
+    awayName: 'أرسنال',
+    homeScore: '2',
+    awayScore: '1',
+  },
+  {
     url: '/matches/الدوري-الإسباني/',
     league: 'esp.1',
     eyebrow: 'مواجهة الكلاسيكو',
+    slideIndex: 1,
+    dots: 2,
     home: 'Real Madrid',
     away: 'Barcelona',
     homeName: 'ريال مدريد',
@@ -316,7 +336,7 @@ const clashScoreCases: ReadonlyArray<{
   },
 ];
 for (const c of clashScoreCases) {
-  test(`${c.league} ticket clash slide renders the score rtl like the schedule card, home number beside house team`, async ({ page }) => {
+  test(`${c.league} ticket clash slide ${c.eyebrow} renders the score rtl like the schedule card, home number beside house team`, async ({ page }) => {
     await mockSource(page, {
       [c.league]: [{
         id: `${c.league}-clash`,
@@ -331,7 +351,9 @@ for (const c of clashScoreCases) {
       }],
     });
     await page.goto(c.url);
-    const slide = page.locator('.league-ticket-slide').nth(1);
+    /* عدد النقاط = شرائح التذكرة (أساسية + كل المواجهات المعروفة للبطولة) */
+    await expect(page.locator('.league-ticket-dot'), `${c.league} dots`).toHaveCount(c.dots);
+    const slide = page.locator('.league-ticket-slide').nth(c.slideIndex);
     await expect(slide.locator('.league-ticket-eyebrow')).toHaveText(c.eyebrow);
     const goals = slide.locator('.league-ticket-goals');
     await expect(goals).toBeVisible();

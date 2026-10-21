@@ -1,5 +1,5 @@
 import LeagueIconBadge from "./LeagueIconBadge";
-import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, type FeaturedClash } from "./LeagueTicketCard";
+import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -65,6 +65,14 @@ function AllLeaguesTicketBase() {
           — وظهورها في هيرو الرئيسية يتبع لهذه الوحدة ذاتها */}
       <NovaTicketBrand />
       <XtvTicketBrand />
+      {/* الثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة): أيقونة
+          محايدة بالكأس — «كل البطولات» لا شعار بطولة واحد لها — ثم
+          الخط الرأسي فالمربع الدوّار واسم ستريم ماستر؛ وظهورها في
+          هيرو الرئيسية يتبع لهذه الوحدة ذاتها */}
+      <div className="league-ticket-header league-ticket-header--brand">
+        <LeagueIconBadge leagueId="matches" size={60} eager />
+        <StreamMasterTicketWordmark />
+      </div>
       {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
           الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
       <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />

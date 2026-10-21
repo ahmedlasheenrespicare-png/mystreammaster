@@ -417,15 +417,27 @@
 /* صف الأيقونات أسفل التذكرة بطلب صريح: المتن (الاسم المعدني) يملأ
    الصف الأول والأيقونات في السطر الأخير — بإسناد صفوف الشبكة صراحةً
    دون إعادة ترتيب DOM */
-.all-leagues-ticket { grid-template-rows: 1fr auto; }
-.all-leagues-ticket .league-ticket-body { grid-row: 1; }
-.all-leagues-ticket .leagues-ticket-icons { grid-row: 2; }
+/* بالثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة) صار تخطيط
+   القاعدة الجامعة ثلاثة صفوف: الترويسة أولاً فالاسم المعدني فصفّ
+   أيقونات البطولات الثماني */
+.all-leagues-ticket {
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header"
+    "body"
+    "icons";
+}
+.all-leagues-ticket .league-ticket-body { grid-area: body; }
+.all-leagues-ticket .leagues-ticket-icons { grid-area: icons; }
 
 .all-leagues-ticket-players {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  height: 92%;
+  /* قُصّر الارتفاع من 92% إلى 72% بعد إضافة سطر الترويسة بالثلاثية
+     المتوسّطة (تعميم المالك) فلا يعلو العنقود نصَّ العلامة ولا خطّها —
+     صفّ الترويسة والاسم المعدني يبقيان نظيفين والقناع يتلاشى كما كان */
+  height: 72%;
   z-index: 1;
   filter: drop-shadow(0 0 26px rgba(216, 255, 62, 0.14));
   mask-image: linear-gradient(180deg, #000 68%, transparent 99%);

@@ -1,4 +1,5 @@
 import LeagueIconBadge from "./LeagueIconBadge";
+import { FEATURED_CLASHES, LeagueTicketCarousel, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -9,14 +10,33 @@ import "./league-ticket.css";
      الشعاعي، اللوح الداكن، نقطة الضوء، الشعاع المموّه، الخطوط المتقاطعة،
      والنص المعدني — بدل أيقونة بطولة واحدة، صفّ أيقونات البطولات الثماني
      (LeagueIconBadge نفسه: الشعار من المصدر الموثّق وبديل الكأس للمصري).
-   • النص: «كل البطولات الكبرى» + السطران ذاتهما (مواعيد · نتائج · ترتيب /
-     يُحدَّث كل دقيقة) انسجاماً مع عائلة التذاكر.
-   • زخرفية بالكامل (aria-hidden): عنوان الصفحة h1 ظاهر بجانبها فلا تكرار.
-   • بلا أي حلقة لانهائية: النقطة ساكنة وتقطع المحيط دورة واحدة عند
-     التحويم/الضغط (القواعد المشتركة في league-ticket.css).
+   • صارت منزلقة جامعة على منصة LeagueTicketCarousel نفسها: شريحة الأساس
+     هي التذكرة الزخرفية الحالية بعينها، تليها خمس شرائح منزلقة بكل
+     خصائصها الحيّة مأخوذة من إعدادات FEATURED_CLASHES نفسه (مصدر واحد
+     يمنع أي انحراف بين نسختي الشريحة في التذكرتين):
+       1) أبطال أوروبا «قمة الجولة» — باريس × برشلونة
+       2) أبطال أوروبا «مباراة الليلة» — بايرن × أرسنال
+       3) الإسباني «مواجهة الكلاسيكو» — ريال مدريد × برشلونة
+       4) الإنجليزي «قمة الجولة» — تشيلسي × توتنهام
+       5) الإنجليزي «قمة الجولة» — أرسنال × إيفرتون
+     لكل مواجهة خانتها source على بطولتها، فيُجلَب نطاق مواعيد بطولتها
+     منفصلاً (أسبوع للوراء + أسبوع للأمام عبر /scoreboard.php نفسه)،
+     وتُرسَم أيقونة البطولة الصحيحة على الشريحة، ويبقى عرض النتيجة
+     باتجاه كرت المواعيد، والعدّاد والمباشر والنهائي بتحديث كل دقيقة.
    ========================================================================== */
 
-/* ترتيب البطولات ذات الصفحات — نفس قائمة صفحات الهبوط الثماني */
+/* مواجهات التذكرة الجامعة — نفس عناصر FEATURED_CLASHES المعتمدة في
+   تذاكر بطولاتها حرفاً مع تثبيت مصدر كل منها */
+const INDEX_CLASHES: FeaturedClash[] = [
+  { ...FEATURED_CLASHES["uefa.champions"][0], source: "uefa.champions" },
+  { ...FEATURED_CLASHES["uefa.champions"][1], source: "uefa.champions" },
+  { ...FEATURED_CLASHES["esp.1"][0], source: "esp.1" },
+  { ...FEATURED_CLASHES["eng.1"][0], source: "eng.1" },
+  { ...FEATURED_CLASHES["eng.1"][1], source: "eng.1" },
+];
+
+/* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
+   اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [
   'uefa.champions',
   'eng.1',
@@ -28,9 +48,9 @@ const TICKET_LEAGUES = [
   'egy.1',
 ];
 
-export default function AllLeaguesTicket() {
+function AllLeaguesTicketBase() {
   return (
-    <div className="league-ticket all-leagues-ticket" aria-hidden="true">
+    <div className="league-ticket all-leagues-ticket league-ticket--in-track">
       {/* لوح التذكرة الداكن + الشعاع الضوئي والخطوط الزخرفية المتقاطعة */}
       <div className="league-ticket-bg league-ticket-holographic">
         <span className="league-ticket-ray" />
@@ -40,8 +60,8 @@ export default function AllLeaguesTicket() {
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
       <span className="league-ticket-symbol" />
-      {/* نجوم البطولات السبعة (مولّدة من صورهم المعتمدة) خلف النص —
-          عنقود الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
+      {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
+          الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
       <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       <span className="all-leagues-ticket-veil" aria-hidden="true" />
       <div className="leagues-ticket-icons">
@@ -56,5 +76,17 @@ export default function AllLeaguesTicket() {
         يُحدَّث كل دقيقة
       </div>
     </div>
+  );
+}
+
+export default function AllLeaguesTicket() {
+  return (
+    <LeagueTicketCarousel
+      leagueId="matches"
+      name="كل البطولات الكبرى"
+      clashes={INDEX_CLASHES}
+      basePlayers={[]}
+      base={<AllLeaguesTicketBase />}
+    />
   );
 }

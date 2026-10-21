@@ -602,6 +602,20 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(ticketBox).toBeTruthy();
   expect(box!.x - ticketBox!.x).toBeLessThanOrEqual(30);
   expect(box!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  /* لوجو X المقصوص من IPTV بجانب نوفا: صورة واحدة، منبع حقيقي،
+     ارتفاع مساوٍ لمساحة نوفا (14..26px)، ويجلس يمينها الفيزيائي
+     ملاصقًا داخل 60px من الركن الأيسر — لا يعلوها ولا ينزاح عنها */
+  const xtv = ticket.locator('img.league-ticket-brand-xtv');
+  await expect(xtv).toHaveCount(1);
+  await expect(xtv).toBeVisible();
+  await expect.poll(async () => xtv.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  const xtvBox = await xtv.boundingBox();
+  expect(xtvBox).toBeTruthy();
+  expect(xtvBox!.height).toBeGreaterThanOrEqual(14);
+  expect(xtvBox!.height).toBeLessThanOrEqual(26);
+  expect(xtvBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  expect(xtvBox!.x).toBeGreaterThan(box!.x + box!.width * 0.5);
+  expect(xtvBox!.x - ticketBox!.x).toBeLessThanOrEqual(60);
 });
 
 test('nova brand is distributed by the owner rollout rule across every ticket', async ({ page }) => {

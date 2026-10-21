@@ -682,9 +682,10 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       <span className="league-ticket-symbol" />
       <TicketBrandPair leagueId={leagueId} scope="static" />
       {PLAYER_MAP[leagueId]}
-      {/* تذكرة الدوري الفرنسي وحدها تنزاح مجموعة ترويسَتها يميناً لتجمع
-          أيقونة البطولة وبعدها الخط الرأسي ثم علامة ستريم ماستر المصغّرة
-          من الفوتر (بطلب المالك)؛ باقي البطولات تبقى متوسّطة كما كانت */}
+      {/* تذكرة الدوري الفرنسي وحدها تحمل بتوسّط ترويسَتها مجموعةً من
+          ثلاثة: أيقونة البطولة ثم الخط الرأسي ثم علامة ستريم ماستر
+          المصغّرة من الفوتر (بطلب المالك) بمركز تذكرةٍ = مركز المجموعة؛
+          باقي البطولات تبقى صفاً مفرداً متوسّطاً كما كانت */}
       <div className={`league-ticket-header${leagueId === "fra.1" ? " league-ticket-header--brand" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
         {leagueId === "fra.1" ? <StreamMasterTicketWordmark /> : null}

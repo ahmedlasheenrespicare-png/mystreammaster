@@ -146,6 +146,12 @@ const KPI_ICONS: Record<string, ReactNode> = {
    واحداً عند التفاعل فقط. */
 const CONFETTI_PIECES = Array.from({ length: 18 }, (_, i) => i);
 
+/* حلقات المؤشر المركزي الزجاجية الخمس — هندستها وألوانها وحركتها الواحدة
+   عند التفاعل كلها في standings-rates-card.css عبر nth-child (روح قالب
+   uiverse.io/Smit-Prajapati/tricky-turtle-16 — MIT — في نفس مساحة
+   الدائرة الحالية 148×148). زخرفية بالكامل؛ الرقم ووسمه هما المحتوى. */
+const RIPPLE_RINGS = Array.from({ length: 5 }, (_, i) => i);
+
 /* عدد الكلمات العربية للمباريات: 1 مباراة، 2 مباراتين، 3–10 مباريات، 11+ مباراة */
 function matchWord(n: number): string {
   if (n === 1) return 'مباراة';
@@ -449,17 +455,26 @@ export default function StandingsRatesCard({
 
           <h3 id={`${baseId}-title`} className="ls-rates-title">الهجوم والدفاع — معدلات أهداف الموسم</h3>
 
-          {/* الدائرة الوسطية — المؤشر المحوري للموسم: متوسط أهداف الفريق/مباراة */}
+          {/* المؤشر المركزي للموسم (متوسط أهداف الفريق/مباراة) — خمس حلقات
+              زجاجية متموجة بروح قالب tricky-turtle-16 في نفس مساحة الدائرة
+              السابقة، والرقم ووسمه فوقها كما كانا حرفيًا */}
           <div className="ls-rates-result-box">
+            {RIPPLE_RINGS.map((ring) => (
+              <span key={ring} className="ls-rates-ring" aria-hidden="true" />
+            ))}
             <strong className={`ls-rates-result-value${leagueSummary.averagePerTeam === null ? ' ls-rates-result-value--na' : ''}`}>
               <bdi dir="ltr">{fmt2(leagueSummary.averagePerTeam)}</bdi>
             </strong>
             <span className="ls-rates-result-label">متوسط أهداف الفريق/مباراة</span>
           </div>
 
-          <p className="ls-rates-status">قراءة تحليلية من جدول الترتيب</p>
+          {/* سطر الحالة والفقرة التوضيحية وأقراص البيانات مخفية بصريًا
+              بطلب صريح — تبقى نصوصها في المحتوى للفهرسة وقارئات الشاشة
+              (.visually-hidden لا display:none)، ويُستثنى منها وسم
+              «بيانات قديمة» أدناه فيبقى ظاهرًا عند التعذّر كما هو */}
+          <p className="ls-rates-status visually-hidden">قراءة تحليلية من جدول الترتيب</p>
 
-          <p className="ls-rates-subtitle">
+          <p className="ls-rates-subtitle visually-hidden">
             محسوبة من جدول الترتيب الحالي فقط، بلا أي بيانات خارجية: المعدل = الأهداف ÷ المباريات الملعوبة،
             والتصنيف التكتيكي يقارن كل فريق بمتوسط المسابقة بالقيمة الدقيقة قبل التقريب.
           </p>
@@ -467,17 +482,17 @@ export default function StandingsRatesCard({
           {(formattedSeason || provider || fetchedAt || stale) && (
             <p className="ls-rates-meta" data-rates-meta>
               {formattedSeason && (
-                <span className="ls-rates-pill" data-rates-season>
+                <span className="ls-rates-pill visually-hidden" data-rates-season>
                   موسم <bdi dir="ltr">{formattedSeason}</bdi>
                 </span>
               )}
               {provider && (
-                <span className="ls-rates-pill" data-rates-provider>
+                <span className="ls-rates-pill visually-hidden" data-rates-provider>
                   المصدر: <bdi dir="ltr">{provider}</bdi>
                 </span>
               )}
               {fetchedAt && (
-                <span className="ls-rates-pill" data-rates-fetched>
+                <span className="ls-rates-pill visually-hidden" data-rates-fetched>
                   آخر قراءة للترتيب: <bdi>{formatStandingsTime(fetchedAt)}</bdi> بتوقيت القاهرة
                 </span>
               )}

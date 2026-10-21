@@ -641,14 +641,21 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(textBox).toBeTruthy();
   expect(lineBox!.width).toBeLessThanOrEqual(2);
   expect(lineBox!.height).toBeGreaterThanOrEqual(20);
-  /* الترتيب الفيزيائي: الأيقونة يميناً فالخط ثم النص — والمجموعة منزوية
-     يمين التذكرة (يمين الأيقونة ضمن 40px من يمين الكرت بفضل flex-start) */
+  /* الترتيب الفيزيائي: الأيقونة يميناً فالخط ثم النص — والمجموعة متوسّطة
+     رأس التذكرة (مركزها الأفقي = مركز الكرت بطلب المالك الذي خلف
+     الانزياح اليميني) */
   expect(lineBox!.x + lineBox!.width).toBeLessThanOrEqual(iconBox!.x + 1);
   expect(textBox!.x).toBeLessThan(lineBox!.x);
-  expect(ticketBox!.x + ticketBox!.width - (iconBox!.x + iconBox!.width)).toBeLessThanOrEqual(40);
+  const groupCenter = (textBox!.x + iconBox!.x + iconBox!.width) / 2;
+  const ticketCenter = ticketBox!.x + ticketBox!.width / 2;
+  expect(Math.abs(groupCenter - ticketCenter)).toBeLessThanOrEqual(30);
   expect(textBox!.x).toBeGreaterThanOrEqual(ticketBox!.x);
   expect(textBox!.height).toBeGreaterThanOrEqual(10);
   expect(textBox!.height).toBeLessThanOrEqual(24);
+  /* حركة المربع تدور بإيقاع loader المرجع (دورة كاملة كل ثانية) لكنها
+     تسكن تقديراً لتفضيل السكون — سياق الاختبار مُجبَر على reduce في
+     playwright.config، فاسم الحركة المحسوب يكون none إثباتاً للقاعدة */
+  await expect(wmBadge).toHaveCSS('animation-name', 'none');
 });
 
 test('nova + X brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {

@@ -325,11 +325,19 @@
 }
 
 /* ── تذكرة الدوري الفرنسي: أيقونة البطولة + خط رأسي + علامة ستريم ماستر ──
-   بطلب المالك تجتمع الترويسة على اليمين (flex-start في RTL) بدل التوسيط،
-   فتتكوّن مجموعة: أيقونة البطولة ثم خط رأسي ليموني متدرج ثم علامة نصية
-   مُصغّرة ومطابقة لشعار الفوتر حرفياً — مربّع #d8ff3e مستدير يحمل مثلث
-   التشغيل الأسود والاسم بخط العناوين الأبيض الثقيل، بمقاسات تلائم الكرت */
-.league-ticket-header--brand { justify-content: flex-start; }
+   بطلب المالك تتوسّط مجموعة الترويسة رأسَ التذكرة (مركزها = مركز الكرت)،
+   وتتكوّن: أيقونة البطولة ثم خط رأسي ليموني متدرج ثم علامة نصية مُصغّرة
+   ومطابقة لشعار الفوتر حرفياً — مربّع #d8ff3e مستدير يحمل مثلث التشغيل
+   الأسود والاسم بخط العناوين الأبيض الثقيل، بمقاسات تلائم الكرت */
+.league-ticket-header--brand { justify-content: center; }
+
+/* حركة المربع الليموني — نفس إيقاع «nice-panda-34» على Uiverse (رخصة MIT،
+   بإلهام لا حرفية): دورة كاملة ناعمة كل ثانية ببطء دخول وخروج في حلقة
+   بلا نهاية، فالعودة من -360° إلى 0° لا تُحدث قفزة لأنهما الموضع نفسه */
+@keyframes league-ticket-wordmark-badge-tumble {
+  0% { transform: rotate(-360deg); }
+  100% { transform: rotate(0deg); }
+}
 
 .league-ticket-wordmark {
   display: flex;
@@ -357,6 +365,8 @@
   place-items: center;
   flex: 0 0 auto;
   box-shadow: 0 2px 8px rgba(216, 255, 62, 0.35);
+  /* دورة الدوران الناعمة الثانية-الواحدة (نفس إيقاع loader المرجع) */
+  animation: league-ticket-wordmark-badge-tumble 1s ease-in-out infinite;
 }
 
 .league-ticket-wordmark-badge svg {
@@ -728,4 +738,6 @@
   .league-ticket-slide { transition: none; transform: none; }
   .league-ticket-dot, .league-ticket-dot:hover { transition: none; transform: none; }
   .ticket-flip__flap { display: none; }
+  /* حركة مربّع علامة الفرنسية تسكن تقديراً لتفضيل السكون */
+  .league-ticket-wordmark-badge { animation: none; }
 }

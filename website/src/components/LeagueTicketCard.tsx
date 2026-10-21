@@ -437,6 +437,13 @@ const PLAYER_MAP: Record<string, ReactElement | ReactElement[]> = {
     <img key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
     <img key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/egy-elsaid.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
+  "sau.1": [
+    /* فيليكس يساراً + الدوسري يميناً — الثنائي الثامن الذي يُكمل خريطة
+       نجوم البطولات الثماني كاملة، بنفس الصفة الزخرفية والمواضع
+       الفيزيائية الصريحة */
+    <img key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/sau-felix.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <img key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/sau-dawsari.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  ],
 };
 
 /* أبطال أوروبا: ميسي في خلفية التكوين خلف رونالدو أعلى يسار التذكرة — يُرسَم

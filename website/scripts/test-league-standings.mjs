@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { load } from 'cheerio';
 import { isApprovedCrestUrl } from '../src/lib/leader-logo.mjs';
+import { LEAGUE_ICONS } from '../src/lib/league-icons.mjs';
 
 /* ==========================================================================
    اختبار عقد «جدول الترتيب» في صفحات هبوط البطولات
@@ -422,11 +423,24 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(details.find('tr[data-rate-row]').length, count, `${file}: صفوف جدول المعدلات لا تطابق عدد فرق البطولة`);
     assert.equal(details.find('[data-rate-tactic]').length, count, `${file}: التصنيف التكتيكي لكل فريق مفقود`);
 
-    // الشعارات: محلي معتمد أو من مضيف مزوّد الترتيب المعتمد (ESPN/Highlightly) لا غير
+    /* قشرة «تذكرة البطولة» على لوح البطاقة الرئيسي — نفس عقد تذكرة صدر
+       الصفحة: شعاع مموّه + 4 خطوط متقاطعة + نقطة ضوء + شارة البطولة */
+    assert.equal(card.find('.ls-rates-ticket-ray').length, 1, `${file}: شعاع تذكرة بطاقة المعدلات مفقود`);
+    assert.equal(card.find('.ls-rates-ticket-line').length, 4, `${file}: خطوط تذكرة بطاقة المعدلات الأربعة مفقودة`);
+    assert.equal(card.find('.ls-rates-ticket-dot').length, 1, `${file}: نقطة ضوء تذكرة بطاقة المعدلات مفقودة`);
+    assert.equal(
+      card.find('.ls-rates-ticket-badge .league-carousel-badge').length,
+      1,
+      `${file}: شارة البطولة في رأس تذكرة بطاقة المعدلات مفقودة`,
+    );
+
+    // الشعارات: محلي معتمد أو من مضيف مزوّد الترتيب المعتمد (ESPN/Highlightly)
+    // أو شعار البطولة نفسه من خريطة الأيقونات الواحدة (رأس التذكرة) لا غير
     card.find('img').each((_, img) => {
       const src = $(img).attr('src') || '';
       const isLocal = /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/.test(src);
-      assert.ok(isLocal || isApprovedCrestUrl(src), `${file}: مصدر شعار غير معتمد: ${src}`);
+      const isLeagueIcon = Object.values(LEAGUE_ICONS).includes(src);
+      assert.ok(isLocal || isLeagueIcon || isApprovedCrestUrl(src), `${file}: مصدر شعار غير معتمد: ${src}`);
     });
   }
 

@@ -293,6 +293,7 @@ export default function LeagueStandings({ league, title }: { league: string; tit
       <StandingsRatesCard
         entries={data.entries}
         league={league}
+        leagueName={title}
         season={data.season}
         provider={data.provider}
         fetchedAt={data.fetchedAt}

@@ -8,6 +8,8 @@ import {
 import { STALE_BADGE_TEXT, formatStandingsTime, seasonText, type StandingsEntry } from '../lib/standings.mjs';
 import { providerTeamLogo } from '../lib/leader-logo.mjs';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import LeagueIconBadge from './LeagueIconBadge';
+import './league-carousel.css';
 import './standings-rates-card.css';
 
 /* الشعارات المحلية المعتمدة داخل المستودع (src/assets/club-logos/manifest.json)
@@ -251,6 +253,17 @@ export interface StandingsRatesCardProps {
   fetchedAt?: string;
   stale?: boolean;
   idPrefix?: string;
+  /**
+   * اسم البطولة العربية المختصر — يظهر سطراً تمهيدياً صغيراً في لوح
+   * «التذكرة» أعلى البطاقة كما في رأس تذكرة البطولة بصدر الصفحة.
+   * غيابه يُخفي السطر فقط (الشارة تبقى).
+   */
+  leagueName?: string;
+  /**
+   * معرّف البطولة لدى مصدر المباريات لمفتاح الشعار — غيابه يعني اشتقاقه
+   * من `league` (معرّف الترتيب) مع تحويل السعودي الموثّق ksa.1 ← sau.1.
+   */
+  iconLeagueId?: string;
 }
 
 export default function StandingsRatesCard({
@@ -261,11 +274,16 @@ export default function StandingsRatesCard({
   fetchedAt,
   stale = false,
   idPrefix,
+  leagueName,
+  iconLeagueId,
 }: StandingsRatesCardProps) {
   const rates = standingsRates(entries);
   const { league: leagueSummary } = rates;
   const baseId = idPrefix ?? `standings-${league.replace(/\./g, '-')}-rates`;
   const formattedSeason = typeof season === 'number' ? seasonText(season) : season;
+  /* شعار التذكرة مفتاحه معرّف المباريات لا الترتيب — السعودي ترتيبه ksa.1
+     وشعاره تحت sau.1 (نفس التحويل الموثّق في LeagueLandingPage) */
+  const ticketLeagueId = iconLeagueId ?? (league === 'ksa.1' ? 'sau.1' : league);
 
   /* الأرشيف المحلي يُحمَّل كسماً خاصاً (لا يُدمج في حزمة الصفحة) ويظهر أثره
      فقط بعد التحميل — الرسم الأولي بلا عمودي الأرشيف يتطابق بين الخادم
@@ -394,16 +412,40 @@ export default function StandingsRatesCard({
       data-rates-stale={stale ? 'true' : 'false'}
     >
       {/* أ) الجزء العلوي المزدوج — Split Summary Hero بهوية القالب المرجعي
-          uiverse.io/sabbircoder07/spotty-firefox-94 (MIT): لوح متدرج +
-          لوح ملخص أبيض، بكل معلومات البطاقة الأصلية دون حذف */}
+          uiverse.io/sabbircoder07/spotty-firefox-94 (MIT): لوح رئيسي +
+          لوح ملخص أبيض، بكل معلومات البطاقة الأصلية دون حذف. اللوح
+          الرئيسي يرتدي قشرة «تذكرة البطولة» في صدر الصفحة نفسها
+          (LeagueTicketCard — uiverse.io/Spacious74/moody-owl-18، MIT):
+          إطار ليموني مضيء، شعاع مموّه، خطوط متقاطعة عند 10%، نقطة ضوء
+          على الحافة، شارة البطولة واسمها، والعنوان بالنص المعدني —
+          القشرة زخرفية بالكامل (aria-hidden) ولا تحمل معلومة وحدها. */}
       <div className="ls-rates-hero">
-        {/* اللوح المتدرج الرئيسي — روح .results-summary-container__result */}
+        {/* اللوح الرئيسي — هيكل .results-summary-container__result بقشرة التذكرة */}
         <div className="ls-rates-panel">
+          {/* قشرة التذكرة الزخرفية — نفس عناصر TicketShell في التذكرة:
+              الشعاع الضوئي المموّه + الخطوط الأربعة المتقاطعة عند 10% */}
+          <div className="ls-rates-ticket-shell" aria-hidden="true">
+            <span className="ls-rates-ticket-ray" />
+            <span className="ls-rates-ticket-line ls-rates-ticket-line--top" />
+            <span className="ls-rates-ticket-line ls-rates-ticket-line--bottom" />
+            <span className="ls-rates-ticket-line ls-rates-ticket-line--left" />
+            <span className="ls-rates-ticket-line ls-rates-ticket-line--right" />
+          </div>
+          {/* نقطة الضوء المتوهّجة على الحافة — ساكنة، وتدور دورة واحدة عند التفاعل */}
+          <span className="ls-rates-ticket-dot" aria-hidden="true" />
+
           <div className="ls-rates-confetti" aria-hidden="true">
             {CONFETTI_PIECES.map((piece) => (
               <span key={piece} className="ls-rates-confetti-piece" />
             ))}
           </div>
+
+          {/* رأس التذكرة: شارة البطولة نفسها في تذكرة صدر الصفحة
+              (LeagueIconBadge — المصدر الواحد للشعار وبديله المحايد) */}
+          <div className="ls-rates-ticket-badge" aria-hidden="true">
+            <LeagueIconBadge leagueId={ticketLeagueId} size={52} />
+          </div>
+          {leagueName ? <p className="ls-rates-ticket-eyebrow">{leagueName}</p> : null}
 
           <h3 id={`${baseId}-title`} className="ls-rates-title">الهجوم والدفاع — معدلات أهداف الموسم</h3>
 
@@ -483,7 +525,8 @@ export default function StandingsRatesCard({
               data-rate-card={card.key}
               aria-labelledby={`${baseId}-${card.key}-title`}
             >
-              {/* الرأس المتدرج — هوية قالب spotty-firefox-94 المصغّرة */}
+              {/* الرأس المتدرج — توهّج شعاعي من الزاوية بروح لوح التذكرة،
+                  بألوان فئة البطاقة (هجوم/دفاع × أقوى/أضعف) */}
               <div className="ls-rate-card-head">
                 {/* الدائرة اللونية خلف الزجاج — روح .cardContainer::before في
                     قالب grumpy-mule-23: ساكنة، ولا تتحرك إلا عند التفاعل */}

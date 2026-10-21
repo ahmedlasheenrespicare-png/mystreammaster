@@ -76,18 +76,40 @@
      نفسه هناك). كل القواعد معزولة بـ `.ls-rates-details` / `.ls-rates-analyst-table`
      ولا تلمس `.ls-table` / `.ls-scroll` المشتركتين، وبنفس المساحة الحالية:
      لا عرض ثابت جديداً ولا تغيير في الحشوات أو min-width.
+
+   • تحديث لاحق — قشرة «تذكرة البطولة» على اللوح الرئيسي بروح تذكرة صدر
+     الصفحة نفسها (`LeagueTicketCard` / `league-ticket.css`، بدورها مقتبسة
+     من uiverse.io/Spacious74/moody-owl-18 — MIT — وموثّقة هناك): اللوح
+     الرئيسي `.ls-rates-panel` صار لوح التذكرة الحبري `#0b0b0f` بتوهّج
+     شعاعي 280px من الزاوية العلوية وإطار مضيء 1px بتدرّج شعاعي ليموني
+     `#d8ff3e` (بحيلة padding-box/border-box بدل خارج التذكرة المنفصل)،
+     وعليه نفس عناصر قشرتها ببادئة `.ls-rates-ticket-*`: الشعاع المموّه
+     المائل 40deg، الخطوط الأربعة المتقاطعة عند 10%، اللمعان الزجاجي
+     القطري، نقطة الضوء 5px على الحافة (ساكنة، ودورة محيط واحدة عند
+     التفاعل فقط كما في التذكرة)، شارة البطولة (`LeagueIconBadge`) واسمها
+     سطراً تمهيدياً، والعنوان بالنص المعدني (بطرفين رماديين لمقروئيته)، ودائرة المؤشر
+     بحلقة ليمونية متوهّجة. وصدى القشرة في بقية البطاقة: رؤوس البطاقات
+     الفرعية بتوهّج شعاعي من الزاوية بألوان فئاتها ولمعان قطري، ولوح
+     الأرقام الزجاجي بحدّ ليموني خفيف وتوهّج الرقم، وزر الجدول التحليلي
+     بلوح الحبر والليموني، والقصاصات بألوان الهوية (ليموني/ذهبي/كريمي).
+     ما بقي من الهويات السابقة كما هو: هيكل اللوحين وصفوف الملخص
+     الباستيلية وشبكة 4/2/1 والجدول الذهبي الداكن — القشرة لون وزخرفة
+     فقط، بلا تغيير في معلومة أو تخطيط أو مقاس، وبلا أي حلقة حركة.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1) الحاوية الخارجية — بظل القالب الناعم البنفسجي وزواياه الدائرية
+   1) الحاوية الخارجية — بيضاء بظل التذكرة الحبري وغسلة ليمونية خفيفة
+      من زاويتها العلوية (صدى توهّج إطار التذكرة على سطح البطاقة الفاتح)
    -------------------------------------------------------------------------- */
 .ls-rates-card {
   margin-top: 22px;
   padding: 18px;
-  border-radius: 28px;
-  border: 1px solid #e7e1ee;
-  background: #ffffff;
-  box-shadow: 0 12px 32px rgba(120, 87, 255, 0.16);
+  border-radius: 24px;
+  border: 1px solid #e6e1d3;
+  background:
+    radial-gradient(circle 260px at 0% 0%, rgba(216, 255, 62, 0.10), rgba(216, 255, 62, 0) 62%),
+    #ffffff;
+  box-shadow: 0 14px 34px rgba(11, 11, 15, 0.14);
 }
 
 .ls-rates-card--stale {
@@ -105,8 +127,11 @@
   min-width: 0;
 }
 
-/* 2أ) اللوح المتدرج الرئيسي — روح .results-summary-container__result
-   بتدرّج القالب `#aa076b → #61045f` وزواياه 30px/10px */
+/* 2أ) اللوح الرئيسي — هيكل .results-summary-container__result بقشرة
+   «تذكرة البطولة» (league-ticket.css): لوح حبري `#0b0b0f` بتوهّج شعاعي
+   280px من الزاوية العلوية، وإطاره المضيء 1px بتدرّج شعاعي ليموني
+   230px مرسوم بحيلة padding-box/border-box (خارج التذكرة بحشو 1px
+   نفسه لكن في عنصر واحد)، وزوايا التذكرة الأقرب للمستطيل، وظلها الحبري */
 .ls-rates-panel {
   position: relative;
   display: flex;
@@ -116,14 +141,146 @@
   gap: 10px;
   min-width: 0;
   padding: 24px 20px;
-  border-radius: 30px 12px;
-  background-image: linear-gradient(to bottom, #aa076b, #61045f);
-  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle 280px at 0% 0%, #2c2c33, #0b0b0f) padding-box,
+    radial-gradient(circle 230px at 0% 0%, #d8ff3e, #0b0b0f) border-box;
+  color: #f6f4ec;
   text-align: center;
   overflow: hidden;
+  box-shadow: 0 14px 34px rgba(11, 11, 15, 0.18);
+  transition: transform 0.35s ease-out;
 }
 
-/* العنوان الرئيسي — بروح .heading-primary (نص متدرج دافئ فوق التدرج الغامق) */
+/* محتوى اللوح فوق قشرة التذكرة الزخرفية (الشعاع والخطوط واللمعان) */
+.ls-rates-ticket-badge,
+.ls-rates-ticket-eyebrow,
+.ls-rates-title,
+.ls-rates-result-box,
+.ls-rates-status,
+.ls-rates-subtitle,
+.ls-rates-meta {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── قشرة التذكرة الزخرفية — نفس هندسة .league-ticket-bg وطبقاتها ── */
+.ls-rates-ticket-shell {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* اللمعان الزجاجي القطري — روح .league-ticket-holographic::after */
+.ls-rates-ticket-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(250, 204, 21, 0.14);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012) 45%, rgba(0, 0, 0, 0));
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* الشعاع الضوئي — روح .league-ticket-ray: شريط ليموني مموّه مائل 40deg */
+.ls-rates-ticket-ray {
+  position: absolute;
+  width: 220px;
+  height: 45px;
+  border-radius: 100px;
+  background-color: rgba(216, 255, 62, 0.75);
+  opacity: 0.32;
+  box-shadow: 0 0 50px rgba(216, 255, 62, 0.75);
+  filter: blur(10px);
+  transform-origin: 10%;
+  top: 0;
+  left: 0;
+  transform: rotate(40deg);
+  pointer-events: none;
+}
+
+/* الخطوط الزخرفية المتقاطعة عند 10% — روح .league-ticket-line الأربع */
+.ls-rates-ticket-line {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.ls-rates-ticket-line--top {
+  top: 10%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(216, 255, 62, 0.45) 30%, rgba(255, 255, 255, 0.06) 70%);
+}
+
+.ls-rates-ticket-line--bottom {
+  bottom: 10%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.ls-rates-ticket-line--left {
+  left: 10%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 30%, rgba(255, 255, 255, 0.05) 70%);
+}
+
+.ls-rates-ticket-line--right {
+  right: 10%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 30%, rgba(255, 255, 255, 0.04) 70%);
+}
+
+/* نقطة الضوء — روح .league-ticket-symbol: 5px ليمونية متوهّجة على
+   الحافة عند 10%/10%، ساكنة في السكون (حركتها في قسم التفاعل 7) */
+.ls-rates-ticket-dot {
+  position: absolute;
+  z-index: 2;
+  width: 5px;
+  aspect-ratio: 1;
+  background-color: #d8ff3e;
+  box-shadow: 0 0 10px rgba(216, 255, 62, 0.95);
+  border-radius: 100px;
+  top: 10%;
+  right: 10%;
+  pointer-events: none;
+}
+
+/* رأس التذكرة: شارة البطولة الكريمية (LeagueIconBadge) تبرز على الحبر
+   كما في .league-ticket-header، وسطر اسم البطولة بحاجب التذكرة الليموني */
+.ls-rates-ticket-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ls-rates-ticket-eyebrow {
+  margin: -2px 0 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08rem;
+  line-height: 1.5;
+  color: #c7db8a;
+  overflow-wrap: anywhere;
+}
+
+/* العنوان الرئيسي — النص المعدني في التذكرة (.league-ticket-body em):
+   تدرّج 45deg مقصوص بالنص فوق اللوح الداكن. اختلاف مقصود وحيد عن
+   التذكرة: طرفا التدرّج رماديان معدنيان فاتحان `#a7a7ae` بدل حبرها
+   الكامل — اسم البطولة في التذكرة قصير متمركز (وزخرفي بمكرّر مخفي)،
+   أما هذا فعنوان حقيقي طويل يمتد بعرض اللوح، فيجب أن تبقى حروفه
+   الطرفية بتباين كامل وألا يطغى سطر الحالة الكريمي تحته عليه */
 .ls-rates-title {
   margin: 0;
   font-family: var(--font-display);
@@ -131,13 +288,13 @@
   font-weight: 900;
   line-height: 1.5;
   letter-spacing: 0.01em;
-  background-image: linear-gradient(to right, #ffe3b8, #ffc7e0);
+  background-image: linear-gradient(45deg, #a7a7ae 0%, #f6f4ec 50%, #a7a7ae 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* الدائرة الوسطية — روح .result-box: المؤشر المحوري للموسم */
+/* الدائرة الوسطية — روح .result-box بحلقة التذكرة الليمونية المتوهّجة */
 .ls-rates-result-box {
   display: flex;
   flex-direction: column;
@@ -150,17 +307,21 @@
   border-radius: 50%;
   background-image: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.10) 62%, rgba(255, 255, 255, 0.18));
   box-shadow:
-    inset 0 0 0 6px rgba(255, 255, 255, 0.16),
-    0 14px 30px rgba(10, 2, 20, 0.32);
+    inset 0 0 0 1px rgba(216, 255, 62, 0.38),
+    inset 0 0 0 6px rgba(216, 255, 62, 0.07),
+    0 0 28px rgba(216, 255, 62, 0.16),
+    0 14px 30px rgba(0, 0, 0, 0.32);
 }
 
+/* الرقم المحوري — كريمي بتوهّج ليموني كأرقام نتيجة التذكرة (.league-ticket-goals) */
 .ls-rates-result-value {
   font-family: var(--font-display);
   font-size: 2.35rem;
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: #f6f4ec;
+  text-shadow: 0 0 14px rgba(216, 255, 62, 0.35);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -170,34 +331,35 @@
   font-size: 0.68rem;
   font-weight: 700;
   line-height: 1.6;
-  color: hsl(241, 100%, 89%);
+  color: #c7db8a;
   overflow-wrap: anywhere;
 }
 
 /* حين لا يتوفر متوسط المسابقة يُصغَّر نص «غير متاح» ليبقى داخل الدائرة */
 .ls-rates-result-value--na {
   font-size: 1.02rem;
-  color: hsl(241, 100%, 89%);
+  color: #c7db8a;
+  text-shadow: none;
 }
 
-/* عنوان الحالة — روح .heading-secondary (أبيض عريض) */
+/* عنوان الحالة — روح .heading-secondary بالكريمي */
 .ls-rates-status {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.02rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #f6f4ec;
   letter-spacing: 0.02em;
 }
 
-/* الفقرة التوضيحية — روح .paragraph بلون القالب الفاتح */
+/* الفقرة التوضيحية — روح .paragraph بلون متن التذكرة الفاتح */
 .ls-rates-subtitle {
   margin: 0;
   max-width: 52ch;
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.9;
-  color: hsl(221, 100%, 96%);
+  color: #b9b9c3;
   overflow-wrap: anywhere;
 }
 
@@ -211,15 +373,17 @@
   margin: 2px 0 0;
 }
 
+/* أقراص البيانات — صناديق التذكرة الداكنة نفسها (.league-ticket-tick):
+   قاع حبري شفاف وحدّ زيتوني داكن ونص كريمي فوق لوح التذكرة */
 .ls-rates-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.34);
+  color: #f6f4ec;
+  background: rgba(13, 14, 8, 0.65);
+  border: 1px solid #34361c;
   border-radius: 999px;
   padding: 4px 10px;
 }
@@ -232,8 +396,9 @@
   border-color: #e8cfa0;
 }
 
-/* القصاصات الاحتفالية — روح .confetti في القالب: ساكنة ومخفية افتراضياً،
-   تعمل مروراً واحداً عند التفاعل فقط (راجع الوسم 7 أدناه) */
+/* القصاصات الاحتفالية — روح .confetti في القالب بألوان هوية التذكرة
+   (ليموني/ذهبي/كريمي): ساكنة ومخفية افتراضياً، تعمل مروراً واحداً
+   عند التفاعل فقط (راجع الوسم 7 أدناه) */
 .ls-rates-confetti {
   position: absolute;
   inset: 0;
@@ -250,7 +415,7 @@
   width: 10px;
   height: 20px;
   border-radius: 2px;
-  background-color: hsl(39, 100%, 56%);
+  background-color: #facc15;
   opacity: 0;
   transform: translateY(-14px) rotate(var(--rot, 0deg));
 }
@@ -258,37 +423,40 @@
 /* هندسة القصاصات: مواضع وأزمنة من القالب الأصلي (بلا حلقات) */
 .ls-rates-confetti-piece:nth-child(1) { left: 7%;  --rot: -10deg; --del: 120ms; --dur: 2000ms; }
 .ls-rates-confetti-piece:nth-child(2) { left: 14%; --rot: 20deg;  --del: 161ms; --dur: 2076ms; }
-.ls-rates-confetti-piece:nth-child(3) { left: 21%; --rot: -51deg; --del: 481ms; --dur: 2103ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
-.ls-rates-confetti-piece:nth-child(4) { left: 28%; --rot: 61deg;  --del: 334ms; --dur: 1008ms; width: 6px; height: 14px; background-color: #c33764; }
-.ls-rates-confetti-piece:nth-child(5) { left: 35%; --rot: -52deg; --del: 302ms; --dur: 1776ms; width: 3px; height: 10px; background-color: #b06ab3; }
-.ls-rates-confetti-piece:nth-child(6) { left: 42%; --rot: 38deg;  --del: 180ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(3) { left: 21%; --rot: -51deg; --del: 481ms; --dur: 2103ms; width: 4px; height: 12px; background-color: #f6f4ec; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(4) { left: 28%; --rot: 61deg;  --del: 334ms; --dur: 1008ms; width: 6px; height: 14px; background-color: #a3cc2e; }
+.ls-rates-confetti-piece:nth-child(5) { left: 35%; --rot: -52deg; --del: 302ms; --dur: 1776ms; width: 3px; height: 10px; background-color: #c7db8a; }
+.ls-rates-confetti-piece:nth-child(6) { left: 42%; --rot: 38deg;  --del: 180ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #f6f4ec; --del: 3000ms; }
 .ls-rates-confetti-piece:nth-child(7) { left: 49%; --rot: 11deg;  --del: 395ms; --dur: 1200ms; }
-.ls-rates-confetti-piece:nth-child(8) { left: 56%; --rot: 49deg;  --del: 14ms;  --dur: 1887ms; width: 6px; height: 14px; background-color: #c33764; }
-.ls-rates-confetti-piece:nth-child(9) { left: 63%; --rot: -72deg; --del: 149ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(8) { left: 56%; --rot: 49deg;  --del: 14ms;  --dur: 1887ms; width: 6px; height: 14px; background-color: #a3cc2e; }
+.ls-rates-confetti-piece:nth-child(9) { left: 63%; --rot: -72deg; --del: 149ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #f6f4ec; --del: 3000ms; }
 .ls-rates-confetti-piece:nth-child(10) { left: 70%; --rot: 10deg; --del: 351ms; --dur: 2059ms; }
 .ls-rates-confetti-piece:nth-child(11) { left: 77%; --rot: 4deg;  --del: 307ms; --dur: 1132ms; }
-.ls-rates-confetti-piece:nth-child(12) { left: 84%; --rot: 42deg; --del: 464ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #dd2476; --del: 3000ms; }
+.ls-rates-confetti-piece:nth-child(12) { left: 84%; --rot: 42deg; --del: 464ms; --dur: 2500ms; width: 4px; height: 12px; background-color: #f6f4ec; --del: 3000ms; }
 .ls-rates-confetti-piece:nth-child(13) { left: 91%; --rot: -72deg; --del: 429ms; --dur: 1818ms; }
-.ls-rates-confetti-piece:nth-child(14) { left: 94%; --rot: -72deg; --del: 429ms; --dur: 818ms; width: 6px; height: 14px; background-color: #c33764; }
-.ls-rates-confetti-piece:nth-child(15) { left: 96%; --rot: -72deg; --del: 429ms; --dur: 2818ms; width: 3px; height: 10px; background-color: #b06ab3; }
-.ls-rates-confetti-piece:nth-child(16) { left: 98%; --rot: -72deg; --del: 429ms; --dur: 2818ms; width: 6px; height: 14px; background-color: #c33764; }
+.ls-rates-confetti-piece:nth-child(14) { left: 94%; --rot: -72deg; --del: 429ms; --dur: 818ms; width: 6px; height: 14px; background-color: #a3cc2e; }
+.ls-rates-confetti-piece:nth-child(15) { left: 96%; --rot: -72deg; --del: 429ms; --dur: 2818ms; width: 3px; height: 10px; background-color: #c7db8a; }
+.ls-rates-confetti-piece:nth-child(16) { left: 98%; --rot: -72deg; --del: 429ms; --dur: 2818ms; width: 6px; height: 14px; background-color: #a3cc2e; }
 .ls-rates-confetti-piece:nth-child(17) { left: 50%; --rot: -72deg; --del: 429ms; --dur: 2818ms; }
 .ls-rates-confetti-piece:nth-child(18) { left: 60%; --rot: -72deg; --del: 429ms; --dur: 1818ms; }
 
 .ls-rates-confetti-piece:nth-child(odd) {
-  background-color: hsl(0, 100%, 67%);
+  background-color: #d8ff3e;
 }
 
-/* 2ب) لوح الملخص — روح .results-summary-container__options (أبيض بعنوان أزرق داكن) */
+/* 2ب) لوح الملخص — روح .results-summary-container__options (أبيض بعنوان
+   حبري بلون التذكرة وغسلة ليمونية من الزاوية توازي توهّج اللوح الرئيسي) */
 .ls-rates-aside {
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
   padding: 18px 16px;
-  border-radius: 12px 30px;
-  background: #ffffff;
-  border: 1px solid #efeaf6;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle 200px at 0% 0%, rgba(216, 255, 62, 0.10), rgba(216, 255, 62, 0) 62%),
+    #ffffff;
+  border: 1px solid #e9e4d8;
 }
 
 .ls-rates-aside-title {
@@ -296,7 +464,7 @@
   font-family: var(--font-display);
   font-size: 1.02rem;
   font-weight: 900;
-  color: hsl(224, 30%, 27%);
+  color: #0b0b0f;
   letter-spacing: 0.01em;
 }
 
@@ -360,7 +528,7 @@
   font-family: var(--font-display);
   font-size: 1.06rem;
   font-weight: 900;
-  color: hsl(224, 30%, 27%);
+  color: #0b0b0f;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -399,7 +567,7 @@
   }
 }
 
-/* البطاقة الفرعية — الهوية المصغّرة للقالب: رأس متدرج + متن أبيض */
+/* البطاقة الفرعية — رأس بتوهّج الزاوية + متن أبيض، بظل حبري كالتذكرة */
 .ls-rate-subcard {
   --head-from: #aa076b;
   --head-to: #61045f;
@@ -409,10 +577,10 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: 22px;
+  border-radius: 18px;
   background: #ffffff;
-  border: 1px solid #efe9f6;
-  box-shadow: 0 10px 26px rgba(76, 29, 149, 0.10);
+  border: 1px solid #ece7da;
+  box-shadow: 0 10px 26px rgba(11, 11, 15, 0.10);
   overflow: hidden;
   transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
 }
@@ -446,7 +614,9 @@
   --fill-b: #fdba74;
 }
 
-/* الرأس المتدرج العلوي — يحتضن لوح الأرقام الزجاجي */
+/* الرأس المتدرج العلوي — يحتضن لوح الأرقام الزجاجي. التدرّج شعاعي من
+   الزاوية العلوية بروح لوح التذكرة (`circle 280px at 0% 0%`) لكن
+   بألوان فئة البطاقة، وفوقه لمعانها الزجاجي القطري (::after) */
 .ls-rate-card-head {
   position: relative;
   display: flex;
@@ -455,10 +625,21 @@
   gap: 10px;
   min-width: 0;
   padding: 14px 12px 16px;
-  background-image: linear-gradient(to bottom, var(--head-from), var(--head-to));
+  background-image: radial-gradient(circle 240px at 0% 0%, var(--head-from), var(--head-to));
   color: #ffffff;
   text-align: center;
   overflow: hidden;
+}
+
+/* اللمعان الزجاجي القطري على الرأس — روح .league-ticket-holographic::after
+   (المحتوى فوقه بقاعدة z-index التالية، والدائرة اللونية تحته) */
+.ls-rate-card-head::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012) 45%, rgba(0, 0, 0, 0));
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 /* محتوى الرأس فوق الدائرة اللونية الزخرفية */
@@ -536,8 +717,8 @@
 }
 
 /* لوح الأرقام الزجاجي — هوية قالب uiverse.io/vinodjangid07/grumpy-mule-23
-   (MIT): زجاج معتم شبه شفاف rgba(65,65,65,.308) مع backdrop-filter: blur(30px)
-   وحدود شفافة rgba(255,255,255,.089) وزوايا 10px — بلا عرض ثابت (100%) */
+   (MIT) بزجاج حبري بروح التذكرة: قاع rgba(11,11,15,.40) مع
+   backdrop-filter: blur(30px) وحدّ ليموني خفيف وزوايا 10px — بلا عرض ثابت */
 .ls-rate-metric {
   position: relative;
   z-index: 1;
@@ -549,20 +730,21 @@
   min-width: 0;
   padding: 14px 12px;
   border-radius: 10px;
-  background-color: rgba(65, 65, 65, 0.308);
+  background-color: rgba(11, 11, 15, 0.40);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.089);
+  border: 1px solid rgba(216, 255, 62, 0.16);
 }
 
-/* الرقم الرئيسي — روح .temp: أبيض كبير بمنتصف اللوح */
+/* الرقم الرئيسي — روح .temp بتوهّج أرقام التذكرة الليموني */
 .ls-rate-value {
   font-family: var(--font-display);
   font-size: 1.85rem;
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: #f6f4ec;
+  text-shadow: 0 0 14px rgba(216, 255, 62, 0.30);
   text-align: center;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
@@ -571,6 +753,7 @@
 .ls-rate-value--na {
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.92);
+  text-shadow: none;
 }
 
 /* وحدة القياس — روح .weather: سطر رمادي فاتح صغير بعد الرقم */
@@ -792,8 +975,8 @@
   inset-inline-end: -8px;
   padding: 1px 4px;
   border-radius: 999px;
-  background: #2b1a3d;
-  color: #ffe3b8;
+  background: #0b0b0f;
+  color: #d8ff3e;
   font-size: 0.55rem;
   font-weight: 900;
   line-height: 1.3;
@@ -866,7 +1049,7 @@
 .ls-rates-details {
   margin-top: 14px;
   background: #ffffff;
-  border: 1px solid #efe9f6;
+  border: 1px solid #ece7da;
   border-radius: 18px;
   padding: 10px;
 }
@@ -875,8 +1058,9 @@
   padding-bottom: 16px;
 }
 
-/* الزر العريض المتدرج أسفل قالب spotty-firefox-94:
-   linear-gradient(to right, #aa076b, #61045f) — حواف دائرية ونص أبيض */
+/* الزر العريض أسفل البطاقة — موضع زر قالب spotty-firefox-94 بجلد
+   التذكرة: لوح حبري `#0b0b0f` بحدّ صناديقها الزيتوني ونص كريمي
+   وسهم ليموني متوهّج كنقطة التذكرة النشطة */
 .ls-rates-summary {
   display: flex;
   align-items: center;
@@ -885,12 +1069,12 @@
   width: 100%;
   min-height: 48px;
   padding: 12px 18px;
-  border: none;
+  border: 1px solid #34361c;
   border-radius: 12px;
   cursor: pointer;
   list-style: none;
-  background-image: linear-gradient(to right, #aa076b, #61045f);
-  color: #ffffff;
+  background-image: linear-gradient(to right, #1a1b06, #0b0b0f);
+  color: #f6f4ec;
   font-family: var(--font-display);
   font-size: 0.9rem;
   font-weight: 800;
@@ -909,6 +1093,8 @@
   flex-shrink: 0;
   font-size: 0.85rem;
   line-height: 1;
+  color: #d8ff3e;
+  text-shadow: 0 0 10px rgba(216, 255, 62, 0.7);
   transition: transform 0.3s ease-out;
 }
 
@@ -1194,13 +1380,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .ls-rates-panel {
-    border-radius: 26px 14px;
-  }
-
-  .ls-rates-aside {
-    border-radius: 14px 26px;
-  }
+  /* زوايا التذكرة موحّدة في العرضين (14px) فلا تبديل هنا */
 }
 
 @media (max-width: 560px) {
@@ -1235,11 +1415,50 @@
   }
 }
 
+/* دورة نقطة الضوء حول محيط لوح التذكرة — مسار league-ticket-dot-tour
+   نفسه (أركان 10%/10%)، تُشغَّل مرة واحدة عند التفاعل فقط */
+@keyframes ls-rates-ticket-dot-tour {
+  0%,
+  100% {
+    top: 10%;
+    right: 10%;
+  }
+
+  25% {
+    top: 10%;
+    right: calc(100% - 35px);
+  }
+
+  50% {
+    top: calc(100% - 30px);
+    right: calc(100% - 35px);
+  }
+
+  75% {
+    top: calc(100% - 30px);
+    right: 10%;
+  }
+}
+
 /* رفعة ناعمة عند التحويم (أجهزة المؤشر الدقيق فقط) */
 @media (hover: hover) and (pointer: fine) {
-  .ls-rate-subcard:hover {
+  /* لوح التذكرة يرتفع وتدور نقطته ويشتد شعاعه — تفاعل التذكرة نفسه */
+  .ls-rates-panel:hover {
     transform: translateY(-4px);
-    box-shadow: 0 18px 34px rgba(76, 29, 149, 0.16);
+  }
+
+  .ls-rates-panel:hover .ls-rates-ticket-dot {
+    animation: ls-rates-ticket-dot-tour 3.4s ease-in-out 1;
+  }
+
+  .ls-rates-panel:hover .ls-rates-ticket-ray {
+    opacity: 0.5;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .ls-rate-subcard:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 18px 34px rgba(11, 11, 15, 0.18);
   }
 
   .ls-rate-subcard:active {
@@ -1260,7 +1479,7 @@
 
   .ls-rates-summary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(120, 87, 255, 0.30);
+    box-shadow: 0 14px 30px rgba(11, 11, 15, 0.28), 0 0 18px rgba(216, 255, 62, 0.22);
   }
 
   .ls-rates-summary:active {
@@ -1275,8 +1494,16 @@
   }
 }
 
-/* اللمس: نفس المرور الواحد عند الضغط */
+/* اللمس: نفس المرور الواحد عند الضغط — قصاصات ودورة نقطة ورفعة */
 @media (hover: none) {
+  .ls-rates-panel:active {
+    transform: translateY(-4px) scale(1.005);
+  }
+
+  .ls-rates-panel:active .ls-rates-ticket-dot {
+    animation: ls-rates-ticket-dot-tour 3.4s ease-in-out 1;
+  }
+
   .ls-rates-panel:active .ls-rates-confetti-piece {
     animation: ls-rates-rain var(--dur, 2000ms) linear 1 both;
     animation-delay: var(--del, 0ms);
@@ -1436,5 +1663,21 @@
 
   .ls-rates-confetti-piece {
     opacity: 0 !important;
+  }
+
+  /* التذكرة ثابتة بلا رفعة ولا دورة نقطة ولا اشتداد شعاع — كقاعدتها */
+  .ls-rates-panel,
+  .ls-rates-panel:hover,
+  .ls-rates-panel:active {
+    transform: none;
+  }
+
+  .ls-rates-ticket-dot {
+    top: 10%;
+    right: 10%;
+  }
+
+  .ls-rates-ticket-ray {
+    opacity: 0.32;
   }
 }

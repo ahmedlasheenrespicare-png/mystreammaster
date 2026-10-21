@@ -114,24 +114,49 @@ export default function Pricing({
                 ? Math.round((1 - plan.prices[duration].SAR / oldSar) * 100)
                 : 0;
 
+            // إخفاء عدد الأجهزة ودليل المشاهدة الرسمية من بطاقة نوفا فقط.
+            const pricingSpecs = [
+              `📺 ${plan.channelsCount}`,
+              `🎬 ${plan.vodCount}`,
+              `⚡ ${plan.quality}`,
+              ...(plan.serverCode === "nova" ? [] : [`🛡️ ${plan.devices}`]),
+            ];
+            const pricingFeatures =
+              plan.serverCode === "nova"
+                ? plan.features.filter((feature) => !feature.startsWith("دليل خيارات المشاهدة الرسمية"))
+                : plan.features;
+
             return (
               <Reveal key={plan.id} variant="up" delay={i * 110} className="h-full">
               <div
                 className={`relative h-full flex flex-col justify-between rounded-[28px] p-6 sm:p-7 transition-all duration-300 ${
                   dark
-                    ? "bg-[#0b0b0f] text-white grain overflow-hidden scale-[1.02] ring-4 ring-[#d8ff3e]/60"
+                    ? "bg-[#0b0b0f] text-white grain overflow-hidden isolate scale-[1.02] ring-4 ring-[#d8ff3e]/60"
                     : isVip
                     ? "bg-[#ffe3c7] border-2 border-[#0b0b0f]/15 hover:border-[#0b0b0f]"
                     : "bg-white border border-black/10 hover:border-black/30 hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.2)]"
                 }`}
               >
                 {dark && (
-                  <div className="absolute -top-24 -end-24 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
+                  <div className="absolute -top-24 -end-24 z-0 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
+                )}
+                {/* شعار نوفا كعلامة مائية مدمجة في أعلى يسار البطاقة */}
+                {plan.serverCode === "nova" && (
+                  <img
+                    src="/images/brand/nova-ticket.png"
+                    alt=""
+                    aria-hidden="true"
+                    width={217}
+                    height={132}
+                    loading="lazy"
+                    decoding="async"
+                    className="pointer-events-none absolute left-4 top-8 z-[1] w-40 sm:w-48 h-auto object-contain opacity-[0.14] mix-blend-screen select-none"
+                  />
                 )}
 
                 {/* الشارات */}
                 {plan.isPopular && (
-                  <div className="absolute -top-3.5 inset-x-0 flex justify-center">
+                  <div className="absolute -top-3.5 inset-x-0 z-20 flex justify-center">
                     <span className="bg-[#d8ff3e] text-black text-[11.5px] font-black px-4 py-1 rounded-full shadow-lg">
                       🔥 الأكثر طلباً
                     </span>
@@ -145,7 +170,7 @@ export default function Pricing({
                   </div>
                 )}
 
-                <div className="relative">
+                <div className="relative z-10">
                   <span
                     className={`inline-block text-[12px] font-black mb-2 ${
                       dark ? "text-white/50" : "text-black/45"
@@ -233,12 +258,7 @@ export default function Pricing({
                     مواصفات سيرفر المزود الخارجي
                   </p>
                   <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] font-bold">
-                    {[
-                      `📺 ${plan.channelsCount}`,
-                      `🎬 ${plan.vodCount}`,
-                      `⚡ ${plan.quality}`,
-                      `🛡️ ${plan.devices}`,
-                    ].map((spec) => (
+                    {pricingSpecs.map((spec) => (
                       <div
                         key={spec}
                         className={`p-2 rounded-xl text-center ${
@@ -259,7 +279,7 @@ export default function Pricing({
                     ما تشمله خدمتنا: التفعيل والربط التقني والدعم
                   </p>
                   <ul className="mt-2 space-y-2.5 text-[12.5px]">
-                    {plan.features.map((feat, idx) => (
+                    {pricingFeatures.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <span
                           className={`w-5 h-5 rounded-full grid place-items-center shrink-0 mt-0.5 ${
@@ -275,7 +295,7 @@ export default function Pricing({
                 </div>
 
                 {/* الأزرار */}
-                <div className="relative mt-7 pt-5 space-y-2.5">
+                <div className="relative z-10 mt-7 pt-5 space-y-2.5">
                   <a
                     href={getWhatsAppUrl(
                       `مرحبًا ستريم ماستر، أود طلب كود تفعيل تقني لدى المزود لـ ${plan.serverName} لمدة ${durationLabels[duration]} بسعر ${currentPrice} ${curr.symbol}`

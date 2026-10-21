@@ -1,5 +1,5 @@
 import LeagueIconBadge from "./LeagueIconBadge";
-import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, type FeaturedClash } from "./LeagueTicketCard";
+import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -60,10 +60,11 @@ function AllLeaguesTicketBase() {
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
       <span className="league-ticket-symbol" />
-      {/* شعار نوفا المقصوص أعلى اليسار الفيزيائي — على تذكرة جدول
-          المواعيد الجامعة بالكامل (وكذلك ظهورها في هيرو الرئيسية
-          باعتبارها الوحدة نفسها) بتوجيه المالك */}
+      {/* زوج الشعارات أعلى اليسار الفيزيائي: نوفا الكاملة على تذكرة
+          جدول المواعيد الجامعة، وX بجانبها نفس الإثراء (تعميم موازٍ)
+          — وظهورها في هيرو الرئيسية يتبع لهذه الوحدة ذاتها */}
       <NovaTicketBrand />
+      <XtvTicketBrand />
       {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
           الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
       <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />

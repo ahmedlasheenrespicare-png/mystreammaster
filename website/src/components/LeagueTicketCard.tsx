@@ -307,9 +307,11 @@ export function XtvTicketBrand() {
   return <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
-/* زوج الأعلام الزخرفية أعلى يسار التذكرة: نوفا وفق حزمة التوزيع (الكل
-   أو قاعدة) وX للفرنسي فقط — منزلق «scope» يمنع لَبس قاعدة انجلتراو
-   إسبانيا وأوروبا (لوجوهم على القاعدة دون القمم) tick-based */
+/* زوج الأعلام الزخرفية أعلى يسار التذكرة: نوفا وفق حزمة التوزيع وX
+   يجاورها أينما ظهرت (البقعة نفسها والمساحة نفسها) بطلب تعميمٍ يطابق
+   بدقة ما جرى لتعميم نوفا في #161: كل التذاكر الجامعة والخماسية ف/
+   هُ / من / ي، وقواعد فقط من eng/esp/uefa — بنطاقان (static/base/
+   clash) يصونان قاعدة القواعد (لوجوهم على القاعدة دون القمم) */
 function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
   leagueId: string;
   scope: "static" | "base" | "clash";
@@ -320,7 +322,7 @@ function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
     : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
   return (<>
     {withNova ? <NovaTicketBrand /> : null}
-    {leagueId === "fra.1" ? <XtvTicketBrand /> : null}
+    {withNova ? <XtvTicketBrand /> : null}
   </>);
 }
 

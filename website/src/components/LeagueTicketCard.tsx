@@ -113,6 +113,28 @@ const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
       awayPlayer: "/images/players/esp-yamal.png",
     },
   ],
+  "eng.1": [
+    {
+      /* الشريحة الثانية لتذكرة الدوري الإنجليزي — بياناتها حيّة من النافذة
+         نفسها (أسبوع للوراء + أسبوع للأمام): نهائية الأمس تبقى ظاهرة
+         وموعد القادمة يَظهر له عدّاد ثم تتحول الحالة وحدها */
+      eyebrow: "قمة الجولة",
+      home: {
+        name: "تشيلسي",
+        crest: "https://a.espncdn.com/i/teamlogos/soccer/500/363.png",
+        mono: "تشي",
+        tokens: ["chelsea", "تشيلسي", "تشلسي"],
+      },
+      away: {
+        name: "توتنهام هوتسبير",
+        crest: "https://a.espncdn.com/i/teamlogos/soccer/500/367.png",
+        mono: "توت",
+        tokens: ["tottenham", "spurs", "توتنهام", "توتينهام"],
+      },
+      homePlayer: "/images/players/chelsea-palmer.png",
+      awayPlayer: "/images/players/eng-marmoush.png",
+    },
+  ],
 };
 
 function isClash(match: Match | null | undefined, clash: FeaturedClash): match is Match {

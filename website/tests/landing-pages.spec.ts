@@ -334,6 +334,20 @@ const clashScoreCases: ReadonlyArray<{
     homeScore: '3',
     awayScore: '1',
   },
+  {
+    /* الشريحة الثانية لتذكرة الإنجليزي: قمة الجولة — تشيلسي (بالمر) × توتنهام (مرموش) */
+    url: '/matches/الدوري-الإنجليزي/',
+    league: 'eng.1',
+    eyebrow: 'قمة الجولة',
+    slideIndex: 1,
+    dots: 2,
+    home: 'Chelsea',
+    away: 'Tottenham Hotspur',
+    homeName: 'تشيلسي',
+    awayName: 'توتنهام',
+    homeScore: '3',
+    awayScore: '2',
+  },
 ];
 for (const c of clashScoreCases) {
   test(`${c.league} ticket clash slide ${c.eyebrow} renders the score rtl like the schedule card, home number beside house team`, async ({ page }) => {

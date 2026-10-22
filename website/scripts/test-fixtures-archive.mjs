@@ -186,6 +186,35 @@ test('standingsRates: derived analyst metrics use exact fractions and never trea
   assert.deepEqual(res.league.bestGdPerMatch.teams.map(t => t.name), ['Alpha', 'Beta']);
   assert.equal(res.league.bestPpm.value, 3);
   assert.deepEqual(res.league.bestPpm.teams.map(t => t.name), ['Beta']);
+  /* متصدّرو المقاييس الأحد عشر باتجاهها الدلالي وبكل المتعادلين */
+  const leaders = res.league.leaders;
+  assert.deepEqual(leaders.played, { value: 4, teams: leaders.played.teams });
+  assert.deepEqual(leaders.played.teams.map(t => t.name), ['Alpha']);
+  assert.deepEqual(leaders.goalsFor.teams.map(t => t.name), ['Alpha']);
+  assert.equal(leaders.goalsAgainst.value, 2, 'متصدّر «عليه» هو الأدنى استقبالاً لا الأعلى');
+  assert.deepEqual(leaders.goalsAgainst.teams.map(t => t.name), ['Beta']);
+  assert.deepEqual(leaders.goalDifference.teams.map(t => t.name), ['Alpha']);
+  assert.deepEqual(leaders.attack.teams.map(t => t.name), ['Alpha', 'Beta'], 'تعادل كسري تام في الصدارة');
+  assert.equal(leaders.defence.value, 1);
+  assert.deepEqual(leaders.defence.teams.map(t => t.name), ['Alpha', 'Beta']);
+  assert.deepEqual(leaders.attackDelta.teams.map(t => t.name), ['Alpha', 'Beta']);
+  assert.deepEqual(leaders.defenceDelta.teams.map(t => t.name), ['Alpha', 'Beta']);
+  assert.deepEqual(leaders.gdPerMatch.teams.map(t => t.name), ['Alpha', 'Beta']);
+  assert.deepEqual(leaders.ppm.teams.map(t => t.name), ['Beta']);
+  assert.deepEqual(leaders.winPct.teams.map(t => t.name), ['Beta']);
+  /* توزيع الهجوم عبر الفرق [2.5, 2.5, 1/3]: وسيط 2.5 ومتوسط عمود 16/9 */
+  const attackDist = res.league.distributions.attack;
+  assert.equal(attackDist.n, 3);
+  assert.equal(attackDist.median, 2.5);
+  assert.ok(Math.abs(attackDist.mean - 16 / 9) < 1e-12);
+  /* درجتا Z لـAlpha: ±1/√2 تماماً في هذه البيانات، والقوة = √2 */
+  assert.ok(Math.abs(res.rows[0].attackZ - Math.SQRT1_2) < 1e-9, 'Z هجوم Alpha');
+  assert.ok(Math.abs(res.rows[0].defenceZ + Math.SQRT1_2) < 1e-9, 'Z دفاع Alpha');
+  assert.ok(Math.abs(res.rows[0].power - Math.SQRT2) < 1e-9, 'قوة Alpha = √2');
+  assert.ok(Math.abs(res.rows[1].power - Math.SQRT2) < 1e-9, 'Beta يتعادل مع Alpha في القوة كتعادلهما في المعدلين');
+  assert.deepEqual(leaders.power.teams.map(t => t.name), ['Alpha', 'Beta']);
+  assert.ok(res.rows[2].power < 0, 'Gamma سالب القوة');
+  assert.equal(res.league.distributions.played.median, 3);
 });
 
 test('standingsRates: missing goalsFor stops only the attack-side metrics of that team', () => {
@@ -198,6 +227,18 @@ test('standingsRates: missing goalsFor stops only the attack-side metrics of tha
   assert.equal(res.rows[1].gdPerMatch, null, 'الصافي/م يتطلب «له» و«عليه» معاً');
   assert.equal(res.rows[1].ppm, 0);
   assert.equal(res.bestAttack.length, 0, 'جدول جزئي لا يثبت أقوى هجوم في المسابقة');
+  /* المتصدّرون بقاعدة الاكتمال نفسها: ناقص «له» يمنع حسم مقاييسه وحدها */
+  assert.equal(res.league.leaders.attack, null, 'متصدّر الهجوم لا يُحسم وفريق بلا «له»');
+  assert.equal(res.league.leaders.goalDifference, null, 'متصدّر فارق المصدر لا يُحسم وفريق بلا فارق');
+  assert.equal(res.league.leaders.defence.value, 1);
+  assert.deepEqual(res.league.leaders.defence.teams.map(t => t.name), ['Whole', 'Gap'], 'تعادل 1.00 دفاعياً رغم اختلاف العينة');
+  assert.deepEqual(res.league.leaders.played.teams.map(t => t.name), ['Gap']);
+  /* توزيع الهجوم بقيمة وحيدة ⇒ انحراف صفر ⇒ لا درجات Z ولا قوة ولا متصدّر لها */
+  assert.equal(res.league.distributions.attack.sd, 0);
+  assert.equal(res.league.distributions.attack.n, 1);
+  assert.equal(res.rows[0].attackZ, null, 'لا قسمة على انحراف صفري');
+  assert.equal(res.rows[0].power, null, 'لا قوة من توزيع مسطّح');
+  assert.equal(res.league.leaders.power, null);
 });
 
 test('standingsRates: negative points and deductions stay valid in PPM; missing wins leave Win% unavailable', () => {

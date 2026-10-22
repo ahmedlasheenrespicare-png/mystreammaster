@@ -130,6 +130,38 @@
      بتدرّج ليموني، قيمة الفارق عن المتوسط بلون دلالي يرافق رمزها
      وإشارتها (لا يحلّ محلهما)، ومركز الفريق قرصًا حبريًا بليموني —
      بلا تغيير في معلومة أو تخطيط أو مقاس أو شبكة تجاوب.
+
+   • تحديث لاحق — توليدات من الجدول التحليلي نفسه (بلا أي بيانات جديدة):
+     فارقا كل فريق عن متوسط المسابقة (`attackDelta`/`defenceDelta` —
+     كانا محسوبين للكروت الفرعية فقط) صارا عمودين قابلين للفرز «هجوم ± /
+     دفاع ±» بعد معدّليهما مباشرة وبدلالة لونية ترافق الإشارة كالكروت،
+     فصارت أزرار الفرز 11 (ونما `min-width` الجدول 1180←1340px داخل
+     منطقة تمريره). وصف «متوسط المسابقة» في `<tfoot>` من حساب
+     `standingsRates` (`league.averages`): الأعداد الخام بمتوسطها على
+     الفرق ذات القيم، والمعدلات من إجماليات المسابقة (مجموع ÷ مجموع)
+     فيتسق الصف كفريقٍ متوسطٍ واحد، ومتوسطا الفارق موزونان بالمباريات
+     (صفر بالتعريف)، ومتوسطا عمودي الأرشيف من فرق الأرشيف وحدها لا من
+     جدول الترتيب. وعمود «مركز المقياس» يظهر أثناء الفرز فقط: مركز كل
+     فريق في المقياس النشط باتجاه «الأفضل أولاً» ثابتاً مهما كان اتجاه
+     العرض، والمتساوون بالقيمة الدقيقة يتقاسمون المركز، والناقص «—».
+     القيم الناقصة خارج كل حساب وتبقى «غير متاح» ولا تُعدّ صفراً،
+     والقواعد كلها ببادئة `.ls-an-*` داخل نطاق البطاقة والجدول.
+     وفوق الجدول شريط «الأول في كل مقياس» (`league.leaders` من الحساب
+     نفسه): متصدّر كل عمود باتجاهه «الأفضل أولاً» وبكل متعادليه، بقاعدة
+     اكتمال التصنيفات الرئيسة (أي فريق ناقص في مقياس يمنع حسم متصدّره)،
+     وكل شريحة زرٌّ يفرز الجدول بمقياسها فيعلو صاحبها بمركز #1 — ولهذا
+     وُحّد اتجاه فرز «عليه» الأول ليصير «الأدنى أقوى» كعمودي الدفاع
+     (كان الأعلى استقبالاً أولاً) فصار «الأفضل أولاً» صادقاً للأعمدة
+     كلها، في الفرز ومركز المقياس والمتصدّرين معاً. ثم طبقة التوزيع:
+     لكل مقياس توزيعه عبر الفرق (`league.distributions`: متوسط العمود
+     البسيط ووسيطه وانحرافه المعياري على مجتمع الفرق — مرجع مختلف
+     صراحةً عن المتوسط الموزون بالمباريات)، وعليه درجتا Z للهجوم
+     والدفاع و«مؤشر القوة» المركّب (فرق الدرجتين) عمودَ فرزٍ ثاني عشر
+     بترتيب قوة تحليلي جديد، ونقطة ذهبية بجانب أي معدل شاذ إحصائياً
+     (|Z| ≥ 2)، وصفّا «وسيط المسابقة» و«الانحراف المعياري» في التذييل
+     تحت صف المتوسط (وعمودا الأرشيف فيهما من فرق الأرشيف وحدها).
+     انحراف صفري أو قيمة ناقصة يتركان الدرجة والقوة null — لا قسمة
+     على صفر ولا مؤشر من توزيع مسطّح.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -1207,7 +1239,11 @@
    6) الجدول التحليلي الكامل — أنماط منقول من landing.css (خاصة بهذه البطاقة)
    -------------------------------------------------------------------------- */
 .ls-rates-analyst-table {
-  min-width: 1180px;
+  /* نما من 1180px بإضافة أعمدة الفرز المولّدة (الفارقان عن المتوسط ثم
+     مؤشر القوة) — العرض كله داخل منطقة التمرير .ls-scroll فلا فيض
+     أفقياً في الصفحة، وعمود «مركز المقياس» الظاهر أثناء الفرز يتمدد
+     داخل التمرير نفسه */
+  min-width: 1420px;
   font-size: 0.8rem;
 }
 
@@ -1309,6 +1345,12 @@
 }
 
 .ls-an-rate {
+  font-variant-numeric: tabular-nums;
+}
+
+/* قيمة الفارق عن متوسط المسابقة (±) داخل خلية المعدل — ألوان دلالتها
+   في قسم الهوية الذهبية أدناه، وهنا ضبط الأرقام الجدولية فقط */
+.ls-an-delta {
   font-variant-numeric: tabular-nums;
 }
 
@@ -1801,6 +1843,205 @@
 /* قيم المعدلات أوضح قليلاً من بقية الأرقام */
 .ls-rates-details .ls-rates-analyst-table .ls-an-rate {
   color: #f5f5f7;
+}
+
+/* قيمتا الفارق عن المتوسط (±) بدلالة لونية ترافق الإشارة الرقمية —
+   نفس ألوان دلالة الكروت الفرعية فوق زجاجها الحبري (ليموني للأفضل،
+   وردي خفيف للأسوأ، ورقي للتعادل التام؛ «غير متاح» بلون الصف العام) */
+.ls-rates-details .ls-rates-analyst-table .ls-an-delta--good {
+  color: #d8ff3e;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-an-delta--bad {
+  color: #fda4af;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-an-delta--neutral {
+  color: #f6f4ec;
+}
+
+/* قيمة مؤشر القوة المركّب — ذهبية أفتح قليلاً من بقية الأرقام لتمييز
+   أنها مؤشر مشتق (فرق درجتي Z) لا معدل خام */
+.ls-rates-details .ls-rates-analyst-table .ls-an-power {
+  color: #fde047;
+  font-weight: 800;
+}
+
+/* نقطة الشذوذ الإحصائي — قرص ذهبي متوهج بجانب معدل يبعد أكثر من
+   انحرافين معياريين عن متوسط الفرق (زخرفية؛ النص الخفي يرافقها
+   لقارئات الشاشة والرقم نفسه لا يتغيّر) */
+.ls-rates-details .ls-rates-analyst-table .ls-an-outlier {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-inline-start: 6px;
+  border-radius: 50%;
+  background: #fde047;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.75);
+  vertical-align: middle;
+}
+
+/* صف «متوسط المسابقة» في التذييل — شريط ذهبي خافت بحدٍّ علوي أوضح
+   يفصله عن صفوف الفرق، وقيمه بوزن أثقل كمرجع قراءة لكل عمود */
+.ls-rates-details .ls-rates-analyst-table tfoot th,
+.ls-rates-details .ls-rates-analyst-table tfoot td {
+  color: #f3e8c8;
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.10), rgba(250, 204, 21, 0.03));
+  border-top: 1px solid rgba(250, 204, 21, 0.35);
+  border-bottom-color: transparent;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rates-details .ls-rates-analyst-table .ls-an-avg-label {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* صفّا التوزيع (الوسيط والانحراف المعياري) تحت صف المتوسط — نفس
+   الشريط الذهبي بدرجة أخف وحدٌّ فاصل أنعم، تدرّجاً بصرياً من مرجع
+   القراءة الأول (المتوسط) إلى مرجعَي التشتت */
+.ls-rates-details .ls-rates-analyst-table tfoot tr + tr th,
+.ls-rates-details .ls-rates-analyst-table tfoot tr + tr td {
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.05), rgba(250, 204, 21, 0.015));
+  border-top: 1px solid rgba(250, 204, 21, 0.16);
+  font-weight: 700;
+}
+
+/* شارة «مركز المقياس» أثناء الفرز — قرص ذهبي صغير يميّزه عن رقم
+   المركز الرسمي المتدرج في خلية الفريق (قرص مغلق مقابل نص متدرج) */
+.ls-rates-details .ls-rates-analyst-table .ls-an-metric-rank {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.08);
+  color: #fde047;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* شريط «الأول في كل مقياس» — لوح ذهبي داكن شقيق للوح الجدول فوقه
+   مباشرة بنفس توهّجه وحدّه، وشرائحه أزرار فرز: مقياسها وشعار متصدّرها
+   وقيمته وعدد متعادليه، تمرّ أفقياً عند الضيق دون أن تفيض بالصفحة،
+   والمقياس المفروز به حالياً بحدٍّ ذهبي أوضح وتعبئة أفتح */
+.ls-rates-details .ls-an-leaders {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: 16px;
+  background-color: #17171b;
+  background-image:
+    radial-gradient(560px 220px at 15% 0%, rgba(250, 204, 21, 0.12), rgba(0, 0, 0, 0) 62%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015) 45%, rgba(0, 0, 0, 0));
+  box-shadow: 0 14px 34px rgba(24, 20, 2, 0.18);
+}
+
+.ls-rates-details .ls-an-leaders-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #f3e8c8;
+}
+
+.ls-rates-details .ls-an-leaders-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.ls-rates-details .ls-an-leader {
+  flex: 0 0 auto;
+  min-width: 138px;
+  max-width: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #dcdce2;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.2s ease-out, background 0.2s ease-out;
+}
+
+.ls-rates-details .ls-an-leader:hover {
+  border-color: rgba(250, 204, 21, 0.45);
+  background: rgba(250, 204, 21, 0.05);
+}
+
+.ls-rates-details .ls-an-leader:focus-visible {
+  outline: 3px solid #fde047;
+  outline-offset: 2px;
+}
+
+.ls-rates-details .ls-an-leader--active {
+  border-color: rgba(250, 204, 21, 0.65);
+  background: rgba(250, 204, 21, 0.09);
+  box-shadow: inset 0 -2px 0 rgba(250, 204, 21, 0.6);
+}
+
+.ls-rates-details .ls-an-leader-metric {
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ls-rates-details .ls-an-leader-gloss {
+  letter-spacing: 0.05em;
+}
+
+.ls-rates-details .ls-an-leader-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #f4f4f5;
+  overflow-wrap: anywhere;
+}
+
+.ls-rates-details .ls-an-leader-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+.ls-rates-details .ls-an-leader-value {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #fde047;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rates-details .ls-an-leader-tie {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-rates-details .ls-an-leader-na {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* تعطيل كل الحركات والانتقالات بالكامل لمن يفضّل تقليل الحركة */

@@ -389,7 +389,9 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(card.find('[data-rate-bench]').length, 4, `${file}: أشرطة المعيار المرجعي ناقصة`);
     assert.equal(card.find('[data-rate-bench-avg]').length, 4, `${file}: علامات متوسط الدوري ناقصة`);
     assert.equal(card.find('[data-rate-sample]').length, 4, `${file}: مقاييس العينة (الأهداف/المباريات) ناقصة`);
-    assert.equal(card.find('[data-rate-sort]').length, 9, `${file}: أزرار فرز أعمدة الجدول التحليلي ناقصة`);
+    assert.equal(card.find('[data-rate-sort]').length, 12, `${file}: أزرار فرز أعمدة الجدول التحليلي ناقصة`);
+    assert.equal(card.find('[data-rate-sort="attackDelta"]').length, 1, `${file}: عمود فارق الهجوم عن المتوسط غير قابل للفرز`);
+    assert.equal(card.find('[data-rate-sort="defenceDelta"]').length, 1, `${file}: عمود فارق الدفاع عن المتوسط غير قابل للفرز`);
     /* كل شارة فريق تحمل علامة بصرية: شعار محلي معتمد أو شعار مزوّد الترتيب
        (نفس مصدر بطاقات المباريات الحيّة) أو درع مونوغرام كاحتياط أخير */
     card.find('[data-rate-team]').each((_, teamEl) => {
@@ -422,6 +424,44 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     assert.equal(details.find('summary').text().trim(), 'عرض معدلات جميع الفرق — جدول تحليلي قابل للفرز');
     assert.equal(details.find('tr[data-rate-row]').length, count, `${file}: صفوف جدول المعدلات لا تطابق عدد فرق البطولة`);
     assert.equal(details.find('[data-rate-tactic]').length, count, `${file}: التصنيف التكتيكي لكل فريق مفقود`);
+    /* فارقا كل فريق عن متوسط المسابقة في الجدول، وصف متوسطات المسابقة
+       مطابقاً لحساب standingsRates نفسه (هجومه = متوسط الدوري المرجعي) */
+    assert.equal(details.find('[data-rate-attack-delta]').length, count, `${file}: خلايا فارق الهجوم عن المتوسط ناقصة`);
+    assert.equal(details.find('[data-rate-defence-delta]').length, count, `${file}: خلايا فارق الدفاع عن المتوسط ناقصة`);
+    assert.equal(details.find('[data-rates-averages]').length, 1, `${file}: صف متوسط المسابقة مفقود`);
+    assert.equal(
+      details.find('[data-rates-avg="attack"]').text().trim(),
+      expected.league.averages.attack.toFixed(2),
+      `${file}: متوسط هجوم المسابقة في التذييل غير مطابق للحساب`,
+    );
+    assert.equal(details.find('[data-rates-avg="attackDelta"]').text().trim(), '0.00', `${file}: متوسط فارق الهجوم الموزون يجب أن يؤول لصفر`);
+    /* شريط «الأول في كل مقياس»: 12 شريحة بأسماء مطابقة لحساب المتصدّرين */
+    assert.equal(details.find('[data-rates-leaders] [data-rate-leader]').length, 12, `${file}: شرائح متصدّري المقاييس الاثني عشر ناقصة`);
+    assert.ok(
+      details.find('[data-rate-leader="attack"]').text().includes(expected.league.leaders.attack.teams[0].name),
+      `${file}: متصدّر هجوم/م في الشريط لا يطابق الحساب`,
+    );
+    assert.ok(
+      details.find('[data-rate-leader="goalsAgainst"]').text().includes(expected.league.leaders.goalsAgainst.teams[0].name),
+      `${file}: متصدّر «عليه» (الأدنى استقبالاً) في الشريط لا يطابق الحساب`,
+    );
+    /* مؤشر القوة المركّب: خلية لكل فريق ومتصدّر مطابق، وصفّا التوزيع
+       (وسيط/انحراف هجوم المسابقة) مطابقان لحساب المكتبة */
+    assert.equal(details.find('[data-rate-power]').length, count, `${file}: خلايا مؤشر القوة ناقصة`);
+    assert.ok(
+      details.find('[data-rate-leader="power"]').text().includes(expected.league.leaders.power.teams[0].name),
+      `${file}: متصدّر مؤشر القوة في الشريط لا يطابق الحساب`,
+    );
+    assert.equal(
+      details.find('[data-rates-median="attack"]').text().trim(),
+      expected.league.distributions.attack.median.toFixed(2),
+      `${file}: وسيط هجوم المسابقة غير مطابق لتوزيع الفرق`,
+    );
+    assert.equal(
+      details.find('[data-rates-sd="attack"]').text().trim(),
+      expected.league.distributions.attack.sd.toFixed(2),
+      `${file}: انحراف هجوم المسابقة المعياري غير مطابق لتوزيع الفرق`,
+    );
 
     /* قشرة «تذكرة البطولة» على لوح البطاقة الرئيسي — نفس عقد تذكرة صدر
        الصفحة: شعاع مموّه + 4 خطوط متقاطعة + نقطة ضوء + شارة البطولة */
@@ -532,6 +572,20 @@ test('StandingsRatesCard: استقلالية صلاحية الهجوم عن ال
   assert.equal($a('[data-rate-card="best-defence"] [data-rate-unavailable]').text().trim(), 'غير متاح');
   assert.equal($a('[data-rate-card="worst-defence"] [data-rate-unavailable]').text().trim(), 'غير متاح');
   assert.equal($a('[data-rates-stale-badge]').attr('hidden') !== undefined, true);
+  /* فارق الهجوم عن المتوسط لكل فريق + صف متوسط المسابقة ببيانات جزئية:
+     المتوسط المرجعي (9+3)÷(3+3)=2.00، ومتوسط الدفاع من Arsenal وحده
+     صاحب القيمة (1÷3) — الناقص خارج حساب عموده لا صفراً فيه */
+  assert.equal($a('[data-rate-row="382"] [data-rate-attack-delta]').text().trim(), '+1.00');
+  assert.equal($a('[data-rates-avg="attack"]').text().trim(), '2.00');
+  assert.equal($a('[data-rates-avg="defence"]').text().trim(), '0.33');
+  /* شريط المتصدّرين ببيانات جزئية: الهجوم محسوم لسيتي (3.00) والدفاع
+     «غير متاح» لغياب goalsAgainst عنده — لا أولَ مختلقاً بمقياس ناقص */
+  assert.ok($a('[data-rate-leader="attack"]').text().includes('Manchester City'));
+  assert.ok($a('[data-rate-leader="attack"]').text().includes('3.00'));
+  assert.equal($a('[data-rate-leader="defence"]').text().includes('غير متاح'), true);
+  /* مؤشر القوة بلا دفاع صالح التوزيع ⇒ «غير متاح»، ووسيط الهجوم من القيمتين (3,1) */
+  assert.equal($a('[data-rate-row="382"] [data-rate-power]').text().trim(), 'غير متاح');
+  assert.equal($a('[data-rates-median="attack"]').text().trim(), '2.00');
 
   // 2) غياب goalsFor لفريق واحد يوقف تصنيف الهجوم فقط ويبقي الدفاع متاحاً، مع إظهار شارة البيانات القديمة
   const htmlDefenceOnly = renderToStaticMarkup(
@@ -556,4 +610,9 @@ test('StandingsRatesCard: استقلالية صلاحية الهجوم عن ال
   assert.ok($d('[data-rate-card="best-defence"] [data-rate-sample]').text().includes('4'));
   assert.ok($d('[data-rate-card="best-defence"] [data-rate-delta]').length === 1);
   assert.equal($d('[data-rates-stale-badge]').attr('hidden'), undefined);
+  /* بلا goalsFor لـBrighton: فارق هجومه «غير متاح» ومتوسط هجوم المسابقة
+     من Arsenal صاحب القيمة وحده (8÷4)، ومتوسط الدفاع (2+6)÷(4+4) */
+  assert.equal($d('[data-rate-row="331"] [data-rate-attack-delta]').text().trim(), 'غير متاح');
+  assert.equal($d('[data-rates-avg="attack"]').text().trim(), '2.00');
+  assert.equal($d('[data-rates-avg="defence"]').text().trim(), '1.00');
 });

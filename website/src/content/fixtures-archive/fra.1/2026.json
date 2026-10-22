@@ -1001,31 +1001,6 @@
       "fetchedAt": "2026-10-18T08:03:24.305Z"
     },
     {
-      "id": "401876423",
-      "date": "2026-10-24T15:15:00.000Z",
-      "home": {
-        "id": "179",
-        "name": "Toulouse"
-      },
-      "away": {
-        "id": "170",
-        "name": "Troyes"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261024&limit=500"
-      },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
-    },
-    {
       "id": "401876427",
       "date": "2026-10-24T18:45:00.000Z",
       "home": {
@@ -1074,6 +1049,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261025&limit=500"
       },
       "fetchedAt": "2026-10-18T08:03:24.305Z"
+    },
+    {
+      "id": "401876423",
+      "date": "2026-10-25T16:15:00.000Z",
+      "home": {
+        "id": "179",
+        "name": "Toulouse"
+      },
+      "away": {
+        "id": "170",
+        "name": "Troyes"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261025&limit=500"
+      },
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401876424",

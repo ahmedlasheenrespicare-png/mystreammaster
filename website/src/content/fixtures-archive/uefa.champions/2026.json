@@ -690,18 +690,18 @@
         "name": "Manchester United"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 10875,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915396",
@@ -715,18 +715,18 @@
         "name": "Galatasaray"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 4
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 44142,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915312",
@@ -740,18 +740,18 @@
         "name": "Arsenal"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 75000,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915313",
@@ -765,18 +765,18 @@
         "name": "RB Leipzig"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 73016,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915388",
@@ -790,18 +790,18 @@
         "name": "Lens"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 26023,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915389",
@@ -815,18 +815,18 @@
         "name": "Feyenoord Rotterdam"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 67524,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915390",
@@ -840,18 +840,18 @@
         "name": "Shakhtar Donetsk"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 73352,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915391",
@@ -865,18 +865,18 @@
         "name": "LASK Linz"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 3
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 48985,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915394",
@@ -890,18 +890,18 @@
         "name": "Viking FK"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 33410,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261021&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-10-22T08:38:27.221Z"
     },
     {
       "id": "401915310",

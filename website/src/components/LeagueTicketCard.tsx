@@ -322,13 +322,12 @@ export function MokaTicketBrand() {
   return <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
-/* زوج الأعلام الزخرفية أعلى يسار التذكرة، في حاوية مرنة تتمدد مع عدد
-   الشعارات (فجوة 7px ورؤوس متساوية): نوفا وفق حزمة التوزيع وX يجاورها
-   أينما ظهرت (البقعة نفسها والمساحة نفسها) بطلب تعميمٍ يطابق بدقة ما
-   جرى لتعميم نوفا في #161؛ وفي تذكرة الدوري الفرنسي وحدها يلتصق بهما
-   شريكتا الخدمة ايستار فموكا (بطلب المالك وبمساحة X نفسها) — بنطاقان
-   (static/base/clash) يصونان قاعدة القواعد (لوجوهم على القاعدة دون
-   القمم) */
+/* صف الأعلام الزخرفية في حاوية مرنة تتمدد مع عدد الشعارات (فجوة 7px
+   ورؤوس متساوية): نوفا وفق حزمة التوزيع وX يجاورها أينما ظهرت بمساحتها
+   نفسها، وفي تذكرة الدوري الفرنسي وحدها يلتصق بهما شريكتا الخدمة
+   ايستار فموكا — وبقرار المالك انتقل الصف الأربعي من اليسار إلى
+   **منتصف أعلى التذكرة** (--center) فوق الثلاثية المركّزة في سطرين
+   متوسّطين متتابعين — بنطاقا (static/base/clash) يصونان قاعدة القواعد */
 function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
   leagueId: string;
   scope: "static" | "base" | "clash";
@@ -339,7 +338,7 @@ function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
     : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
   if (!withNova) return null;
   return (
-    <span className="league-ticket-brands">
+    <span className={`league-ticket-brands${leagueId === "fra.1" ? " league-ticket-brands--center" : ""}`}>
       <NovaTicketBrand />
       <XtvTicketBrand />
       {leagueId === "fra.1" ? <><IstarTicketBrand /><MokaTicketBrand /></> : null}
@@ -721,9 +720,10 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       <TicketBrandPair leagueId={leagueId} scope="static" />
       {PLAYER_MAP[leagueId]}
       {/* الثلاثية المتوسّطة (أيقونة البطولة فالخط فعلامة ستريم ماستر)
-          تجلس في رأس كل التذاكر الثابتة حاملةِ حزمة «الكل» — فرنسا
-          وألمانيا وإيطاليا ومصر والسعودية (تعميم المالك بعد #166) */}
-      <div className={`league-ticket-header${ticketWordmark(leagueId, "static") ? " league-ticket-header--brand" : ""}`}>
+          تجلس في رأس كل التذاكر الثابتة حاملةِ حزمة «الكل» — وفي الفرنسية
+          وحدها تنزاح مبطّطًا إضافيًا (--under-brands) تحت صف أعلام
+          السيرفرات الذي انتقل بطلب المالك إلى منتصف أعلى التذكرة */}
+      <div className={`league-ticket-header${ticketWordmark(leagueId, "static") ? " league-ticket-header--brand" : ""}${leagueId === "fra.1" ? " league-ticket-header--under-brands" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
         {ticketWordmark(leagueId, "static") ? <StreamMasterTicketWordmark /> : null}
       </div>

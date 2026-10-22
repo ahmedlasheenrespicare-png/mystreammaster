@@ -455,31 +455,48 @@
 .all-leagues-ticket .league-ticket-body { grid-area: body; }
 .all-leagues-ticket .leagues-ticket-icons { grid-area: icons; }
 
+/* الخلفية السينمائية بعرض الكارت طبقة أولى فحسب: الترويسة (فيفا
+   والثلاثية) والاسم المعدني وصفّ أيقونات البطولات فوقها دوماً —
+   بلا هذه الطبقة يغطّي الملصق ممتلئ الارتفاع عناصرَ النص كما كان
+   يفعل حين يعلو العنقود سطرَ الترويسة سابقاً */
+.all-leagues-ticket .league-ticket-header,
+.all-leagues-ticket .league-ticket-body,
+.all-leagues-ticket .leagues-ticket-icons { z-index: 2; }
+
+/* عنقود النجوم — كبّره المالك ليملأ **عرض التذكرة قدر الإمكان**: ملصق
+   النجوم السبعة بورتريه (843×1038) فيُرسَم بنسبة «التغطية» على مسرح
+   بعرض الكرت وارتفاعه كاملين، ونافذة القصّ الرأسية مثبّتة على صفّ
+   الوجوه (8% من فائض الارتفاع) فتتّسع الوجوه والأكتاف من الحافة إلى
+   الحافة بلا تشويه أبعاد. وعلى هذا الامتلاء صار العنقود خلفيةً
+   سينمائية معتمة (brightness 0.62) لا منافساً للتلال: الوجوه تتّسع
+   واضحةً فالإبهام الفضي للاسم وللثلاثية فوقها يبقى أعلى صوتاً،
+   وحماية القراءة انتقلت من قصّ الارتفاع (92% ثم 72% ف62% في السلسلة
+   السابقة) إلى هذا التعتيم مع القناع وتلاشي الحافة السفلية */
 .all-leagues-ticket-players {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  /* قُصّر الارتفاع من 92% إلى 72% بعد إضافة سطر الترويسة بالثلاثية
-     المتوسّطة (تعميم المالك) فلا يعلو العنقود نصَّ العلامة ولا خطّها،
-     ثم قُصّر مجدداً إلى 62% بعد تعميم المبطّط (--under-brands) الذي
-     أنزل الثلاثية تحت صف الأعلام المتوسّط فوقها — تبقى الرؤوس كلها
-     تحت سطر الترويسة نظيفاً، والقناع يتلاشى كما كان */
-  height: 62%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 8%;
   z-index: 1;
-  filter: drop-shadow(0 0 26px rgba(216, 255, 62, 0.14));
-  mask-image: linear-gradient(180deg, #000 68%, transparent 99%);
-  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 99%);
+  filter: brightness(0.62) drop-shadow(0 0 26px rgba(216, 255, 62, 0.14));
+  mask-image: linear-gradient(180deg, #000 55%, transparent 99%);
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 99%);
 }
 
-/* غطاء معتم فوق العنقود وتحت النص — يحمي تباين الاسم المعدني وسط اللاعبين */
+/* غطاء معتم فوق العنقود وتحت النص — يحمي تباين الاسم المعدني وسط
+   اللاعبين (وبعد أن غدا العنقود خلفية معتمة بـbrightness عاد الغطاء
+   لحجمه الأوّلي الناعم فلا يؤلّف بقعة سوداء صريحة وسط التذكرة) */
 .all-leagues-ticket-veil {
   position: absolute;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: 58%;
-  height: 84%;
-  background: radial-gradient(ellipse at 50% 62%, rgba(5, 5, 7, 0.94) 32%, rgba(5, 5, 7, 0) 72%);
+  width: 62%;
+  height: 86%;
+  background: radial-gradient(ellipse at 50% 62%, rgba(5, 5, 7, 0.82) 30%, rgba(5, 5, 7, 0) 72%);
   z-index: 1;
   pointer-events: none;
 }

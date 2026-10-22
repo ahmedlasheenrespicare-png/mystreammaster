@@ -72,14 +72,16 @@ function AllLeaguesTicketBase() {
         <IstarTicketBrand />
         <MokaTicketBrand />
       </span>
-      {/* الثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة): أيقونة
-          محايدة بالكأس — «كل البطولات» لا شعار بطولة واحد لها — ثم
-          الخط الرأسي فالمربع الدوّار واسم ستريم ماستر؛ وتنزاح مبطّطةً
+      {/* الثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة): شعار
+          الاتحاد الدولي لكرة القدم «FIFA» بطلب المالك — النصّيّ الأزرق
+          الملكي الشفاف من أصول العلامة المحلية — بديلاً عن الكأس المحايدة
+          («كل البطولات» لا شعار بطولة واحد لها والفيفا جامعها الأعلى) —
+          ثم الخط الرأسي فالمربع الدوّار واسم ستريم ماستر؛ وتنزاح مبطّطةً
           (--under-brands) تحت صف الأعلام المتوسّط فوقها كسائر التذاكر
           الحاملة بعد تعميم المركز؛ وظهورها في هيرو الرئيسية يتبع لهذه
           الوحدة ذاتها */}
       <div className="league-ticket-header league-ticket-header--brand league-ticket-header--under-brands">
-        <LeagueIconBadge leagueId="matches" size={60} eager />
+        <LeagueIconBadge leagueId="matches" iconSrc="/images/brand/fifa-ticket.png" size={60} eager />
         <StreamMasterTicketWordmark />
       </div>
       {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
@@ -91,11 +93,11 @@ function AllLeaguesTicketBase() {
           <LeagueIconBadge key={id} leagueId={id} size={46} eager />
         ))}
       </div>
+      {/* المتن: الاسم المعدني الكبير وحده بطلب المالك — سطرا «مواعيد ·
+          نتائج · ترتيب / يُحدَّث كل دقيقة» أُخفيا من هنا فهما مكتوبان
+          بوضوح في متن صفحة المواعيد تحت التذكرة مباشرةً */}
       <div className="league-ticket-body">
         <em>كل البطولات الكبرى</em>
-        مواعيد · نتائج · ترتيب
-        <br />
-        يُحدَّث كل دقيقة
       </div>
     </div>
   );

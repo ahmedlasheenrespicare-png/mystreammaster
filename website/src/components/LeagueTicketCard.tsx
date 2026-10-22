@@ -310,14 +310,16 @@ export function XtvTicketBrand() {
 
 /* لوجو سيرفر «ايستار» — اللافتة الرسمية لهيدر istar-tv.com (نجمة
    ذهبية + iSTAR INTERNATIONAL) بعد فتح خلفيتها السوداء إلى شفافية —
-   تذكرة الدوري الفرنسي حصراً بطلب المالك، وبمساحة X نفسها */
+   دخل أولاً فرنسياً بطلب المالك ثم عمّمه المالك مع موكا على نطاق
+   نوفا/X نفسه حرفياً، وبمساحة X نفسها */
 export function IstarTicketBrand() {
   return <img className="league-ticket-brand-istar" src="/images/brand/istar-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
 /* لوجو سيرفر «موكا» — القرص الأبيض MOKA IPTV من الصفحة الرسمية
-   mokatv.online بعد قصّه قناعاً دائرياً شفاف الحواف — تذكرة الدوري
-   الفرنسي حصراً ويلاصق ايستار يساراً بمساحة X نفسها */
+   mokatv.online بعد قصّه قناعاً دائرياً شفاف الحواف — كشقيقه ايستار:
+   فرنسي أولاً ثم معمّم على نطاق نوفا/X نفسه، يلاصقه يساراً وبمساحة
+   X نفسها */
 export function MokaTicketBrand() {
   return <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
@@ -334,11 +336,11 @@ function hasTicketBrands(leagueId: string, scope: "static" | "base" | "clash", s
 
 /* صف الأعلام الزخرفية في حاوية مرنة تتمدد مع عدد الشعارات (فجوة 7px
    ورؤوس متساوية): نوفا وفق حزمة التوزيع وX يجاورها أينما ظهرت بمساحتها
-   نفسها، وفي تذكرة الدوري الفرنسي وحدها يلتصق بهما شريكتا الخدمة
-   ايستار فموكا — وبقرار المالك الثاني عمّ نقلُ الصف من اليسار إلى
-   **منتصف أعلى التذكرة** على كل حامل له (الجامعة كاملةً + الخمسة
-   الساكنة + أول شريحة من eng/esp/uefa) فوق الثلاثية المركّزة في سطرين
-   متوسّطين متتابعين — التوسيط مدموجٌ في قاعدة CSS نفسها */
+   نفسها، وبقرار المالك الثالث يلتصق بهما شريكتا الخدمة ايستار فموكا
+   على **النطاق نفسه حرفاً** (الجامعة كاملةً + الخمسة الساكنة + أول
+   شريحة من eng/esp/uefa) — وبقراره الثاني عمّ المركز: الصف **متوسّط
+   أعلى كل تذكرة تحمله** فوق الثلاثية المركّزة في سطرين متوسّطين
+   متتابعين — التوسيط مدموجٌ في قاعدة CSS نفسها */
 function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
   leagueId: string;
   scope: "static" | "base" | "clash";
@@ -349,7 +351,8 @@ function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
     <span className="league-ticket-brands">
       <NovaTicketBrand />
       <XtvTicketBrand />
-      {leagueId === "fra.1" ? <><IstarTicketBrand /><MokaTicketBrand /></> : null}
+      <IstarTicketBrand />
+      <MokaTicketBrand />
     </span>
   );
 }

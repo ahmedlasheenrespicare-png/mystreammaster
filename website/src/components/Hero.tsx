@@ -1,105 +1,55 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket from "./AllLeaguesTicket";
-import { ServerLink } from "./ServerIcon";
+import { ServerIcon } from "./ServerIcon";
 import { PRICING_PLANS } from "../data";
-import { FEATURED_CLASHES } from "./LeagueTicketCard";
 
 /* =========================================================================
-   بيانات الماكيت — من مصادر الموقع نفسها لا من نصوص مختلقة
+   تبويبات الماكيت — السيرفرات الأربعة من `PRICING_PLANS`
    -------------------------------------------------------------------------
-   • المواصفات (الجودة، مانع التقطيع، الأجهزة، عدد القنوات وVOD) تُقرأ من
-     باقة نوفا في `data.ts`: رقم واحد لا يتضارب بين الماكيت وبطاقات الأسعار.
-   • «مباراة الليلة» هي المواجهة الأولى المميّزة في `FEATURED_CLASHES`
-     (باريس سان جيرمان × برشلونة) بشعاراتها وأسمائها الحقيقية — نفس المصدر
-     الذي يغذّي تذكرة المواعيد فوق الماكيت.
-   • أسماء القنوات في اللوحة الجانبية أسماء عامة محايدة (قناة أفلام 1 …)
-     بلا أي إيحاء بقنوات قد لا يملكها المزود.
+   كل تبويب = سيرفر حقيقي: اسمه وتاجه وعدد قنواته وجودته وأجهزته وسعره
+   السنوي ورابط صفحته. لا نص مكتوب يدوياً هنا، فما يظهر في الماكيت هو نفسه
+   ما يظهر في بطاقات الأسعار وفي صفحات /nova و/istar و/moka و/x.
+   الألوان ألوان عرض (توهّج خلفي فقط) لا ادعاء بهوية بصرية للمزود.
 ========================================================================= */
-const PLAN = PRICING_PLANS.find((p) => p.serverCode === "nova") ?? PRICING_PLANS[0];
-const LIVE_CLASH = FEATURED_CLASHES["uefa.champions"][0];
+const SERVER_AR: Record<string, string> = { nova: "نوفا", istar: "إيستار", moka: "موكا", x: "X" };
 
-/* صور الشاشة — WebP بعرضين مع srcset (بدل JPEG 1376×768 الثقيل) */
-const slideImg = (base: string) => ({
-  src: `images/hero/${base}-700.webp`,
-  srcSet: `images/hero/${base}-700.webp 700w, images/hero/${base}-1320.webp 1320w`,
-  sizes: "(min-width: 768px) 660px, calc(100vw - 40px)",
-});
-
-type Slide = {
-  id: string;
-  tab: string;
-  chip: string;
-  title: ReactNode;
-  sub: string;
-  overlayTitle: string;
-  overlaySub: string;
-  qualityTag: string;
-  img: ReturnType<typeof slideImg>;
-  alt: string;
+/* توهّج كل سيرفر (تدرّج خلفي زخرفي فقط) */
+const SERVER_GLOW: Record<string, string> = {
+  nova: "radial-gradient(circle at 70% 0%, rgba(43,78,255,0.55), transparent 65%)",
+  istar: "radial-gradient(circle at 70% 0%, rgba(255,92,77,0.5), transparent 65%)",
+  moka: "radial-gradient(circle at 70% 0%, rgba(22,163,74,0.45), transparent 65%)",
+  x: "radial-gradient(circle at 70% 0%, rgba(216,255,62,0.35), transparent 65%)",
 };
 
-const SLIDES: Slide[] = [
-  {
-    id: "live",
-    tab: "البث المباشر",
-    chip: "مباشر الآن",
-    title: (
-      <span className="inline-flex items-center justify-center gap-2 flex-wrap">
-        <img
-          src={LIVE_CLASH.home.crest}
-          alt=""
-          width={26}
-          height={26}
-          className="w-[22px] h-[22px] md:w-[26px] md:h-[26px] object-contain"
-          loading="lazy"
-        />
-        {LIVE_CLASH.home.name}
-        <span className="opacity-40">×</span>
-        {LIVE_CLASH.away.name}
-        <img
-          src={LIVE_CLASH.away.crest}
-          alt=""
-          width={26}
-          height={26}
-          className="w-[22px] h-[22px] md:w-[26px] md:h-[26px] object-contain"
-          loading="lazy"
-        />
-      </span>
-    ),
-    sub: `دوري أبطال أوروبا — ${LIVE_CLASH.eyebrow}`,
-    overlayTitle: `${LIVE_CLASH.home.mono} × ${LIVE_CLASH.away.mono}`,
-    overlaySub: "جودة تلقائية حتى 4K — بدون تقطيع",
-    qualityTag: "H.265",
-    img: slideImg("slide-sports"),
-    alt: "شاشة بث مباشر لمباراة في دوري أبطال أوروبا",
-  },
-  {
-    id: "vod",
-    tab: "الأفلام والمسلسلات",
-    chip: "مكتبة VOD",
-    title: PLAN.vodCount,
-    sub: "إصدارات تُضاف يومياً — ترجمة فورية",
-    overlayTitle: "أفلام ومسلسلات بجودة عالية",
-    overlaySub: "مكتبة تتجدد — تُشاهد متى شئت",
-    qualityTag: PLAN.quality.split(" / ")[1] ?? "4K",
-    img: slideImg("slide-cinema"),
-    alt: "شاشة سينما منزلية تعرض فيلماً",
-  },
-  {
-    id: "devices",
-    tab: "الأجهزة",
-    chip: "التشغيل",
-    title: "كل شاشاتك في حساب واحد",
-    sub: "Samsung · LG · Android TV · Apple TV",
-    overlayTitle: "التطبيق على شاشتك",
-    overlaySub: `حساب واحد — ${PLAN.devices}`,
-    qualityTag: "FHD / 4K",
-    img: slideImg("slide-devices"),
-    alt: "تلفزيون ذكي في غرفة معيشة",
-  },
-];
+const SERVER_TABS = (["nova", "istar", "moka", "x"] as const)
+  .map((code) => {
+    const plan = PRICING_PLANS.find((p) => p.serverCode === code);
+    if (!plan) return null;
+    return {
+      code,
+      name: SERVER_AR[code],
+      tag: plan.tag,
+      quality: plan.quality,
+      channelsCount: plan.channelsCount,
+      vodCount: plan.vodCount,
+      devices: plan.devices,
+      antiFreeze: plan.antiFreeze,
+      /* السنة هي المدة الوحيدة المعروضة للبيع (AVAILABLE_DURATIONS) */
+      price: plan.prices["12"].USD,
+      glow: SERVER_GLOW[code],
+    };
+  })
+  .filter((t): t is NonNullable<typeof t> => t !== null);
+
+/* شارة «عدد القنوات» العائمة — أعلى رقم بين السيرفرات المعروضة، مقروء من
+   الباقات نفسها فلا يتضارب الرقم العائم مع ما تعرضه التبويبات */
+const channelNum = (v: string) => Number(v.replace(/[^\d]/g, ""));
+const MEDIA_BADGE = SERVER_TABS.reduce(
+  (best, t) => (channelNum(t.channelsCount) > channelNum(best) ? t.channelsCount : best),
+  SERVER_TABS[0]?.channelsCount ?? ""
+);
 
 /* قنوات اللوحة الجانبية — أسماء عامة محايدة (كما اختار المالك) */
 const SIDE_CHANNELS = [
@@ -113,70 +63,27 @@ const SIDE_CHANNELS = [
   { n: "قناة الموسيقى 1", live: false },
 ];
 
-/* بطاقة مواصفات الخدمة — كل سطر من `data.ts` لا من وصف تصميمي */
-const SPECS = [
-  { label: "الجودة", value: PLAN.quality },
-  { label: "مانع التقطيع", value: PLAN.antiFreeze },
-  { label: "الأجهزة", value: PLAN.devices },
-  { label: "الدعم", value: "24/7" },
-];
-
-const TAB_MS = 6500;
-
 /* =========================================================================
-   ماكيت المشاهدة — لوحة تشغيل فعلية بثلاثة تبويبات
+   ماكيت المشاهدة — لوحة مقارنة السيرفرات داخل شاشة
    -------------------------------------------------------------------------
-   • تبويبات تعمل بالفأرة/اللمس/لوحة المفاتيح (role=tablist/tab/tabpanel).
-   • نقاط تحكّم أسفل الشاشة تُثبّت أي تبويب، وإيقاف تلقائي عند:
-     مرور المؤشر، الخروج من الشاشة (IntersectionObserver)، إخفاء التبويب،
-     أو تفضيل تقليل الحركة (حينها لا يوجد تدوير إطلاقاً).
-   • واجهة المتصفح واللوحة الجانبية زخرفية: aria-hidden، فلا يقرأ قارئ
-     الشاشة أسماء قنوات نموذجية ولا أرقاماً غير حقيقية.
-   • «معاينة توضيحية» صريحة: الشاشة تعرض صورة معاينة لا بثاً فعلياً.
+   • أربعة تبويبات تعمل بالفأرة/اللمس/لوحة المفاتيح (role=tablist/tab/tabpanel).
+   • اختيار يدوي بالكامل: مقارنة أسعار لا تُدار بمؤقّت، فلا يتبدّل السعر
+     تحت يد الزائر أثناء القراءة.
+   • كل ما يظهر — القنوات، الجودة، مانع التقطيع، الأجهزة، السعر، صفحة
+     السيرفر — يأتي من نفس التبويب المختار (لوحة جانبية + زر متزامنان).
+   • الشاشة تصميم بلا صور: توهّج لوني + شعار المزود + شرائح مواصفات.
+   • واجهة المتصفح واللوحة الجانبية والقائمة زخرفية (aria-hidden).
 ========================================================================= */
 function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const hostRef = useRef<HTMLDivElement | null>(null);
-  const current = SLIDES[active];
-
-  /* تدوير التبويبات — يتوقف كلياً مع تقليل الحركة، ويحترم الإيقاف والرؤية */
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let onScreen = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        onScreen = entries.some((e) => e.isIntersecting);
-      },
-      { threshold: 0.25 }
-    );
-    if (hostRef.current) io.observe(hostRef.current);
-
-    const t = window.setInterval(() => {
-      if (paused || !onScreen || document.hidden) return;
-      setActive((i) => (i + 1) % SLIDES.length);
-    }, TAB_MS);
-
-    return () => {
-      io.disconnect();
-      window.clearInterval(t);
-    };
-  }, [paused]);
-
-  const tabId = (i: number) => `hero-tab-${SLIDES[i].id}`;
+  const tab = SERVER_TABS[active];
+  const tabId = (i: number) => `hero-tab-${SERVER_TABS[i].code}`;
 
   return (
     <div
-      ref={hostRef}
       role="group"
-      aria-label="معاينة واجهة المشاهدة"
+      aria-label="مقارنة سيرفرات المشاهدة"
       className="relative rounded-[24px] overflow-hidden border border-black/10 bg-white shadow-[0_60px_120px_-30px_rgba(0,0,0,0.35)]"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
     >
       {/* شريط المتصفح — زخرفي */}
       <div
@@ -191,19 +98,19 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
         <div className="flex-1 flex justify-center">
           <div className="bg-white border border-black/10 rounded-full px-4 py-1 text-[12px] font-bold text-black/60 flex items-center gap-2 w-full max-w-sm">
             <span className="w-2 h-2 rounded-full bg-[#ff5c4d] animate-pulse-soft" />
-            stream-master.pro — معاينة واجهة المشاهدة
+            stream-master.pro — مقارنة السيرفرات
           </div>
         </div>
         <span className="inline-flex items-center gap-1 text-[11px] font-black bg-[#0b0b0f] text-[#d8ff3e] px-3 py-1 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#d8ff3e]" /> {PLAN.channelsCount}
+          <span className="w-1.5 h-1.5 rounded-full bg-[#d8ff3e]" /> 4 سيرفرات
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr_230px]">
+      <div className="grid grid-cols-1 md:grid-cols-[190px_1fr_230px]">
         {/* لوحة القنوات (يمين في RTL) — زخرفية */}
         <div aria-hidden="true" className="border-s border-black/10 bg-[#faf9f6] p-3 hidden md:block">
           <p className="text-[10px] font-black tracking-[0.18em] uppercase text-black/40 mb-3 px-1">
-            قنوات مباشرة — {PLAN.channelsCount}
+            قنوات مباشرة
           </p>
           <div className="space-y-1.5">
             {SIDE_CHANNELS.map((e, i) => (
@@ -224,7 +131,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
           </div>
           <div className="mt-4 rounded-2xl bg-gradient-to-br from-[#2b4eff] to-[#7c5cff] text-white p-4">
             <p className="text-[12px] font-black">مكتبة VOD</p>
-            <p className="text-[11px] opacity-80 leading-snug mt-1">{PLAN.vodCount} — تتجدد يومياً</p>
+            <p className="text-[11px] opacity-80 leading-snug mt-1">{tab.vodCount} — تتجدد يومياً</p>
           </div>
         </div>
 
@@ -245,111 +152,121 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
           </div>
 
           <div className="rounded-2xl bg-white border border-black/10 overflow-hidden">
-            {/* تبويبات تعمل */}
+            {/* تبويبات السيرفرات */}
             <div
               role="tablist"
-              aria-label="أقسام المعاينة"
+              aria-label="اختر السيرفر"
               className="flex gap-1 p-2 border-b border-black/[0.07] bg-[#faf9f6] overflow-x-auto"
             >
-              {SLIDES.map((s, i) => (
+              {SERVER_TABS.map((t, i) => (
                 <button
-                  key={s.id}
+                  key={t.code}
                   id={tabId(i)}
                   role="tab"
                   type="button"
                   aria-selected={active === i}
-                  aria-controls={`hero-panel-${s.id}`}
+                  aria-controls={`hero-panel-${t.code}`}
                   tabIndex={active === i ? 0 : -1}
                   onClick={() => setActive(i)}
                   onKeyDown={(e) => {
                     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
                     e.preventDefault();
-                    setActive((prev) => (prev + (e.key === "ArrowLeft" ? 1 : SLIDES.length - 1)) % SLIDES.length);
+                    setActive((prev) => (prev + (e.key === "ArrowLeft" ? 1 : SERVER_TABS.length - 1)) % SERVER_TABS.length);
                   }}
-                  className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-black transition cursor-pointer ${
-                    active === i
-                      ? "bg-[#0b0b0f] text-white"
-                      : "text-black/55 hover:text-black hover:bg-black/[0.06]"
+                  className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-black transition cursor-pointer ${
+                    active === i ? "bg-[#0b0b0f] text-white" : "text-black/55 hover:text-black hover:bg-black/[0.06]"
                   }`}
                 >
-                  {s.tab}
+                  <ServerIcon code={t.code} size={16} />
+                  {t.name}
                 </button>
               ))}
             </div>
 
             <div
-              key={current.id}
-              id={`hero-panel-${current.id}`}
+              key={tab.code}
+              id={`hero-panel-${tab.code}`}
               role="tabpanel"
               aria-labelledby={tabId(active)}
               className="p-4 md:p-6"
             >
               <div className="flex items-center justify-between gap-3 mb-3">
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-black bg-[#d8ff3e] px-2.5 py-1 rounded-full">
-                  {current.id === "live" && <span className="w-1.5 h-1.5 rounded-full bg-[#0b0b0f] animate-pulse-soft" />}
-                  {current.chip}
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0b0b0f] animate-pulse-soft" />
+                  {tab.tag}
                 </span>
-                <span className="text-[10.5px] font-bold text-black/40 truncate">{current.sub}</span>
+                <span className="text-[10.5px] font-bold text-black/40 truncate">سيرفر {tab.name}</span>
               </div>
 
-              <div className="font-display font-black text-lg md:text-[26px] leading-[1.2] tracking-tight">
-                {current.title}
-              </div>
-
-              {/* شاشة العرض */}
-              <div className="relative mt-4 rounded-xl overflow-hidden aspect-video bg-black">
-                <img
-                  src={current.img.src}
-                  srcSet={current.img.srcSet}
-                  sizes={current.img.sizes}
-                  alt={current.alt}
-                  loading={active === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover"
+              {/* الشاشة — تصميم بلا صور: توهّج + شعار المزود + شرائح مواصفات */}
+              <div className="relative mt-1 rounded-xl overflow-hidden aspect-video bg-[#0b0b0f] text-white">
+                <div className="absolute inset-0" style={{ backgroundImage: tab.glow }} />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 opacity-[0.07]"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+                    backgroundSize: "34px 34px",
+                  }}
                 />
-                <div className="absolute top-2 start-2 bg-[#ff5c4d] text-white text-[10px] font-black px-2 py-0.5 rounded flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse-soft" />
-                  {current.id === "live" ? "مباشر" : current.chip}
-                </div>
-                <div className="absolute top-2 end-2 glass-dark text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                  {current.qualityTag}
-                </div>
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent px-3 pb-2 pt-6 text-right">
-                  <div className="text-[12px] font-black text-white leading-tight">{current.overlayTitle}</div>
-                  <div className="text-[10.5px] text-white/70 font-medium truncate">{current.overlaySub}</div>
+                <div className="relative h-full p-4 md:p-6 flex flex-col justify-between">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-black bg-white/10 border border-white/15 px-2.5 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#3effe0] animate-pulse-soft" />
+                      جاهز للتفعيل
+                    </span>
+                    <span className="text-[10px] font-black bg-[#d8ff3e] text-[#0b0b0f] px-2 py-1 rounded-full">
+                      سنة كاملة
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-3 md:gap-4">
+                    <span className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white grid place-items-center p-1.5 md:p-2 shadow-lg shrink-0">
+                      <ServerIcon code={tab.code} size={32} />
+                    </span>
+                    <div className="min-w-0 text-start">
+                      <p className="font-display font-black text-lg md:text-2xl leading-tight">
+                        سيرفر {tab.name}
+                      </p>
+                      <p className="text-[10px] md:text-[11.5px] text-white/60 font-medium">
+                        تفعيل خلال دقائق — على كل أجهزتك
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {[tab.channelsCount, tab.quality, tab.devices].map((chip) => (
+                      <span
+                        key={chip}
+                        className="text-[10px] font-bold bg-white/10 border border-white/15 rounded-full px-2 py-1"
+                      >
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* التحكّم + زر التحويل */}
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5">
-                  {SLIDES.map((s, i) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      aria-pressed={active === i}
-                      aria-label={`عرض ${s.tab}`}
-                      onClick={() => setActive(i)}
-                      className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                        active === i ? "w-5 bg-[#0b0b0f]" : "w-1.5 bg-black/20 hover:bg-black/40"
-                      }`}
-                    />
-                  ))}
-                  <span className="ms-1.5 text-[10px] font-bold text-black/35">معاينة توضيحية</span>
-                </div>
-                <div className="flex items-center gap-2">
+              {/* السعر + التحويل — متزامنان مع التبويب */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+                <p className="text-[13px] font-black">
+                  <span className="text-[19px]">{tab.price}$</span>
+                  <span className="text-black/45 font-bold"> / سنة</span>
+                </p>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={onOpenTrial}
-                    className="inline-flex items-center gap-1.5 bg-[#0b0b0f] text-white text-[11.5px] font-black px-3.5 py-2 rounded-full cursor-pointer hover:bg-[#1c1c22] transition"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 bg-[#0b0b0f] text-white text-[11.5px] font-black px-3.5 py-2 rounded-full cursor-pointer hover:bg-[#1c1c22] transition whitespace-nowrap"
                   >
                     <IconZap className="w-3.5 h-3.5 text-[#d8ff3e]" /> جرّب 6 ساعات مجاناً
                   </button>
                   <a
-                    href="#pricing"
-                    className="inline-flex items-center gap-1 text-[11.5px] font-black text-black/60 hover:text-black transition"
+                    href={`/${tab.code}/`}
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1 text-[11.5px] font-black text-black/60 hover:text-black transition whitespace-nowrap"
                   >
-                    كل الباقات <IconArrow className="w-3.5 h-3.5" />
+                    صفحة {tab.name} <IconArrow className="w-3.5 h-3.5" />
                   </a>
                 </div>
               </div>
@@ -357,13 +274,20 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
           </div>
         </div>
 
-        {/* لوحة المواصفات (يسار في RTL) — من data.ts */}
+        {/* لوحة المواصفات (يسار في RTL) — تتزامن مع التبويب المختار */}
         <div className="border-e border-black/10 bg-white p-4 hidden md:block">
           <p className="text-[10px] font-black tracking-[0.18em] uppercase text-black/40 mb-3">
-            مواصفات الخدمة
+            مواصفات سيرفر {tab.name}
           </p>
           <ul className="space-y-2.5">
-            {SPECS.map((s) => (
+            {[
+              { label: "القنوات", value: tab.channelsCount },
+              { label: "مكتبة VOD", value: tab.vodCount },
+              { label: "الجودة", value: tab.quality },
+              { label: "مانع التقطيع", value: tab.antiFreeze },
+              { label: "الأجهزة", value: tab.devices },
+              { label: "الدعم", value: "24/7" },
+            ].map((s) => (
               <li key={s.label}>
                 <p className="text-[10.5px] font-bold text-black/40">{s.label}</p>
                 <p className="text-[11.5px] font-black leading-snug">{s.value}</p>
@@ -371,20 +295,18 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
             ))}
           </ul>
 
-          <p className="text-[10px] font-black tracking-[0.18em] uppercase text-black/40 mt-5 mb-2">
-            سيرفرات المزود
-          </p>
-          <div className="grid grid-cols-2 gap-x-2 gap-y-2">
-            {(["nova", "istar", "moka", "x"] as const).map((code) => (
-              <ServerLink
-                key={code}
-                code={code}
-                label={code === "x" ? "X" : code === "nova" ? "نوفا" : code === "istar" ? "إيستار" : "موكا"}
-                size={18}
-                className="text-[11px] font-black hover:opacity-70"
-              />
-            ))}
-          </div>
+          <a
+            href={`/${tab.code}/`}
+            className="mt-4 flex items-center justify-center gap-1.5 bg-[#0b0b0f] text-white text-[12px] font-black py-2.5 rounded-full hover:bg-[#1c1c22] transition"
+          >
+            اشترك في {tab.name} — {tab.price}$ <IconArrow className="w-3.5 h-3.5" />
+          </a>
+          <a
+            href="#pricing"
+            className="mt-2 flex items-center justify-center gap-1 text-[11.5px] font-black text-black/55 hover:text-black transition"
+          >
+            مقارنة كل الباقات
+          </a>
 
           <div className="mt-4 rounded-xl bg-[#faf9f6] border border-black/10 p-3 text-[11px] font-medium text-black/60 leading-snug text-right">
             يعمل على Smart TV، أندرويد، آبل، وكمبيوتر.
@@ -531,7 +453,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             <MouseParallax factor={-0.008} className="max-w-full">
               <div data-hero-badge="channels" className="flex items-center gap-2 bg-[#0b0b0f] text-white rounded-2xl shadow-lg px-4 py-3 sm:rotate-[3deg] motion-safe:animate-float-delayed">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#3effe0] animate-pulse-soft" />
-                <p className="text-[13px] font-black">{PLAN.channelsCount}</p>
+                <p className="text-[13px] font-black">{MEDIA_BADGE}</p>
               </div>
             </MouseParallax>
           </div>

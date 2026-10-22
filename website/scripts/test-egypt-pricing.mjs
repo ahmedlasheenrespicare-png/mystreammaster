@@ -30,8 +30,8 @@ const sourceRows = [...pricingSource.matchAll(
 
 const hasPrices = sourceRows.some((r) => Object.values(r.prices).some((p) => p !== null));
 
-test('ملف الأسعار المصري يحتوي السيرفرات الأربعة بترتيب معلن', () => {
-  assert.deepEqual(sourceRows.map((r) => r.code), ['nova', 'istar', 'moka', 'x']);
+test('ملف الأسعار المصري يقتصر على سيرفري العرض: نوفا ثم X', () => {
+  assert.deepEqual(sourceRows.map((r) => r.code), ['nova', 'x']);
 });
 
 test('كل سعر في ملف الأسعار عدد صحيح موجب', () => {
@@ -72,6 +72,14 @@ test('جدول الأسعار يُرسم فقط بعد وصول الأرقام،
   assert.equal(hasTable, true, 'الأسعار وصلت والجدول غير مرسوم');
   assert.equal(hasHeading, true, 'عنوان قسم الأسعار غائب مع وجود الجدول');
   const fmt = (n) => `${n.toLocaleString('en-US')} ج.م`;
+  /* نسخة الجوال (بطاقات) يجب أن تعرض الأسعار نفسها بلا تمرير أفقي */
+  for (const row of sourceRows) {
+    for (const price of Object.values(row.prices)) {
+      if (price === null) continue;
+      const occurrences = egyptHtml.split(fmt(price)).length - 1;
+      assert.ok(occurrences >= 2, `السعر ${price} يجب أن يظهر في جدول الحاسب وبطاقات الجوال`);
+    }
+  }
   for (const row of sourceRows) {
     for (const price of Object.values(row.prices)) {
       if (price === null) continue;

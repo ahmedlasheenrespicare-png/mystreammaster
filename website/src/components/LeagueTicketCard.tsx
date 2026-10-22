@@ -66,6 +66,13 @@ export interface FeaturedClash {
      بايرن/أرسنال/تشيلسي/توتنهام/إيفرتون من مصدر أيقونات الموقع نفسه
      (ESPN CDN كما في بطاقات المباريات) مع بديل الحرفين المحلي
      إن تعذّر التحميل */
+/* نسخ الاحتفال المخزّنة (‎-celebration / ‎-phone / ‎-playstation بحسب قاعدة
+   التسمية في images/players/README.md) تحمل صفّ التحريك الحيّ — نبضة زوم
+   خفيفة تبقى القدم مثبته وتتجمد مع تفضيل تقليل الحركة. التحديد باسم الملف
+   لا باسم اللاعب يُعمّم على كل احتفالات المستقبل بالقاعدة نفسها */
+const celebrationClass = (src: string): string =>
+  /-(celebration|phone|playstation)\.png$/.test(src) ? " league-ticket-player--celebrate" : "";
+
 export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
   "uefa.champions": [
     {
@@ -82,7 +89,7 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
         mono: "برم",
         tokens: ["barcelona", "برشلونة", "بارسلونة"],
       },
-      homePlayer: "/images/players/fra-dembele.png",
+      homePlayer: "/images/players/fra-dembele-phone.png",
       awayPlayer: "/images/players/esp-yamal.png",
     },
     {
@@ -512,8 +519,8 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
       <TicketShell />
       {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
           ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد */}
-      <img className="league-ticket-player league-ticket-player--left" src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <img className="league-ticket-player league-ticket-player--right" src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      <img className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      <img className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
           بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي
           تُبدي أيقونتها هنا — وقمم eng/esp/uefa تبقى نقيةً بطلبه.

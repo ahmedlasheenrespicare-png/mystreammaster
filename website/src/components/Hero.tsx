@@ -358,8 +358,11 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        {/* العنوان الرئيسي — كشف سطر بسطر من خلف قناع */}
-        <h1 className="mt-6 font-display font-black tracking-tight leading-[1.12] text-[11.5vw] sm:text-[56px] md:text-[76px] lg:text-[84px]">
+        {/* العنوان الرئيسي — كشف سطر بسطر من خلف قناع
+            حجم الجوال مخفّض إلى 9vw (كان 11.5vw) للسطرين معاً: الكلمة المتناوبة
+            و«كل ما تحب» في السطر الأول، و«بجودة 4K وبلا تقطيع» في الثاني.
+            من sm (640px) فصاعداً تبقى الأحجام كما هي تماماً. */}
+        <h1 className="mt-6 font-display font-black tracking-tight leading-[1.12] text-[9vw] sm:text-[56px] md:text-[76px] lg:text-[84px]">
           <LineReveal
             threshold={0.3}
             step={130}

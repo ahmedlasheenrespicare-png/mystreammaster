@@ -582,6 +582,14 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
   for (const text of await strip.locator('.ticket-flip__txt').allTextContents()) {
     expect(text).toMatch(/^[٠-٩]$/);
   }
+  /* بطلب المالك: خانتَا كل إطار كانتا تظهران معكوستين (الحاوية تورث
+     اتجاه الصفحة rtl فتصفّ البطاقتين من اليمين) — الإطار مثبّت ltr
+     اتجاهاً محسوباً، وبطاقة العشرات تسبق الآحاد بصرياً يساراً: الرقم
+     مقطع سياقي ثنائي يُقرأ من أكبر خانة يسارها كما في أسطر العربية */
+  const dayPair = strip.locator('.ticket-flip__pair').first();
+  expect(await dayPair.evaluate((el: HTMLElement) => getComputedStyle(el).direction), 'pair direction frozen ltr').toBe('ltr');
+  const digitXs = await dayPair.locator('.ticket-flip__digit').evaluateAll((els: HTMLElement[]) => els.map(el => el.getBoundingClientRect().x));
+  expect(digitXs[1]).toBeGreaterThan(digitXs[0]);
 });
 
 test('french league ticket stacks its four server brands centered above the centered wordmark trio', async ({ page }) => {

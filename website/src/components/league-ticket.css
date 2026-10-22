@@ -328,6 +328,10 @@
    DOM وaria-hidden على التذكرة محفوظان) */
 .league-ticket-brand-link { display: inline-flex; pointer-events: auto; }
 
+/* وأيقونة الثلاثية (شعار الفيفا على أساس الجامعة) رابط لصفحة «مواعيد
+   المباريات» بنفس القاعدة — مسار اللمعة نفسه بلا تنسيق إضافي */
+.league-ticket-badge-link { display: inline-flex; pointer-events: auto; }
+
 /* وحيثما جاور الصفُّ المتوسّطُ الثلاثيةَ المتوسّطةَ تنزاح مبطّطةً
    إضافيًا (50px بدل 22px) فلا يصطدم السطران المركزيان المتتابعان —
    معمّمٌ مع التوسيط على كل حامل للصف: الخمسة الساكنة وأساس المنزلقات
@@ -521,6 +525,36 @@
 /* كل أيقونة في الصف رابط لصفحة هبوط بطولتها بطلب المالك — نفس قاعدة
    روابط الأعلام: نقرة فأرة فحسب داخل الحيّز الزخرفي */
 .leagues-ticket-icon-link { display: inline-flex; pointer-events: auto; border-radius: inherit; }
+
+/* ── لمعة الاسم المعدني الليمونية — أساس التذكرة الجامعة ─────────────
+   بطلب المالك: «كل البطولات الكبرى» يعلوها شعاع ليموني متحرك مستوحى من
+   «shiny text» على uiverse.io/devkatyall/spicy-mule-43 (رخصة MIT —
+   بالإلهام لا الحرفية): شريط قطري ضيّق شفاف الحواف مقصوص بالنص نفسه
+   فوق التدرّج المعدني الأصلي، حجمه 220% يعادل عرض الاسم فينطلق من خلف
+   الحافة اليمنى إلى اليمنى كلياً خلال دورة 4.8 ثوانٍ بإيقاع المرجع
+   نفسه (إمساك 12% ثم انزلاق ثم هدوء حتى النهاية) — بلا أي عنصر زائد
+   ولا خاصية غير مدعومة: موضع الخلفية يعمل على الجوال والمكتب سواءً.
+   (المحدد مضاعف الدرجة بالأب عمداً: اختزال background في قاعدة
+   .league-ticket-body em بدرجتها الأعلى يمسح كل خصائص الصورة بلا
+   استثناء — كان ذلك يخفي طبقة اللمعة كلياً قبل هذا التقويم) */
+.all-leagues-ticket .all-leagues-ticket-name {
+  background-image:
+    linear-gradient(115deg, transparent 42%, rgba(216, 255, 62, 0.82) 50%, transparent 58%),
+    linear-gradient(45deg, #0b0b0f 4%, #f6f4ec 50%, #0b0b0f 96%);
+  background-size: 220% 100%, 100% 100%;
+  background-position: 110% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: all-leagues-ticket-name-shine 4.8s linear infinite;
+}
+
+@keyframes all-leagues-ticket-name-shine {
+  0%, 12% { background-position: 110% 0, 0 0; }
+  46% { background-position: -10% 0, 0 0; }
+  100% { background-position: -10% 0, 0 0; }
+}
 
 /* ==========================================================================
    منصة أبطال أوروبا المنزلقة — تذكرتان بتصميم واحد، تبديل تلقائي 5 ثوانٍ
@@ -808,4 +842,6 @@
   .ticket-flip__flap { display: none; }
   /* حركة مربّع علامة الفرنسية تسكن تقديراً لتفضيل السكون */
   .league-ticket-wordmark-badge { animation: none; }
+  /* ولمعة الاسم الليمونية تثبت كذلك تقديراً للتفضيل نفسه */
+  .all-leagues-ticket .all-leagues-ticket-name { animation: none; }
 }

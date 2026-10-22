@@ -846,21 +846,22 @@ test('universal ticket metallic name carries an animated lime shine that keeps s
   await expect(name, 'metallic name present').toHaveCount(1);
   /* 1) احترام تفضيل السكون (إعداد العائلة كلها مجبر على reduce) */
   await expect(name).toHaveCSS('animation-name', 'none');
-  /* 2) بلا ذلك التفضيل: اسم الدورة المحسوب هو مسح اللمعة — والأهم أن
-     موضع الخلفية المقصوصة **يتبدّل فعلاً** بين عينتين زمنيتين على
-     عرض سطح المكتب وعرض الجوال سواءً (الشعاع يتحرك حقاً على الجوال) */
+  /* 2) بلا ذلك التفضيل: اسم الدورة المحسوب هو مسح اللمعة — إلزامياً على
+     عرض الجوال أيضاً كما اشترط المالك (أي وسيط يعطّلها تحت 700px يُسقط
+     هذا التوكيد فوراً) — والأهم أن موضع الخلفية المقصوصة **يتبدّل فعلاً**
+     بين عينات زمنية على عرض سطح المكتب وعرض الجوال سواءً */
   for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     const animName = await name.evaluate((el: HTMLElement) => getComputedStyle(el).animationName);
-    expect(animName, `${viewport.width}px: shine animation engaged`).toBe('all-leagues-ticket-name-shine');
+    expect(animName, `${viewport.width}px: shine animation engaged — mandatory on mobile`).toBe('all-leagues-ticket-name-shine');
     /* والأهم: موضع الخلفية المقصوصة **يتبدّل فعلاً** خلال الدورة —
-       استقراء دوري يقاطع عند أول تبديل مهلة قدرها 5.25 ثانية (الدورة
-       4.8 ثوانٍ بإمساكٍ افتتاحي وهدوءٍ ختامي تشريطيين، فالعينتان
-       الثابتتان قد تقعان معاً في الطور الهادئ كما في أول تشغيل) */
+       استقراء دوري يقاطع عند أول تبديل بمهلة 10 ثوانٍ (الدورة 8 ثوانٍ
+       بطلب المالك سيراً أبطأ، بإمساك افتتاحي «5%» وهدوء ختامي «30%»
+       فالعينة الثابتة قد تقع في طور هادئ دون تبدّل ظاهر) */
     const posInitial = await name.evaluate((el: HTMLElement) => getComputedStyle(el).backgroundPosition);
     let shineMoved = false;
-    for (let tries = 0; tries < 21 && !shineMoved; tries++) {
+    for (let tries = 0; tries < 40 && !shineMoved; tries++) {
       await page.waitForTimeout(250);
       const posNow = await name.evaluate((el: HTMLElement) => getComputedStyle(el).backgroundPosition);
       shineMoved = posNow !== posInitial;

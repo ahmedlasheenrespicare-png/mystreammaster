@@ -1,3 +1,4 @@
+import { ServerLink } from "./ServerIcon";
 import { useState } from "react";
 import { IconArrow, IconCheck, IconQuote, IconSparkles, IconZap } from "./Icons";
 import { PRICING_PLANS, TESTIMONIALS } from "../data";
@@ -170,8 +171,13 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
               <span className="block text-[13px] font-black text-[#2b4eff] uppercase tracking-[0.2em]">
                 الترشيح المثالي لك
               </span>
-              <h3 className="font-display font-black text-[26px] sm:text-[34px] tracking-tight mt-1">
-                {recommendedPlan.serverName}
+              <h3 className="font-display font-black text-[26px] sm:text-[34px] tracking-tight mt-1 flex items-center justify-center gap-2.5">
+                <ServerLink
+                  code={recommendedPlan.serverCode}
+                  label={recommendedPlan.serverName}
+                  size={38}
+                  className="justify-center hover:underline underline-offset-4"
+                />
               </h3>
               <p className="text-[15px] text-black/60 max-w-[560px] mx-auto mt-2.5 leading-relaxed">
                 {recommendedPlan.description}

@@ -1,3 +1,4 @@
+import { ServerLink } from "./ServerIcon";
 import { useRef } from "react";
 import { IconCart, IconChat, IconClose } from "./Icons";
 import { useDialogA11y } from "./useDialogA11y";
@@ -121,7 +122,9 @@ export default function CartModal({
                   className="p-4 rounded-2xl bg-white border border-black/10 flex items-center justify-between gap-3 hover:border-black/30 transition"
                 >
                   <div>
-                    <h4 className="text-[14px] font-black">{item.plan.serverName}</h4>
+                    <h4 className="text-[14px] font-black">
+                      <ServerLink code={item.plan.serverCode} label={item.plan.serverName} size={26} />
+                    </h4>
                     <span className="text-[12px] text-black/50 block mt-0.5 font-medium">
                       المدة: {durationLabels[item.months]}
                     </span>

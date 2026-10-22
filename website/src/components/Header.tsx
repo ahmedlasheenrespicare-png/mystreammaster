@@ -1,3 +1,5 @@
+import { ServerIcon } from "./ServerIcon";
+import type { PricingPlan } from "../data";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   IconArrow,
@@ -356,7 +358,9 @@ export default function Header({
                           onClick={() => setMobileOpen(false)}
                           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-bold hover:bg-black/[0.05] transition"
                         >
-                          {l.league ? (
+                          {l.server ? (
+                            <ServerIcon code={l.server} size={26} />
+                          ) : l.league ? (
                             <LeagueNavIcon league={l.league} />
                           ) : (
                             l.icon && <span aria-hidden="true" className="w-6 text-center">{l.icon}</span>
@@ -390,7 +394,7 @@ export default function Header({
 }
 
 /* روابط مجموعة واحدة بصيغة مسطّحة — لقائمة الجوال */
-function mobileLinks(group: NavGroup): { href: string; label: string; icon?: string; league?: string }[] {
+function mobileLinks(group: NavGroup): { href: string; label: string; icon?: string; league?: string; server?: PricingPlan["serverCode"] }[] {
   if (group.key === "home") {
     return [
       { href: to(""), label: "الصفحة الرئيسية", icon: "🏠" },
@@ -400,7 +404,7 @@ function mobileLinks(group: NavGroup): { href: string; label: string; icon?: str
   if (group.key === "servers") {
     return [
       ...group.links.slice(0, 1).map((l) => ({ href: pageHref(l), label: l.label, icon: "🗂️" })),
-      ...SERVER_PAGES.map((s) => ({ href: to(`${s.code}/`), label: s.label, icon: s.emoji })),
+      ...SERVER_PAGES.map((s) => ({ href: to(`${s.code}/`), label: s.label, server: s.code as PricingPlan["serverCode"] })),
       ...group.links.slice(1).map((l) => ({ href: pageHref(l), label: l.label, icon: l.href === "cart/" ? "🛒" : "🏬" })),
     ];
   }
@@ -473,9 +477,10 @@ function DesktopPanel({
               className="group/m rounded-2xl overflow-hidden border border-black/10 hover:border-black transition"
             >
               <div
-                className={`h-[88px] bg-gradient-to-br ${s.grad} grid place-items-center text-3xl overflow-hidden`}
+                className={`h-[88px] bg-gradient-to-br ${s.grad} grid place-items-center overflow-hidden`}
               >
-                <span className="group-hover/m:scale-125 transition duration-500">{s.emoji}</span>
+                {/* شعار السيرفر بدل الإيموجي — نفس الأيقونة المستخدمة بجانب الاسم في كل الموقع */}
+                <ServerIcon code={s.code as PricingPlan["serverCode"]} size={46} className="transition duration-500 group-hover/m:scale-110" />
               </div>
               <div className="p-2.5 bg-white">
                 <p className="text-[13px] font-black leading-tight">{s.label}</p>

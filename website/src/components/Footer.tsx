@@ -1,3 +1,4 @@
+import { ServerIcon } from "./ServerIcon";
 import { useState } from "react";
 import {
   IconArrowUpRight,
@@ -132,10 +133,10 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 {
                   h: "السيرفرات",
                   l: [
-                    { t: "سيرفر نوفا (Nova) ⚽", href: to("nova/") },
-                    { t: "سيرفر إيستار (iStar) 🎬", href: to("istar/") },
-                    { t: "سيرفر موكا (Moka) ⚡", href: to("moka/") },
-                    { t: "سيرفر X (XTV) ✕", href: to("x/") },
+                    { t: "سيرفر نوفا (Nova)", href: to("nova/"), server: "nova" as const },
+                    { t: "سيرفر إيستار (iStar)", href: to("istar/"), server: "istar" as const },
+                    { t: "سيرفر موكا (Moka)", href: to("moka/"), server: "moka" as const },
+                    { t: "سيرفر X (XTV)", href: to("x/"), server: "x" as const },
                     { t: "البث المباشر", href: "#live-player" },
                   ],
                 },
@@ -172,6 +173,9 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                           href={item.href}
                           className="text-[13.5px] font-medium text-white/65 hover:text-[#d8ff3e] transition inline-flex items-center gap-1 group"
                         >
+                          {"server" in item && item.server ? (
+                            <ServerIcon code={item.server} size={22} className="me-1.5" />
+                          ) : null}
                           {item.t}
                           <IconArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition" />
                         </a>

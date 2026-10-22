@@ -1,3 +1,4 @@
+import { ServerLink } from "./ServerIcon";
 import { useEffect, useState } from "react";
 import {
   IconArrow,
@@ -482,7 +483,12 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               <div className="relative">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-display font-black text-[20px] tracking-tight flex items-center gap-2">
-                    <IconTrophy className="w-5 h-5 text-[#ffe3c7]" /> قنوات المباريات وسيرفر نوفا
+                    <ServerLink
+                      code="nova"
+                      label="قنوات المباريات وسيرفر نوفا"
+                      size={26}
+                      className="hover:underline underline-offset-4"
+                    />
                   </h3>
                   <span className="w-9 h-9 rounded-xl bg-white/15 grid place-items-center">
                     <IconPlay className="w-4 h-4" />

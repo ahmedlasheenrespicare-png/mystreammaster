@@ -1,4 +1,5 @@
 import { IconTrophy } from "./Icons";
+import { ServerLink } from "./ServerIcon";
 import { Reveal, useInViewOnce } from "./motion";
 
 export default function ServersComparison() {
@@ -92,17 +93,17 @@ export default function ServersComparison() {
                 <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black">
                   الميزة / المواصفة
                 </th>
-                <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#a5b4ff] bg-white/[0.04]">
-                  نوفا (Nova) ⚽
+                <th scope="col" className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#a5b4ff] bg-white/[0.04]">
+                  <ServerLink code="nova" label="نوفا (Nova)" size={26} className="hover:underline underline-offset-4" />
                 </th>
-                <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#c4b0ff] bg-white/[0.04]">
-                  إيستار (iStar) 🎬
+                <th scope="col" className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#c4b0ff] bg-white/[0.04]">
+                  <ServerLink code="istar" label="إيستار (iStar)" size={26} className="hover:underline underline-offset-4" />
                 </th>
-                <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-white/60">
-                  موكا (Moka) ⚡
+                <th scope="col" className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-white/60">
+                  <ServerLink code="moka" label="موكا (Moka)" size={26} className="hover:underline underline-offset-4" />
                 </th>
-                <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#ff9296] bg-white/[0.04]">
-                  سيرفر X (XTV) ✕
+                <th scope="col" className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#ff9296] bg-white/[0.04]">
+                  <ServerLink code="x" label="سيرفر X (XTV)" size={26} className="hover:underline underline-offset-4" />
                 </th>
               </tr>
             </thead>

@@ -315,6 +315,17 @@
   pointer-events: none;
 }
 
+/* تذكرة الدوري الفرنسي: صف أعلام السيرفرات الأربعة بطلب المالك انتقل
+   من اليسار إلى **منتصف أعلى التذكرة** — مركز مركّز على مركز الكرت
+   فيرتفع سطرٌ مركزّي أول فوق الثلاثية المركزية أسفله مباشرةً */
+.league-ticket-brands--center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* وثلاثيتها تنزاح مبطّطًا إضافيًا (بدل 22px) فلا يصطدم سطرا الوسطان */
+.league-ticket-header--under-brands { padding-top: 50px; }
+
 /* شعار نوفا المقصوص (بدون شريط IPTV) — صغير (~34px كحد أقصى) ومرئي
    بظل سقوط رقيق فوق خلفية التذكرة */
 .league-ticket-brand-nova {
@@ -746,6 +757,7 @@
 /* الجوال — مطابق تضييق الشريط المسطّح السابق (وحدات أضيق وأرقام أصغر) */
 @media (max-width: 700px) {
   .league-ticket-crest { width: 34px; height: 34px; }
+  .league-ticket-header--under-brands { padding-top: 42px; }
   .league-ticket-wordmark { gap: 7px; margin-inline-start: 9px; }
   .league-ticket-wordmark-line { height: 26px; }
   .league-ticket-wordmark-badge { width: 18px; height: 18px; border-radius: 6px; }

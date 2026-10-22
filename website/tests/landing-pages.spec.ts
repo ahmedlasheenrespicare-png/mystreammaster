@@ -578,7 +578,7 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
   await expect(strip.locator('.ticket-flip__digit')).toHaveCount(8);
 });
 
-test('french league ticket carries the small Nova brand in its physical top-left corner', async ({ page }) => {
+test('french league ticket stacks its four server brands centered above the centered wordmark trio', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-الفرنسي/');
   /* تذكرة الفرنسي اليوم يقف وحدة قممها فارغة فتُرسَم بالمسار الساكن
@@ -595,16 +595,20 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(box).toBeTruthy();
   expect(box!.width).toBeGreaterThanOrEqual(20);
   expect(box!.width).toBeLessThanOrEqual(44);
-  /* أعلى اليسار الفيزيائي: ضمن 30px من ركني التذكرة نفسها (الموضع
-     left صريح لأن التذكرة RTL فلا يقفز مع inline-start). الصندوق
-     في Playwright = {x, y, width, height} لا خصائص left/top له */
+  /* منتصف أعلى التذكرة (بطلب المالك الذي نقل الصف الرباعي من اليسار):
+     حاوية الصف مركزُها الأفقي = مركز الكرت (±30px) وقمتها ضمن 30px من
+     سقف التذكرة. الصندوق في Playwright = {x, y, width, height} */
   const ticketBox = await ticket.boundingBox();
   expect(ticketBox).toBeTruthy();
-  expect(box!.x - ticketBox!.x).toBeLessThanOrEqual(30);
-  expect(box!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  const rowBox = await ticket.locator('.league-ticket-brands').boundingBox();
+  expect(rowBox).toBeTruthy();
+  const rowCenter = rowBox!.x + rowBox!.width / 2;
+  const ticketCenterX = ticketBox!.x + ticketBox!.width / 2;
+  expect(Math.abs(rowCenter - ticketCenterX)).toBeLessThanOrEqual(30);
+  expect(rowBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
   /* لوجو X المقصوص من IPTV بجانب نوفا: صورة واحدة، منبع حقيقي،
      ارتفاع مساوٍ لمساحة نوفا (14..26px)، ويجلس يمينها الفيزيائي
-     ملاصقًا داخل 60px من الركن الأيسر — لا يعلوها ولا ينزاح عنها */
+     ملاصقًا ضمن الصف المتوسّط أعلى الكرت — لا يعلوها ولا ينزاح عنها */
   const xtv = ticket.locator('img.league-ticket-brand-xtv');
   await expect(xtv).toHaveCount(1);
   await expect(xtv).toBeVisible();
@@ -615,7 +619,6 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(xtvBox!.height).toBeLessThanOrEqual(26);
   expect(xtvBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
   expect(xtvBox!.x).toBeGreaterThan(box!.x + box!.width * 0.5);
-  expect(xtvBox!.x - ticketBox!.x).toBeLessThanOrEqual(60);
 
   /* شاركتا الخدمة (ايستار ثم موكا) يلتصقان بالزوج في تذكرة الفرنسية
      حصراً بطلب المالك وبمساحة X نفسها (ارتفاع 14..26): صورتان
@@ -672,6 +675,10 @@ test('french league ticket carries the small Nova brand in its physical top-left
   const groupCenter = (textBox!.x + iconBox!.x + iconBox!.width) / 2;
   const ticketCenter = ticketBox!.x + ticketBox!.width / 2;
   expect(Math.abs(groupCenter - ticketCenter)).toBeLessThanOrEqual(30);
+  /* التعامد المطلوب: سطر الأعلام الرباعي المتوسّط أعلى الكرت وسطر
+     الثلاثية المركزية أسفله — قاع الصف لا يتجاوز رأس الأيقونة إطلاقاً
+     (مبطّط الرأس الإضافي يصون الفرنسية وحدها) */
+  expect((rowBox!.y + rowBox!.height) - iconBox!.y).toBeLessThanOrEqual(8);
   expect(textBox!.x).toBeGreaterThanOrEqual(ticketBox!.x);
   expect(textBox!.height).toBeGreaterThanOrEqual(10);
   expect(textBox!.height).toBeLessThanOrEqual(24);

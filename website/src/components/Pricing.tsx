@@ -9,9 +9,17 @@ import {
   IconZap,
 } from "./Icons";
 import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PlanDuration, PricingPlan } from "../data";
-import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
 import { ServerLink } from "./ServerIcon";
+import "./server-card.css";
 import { Reveal } from "./motion";
+
+/* حرف كل سيرفر في أعلى بطاقته — العنصر الزخرفي نفسه في التصميم المرجعي */
+const SERVER_GLYPH: Record<PricingPlan["serverCode"], string> = {
+  nova: "N",
+  istar: "i",
+  moka: "M",
+  x: "X",
+};
 
 interface PricingProps {
   currentCurrency: string;
@@ -106,7 +114,6 @@ export default function Pricing({
             if (!priceObj) return null;
             const currentPrice = priceObj[curr.code] || priceObj.SAR;
             const isHighlighted = highlightedPlanId === plan.id;
-            const isVip = plan.isVip;
             const dark = plan.isPopular || plan.isFeatured || isHighlighted;
 
             /* نسبة الخصم من السعر القديم (بالريال) */
@@ -127,53 +134,35 @@ export default function Pricing({
             const pricingFeatures = hideDeviceCountAndGuide
               ? plan.features.filter((feature) => !feature.startsWith("دليل خيارات المشاهدة الرسمية"))
               : plan.features;
-            const watermark = SERVER_WATERMARKS[plan.serverCode];
 
             return (
               <Reveal key={plan.id} variant="up" delay={i * 110} className="h-full">
-              <div
-                className={`relative h-full flex flex-col justify-between rounded-[28px] p-6 sm:p-7 transition-all duration-300 ${
-                  dark
-                    ? "bg-[#0b0b0f] text-white grain overflow-hidden isolate scale-[1.02] ring-4 ring-[#d8ff3e]/60"
-                    : isVip
-                    ? "bg-[#ffe3c7] border-2 border-[#0b0b0f]/15 hover:border-[#0b0b0f]"
-                    : "bg-white border border-black/10 hover:border-black/30 hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.2)]"
-                }`}
+              <article
+                className={`srv-card ${dark ? "is-dark" : ""} ${plan.isPopular ? "is-popular" : ""}`}
+                data-server={plan.serverCode}
               >
-                {dark && (
-                  <div className="absolute -top-24 -end-24 z-0 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
-                )}
-                {/* شعار السيرفر كعلامة مائية خافتة في أعلى يسار البطاقة */}
-                {watermark && (
-                  <img
-                    src={watermark.src}
-                    alt=""
-                    aria-hidden="true"
-                    width={watermark.width}
-                    height={watermark.height}
-                    loading="lazy"
-                    decoding="async"
-                    className={SERVER_WATERMARK_CLASS}
-                  />
-                )}
-
-                {/* الشارات */}
-                {plan.isPopular && (
-                  <div className="absolute -top-3.5 inset-x-0 z-20 flex justify-center">
-                    <span className="bg-[#d8ff3e] text-black text-[11.5px] font-black px-4 py-1 rounded-full shadow-lg">
-                      🔥 الأكثر طلباً
-                    </span>
-                  </div>
-                )}
-                {plan.isVip && (
-                  <div className="absolute -top-3.5 inset-x-0 flex justify-center">
-                    <span className="bg-[#0b0b0f] text-[#d8ff3e] text-[11.5px] font-black px-4 py-1 rounded-full shadow-lg">
-                      👑 باقة VIP لشاشتين
-                    </span>
-                  </div>
-                )}
+                <div className="srv-card-inner">
+                  {/* الحرف الضخم المفرّغ — كما في التصميم المرجعي، بلون هوية السيرفر */}
+                  <span className="srv-card-glyph" aria-hidden="true">
+                    {SERVER_GLYPH[plan.serverCode]}
+                  </span>
 
                 <div className="relative z-10">
+                  {/* الشارات داخل المحتوى حتى لا تُقصّها حواف الإطار المتدرّج */}
+                  {(plan.isPopular || plan.isVip) && (
+                    <div className="srv-card-badges">
+                      {plan.isPopular && (
+                        <span className="bg-[#d8ff3e] text-black text-[11px] font-black px-3 py-1 rounded-full shadow-sm">
+                          🔥 الأكثر طلباً
+                        </span>
+                      )}
+                      {plan.isVip && (
+                        <span className="bg-[#0b0b0f] text-[#d8ff3e] text-[11px] font-black px-3 py-1 rounded-full shadow-sm">
+                          👑 باقة VIP لشاشتين
+                        </span>
+                      )}
+                    </div>
+                  )}
                   <span
                     className={`inline-block text-[12px] font-black mb-2 ${
                       dark ? "text-white/50" : "text-black/45"
@@ -330,7 +319,9 @@ export default function Pricing({
                     <IconCart className="w-3.5 h-3.5" /> أضف إلى السلة
                   </button>
                 </div>
-              </div>
+                <span className="srv-card-line" aria-hidden="true" />
+                </div>
+              </article>
               </Reveal>
             );
           })}

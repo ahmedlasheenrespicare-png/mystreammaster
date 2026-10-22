@@ -265,6 +265,18 @@ export default function ChannelsPage() {
             </span>
           </a>
           <a
+            href={to("blog/افضل-اشتراك-iptv-2026/")}
+            className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
+          >
+            <span className="block font-black text-[15px]">أي باقة اشتراك تناسبك في 2026؟</span>
+            <span className="mt-1 block text-[12.5px] text-black/50 font-medium">
+              مقارنة الأسعار والأجهزة والجودة بين الباقات الأربع
+            </span>
+            <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-black text-[#2b4eff]">
+              اقرأ المقارنة <IconArrowUpRight className="w-3.5 h-3.5" />
+            </span>
+          </a>
+          <a
             href={to("#live-player")}
             className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
           >

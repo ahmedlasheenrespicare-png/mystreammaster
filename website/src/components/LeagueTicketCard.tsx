@@ -95,12 +95,18 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
         mono: "برم",
         tokens: ["barcelona", "برشلونة", "بارسلونة"],
       },
-      /* بطلب المالك: صورة ديمبيلي صارت «phone-celebration» — القصاصة
-         الجديدة كاملة الجسم (رأس إلى القماش والأحذية) بخلفية مزالة
-         إزالة لونية نظيفة، وتُعرض ساكنةً بنبضة الاحتفال نفسها بدل
-         تسلسل الفليب-بوك الذي كان يكتفي بالنصف العلوي */
-      homePlayer: "/images/players/fra-dembele-phone-celebration.png",
+      /* بطلب المالك: إطارات التسلسل الأربعة لديمبيلي صارت كاملة الجسم
+         (رأس إلى الأحذية) بخلفيات مزالة لونياً — الفليب-بوك نفسه يتنفس
+         الآن بقوام كامل لا بنصف علوي، وبقي حجم اللوحة 1280×1600 موحّداً
+         بأسفلها ملامساً قاع التذكرة كما كان التقعيد */
+      homePlayer: "/images/players/fra-dembele-phone.png",
       awayPlayer: "/images/players/esp-yamal.png",
+      homePlayerSequence: [
+        "/images/players/fra-dembele-phone-stage-1.png",
+        "/images/players/fra-dembele-phone-stage-2.png",
+        "/images/players/fra-dembele-phone-stage-3.png",
+        "/images/players/fra-dembele-phone-stage-4.png",
+      ],
     },
     {
       /* بطلب المالك: كانت العبارة التصنيفية «مباراة الليلة» وصارت

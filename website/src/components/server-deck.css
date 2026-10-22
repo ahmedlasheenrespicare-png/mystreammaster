@@ -59,15 +59,31 @@
 
 .srv-deck-card[data-server="nova"] {
   --bg: radial-gradient(circle, #fcf08e 0%, #f6ad20 40%, #c08e08 100%);
+  --wa-frame: #8a6206;
+  --wa-frame-hi: #e6a000;
+  --wa-glow: #6b4c04;
+  --wa-label: #43300a;
 }
 .srv-deck-card[data-server="istar"] {
   --bg: radial-gradient(circle, #de80e9 0%, #d520f6 40%, #8b069d 100%);
+  --wa-frame: #8b069d;
+  --wa-frame-hi: #cf1ff0;
+  --wa-glow: #6b0479;
+  --wa-label: #3a0241;
 }
 .srv-deck-card[data-server="moka"] {
   --bg: radial-gradient(circle, #d8ff3e 0%, #6fd94a 40%, #0f8d74 100%);
+  --wa-frame: #0f8d74;
+  --wa-frame-hi: #35c39a;
+  --wa-glow: #0a6a58;
+  --wa-label: #053f34;
 }
 .srv-deck-card[data-server="x"] {
   --bg: radial-gradient(circle, #8ef9fc 0%, #20a4f6 40%, #0851c0 100%);
+  --wa-frame: #0851c0;
+  --wa-frame-hi: #1a8ef0;
+  --wa-glow: #063e94;
+  --wa-label: #062a63;
 }
 
 /* الكروت الخلفية أهدأ قليلاً حتى يبرز الأمامي */
@@ -223,7 +239,7 @@
   font-size: 10px;
   font-weight: 900;
   line-height: 1;
-  color: #0b1b33;
+  color: var(--wa-label, #0b1b33);
   text-decoration: none;
   background-color: transparent;
   border: none;
@@ -239,7 +255,7 @@
 
 /* الإطار المثمّن */
 .srv-wa-clip {
-  --srv-wa-color: #2761c3;
+  --srv-wa-color: var(--wa-frame, #2761c3);
   position: absolute;
   top: 0;
   left: 0;
@@ -247,7 +263,7 @@
   height: 100%;
   overflow: hidden;
   border: 4px double var(--srv-wa-color);
-  box-shadow: inset 0 0 12px #195480;
+  box-shadow: inset 0 0 12px var(--wa-glow, #195480);
   -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
   clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
 }
@@ -258,7 +274,7 @@
   top: 35%;
   width: 11%;
   height: 30%;
-  background-color: #2761c3;
+  background-color: var(--wa-frame, #2761c3);
   transition: 0.2s;
 }
 
@@ -275,13 +291,13 @@
 }
 
 .srv-wa:hover .srv-wa-arrow--right {
-  background-color: #27c39f;
+  background-color: var(--wa-frame-hi, #27c39f);
   left: -15%;
   animation: 0.6s ease-in-out both infinite alternate srv-wa-right-arrow;
 }
 
 .srv-wa:hover .srv-wa-arrow--left {
-  background-color: #27c39f;
+  background-color: var(--wa-frame-hi, #27c39f);
   left: 103%;
   animation: 0.6s ease-in-out both infinite alternate srv-wa-left-arrow;
 }
@@ -291,8 +307,8 @@
   position: absolute;
   width: 4em;
   height: 4em;
-  background-color: #2761c3;
-  box-shadow: inset 1px 1px 8px #2781c3;
+  background-color: var(--wa-frame, #2761c3);
+  box-shadow: inset 1px 1px 8px var(--wa-frame-hi, #2781c3);
   transform: scale(1) rotate(45deg);
   transition: 0.2s;
 }
@@ -332,31 +348,31 @@
 }
 
 .srv-wa:hover .srv-wa-clip {
-  animation: 0.2s ease-in-out 0.55s both srv-wa-green-light;
-  --srv-wa-color: #27c39f;
+  animation: 0.2s ease-in-out 0.55s both srv-wa-glow;
+  --srv-wa-color: var(--wa-frame-hi, #27c39f);
 }
 
 @keyframes srv-wa-change {
   from {
-    background-color: #2781c3;
+    background-color: var(--wa-frame, #2781c3);
   }
   to {
-    background-color: #27c39f;
+    background-color: var(--wa-frame-hi, #27c39f);
   }
 }
 
 @keyframes srv-wa-light {
   from {
-    box-shadow: 1px 1px 5px #27c39f;
+    box-shadow: 1px 1px 5px var(--wa-frame-hi, #27c39f);
   }
   to {
-    box-shadow: 0 0 2px #27c39f;
+    box-shadow: 0 0 2px var(--wa-frame-hi, #27c39f);
   }
 }
 
-@keyframes srv-wa-green-light {
+@keyframes srv-wa-glow {
   to {
-    box-shadow: inset 0 0 32px #27c39f;
+    box-shadow: inset 0 0 32px var(--wa-frame-hi, #27c39f);
   }
 }
 

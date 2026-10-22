@@ -27,16 +27,20 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
 
         <article>
           <header>
-            <div className="flex items-center gap-3 text-[11.5px] font-black text-black/45">
+            <div className="flex flex-wrap items-center gap-3 text-[11.5px] font-black text-black/45">
               <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{post.category}</span>
-              <span className="inline-flex items-center gap-1">
-                <IconClock className="w-3.5 h-3.5" /> {post.readingMinutes} دقائق قراءة
-              </span>
-              <time dateTime={post.date} className="font-latin">{post.date}</time>
-              {post.updated && post.updated !== post.date && (
-                <span className="text-black/40">
-                  آخر تحديث: <time dateTime={post.updated} className="font-latin">{post.updated}</time>
-                </span>
+              {!post.hideMeta && (
+                <>
+                  <span className="inline-flex items-center gap-1">
+                    <IconClock className="w-3.5 h-3.5" /> {post.readingMinutes} دقائق قراءة
+                  </span>
+                  <time dateTime={post.date} className="font-latin">{post.date}</time>
+                  {post.updated && post.updated !== post.date && (
+                    <span className="text-black/40">
+                      آخر تحديث: <time dateTime={post.updated} className="font-latin">{post.updated}</time>
+                    </span>
+                  )}
+                </>
               )}
             </div>
             <h1 className="mt-4 font-display font-black tracking-tight leading-[1.2] text-[32px] md:text-[44px]">

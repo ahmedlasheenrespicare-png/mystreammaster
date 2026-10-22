@@ -106,6 +106,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "blog/risks-of-unverified-apps": "blog-risks-of-unverified-apps",
   "blog/what-is-unlicensed-streaming": "blog-what-is-unlicensed-streaming",
   "blog/افضل-اشتراك-iptv-2026": "best-iptv-2026",
+  "blog/افضل-سيرفر-iptv-في-مصر": "blog-iptv-egypt",
   /* صفحات هبوط البطولات — /matches/{slug} */
   "matches/الدوري-الإنجليزي": "league-premier-league",
   "matches/الدوري-السعودي": "league-saudi-pro-league",

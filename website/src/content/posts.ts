@@ -13,6 +13,8 @@ export interface PostSection {
   note?: string;
   /** جدول مقارنة الباقات — يُبنى من PRICING_PLANS وقت البناء فلا ينفصل عن المتجر */
   pricing?: boolean;
+  /** جدول أسعار السوق المصري — يُبنى من content/egypt-pricing.ts ولا يظهر قبل وصول الأرقام */
+  egyptPricing?: boolean;
   /** روابط داخلية تُعرض أسفل القسم */
   links?: { label: string; href: string }[];
 }
@@ -40,6 +42,7 @@ export interface BlogPost {
 }
 
 import { GUIDE_POSTS } from "./guide-posts";
+import { EGYPT_POSTS } from "./egypt-post";
 
 const RETAINED_POSTS: BlogPost[] = [
   {
@@ -92,6 +95,7 @@ const RETAINED_POSTS: BlogPost[] = [
         links: [
           { label: "كيف تختبر ثبات السيرفر في 30 دقيقة", href: "blog/test-iptv-server-stability/" },
           { label: "اختيار السيرفر حسب سرعتك وجهازك", href: "blog/choose-iptv-server/" },
+          { label: "أفضل سيرفر IPTV في مصر وأسعاره", href: "blog/افضل-سيرفر-iptv-في-مصر/" },
         ],
       },
       {
@@ -404,6 +408,9 @@ const RETAINED_POSTS: BlogPost[] = [
           "الخطأ الأول: شراء الأغلى على أمل حل مشاكل الشبكة. السيرفر الأعلى سعراً لا يصلح إنترنت ضعيفاً، بل يستهلكه أكثر بالعكس. اختر حسب شبكتك لا حسب السعر.",
           "الخطأ الثاني: الاعتماد على السعر الأرخص لسنة كاملة ثم ترك الاشتراك بعد أسبوعين. المزوّد الجيد يقبل التجربة المجانية — جرّب أرقامك أولاً ثم ادفع بثقة.",
         ],
+        links: [
+          { label: "أفضل سيرفر IPTV في مصر: المقارنة والأسعار بالجنيه", href: "blog/افضل-سيرفر-iptv-في-مصر/" },
+        ],
       },
     ],
     faq: [
@@ -419,8 +426,8 @@ const RETAINED_POSTS: BlogPost[] = [
   },
 ];
 
-/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم المقالات المحفوظة */
-export const BLOG_POSTS: BlogPost[] = [...GUIDE_POSTS, ...RETAINED_POSTS];
+/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم مقال السوق المصري، ثم المقالات المحفوظة */
+export const BLOG_POSTS: BlogPost[] = [...GUIDE_POSTS, ...EGYPT_POSTS, ...RETAINED_POSTS];
 
 export function getPost(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

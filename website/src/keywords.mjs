@@ -34,6 +34,7 @@ export const KEYWORDS = {
   "/blog/what-is-unlicensed-streaming": { primary: "بث محتوى بدون ترخيص", intent: "informational" },
   "/blog/أهمية-الدعم-الفني-في-اشتراكات-iptv": { primary: "الدعم الفني", intent: "informational" },
   "/blog/افضل-اشتراك-iptv-2026": { primary: "اشتراك IPTV 2026", intent: "informational" },
+  "/blog/افضل-سيرفر-iptv-في-مصر": { primary: "أفضل سيرفر IPTV في مصر", intent: "comparison" },
   "/blog/افضل-قنوات-iptv-الرياضية": { primary: "القنوات الرياضية الناقلة", intent: "informational" },
   "/blog/الدول-العربية-في-كأس-العالم-2026": { primary: "المنتخبات العربية", intent: "informational" },
   "/blog/تثبيت-iptv-على-samsung-smart-tv": { primary: "Samsung Smart TV", intent: "informational" },

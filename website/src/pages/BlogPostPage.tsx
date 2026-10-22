@@ -1,5 +1,13 @@
 import type { BlogPost } from "../content/posts";
 import { AVAILABLE_DURATIONS, getWhatsAppUrl, PRICING_PLANS } from "../data";
+import {
+  EGYPT_PRICING,
+  EGYPT_PRICING_UPDATED,
+  EGYPT_TERMS,
+  formatEgp,
+  hasEgyptPricing,
+  monthlyEquivalent,
+} from "../content/egypt-pricing";
 import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
@@ -12,7 +20,9 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
     : undefined;
   const duration = AVAILABLE_DURATIONS[0];
   const durationLabel = duration === "12" ? "12 شهراً" : `${duration} أشهر`;
-  const toc = post.sections.filter((s) => Boolean(s.heading));
+  /* أقسام مرتبطة ببيانات لم تصل بعد لا تُرسم (ولا يظهر عنوانها فارغاً) */
+  const sections = post.sections.filter((s) => !(s.egyptPricing && !hasEgyptPricing()));
+  const toc = sections.filter((s) => Boolean(s.heading));
 
   return (
     <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
@@ -80,7 +90,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
               </p>
               <ol className="mt-3 grid gap-2 sm:grid-cols-2">
                 {toc.map((t) => {
-                  const index = post.sections.indexOf(t);
+                  const index = sections.indexOf(t);
                   return (
                     <li key={t.heading}>
                       <a
@@ -97,7 +107,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           )}
 
           <div className="mt-10 space-y-9">
-            {post.sections.map((s, i) => (
+            {sections.map((s, i) => (
               <section key={i}>
                 {s.heading && (
                   <h2
@@ -203,6 +213,78 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                       className="inline-flex items-center gap-2 border border-black/15 font-black text-[14px] px-6 py-3 rounded-full hover:bg-white transition"
                     >
                       <IconChat className="w-4 h-4" /> تجربة 6 ساعات قبل الدفع
+                    </a>
+                  </div>
+                )}
+
+                {s.egyptPricing && hasEgyptPricing() && (
+                  <div className="mt-5 overflow-x-auto rounded-2xl border border-black/10 bg-white">
+                    <table className="w-full text-right border-collapse min-w-[720px]">
+                      <caption className="p-4 text-right text-[12.5px] font-bold text-black/50">
+                        أسعار اشتراك IPTV في مصر بالجنيه المصري — إجمالي كل مدة
+                        {EGYPT_PRICING_UPDATED ? ` · آخر تحديث ${EGYPT_PRICING_UPDATED}` : ""}
+                      </caption>
+                      <thead>
+                        <tr className="bg-[#0b0b0f] text-white">
+                          <th scope="col" className="p-4 text-[13px] font-black">السيرفر</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الأنسب لـ</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الأجهزة</th>
+                          {EGYPT_TERMS.map((term) => (
+                            <th key={term} scope="col" className="p-4 text-[13px] font-black whitespace-nowrap">
+                              {term} أشهر
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-black/[0.07]">
+                        {EGYPT_PRICING.map((server) => (
+                          <tr key={server.code} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
+                            <th scope="row" className="p-4 text-[13px] font-black text-right bg-[#f4f3ef]">
+                              <ServerLink
+                                code={server.code}
+                                label={server.name.split("(")[0].trim()}
+                                size={26}
+                                textClassName="hover:text-[#2b4eff] underline underline-offset-4 decoration-black/20"
+                              />
+                            </th>
+                            <td className="p-4 text-[13px] font-medium text-black/70">{server.bestFor}</td>
+                            <td className="p-4 text-[13px] font-medium text-black/70">{server.devices}</td>
+                            {EGYPT_TERMS.map((term) => {
+                              const price = server.prices[term];
+                              const monthly = monthlyEquivalent(price, term);
+                              return (
+                                <td key={term} className="p-4 text-[13px] font-black whitespace-nowrap">
+                                  {typeof price === "number" ? (
+                                    <>
+                                      {formatEgp(price)}
+                                      {monthly && (
+                                        <span className="mt-0.5 block text-[11px] font-bold text-black/40">
+                                          ≈ {Math.round(monthly)} ج.م شهرياً
+                                        </span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span className="font-bold text-black/35">باتفاق</span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {s.egyptPricing && hasEgyptPricing() && (
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <a
+                      href={getWhatsAppUrl("مرحبًا، أريد الاشتراك في باقة IPTV داخل مصر ومعرفة السعر النهائي")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-[#0b0b0f] text-white font-black text-[14px] px-6 py-3 rounded-full"
+                    >
+                      <IconChat className="w-4 h-4" /> اطلب السعر النهائي على واتساب
                     </a>
                   </div>
                 )}

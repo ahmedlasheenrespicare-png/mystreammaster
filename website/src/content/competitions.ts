@@ -640,6 +640,12 @@ export function leagueLandingBySlug(slug: string): LeagueLanding | undefined {
   return LEAGUE_LANDINGS.find((l) => l.slug === slug);
 }
 
+/** صفحة هبوط البطولة بمعرّف المصدر — تبني منها روابط أيقونات البطولات
+    الثماني في أساس التذكرة الجامعة بطلب المالك */
+export function leagueLandingById(leagueId: string): LeagueLanding | undefined {
+  return LEAGUE_LANDINGS.find((l) => l.leagueId === leagueId);
+}
+
 /** صفحات البطولات بترتيب العرض المعتمد — تتجاهل ما لم تُضف صفحته بعد */
 export function leagueLandingsInPageOrder(): LeagueLanding[] {
   return LEAGUE_PAGE_ORDER

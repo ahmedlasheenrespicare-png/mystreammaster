@@ -1,4 +1,5 @@
 import LeagueIconBadge from "./LeagueIconBadge";
+import { leagueLandingById } from "../content/competitions";
 import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, IstarTicketBrand, MokaTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
@@ -88,10 +89,21 @@ function AllLeaguesTicketBase() {
           الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
       <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       <span className="all-leagues-ticket-veil" aria-hidden="true" />
+      {/* أيقونات البطولات الثماني — بطلب المالك صارت روابط لصفحاتها
+          المخصصة /matches/{السلاج}/: نقرة الفأرة فوق أي أيقونة تفتح
+          صفحة هبوط بطولتها، وتلميح التحويم يعرض اسمها المختصر — وتبقى
+          في الحيّز الزخرفي للتذكرة (aria-hidden المحفوظ كما أقفلته
+          حُرّاس المواصفات) فلا تدخل ترتيب لوحة المفاتيح (tabIndex=-1) */}
       <div className="leagues-ticket-icons">
-        {TICKET_LEAGUES.map((id) => (
-          <LeagueIconBadge key={id} leagueId={id} size={46} eager />
-        ))}
+        {TICKET_LEAGUES.map((id) => {
+          /* الثمانية كلها موثّقة في LEAGUE_LANDINGS بلا استثناء */
+          const landing = leagueLandingById(id)!;
+          return (
+            <a key={id} className="leagues-ticket-icon-link" href={`/matches/${landing.slug}/`} title={landing.shortName} tabIndex={-1}>
+              <LeagueIconBadge leagueId={id} size={46} eager />
+            </a>
+          );
+        })}
       </div>
       {/* المتن: الاسم المعدني الكبير وحده بطلب المالك — سطرا «مواعيد ·
           نتائج · ترتيب / يُحدَّث كل دقيقة» أُخفيا من هنا فهما مكتوبان

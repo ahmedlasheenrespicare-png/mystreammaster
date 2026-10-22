@@ -617,6 +617,29 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(xtvBox!.x).toBeGreaterThan(box!.x + box!.width * 0.5);
   expect(xtvBox!.x - ticketBox!.x).toBeLessThanOrEqual(60);
 
+  /* شاركتا الخدمة (ايستار ثم موكا) يلتصقان بالزوج في تذكرة الفرنسية
+     حصراً بطلب المالك وبمساحة X نفسها (ارتفاع 14..26): صورتان
+     حقيقيتان منبثقتان من مصدريهما الرسميين، وتسلسلهما الفيزيائي
+     نوفا ← X ← ايستار ← موكا بفجوة 7px بين كل جارين ملاصقين */
+  const istar = ticket.locator('img.league-ticket-brand-istar');
+  const moka = ticket.locator('img.league-ticket-brand-moka');
+  for (const [nm, elm] of [['istar', istar], ['moka', moka]] as const) {
+    await expect(elm, `${nm} present on french ticket`).toHaveCount(1);
+    await expect(elm, `${nm} visible`).toBeVisible();
+    await expect.poll(async () => elm.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+    const b = await elm.boundingBox();
+    expect(b).toBeTruthy();
+    expect(b!.height).toBeGreaterThanOrEqual(14);
+    expect(b!.height).toBeLessThanOrEqual(26);
+    expect(b!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  }
+  const istarBox = await istar.boundingBox();
+  const mokaBox = await moka.boundingBox();
+  expect(istarBox!.x - (xtvBox!.x + xtvBox!.width)).toBeGreaterThanOrEqual(0);
+  expect(istarBox!.x - (xtvBox!.x + xtvBox!.width)).toBeLessThanOrEqual(17);
+  expect(mokaBox!.x - (istarBox!.x + istarBox!.width)).toBeGreaterThanOrEqual(0);
+  expect(mokaBox!.x - (istarBox!.x + istarBox!.width)).toBeLessThanOrEqual(17);
+
   /* علامة «ستريم ماستر» النصية (مصغّر شعار الفوتر بطلب المالك) يمين
      التذكرة بجانب أيقونة البطولة بعد خط رأسي: مجموعة واحدة ظاهرة نصها
      بالضبط، وخط شعرة ≤2px عرضاً و≥20px ارتفاعاً، ومربّعها بلون الفوتر
@@ -671,6 +694,10 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
   await expect(indexCarousel.locator('img.league-ticket-brand-xtv'), 'index: X on every slide').toHaveCount(dots);
   await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-nova').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
   await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-xtv').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  /* والشريكتان لا تظهران خارج تذكرة الفرنسية حتى في الجامعة */
+  for (const sel of ['img.league-ticket-brand-istar', 'img.league-ticket-brand-moka']) {
+    await expect(indexCarousel.locator(sel), `index: ${sel} french-only`).toHaveCount(0);
+  }
 
   /* 2) الإنجليزي والإسباني وأبطال أوروبا: الشريحة الأولى (القاعدة)
      فقط — شرائح القمم بلا لوجو حتى لا تزاحم محتواها الغني */
@@ -686,6 +713,10 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
       for (let i = 1; i < slideCount; i++) {
         await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
       }
+    }
+    /* شاركتا الخدمة ايستار/موكا فرنسيتا التذكرة حصراً — لا تتسرّبان */
+    for (const sel of ['img.league-ticket-brand-istar', 'img.league-ticket-brand-moka']) {
+      await expect(carousel.locator(sel), `${slug}: ${sel} french-only`).toHaveCount(0);
     }
     /* (علامة ستريم ماستر صارت معمّمة بقاعدة التوزيع نفسها — حراستها
        كلها في الاختبار التالي المخصّص لها) */
@@ -706,6 +737,12 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
         await expect(brand, `${slug}: single ${sel}`).toHaveCount(1);
       }
       await expect(brand.first(), `${slug}: ${sel} visible`).toBeVisible();
+    }
+    /* ايستار وموكا على الفرنسية وحدها من الخماسية، وغائبان عن شقيقاتها */
+    for (const sel of ['img.league-ticket-brand-istar', 'img.league-ticket-brand-moka']) {
+      const extra = page.locator(`.matches-hero-title ${sel}`);
+      const expected = slug === 'الدوري-الفرنسي' ? 1 : 0;
+      await expect(extra, `${slug}: ${sel} count ${expected}`).toHaveCount(expected);
     }
   }
 });

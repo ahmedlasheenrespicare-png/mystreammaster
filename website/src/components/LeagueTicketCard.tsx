@@ -308,6 +308,45 @@ export function XtvTicketBrand() {
   return <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
+/* لوجو سيرفر «ايستار» — اللافتة الرسمية لهيدر istar-tv.com (نجمة
+   ذهبية + iSTAR INTERNATIONAL) بعد فتح خلفيتها السوداء إلى شفافية —
+   تذكرة الدوري الفرنسي حصراً بطلب المالك، وبمساحة X نفسها */
+export function IstarTicketBrand() {
+  return <img className="league-ticket-brand-istar" src="/images/brand/istar-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+}
+
+/* لوجو سيرفر «موكا» — القرص الأبيض MOKA IPTV من الصفحة الرسمية
+   mokatv.online بعد قصّه قناعاً دائرياً شفاف الحواف — تذكرة الدوري
+   الفرنسي حصراً ويلاصق ايستار يساراً بمساحة X نفسها */
+export function MokaTicketBrand() {
+  return <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+}
+
+/* زوج الأعلام الزخرفية أعلى يسار التذكرة، في حاوية مرنة تتمدد مع عدد
+   الشعارات (فجوة 7px ورؤوس متساوية): نوفا وفق حزمة التوزيع وX يجاورها
+   أينما ظهرت (البقعة نفسها والمساحة نفسها) بطلب تعميمٍ يطابق بدقة ما
+   جرى لتعميم نوفا في #161؛ وفي تذكرة الدوري الفرنسي وحدها يلتصق بهما
+   شريكتا الخدمة ايستار فموكا (بطلب المالك وبمساحة X نفسها) — بنطاقان
+   (static/base/clash) يصونان قاعدة القواعد (لوجوهم على القاعدة دون
+   القمم) */
+function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
+  leagueId: string;
+  scope: "static" | "base" | "clash";
+  showNovaBrand?: boolean;
+}) {
+  const withNova = scope === "clash"
+    ? NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand
+    : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
+  if (!withNova) return null;
+  return (
+    <span className="league-ticket-brands">
+      <NovaTicketBrand />
+      <XtvTicketBrand />
+      {leagueId === "fra.1" ? <><IstarTicketBrand /><MokaTicketBrand /></> : null}
+    </span>
+  );
+}
+
 /* علامة «ستريم ماستر» النصية بتوسّط رأس التذاكر — مصغّرٌ وفيٌّ لشعار
    الفوتر حرفياً (مربّع ليموني مستدير بمثلث تشغيل دوّار كل ثانية بنفس
    إيقاع loader «nice-panda-34» + الاسم بخط العناوين الأبيض الثقيل)
@@ -332,25 +371,6 @@ export function StreamMasterTicketWordmark() {
       <span className="league-ticket-wordmark-text">ستريم ماستر</span>
     </span>
   );
-}
-
-/* زوج الأعلام الزخرفية أعلى يسار التذكرة: نوفا وفق حزمة التوزيع وX
-   يجاورها أينما ظهرت (البقعة نفسها والمساحة نفسها) بطلب تعميمٍ يطابق
-   بدقة ما جرى لتعميم نوفا في #161: كل التذاكر الجامعة والخماسية ف/
-   هُ / من / ي، وقواعد فقط من eng/esp/uefa — بنطاقان (static/base/
-   clash) يصونان قاعدة القواعد (لوجوهم على القاعدة دون القمم) */
-function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
-  leagueId: string;
-  scope: "static" | "base" | "clash";
-  showNovaBrand?: boolean;
-}) {
-  const withNova = scope === "clash"
-    ? NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand
-    : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
-  return (<>
-    {withNova ? <NovaTicketBrand /> : null}
-    {withNova ? <XtvTicketBrand /> : null}
-  </>);
 }
 
 /* الإطار الزخرفي المشترك بين منزلقتَي البطولة: خلفية نقطة قالب وخطوط */

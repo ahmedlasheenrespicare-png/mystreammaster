@@ -3,6 +3,7 @@ import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from ".
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket from "./AllLeaguesTicket";
 import { ServerIcon } from "./ServerIcon";
+import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
 
 /* =========================================================================
@@ -34,7 +35,6 @@ const SERVER_TABS = (["nova", "istar", "moka", "x"] as const)
       quality: plan.quality,
       channelsCount: plan.channelsCount,
       vodCount: plan.vodCount,
-      devices: plan.devices,
       antiFreeze: plan.antiFreeze,
       /* السنة هي المدة الوحيدة المعروضة للبيع (AVAILABLE_DURATIONS) */
       price: plan.prices["12"].USD,
@@ -69,7 +69,7 @@ const SIDE_CHANNELS = [
    • أربعة تبويبات تعمل بالفأرة/اللمس/لوحة المفاتيح (role=tablist/tab/tabpanel).
    • اختيار يدوي بالكامل: مقارنة أسعار لا تُدار بمؤقّت، فلا يتبدّل السعر
      تحت يد الزائر أثناء القراءة.
-   • كل ما يظهر — القنوات، الجودة، مانع التقطيع، الأجهزة، السعر، صفحة
+   • كل ما يظهر — القنوات، الجودة، مانع التقطيع، السعر، صفحة
      السيرفر — يأتي من نفس التبويب المختار (لوحة جانبية + زر متزامنان).
    • الشاشة تصميم بلا صور: توهّج لوني + شعار المزود + شرائح مواصفات.
    • واجهة المتصفح واللوحة الجانبية والقائمة زخرفية (aria-hidden).
@@ -222,8 +222,17 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
                   </div>
 
                   <div className="flex items-center justify-center gap-3 md:gap-4">
-                    <span className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white grid place-items-center p-1.5 md:p-2 shadow-lg shrink-0">
-                      <ServerIcon code={tab.code} size={32} />
+                    {/* شعار المزود بلا صندوق أبيض، فوق خلفية البطاقة مباشرة.
+                        X وحده نسخته الشفافة SERVER_MARK_SRC (ملفّه الأصلي معتم). */}
+                    <span className="w-10 h-10 md:w-14 md:h-14 grid place-items-center shrink-0 drop-shadow-[0_4px_14px_rgba(0,0,0,0.55)]">
+                      <img
+                        src={SERVER_MARK_SRC[tab.code] ?? SERVER_WATERMARKS[tab.code].src}
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="max-h-full max-w-full object-contain select-none"
+                        draggable={false}
+                      />
                     </span>
                     <div className="min-w-0 text-start">
                       <p className="font-display font-black text-lg md:text-2xl leading-tight">
@@ -236,7 +245,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
                   </div>
 
                   <div className="flex flex-wrap gap-1.5">
-                    {[tab.channelsCount, tab.quality, tab.devices].map((chip) => (
+                    {[tab.channelsCount, tab.quality].map((chip) => (
                       <span
                         key={chip}
                         className="text-[10px] font-bold bg-white/10 border border-white/15 rounded-full px-2 py-1"
@@ -285,7 +294,6 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
               { label: "مكتبة VOD", value: tab.vodCount },
               { label: "الجودة", value: tab.quality },
               { label: "مانع التقطيع", value: tab.antiFreeze },
-              { label: "الأجهزة", value: tab.devices },
               { label: "الدعم", value: "24/7" },
             ].map((s) => (
               <li key={s.label}>

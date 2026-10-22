@@ -7,7 +7,7 @@ import { Reveal } from "../components/motion";
 const wa = (text: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 
-/* صفحة سيرفر إنجليزية (/en/nova و/en/istar و/en/moka): السعر من بيانات
+/* صفحة سيرفر إنجليزية (/en/nova و/en/istar و/en/moka و/en/x): السعر من بيانات
    الباقة نفسها، والمواصفات بصيغة «يُعلن المزود الخارجي»، بلا أي وعد بمحتوى. */
 export default function EnPlanPage({ plan }: { plan: PricingPlan }) {
   const [openKey, setOpenKey] = useState<number | null>(0);
@@ -136,7 +136,7 @@ export default function EnPlanPage({ plan }: { plan: PricingPlan }) {
               <a href={to("watch-legal.html")} className="font-bold text-[#2b4eff] underline underline-offset-4">
                 official viewing guide
               </a>
-              . Compare all three servers on the{" "}
+              . Compare all four servers on the{" "}
               <a href={to("en/")} className="font-bold text-[#2b4eff] underline underline-offset-4">
                 English homepage
               </a>

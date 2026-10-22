@@ -92,12 +92,12 @@ export default function EnHomePage() {
               Choose your <span className="font-serif italic font-normal">server</span>
             </h2>
             <p className="mt-4 text-[15px] text-black/55 font-medium max-w-[640px] mx-auto leading-[1.9]">
-              Three external providers, three activation packages. Specifications below
+              Four external providers, four activation packages. Specifications below
               are announced by each provider; our package covers activation, linking,
               player setup and support.
             </p>
           </div>
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {PRICING_PLANS.map((plan, i) => (
               <Reveal key={plan.id} variant="up" delay={i * 70}>
                 <article className="h-full rounded-3xl border border-black/10 bg-white p-7 flex flex-col">
@@ -106,7 +106,11 @@ export default function EnHomePage() {
                   <p className="mt-3 text-[14px] leading-[1.9] text-black/60">{plan.en.description}</p>
                   <ul className="mt-5 space-y-2 text-[13.5px] font-bold text-black/70">
                     <li>{plan.en.channels} · {plan.en.vod}</li>
-                    <li>{plan.quality} quality · {plan.en.devices}</li>
+                    <li>
+                      {plan.serverCode === "x"
+                        ? `${plan.quality} quality`
+                        : `${plan.quality} quality · ${plan.en.devices}`}
+                    </li>
                     <li>{plan.en.antiFreeze}</li>
                   </ul>
                   <p className="mt-6 font-display text-[30px] font-black">

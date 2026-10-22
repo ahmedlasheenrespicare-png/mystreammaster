@@ -22,20 +22,28 @@ export const CURRENCIES: Record<string, Currency> = {
   USD: { code: "USD", symbol: "$", name: "دولار أمريكي", rateToSar: 0.27 },
 };
 
+export type PlanDuration = "3" | "6" | "12" | "24";
+
+export interface PlanPrice {
+  SAR: number;
+  EGP: number;
+  AED: number;
+  KWD: number;
+  USD: number;
+  oldSar?: number;
+}
+
 export interface PricingPlan {
   id: string;
   serverName: string;
-  serverCode: "nova" | "istar" | "moka";
+  serverCode: "nova" | "istar" | "moka" | "x";
   tag: string;
   isPopular?: boolean;
+  isFeatured?: boolean;
   isVip?: boolean;
   description: string;
-  prices: {
-    "3": { SAR: number; EGP: number; AED: number; KWD: number; USD: number; oldSar?: number };
-    "6": { SAR: number; EGP: number; AED: number; KWD: number; USD: number; oldSar?: number };
-    "12": { SAR: number; EGP: number; AED: number; KWD: number; USD: number; oldSar?: number };
-    "24": { SAR: number; EGP: number; AED: number; KWD: number; USD: number; oldSar?: number };
-  };
+  /** A missing duration means that this plan is not sold for that term. */
+  prices: Partial<Record<PlanDuration, PlanPrice>> & { "12": PlanPrice };
   features: string[];
   channelsCount: string;
   vodCount: string;
@@ -55,6 +63,7 @@ export interface PricingPlan {
   };
 }
 
+/** مدد البيع المعروضة على مستوى المتجر؛ قد يستثني كل سيرفر مدة عبر غياب سعرها. */
 export const AVAILABLE_DURATIONS = ["12"] as const;
 
 /* ملاحظة صفة: الأسماء والمواصفات أدناه تصف سيرفرات يديرها مزوّدون خارجيون مستقلون.
@@ -196,6 +205,51 @@ export const PRICING_PLANS: PricingPlan[] = [
       antiFreeze: "Smart Low-Buffer compression technology",
     },
   },
+  {
+    id: "plan-x",
+    serverName: "سيرفر X (XTV Server)",
+    serverCode: "x",
+    tag: "اختيار جديد ⚡",
+    isFeatured: true,
+    description:
+      "يُعلن المزود الخارجي لهذا السيرفر ثباتاً مرتفعاً وقت ضغط المباريات وتعدداً في مصادر البث لكل قناة.",
+    prices: {
+      "12": { USD: 20, SAR: 74.07, EGP: 951.85, AED: 72.59, KWD: 6.07 },
+    },
+    features: [
+      "تفعيل بيانات الاشتراك الصادرة من المزود وإرسالها خلال دقائق",
+      "إعداد المشغّل على شاشتك أو جهازك خطوة بخطوة (Smart TV، أندرويد، Apple، كمبيوتر)",
+      "ربط قوائم التشغيل M3U / Xtream Codes في التطبيق الذي تختاره",
+      "اختبار الجودة والثبات على سرعة اتصالك قبل الالتزام بمدة أطول",
+      "دعم فني بالعربية على مدار الساعة ومتابعة حتى حل المشكلة",
+      "مساعدة في ضبط الترجمة والدبلجة وإعادة البث (TimeShift) متى دعمها سيرفر المزود",
+      "دليل خيارات المشاهدة الرسمية للمحتوى المشفّر في صفحة المشاهدة القانونية",
+    ],
+    channelsCount: "+15,000 قناة حية",
+    vodCount: "+50,000 فيلم ومسلسل",
+    quality: "8K / 4K / FHD / HD",
+    antiFreeze: "نظام مانع التقطيع H.265 v9.4",
+    devices: "حتى 3 أجهزة",
+    en: {
+      name: "X Server",
+      tag: "A new server option ⚡",
+      description:
+        "The external provider of this server announces high stability during match-time pressure and multiple broadcast sources per channel.",
+      features: [
+        "Activation of the provider-issued subscription data, sent to you within minutes",
+        "Player setup on your TV or device, step by step (Smart TV, Android, Apple, computer)",
+        "Linking M3U playlists / Xtream Codes in the player app you choose",
+        "Quality and stability testing on your connection speed before you commit to a longer term",
+        "Technical support in Arabic around the clock, following up until your issue is resolved",
+        "Help with subtitles, audio tracks and catch-up (TimeShift) whenever the provider's server supports it",
+        "A guide to official viewing options for encrypted content on the Legal Viewing page",
+      ],
+      channels: "+15,000 live channels",
+      vod: "+50,000 movies & series",
+      devices: "Up to 3 devices",
+      antiFreeze: "H.265 anti-freeze system v9.4",
+    },
+  },
 ];
 
 /* ==========================================================================
@@ -324,8 +378,8 @@ export const FAQS = [
     a: "لا تحتاج إلى أي فني على الإطلاق! العملية بسيطة جداً: تقوم بتحميل التطبيق على جهازك، وتدخل كود التفعيل الصادر من المزود، وتعمل القنوات فوراً. كما أن فريق الدعم الفني جاهز لمساعدتك خطوة بخطوة عبر واتساب.",
   },
   {
-    q: "ما الفرق بين سيرفر نوفا وإيستار برو وموكا؟",
-    a: "سيرفر نوفا هو الأنسب للمباريات والرياضة ويدعم حتى 3 أجهزة، سيرفر إيستار برو متوازن للأفلام والمسلسلات والترفيه العائلي، وسيرفر موكا اقتصادي في استهلاك البيانات ويعمل جيداً على السرعات المحدودة. المواصفات الفنية لكل سيرفر يعلنها المزود الخارجي، وتشمل خدمتنا التفعيل والربط التقني وإعداد المشغّل والدعم الفني.",
+    q: "ما الفرق بين سيرفر نوفا وإيستار برو وموكا وX؟",
+    a: "سيرفر نوفا هو الأنسب للمباريات والرياضة ويدعم حتى 3 أجهزة، وتُعرض باقة X حالياً بمواصفات ومزايا مماثلة لنوفا. سيرفر إيستار برو متوازن للأفلام والمسلسلات والترفيه العائلي، وسيرفر موكا اقتصادي في استهلاك البيانات ويعمل جيداً على السرعات المحدودة. المواصفات الفنية لكل سيرفر يعلنها المزود الخارجي، وتشمل خدمتنا التفعيل والربط التقني وإعداد المشغّل والدعم الفني.",
   },
 ];
 
@@ -504,8 +558,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
         a: "عند طلب التجديد بعد الانتهاء، راسل الدعم الفني برقم جوالك المسجل، وسيتحقق من حالة حسابك لدى المزود الخارجي ويوضح لك قبل إتمام الطلب ما إذا كانت مدة حسابك ستُمدَّد بنفس البيانات أم ستُصدر لك بيانات اشتراك جديدة تُرسل عبر واتساب والبريد الإلكتروني. وفي الحالتين لا يستغرق إعداد المشغّل من جديد سوى دقائق بمساعدة الدعم.",
       },
       {
-        q: "أي سيرفر أنسب لي: نوفا أم إيستار برو أم موكا؟",
-        a: "يعتمد الاختيار على استخدامك وسرعة اتصالك: يُعلن المزود الخارجي لسيرفر نوفا تركيزاً على المباريات والرياضة مع دعم حتى 3 أجهزة، ويُعلن مزود إيستار برو توازناً بين الرياضة والأفلام والمسلسلات والترفيه العائلي مع دعم حتى جهازين، بينما يُعلن مزود موكا استهلاكاً اقتصادياً للبيانات وأداءً جيداً على السرعات المحدودة مع دعم حتى جهازين. قارن المواصفات المعلنة من المزودين في صفحة المقارنة، وإذا ترددت بين سيرفرين فاطلب التجربة المجانية على الأقرب لاحتياجك وقرر بعد أن ترى الأداء على جهازك واتصالك.",
+        q: "أي سيرفر أنسب لي: نوفا أم إيستار برو أم موكا أم X؟",
+        a: "يعتمد الاختيار على استخدامك وسرعة اتصالك: يُعلن المزود الخارجي لسيرفر نوفا تركيزاً على المباريات والرياضة مع دعم حتى 3 أجهزة، وتُعرض باقة X حالياً بمواصفات ومزايا مماثلة لنوفا. يُعلن مزود إيستار برو توازناً بين الرياضة والأفلام والمسلسلات والترفيه العائلي مع دعم حتى جهازين، بينما يُعلن مزود موكا استهلاكاً اقتصادياً للبيانات وأداءً جيداً على السرعات المحدودة مع دعم حتى جهازين. قارن المواصفات المعلنة من المزودين في صفحة المقارنة، وإذا ترددت بين سيرفرين فاطلب التجربة المجانية على الأقرب لاحتياجك وقرر بعد أن ترى الأداء على جهازك واتصالك.",
         links: [
           { href: "servers/", label: "مقارنة السيرفرات والباقات في صفحة واحدة" },
           { href: "blog/choose-iptv-server/", label: "دليل اختيار السيرفر المناسب لاستخدامك" },
@@ -650,8 +704,8 @@ export const FAQ_SECTIONS_EN: FaqSection[] = [
       "Renewing your package before it expires without interruption, switching between the external providers' servers, and moving your subscription details to a new device.",
     faqs: [
       {
-        q: "What is the difference between the Nova, iStar Pro and Moka servers?",
-        a: "The Nova server is best suited to matches and sports and supports up to 3 devices; iStar Pro is balanced for movies, series and family entertainment; and Moka is economical on data usage and works well on limited speeds. Each server's technical specifications are announced by its external provider, while our service covers technical activation and linking, player setup and technical support.",
+        q: "What is the difference between the Nova, iStar Pro, Moka and X servers?",
+        a: "The Nova server is best suited to matches and sports and supports up to 3 devices; the X package is currently presented with specifications and features matching Nova. iStar Pro is balanced for movies, series and family entertainment, while Moka is economical on data usage and works well on limited speeds. Each server's technical specifications are announced by its external provider, while our service covers technical activation and linking, player setup and technical support.",
       },
       {
         q: "How do I renew my activation package before it expires so playback does not stop?",
@@ -670,10 +724,11 @@ export const FAQ_SECTIONS_EN: FaqSection[] = [
         a: "When you request renewal after expiry, message technical support with your registered phone number; they will check your account status with the external provider and explain, before you complete the order, whether your account term will be extended with the same details or new subscription data will be issued and sent to you via WhatsApp and email. Either way, setting up the player again takes only a few minutes with support's help.",
       },
       {
-        q: "Which server suits me best: Nova, iStar Pro or Moka?",
-        a: "It depends on your usage and connection speed: the external provider of the Nova server announces a focus on matches and sports with support for up to 3 devices; iStar Pro's provider announces a balance between sports, movies, series and family entertainment with up to 2 devices; and Moka's provider announces economical data usage and good performance on limited speeds with up to 2 devices. Compare the providers' announced specifications, and if you are torn between two servers, request the free trial on the one closest to your needs and decide after seeing the performance on your device and connection.",
+        q: "Which server suits me best: Nova, iStar Pro, Moka or X?",
+        a: "It depends on your usage and connection speed: the external provider of the Nova server announces a focus on matches and sports with support for up to 3 devices; the X package is currently listed with specifications and features matching Nova. iStar Pro's provider announces a balance between sports, movies, series and family entertainment with up to 2 devices; Moka's provider announces economical data usage and good performance on limited speeds with up to 2 devices. Compare the providers' announced specifications, and if you are torn between two servers, request the free trial on the one closest to your needs and decide after seeing the performance on your device and connection.",
         links: [
           { href: "en/nova/", label: "Nova Server — activation & setup package" },
+          { href: "en/x/", label: "X Server — activation & setup package" },
           { href: "en/istar/", label: "iStar Pro Server — activation & setup package" },
           { href: "en/moka/", label: "Moka Server — activation & setup package" },
         ],

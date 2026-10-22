@@ -5,6 +5,7 @@ const PRICING_PLANS = [
   { id: 'plan-nova', serverName: 'سيرفر نوفا (Nova Server)', prices: { '12': { USD: 25, SAR: 92.59 } } },
   { id: 'plan-istar', serverName: 'سيرفر إيستار برو (iStar Pro Server)', prices: { '12': { USD: 35, SAR: 129.63 } } },
   { id: 'plan-moka', serverName: 'سيرفر موكا (Moka Server)', prices: { '12': { USD: 45, SAR: 166.67 } } },
+  { id: 'plan-x', serverName: 'سيرفر X (XTV Server)', prices: { '12': { USD: 20, SAR: 74.07 } } },
 ];
 
 // Inspect generated URLs only; do not contact WhatsApp or submit real requests.
@@ -38,7 +39,7 @@ async function capturedMessage(page: Page) {
 
 test('homepage activation and trial CTAs use technical-service wording', async ({ page }) => {
   await page.goto('/');
-  const activation = page.getByRole('link', { name: 'اطلب التفعيل — من $25', exact: true });
+  const activation = page.getByRole('link', { name: 'اطلب التفعيل — من $20', exact: true });
   await expect(activation).toBeVisible();
   expect(messageFrom((await activation.getAttribute('href'))!)).toBe('مرحبًا ستريم ماستر، أود الاستفسار عن باقات التفعيل التقني لدى المزود');
   await expect(page.getByText('خصومات على باقات التفعيل التقني', { exact: true })).toBeVisible();

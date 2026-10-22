@@ -5,6 +5,8 @@ import {
   OUR_SERVICE_NOTE,
   PRICING_PLANS,
   PROVIDER_SPECS_NOTE,
+  AVAILABLE_DURATIONS,
+  type PlanDuration,
   type PricingPlan,
 } from "../data";
 import { to } from "../config";
@@ -13,7 +15,7 @@ import FAQ from "../components/FAQ";
 import { Reveal } from "../components/motion";
 
 /* =========================================================================
-   صفحة هبوط لكل باقة — /nova  /istar  /moka
+   صفحة هبوط لكل باقة — /nova  /istar  /moka  /x
    • تُرسم مسبقاً وقت البناء بالكامل (عنوان ووصف وأسعار وميزات وباقة أسئلة)
    • تستهدف كلمة مفتاحية مستقلة لكل سيرفر بدل حشرها كلها في الصفحة الرئيسية
    • فصل الصفتين في كل عناوينها الفرعية:
@@ -31,8 +33,6 @@ interface PlanPageProps {
   onAddToCart: (plan: PricingPlan, months: "3" | "6" | "12" | "24", price: number) => void;
 }
 
-const DURATIONS: ("3" | "6" | "12" | "24")[] = ["12"];
-
 export default function PlanPage({
   plan,
   currency,
@@ -40,14 +40,15 @@ export default function PlanPage({
   onOpenTrial,
   onAddToCart,
 }: PlanPageProps) {
-  const [duration, setDuration] = useState<"3" | "6" | "12" | "24">("12");
+  const [duration, setDuration] = useState<PlanDuration>("12");
   const curr = CURRENCIES[currency] || CURRENCIES.SAR;
-  const priceObj = plan.prices[duration];
+  const priceObj = plan.prices[duration] ?? plan.prices["12"];
   const price = priceObj[curr.code] || priceObj.SAR;
   const oldSar = priceObj.oldSar;
   const discount = oldSar ? Math.round((1 - priceObj.SAR / oldSar) * 100) : 0;
   const others = PRICING_PLANS.filter((p) => p.id !== plan.id);
   const nameOnly = plan.serverName.split("(")[0].trim();
+  const availableDurations = AVAILABLE_DURATIONS.filter((d) => plan.prices[d] !== undefined);
 
   const durationLabels: Record<"3" | "6" | "12" | "24", string> = {
     "3": "3 شهور",
@@ -132,6 +133,8 @@ export default function PlanPage({
                 "مناسبة لمن لديه سرعة إنترنت محدودة (من 4 ميجابت) أو يستخدم بيانات الهاتف، وللباحثين عن أفضل قيمة مقابل السعر مع مكتبة متنوعة وقنوات بديلة للمباريات."}
               {plan.serverCode === "nova" &&
                 "مناسبة لعشّاق المباريات والدوريات الكبرى الذين يشاهدون في أوقات الذروة، ولمن يريد ثباتاً عالياً مع تنويع مصادر البث لكل قناة رياضية."}
+              {plan.serverCode === "x" &&
+                "مناسبة لعشّاق المباريات والدوريات الكبرى الذين يبحثون عن ثبات مرتفع وتعدد مصادر البث لكل قناة، وفق المواصفات المعلنة لباقة X."}
               {plan.serverCode === "istar" &&
                 "مناسبة للعائلات ولمن يشاهد الأفلام والمسلسلات أكثر من الرياضة، مع توازن بين المكتبة والسعر واستهلاك بيانات متوسط."}
             </p>
@@ -163,7 +166,7 @@ export default function PlanPage({
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  {DURATIONS.map((d) => (
+                  {availableDurations.map((d) => (
                     <button
                       key={d}
                       onClick={() => setDuration(d)}

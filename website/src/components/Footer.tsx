@@ -135,6 +135,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                     { t: "سيرفر نوفا (Nova) ⚽", href: to("nova/") },
                     { t: "سيرفر إيستار (iStar) 🎬", href: to("istar/") },
                     { t: "سيرفر موكا (Moka) ⚡", href: to("moka/") },
+                    { t: "سيرفر X (XTV) ✕", href: to("x/") },
                     { t: "البث المباشر", href: "#live-player" },
                   ],
                 },

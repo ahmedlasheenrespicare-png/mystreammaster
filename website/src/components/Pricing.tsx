@@ -8,7 +8,7 @@ import {
   IconStar,
   IconZap,
 } from "./Icons";
-import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PricingPlan } from "../data";
+import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PlanDuration, PricingPlan } from "../data";
 import { Reveal } from "./motion";
 
 interface PricingProps {
@@ -24,7 +24,7 @@ export default function Pricing({
   onAddToCart,
   highlightedPlanId,
 }: PricingProps) {
-  const [duration, setDuration] = useState<"3" | "6" | "12" | "24">("12");
+  const [duration, setDuration] = useState<PlanDuration>("12");
 
   const curr = CURRENCIES[currentCurrency] || CURRENCIES.SAR;
 
@@ -98,33 +98,39 @@ export default function Pricing({
         </Reveal>
 
         {/* بطاقات الباقات */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-stretch">
           {PRICING_PLANS.map((plan, i) => {
             const priceObj = plan.prices[duration];
+            if (!priceObj) return null;
             const currentPrice = priceObj[curr.code] || priceObj.SAR;
             const isHighlighted = highlightedPlanId === plan.id;
-            const isPopular = plan.isPopular || isHighlighted;
             const isVip = plan.isVip;
-            const dark = isPopular;
+            const dark = plan.isPopular || plan.isFeatured || isHighlighted;
 
             /* نسبة الخصم من السعر القديم (بالريال) */
             const oldSar = priceObj.oldSar;
             const discountPct =
               oldSar && oldSar > 0
-                ? Math.round((1 - plan.prices[duration].SAR / oldSar) * 100)
+                ? Math.round((1 - priceObj.SAR / oldSar) * 100)
                 : 0;
 
-            // إخفاء عدد الأجهزة ودليل المشاهدة الرسمية من بطاقة نوفا فقط.
+            // إخفاء عدد الأجهزة ودليل المشاهدة الرسمية من بطاقتي نوفا وX فقط.
+            const hideDeviceCountAndGuide = plan.serverCode === "nova" || plan.serverCode === "x";
             const pricingSpecs = [
               `📺 ${plan.channelsCount}`,
               `🎬 ${plan.vodCount}`,
               `⚡ ${plan.quality}`,
-              ...(plan.serverCode === "nova" ? [] : [`🛡️ ${plan.devices}`]),
+              ...(hideDeviceCountAndGuide ? [] : [`🛡️ ${plan.devices}`]),
             ];
-            const pricingFeatures =
+            const pricingFeatures = hideDeviceCountAndGuide
+              ? plan.features.filter((feature) => !feature.startsWith("دليل خيارات المشاهدة الرسمية"))
+              : plan.features;
+            const watermark =
               plan.serverCode === "nova"
-                ? plan.features.filter((feature) => !feature.startsWith("دليل خيارات المشاهدة الرسمية"))
-                : plan.features;
+                ? { src: "/images/brand/nova-ticket.png", width: 217, height: 132 }
+                : plan.serverCode === "x"
+                  ? { src: "/images/brand/xtv-ticket.png", width: 172, height: 112 }
+                  : null;
 
             return (
               <Reveal key={plan.id} variant="up" delay={i * 110} className="h-full">
@@ -140,14 +146,14 @@ export default function Pricing({
                 {dark && (
                   <div className="absolute -top-24 -end-24 z-0 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
                 )}
-                {/* شعار نوفا كعلامة مائية مدمجة في أعلى يسار البطاقة */}
-                {plan.serverCode === "nova" && (
+                {/* شعار السيرفر كعلامة مائية خافتة في أعلى يسار البطاقة */}
+                {watermark && (
                   <img
-                    src="/images/brand/nova-ticket.png"
+                    src={watermark.src}
                     alt=""
                     aria-hidden="true"
-                    width={217}
-                    height={132}
+                    width={watermark.width}
+                    height={watermark.height}
                     loading="lazy"
                     decoding="async"
                     className="pointer-events-none absolute left-4 top-8 z-[1] w-40 sm:w-48 h-auto object-contain opacity-[0.14] mix-blend-screen select-none"

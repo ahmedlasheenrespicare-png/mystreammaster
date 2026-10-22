@@ -743,6 +743,40 @@ test('server brands row stacks centered above the trio on every branded ticket (
   }
 });
 
+test('universal ticket base carries the fifa crest, a full-width stars cluster and a bare metallic name', async ({ page }) => {
+  await mockSource(page, {});
+  /* طلبات المالك الثلاثة على أساس التذكرة الجامعة: شعار الاتحاد
+     الدولي (FIFA) مكان الكأس المحايدة في الثلاثية المتوسّطة، وعنقود
+     النجوم مكبّراً حتى ملء عرض التذكرة، ومتن الاسم المعدني بلا سطرَي
+     «مواعيد · نتائج · ترتيب / يُحدَّث كل دقيقة» (المكتوبَين أساساً
+     في نص الصفحة تحت التذكرة) */
+  await page.goto('/matches/');
+  const base = page.locator('.league-ticket-carousel .league-ticket-slide').first().locator('.league-ticket');
+  await expect(base).toHaveCount(1);
+  /* شعار FIFA داخل صدفة الشارة ذاتها: صورة واحدة منبعها الأصل المحلي
+     المقصوص — ولا فيفا أخرى في الصفحة كلها */
+  const fifa = base.locator('.league-ticket-header .league-carousel-badge img.league-carousel-logo');
+  await expect(fifa).toHaveCount(1);
+  await expect(fifa).toHaveAttribute('src', /fifa-ticket\.png$/);
+  await expect.poll(async () => fifa.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  await expect(page.locator('img.league-carousel-logo[src*="fifa-ticket"]')).toHaveCount(1);
+  /* العنقود بعرض الكرت: صندوقه يطابق عرض التذكرة وحدها (هامش قياس
+     الحدود الدقيقة) ولا يتجاوز جانبيها */
+  const ticketBox = await base.boundingBox();
+  const cluster = base.locator('img.all-leagues-ticket-players');
+  await expect(cluster).toHaveCount(1);
+  const clusterBox = await cluster.boundingBox();
+  expect(ticketBox).toBeTruthy();
+  expect(clusterBox).toBeTruthy();
+  expect(Math.abs(clusterBox!.width - ticketBox!.width)).toBeLessThanOrEqual(6);
+  expect(Math.abs(clusterBox!.x - ticketBox!.x)).toBeLessThanOrEqual(6);
+  /* الاسم المعدني وحيداً: نصّه المثبّت قائم وسطرا التوضيح غائبان كلياً */
+  const body = base.locator('.league-ticket-body');
+  await expect(body.locator('em')).toHaveText('كل البطولات الكبرى');
+  await expect(body).not.toContainText('مواعيد');
+  await expect(body).not.toContainText('يُحدَّث');
+});
+
 test('the four server brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
   await mockSource(page, {});
   /* قاعدة التوزيع واحدة للأعلام كلها (نوفا + X + ايستار + موكا) بعد أن

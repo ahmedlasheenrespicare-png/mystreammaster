@@ -31,12 +31,16 @@ export default function BlogIndexPage() {
             >
               <div className="flex items-center gap-3 text-[11.5px] font-black text-black/45">
                 <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{post.category}</span>
-                <span className="inline-flex items-center gap-1">
-                  <IconClock className="w-3.5 h-3.5" /> {post.readingMinutes} دقائق قراءة
-                </span>
-                <time dateTime={post.date} className="font-latin">
-                  {post.date}
-                </time>
+                {!post.hideMeta && (
+                  <>
+                    <span className="inline-flex items-center gap-1">
+                      <IconClock className="w-3.5 h-3.5" /> {post.readingMinutes} دقائق قراءة
+                    </span>
+                    <time dateTime={post.date} className="font-latin">
+                      {post.date}
+                    </time>
+                  </>
+                )}
               </div>
               <h2 className="mt-3 font-display font-black text-[20px] sm:text-[24px] tracking-tight leading-snug group-hover:text-[#2b4eff] transition">
                 {post.title}

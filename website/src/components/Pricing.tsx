@@ -9,6 +9,7 @@ import {
   IconZap,
 } from "./Icons";
 import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PlanDuration, PricingPlan } from "../data";
+import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
 import { Reveal } from "./motion";
 
 interface PricingProps {
@@ -114,8 +115,8 @@ export default function Pricing({
                 ? Math.round((1 - priceObj.SAR / oldSar) * 100)
                 : 0;
 
-            // إخفاء عدد الأجهزة ودليل المشاهدة الرسمية من بطاقتي نوفا وX فقط.
-            const hideDeviceCountAndGuide = plan.serverCode === "nova" || plan.serverCode === "x";
+            // إخفاء عدد الأجهزة ودليل المشاهدة الرسمية من بطاقات السيرفرات فقط، مع إبقاء البيانات في المصدر.
+            const hideDeviceCountAndGuide = ["nova", "istar", "moka", "x"].includes(plan.serverCode);
             const pricingSpecs = [
               `📺 ${plan.channelsCount}`,
               `🎬 ${plan.vodCount}`,
@@ -125,12 +126,7 @@ export default function Pricing({
             const pricingFeatures = hideDeviceCountAndGuide
               ? plan.features.filter((feature) => !feature.startsWith("دليل خيارات المشاهدة الرسمية"))
               : plan.features;
-            const watermark =
-              plan.serverCode === "nova"
-                ? { src: "/images/brand/nova-ticket.png", width: 217, height: 132 }
-                : plan.serverCode === "x"
-                  ? { src: "/images/brand/xtv-ticket.png", width: 172, height: 112 }
-                  : null;
+            const watermark = SERVER_WATERMARKS[plan.serverCode];
 
             return (
               <Reveal key={plan.id} variant="up" delay={i * 110} className="h-full">
@@ -156,7 +152,7 @@ export default function Pricing({
                     height={watermark.height}
                     loading="lazy"
                     decoding="async"
-                    className="pointer-events-none absolute left-4 top-8 z-[1] w-40 sm:w-48 h-auto object-contain opacity-[0.14] mix-blend-screen select-none"
+                    className={SERVER_WATERMARK_CLASS}
                   />
                 )}
 

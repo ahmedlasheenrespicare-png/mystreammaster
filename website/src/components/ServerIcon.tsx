@@ -15,8 +15,8 @@ import { SERVER_WATERMARKS } from "../lib/server-branding";
 
 export type ServerCode = PricingPlan["serverCode"];
 
-const BOX =
-  "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white ring-1 ring-black/10 shadow-[0_2px_6px_rgba(0,0,0,0.08)]";
+/* الشعار بلا أي خلفية أو إطار: الصورة وحدها فوق خلفية الصفحة */
+const BOX = "relative inline-flex shrink-0 items-center justify-center";
 
 export function ServerIcon({
   code,
@@ -46,7 +46,7 @@ export function ServerIcon({
         loading={eager ? "eager" : "lazy"}
         decoding="async"
         draggable={false}
-        className="max-h-[76%] max-w-[80%] object-contain select-none"
+        className="max-h-full max-w-full object-contain select-none"
       />
     </span>
   );

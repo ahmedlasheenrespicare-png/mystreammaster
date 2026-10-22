@@ -151,14 +151,12 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.6);
+  background: transparent;
   transition: transform 0.5s cubic-bezier(0.75, 0, 0, 1.01);
 }
 .srv-deck-logo img {
-  max-width: 76%;
-  max-height: 74%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 .srv-deck-card.is-front .srv-deck-link:hover .srv-deck-logo {

@@ -2,6 +2,7 @@ import type { BlogPost } from "../content/posts";
 import { AVAILABLE_DURATIONS, getWhatsAppUrl, PRICING_PLANS } from "../data";
 import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
+import ServerDeck from "../components/ServerDeck";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
 /* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر */
@@ -62,6 +63,8 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
               </picture>
             </div>
           )}
+
+          {post.serverStrip && <ServerDeck label="السيرفرات الأربعة في نظرة واحدة" />}
 
           {toc.length >= 5 && (
             <nav

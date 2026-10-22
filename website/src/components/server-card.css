@@ -1,0 +1,152 @@
+/* ==========================================================================
+   بطاقة السيرفر — مستوحاة من كارت uiverse.io/ilkhoeri/blue-wombat-46
+   --------------------------------------------------------------------------
+   التصميم الأصلي: كارت بتدرّج لوني دائري (radial-gradient) يحيط بمحتوى داخلي
+   شبه شفاف بحواف مستديرة، حرف ضخم مفرّغ داخل المحتوى، وخط توهّج أسفل الكارت.
+   هنا: نفس البنية لكن أربع بطاقات مستقلّة — كل سيرفر في بطاقته — بدل كومة
+   تدور فوق بعضها، مع ألوان هوية كل سيرفر في الموقع.
+   ========================================================================== */
+
+.srv-card {
+  position: relative;
+  display: flex;
+  height: 100%;
+  padding: 4px; /* --pd في التصميم الأصلي: إطار التدرّج حول المحتوى */
+  border-radius: 26px;
+  background: var(--srv-bg);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.55s cubic-bezier(0.75, 0, 0, 1.01), box-shadow 0.55s ease;
+}
+
+/* ألوان الهوية — نفس تدرّجات شعارات السيرفرات المستخدمة في الموقع */
+.srv-card[data-server="nova"] {
+  --srv-bg: radial-gradient(circle at 28% 16%, #b9ccff 0%, #2b4eff 46%, #16257a 100%);
+  --srv-glow: #2b4eff;
+}
+.srv-card[data-server="istar"] {
+  --srv-bg: radial-gradient(circle at 28% 16%, #d8ccff 0%, #7c5cff 46%, #0d6b5d 100%);
+  --srv-glow: #7c5cff;
+}
+.srv-card[data-server="moka"] {
+  --srv-bg: radial-gradient(circle at 28% 16%, #f7ffd2 0%, #d8ff3e 44%, #0f8d74 100%);
+  --srv-glow: #a8cc15;
+}
+.srv-card[data-server="x"] {
+  --srv-bg: radial-gradient(circle at 28% 16%, #ffc2c5 0%, #ed1c24 46%, #7a0a0f 100%);
+  --srv-glow: #ed1c24;
+}
+
+.srv-card-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+
+.srv-card.is-dark .srv-card-inner {
+  background: rgba(11, 11, 15, 0.95);
+  color: #fff;
+}
+
+/* الحرف الضخم المفرّغ — عنصر التصميم الأساسي في الكارت الأصلي */
+.srv-card-glyph {
+  position: absolute;
+  /* أسفل يسار البطاقة: بعيداً عن السعر والاسم (يبدأان من يمين التخطيط العربي) */
+  inset: auto auto -20% -8%;
+  z-index: 0;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: clamp(190px, 22vw, 300px);
+  font-weight: 800;
+  line-height: 0.75;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: rgba(11, 11, 15, 0.12);
+  background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.85) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.34;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.75, 0, 0, 1.01);
+}
+
+.srv-card.is-dark .srv-card-glyph {
+  -webkit-text-stroke-color: rgba(255, 255, 255, 0.18);
+  background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.5) 100%);
+  opacity: 0.3;
+}
+
+.srv-card:hover .srv-card-glyph {
+  opacity: 0.55;
+  transform: translate(3%, -3%) rotate(-3deg);
+}
+
+/* خط التوهّج أسفل الكارت — مكافئ .lines في التصميم الأصلي */
+/* يظهر فوق الإطار السفلي للبطاقة (z-index أعلى من المحتوى الداخلي) */
+.srv-card-line {
+  position: absolute;
+  inset: auto 8% 0;
+  z-index: 3;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(to right, transparent, var(--srv-glow), transparent);
+  filter: blur(4px);
+  opacity: 0.9;
+  transition: opacity 0.5s ease, height 0.5s ease;
+}
+
+.srv-card-line::after {
+  content: "";
+  position: absolute;
+  inset: 2px 14%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #fff, transparent);
+  opacity: 0.9;
+}
+
+.srv-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 34px 60px -26px var(--srv-glow);
+}
+
+/* الباقة الأكثر طلباً: إطار لايم واضح حول الإطار المتدرّج */
+.srv-card.is-popular {
+  box-shadow: 0 0 0 3px rgba(216, 255, 62, 0.85), 0 26px 50px -30px var(--srv-glow);
+}
+.srv-card.is-popular:hover {
+  box-shadow: 0 0 0 3px rgba(216, 255, 62, 0.95), 0 34px 60px -26px var(--srv-glow);
+}
+
+.srv-card:hover .srv-card-line {
+  opacity: 1;
+  height: 7px;
+}
+
+/* الشارة العلوية داخل المحتوى بدل الخروج عن حدود البطاقة المقصوصة */
+.srv-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .srv-card,
+  .srv-card-glyph,
+  .srv-card-line {
+    transition: none !important;
+  }
+  .srv-card:hover {
+    transform: none;
+  }
+}

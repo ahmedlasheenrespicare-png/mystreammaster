@@ -51,6 +51,12 @@ export interface FeaturedClash {
   away: ClashTeamSide;
   homePlayer: string;
   awayPlayer: string;
+  /* تسلسل احتفال متحرك (فليب-بوك 4 إطارات ثابتة بلا خلفية، محاذاة
+     موحّدة 1280×1600): إن حُدِّد لجهةٍ عُرض بدل الصورة الساكنة كطبقات
+     تتبدّل بشفافية CSS — تشبه الفيديو بأربع صور فقط، وتتجمد على الإطار
+     الأخير مع تفضيل تقليل الحركة */
+  homePlayerSequence?: string[];
+  awayPlayerSequence?: string[];
   /* مصدر البطولة المغذِّية لهذه المواجهة (مفتاح ESPN نفسه): في تذكرة
      البطولة يُورَّث من التذكرة نفسها ولا يُذكر، وفي التذكرة الجامعة
      بصفحة «مواعيد المباريات» يُثبَّت صراحةً على بطولة المواجهة فيُرسَم
@@ -91,6 +97,12 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
       },
       homePlayer: "/images/players/fra-dembele-phone.png",
       awayPlayer: "/images/players/esp-yamal.png",
+      homePlayerSequence: [
+        "/images/players/fra-dembele-phone-stage-1.png",
+        "/images/players/fra-dembele-phone-stage-2.png",
+        "/images/players/fra-dembele-phone-stage-3.png",
+        "/images/players/fra-dembele-phone-stage-4.png",
+      ],
     },
     {
       /* بطلب المالك: كانت العبارة التصنيفية «مباراة الليلة» وصارت
@@ -513,14 +525,35 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
   const leftSide = homeIsConfigHome ? clash.away : clash.home;
   const rightPlayer = homeIsConfigHome ? clash.homePlayer : clash.awayPlayer;
   const leftPlayer = homeIsConfigHome ? clash.awayPlayer : clash.homePlayer;
+  /* تسلسل الاحتفال يتبع انعكاس الضيافة نفسه — الجهة تحمل إطاراتها مهما دار الترتيب */
+  const rightSequence = homeIsConfigHome ? clash.homePlayerSequence : clash.awayPlayerSequence;
+  const leftSequence = homeIsConfigHome ? clash.awayPlayerSequence : clash.homePlayerSequence;
 
   return (
     <>
       <TicketShell />
       {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
-          ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد */}
-      <img className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <img className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+          ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد. جهةٌ ذات
+          تسلسل احتفال تُرسَم حاويةً طبقية (4 إطارات تتبدّل بشفافية
+          CSS كفليب-بوك) بدل الصورة الساكنة */}
+      {leftSequence ? (
+        <span className="league-ticket-player league-ticket-player--left league-ticket-player--celebrate league-ticket-player--seq" data-player-src={leftSequence[leftSequence.length - 1]} aria-hidden="true">
+          {leftSequence.map((src, i) => (
+            <img key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
+          ))}
+        </span>
+      ) : (
+        <img className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
+      {rightSequence ? (
+        <span className="league-ticket-player league-ticket-player--right league-ticket-player--celebrate league-ticket-player--seq" data-player-src={rightSequence[rightSequence.length - 1]} aria-hidden="true">
+          {rightSequence.map((src, i) => (
+            <img key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
+          ))}
+        </span>
+      ) : (
+        <img className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
       {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
           بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي
           تُبدي أيقونتها هنا — وقمم eng/esp/uefa تبقى نقيةً بطلبه.

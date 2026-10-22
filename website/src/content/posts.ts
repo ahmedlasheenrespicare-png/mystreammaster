@@ -31,6 +31,8 @@ export interface BlogPost {
   relatedPlan?: "nova" | "istar" | "moka" | "x";
   /** صورة المقال الرئيسية (اختيارية) — تُرسم وقت البناء بلا JS */
   hero?: { src: string; avif?: string; alt: string };
+  /** شريط بطاقات السيرفرات الأربعة (تصميم كارت uiverse) بدل صورة الغلاف */
+  serverStrip?: boolean;
   /** "guide" = دليل تعريفي محايد بدون صندوق بيع */
   kind?: "guide";
 }
@@ -48,11 +50,8 @@ const RETAINED_POSTS: BlogPost[] = [
     readingMinutes: 7,
     category: "دليل المشتري",
     relatedPlan: "nova",
-    hero: {
-      src: "images/articles/best-iptv-2026-1280w.webp",
-      avif: "images/articles/best-iptv-2026-1280w.avif",
-      alt: "أفضل اشتراك IPTV 2026 — مقارنة الباقات والأسعار",
-    },
+    /* صورة الغلاف مخفيّة بطلب المالك — مكانها شريط بطاقات السيرفرات */
+    serverStrip: true,
     intro:
       "«أفضل اشتراك» ليست صفة مطلقة: الباقة الأنسب لك تعتمد على سرعة اتصالك، وما تشاهده غالباً، وعدد الأجهزة في منزلك. هذه الصفحة تجمع الباقات الأربع في جدول واحد، وتشرح كيف تختار بينها في دقيقتين، وكيف تختبر أي سيرفر قبل أن تدفع.",
     sections: [

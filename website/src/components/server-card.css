@@ -132,6 +132,21 @@
 }
 
 /* الشارة العلوية داخل المحتوى بدل الخروج عن حدود البطاقة المقصوصة */
+.srv-card.is-compact .srv-card-inner {
+  justify-content: space-between;
+  padding: 18px 16px;
+  border-radius: 20px;
+}
+
+.srv-card.is-compact {
+  border-radius: 24px;
+}
+
+.srv-card.is-compact .srv-card-glyph {
+  font-size: clamp(140px, 16vw, 190px);
+  inset: auto auto -16% -10%;
+}
+
 .srv-card-badges {
   display: flex;
   flex-wrap: wrap;

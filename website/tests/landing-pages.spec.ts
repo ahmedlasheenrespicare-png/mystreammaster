@@ -804,6 +804,15 @@ test('ticket league icons and server brands link to their dedicated pages (owner
     await expect(link).toHaveAttribute('href', href);
     await expect(link).toHaveAttribute('tabindex', '-1');
   }
+  /* وأيقونة الثلاثية (شعار الفيفا) على أساس الجامعة رابط لصفحة
+     «مواعيد المباريات» نفسها — تنقل من هيرو الرئيسية إليها فعلاً */
+  await page.goto('/matches/');
+  const baseFifa = page.locator('.league-ticket-carousel .league-ticket-slide').first();
+  const fifa = baseFifa.locator('.league-ticket-header a.league-ticket-badge-link');
+  await expect(fifa, 'fifa badge linked to /matches/').toHaveCount(1);
+  await expect(fifa).toHaveAttribute('href', '/matches/');
+  await expect(fifa).toHaveAttribute('tabindex', '-1');
+
   /* ونفس السلوك على تذكرة دوري ساكنة (الفرنسية أربعة أعلام مرتبطة) */
   await page.goto('/matches/الدوري-الفرنسي/');
   await expect(page.locator('.matches-hero-title .league-ticket .league-ticket-brands a.league-ticket-brand-link')).toHaveCount(4);
@@ -819,6 +828,46 @@ test('ticket league icons and server brands link to their dedicated pages (owner
     .locator('.league-ticket-brands a.league-ticket-brand-link').first().click();
   await page.waitForLoadState('domcontentloaded');
   expect(page.url(), 'nova brand navigates to its server page').toMatch(/\/nova\/$/);
+  /* ونقرة أيقونة الفيفا من هيرو الرئيسية تصل «مواعيد المباريات» فعلاً */
+  await page.goto('/');
+  await page.locator('.league-ticket-carousel .league-ticket-slide').first()
+    .locator('.league-ticket-header a.league-ticket-badge-link').click();
+  await page.waitForLoadState('domcontentloaded');
+  expect(page.url(), 'fifa badge navigates to the matches schedule').toMatch(/\/matches\/$/);
+});
+
+test('universal ticket metallic name carries an animated lime shine that keeps sweeping on mobile', async ({ page }) => {
+  await mockSource(page, {});
+  /* بطلب المالك: «كل البطولات الكبرى» يعلو معدنَّه شعاع ليموني متحرك
+     مستوحى من uiverse.io/devkatyall/spicy-mule-43 (رخصة MIT) — وحراسته
+     تثبت الحركة نفسها لا مجرد القاعدة، على عرض الجوال خصوصاً كما اشترط */
+  await page.goto('/matches/');
+  const name = page.locator('.league-ticket-carousel .league-ticket-slide').first().locator('.all-leagues-ticket-name');
+  await expect(name, 'metallic name present').toHaveCount(1);
+  /* 1) احترام تفضيل السكون (إعداد العائلة كلها مجبر على reduce) */
+  await expect(name).toHaveCSS('animation-name', 'none');
+  /* 2) بلا ذلك التفضيل: اسم الدورة المحسوب هو مسح اللمعة — والأهم أن
+     موضع الخلفية المقصوصة **يتبدّل فعلاً** بين عينتين زمنيتين على
+     عرض سطح المكتب وعرض الجوال سواءً (الشعاع يتحرك حقاً على الجوال) */
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const animName = await name.evaluate((el: HTMLElement) => getComputedStyle(el).animationName);
+    expect(animName, `${viewport.width}px: shine animation engaged`).toBe('all-leagues-ticket-name-shine');
+    /* والأهم: موضع الخلفية المقصوصة **يتبدّل فعلاً** خلال الدورة —
+       استقراء دوري يقاطع عند أول تبديل مهلة قدرها 5.25 ثانية (الدورة
+       4.8 ثوانٍ بإمساكٍ افتتاحي وهدوءٍ ختامي تشريطيين، فالعينتان
+       الثابتتان قد تقعان معاً في الطور الهادئ كما في أول تشغيل) */
+    const posInitial = await name.evaluate((el: HTMLElement) => getComputedStyle(el).backgroundPosition);
+    let shineMoved = false;
+    for (let tries = 0; tries < 21 && !shineMoved; tries++) {
+      await page.waitForTimeout(250);
+      const posNow = await name.evaluate((el: HTMLElement) => getComputedStyle(el).backgroundPosition);
+      shineMoved = posNow !== posInitial;
+    }
+    expect(shineMoved, `${viewport.width}px: shine actually moves`).toBeTruthy();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  }
 });
 
 test('the four server brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {

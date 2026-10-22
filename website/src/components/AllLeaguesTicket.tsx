@@ -82,7 +82,13 @@ function AllLeaguesTicketBase() {
           الحاملة بعد تعميم المركز؛ وظهورها في هيرو الرئيسية يتبع لهذه
           الوحدة ذاتها */}
       <div className="league-ticket-header league-ticket-header--brand league-ticket-header--under-brands">
-        <LeagueIconBadge leagueId="matches" iconSrc="/images/brand/fifa-ticket.png" size={60} eager />
+        {/* وبطلب المالك صارت أيقونة الفيفا رابطاً لصفحة «مواعيد
+            المباريات» /matches/ — نقرة فأرة بنفس قاعدة روابط الأعلام
+            وأيقونات البطولات (حيّز زخرفي محفوظ بلا تغيير: tabIndex=-1
+            وتلميح الاسم عند التحويم) */}
+        <a className="league-ticket-badge-link" href="/matches/" title="مواعيد المباريات" tabIndex={-1}>
+          <LeagueIconBadge leagueId="matches" iconSrc="/images/brand/fifa-ticket.png" size={60} eager />
+        </a>
         <StreamMasterTicketWordmark />
       </div>
       {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
@@ -107,9 +113,11 @@ function AllLeaguesTicketBase() {
       </div>
       {/* المتن: الاسم المعدني الكبير وحده بطلب المالك — سطرا «مواعيد ·
           نتائج · ترتيب / يُحدَّث كل دقيقة» أُخفيا من هنا فهما مكتوبان
-          بوضوح في متن صفحة المواعيد تحت التذكرة مباشرةً */}
+          بوضوح في متن صفحة المواعيد تحت التذكرة مباشرةً؛ وتحمل التدرّج
+          المعدني الآن لمعة ليمونية مسحوبة (فئة مخصصة — القاعدة بملف
+          الأنماط) تتحرك على الجوال والمكتب سواءً */}
       <div className="league-ticket-body">
-        <em>كل البطولات الكبرى</em>
+        <em className="all-leagues-ticket-name">كل البطولات الكبرى</em>
       </div>
     </div>
   );

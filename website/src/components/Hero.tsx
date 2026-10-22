@@ -142,12 +142,14 @@ function TvMockup({ index }: { index: number }) {
         {/* لوحة العرض — موقع مصغّر بداخله شاشة بث حية تتناوب */}
         <div className="bg-[#efeee9] p-4 md:p-6 relative min-w-0">
           {/* شارة عائمة: تفعيل فوري */}
-          <div data-hero-badge="activation" className="relative z-10 mb-4 ms-auto w-fit max-w-full bg-white rounded-2xl shadow-lg border border-black/10 px-3 py-2 hidden md:flex items-center gap-2 motion-safe:animate-float">
-            <span className="w-7 h-7 shrink-0 rounded-lg bg-[#d8ff3e] grid place-items-center">
-              <IconCheck className="w-3.5 h-3.5" />
+          <div data-hero-badge="activation" className="relative z-10 mb-3 md:mb-4 ms-auto w-fit max-w-full bg-white rounded-2xl shadow-lg border border-black/10 px-2.5 py-1.5 md:px-3 md:py-2 flex items-center gap-2 motion-safe:animate-float">
+            <span className="w-6 h-6 md:w-7 md:h-7 shrink-0 rounded-lg bg-[#d8ff3e] grid place-items-center">
+              <IconCheck className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </span>
-            <div className="leading-none text-right">
-              <p className="text-[11px] font-black">تفعيل فوري</p>
+            {/* على الجوال سطر واحد مضغوط (كان سطرين + 54px ارتفاعاً)، ويبقى
+                ظاهراً لأن اختبار storefront يشترط ظهور الشارات الثلاث لكل عرض */}
+            <div className="leading-none text-right flex items-baseline gap-1.5">
+              <p className="text-[10.5px] md:text-[11px] font-black">تفعيل فوري</p>
               <p className="text-[10px] text-black/50">خلال 5 دقائق</p>
             </div>
           </div>

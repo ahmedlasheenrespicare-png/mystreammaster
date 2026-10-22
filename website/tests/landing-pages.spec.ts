@@ -308,10 +308,11 @@ const clashScoreCases: ReadonlyArray<{
     awayScore: '2',
   },
   {
-    /* الشريحة الثالثة: مباراة الليلة — بايرن (كين) × أرسنال (ساكا) */
+    /* الشريحة الثالثة: قمة الجولة (وحّدها المالك — كانت «مباراة الليلة»)
+       — بايرن (كين) × أرسنال (ساكا) */
     url: '/matches/دوري-أبطال-أوروبا/',
     league: 'uefa.champions',
-    eyebrow: 'مباراة الليلة',
+    eyebrow: 'قمة الجولة',
     slideIndex: 2,
     dots: 3,
     home: 'Bayern München',
@@ -460,7 +461,7 @@ test('matches index ticket hosts the five clash slides with their league feature
     n: number; eyebrow: string; homeName: string; awayName: string; homeScore: string; awayScore: string; fullCheck?: boolean;
   }> = [
     { n: 1, eyebrow: 'قمة الجولة', homeName: 'باريس', awayName: 'برشلونة', homeScore: '4', awayScore: '2', fullCheck: true },
-    { n: 2, eyebrow: 'مباراة الليلة', homeName: 'بايرن', awayName: 'أرسنال', homeScore: '2', awayScore: '1' },
+    { n: 2, eyebrow: 'قمة الجولة', homeName: 'بايرن', awayName: 'أرسنال', homeScore: '2', awayScore: '1' },
     { n: 3, eyebrow: 'مواجهة الكلاسيكو', homeName: 'ريال مدريد', awayName: 'برشلونة', homeScore: '3', awayScore: '1' },
     { n: 4, eyebrow: 'قمة الجولة', homeName: 'تشيلسي', awayName: 'توتنهام', homeScore: '3', awayScore: '2' },
     { n: 5, eyebrow: 'قمة الجولة', homeName: 'أرسنال', awayName: 'إيفرتون', homeScore: '2', awayScore: '0' },
@@ -563,19 +564,24 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
   await page.goto('/matches/الدوري-الإنجليزي/');
   const strip = page.locator('.league-ticket-slide').nth(2).locator('.league-ticket-countdown.ticket-flip');
   await expect(strip).toBeVisible();
-  /* أربع خلايا بترتيب عربي: يوم ← ساعة ← دقيقة ← ثانية */
+  /* أربع خلايا بترتيب عربي وبصيغة جمع المالك: أيام ← ساعات ← دقائق ← ثوانٍ */
   const labels = await strip.locator('.ticket-flip__label').allTextContents();
-  expect(labels).toEqual(['يوم', 'ساعة', 'دقيقة', 'ثانية']);
-  /* القيم المجمدة محسوبة من فترق الموعد: 02 يوم / 05 ساعة / 03 دقيقة /
-     07 ثانية — القراءة من الأنصاف العلوية لأن كل خانة تضاعف قيمتها
-     في النصفين ما دامت ساكنة */
+  expect(labels).toEqual(['أيام', 'ساعات', 'دقائق', 'ثوانٍ']);
+  /* القيم المجمدة محسوبة من فترق الموعد: ٠٢ يوم / ٠٥ ساعات / ٠٣ دقائق /
+     ٠٧ ثوانٍ — بطلبه تُعرض كل الخانات بالأرقام العربية المشرقية (٠١٢...)؛
+     القراءة من الأنصاف العلوية لأن كل خانة تضاعف قيمتها في النصفين ما
+     دامت ساكنة، ولا رقم لاتينياً واحداً يتسلل إلى أي خانة */
   const tops = await strip.locator('.ticket-flip__half--top').allTextContents();
-  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تحمّل سعة دقيقة */
-  expect(tops.slice(0, 6)).toEqual(['0', '2', '0', '5', '0', '3']);
-  expect(tops.slice(6, 7)).toEqual(['0']);
-  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تسامح رقمي على الوحدة */
-  expect(tops[7]).toMatch(/^\d$/);
+  expect(tops.slice(0, 6)).toEqual(['٠', '٢', '٠', '٥', '٠', '٣']);
+  expect(tops.slice(6, 7)).toEqual(['٠']);
+  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تسامح رقمي على
+     الوحدة ضمن الأبجدية العربية نفسها حصراً */
+  expect(tops[7]).toMatch(/^[٠-٩]$/);
   await expect(strip.locator('.ticket-flip__digit')).toHaveCount(8);
+  /* وحصار شامل: لا خانة لاتينية في العدّاد كله مهما تبدّلت الرفرفة */
+  for (const text of await strip.locator('.ticket-flip__txt').allTextContents()) {
+    expect(text).toMatch(/^[٠-٩]$/);
+  }
 });
 
 test('french league ticket stacks its four server brands centered above the centered wordmark trio', async ({ page }) => {

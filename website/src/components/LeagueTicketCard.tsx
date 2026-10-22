@@ -60,8 +60,9 @@ export interface FeaturedClash {
 
 /* ── المواجهات المميّزة — شرائح القمم لكل بطولة بترتيب عرضها بعد
      الشريحة الأساسية: مقاتلو الأبطال «قمة الجولة» (باريس × برشلونة)
-     و«مباراة الليلة» (بايرن × أرسنال)، والكلاسيكو للإسباني، وقمتان
-     للإنجليزي (تشيلسي × توتنهام ثم أرسنال × إيفرتون). شعارات
+     و«قمة الجولة» ثانية (بايرن × أرسنال — كانت «مباراة الليلة» قبل أن
+     يوحّدها المالك)، والكلاسيكو للإسباني، وقمتان للإنجليزي (تشيلسي ×
+     توتنهام ثم أرسنال × إيفرتون). شعارات
      بايرن/أرسنال/تشيلسي/توتنهام/إيفرتون من مصدر أيقونات الموقع نفسه
      (ESPN CDN كما في بطاقات المباريات) مع بديل الحرفين المحلي
      إن تعذّر التحميل */
@@ -92,7 +93,9 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
       awayPlayer: "/images/players/esp-yamal.png",
     },
     {
-      eyebrow: "مباراة الليلة",
+      /* بطلب المالك: كانت العبارة التصنيفية «مباراة الليلة» وصارت
+         «قمة الجولة» أسوةً بشقيقتها (الشريحة الثالثة في المنزلقة الجامعة) */
+      eyebrow: "قمة الجولة",
       home: {
         name: "بايرن ميونخ",
         crest: "https://a.espncdn.com/i/teamlogos/soccer/500/132.png",
@@ -268,13 +271,20 @@ function useNow(active: boolean) {
   return now;
 }
 
+/* بطلب المالك: خانات العدّاد تُعرض بالأرقام العربية المشرقية
+   (٠١٢٣٤٥٦٧٨٩) — تحويل شكلي محض يُطبَّق على النص المهيّأ بعد الحساب،
+   فلا يمسّ أي قيمة زمنية، وكل محرف عربي هنا نقطة شيفرة واحدة فينقسم
+   بحروفه بأمان عند إسقاطه على بطاقات الفليب */
+const AR_DIGITS: Readonly<Record<string, string>> = { "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤", "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩" };
+const toArabicDigits = (western: string) => western.replace(/\d/g, (d) => AR_DIGITS[d]);
+
 function splitCountdown(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
   const days = Math.floor(total / 86400);
   const hours = Math.floor((total % 86400) / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = total % 60;
-  const two = (n: number) => String(n).padStart(2, "0");
+  const two = (n: number) => toArabicDigits(String(n).padStart(2, "0"));
   return { days, hours: two(hours), minutes: two(minutes), seconds: two(seconds) };
 }
 
@@ -454,11 +464,13 @@ function FlipDigit({ value }: { value: string }) {
 }
 
 export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof splitCountdown> }) {
+  /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفياً:
+     أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه) */
   const cells: { label: string; value: string }[] = [
-    ...(countdown.days > 0 ? [{ label: "يوم", value: String(countdown.days).padStart(2, "0") }] : []),
-    { label: "ساعة", value: countdown.hours },
-    { label: "دقيقة", value: countdown.minutes },
-    { label: "ثانية", value: countdown.seconds },
+    ...(countdown.days > 0 ? [{ label: "أيام", value: toArabicDigits(String(countdown.days).padStart(2, "0")) }] : []),
+    { label: "ساعات", value: countdown.hours },
+    { label: "دقائق", value: countdown.minutes },
+    { label: "ثوانٍ", value: countdown.seconds },
   ];
   return (
     <div className="league-ticket-countdown ticket-flip" role="presentation">
@@ -476,7 +488,7 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
   );
 }
 
-/* منزلقة «قمة الجولة/الكلاسيكو/مباراة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
+/* منزلقة «قمة الجولة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
 function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean; underBrands?: boolean }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;

@@ -1,4 +1,5 @@
 import LeagueIconBadge from "./LeagueIconBadge";
+import { TicketImage } from "./TicketImage";
 import { leagueLandingById } from "../content/competitions";
 import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, IstarTicketBrand, MokaTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
@@ -94,7 +95,7 @@ function AllLeaguesTicketBase() {
       </div>
       {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
           الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
-      <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+      <TicketImage className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       <span className="all-leagues-ticket-veil" aria-hidden="true" />
       {/* أيقونات البطولات الثماني — بطلب المالك صارت روابط لصفحاتها
           المخصصة /matches/{السلاج}/: نقرة الفأرة فوق أي أيقونة تفتح

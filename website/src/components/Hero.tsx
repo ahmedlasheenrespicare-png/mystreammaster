@@ -371,6 +371,15 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
+        {/* تذكرة مواعيد المباريات الجامعة بعد الشارة مباشرةً — كما كانت قبل
+            إعادة هيكلة الهيرو: نفس مكوّن صفحة «مواعيد المباريات» بشرائحه
+            الست (الأساسية + قمم الأبطال والكلاسيكو والإنجليزي) ووظائفه الحيّة. */}
+        <Reveal variant="up" delay={140} className="mt-7">
+          <div className="home-matches-ticket mx-auto w-full max-w-[1120px]">
+            <AllLeaguesTicket />
+          </div>
+        </Reveal>
+
         {/* العنوان الرئيسي — كشف سطر بسطر من خلف قناع
             حجم الجوال مخفّض إلى 9vw (كان 11.5vw) للسطرين معاً، ومن sm
             (640px) فصاعداً تبقى الأحجام كما هي تماماً. */}
@@ -432,14 +441,6 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               </span>
               دليل المشاهدة الرسمية
             </a>
-          </div>
-        </Reveal>
-
-        {/* تذكرة مواعيد المباريات الجامعة — بعد الأزرار: الوعد والتحويل أولاً،
-            ثم الحيوية الحيّة تحتهما. نفس مكوّن صفحة «مواعيد المباريات». */}
-        <Reveal variant="up" delay={540} className="mt-9 md:mt-10">
-          <div className="home-matches-ticket mx-auto w-full max-w-[1120px]">
-            <AllLeaguesTicket />
           </div>
         </Reveal>
 

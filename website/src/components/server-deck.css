@@ -126,7 +126,8 @@
 }
 
 /* ---- محتوى الكارت: شعار السيرفر واسمه وسعره ---- */
-.srv-deck-link {
+/* جسم الكارت: الشعار والاسم والسعر في الأعلى، وزر التفعيل تحتها */
+.srv-deck-body {
   position: relative;
   z-index: 1;
   display: flex;
@@ -136,13 +137,21 @@
   gap: 2px;
   width: 100%;
   height: 100%;
-  padding: 8px 6px;
+  padding: 8px 0 10px;
+}
+
+.srv-deck-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
   text-align: center;
   text-decoration: none;
   color: #0b0b0f;
 }
 
-.srv-deck-card:not(.is-front) .srv-deck-link {
+.srv-deck-card:not(.is-front) .srv-deck-link,
+.srv-deck-card:not(.is-front) .srv-wa {
   pointer-events: none;
 }
 
@@ -189,13 +198,184 @@
   color: #0b0b0f;
 }
 
-.srv-deck-cta {
+/* ==========================================================================
+   زر «تفعيل» داخل الكارت — منقول عن uiverse.io/Navarog21/ordinary-rat-19
+   --------------------------------------------------------------------------
+   نفس الهندسة حرفياً: إطار مثمّن (clip-path) بحدّ مزدوج، وأربعة مربعات
+   مُدارة 45° تُرسم بها زوايا الإطار المقصوصة، وسهمان على الجانبين يتبادلان
+   الموضع وينبضان عند المرور، مع توهّج أخضر داخلي وتبديل الألوان بالتتابع.
+
+   كل المقاسات بالـ em كما في الأصل، فتكبير/تصغير font-size يحفظ النِسب؛
+   هنا 10px فقط ليدخل الزر ومعه السهمان داخل لوح الكارت (142px عرضاً).
+   الألوان: النص في الأصل #ddebf0 لأن خلفيته داكنة، ولوح كارتنا فاتح، فصار
+   كحلياً غامقاً ليُقرأ؛ وبقية الألوان (أزرق #2761c3 وأخضر #27c39f) كما هي.
+   ========================================================================== */
+
+.srv-wa {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 11em;
+  height: 4em;
   margin-top: 3px;
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 900;
-  color: #1e3bbf;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  line-height: 1;
+  color: #0b1b33;
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  transition: 0.1s;
+}
+
+.srv-wa:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* الإطار المثمّن */
+.srv-wa-clip {
+  --srv-wa-color: #2761c3;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 4px double var(--srv-wa-color);
+  box-shadow: inset 0 0 12px #195480;
+  -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+/* السهمان خارج الزر — يظهران ويتبادلان الجانبين عند المرور */
+.srv-wa-arrow {
+  position: absolute;
+  top: 35%;
+  width: 11%;
+  height: 30%;
+  background-color: #2761c3;
+  transition: 0.2s;
+}
+
+.srv-wa-arrow--left {
+  left: -13.5%;
+  -webkit-clip-path: polygon(100% 0, 100% 100%, 0 50%);
+  clip-path: polygon(100% 0, 100% 100%, 0 50%);
+}
+
+.srv-wa-arrow--right {
+  left: 102%;
+  -webkit-clip-path: polygon(100% 49%, 0 0, 0 100%);
+  clip-path: polygon(100% 49%, 0 0, 0 100%);
+}
+
+.srv-wa:hover .srv-wa-arrow--right {
+  background-color: #27c39f;
+  left: -15%;
+  animation: 0.6s ease-in-out both infinite alternate srv-wa-right-arrow;
+}
+
+.srv-wa:hover .srv-wa-arrow--left {
+  background-color: #27c39f;
+  left: 103%;
+  animation: 0.6s ease-in-out both infinite alternate srv-wa-left-arrow;
+}
+
+/* المربعات المُدارة 45° التي تشكّل زوايا الإطار */
+.srv-wa-corner {
+  position: absolute;
+  width: 4em;
+  height: 4em;
+  background-color: #2761c3;
+  box-shadow: inset 1px 1px 8px #2781c3;
+  transform: scale(1) rotate(45deg);
+  transition: 0.2s;
+}
+
+.srv-wa-corner--rt {
+  top: -1.98em;
+  left: 91%;
+}
+.srv-wa-corner--lt {
+  top: -1.96em;
+  left: -3em;
+}
+.srv-wa-corner--lb {
+  top: 2.1em;
+  left: -2.15em;
+}
+.srv-wa-corner--rb {
+  top: 45%;
+  left: 88%;
+}
+
+.srv-wa:hover .srv-wa-corner--lt {
+  animation: 0.1s ease-in-out 0.05s both srv-wa-change, 0.2s linear 0.4s both srv-wa-light;
+}
+.srv-wa:hover .srv-wa-corner--rt {
+  animation: 0.1s ease-in-out 0.15s both srv-wa-change, 0.2s linear 0.4s both srv-wa-light;
+}
+.srv-wa:hover .srv-wa-corner--rb {
+  animation: 0.1s ease-in-out 0.25s both srv-wa-change, 0.2s linear 0.4s both srv-wa-light;
+}
+.srv-wa:hover .srv-wa-corner--lb {
+  animation: 0.1s ease-in-out 0.35s both srv-wa-change, 0.2s linear 0.4s both srv-wa-light;
+}
+
+.srv-wa:hover .srv-wa-corner {
+  transform: scale(1.25) rotate(45deg);
+}
+
+.srv-wa:hover .srv-wa-clip {
+  animation: 0.2s ease-in-out 0.55s both srv-wa-green-light;
+  --srv-wa-color: #27c39f;
+}
+
+@keyframes srv-wa-change {
+  from {
+    background-color: #2781c3;
+  }
+  to {
+    background-color: #27c39f;
+  }
+}
+
+@keyframes srv-wa-light {
+  from {
+    box-shadow: 1px 1px 5px #27c39f;
+  }
+  to {
+    box-shadow: 0 0 2px #27c39f;
+  }
+}
+
+@keyframes srv-wa-green-light {
+  to {
+    box-shadow: inset 0 0 32px #27c39f;
+  }
+}
+
+@keyframes srv-wa-left-arrow {
+  from {
+    transform: translate(0px);
+  }
+  to {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes srv-wa-right-arrow {
+  from {
+    transform: translate(0px);
+  }
+  to {
+    transform: translateX(-10px);
+  }
 }
 
 /* ---- نقاط التنقّل بين السيرفرات (خارج الكارت حتى لا تُشوّه التصميم) ---- */
@@ -311,7 +491,11 @@
 @media (prefers-reduced-motion: reduce) {
   .srv-deck-card,
   .srv-deck-glyph,
-  .srv-deck-logo {
+  .srv-deck-logo,
+  .srv-wa,
+  .srv-wa-clip,
+  .srv-wa-corner,
+  .srv-wa-arrow {
     transition: none !important;
     animation: none !important;
   }

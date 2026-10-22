@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AVAILABLE_DURATIONS, PRICING_PLANS, type PlanDuration, type PricingPlan } from "../data";
+import {
+  AVAILABLE_DURATIONS,
+  getWhatsAppUrl,
+  PRICING_PLANS,
+  type PlanDuration,
+  type PricingPlan,
+} from "../data";
 import { to } from "../config";
 import { SERVER_WATERMARKS } from "../lib/server-branding";
 import "./server-deck.css";
@@ -132,29 +138,54 @@ function CardBody({
   const logo = SERVER_WATERMARKS[plan.serverCode];
   const price = useMemo(() => plan.prices[duration] ?? plan.prices["12"], [plan, duration]);
 
+  /* رسالة واتساب جاهزة: السيرفر + المدة + السعر — يفتحها الزر مباشرة */
+  const waMessage = `مرحبًا ستريم ماستر، أريد تفعيل اشتراك ${nameOnly} — 12 شهرًا — ${price.SAR} ر.س`;
+  const waHref = getWhatsAppUrl(waMessage);
+
   return (
-    <a
-      href={to(`${plan.serverCode}/`)}
-      className="srv-deck-link"
-      tabIndex={focusable ? 0 : -1}
-      aria-label={`${nameOnly} — صفحة السيرفر، ${price.SAR} ر.س لكل 12 شهراً`}
-    >
-      <span className="srv-deck-logo">
-        <img
-          src={logo.src}
-          alt=""
-          width={logo.width}
-          height={logo.height}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-        />
-      </span>
-      <span className="srv-deck-name">{nameOnly}</span>
-      <span className="srv-deck-price">
-        <b>{price.SAR}</b> ر.س / 12 شهراً
-      </span>
-      <span className="srv-deck-cta">تفاصيل السيرفر</span>
-    </a>
+    <div className="srv-deck-body">
+      <a
+        href={to(`${plan.serverCode}/`)}
+        className="srv-deck-link"
+        tabIndex={focusable ? 0 : -1}
+        aria-label={`${nameOnly} — صفحة السيرفر، ${price.SAR} ر.س لكل 12 شهراً`}
+      >
+        <span className="srv-deck-logo">
+          <img
+            src={logo.src}
+            alt=""
+            width={logo.width}
+            height={logo.height}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        </span>
+        <span className="srv-deck-name">{nameOnly}</span>
+        <span className="srv-deck-price">
+          <b>{price.SAR}</b> ر.س / 12 شهراً
+        </span>
+      </a>
+
+      {/* زر التفعيل — تصميم uiverse (Navarog21/ordinary-rat-19) */}
+      <a
+        href={waHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="srv-wa"
+        tabIndex={focusable ? 0 : -1}
+        aria-label={`تفعيل اشتراك ${nameOnly} عبر واتساب`}
+      >
+        <span className="srv-wa-label">تفعيل</span>
+        <span className="srv-wa-clip" aria-hidden="true">
+          <span className="srv-wa-corner srv-wa-corner--lt" />
+          <span className="srv-wa-corner srv-wa-corner--rb" />
+          <span className="srv-wa-corner srv-wa-corner--rt" />
+          <span className="srv-wa-corner srv-wa-corner--lb" />
+        </span>
+        <span className="srv-wa-arrow srv-wa-arrow--right" aria-hidden="true" />
+        <span className="srv-wa-arrow srv-wa-arrow--left" aria-hidden="true" />
+      </a>
+    </div>
   );
 }

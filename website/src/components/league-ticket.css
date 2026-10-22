@@ -458,6 +458,59 @@
   .league-ticket-player--celebrate { animation: none; }
 }
 
+/* التسلسل المتحرك (فليب-بوك 4 إطارات موحّدة 1280×1600): الحاوية تحمل
+   هندسة الخانة بنسبة الإطار، والإطارات طبقات مطلقة تتبدّل شفافيتها
+   بمقاطع متتالية — ذهاب وعودة (1→2→3→4→3→2) كل 600 مللي كأنها فيديو
+   قصير، بلا جافاسكربت. مع تقليل الحركة: الإطارات الثلاثة الأولى
+   تُخفى ويبقى الإطار الأخير (ذروة الاحتفال) ثابتاً */
+.league-ticket-player--seq {
+  width: auto;
+  aspect-ratio: 1280 / 1600;
+}
+
+.league-ticket-player__seq-frame {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  opacity: 0;
+  animation: league-ticket-seq 3.6s infinite;
+}
+
+.league-ticket-player__seq-frame--1 { animation-name: league-ticket-seq-1; }
+.league-ticket-player__seq-frame--2 { animation-name: league-ticket-seq-2; }
+.league-ticket-player__seq-frame--3 { animation-name: league-ticket-seq-3; }
+.league-ticket-player__seq-frame--4 { animation-name: league-ticket-seq-4; }
+
+@keyframes league-ticket-seq-1 {
+  0%, 16.6% { opacity: 1; }
+  16.7%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-2 {
+  0%, 16.6% { opacity: 0; }
+  16.7%, 33.3% { opacity: 1; }
+  33.4%, 83.3% { opacity: 0; }
+  83.4%, 100% { opacity: 1; }
+}
+@keyframes league-ticket-seq-3 {
+  0%, 33.3% { opacity: 0; }
+  33.4%, 50% { opacity: 1; }
+  50.1%, 66.6% { opacity: 0; }
+  66.7%, 83.3% { opacity: 1; }
+  83.4%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-4 {
+  0%, 50% { opacity: 0; }
+  50.1%, 66.6% { opacity: 1; }
+  66.7%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .league-ticket-player__seq-frame { animation: none; opacity: 0; }
+  .league-ticket-player__seq-frame--4 { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {
   .league-ticket-player { height: 70%; opacity: .85; }
   /* ميسي الخلفي يبقى مطلّاً من وراء رونالدو إلى أعلى اليسار */

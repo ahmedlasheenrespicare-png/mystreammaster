@@ -31,5 +31,8 @@ jobs:
       - run: npm test --prefix tests/source-store
       - run: npm run typecheck
       - run: npm test
+      # الحارس الصارم دائم: أي عنوان بلا كلمته أو أطول من 60 حرفاً يُفشل البناء
       - run: npm run build
+        env:
+          SEO_STRICT: '1'
       - run: npm run test:ui

@@ -439,6 +439,25 @@
   height: 72%;
 }
 
+/* نسخ الاحتفال (fra-dembele-phone على قمة سان جيرمان×برشا الآن): نبضة
+   حيّة بلا اهتزاز — زوم كين-برنز بطيء بأصل مثبت عند القدم، وtransform
+   فقط ليبقى التحريك على طبقة التركيب، ومع تفضيل تقليل الحركة تتجمد
+   الصورة ثابتة كنقطة البداية */
+.league-ticket-player--celebrate {
+  transform-origin: 50% 100%;
+  animation: league-ticket-player-celebrate 6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes league-ticket-player-celebrate {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.05) translateY(-1.2%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .league-ticket-player--celebrate { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {
   .league-ticket-player { height: 70%; opacity: .85; }
   /* ميسي الخلفي يبقى مطلّاً من وراء رونالدو إلى أعلى اليسار */

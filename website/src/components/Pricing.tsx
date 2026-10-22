@@ -10,6 +10,7 @@ import {
 } from "./Icons";
 import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PlanDuration, PricingPlan } from "../data";
 import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
+import { ServerLink } from "./ServerIcon";
 import { Reveal } from "./motion";
 
 interface PricingProps {
@@ -186,7 +187,14 @@ export default function Pricing({
                       dark ? "text-white" : "text-[#0b0b0f]"
                     }`}
                   >
-                    {plan.serverName}
+                    {/* الأيقونة والاسم كلاهما رابط لصفحة السيرفر */}
+                    <ServerLink
+                      code={plan.serverCode}
+                      label={plan.serverName}
+                      size={34}
+                      className="hover:underline underline-offset-4 decoration-2"
+                      textClassName="leading-snug"
+                    />
                   </h3>
 
                   <p

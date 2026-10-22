@@ -2,6 +2,7 @@ import { useState } from "react";
 import { EN_PLAN_FAQS, type PricingPlan } from "../data";
 import { to, WHATSAPP_NUMBER } from "../config";
 import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
+import { ServerLink } from "../components/ServerIcon";
 import { IconPlus } from "../components/Icons";
 import { Reveal } from "../components/motion";
 
@@ -39,7 +40,14 @@ export default function EnPlanPage({ plan }: { plan: PricingPlan }) {
           <div>
             <p className="text-[13px] font-black text-[#2b4eff]">{en.tag}</p>
             <h1 className="mt-3 font-display font-black tracking-tight leading-[1.12] text-[32px] md:text-[48px]">
-              {en.name} — technical activation &amp; player setup package
+              <ServerLink
+                code={plan.serverCode}
+                label={en.name}
+                size={42}
+                className="me-2 align-middle"
+                ariaLabel={`${en.name} — server page`}
+              />
+              <span className="font-serif italic font-normal">— technical activation &amp; player setup package</span>
             </h1>
             <p className="mt-5 text-[15px] md:text-[16.5px] text-black/55 font-medium leading-[1.9]">
               {en.description} Our package covers the technical side end to end:

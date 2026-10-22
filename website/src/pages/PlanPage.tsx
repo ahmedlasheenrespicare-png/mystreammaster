@@ -10,6 +10,7 @@ import {
   type PricingPlan,
 } from "../data";
 import { to } from "../config";
+import { ServerLink } from "../components/ServerIcon";
 import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
 import { IconArrowUpRight, IconChat, IconCheck, IconShieldCheck, IconStar, IconZap } from "../components/Icons";
 import FAQ from "../components/FAQ";
@@ -76,7 +77,13 @@ export default function PlanPage({
               <IconZap className="w-4 h-4" /> {plan.tag}
             </span>
             <h1 className="mt-4 font-display font-black tracking-tight leading-[1.15] text-[34px] md:text-[50px]">
-              {nameOnly}{" "}
+              <ServerLink
+                code={plan.serverCode}
+                label={nameOnly}
+                size={46}
+                className="me-2 align-middle"
+                ariaLabel={`${nameOnly} — صفحة السيرفر`}
+              />
               <span className="font-serif italic font-normal">تفعيل وربط تقني</span>
             </h1>
             <p className="mt-4 text-[15.5px] md:text-[17px] text-black/60 font-medium leading-relaxed">
@@ -318,7 +325,12 @@ export default function PlanPage({
                 href={to(`${p.serverCode}/`)}
                 className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
               >
-                <span className="block font-black text-[15px]">{p.serverName.split("(")[0].trim()}</span>
+                <ServerLink
+                  code={p.serverCode}
+                  label={p.serverName.split("(")[0].trim()}
+                  size={26}
+                  textClassName="font-black text-[15px] group-hover:text-[#2b4eff] transition"
+                />
                 <span className="mt-1 block text-[12.5px] text-black/50 font-medium">{p.tag}</span>
                 <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-black text-[#2b4eff]">
                   تفاصيل الباقة <IconArrowUpRight className="w-3.5 h-3.5" />

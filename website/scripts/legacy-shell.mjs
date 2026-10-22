@@ -45,7 +45,7 @@ function desktopPanel(group) {
       + `<div class="sm-dd-foot"><a href="/">الصفحة الرئيسية — العودة للأعلى</a><a class="sm-dd-pill" href="/?trial=1">تجربة مجانية ↗</a></div>`;
   }
   if (group.key === 'servers') {
-    return `<div class="sm-dd-cards">${SERVER_PAGES.map(s => `<a class="sm-dd-card sm-card-${s.code}" href="${page(`${s.code}/`)}"><span class="sm-dd-card-art" aria-hidden="true">${s.emoji}</span><b>${esc(s.label)}</b><small>${esc(s.desc)}</small></a>`).join('')}</div>`
+    return `<div class="sm-dd-cards">${SERVER_PAGES.map(s => `<a class="sm-dd-card sm-card-${s.code}" href="${page(`${s.code}/`)}"><span class="sm-dd-card-art" aria-hidden="true"><img src="${esc(s.logo)}" alt="" width="46" height="46" loading="lazy" decoding="async"></span><b>${esc(s.label)}</b><small>${esc(s.desc)}</small></a>`).join('')}</div>`
       + `<div class="sm-dd-grid sm-dd-grid-3">${group.links.map(l => item(page(l.href), l.label, l.desc)).join('')}</div>`
       + `<div class="sm-dd-foot"><span>سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</span><a class="sm-dd-pill" href="/#pricing">عرض الأسعار ↗</a></div>`;
   }
@@ -60,12 +60,12 @@ function matchesMobileLinks(group) {
 
 function mobileLinks(group) {
   if (group.key === 'home') return [['/', 'الصفحة الرئيسية'], ...HOME_SECTIONS.map(s => [section(s.id), s.label])];
-  if (group.key === 'servers') return [[page(group.links[0].href), group.links[0].label], ...SERVER_PAGES.map(s => [page(`${s.code}/`), s.label]), ...group.links.slice(1).map(l => [page(l.href), l.label])];
-  return [...group.links, ...(group.legal || [])].map(l => [page(l.href), l.label]);
+  if (group.key === 'servers') return [[page(group.links[0].href), group.links[0].label], ...SERVER_PAGES.map(s => [page(`${s.code}/`), s.label, s.logo]), ...group.links.slice(1).map(l => [page(l.href), l.label])];
+  return [...group.links, ...(group.legal || [])].map(l => [page(l.href), l.label, '']);
 }
 
 const desktopNav = NAV_GROUPS.map(g => `<div class="sm-dd" data-group="${g.key}" data-match="${esc(g.match.join(' '))}"><button type="button" class="sm-dd-btn" id="sm-dd-btn-${g.key}" aria-expanded="false" aria-controls="sm-dd-${g.key}">${esc(g.label)}${chevron}</button><div class="sm-dd-panel sm-dd-${g.key}" id="sm-dd-${g.key}"><div class="sm-dd-box">${desktopPanel(g)}</div></div></div>`).join('');
-const mobileNav = NAV_GROUPS.map(g => `<details class="sm-acc" data-group="${g.key}" data-match="${esc(g.match.join(' '))}"><summary>${esc(g.label)}${chevron}</summary>${g.key === 'match-center' ? analysisMenu(g) : g.key === 'matches' ? matchesMobileLinks(g) : mobileLinks(g).map(([href, label]) => `<a href="${esc(href)}">${esc(label)}</a>`).join('')}</details>`).join('');
+const mobileNav = NAV_GROUPS.map(g => `<details class="sm-acc" data-group="${g.key}" data-match="${esc(g.match.join(' '))}"><summary>${esc(g.label)}${chevron}</summary>${g.key === 'match-center' ? analysisMenu(g) : g.key === 'matches' ? matchesMobileLinks(g) : mobileLinks(g).map(([href, label, logo]) => `<a href="${esc(href)}"${logo ? ' class="sm-m-row"' : ''}>${logo ? `<span class="sm-m-logo" aria-hidden="true"><img src="${esc(logo)}" alt="" width="24" height="24" loading="lazy" decoding="async"></span>` : ''}${esc(label)}</a>`).join('')}</details>`).join('');
 
 export const header = `<a class="sm-skip" href="#main-content">تخطي إلى المحتوى</a>
 <div class="sm-announcement">ستريم ماستر برو — <strong>اشتراك واحد، ترفيه بلا حدود</strong><a href="/?trial=1">اطلب تجربتك المجانية ←</a></div>

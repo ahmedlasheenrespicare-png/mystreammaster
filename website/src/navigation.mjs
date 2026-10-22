@@ -44,10 +44,10 @@ export const CHANNEL_CATEGORY_LINKS = [
 
 /** صفحات السيرفرات — تُعرض كبطاقات في القائمة المنسدلة */
 export const SERVER_PAGES = [
-  { code: "nova", label: "سيرفر نوفا", desc: "الأقوى للمباريات", emoji: "⚽", grad: "from-[#2b4eff] to-[#7c5cff]" },
-  { code: "istar", label: "سيرفر إيستار", desc: "أفلام ومسلسلات 4K", emoji: "🎬", grad: "from-[#7c5cff] to-[#3effe0]" },
-  { code: "moka", label: "سيرفر موكا", desc: "اقتصادي وثابت", emoji: "⚡", grad: "from-[#d8ff3e] to-[#3effe0]" },
-  { code: "x", label: "سيرفر X", desc: "باقة سنوية جديدة", emoji: "✕", grad: "from-[#ed1c24] to-[#ff5c4d]" },
+  { code: "nova", label: "سيرفر نوفا", desc: "الأقوى للمباريات", emoji: "⚽", logo: "/images/brand/nova-ticket.png", grad: "from-[#2b4eff] to-[#7c5cff]" },
+  { code: "istar", label: "سيرفر إيستار", desc: "أفلام ومسلسلات 4K", emoji: "🎬", logo: "/images/brand/istar-ticket.png", grad: "from-[#7c5cff] to-[#3effe0]" },
+  { code: "moka", label: "سيرفر موكا", desc: "اقتصادي وثابت", emoji: "⚡", logo: "/images/brand/moka-ticket.png", grad: "from-[#d8ff3e] to-[#3effe0]" },
+  { code: "x", label: "سيرفر X", desc: "باقة سنوية جديدة", emoji: "✕", logo: "/images/brand/xtv-ticket.png", grad: "from-[#ed1c24] to-[#ff5c4d]" },
 ];
 
 /**

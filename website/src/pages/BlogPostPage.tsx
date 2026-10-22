@@ -1,6 +1,7 @@
 import type { BlogPost } from "../content/posts";
 import { AVAILABLE_DURATIONS, getWhatsAppUrl, PRICING_PLANS } from "../data";
 import { to } from "../config";
+import { ServerLink } from "../components/ServerIcon";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
 /* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر */
@@ -152,9 +153,12 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                           return (
                             <tr key={p.id} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
                               <th scope="row" className="p-4 text-[13px] font-black text-right bg-[#f4f3ef]">
-                                <a href={to(`${p.serverCode}/`)} className="hover:text-[#2b4eff] underline underline-offset-4 decoration-black/20">
-                                  {p.serverName.split("(")[0].trim()}
-                                </a>
+                                <ServerLink
+                                  code={p.serverCode}
+                                  label={p.serverName.split("(")[0].trim()}
+                                  size={26}
+                                  textClassName="hover:text-[#2b4eff] underline underline-offset-4 decoration-black/20"
+                                />
                                 {p.isPopular && (
                                   <span className="mt-1 block text-[10.5px] font-black text-[#2b4eff]">الأكثر طلباً</span>
                                 )}

@@ -1,5 +1,6 @@
 import { PRICING_PLANS } from "../data";
 import { to } from "../config";
+import { ServerIcon } from "../components/ServerIcon";
 import { BLOG_POSTS } from "../content/posts";
 import { IconArrowUpRight } from "../components/Icons";
 
@@ -43,8 +44,9 @@ export default function NotFoundPage() {
                     href={to(`${p.serverCode}/`)}
                     className="inline-flex items-center gap-1.5 text-[13.5px] font-bold text-black/65 hover:text-[#2b4eff] transition"
                   >
-                    <IconArrowUpRight className="w-3.5 h-3.5" />
+                    <ServerIcon code={p.serverCode} size={22} />
                     {p.serverName.split("(")[0].trim()}
+                    <IconArrowUpRight className="w-3.5 h-3.5" />
                   </a>
                 </li>
               ))}

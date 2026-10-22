@@ -322,23 +322,31 @@ export function MokaTicketBrand() {
   return <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
 }
 
+/* قاعدة ظهور صف الأعلام — مشتق واحد يطابق أصله في TicketBrandPair
+   وتستعمله الترويسات لتعرف متى تنزاح مبطّطة (--under-brands) تحت الصف:
+   حزمة «الكل» على كل النطاقات، «الأساس» على الساكن والقاعدة، وعلم
+   الجامعة (showNovaBrand) يجبر الظهور أينما مُرِّر */
+function hasTicketBrands(leagueId: string, scope: "static" | "base" | "clash", showNovaBrand = false): boolean {
+  return scope === "clash"
+    ? NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand
+    : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
+}
+
 /* صف الأعلام الزخرفية في حاوية مرنة تتمدد مع عدد الشعارات (فجوة 7px
    ورؤوس متساوية): نوفا وفق حزمة التوزيع وX يجاورها أينما ظهرت بمساحتها
    نفسها، وفي تذكرة الدوري الفرنسي وحدها يلتصق بهما شريكتا الخدمة
-   ايستار فموكا — وبقرار المالك انتقل الصف الأربعي من اليسار إلى
-   **منتصف أعلى التذكرة** (--center) فوق الثلاثية المركّزة في سطرين
-   متوسّطين متتابعين — بنطاقا (static/base/clash) يصونان قاعدة القواعد */
+   ايستار فموكا — وبقرار المالك الثاني عمّ نقلُ الصف من اليسار إلى
+   **منتصف أعلى التذكرة** على كل حامل له (الجامعة كاملةً + الخمسة
+   الساكنة + أول شريحة من eng/esp/uefa) فوق الثلاثية المركّزة في سطرين
+   متوسّطين متتابعين — التوسيط مدموجٌ في قاعدة CSS نفسها */
 function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
   leagueId: string;
   scope: "static" | "base" | "clash";
   showNovaBrand?: boolean;
 }) {
-  const withNova = scope === "clash"
-    ? NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand
-    : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
-  if (!withNova) return null;
+  if (!hasTicketBrands(leagueId, scope, showNovaBrand)) return null;
   return (
-    <span className={`league-ticket-brands${leagueId === "fra.1" ? " league-ticket-brands--center" : ""}`}>
+    <span className="league-ticket-brands">
       <NovaTicketBrand />
       <XtvTicketBrand />
       {leagueId === "fra.1" ? <><IstarTicketBrand /><MokaTicketBrand /></> : null}
@@ -436,7 +444,7 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
 }
 
 /* منزلقة «قمة الجولة/الكلاسيكو/مباراة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
-function ClashSlide({ match, clash, leagueId, showWordmark = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean }) {
+function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean; underBrands?: boolean }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
   const finished = match ? match.state === "finished" : false;
@@ -470,8 +478,11 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false }: { match: M
       <img className="league-ticket-player league-ticket-player--right" src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
           بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي
-          تُبدي أيقونتها هنا — وقمم eng/esp/uefa تبقى نقيةً بطلبه */}
-      <div className={`league-ticket-header${showWordmark ? " league-ticket-header--brand" : ""}`}>
+          تُبدي أيقونتها هنا — وقمم eng/esp/uefa تبقى نقيةً بطلبه.
+          وحيثما جاور الصفُّ المتوسّطُ الثلاثيةَ على الشريحة (الجامعة
+          كاملةً) تنزاح مبطّطةً تحته (--under-brands) كقاعدة عامة لكل
+          حالات التوسيط المعمّم */}
+      <div className={`league-ticket-header${showWordmark ? " league-ticket-header--brand" : ""}${underBrands ? " league-ticket-header--under-brands" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
         {showWordmark ? <StreamMasterTicketWordmark /> : null}
       </div>
@@ -610,8 +621,10 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
               <TicketBrandPair leagueId={leagueId} scope="base" showNovaBrand={showNovaBrand} />
               {basePlayers}
               {/* الشريحة الأولى — الثلاثية المتوسّطة هنا في حِزم «الكل»
-                  و«الأساس» معاً (فرنسا ورفاقها + eng/esp/uefa) */}
-              <div className={`league-ticket-header${ticketWordmark(leagueId, "base") ? " league-ticket-header--brand" : ""}`}>
+                  و«الأساس» معاً (فرنسا ورفاقها + eng/esp/uefa)، وحيثما
+                  جاورها الصف المتوسّط على الشريحة نفسها تنزاح مبطّطةً
+                  تحته (--under-brands) فينعم انطباق السطرين المركزيين */}
+              <div className={`league-ticket-header${ticketWordmark(leagueId, "base") ? " league-ticket-header--brand" : ""}${ticketWordmark(leagueId, "base") && hasTicketBrands(leagueId, "base", showNovaBrand) ? " league-ticket-header--under-brands" : ""}`}>
                 <LeagueIconBadge leagueId={leagueId} size={60} eager />
                 {ticketWordmark(leagueId, "base") ? <StreamMasterTicketWordmark /> : null}
               </div>
@@ -628,7 +641,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
               <TicketBrandPair leagueId={leagueId} scope="clash" showNovaBrand={showNovaBrand} />
-              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} />
+              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} underBrands={ticketWordmark(leagueId, "clash") && hasTicketBrands(leagueId, "clash", showNovaBrand)} />
             </div>
           </div>
         ))}
@@ -720,10 +733,11 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       <TicketBrandPair leagueId={leagueId} scope="static" />
       {PLAYER_MAP[leagueId]}
       {/* الثلاثية المتوسّطة (أيقونة البطولة فالخط فعلامة ستريم ماستر)
-          تجلس في رأس كل التذاكر الثابتة حاملةِ حزمة «الكل» — وفي الفرنسية
-          وحدها تنزاح مبطّطًا إضافيًا (--under-brands) تحت صف أعلام
-          السيرفرات الذي انتقل بطلب المالك إلى منتصف أعلى التذكرة */}
-      <div className={`league-ticket-header${ticketWordmark(leagueId, "static") ? " league-ticket-header--brand" : ""}${leagueId === "fra.1" ? " league-ticket-header--under-brands" : ""}`}>
+          تجلس في رأس كل التذاكر الثابتة حاملةِ حزمة «الكل» — وبعد تعميم
+          المالك نقلَ الصف إلى منتصف الأعلى تنزاح مبطّطةً (--under-brands)
+          تحته في كل حامل (فرنسا وألمانيا وإيطاليا ومصر والسعودية) فلا
+          يصطدم السطران المركزيان المتتابعان */}
+      <div className={`league-ticket-header${ticketWordmark(leagueId, "static") ? " league-ticket-header--brand" : ""}${ticketWordmark(leagueId, "static") && hasTicketBrands(leagueId, "static") ? " league-ticket-header--under-brands" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
         {ticketWordmark(leagueId, "static") ? <StreamMasterTicketWordmark /> : null}
       </div>

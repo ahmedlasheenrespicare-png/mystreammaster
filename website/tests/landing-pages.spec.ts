@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page, type Locator } from '@playwright/test';
 
 /* ==========================================================================
    اختبارات صفحات هبوط البطولات والمنتخبات
@@ -677,7 +677,7 @@ test('french league ticket stacks its four server brands centered above the cent
   expect(Math.abs(groupCenter - ticketCenter)).toBeLessThanOrEqual(30);
   /* التعامد المطلوب: سطر الأعلام الرباعي المتوسّط أعلى الكرت وسطر
      الثلاثية المركزية أسفله — قاع الصف لا يتجاوز رأس الأيقونة إطلاقاً
-     (مبطّط الرأس الإضافي يصون الفرنسية وحدها) */
+     (مبطّط الرأس الإضافي صار هنا أولاً ثم عمّمه المالك على كل حامل) */
   expect((rowBox!.y + rowBox!.height) - iconBox!.y).toBeLessThanOrEqual(8);
   expect(textBox!.x).toBeGreaterThanOrEqual(ticketBox!.x);
   expect(textBox!.height).toBeGreaterThanOrEqual(10);
@@ -686,6 +686,60 @@ test('french league ticket stacks its four server brands centered above the cent
      تسكن تقديراً لتفضيل السكون — سياق الاختبار مُجبَر على reduce في
      playwright.config، فاسم الحركة المحسوب يكون none إثباتاً للقاعدة */
   await expect(wmBadge).toHaveCSS('animation-name', 'none');
+});
+
+test('server brands row stacks centered above the trio on every branded ticket (owner generalization)', async ({ page }) => {
+  await mockSource(page, {});
+  /* تعميم المالك: هندسة الفرنسية المعتمدة أعلاه نفسها على كل حامل
+     للصف — مركز الصف الأفقي = مركز الكرت (±30px)، وقمته ضمن 30px من
+     السقف، وقاعه لا يتجاوز رأس أيقونة الثلاثية أسفله (سماحية 8px) */
+  async function expectCenteredStack(ticket: Locator, label: string) {
+    const ticketBox = await ticket.boundingBox();
+    expect(ticketBox, `${label}: ticket box present`).toBeTruthy();
+    const row = ticket.locator('.league-ticket-brands').first();
+    await expect(row, `${label}: brands row present`).toHaveCount(1);
+    const rowBox = await row.boundingBox();
+    expect(rowBox, `${label}: brands row box`).toBeTruthy();
+    const icon = ticket.locator('.league-ticket-header .league-carousel-badge').first();
+    const iconBox = await icon.boundingBox();
+    expect(iconBox, `${label}: trio icon box`).toBeTruthy();
+    const rowCenter = rowBox!.x + rowBox!.width / 2;
+    const ticketCenterX = ticketBox!.x + ticketBox!.width / 2;
+    expect(Math.abs(rowCenter - ticketCenterX), `${label}: row centered on ticket`).toBeLessThanOrEqual(30);
+    expect(rowBox!.y - ticketBox!.y, `${label}: row hugs the top`).toBeLessThanOrEqual(30);
+    expect((rowBox!.y + rowBox!.height) - iconBox!.y, `${label}: row clears the trio below`).toBeLessThanOrEqual(8);
+  }
+
+  /* 1) تذكرة مواعيد المباريات الجامعة — أساسها وقممها على السواء */
+  await page.goto('/matches/');
+  const indexCarousel = page.locator('.league-ticket-carousel');
+  await expect(indexCarousel).toHaveCount(1);
+  const indexDots = indexCarousel.locator('button.league-ticket-dot');
+  const indexDotCount = await indexDots.count();
+  expect(indexDotCount).toBeGreaterThanOrEqual(6);
+  const indexSlides = indexCarousel.locator('.league-ticket-slide');
+  /* الأساس قبل أي نقرة: الشريحة الأولى فعّالة افتراضياً */
+  await expectCenteredStack(indexSlides.first().locator('.league-ticket'), 'index base');
+  /* وقمّة واردة بعد النقر على نقطتها — السكون المفروض بالإعداد يجعل
+     التبديل فورياً بلا انتقال فيُثبَت الفعّال الجديد مباشرة */
+  await indexDots.nth(1).click();
+  await expect(indexSlides.nth(1)).toHaveClass(/is-active/);
+  await expectCenteredStack(indexSlides.nth(1).locator('.league-ticket'), 'index clash slide 2');
+
+  /* 2) الخمسة الساكنة الباقية بعد الفرنسية (المثبتة أعلاه): ألمانيا
+     وإيطاليا ومصر والسعودية — تذكرة واحدة بلا منزلقة في الهيرو */
+  for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
+    await page.goto(`/matches/${slug}/`);
+    await expectCenteredStack(page.locator('.matches-hero-title .league-ticket'), slug);
+  }
+
+  /* 3) أول شريحة فقط من المنزلقات الثلاث — هندسة القاعدة دون القمم */
+  for (const slug of ['الدوري-الإنجليزي', 'الدوري-الإسباني', 'دوري-أبطال-أوروبا']) {
+    await page.goto(`/matches/${slug}/`);
+    const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
+    await expect(carousel).toHaveCount(1);
+    await expectCenteredStack(carousel.locator('.league-ticket-slide').first().locator('.league-ticket'), `${slug} base slide`);
+  }
 });
 
 test('nova + X brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {

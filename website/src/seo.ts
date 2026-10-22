@@ -105,6 +105,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "blog/phone-and-computer-viewing-setup": "blog-phone-computer-setup",
   "blog/risks-of-unverified-apps": "blog-risks-of-unverified-apps",
   "blog/what-is-unlicensed-streaming": "blog-what-is-unlicensed-streaming",
+  "blog/افضل-اشتراك-iptv-2026": "best-iptv-2026",
   /* صفحات هبوط البطولات — /matches/{slug} */
   "matches/الدوري-الإنجليزي": "league-premier-league",
   "matches/الدوري-السعودي": "league-saudi-pro-league",
@@ -1052,11 +1053,29 @@ export function getSeo(path: string): SeoMeta {
         mainEntityOfPage: { "@id": `${canonical}#webpage` },
         author: { "@type": "Organization", name: BRAND_NAME, url: `${SITE_URL}/` },
         publisher: { "@id": ORG_ID },
-        image: OG_IMAGE,
-        wordCount: post.sections.reduce(
-          (n, s) => n + (s.paragraphs?.join(" ").split(/\s+/).length ?? 0),
-          0
-        ),
+        image: ogImageFromCanonical(canonical),
+        /* عدد الكلمات لكل نص المقال — الفقرات والبنود والخطوات والجداول والملاحظات،
+           لا الفقرات وحدها (كان يُحتسب 140 كلمة لمقال من 1100+). */
+        wordCount:
+          [post.intro, ...(post.faq ?? []).flatMap((f) => [f.q, f.a])]
+            .join(" ")
+            .split(/\s+/)
+            .filter(Boolean).length +
+          post.sections.reduce(
+            (n, s) =>
+              n +
+              [
+                ...(s.paragraphs ?? []),
+                ...(s.bullets ?? []),
+                ...(s.steps ?? []),
+                ...(s.table ? [...s.table.head, ...s.table.rows.flat()] : []),
+                ...(s.note ? [s.note] : []),
+              ]
+                .join(" ")
+                .split(/\s+/)
+                .filter(Boolean).length,
+            0
+          ),
       },
     ];
     /* أسئلة المقال ظاهرة فعلاً أسفل نصّه (عناصر details) */

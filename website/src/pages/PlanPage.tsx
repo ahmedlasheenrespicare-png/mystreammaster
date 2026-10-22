@@ -147,6 +147,10 @@ export default function PlanPage({
               <a href={to("blog/choose-iptv-server/")} className="font-black text-[#2b4eff] underline underline-offset-4">
                 اقرأ دليل المقارنة
               </a>
+              {" "}أو راجع{" "}
+              <a href={to("blog/افضل-اشتراك-iptv-2026/")} className="font-black text-[#2b4eff] underline underline-offset-4">
+                جدول مقارنة الباقات والأسعار
+              </a>
               ، ويمكنك دائماً طلب كود تجريبي قبل الدفع.
             </p>
           </div>

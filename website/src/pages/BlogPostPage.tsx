@@ -1,5 +1,5 @@
 import type { BlogPost } from "../content/posts";
-import { getWhatsAppUrl, PRICING_PLANS } from "../data";
+import { AVAILABLE_DURATIONS, getWhatsAppUrl, PRICING_PLANS } from "../data";
 import { to } from "../config";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
@@ -8,6 +8,9 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
   const plan = post.relatedPlan
     ? PRICING_PLANS.find((p) => p.serverCode === post.relatedPlan)
     : undefined;
+  const duration = AVAILABLE_DURATIONS[0];
+  const durationLabel = duration === "12" ? "12 شهراً" : `${duration} أشهر`;
+  const toc = post.sections.filter((s) => Boolean(s.heading));
 
   return (
     <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
@@ -28,6 +31,11 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                 <IconClock className="w-3.5 h-3.5" /> {post.readingMinutes} دقائق قراءة
               </span>
               <time dateTime={post.date} className="font-latin">{post.date}</time>
+              {post.updated && post.updated !== post.date && (
+                <span className="text-black/40">
+                  آخر تحديث: <time dateTime={post.updated} className="font-latin">{post.updated}</time>
+                </span>
+              )}
             </div>
             <h1 className="mt-4 font-display font-black tracking-tight leading-[1.2] text-[32px] md:text-[44px]">
               {post.title}
@@ -37,11 +45,57 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             </p>
           </header>
 
+          {post.hero && (
+            <div className="mt-8 overflow-hidden rounded-[28px] border border-black/10 bg-[#f4f3ef]">
+              <picture>
+                {post.hero.avif && <source srcSet={`/${post.hero.avif}`} type="image/avif" />}
+                <img
+                  src={`/${post.hero.src}`}
+                  alt={post.hero.alt}
+                  width={1280}
+                  height={720}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-auto object-cover"
+                />
+              </picture>
+            </div>
+          )}
+
+          {toc.length >= 5 && (
+            <nav
+              aria-label="فهرس المقال"
+              className="mt-8 rounded-2xl border border-black/10 bg-white p-5 sm:p-6"
+            >
+              <p className="text-[12px] font-black tracking-[0.18em] uppercase text-[#2b4eff]">
+                في هذا الدليل
+              </p>
+              <ol className="mt-3 grid gap-2 sm:grid-cols-2">
+                {toc.map((t) => {
+                  const index = post.sections.indexOf(t);
+                  return (
+                    <li key={t.heading}>
+                      <a
+                        href={`#s-${index}`}
+                        className="text-[13.5px] font-bold text-black/65 hover:text-[#2b4eff] transition"
+                      >
+                        {t.heading}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
+          )}
+
           <div className="mt-10 space-y-9">
             {post.sections.map((s, i) => (
               <section key={i}>
                 {s.heading && (
-                  <h2 className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug">
+                  <h2
+                    id={`s-${i}`}
+                    className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug scroll-mt-32"
+                  >
                     {s.heading}
                   </h2>
                 )}
@@ -51,12 +105,6 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                     {p}
                   </p>
                 ))}
-
-                {s.note && (
-                  <p className="mt-4 rounded-2xl border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-5 py-4 text-[14px] font-bold leading-[1.9] text-[#1e3bbf]">
-                    ملاحظة عملية: {s.note}
-                  </p>
-                )}
 
                 {s.bullets && (
                   <ul className="mt-4 space-y-2.5">
@@ -80,6 +128,72 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                       </li>
                     ))}
                   </ol>
+                )}
+
+                {s.pricing && (
+                  <div className="mt-5 overflow-x-auto rounded-2xl border border-black/10 bg-white">
+                    <table className="w-full text-right border-collapse min-w-[760px]">
+                      <caption className="p-4 text-right text-[12.5px] font-bold text-black/50">
+                        مقارنة باقات اشتراك IPTV 2026 — الأسعار لمدة {durationLabel} كما هي في المتجر
+                      </caption>
+                      <thead>
+                        <tr className="bg-[#0b0b0f] text-white">
+                          <th scope="col" className="p-4 text-[13px] font-black">السيرفر</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الأنسب لمن</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الأجهزة</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الجودة المعلنة</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">القنوات</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">سعر {durationLabel}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-black/[0.07]">
+                        {PRICING_PLANS.map((p) => {
+                          const price = p.prices[duration] ?? p.prices["12"];
+                          return (
+                            <tr key={p.id} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
+                              <th scope="row" className="p-4 text-[13px] font-black text-right bg-[#f4f3ef]">
+                                <a href={to(`${p.serverCode}/`)} className="hover:text-[#2b4eff] underline underline-offset-4 decoration-black/20">
+                                  {p.serverName.split("(")[0].trim()}
+                                </a>
+                                {p.isPopular && (
+                                  <span className="mt-1 block text-[10.5px] font-black text-[#2b4eff]">الأكثر طلباً</span>
+                                )}
+                              </th>
+                              <td className="p-4 text-[13px] font-medium text-black/70">{p.tag}</td>
+                              <td className="p-4 text-[13px] font-medium text-black/70">{p.devices}</td>
+                              <td className="p-4 text-[13px] font-medium text-black/70">{p.quality}</td>
+                              <td className="p-4 text-[13px] font-medium text-black/70">{p.channelsCount}</td>
+                              <td className="p-4 text-[13px] font-black whitespace-nowrap">
+                                {price.SAR} ر.س
+                                <span className="mt-0.5 block text-[11px] font-bold text-black/40 font-latin">
+                                  ≈ {price.USD} USD
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {s.pricing && (
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <a
+                      href={to("store/")}
+                      className="inline-flex items-center gap-2 bg-[#0b0b0f] text-white font-black text-[14px] px-6 py-3 rounded-full"
+                    >
+                      اختر باقتك من المتجر <IconArrowUpRight className="w-4 h-4" />
+                    </a>
+                    <a
+                      href={getWhatsAppUrl("مرحبًا، أريد كود فحص تجريبي لأقارن الباقات قبل الشراء")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 border border-black/15 font-black text-[14px] px-6 py-3 rounded-full hover:bg-white transition"
+                    >
+                      <IconChat className="w-4 h-4" /> تجربة 6 ساعات قبل الدفع
+                    </a>
+                  </div>
                 )}
 
                 {s.table && (
@@ -108,6 +222,27 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                       </tbody>
                     </table>
                   </div>
+                )}
+
+                {s.note && (
+                  <p className="mt-4 rounded-2xl border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-5 py-4 text-[14px] font-bold leading-[1.9] text-[#1e3bbf]">
+                    ملاحظة عملية: {s.note}
+                  </p>
+                )}
+
+                {s.links && s.links.length > 0 && (
+                  <ul className="mt-5 flex flex-wrap gap-2.5">
+                    {s.links.map((l) => (
+                      <li key={l.href}>
+                        <a
+                          href={to(l.href)}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-4 py-2 text-[12.5px] font-black text-[#1e3bbf] hover:bg-[#2b4eff]/[0.12] transition"
+                        >
+                          {l.label} <IconArrowUpRight className="w-3.5 h-3.5" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </section>
             ))}

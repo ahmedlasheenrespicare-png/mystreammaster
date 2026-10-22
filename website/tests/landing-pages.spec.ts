@@ -620,10 +620,11 @@ test('french league ticket stacks its four server brands centered above the cent
   expect(xtvBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
   expect(xtvBox!.x).toBeGreaterThan(box!.x + box!.width * 0.5);
 
-  /* شاركتا الخدمة (ايستار ثم موكا) يلتصقان بالزوج في تذكرة الفرنسية
-     حصراً بطلب المالك وبمساحة X نفسها (ارتفاع 14..26): صورتان
-     حقيقيتان منبثقتان من مصدريهما الرسميين، وتسلسلهما الفيزيائي
-     نوفا ← X ← ايستار ← موكا بفجوة 7px بين كل جارين ملاصقين */
+  /* شاركتا الخدمة (ايستار ثم موكا) — دخلا هذه التذكرة أولاً بطلب
+     المالك قبل أن يعمّمهما على نطاق نوفا/X نفسه — يلتصقان بالزوج
+     بمساحة X نفسها (ارتفاع 14..26): صورتان حقيقيتان منبثقتان من
+     مصدريهما الرسميين، وتسلسلهما الفيزيائي نوفا ← X ← ايستار ← موكا
+     بفجوة 7px بين كل جارين ملاصقين */
   const istar = ticket.locator('img.league-ticket-brand-istar');
   const moka = ticket.locator('img.league-ticket-brand-moka');
   for (const [nm, elm] of [['istar', istar], ['moka', moka]] as const) {
@@ -742,22 +743,21 @@ test('server brands row stacks centered above the trio on every branded ticket (
   }
 });
 
-test('nova + X brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
+test('the four server brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
   await mockSource(page, {});
-  /* 1) تذكرة مواعيد المباريات الجامعة: اللوجوان على كل شرائحها —
-     الأساس الجامع + شرائح القمم (= عدد النقاط نفسه) */
+  /* قاعدة التوزيع واحدة للأعلام كلها (نوفا + X + ايستار + موكا) بعد أن
+     عمّم المالك الشريكين على نطاق الزوج نفسه حرفاً */
+  const BRANDS = ['img.league-ticket-brand-nova', 'img.league-ticket-brand-xtv', 'img.league-ticket-brand-istar', 'img.league-ticket-brand-moka'] as const;
+  /* 1) تذكرة مواعيد المباريات الجامعة: الأعلام الأربعة على كل
+     شرائحها — الأساس الجامع + شرائح القمم (= عدد النقاط نفسه) */
   await page.goto('/matches/');
   const indexCarousel = page.locator('.league-ticket-carousel');
   await expect(indexCarousel).toHaveCount(1);
   const dots = await indexCarousel.locator('button.league-ticket-dot').count();
   expect(dots).toBeGreaterThanOrEqual(6);
-  await expect(indexCarousel.locator('img.league-ticket-brand-nova'), 'index: nova on every slide').toHaveCount(dots);
-  await expect(indexCarousel.locator('img.league-ticket-brand-xtv'), 'index: X on every slide').toHaveCount(dots);
-  await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-nova').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
-  await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-xtv').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
-  /* والشريكتان لا تظهران خارج تذكرة الفرنسية حتى في الجامعة */
-  for (const sel of ['img.league-ticket-brand-istar', 'img.league-ticket-brand-moka']) {
-    await expect(indexCarousel.locator(sel), `index: ${sel} french-only`).toHaveCount(0);
+  for (const sel of BRANDS) {
+    await expect(indexCarousel.locator(sel), `index: ${sel} on every slide`).toHaveCount(dots);
+    await expect.poll(async () => indexCarousel.locator(sel).first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), `index: ${sel} served`).toBeTruthy();
   }
 
   /* 2) الإنجليزي والإسباني وأبطال أوروبا: الشريحة الأولى (القاعدة)
@@ -768,28 +768,24 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
     await expect(carousel).toHaveCount(1);
     const slideCount = await carousel.locator('.league-ticket-slide').count();
     expect(slideCount).toBeGreaterThanOrEqual(2);
-    for (const sel of ['img.league-ticket-brand-nova', 'img.league-ticket-brand-xtv']) {
+    for (const sel of BRANDS) {
       await expect(carousel.locator(sel), `${slug}: ${sel} only on base`).toHaveCount(1);
       await expect(carousel.locator('.league-ticket-slide').first().locator(sel), `${slug}: ${sel} on base slide`).toHaveCount(1);
       for (let i = 1; i < slideCount; i++) {
         await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
       }
     }
-    /* شاركتا الخدمة ايستار/موكا فرنسيتا التذكرة حصراً — لا تتسرّبان */
-    for (const sel of ['img.league-ticket-brand-istar', 'img.league-ticket-brand-moka']) {
-      await expect(carousel.locator(sel), `${slug}: ${sel} french-only`).toHaveCount(0);
-    }
     /* (علامة ستريم ماستر صارت معمّمة بقاعدة التوزيع نفسها — حراستها
        كلها في الاختبار التالي المخصّص لها) */
   }
 
-  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: كامل التذكرة —
-     ساكنة اليوم (شريحة واحدة) فيُثبت عدد 1، مستقبل-احتمائي لو
-     أُثرقت بالقمم */
+  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: الأعلام الأربعة
+     على كامل التذكرة — ساكنة اليوم (شريحة واحدة) فيُثبت عدد 1،
+     مستقبل-احتمائي لو أُثرقت بالقمم */
   for (const slug of ['الدوري-الفرنسي', 'الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
-    for (const sel of ['img.league-ticket-brand-nova', 'img.league-ticket-brand-xtv']) {
+    for (const sel of BRANDS) {
       const brand = page.locator(`.matches-hero-title ${sel}`);
       if (slideCount > 0) {
         await expect(brand, `${slug}: ${sel} on all slides`).toHaveCount(slideCount);
@@ -798,12 +794,6 @@ test('nova + X brands are distributed by the owner rollout rule across every tic
         await expect(brand, `${slug}: single ${sel}`).toHaveCount(1);
       }
       await expect(brand.first(), `${slug}: ${sel} visible`).toBeVisible();
-    }
-    /* ايستار وموكا على الفرنسية وحدها من الخماسية، وغائبان عن شقيقاتها */
-    for (const sel of ['img.league-ticket-brand-istar', 'img.league-ticket-brand-moka']) {
-      const extra = page.locator(`.matches-hero-title ${sel}`);
-      const expected = slug === 'الدوري-الفرنسي' ? 1 : 0;
-      await expect(extra, `${slug}: ${sel} count ${expected}`).toHaveCount(expected);
     }
   }
 });

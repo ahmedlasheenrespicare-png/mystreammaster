@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { EN_PLAN_FAQS, type PricingPlan } from "../data";
 import { to, WHATSAPP_NUMBER } from "../config";
+import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
 import { IconPlus } from "../components/Icons";
 import { Reveal } from "../components/motion";
 
@@ -18,7 +19,6 @@ export default function EnPlanPage({ plan }: { plan: PricingPlan }) {
     ["Live channels", en.channels],
     ["Movies & series library", en.vod],
     ["Stream quality", plan.quality],
-    ["Simultaneous devices", en.devices],
     ["Streaming technology", en.antiFreeze],
   ];
 
@@ -70,27 +70,39 @@ export default function EnPlanPage({ plan }: { plan: PricingPlan }) {
 
           {/* مواصفات يعلنها المزود */}
           <Reveal variant="up">
-            <article className="rounded-3xl bg-[#0b0b0f] text-white p-7">
-              <h2 className="font-display font-black text-[20px]">
-                What the external provider announces
-              </h2>
-              <dl className="mt-5 divide-y divide-white/10">
-                {specs.map(([k, v]) => (
-                  <div key={k} className="py-3.5 flex items-baseline justify-between gap-4">
-                    <dt className="text-[13px] font-bold text-white/50">{k}</dt>
-                    <dd className="text-[14.5px] font-black text-end">{v}</dd>
+            <article className="relative overflow-hidden rounded-3xl bg-[#0b0b0f] text-white p-7">
+              <img
+                src={SERVER_WATERMARKS[plan.serverCode].src}
+                alt=""
+                aria-hidden="true"
+                width={SERVER_WATERMARKS[plan.serverCode].width}
+                height={SERVER_WATERMARKS[plan.serverCode].height}
+                loading="lazy"
+                decoding="async"
+                className={SERVER_WATERMARK_CLASS}
+              />
+              <div className="relative z-10">
+                <h2 className="font-display font-black text-[20px]">
+                  What the external provider announces
+                </h2>
+                <dl className="mt-5 divide-y divide-white/10">
+                  {specs.map(([k, v]) => (
+                    <div key={k} className="py-3.5 flex items-baseline justify-between gap-4">
+                      <dt className="text-[13px] font-bold text-white/50">{k}</dt>
+                      <dd className="text-[14.5px] font-black text-end">{v}</dd>
+                    </div>
+                  ))}
+                  <div className="py-3.5 flex items-baseline justify-between gap-4">
+                    <dt className="text-[13px] font-bold text-white/50">Package price</dt>
+                    <dd className="font-display text-[22px] font-black text-[#d8ff3e]">${price} / year</dd>
                   </div>
-                ))}
-                <div className="py-3.5 flex items-baseline justify-between gap-4">
-                  <dt className="text-[13px] font-bold text-white/50">Package price</dt>
-                  <dd className="font-display text-[22px] font-black text-[#d8ff3e]">${price} / year</dd>
-                </div>
-              </dl>
-              <p className="mt-4 text-[12.5px] leading-relaxed text-white/45">
-                These specifications are announced by the server's independent external
-                provider. Stream Master Pro does not host or stream content and does
-                not sell channels.
-              </p>
+                </dl>
+                <p className="mt-4 text-[12.5px] leading-relaxed text-white/45">
+                  These specifications are announced by the server's independent external
+                  provider. Stream Master Pro does not host or stream content and does
+                  not sell channels.
+                </p>
+              </div>
             </article>
           </Reveal>
         </div>

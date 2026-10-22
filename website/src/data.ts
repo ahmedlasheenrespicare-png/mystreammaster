@@ -126,6 +126,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     serverName: "سيرفر إيستار برو (iStar Pro Server)",
     serverCode: "istar",
     tag: "باقة الترفيه الشاملة 🎬",
+    isFeatured: true,
     description:
       "يُعلن المزود الخارجي لهذا السيرفر توازناً بين التصنيفات الرياضية والمكتبة الترفيهية مع سرعة تشغيل جيدة.",
     prices: Object.fromEntries(["3", "6", "12", "24"].map(duration => [duration, {
@@ -168,6 +169,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     serverName: "سيرفر موكا (Moka Server)",
     serverCode: "moka",
     tag: "للمشاهدة الثقيلة والمباريات ⚡",
+    isFeatured: true,
     description:
       "يُعلن المزود الخارجي لهذا السيرفر تحمّلاً للمشاهدة الطويلة وقنوات بجودات متعددة تناسب السرعات المنخفضة.",
     prices: Object.fromEntries(["3", "6", "12", "24"].map(duration => [duration, {

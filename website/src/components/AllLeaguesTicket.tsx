@@ -1,5 +1,5 @@
 import LeagueIconBadge from "./LeagueIconBadge";
-import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
+import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, IstarTicketBrand, MokaTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -60,19 +60,25 @@ function AllLeaguesTicketBase() {
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
       <span className="league-ticket-symbol" />
-      {/* زوج الشعارات أعلى اليسار الفيزيائي (في الحاوية المرنة ذاتها):
-          نوفا الكاملة على تذكرة جدول المواعيد الجامعة، وX بجانبها نفس
-          الإثراء (تعميم موازٍ) — وظهورها في هيرو الرئيسية يتبع لهذه
+      {/* رباعي الأعلام متوسّطًا أعلى التذكرة (الحاوية المرنة ذاتها بعد
+          تعميم المالك نقلَها من اليسار إلى المركز على كل التذاكر): نوفا
+          الكاملة على تذكرة جدول المواعيد الجامعة، وX بجانبها نفس
+          الإثراء (تعميم موازٍ)، ثم ايستار فموكا بعد أن عمّمهما المالك
+          على نطاق نوفا/X نفسه — وظهورها في هيرو الرئيسية يتبع لهذه
           الوحدة ذاتها */}
       <span className="league-ticket-brands">
         <NovaTicketBrand />
         <XtvTicketBrand />
+        <IstarTicketBrand />
+        <MokaTicketBrand />
       </span>
       {/* الثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة): أيقونة
           محايدة بالكأس — «كل البطولات» لا شعار بطولة واحد لها — ثم
-          الخط الرأسي فالمربع الدوّار واسم ستريم ماستر؛ وظهورها في
-          هيرو الرئيسية يتبع لهذه الوحدة ذاتها */}
-      <div className="league-ticket-header league-ticket-header--brand">
+          الخط الرأسي فالمربع الدوّار واسم ستريم ماستر؛ وتنزاح مبطّطةً
+          (--under-brands) تحت صف الأعلام المتوسّط فوقها كسائر التذاكر
+          الحاملة بعد تعميم المركز؛ وظهورها في هيرو الرئيسية يتبع لهذه
+          الوحدة ذاتها */}
+      <div className="league-ticket-header league-ticket-header--brand league-ticket-header--under-brands">
         <LeagueIconBadge leagueId="matches" size={60} eager />
         <StreamMasterTicketWordmark />
       </div>

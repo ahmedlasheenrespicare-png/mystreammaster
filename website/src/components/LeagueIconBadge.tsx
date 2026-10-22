@@ -23,14 +23,18 @@ export default function LeagueIconBadge({
   leagueId,
   size,
   eager = false,
+  iconSrc,
 }: {
   leagueId: string;
   /** ضلع اللوح المربع بالبكسل — الافتراضي 36px كما في league-carousel.css */
   size?: number;
   /** تحميل فوري بدل الكسول — لأيقونة رأس الصفحة لأنها فوق الطية */
   eager?: boolean;
+  /** أيقونة صريحة محلية تتقدّم على مخزن المصدر — لشعار FIFA على تذكرة
+      الجامعة بطلب المالك (leagueId="matches" بلا شعار موثّق لدى المصدر) */
+  iconSrc?: string;
 }) {
-  const icon = leagueIcon(leagueId);
+  const icon = iconSrc ?? leagueIcon(leagueId);
   /* صندوق الصورة = اللوح ناقص الحشو (4px من كل جانب كما في .league-carousel-logo) */
   const logoBox = size ? size - 8 : 28;
   return (

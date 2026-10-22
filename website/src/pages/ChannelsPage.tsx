@@ -258,7 +258,7 @@ export default function ChannelsPage() {
               كيف تختار السيرفر المناسب لسرعتك؟
             </span>
             <span className="mt-1 block text-[12.5px] text-black/50 font-medium">
-              مقارنة عملية بين سيرفرات المزودين الثلاثة (نوفا وإيستار وموكا)
+              مقارنة عملية بين سيرفرات المزودين الأربعة (نوفا وإيستار وموكا وX)
             </span>
             <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-black text-[#2b4eff]">
               اقرأ الدليل <IconArrowUpRight className="w-3.5 h-3.5" />

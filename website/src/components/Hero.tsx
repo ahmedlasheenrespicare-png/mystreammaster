@@ -489,7 +489,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                   </span>
                 </div>
                 <p className="text-[13.5px] leading-[1.8] text-white/85 font-medium">
-                  سيرفرات المزودين (نوفا وإيستار وموكا) بدعم تقني كامل وجودة بث تصل إلى 4K
+                  سيرفرات المزودين (نوفا وإيستار وموكا وX) بدعم تقني كامل وجودة بث تصل إلى 4K
                   وسيرفرات احتياطية لدى المزود وقت الذروة.
                 </p>
               </div>

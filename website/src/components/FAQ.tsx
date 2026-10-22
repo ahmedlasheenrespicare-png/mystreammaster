@@ -3,8 +3,14 @@ import { FAQS } from "../data";
 import { IconPlus } from "./Icons";
 import { Reveal } from "./motion";
 
-export default function FAQ() {
+const DEVICE_COUNT_FAQ_QUESTIONS = new Set([
+  "هل يعمل الاشتراك على أكثر من جهاز؟",
+  "ما الفرق بين سيرفر نوفا وإيستار برو وموكا وX؟",
+]);
+
+export default function FAQ({ hideDeviceCount = false }: { hideDeviceCount?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const faqs = hideDeviceCount ? FAQS.filter((faq) => !DEVICE_COUNT_FAQ_QUESTIONS.has(faq.q)) : FAQS;
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -28,7 +34,7 @@ export default function FAQ() {
 
         {/* الأكورديون */}
         <div className="space-y-3">
-          {FAQS.map((faq, idx) => {
+          {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <Reveal key={idx} variant="up" delay={idx * 70}>

@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page, type Locator } from '@playwright/test';
 
 /* ==========================================================================
    اختبارات صفحات هبوط البطولات والمنتخبات
@@ -308,10 +308,11 @@ const clashScoreCases: ReadonlyArray<{
     awayScore: '2',
   },
   {
-    /* الشريحة الثالثة: مباراة الليلة — بايرن (كين) × أرسنال (ساكا) */
+    /* الشريحة الثالثة: قمة الجولة (وحّدها المالك — كانت «مباراة الليلة»)
+       — بايرن (كين) × أرسنال (ساكا) */
     url: '/matches/دوري-أبطال-أوروبا/',
     league: 'uefa.champions',
-    eyebrow: 'مباراة الليلة',
+    eyebrow: 'قمة الجولة',
     slideIndex: 2,
     dots: 3,
     home: 'Bayern München',
@@ -460,7 +461,7 @@ test('matches index ticket hosts the five clash slides with their league feature
     n: number; eyebrow: string; homeName: string; awayName: string; homeScore: string; awayScore: string; fullCheck?: boolean;
   }> = [
     { n: 1, eyebrow: 'قمة الجولة', homeName: 'باريس', awayName: 'برشلونة', homeScore: '4', awayScore: '2', fullCheck: true },
-    { n: 2, eyebrow: 'مباراة الليلة', homeName: 'بايرن', awayName: 'أرسنال', homeScore: '2', awayScore: '1' },
+    { n: 2, eyebrow: 'قمة الجولة', homeName: 'بايرن', awayName: 'أرسنال', homeScore: '2', awayScore: '1' },
     { n: 3, eyebrow: 'مواجهة الكلاسيكو', homeName: 'ريال مدريد', awayName: 'برشلونة', homeScore: '3', awayScore: '1' },
     { n: 4, eyebrow: 'قمة الجولة', homeName: 'تشيلسي', awayName: 'توتنهام', homeScore: '3', awayScore: '2' },
     { n: 5, eyebrow: 'قمة الجولة', homeName: 'أرسنال', awayName: 'إيفرتون', homeScore: '2', awayScore: '0' },
@@ -563,22 +564,27 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
   await page.goto('/matches/الدوري-الإنجليزي/');
   const strip = page.locator('.league-ticket-slide').nth(2).locator('.league-ticket-countdown.ticket-flip');
   await expect(strip).toBeVisible();
-  /* أربع خلايا بترتيب عربي: يوم ← ساعة ← دقيقة ← ثانية */
+  /* أربع خلايا بترتيب عربي وبصيغة جمع المالك: أيام ← ساعات ← دقائق ← ثوانٍ */
   const labels = await strip.locator('.ticket-flip__label').allTextContents();
-  expect(labels).toEqual(['يوم', 'ساعة', 'دقيقة', 'ثانية']);
-  /* القيم المجمدة محسوبة من فترق الموعد: 02 يوم / 05 ساعة / 03 دقيقة /
-     07 ثانية — القراءة من الأنصاف العلوية لأن كل خانة تضاعف قيمتها
-     في النصفين ما دامت ساكنة */
+  expect(labels).toEqual(['أيام', 'ساعات', 'دقائق', 'ثوانٍ']);
+  /* القيم المجمدة محسوبة من فترق الموعد: ٠٢ يوم / ٠٥ ساعات / ٠٣ دقائق /
+     ٠٧ ثوانٍ — بطلبه تُعرض كل الخانات بالأرقام العربية المشرقية (٠١٢...)؛
+     القراءة من الأنصاف العلوية لأن كل خانة تضاعف قيمتها في النصفين ما
+     دامت ساكنة، ولا رقم لاتينياً واحداً يتسلل إلى أي خانة */
   const tops = await strip.locator('.ticket-flip__half--top').allTextContents();
-  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تحمّل سعة دقيقة */
-  expect(tops.slice(0, 6)).toEqual(['0', '2', '0', '5', '0', '3']);
-  expect(tops.slice(6, 7)).toEqual(['0']);
-  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تسامح رقمي على الوحدة */
-  expect(tops[7]).toMatch(/^\d$/);
+  expect(tops.slice(0, 6)).toEqual(['٠', '٢', '٠', '٥', '٠', '٣']);
+  expect(tops.slice(6, 7)).toEqual(['٠']);
+  /* الثانية الواحدة قد تمر بين تجميد الساعة والعرض — تسامح رقمي على
+     الوحدة ضمن الأبجدية العربية نفسها حصراً */
+  expect(tops[7]).toMatch(/^[٠-٩]$/);
   await expect(strip.locator('.ticket-flip__digit')).toHaveCount(8);
+  /* وحصار شامل: لا خانة لاتينية في العدّاد كله مهما تبدّلت الرفرفة */
+  for (const text of await strip.locator('.ticket-flip__txt').allTextContents()) {
+    expect(text).toMatch(/^[٠-٩]$/);
+  }
 });
 
-test('french league ticket carries the small Nova brand in its physical top-left corner', async ({ page }) => {
+test('french league ticket stacks its four server brands centered above the centered wordmark trio', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-الفرنسي/');
   /* تذكرة الفرنسي اليوم يقف وحدة قممها فارغة فتُرسَم بالمسار الساكن
@@ -595,26 +601,298 @@ test('french league ticket carries the small Nova brand in its physical top-left
   expect(box).toBeTruthy();
   expect(box!.width).toBeGreaterThanOrEqual(20);
   expect(box!.width).toBeLessThanOrEqual(44);
-  /* أعلى اليسار الفيزيائي: ضمن 30px من ركني التذكرة نفسها (الموضع
-     left صريح لأن التذكرة RTL فلا يقفز مع inline-start). الصندوق
-     في Playwright = {x, y, width, height} لا خصائص left/top له */
+  /* منتصف أعلى التذكرة (بطلب المالك الذي نقل الصف الرباعي من اليسار):
+     حاوية الصف مركزُها الأفقي = مركز الكرت (±30px) وقمتها ضمن 30px من
+     سقف التذكرة. الصندوق في Playwright = {x, y, width, height} */
   const ticketBox = await ticket.boundingBox();
   expect(ticketBox).toBeTruthy();
-  expect(box!.x - ticketBox!.x).toBeLessThanOrEqual(30);
-  expect(box!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  const rowBox = await ticket.locator('.league-ticket-brands').boundingBox();
+  expect(rowBox).toBeTruthy();
+  const rowCenter = rowBox!.x + rowBox!.width / 2;
+  const ticketCenterX = ticketBox!.x + ticketBox!.width / 2;
+  expect(Math.abs(rowCenter - ticketCenterX)).toBeLessThanOrEqual(30);
+  expect(rowBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  /* لوجو X المقصوص من IPTV بجانب نوفا: صورة واحدة، منبع حقيقي،
+     ارتفاع مساوٍ لمساحة نوفا (14..26px)، ويجلس يمينها الفيزيائي
+     ملاصقًا ضمن الصف المتوسّط أعلى الكرت — لا يعلوها ولا ينزاح عنها */
+  const xtv = ticket.locator('img.league-ticket-brand-xtv');
+  await expect(xtv).toHaveCount(1);
+  await expect(xtv).toBeVisible();
+  await expect.poll(async () => xtv.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  const xtvBox = await xtv.boundingBox();
+  expect(xtvBox).toBeTruthy();
+  expect(xtvBox!.height).toBeGreaterThanOrEqual(14);
+  expect(xtvBox!.height).toBeLessThanOrEqual(26);
+  expect(xtvBox!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  expect(xtvBox!.x).toBeGreaterThan(box!.x + box!.width * 0.5);
+
+  /* شاركتا الخدمة (ايستار ثم موكا) — دخلا هذه التذكرة أولاً بطلب
+     المالك قبل أن يعمّمهما على نطاق نوفا/X نفسه — يلتصقان بالزوج
+     بمساحة X نفسها (ارتفاع 14..26): صورتان حقيقيتان منبثقتان من
+     مصدريهما الرسميين، وتسلسلهما الفيزيائي نوفا ← X ← ايستار ← موكا
+     بفجوة 7px بين كل جارين ملاصقين */
+  const istar = ticket.locator('img.league-ticket-brand-istar');
+  const moka = ticket.locator('img.league-ticket-brand-moka');
+  for (const [nm, elm] of [['istar', istar], ['moka', moka]] as const) {
+    await expect(elm, `${nm} present on french ticket`).toHaveCount(1);
+    await expect(elm, `${nm} visible`).toBeVisible();
+    await expect.poll(async () => elm.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+    const b = await elm.boundingBox();
+    expect(b).toBeTruthy();
+    expect(b!.height).toBeGreaterThanOrEqual(14);
+    expect(b!.height).toBeLessThanOrEqual(26);
+    expect(b!.y - ticketBox!.y).toBeLessThanOrEqual(30);
+  }
+  const istarBox = await istar.boundingBox();
+  const mokaBox = await moka.boundingBox();
+  expect(istarBox!.x - (xtvBox!.x + xtvBox!.width)).toBeGreaterThanOrEqual(0);
+  expect(istarBox!.x - (xtvBox!.x + xtvBox!.width)).toBeLessThanOrEqual(17);
+  expect(mokaBox!.x - (istarBox!.x + istarBox!.width)).toBeGreaterThanOrEqual(0);
+  expect(mokaBox!.x - (istarBox!.x + istarBox!.width)).toBeLessThanOrEqual(17);
+
+  /* علامة «ستريم ماستر» النصية (مصغّر شعار الفوتر بطلب المالك) يمين
+     التذكرة بجانب أيقونة البطولة بعد خط رأسي: مجموعة واحدة ظاهرة نصها
+     بالضبط، وخط شعرة ≤2px عرضاً و≥20px ارتفاعاً، ومربّعها بلون الفوتر
+     الليموني نفسه #d8ff3e يحمل مثلث تشغيل، والترتيب الفيزيائي RTL:
+     الأيقونة أقصى اليمين ثم الخط ثم المربّع ثم النص — والكل داخل
+     حدود التذكرة وبمقاسٍ يليق بالكرت */
+  const wordmark = ticket.locator('.league-ticket-wordmark');
+  await expect(wordmark).toHaveCount(1);
+  await expect(wordmark).toBeVisible();
+  await expect(wordmark.locator('.league-ticket-wordmark-text')).toHaveText('ستريم ماستر');
+  const wmLine = wordmark.locator('.league-ticket-wordmark-line');
+  const wmBadge = wordmark.locator('.league-ticket-wordmark-badge');
+  await expect(wmLine).toHaveCount(1);
+  await expect(wmBadge).toHaveCount(1);
+  await expect(wmBadge.locator('svg')).toHaveCount(1);
+  await expect(wmBadge).toHaveCSS('background-color', 'rgb(216, 255, 62)');
+  const iconBox = await ticket.locator('.league-ticket-header .league-carousel-badge').boundingBox();
+  const lineBox = await wmLine.boundingBox();
+  const textBox = await wordmark.locator('.league-ticket-wordmark-text').boundingBox();
+  expect(iconBox).toBeTruthy();
+  expect(lineBox).toBeTruthy();
+  expect(textBox).toBeTruthy();
+  expect(lineBox!.width).toBeLessThanOrEqual(2);
+  expect(lineBox!.height).toBeGreaterThanOrEqual(20);
+  /* الترتيب الفيزيائي: الأيقونة يميناً فالخط ثم النص — والمجموعة متوسّطة
+     رأس التذكرة (مركزها الأفقي = مركز الكرت بطلب المالك الذي خلف
+     الانزياح اليميني) */
+  expect(lineBox!.x + lineBox!.width).toBeLessThanOrEqual(iconBox!.x + 1);
+  expect(textBox!.x).toBeLessThan(lineBox!.x);
+  const groupCenter = (textBox!.x + iconBox!.x + iconBox!.width) / 2;
+  const ticketCenter = ticketBox!.x + ticketBox!.width / 2;
+  expect(Math.abs(groupCenter - ticketCenter)).toBeLessThanOrEqual(30);
+  /* التعامد المطلوب: سطر الأعلام الرباعي المتوسّط أعلى الكرت وسطر
+     الثلاثية المركزية أسفله — قاع الصف لا يتجاوز رأس الأيقونة إطلاقاً
+     (مبطّط الرأس الإضافي صار هنا أولاً ثم عمّمه المالك على كل حامل) */
+  expect((rowBox!.y + rowBox!.height) - iconBox!.y).toBeLessThanOrEqual(8);
+  expect(textBox!.x).toBeGreaterThanOrEqual(ticketBox!.x);
+  expect(textBox!.height).toBeGreaterThanOrEqual(10);
+  expect(textBox!.height).toBeLessThanOrEqual(24);
+  /* حركة المربع تدور بإيقاع loader المرجع (دورة كاملة كل ثانية) لكنها
+     تسكن تقديراً لتفضيل السكون — سياق الاختبار مُجبَر على reduce في
+     playwright.config، فاسم الحركة المحسوب يكون none إثباتاً للقاعدة */
+  await expect(wmBadge).toHaveCSS('animation-name', 'none');
 });
 
-test('nova brand is distributed by the owner rollout rule across every ticket', async ({ page }) => {
+test('server brands row stacks centered above the trio on every branded ticket (owner generalization)', async ({ page }) => {
   await mockSource(page, {});
-  /* 1) تذكرة مواعيد المباريات الجامعة: اللوجو على كل شرائحها —
-     الأساس الجامع + شرائح القمم (= عدد النقاط نفسه) */
+  /* تعميم المالك: هندسة الفرنسية المعتمدة أعلاه نفسها على كل حامل
+     للصف — مركز الصف الأفقي = مركز الكرت (±30px)، وقمته ضمن 30px من
+     السقف، وقاعه لا يتجاوز رأس أيقونة الثلاثية أسفله (سماحية 8px) */
+  async function expectCenteredStack(ticket: Locator, label: string) {
+    const ticketBox = await ticket.boundingBox();
+    expect(ticketBox, `${label}: ticket box present`).toBeTruthy();
+    const row = ticket.locator('.league-ticket-brands').first();
+    await expect(row, `${label}: brands row present`).toHaveCount(1);
+    const rowBox = await row.boundingBox();
+    expect(rowBox, `${label}: brands row box`).toBeTruthy();
+    const icon = ticket.locator('.league-ticket-header .league-carousel-badge').first();
+    const iconBox = await icon.boundingBox();
+    expect(iconBox, `${label}: trio icon box`).toBeTruthy();
+    const rowCenter = rowBox!.x + rowBox!.width / 2;
+    const ticketCenterX = ticketBox!.x + ticketBox!.width / 2;
+    expect(Math.abs(rowCenter - ticketCenterX), `${label}: row centered on ticket`).toBeLessThanOrEqual(30);
+    expect(rowBox!.y - ticketBox!.y, `${label}: row hugs the top`).toBeLessThanOrEqual(30);
+    expect((rowBox!.y + rowBox!.height) - iconBox!.y, `${label}: row clears the trio below`).toBeLessThanOrEqual(8);
+  }
+
+  /* 1) تذكرة مواعيد المباريات الجامعة — أساسها وقممها على السواء */
+  await page.goto('/matches/');
+  const indexCarousel = page.locator('.league-ticket-carousel');
+  await expect(indexCarousel).toHaveCount(1);
+  const indexDots = indexCarousel.locator('button.league-ticket-dot');
+  const indexDotCount = await indexDots.count();
+  expect(indexDotCount).toBeGreaterThanOrEqual(6);
+  const indexSlides = indexCarousel.locator('.league-ticket-slide');
+  /* الأساس قبل أي نقرة: الشريحة الأولى فعّالة افتراضياً */
+  await expectCenteredStack(indexSlides.first().locator('.league-ticket'), 'index base');
+  /* وقمّة واردة بعد النقر على نقطتها — السكون المفروض بالإعداد يجعل
+     التبديل فورياً بلا انتقال فيُثبَت الفعّال الجديد مباشرة */
+  await indexDots.nth(1).click();
+  await expect(indexSlides.nth(1)).toHaveClass(/is-active/);
+  await expectCenteredStack(indexSlides.nth(1).locator('.league-ticket'), 'index clash slide 2');
+
+  /* 2) الخمسة الساكنة الباقية بعد الفرنسية (المثبتة أعلاه): ألمانيا
+     وإيطاليا ومصر والسعودية — تذكرة واحدة بلا منزلقة في الهيرو */
+  for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
+    await page.goto(`/matches/${slug}/`);
+    await expectCenteredStack(page.locator('.matches-hero-title .league-ticket'), slug);
+  }
+
+  /* 3) أول شريحة فقط من المنزلقات الثلاث — هندسة القاعدة دون القمم */
+  for (const slug of ['الدوري-الإنجليزي', 'الدوري-الإسباني', 'دوري-أبطال-أوروبا']) {
+    await page.goto(`/matches/${slug}/`);
+    const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
+    await expect(carousel).toHaveCount(1);
+    await expectCenteredStack(carousel.locator('.league-ticket-slide').first().locator('.league-ticket'), `${slug} base slide`);
+  }
+});
+
+test('universal ticket base carries the fifa crest, a full-width stars cluster and a bare metallic name', async ({ page }) => {
+  await mockSource(page, {});
+  /* طلبات المالك الثلاثة على أساس التذكرة الجامعة: شعار الاتحاد
+     الدولي (FIFA) مكان الكأس المحايدة في الثلاثية المتوسّطة، وعنقود
+     النجوم مكبّراً حتى ملء عرض التذكرة، ومتن الاسم المعدني بلا سطرَي
+     «مواعيد · نتائج · ترتيب / يُحدَّث كل دقيقة» (المكتوبَين أساساً
+     في نص الصفحة تحت التذكرة) */
+  await page.goto('/matches/');
+  const base = page.locator('.league-ticket-carousel .league-ticket-slide').first().locator('.league-ticket');
+  await expect(base).toHaveCount(1);
+  /* شعار FIFA داخل صدفة الشارة ذاتها: صورة واحدة منبعها الأصل المحلي
+     المقصوص — ولا فيفا أخرى في الصفحة كلها */
+  const fifa = base.locator('.league-ticket-header .league-carousel-badge img.league-carousel-logo');
+  await expect(fifa).toHaveCount(1);
+  await expect(fifa).toHaveAttribute('src', /fifa-ticket\.png$/);
+  await expect.poll(async () => fifa.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  await expect(page.locator('img.league-carousel-logo[src*="fifa-ticket"]')).toHaveCount(1);
+  /* العنقود بعرض الكرت: صندوقه يطابق عرض التذكرة وحدها (هامش قياس
+     الحدود الدقيقة) ولا يتجاوز جانبيها */
+  const ticketBox = await base.boundingBox();
+  const cluster = base.locator('img.all-leagues-ticket-players');
+  await expect(cluster).toHaveCount(1);
+  const clusterBox = await cluster.boundingBox();
+  expect(ticketBox).toBeTruthy();
+  expect(clusterBox).toBeTruthy();
+  expect(Math.abs(clusterBox!.width - ticketBox!.width)).toBeLessThanOrEqual(6);
+  expect(Math.abs(clusterBox!.x - ticketBox!.x)).toBeLessThanOrEqual(6);
+  /* الاسم المعدني وحيداً: نصّه المثبّت قائم وسطرا التوضيح غائبان كلياً */
+  const body = base.locator('.league-ticket-body');
+  await expect(body.locator('em')).toHaveText('كل البطولات الكبرى');
+  await expect(body).not.toContainText('مواعيد');
+  await expect(body).not.toContainText('يُحدَّث');
+});
+
+test('ticket league icons and server brands link to their dedicated pages (owner request)', async ({ page }) => {
+  await mockSource(page, {});
+  /* بطلب المالك: أيقونات البطولات الثماني في أساس التذكرة الجامعة
+     تفتح صفحات هبوطها المخصصة، وأعلام السيرفرات الأربعة تفتح صفحات
+     سيرفراتها الجذرية — روابط فأرة داخل الحيّز الزخرفي (tabIndex=-1
+     وaria-hidden المحفوظان بلا مساس) */
+  await page.goto('/matches/');
+  const base = page.locator('.league-ticket-carousel .league-ticket-slide').first();
+  const LEAGUE_HREFS = [
+    '/matches/دوري-أبطال-أوروبا/', '/matches/الدوري-الإنجليزي/', '/matches/الدوري-الإسباني/', '/matches/الدوري-الإيطالي/',
+    '/matches/الدوري-الألماني/', '/matches/الدوري-الفرنسي/', '/matches/الدوري-السعودي/', '/matches/الدوري-المصري/',
+  ] as const;
+  const iconLinks = base.locator('.leagues-ticket-icons a.leagues-ticket-icon-link');
+  await expect(iconLinks, 'eight league links in row order').toHaveCount(8);
+  for (const [i, href] of LEAGUE_HREFS.entries()) {
+    await expect(iconLinks.nth(i), `league icon ${href}`).toHaveAttribute('href', href);
+    await expect(iconLinks.nth(i)).toHaveAttribute('tabindex', '-1');
+  }
+  const BRAND_HREFS = [
+    ['nova', '/nova/'], ['xtv', '/x/'], ['istar', '/istar/'], ['moka', '/moka/'],
+  ] as const;
+  for (const [brand, href] of BRAND_HREFS) {
+    const link = base.locator(`.league-ticket-brands a.league-ticket-brand-link:has(img.league-ticket-brand-${brand})`);
+    await expect(link, `index base: ${brand} linked`).toHaveCount(1);
+    await expect(link).toHaveAttribute('href', href);
+    await expect(link).toHaveAttribute('tabindex', '-1');
+  }
+  /* وأيقونة الثلاثية (شعار الفيفا) على أساس الجامعة رابط لصفحة
+     «مواعيد المباريات» نفسها — تنقل من هيرو الرئيسية إليها فعلاً */
+  await page.goto('/matches/');
+  const baseFifa = page.locator('.league-ticket-carousel .league-ticket-slide').first();
+  const fifa = baseFifa.locator('.league-ticket-header a.league-ticket-badge-link');
+  await expect(fifa, 'fifa badge linked to /matches/').toHaveCount(1);
+  await expect(fifa).toHaveAttribute('href', '/matches/');
+  await expect(fifa).toHaveAttribute('tabindex', '-1');
+
+  /* ونفس السلوك على تذكرة دوري ساكنة (الفرنسية أربعة أعلام مرتبطة) */
+  await page.goto('/matches/الدوري-الفرنسي/');
+  await expect(page.locator('.matches-hero-title .league-ticket .league-ticket-brands a.league-ticket-brand-link')).toHaveCount(4);
+
+  /* النقرة الفعلية تفتح الوجهة: أيقونة أبطال أوروبا أولاً ثم علم نوفا */
+  await page.goto('/matches/');
+  const baseAgain = page.locator('.league-ticket-carousel .league-ticket-slide').first();
+  await baseAgain.locator('.leagues-ticket-icons a.leagues-ticket-icon-link').first().click();
+  await page.waitForLoadState('domcontentloaded');
+  expect(decodeURIComponent(page.url()), 'league icon navigates to its landing').toContain('/matches/دوري-أبطال-أوروبا/');
+  await page.goto('/matches/');
+  await page.locator('.league-ticket-carousel .league-ticket-slide').first()
+    .locator('.league-ticket-brands a.league-ticket-brand-link').first().click();
+  await page.waitForLoadState('domcontentloaded');
+  expect(page.url(), 'nova brand navigates to its server page').toMatch(/\/nova\/$/);
+  /* ونقرة أيقونة الفيفا من هيرو الرئيسية تصل «مواعيد المباريات» فعلاً */
+  await page.goto('/');
+  await page.locator('.league-ticket-carousel .league-ticket-slide').first()
+    .locator('.league-ticket-header a.league-ticket-badge-link').click();
+  await page.waitForLoadState('domcontentloaded');
+  expect(page.url(), 'fifa badge navigates to the matches schedule').toMatch(/\/matches\/$/);
+});
+
+test('universal ticket metallic name carries an animated lime shine that keeps sweeping on mobile', async ({ page }) => {
+  await mockSource(page, {});
+  /* بطلب المالك: «كل البطولات الكبرى» يعلو معدنَّه شعاع ليموني متحرك
+     مستوحى من uiverse.io/devkatyall/spicy-mule-43 (رخصة MIT) — وحراسته
+     تثبت الحركة نفسها لا مجرد القاعدة، على عرض الجوال خصوصاً كما اشترط */
+  await page.goto('/matches/');
+  const name = page.locator('.league-ticket-carousel .league-ticket-slide').first().locator('.all-leagues-ticket-name');
+  await expect(name, 'metallic name present').toHaveCount(1);
+  /* 1) احترام تفضيل السكون (إعداد العائلة كلها مجبر على reduce) */
+  await expect(name).toHaveCSS('animation-name', 'none');
+  /* 2) بلا ذلك التفضيل: اسم الدورة المحسوب هو مسح اللمعة — إلزامياً على
+     عرض الجوال أيضاً كما اشترط المالك (أي وسيط يعطّلها تحت 700px يُسقط
+     هذا التوكيد فوراً) — والأهم أن موضع الخلفية المقصوصة **يتبدّل فعلاً**
+     بين عينات زمنية على عرض سطح المكتب وعرض الجوال سواءً */
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const animName = await name.evaluate((el: HTMLElement) => getComputedStyle(el).animationName);
+    expect(animName, `${viewport.width}px: shine animation engaged — mandatory on mobile`).toBe('all-leagues-ticket-name-shine');
+    /* والأهم: موضع الخلفية المقصوصة **يتبدّل فعلاً** خلال الدورة —
+       استقراء دوري يقاطع عند أول تبديل بمهلة 10 ثوانٍ (الدورة 8 ثوانٍ
+       بطلب المالك سيراً أبطأ، بإمساك افتتاحي «5%» وهدوء ختامي «30%»
+       فالعينة الثابتة قد تقع في طور هادئ دون تبدّل ظاهر) */
+    const posInitial = await name.evaluate((el: HTMLElement) => getComputedStyle(el).backgroundPosition);
+    let shineMoved = false;
+    for (let tries = 0; tries < 40 && !shineMoved; tries++) {
+      await page.waitForTimeout(250);
+      const posNow = await name.evaluate((el: HTMLElement) => getComputedStyle(el).backgroundPosition);
+      shineMoved = posNow !== posInitial;
+    }
+    expect(shineMoved, `${viewport.width}px: shine actually moves`).toBeTruthy();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  }
+});
+
+test('the four server brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
+  await mockSource(page, {});
+  /* قاعدة التوزيع واحدة للأعلام كلها (نوفا + X + ايستار + موكا) بعد أن
+     عمّم المالك الشريكين على نطاق الزوج نفسه حرفاً */
+  const BRANDS = ['img.league-ticket-brand-nova', 'img.league-ticket-brand-xtv', 'img.league-ticket-brand-istar', 'img.league-ticket-brand-moka'] as const;
+  /* 1) تذكرة مواعيد المباريات الجامعة: الأعلام الأربعة على كل
+     شرائحها — الأساس الجامع + شرائح القمم (= عدد النقاط نفسه) */
   await page.goto('/matches/');
   const indexCarousel = page.locator('.league-ticket-carousel');
   await expect(indexCarousel).toHaveCount(1);
   const dots = await indexCarousel.locator('button.league-ticket-dot').count();
   expect(dots).toBeGreaterThanOrEqual(6);
-  await expect(indexCarousel.locator('img.league-ticket-brand-nova'), 'index: brand on every slide').toHaveCount(dots);
-  await expect.poll(async () => indexCarousel.locator('img.league-ticket-brand-nova').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+  for (const sel of BRANDS) {
+    await expect(indexCarousel.locator(sel), `index: ${sel} on every slide`).toHaveCount(dots);
+    await expect.poll(async () => indexCarousel.locator(sel).first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), `index: ${sel} served`).toBeTruthy();
+  }
 
   /* 2) الإنجليزي والإسباني وأبطال أوروبا: الشريحة الأولى (القاعدة)
      فقط — شرائح القمم بلا لوجو حتى لا تزاحم محتواها الغني */
@@ -624,28 +902,95 @@ test('nova brand is distributed by the owner rollout rule across every ticket', 
     await expect(carousel).toHaveCount(1);
     const slideCount = await carousel.locator('.league-ticket-slide').count();
     expect(slideCount).toBeGreaterThanOrEqual(2);
-    await expect(carousel.locator('img.league-ticket-brand-nova'), `${slug}: brand only on base`).toHaveCount(1);
-    await expect(carousel.locator('.league-ticket-slide').first().locator('img.league-ticket-brand-nova'), `${slug}: brand on base slide`).toHaveCount(1);
-    for (let i = 1; i < slideCount; i++) {
-      await expect(carousel.locator('.league-ticket-slide').nth(i).locator('img.league-ticket-brand-nova'), `${slug}: clash slide ${i} brand-free`).toHaveCount(0);
+    for (const sel of BRANDS) {
+      await expect(carousel.locator(sel), `${slug}: ${sel} only on base`).toHaveCount(1);
+      await expect(carousel.locator('.league-ticket-slide').first().locator(sel), `${slug}: ${sel} on base slide`).toHaveCount(1);
+      for (let i = 1; i < slideCount; i++) {
+        await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
+      }
     }
+    /* (علامة ستريم ماستر صارت معمّمة بقاعدة التوزيع نفسها — حراستها
+       كلها في الاختبار التالي المخصّص لها) */
   }
 
-  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: كامل التذكرة —
-     ساكنة اليوم (شريحة واحدة) فيُثبت عدد 1، مستقبل-احتمائي لو
-     أُثرقت بالقمم */
+  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: الأعلام الأربعة
+     على كامل التذكرة — ساكنة اليوم (شريحة واحدة) فيُثبت عدد 1،
+     مستقبل-احتمائي لو أُثرقت بالقمم */
   for (const slug of ['الدوري-الفرنسي', 'الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
-    const brand = page.locator('.matches-hero-title img.league-ticket-brand-nova');
-    if (slideCount > 0) {
-      await expect(brand, `${slug}: brand on all slides`).toHaveCount(slideCount);
-    } else {
-      await expect(page.locator('.matches-hero-title .league-ticket')).toHaveCount(1);
-      await expect(brand, `${slug}: single brand`).toHaveCount(1);
+    for (const sel of BRANDS) {
+      const brand = page.locator(`.matches-hero-title ${sel}`);
+      if (slideCount > 0) {
+        await expect(brand, `${slug}: ${sel} on all slides`).toHaveCount(slideCount);
+      } else {
+        await expect(page.locator('.matches-hero-title .league-ticket')).toHaveCount(1);
+        await expect(brand, `${slug}: single ${sel}`).toHaveCount(1);
+      }
+      await expect(brand.first(), `${slug}: ${sel} visible`).toBeVisible();
     }
-    await expect(brand.first(), `${slug}: brand visible`).toBeVisible();
   }
+});
+
+test('stream-master wordmark trio is distributed by the owner rollout rule across every ticket', async ({ page }) => {
+  await mockSource(page, {});
+  /* تعميم المالك بقاعدة التوزيع المطابقة لنوڤا/X حرفاً: الثلاثية
+     المتوسّطة (أيقونة البطولة + الخط الرأسي + المربع الدوّار و«ستريم
+     ماستر») على التذاكر الخمس كاملةً وتذكرة الجامعة كاملةً، وأول
+     شريحة فقط من الثلاثة المنزلقة */
+
+  /* 1) تذكرة مواعيد المباريات الجامعة: ثلاثية على كل شرائحها — الأساس
+     الجامع (بأيقونة الكأس المحايدة) والقمم الواردة كلها */
+  await page.goto('/matches/');
+  const indexCarousel = page.locator('.league-ticket-carousel');
+  await expect(indexCarousel).toHaveCount(1);
+  const dots = await indexCarousel.locator('button.league-ticket-dot').count();
+  expect(dots).toBeGreaterThanOrEqual(6);
+  await expect(indexCarousel.locator('.league-ticket-wordmark'), 'index: trio on every slide').toHaveCount(dots);
+  await expect(indexCarousel.locator('.league-ticket-wordmark-text').first()).toHaveText('ستريم ماستر');
+  await expect(indexCarousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark-line'), 'index base: divider').toHaveCount(1);
+  await expect(indexCarousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark-badge'), 'index base: tumbling badge').toHaveCount(1);
+  /* وقمتها الأولى (شريحة رقم 2) تحملها أيضاً بجوار أيقونة بطولتها */
+  await expect(indexCarousel.locator('.league-ticket-slide').nth(1).locator('.league-ticket-wordmark'), 'index clash 1: trio').toHaveCount(1);
+
+  /* 2) الألماني والإيطالي والمصري والسعودي: تذاكر ثابتة وحيدة بثلاثية */
+  for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
+    await page.goto(`/matches/${slug}/`);
+    const ticket = page.locator('.matches-hero-title .league-ticket');
+    await expect(ticket, `${slug}: single static ticket`).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-wordmark'), `${slug}: trio`).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-wordmark-text'), `${slug}: exact text`).toHaveText('ستريم ماستر');
+    await expect(ticket.locator('.league-ticket-wordmark-line'), `${slug}: divider`).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-wordmark-badge'), `${slug}: tumbling badge`).toHaveCount(1);
+  }
+
+  /* 3) الإنجليزي والإسباني والأبطال: الشريحة الأولى فقط — القمم نقية */
+  for (const slug of ['الدوري-الإنجليزي', 'الدوري-الإسباني', 'دوري-أبطال-أوروبا']) {
+    await page.goto(`/matches/${slug}/`);
+    const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
+    await expect(carousel, `${slug}: carousel`).toHaveCount(1);
+    const slideCount = await carousel.locator('.league-ticket-slide').count();
+    expect(slideCount).toBeGreaterThanOrEqual(2);
+    await expect(carousel.locator('.league-ticket-wordmark'), `${slug}: trio on base only`).toHaveCount(1);
+    await expect(carousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark'), `${slug}: base slide trio`).toHaveCount(1);
+    for (let i = 1; i < slideCount; i++) {
+      await expect(carousel.locator('.league-ticket-slide').nth(i).locator('.league-ticket-wordmark'), `${slug}: clash ${i} trio-free`).toHaveCount(0);
+    }
+  }
+
+  /* 4) هندسة التوسيط تُقاس على الألماني الثابتة أيضاً: مركز المجموعة
+     الأفقي = مركز التذكرة (±30px) كما فُرض على الفرنسية */
+  await page.goto('/matches/الدوري-الألماني/');
+  const gerTicket = page.locator('.matches-hero-title .league-ticket');
+  const gerBox = await gerTicket.boundingBox();
+  const gerIconBox = await gerTicket.locator('.league-ticket-header .league-carousel-badge').boundingBox();
+  const gerTextBox = await gerTicket.locator('.league-ticket-wordmark-text').boundingBox();
+  expect(gerBox).toBeTruthy();
+  expect(gerIconBox).toBeTruthy();
+  expect(gerTextBox).toBeTruthy();
+  const gerGroupCenter = (gerTextBox!.x + gerIconBox!.x + gerIconBox!.width) / 2;
+  const gerTicketCenter = gerBox!.x + gerBox!.width / 2;
+  expect(Math.abs(gerGroupCenter - gerTicketCenter)).toBeLessThanOrEqual(30);
 });
 
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {

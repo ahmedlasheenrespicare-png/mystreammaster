@@ -10,48 +10,56 @@ export default function ServersComparison() {
       nova: "99.9% (الأعلى)",
       istar: "99.7%",
       moka: "99.9%",
+      x: "99.9% (الأعلى)",
     },
     {
       feature: "البث الرياضي بدقة 4K & 50fps لدى المزود",
       nova: "✓ متاحة بكافة المصادر",
       istar: "✓ متاحة FHD & 4K",
       moka: "FHD & HD فقط",
+      x: "✓ متاحة بكافة المصادر",
     },
     {
       feature: "تغطية البطولات العربية والخليجية لدى المزود",
       nova: "✓ متوفرة كاملة",
       istar: "✓ متوفرة",
       moka: "✓ متوفرة HD",
+      x: "✓ متوفرة كاملة",
     },
     {
       feature: "عدد الشاشات في نفس الوقت",
       nova: "حتى 3 أجهزة",
       istar: "حتى جهازين",
       moka: "حتى جهازين",
+      x: "حتى 3 أجهزة",
     },
     {
       feature: "مكتبة الأفلام والمسلسلات VOD",
       nova: "+50,000 فيلم ومسلسل",
       istar: "+50,000",
       moka: "+35,000",
+      x: "+50,000 فيلم ومسلسل",
     },
     {
       feature: "أدنى سرعة إنترنت مطلوبة",
       nova: "10 - 15 ميجابت",
       istar: "8 - 12 ميجابت",
       moka: "4 - 8 ميجابت (اقتصادي)",
+      x: "10 - 15 ميجابت",
     },
     {
       feature: "خاصية التايم شفت والترجمة",
       nova: "✓ مدعومة بالكامل",
       istar: "✓ مدعومة",
       moka: "مدعومة جزئياً",
+      x: "✓ مدعومة بالكامل",
     },
     {
       feature: "سرعة التنقل بين القنوات",
       nova: "سريعة جداً (< 0.8s)",
       istar: "سريعة (< 1.2s)",
       moka: "عادية (< 1.5s)",
+      x: "سريعة جداً (< 0.8s)",
     },
   ];
 
@@ -78,7 +86,7 @@ export default function ServersComparison() {
           ref={tableRef}
           className="rounded-[28px] border border-black/10 bg-white overflow-hidden shadow-[0_40px_90px_-40px_rgba(0,0,0,0.3)] overflow-x-auto"
         >
-          <table className="w-full text-right border-collapse min-w-[700px]">
+          <table className="w-full text-right border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-[#0b0b0f] text-white">
                 <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black">
@@ -92,6 +100,9 @@ export default function ServersComparison() {
                 </th>
                 <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-white/60">
                   موكا (Moka) ⚡
+                </th>
+                <th className="p-4 sm:p-5 text-[13.5px] sm:text-[14.5px] font-black text-[#ff9296] bg-white/[0.04]">
+                  سيرفر X (XTV) ✕
                 </th>
               </tr>
             </thead>
@@ -110,6 +121,7 @@ export default function ServersComparison() {
                     {row.istar}
                   </td>
                   <td className="p-4 sm:p-5 font-bold text-black/60">{row.moka}</td>
+                  <td className="p-4 sm:p-5 font-bold text-[#dc2626] bg-[#dc2626]/[0.04]">{row.x}</td>
                 </tr>
               ))}
             </tbody>

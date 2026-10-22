@@ -294,18 +294,134 @@
   -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 99%);
 }
 
-/* شعار نوفا المقصوص (بدون شريط IPTV) — زاوية تذكرة الدوري الفرنسي فقط:
-   أعلى اليسار الفيزيائي (not inline-start لأن التذكرة RTL)، صغير (~34px
-   كحد أقصى) ومرئي بظل سقوط رقيق فوق خلفية التذكرة بلا تفاعل أو نص بديل */
-.league-ticket-brand-nova {
+/* صف أعلام السيرفرات **متوسّطًا أعلى التذكرة** — كان أعلى اليسار
+   الفيزيائي ثم انتقل بطلب المالك أولاً إلى مركز الفرنسية، وبعدها
+   عمّم المالك المركز على كل حامل له (تذكرة مواعيد المباريات كاملةً
+   + الخمسة الساكنة + أول شريحة من eng/esp/uefa) — حاوية مرنة (بدل
+   التثبيت المطلق لكل علم) تتمدّد مع انضمام أعضاء جدد بفجوة 7px ثابتة
+   ورؤوس متساوية: نوفا وفق حزمة التوزيع ثم X ملاصقاً لها أينما ظهرت،
+   ثم شريكتا الخدمة ايستار فموكا بعد أن عمّمهما المالك على النطاق
+   نفسه — الهندسة الدقيقة محفوظة بحذافيرها: أعلى 10 ونوفا بعرض مقيّد
+   والباقين بارتفاع X نفسه، بلا تفاعل ولا نص بديل */
+.league-ticket-brands {
   position: absolute;
   top: 10px;
-  left: 12px;
-  width: clamp(28px, 4.2vw, 36px);
-  height: auto;
+  /* التوسيط الفيزيائي: مركز الصف = مركز الكرت (نصف عرضه ثم إزاحة
+     سالبة بمقدار نصف عرض الصف نفسه مهما تمدّد بعدد أعلامه) */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  /* اتجاه فيزيائي صريح: التذكرة RTL فبلا هذا السطر ينعكس الصف وتقفز
+     نوفا لآخره يميناً — الترتيب المطلوب ثابت فيزيائياً (نوفا فX
+     فايستار فموكا) من اليسار، والأعلام صور لا تتأثر بالاتجاه النصي */
+  direction: ltr;
+  align-items: flex-start;
+  gap: 7px;
   z-index: 3;
   pointer-events: none;
+}
+
+/* أعلام السيرفرات الأربعة صارت روابط لصفحات سيرفراتها المخصصة بطلب
+   المالك (/nova/ /x/ /istar/ /moka/) — إلغاء أحداث الحاوية الزخرفية
+   أعلاه يبقى، والرابط نفسه يستعيد النقرة مباشرةً؛ أما لوحة المفاتيح
+   وقارئ الشاشة فيبقى الحيّز زخرفياً خالصاً بلا تغيير (tabIndex=-1 في
+   DOM وaria-hidden على التذكرة محفوظان) */
+.league-ticket-brand-link { display: inline-flex; pointer-events: auto; }
+
+/* وأيقونة الثلاثية (شعار الفيفا على أساس الجامعة) رابط لصفحة «مواعيد
+   المباريات» بنفس القاعدة — مسار اللمعة نفسه بلا تنسيق إضافي */
+.league-ticket-badge-link { display: inline-flex; pointer-events: auto; }
+
+/* وحيثما جاور الصفُّ المتوسّطُ الثلاثيةَ المتوسّطةَ تنزاح مبطّطةً
+   إضافيًا (50px بدل 22px) فلا يصطدم السطران المركزيان المتتابعان —
+   معمّمٌ مع التوسيط على كل حامل للصف: الخمسة الساكنة وأساس المنزلقات
+   الثلاث وتذكرة مواعيد المباريات بأساسها وقممها — ويُضيَّق إلى 42px
+   على الجوال ضمن استعلام الوسائط بالأسفل */
+.league-ticket-header--under-brands { padding-top: 50px; }
+
+/* شعار نوفا المقصوص (بدون شريط IPTV) — صغير (~34px كحد أقصى) ومرئي
+   بظل سقوط رقيق فوق خلفية التذكرة */
+.league-ticket-brand-nova {
+  width: clamp(28px, 4.2vw, 36px);
+  height: auto;
   filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.55));
+}
+
+/* لوجو X المقصوص (إزالة نص IPTV من أيقونته الداكنة) — بجانب نوفا
+   أينما ظهرت بعد التعميم في #163 و**بمساحتها نفسها** (ارتفاع ~21px كحد
+   أعلى والعرض من نسبة الشعار)؛ وكذلك ايستار وموكا على المساحة نفسها
+   تماماً — لافتة ايستار الرسمية بعد فتح سوادها شفافاً، وقرص موكا
+   الأبيض بعد قصّه دائرياً */
+.league-ticket-brand-xtv,
+.league-ticket-brand-istar,
+.league-ticket-brand-moka {
+  height: clamp(17px, 2.55vw, 22px);
+  width: auto;
+  filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.55));
+}
+
+/* ── تذكرة الدوري الفرنسي: أيقونة البطولة + خط رأسي + علامة ستريم ماستر ──
+   بطلب المالك تتوسّط مجموعة الترويسة رأسَ التذكرة (مركزها = مركز الكرت)،
+   وتتكوّن: أيقونة البطولة ثم خط رأسي ليموني متدرج ثم علامة نصية مُصغّرة
+   ومطابقة لشعار الفوتر حرفياً — مربّع #d8ff3e مستدير يحمل مثلث التشغيل
+   الأسود والاسم بخط العناوين الأبيض الثقيل، بمقاسات تلائم الكرت */
+.league-ticket-header--brand { justify-content: center; }
+
+/* حركة المربع الليموني — نفس إيقاع «nice-panda-34» على Uiverse (رخصة MIT،
+   بإلهام لا حرفية): دورة كاملة ناعمة كل ثانية ببطء دخول وخروج في حلقة
+   بلا نهاية، فالعودة من -360° إلى 0° لا تُحدث قفزة لأنهما الموضع نفسه */
+@keyframes league-ticket-wordmark-badge-tumble {
+  0% { transform: rotate(-360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.league-ticket-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-inline-start: 11px;
+  pointer-events: none;
+}
+
+.league-ticket-wordmark-line {
+  width: 1.5px;
+  height: 36px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, rgba(216, 255, 62, 0) 0%, rgba(216, 255, 62, 0.95) 50%, rgba(216, 255, 62, 0) 100%);
+  /* وهج خفيف يجاري خطوط القالب المضيئة فيبقى الفاصل مقروءاً على الداكن */
+  box-shadow: 0 0 7px rgba(216, 255, 62, 0.45);
+}
+
+.league-ticket-wordmark-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: #d8ff3e;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  box-shadow: 0 2px 8px rgba(216, 255, 62, 0.35);
+  /* دورة الدوران الناعمة الثانية-الواحدة (نفس إيقاع loader المرجع) */
+  animation: league-ticket-wordmark-badge-tumble 1s ease-in-out infinite;
+}
+
+.league-ticket-wordmark-badge svg {
+  width: 10px;
+  height: 10px;
+  color: #0b0b0f;
+  /* مثلث التشغيل يُزاح شعرة نحو اتجاهه ليتوسّط بصرياً داخل المربّع */
+  margin-inline-start: 1px;
+}
+
+.league-ticket-wordmark-text {
+  font-family: var(--font-display, "Tajawal", "Cairo", ui-sans-serif, sans-serif);
+  font-weight: 900;
+  font-size: 14.5px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
 }
 
 /* الإسباني: لاعبان على الجناحين — مواضع فيزيائية صريحة (يمين/يسار)
@@ -323,6 +439,78 @@
   height: 72%;
 }
 
+/* نسخ الاحتفال (fra-dembele-phone على قمة سان جيرمان×برشا الآن): نبضة
+   حيّة بلا اهتزاز — زوم كين-برنز بطيء بأصل مثبت عند القدم، وtransform
+   فقط ليبقى التحريك على طبقة التركيب، ومع تفضيل تقليل الحركة تتجمد
+   الصورة ثابتة كنقطة البداية */
+.league-ticket-player--celebrate {
+  transform-origin: 50% 100%;
+  animation: league-ticket-player-celebrate 6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes league-ticket-player-celebrate {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.05) translateY(-1.2%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .league-ticket-player--celebrate { animation: none; }
+}
+
+/* التسلسل المتحرك (فليب-بوك 4 إطارات موحّدة 1280×1600): الحاوية تحمل
+   هندسة الخانة بنسبة الإطار، والإطارات طبقات مطلقة تتبدّل شفافيتها
+   بمقاطع متتالية — ذهاب وعودة (1→2→3→4→3→2) كل 600 مللي كأنها فيديو
+   قصير، بلا جافاسكربت. مع تقليل الحركة: الإطارات الثلاثة الأولى
+   تُخفى ويبقى الإطار الأخير (ذروة الاحتفال) ثابتاً */
+.league-ticket-player--seq {
+  width: auto;
+  aspect-ratio: 1280 / 1600;
+}
+
+.league-ticket-player__seq-frame {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  opacity: 0;
+  animation: league-ticket-seq 3.6s infinite;
+}
+
+.league-ticket-player__seq-frame--1 { animation-name: league-ticket-seq-1; }
+.league-ticket-player__seq-frame--2 { animation-name: league-ticket-seq-2; }
+.league-ticket-player__seq-frame--3 { animation-name: league-ticket-seq-3; }
+.league-ticket-player__seq-frame--4 { animation-name: league-ticket-seq-4; }
+
+@keyframes league-ticket-seq-1 {
+  0%, 16.6% { opacity: 1; }
+  16.7%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-2 {
+  0%, 16.6% { opacity: 0; }
+  16.7%, 33.3% { opacity: 1; }
+  33.4%, 83.3% { opacity: 0; }
+  83.4%, 100% { opacity: 1; }
+}
+@keyframes league-ticket-seq-3 {
+  0%, 33.3% { opacity: 0; }
+  33.4%, 50% { opacity: 1; }
+  50.1%, 66.6% { opacity: 0; }
+  66.7%, 83.3% { opacity: 1; }
+  83.4%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-4 {
+  0%, 50% { opacity: 0; }
+  50.1%, 66.6% { opacity: 1; }
+  66.7%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .league-ticket-player__seq-frame { animation: none; opacity: 0; }
+  .league-ticket-player__seq-frame--4 { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {
   .league-ticket-player { height: 70%; opacity: .85; }
   /* ميسي الخلفي يبقى مطلّاً من وراء رونالدو إلى أعلى اليسار */
@@ -337,30 +525,61 @@
 /* صف الأيقونات أسفل التذكرة بطلب صريح: المتن (الاسم المعدني) يملأ
    الصف الأول والأيقونات في السطر الأخير — بإسناد صفوف الشبكة صراحةً
    دون إعادة ترتيب DOM */
-.all-leagues-ticket { grid-template-rows: 1fr auto; }
-.all-leagues-ticket .league-ticket-body { grid-row: 1; }
-.all-leagues-ticket .leagues-ticket-icons { grid-row: 2; }
+/* بالثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة) صار تخطيط
+   القاعدة الجامعة ثلاثة صفوف: الترويسة أولاً فالاسم المعدني فصفّ
+   أيقونات البطولات الثماني */
+.all-leagues-ticket {
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header"
+    "body"
+    "icons";
+}
+.all-leagues-ticket .league-ticket-body { grid-area: body; }
+.all-leagues-ticket .leagues-ticket-icons { grid-area: icons; }
 
+/* الخلفية السينمائية بعرض الكارت طبقة أولى فحسب: الترويسة (فيفا
+   والثلاثية) والاسم المعدني وصفّ أيقونات البطولات فوقها دوماً —
+   بلا هذه الطبقة يغطّي الملصق ممتلئ الارتفاع عناصرَ النص كما كان
+   يفعل حين يعلو العنقود سطرَ الترويسة سابقاً */
+.all-leagues-ticket .league-ticket-header,
+.all-leagues-ticket .league-ticket-body,
+.all-leagues-ticket .leagues-ticket-icons { z-index: 2; }
+
+/* عنقود النجوم — كبّره المالك ليملأ **عرض التذكرة قدر الإمكان**: ملصق
+   النجوم السبعة بورتريه (843×1038) فيُرسَم بنسبة «التغطية» على مسرح
+   بعرض الكرت وارتفاعه كاملين، ونافذة القصّ الرأسية مثبّتة على صفّ
+   الوجوه (8% من فائض الارتفاع) فتتّسع الوجوه والأكتاف من الحافة إلى
+   الحافة بلا تشويه أبعاد. وعلى هذا الامتلاء صار العنقود خلفيةً
+   سينمائية معتمة (brightness 0.62) لا منافساً للتلال: الوجوه تتّسع
+   واضحةً فالإبهام الفضي للاسم وللثلاثية فوقها يبقى أعلى صوتاً،
+   وحماية القراءة انتقلت من قصّ الارتفاع (92% ثم 72% ف62% في السلسلة
+   السابقة) إلى هذا التعتيم مع القناع وتلاشي الحافة السفلية */
 .all-leagues-ticket-players {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  height: 92%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 8%;
   z-index: 1;
-  filter: drop-shadow(0 0 26px rgba(216, 255, 62, 0.14));
-  mask-image: linear-gradient(180deg, #000 68%, transparent 99%);
-  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 99%);
+  filter: brightness(0.62) drop-shadow(0 0 26px rgba(216, 255, 62, 0.14));
+  mask-image: linear-gradient(180deg, #000 55%, transparent 99%);
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 99%);
 }
 
-/* غطاء معتم فوق العنقود وتحت النص — يحمي تباين الاسم المعدني وسط اللاعبين */
+/* غطاء معتم فوق العنقود وتحت النص — يحمي تباين الاسم المعدني وسط
+   اللاعبين (وبعد أن غدا العنقود خلفية معتمة بـbrightness عاد الغطاء
+   لحجمه الأوّلي الناعم فلا يؤلّف بقعة سوداء صريحة وسط التذكرة) */
 .all-leagues-ticket-veil {
   position: absolute;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: 58%;
-  height: 84%;
-  background: radial-gradient(ellipse at 50% 62%, rgba(5, 5, 7, 0.94) 32%, rgba(5, 5, 7, 0) 72%);
+  width: 62%;
+  height: 86%;
+  background: radial-gradient(ellipse at 50% 62%, rgba(5, 5, 7, 0.82) 30%, rgba(5, 5, 7, 0) 72%);
   z-index: 1;
   pointer-events: none;
 }
@@ -373,6 +592,43 @@
   justify-content: center;
   gap: 10px;
   padding: 0 18px 16px;
+}
+
+/* كل أيقونة في الصف رابط لصفحة هبوط بطولتها بطلب المالك — نفس قاعدة
+   روابط الأعلام: نقرة فأرة فحسب داخل الحيّز الزخرفي */
+.leagues-ticket-icon-link { display: inline-flex; pointer-events: auto; border-radius: inherit; }
+
+/* ── لمعة الاسم المعدني الليمونية — أساس التذكرة الجامعة ─────────────
+   بطلب المالك: «كل البطولات الكبرى» يعلوها شعاع ليموني متحرك مستوحى من
+   «shiny text» على uiverse.io/devkatyall/spicy-mule-43 (رخصة MIT —
+   بالإلهام لا الحرفية): شريط قطري ضيّق شفاف الحواف مقصوص بالنص نفسه
+   فوق التدرّج المعدني الأصلي، حجمه 220% يعادل عرض الاسم فينطلق من خلف
+   الحافة اليمنى إلى اليمنى كلياً خلال دورة 8 ثوانٍ ممهّلة (بطلب المالك
+   سيراً أبطأ) وإيقاع معاد توزيعه لمصلحة الإظهار الإلزامي على الجوال:
+   إمساك 5% فقط (≈0.4 ثانية) ثم انزلاق واحد يستغرق 65% من الدورة
+   (≈5.2 ثانية ظاهرة العيان دائماً) ثم هدوء 30% قبل الالتفاف — فمتى
+   نظرتَ إلى الشاشة الصغيرة غالباً تلقى الشعاع متحركاً — بلا أي عنصر
+   زائد ولا خاصية غير مدعومة: موضع الخلفية يعمل على الجوال والمكتب سواءً.
+   (المحدد مضاعف الدرجة بالأب عمداً: اختزال background في قاعدة
+   .league-ticket-body em بدرجتها الأعلى يمسح كل خصائص الصورة بلا
+   استثناء — كان ذلك يخفي طبقة اللمعة كلياً قبل هذا التقويم) */
+.all-leagues-ticket .all-leagues-ticket-name {
+  background-image:
+    linear-gradient(115deg, transparent 42%, rgba(216, 255, 62, 0.82) 50%, transparent 58%),
+    linear-gradient(45deg, #0b0b0f 4%, #f6f4ec 50%, #0b0b0f 96%);
+  background-size: 220% 100%, 100% 100%;
+  background-position: 110% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: all-leagues-ticket-name-shine 8s linear infinite;
+}
+
+@keyframes all-leagues-ticket-name-shine {
+  0%, 5% { background-position: 110% 0, 0 0; }
+  70% { background-position: -10% 0, 0 0; }
+  100% { background-position: -10% 0, 0 0; }
 }
 
 /* ==========================================================================
@@ -642,6 +898,12 @@
 /* الجوال — مطابق تضييق الشريط المسطّح السابق (وحدات أضيق وأرقام أصغر) */
 @media (max-width: 700px) {
   .league-ticket-crest { width: 34px; height: 34px; }
+  .league-ticket-header--under-brands { padding-top: 42px; }
+  .league-ticket-wordmark { gap: 7px; margin-inline-start: 9px; }
+  .league-ticket-wordmark-line { height: 26px; }
+  .league-ticket-wordmark-badge { width: 18px; height: 18px; border-radius: 6px; }
+  .league-ticket-wordmark-badge svg { width: 8.5px; height: 8.5px; }
+  .league-ticket-wordmark-text { font-size: 12px; }
   .league-ticket-goals { font-size: 1.25rem; }
   .league-ticket-countdown { gap: 0.3rem; }
   .ticket-flip__pair { gap: 0.1rem; }
@@ -653,4 +915,8 @@
   .league-ticket-slide { transition: none; transform: none; }
   .league-ticket-dot, .league-ticket-dot:hover { transition: none; transform: none; }
   .ticket-flip__flap { display: none; }
+  /* حركة مربّع علامة الفرنسية تسكن تقديراً لتفضيل السكون */
+  .league-ticket-wordmark-badge { animation: none; }
+  /* ولمعة الاسم الليمونية تثبت كذلك تقديراً للتفضيل نفسه */
+  .all-leagues-ticket .all-leagues-ticket-name { animation: none; }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
+import { IconPlay } from "./Icons";
 import {
   dayInZone,
   hasCompleteScore,
@@ -50,6 +51,12 @@ export interface FeaturedClash {
   away: ClashTeamSide;
   homePlayer: string;
   awayPlayer: string;
+  /* تسلسل احتفال متحرك (فليب-بوك 4 إطارات ثابتة بلا خلفية، محاذاة
+     موحّدة 1280×1600): إن حُدِّد لجهةٍ عُرض بدل الصورة الساكنة كطبقات
+     تتبدّل بشفافية CSS — تشبه الفيديو بأربع صور فقط، وتتجمد على الإطار
+     الأخير مع تفضيل تقليل الحركة */
+  homePlayerSequence?: string[];
+  awayPlayerSequence?: string[];
   /* مصدر البطولة المغذِّية لهذه المواجهة (مفتاح ESPN نفسه): في تذكرة
      البطولة يُورَّث من التذكرة نفسها ولا يُذكر، وفي التذكرة الجامعة
      بصفحة «مواعيد المباريات» يُثبَّت صراحةً على بطولة المواجهة فيُرسَم
@@ -59,11 +66,19 @@ export interface FeaturedClash {
 
 /* ── المواجهات المميّزة — شرائح القمم لكل بطولة بترتيب عرضها بعد
      الشريحة الأساسية: مقاتلو الأبطال «قمة الجولة» (باريس × برشلونة)
-     و«مباراة الليلة» (بايرن × أرسنال)، والكلاسيكو للإسباني، وقمتان
-     للإنجليزي (تشيلسي × توتنهام ثم أرسنال × إيفرتون). شعارات
+     و«قمة الجولة» ثانية (بايرن × أرسنال — كانت «مباراة الليلة» قبل أن
+     يوحّدها المالك)، والكلاسيكو للإسباني، وقمتان للإنجليزي (تشيلسي ×
+     توتنهام ثم أرسنال × إيفرتون). شعارات
      بايرن/أرسنال/تشيلسي/توتنهام/إيفرتون من مصدر أيقونات الموقع نفسه
      (ESPN CDN كما في بطاقات المباريات) مع بديل الحرفين المحلي
      إن تعذّر التحميل */
+/* نسخ الاحتفال المخزّنة (‎-celebration / ‎-phone / ‎-playstation بحسب قاعدة
+   التسمية في images/players/README.md) تحمل صفّ التحريك الحيّ — نبضة زوم
+   خفيفة تبقى القدم مثبته وتتجمد مع تفضيل تقليل الحركة. التحديد باسم الملف
+   لا باسم اللاعب يُعمّم على كل احتفالات المستقبل بالقاعدة نفسها */
+const celebrationClass = (src: string): string =>
+  /-(celebration|phone|playstation)\.png$/.test(src) ? " league-ticket-player--celebrate" : "";
+
 export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
   "uefa.champions": [
     {
@@ -80,11 +95,19 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
         mono: "برم",
         tokens: ["barcelona", "برشلونة", "بارسلونة"],
       },
-      homePlayer: "/images/players/fra-dembele.png",
+      homePlayer: "/images/players/fra-dembele-phone.png",
       awayPlayer: "/images/players/esp-yamal.png",
+      homePlayerSequence: [
+        "/images/players/fra-dembele-phone-stage-1.png",
+        "/images/players/fra-dembele-phone-stage-2.png",
+        "/images/players/fra-dembele-phone-stage-3.png",
+        "/images/players/fra-dembele-phone-stage-4.png",
+      ],
     },
     {
-      eyebrow: "مباراة الليلة",
+      /* بطلب المالك: كانت العبارة التصنيفية «مباراة الليلة» وصارت
+         «قمة الجولة» أسوةً بشقيقتها (الشريحة الثالثة في المنزلقة الجامعة) */
+      eyebrow: "قمة الجولة",
       home: {
         name: "بايرن ميونخ",
         crest: "https://a.espncdn.com/i/teamlogos/soccer/500/132.png",
@@ -260,13 +283,20 @@ function useNow(active: boolean) {
   return now;
 }
 
+/* بطلب المالك: خانات العدّاد تُعرض بالأرقام العربية المشرقية
+   (٠١٢٣٤٥٦٧٨٩) — تحويل شكلي محض يُطبَّق على النص المهيّأ بعد الحساب،
+   فلا يمسّ أي قيمة زمنية، وكل محرف عربي هنا نقطة شيفرة واحدة فينقسم
+   بحروفه بأمان عند إسقاطه على بطاقات الفليب */
+const AR_DIGITS: Readonly<Record<string, string>> = { "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤", "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩" };
+const toArabicDigits = (western: string) => western.replace(/\d/g, (d) => AR_DIGITS[d]);
+
 function splitCountdown(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
   const days = Math.floor(total / 86400);
   const hours = Math.floor((total % 86400) / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = total % 60;
-  const two = (n: number) => String(n).padStart(2, "0");
+  const two = (n: number) => toArabicDigits(String(n).padStart(2, "0"));
   return { days, hours: two(hours), minutes: two(minutes), seconds: two(seconds) };
 }
 
@@ -298,7 +328,111 @@ function TeamCrest({ src, monogram }: { src: string; monogram: string }) {
 const NOVA_BRAND_WHOLE = new Set(["fra.1", "ger.1", "ita.1", "egy.1", "sau.1"]);
 const NOVA_BRAND_BASE = new Set(["eng.1", "esp.1", "uefa.champions"]);
 export function NovaTicketBrand() {
-  return <img className="league-ticket-brand-nova" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+  /* بطلب المالك صار العلم رابطاً لصفحة سيرفره المخصصة — نقرة فأرة فوق
+     التذكرة تصل /nova/؛ ويبقى بحيّز التذكرة الزخرفي (aria-hidden بلا
+     تغيير) فلا يدخل ترتيب لوحة المفاتيح (tabIndex=-1) ويسمّي title
+     الوجهة عند التحويم */
+  return (
+    <a className="league-ticket-brand-link" href="/nova/" title="سيرفر نوفا" tabIndex={-1}>
+      <img className="league-ticket-brand-nova" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
+}
+
+/* لوجو «X» المقصوص من نصّه IPTV (اختيار المالك للأيقونة الداكنة) — يجلس
+   بجانب نوفا مباشرة أينما ظهرت بعد التعميم في #163 وبمساحتها نفسها */
+export function XtvTicketBrand() {
+  /* رابط «سيرفر X» /x/ — نفس قاعدة النقرة الزخرفية الموثّقة عند نوفا */
+  return (
+    <a className="league-ticket-brand-link" href="/x/" title="سيرفر X" tabIndex={-1}>
+      <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
+}
+
+/* لوجو سيرفر «ايستار» — اللافتة الرسمية لهيدر istar-tv.com (نجمة
+   ذهبية + iSTAR INTERNATIONAL) بعد فتح خلفيتها السوداء إلى شفافية —
+   دخل أولاً فرنسياً بطلب المالك ثم عمّمه المالك مع موكا على نطاق
+   نوفا/X نفسه حرفياً، وبمساحة X نفسها */
+export function IstarTicketBrand() {
+  /* رابط «سيرفر إيستار» /istar/ — نفس قاعدة النقرة الزخرفية الموثّقة عند نوفا */
+  return (
+    <a className="league-ticket-brand-link" href="/istar/" title="سيرفر إيستار" tabIndex={-1}>
+      <img className="league-ticket-brand-istar" src="/images/brand/istar-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
+}
+
+/* لوجو سيرفر «موكا» — القرص الأبيض MOKA IPTV من الصفحة الرسمية
+   mokatv.online بعد قصّه قناعاً دائرياً شفاف الحواف — كشقيقه ايستار:
+   فرنسي أولاً ثم معمّم على نطاق نوفا/X نفسه، يلاصقه يساراً وبمساحة
+   X نفسها */
+export function MokaTicketBrand() {
+  /* رابط «سيرفر موكا» /moka/ — نفس قاعدة النقرة الزخرفية الموثّقة عند نوفا */
+  return (
+    <a className="league-ticket-brand-link" href="/moka/" title="سيرفر موكا" tabIndex={-1}>
+      <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
+}
+
+/* قاعدة ظهور صف الأعلام — مشتق واحد يطابق أصله في TicketBrandPair
+   وتستعمله الترويسات لتعرف متى تنزاح مبطّطة (--under-brands) تحت الصف:
+   حزمة «الكل» على كل النطاقات، «الأساس» على الساكن والقاعدة، وعلم
+   الجامعة (showNovaBrand) يجبر الظهور أينما مُرِّر */
+function hasTicketBrands(leagueId: string, scope: "static" | "base" | "clash", showNovaBrand = false): boolean {
+  return scope === "clash"
+    ? NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand
+    : NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand;
+}
+
+/* صف الأعلام الزخرفية في حاوية مرنة تتمدد مع عدد الشعارات (فجوة 7px
+   ورؤوس متساوية): نوفا وفق حزمة التوزيع وX يجاورها أينما ظهرت بمساحتها
+   نفسها، وبقرار المالك الثالث يلتصق بهما شريكتا الخدمة ايستار فموكا
+   على **النطاق نفسه حرفاً** (الجامعة كاملةً + الخمسة الساكنة + أول
+   شريحة من eng/esp/uefa) — وبقراره الثاني عمّ المركز: الصف **متوسّط
+   أعلى كل تذكرة تحمله** فوق الثلاثية المركّزة في سطرين متوسّطين
+   متتابعين — التوسيط مدموجٌ في قاعدة CSS نفسها */
+function TicketBrandPair({ leagueId, scope, showNovaBrand = false }: {
+  leagueId: string;
+  scope: "static" | "base" | "clash";
+  showNovaBrand?: boolean;
+}) {
+  if (!hasTicketBrands(leagueId, scope, showNovaBrand)) return null;
+  return (
+    <span className="league-ticket-brands">
+      <NovaTicketBrand />
+      <XtvTicketBrand />
+      <IstarTicketBrand />
+      <MokaTicketBrand />
+    </span>
+  );
+}
+
+/* علامة «ستريم ماستر» النصية بتوسّط رأس التذاكر — مصغّرٌ وفيٌّ لشعار
+   الفوتر حرفياً (مربّع ليموني مستدير بمثلث تشغيل دوّار كل ثانية بنفس
+   إيقاع loader «nice-panda-34» + الاسم بخط العناوين الأبيض الثقيل)
+   يجلس يميناً بجانب أيقونة البطولة ويفصل بينهما خط رأسي ليموني متدرج.
+   وتوزيعها مطابقٌ لتوزيع أعلام نوفا/X حرفياً بطلب المالك المثبّت:
+   تذاكر fra/ger/ita/egy/sau **كاملة** (وهي ثابتة بلا شرائح) + تذكرة
+   مواعيد المباريات الجامعة **كاملة** (الجامع أساساً وقمماً، وإن حملت
+   قمتها أيقونة بطولةٍ وردت) + **الشريحة الأولى فقط** من eng/esp/uefa
+   فتبقى قممهم نقيةً — وبمقاسات تلائم ارتفاع التذكرة */
+const WORDMARK_WHOLE = new Set(["fra.1", "ger.1", "ita.1", "egy.1", "sau.1"]);
+const WORDMARK_BASE = new Set(["eng.1", "esp.1", "uefa.champions"]);
+function ticketWordmark(leagueId: string, scope: "static" | "base" | "clash"): boolean {
+  if (leagueId === "matches") return true;
+  if (scope === "clash") return WORDMARK_WHOLE.has(leagueId);
+  return WORDMARK_WHOLE.has(leagueId) || WORDMARK_BASE.has(leagueId);
+}
+export function StreamMasterTicketWordmark() {
+  return (
+    <span className="league-ticket-wordmark" aria-hidden="true">
+      <span className="league-ticket-wordmark-line" />
+      <span className="league-ticket-wordmark-badge"><IconPlay /></span>
+      <span className="league-ticket-wordmark-text">ستريم ماستر</span>
+    </span>
+  );
 }
 
 /* الإطار الزخرفي المشترك بين منزلقتَي البطولة: خلفية نقطة قالب وخطوط */
@@ -342,11 +476,13 @@ function FlipDigit({ value }: { value: string }) {
 }
 
 export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof splitCountdown> }) {
+  /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفياً:
+     أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه) */
   const cells: { label: string; value: string }[] = [
-    ...(countdown.days > 0 ? [{ label: "يوم", value: String(countdown.days).padStart(2, "0") }] : []),
-    { label: "ساعة", value: countdown.hours },
-    { label: "دقيقة", value: countdown.minutes },
-    { label: "ثانية", value: countdown.seconds },
+    ...(countdown.days > 0 ? [{ label: "أيام", value: toArabicDigits(String(countdown.days).padStart(2, "0")) }] : []),
+    { label: "ساعات", value: countdown.hours },
+    { label: "دقائق", value: countdown.minutes },
+    { label: "ثوانٍ", value: countdown.seconds },
   ];
   return (
     <div className="league-ticket-countdown ticket-flip" role="presentation">
@@ -364,8 +500,8 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
   );
 }
 
-/* منزلقة «قمة الجولة/الكلاسيكو/مباراة الليلة» — النصوص بنوعية كرت لوحة المباريات نفسها */
-function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: FeaturedClash; leagueId: string }) {
+/* منزلقة «قمة الجولة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
+function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean; underBrands?: boolean }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
   const finished = match ? match.state === "finished" : false;
@@ -389,16 +525,44 @@ function ClashSlide({ match, clash, leagueId }: { match: Match | null; clash: Fe
   const leftSide = homeIsConfigHome ? clash.away : clash.home;
   const rightPlayer = homeIsConfigHome ? clash.homePlayer : clash.awayPlayer;
   const leftPlayer = homeIsConfigHome ? clash.awayPlayer : clash.homePlayer;
+  /* تسلسل الاحتفال يتبع انعكاس الضيافة نفسه — الجهة تحمل إطاراتها مهما دار الترتيب */
+  const rightSequence = homeIsConfigHome ? clash.homePlayerSequence : clash.awayPlayerSequence;
+  const leftSequence = homeIsConfigHome ? clash.awayPlayerSequence : clash.homePlayerSequence;
 
   return (
     <>
       <TicketShell />
       {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
-          ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد */}
-      <img className="league-ticket-player league-ticket-player--left" src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <img className="league-ticket-player league-ticket-player--right" src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
-      <div className="league-ticket-header">
+          ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد. جهةٌ ذات
+          تسلسل احتفال تُرسَم حاويةً طبقية (4 إطارات تتبدّل بشفافية
+          CSS كفليب-بوك) بدل الصورة الساكنة */}
+      {leftSequence ? (
+        <span className="league-ticket-player league-ticket-player--left league-ticket-player--celebrate league-ticket-player--seq" data-player-src={leftSequence[leftSequence.length - 1]} aria-hidden="true">
+          {leftSequence.map((src, i) => (
+            <img key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
+          ))}
+        </span>
+      ) : (
+        <img className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
+      {rightSequence ? (
+        <span className="league-ticket-player league-ticket-player--right league-ticket-player--celebrate league-ticket-player--seq" data-player-src={rightSequence[rightSequence.length - 1]} aria-hidden="true">
+          {rightSequence.map((src, i) => (
+            <img key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
+          ))}
+        </span>
+      ) : (
+        <img className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+      )}
+      {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
+          بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي
+          تُبدي أيقونتها هنا — وقمم eng/esp/uefa تبقى نقيةً بطلبه.
+          وحيثما جاور الصفُّ المتوسّطُ الثلاثيةَ على الشريحة (الجامعة
+          كاملةً) تنزاح مبطّطةً تحته (--under-brands) كقاعدة عامة لكل
+          حالات التوسيط المعمّم */}
+      <div className={`league-ticket-header${showWordmark ? " league-ticket-header--brand" : ""}${underBrands ? " league-ticket-header--under-brands" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
+        {showWordmark ? <StreamMasterTicketWordmark /> : null}
       </div>
       <div className="league-ticket-body league-ticket-body--clash">
         <span className="league-ticket-eyebrow">{clash.eyebrow}</span>
@@ -532,10 +696,15 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           {base ?? (
             <div className="league-ticket league-ticket--in-track">
               <TicketShell />
-              {NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) || showNovaBrand ? <NovaTicketBrand /> : null}
+              <TicketBrandPair leagueId={leagueId} scope="base" showNovaBrand={showNovaBrand} />
               {basePlayers}
-              <div className="league-ticket-header">
+              {/* الشريحة الأولى — الثلاثية المتوسّطة هنا في حِزم «الكل»
+                  و«الأساس» معاً (فرنسا ورفاقها + eng/esp/uefa)، وحيثما
+                  جاورها الصف المتوسّط على الشريحة نفسها تنزاح مبطّطةً
+                  تحته (--under-brands) فينعم انطباق السطرين المركزيين */}
+              <div className={`league-ticket-header${ticketWordmark(leagueId, "base") ? " league-ticket-header--brand" : ""}${ticketWordmark(leagueId, "base") && hasTicketBrands(leagueId, "base", showNovaBrand) ? " league-ticket-header--under-brands" : ""}`}>
                 <LeagueIconBadge leagueId={leagueId} size={60} eager />
+                {ticketWordmark(leagueId, "base") ? <StreamMasterTicketWordmark /> : null}
               </div>
               <div className="league-ticket-body">
                 <em>{name}</em>
@@ -549,8 +718,8 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         {clashes.map((clash, i) => (
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             <div className="league-ticket league-ticket--match league-ticket--in-track">
-              {NOVA_BRAND_WHOLE.has(leagueId) || showNovaBrand ? <NovaTicketBrand /> : null}
-              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} />
+              <TicketBrandPair leagueId={leagueId} scope="clash" showNovaBrand={showNovaBrand} />
+              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} underBrands={ticketWordmark(leagueId, "clash") && hasTicketBrands(leagueId, "clash", showNovaBrand)} />
             </div>
           </div>
         ))}
@@ -639,10 +808,16 @@ export default function LeagueTicketCard({ leagueId, name }: { leagueId: string;
       </div>
       {/* نقطة الضوء — عنصر «مقصّ القصّ» سابقاً؛ صارت نقطة القالب المتوهّجة */}
       <span className="league-ticket-symbol" />
-      {NOVA_BRAND_WHOLE.has(leagueId) || NOVA_BRAND_BASE.has(leagueId) ? <NovaTicketBrand /> : null}
+      <TicketBrandPair leagueId={leagueId} scope="static" />
       {PLAYER_MAP[leagueId]}
-      <div className="league-ticket-header">
+      {/* الثلاثية المتوسّطة (أيقونة البطولة فالخط فعلامة ستريم ماستر)
+          تجلس في رأس كل التذاكر الثابتة حاملةِ حزمة «الكل» — وبعد تعميم
+          المالك نقلَ الصف إلى منتصف الأعلى تنزاح مبطّطةً (--under-brands)
+          تحته في كل حامل (فرنسا وألمانيا وإيطاليا ومصر والسعودية) فلا
+          يصطدم السطران المركزيان المتتابعان */}
+      <div className={`league-ticket-header${ticketWordmark(leagueId, "static") ? " league-ticket-header--brand" : ""}${ticketWordmark(leagueId, "static") && hasTicketBrands(leagueId, "static") ? " league-ticket-header--under-brands" : ""}`}>
         <LeagueIconBadge leagueId={leagueId} size={60} eager />
+        {ticketWordmark(leagueId, "static") ? <StreamMasterTicketWordmark /> : null}
       </div>
       <div className="league-ticket-body">
         <em>{name}</em>

@@ -15,7 +15,9 @@ const ssrArchiveModules = import.meta.glob("./content/fixtures-archive/*/*.json"
 export function getAllRoutes(): string[] {
   return [
     "/",
-    "/en", "/en/nova", "/en/istar", "/en/moka", "/en/faq",
+    "/en",
+    ...PRICING_PLANS.map((p) => `/en/${p.serverCode}`),
+    "/en/faq",
     "/channels",
     ...CHANNEL_CATEGORY_PAGES.map((category) => `/channels/${category.slug}`),
     "/matches", "/match-center", "/store", "/servers", "/cart", "/faq", "/trial",

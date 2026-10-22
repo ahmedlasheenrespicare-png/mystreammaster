@@ -5,19 +5,22 @@ import {
   OUR_SERVICE_NOTE,
   PRICING_PLANS,
   PROVIDER_SPECS_NOTE,
+  AVAILABLE_DURATIONS,
+  type PlanDuration,
   type PricingPlan,
 } from "../data";
 import { to } from "../config";
+import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
 import { IconArrowUpRight, IconChat, IconCheck, IconShieldCheck, IconStar, IconZap } from "../components/Icons";
 import FAQ from "../components/FAQ";
 import { Reveal } from "../components/motion";
 
 /* =========================================================================
-   صفحة هبوط لكل باقة — /nova  /istar  /moka
+   صفحة هبوط لكل باقة — /nova  /istar  /moka  /x
    • تُرسم مسبقاً وقت البناء بالكامل (عنوان ووصف وأسعار وميزات وباقة أسئلة)
    • تستهدف كلمة مفتاحية مستقلة لكل سيرفر بدل حشرها كلها في الصفحة الرئيسية
    • فصل الصفتين في كل عناوينها الفرعية:
-       - المواصفات (القنوات/المكتبة/الجودة/الأجهزة) = مواصفات سيرفر المزود الخارجي
+       - المواصفات (القنوات/المكتبة/الجودة) = مواصفات سيرفر المزود الخارجي
        - ما يقدّمه الموقع = باقة التفعيل والربط التقني والدعم الفني
 ========================================================================== */
 
@@ -31,8 +34,6 @@ interface PlanPageProps {
   onAddToCart: (plan: PricingPlan, months: "3" | "6" | "12" | "24", price: number) => void;
 }
 
-const DURATIONS: ("3" | "6" | "12" | "24")[] = ["12"];
-
 export default function PlanPage({
   plan,
   currency,
@@ -40,14 +41,15 @@ export default function PlanPage({
   onOpenTrial,
   onAddToCart,
 }: PlanPageProps) {
-  const [duration, setDuration] = useState<"3" | "6" | "12" | "24">("12");
+  const [duration, setDuration] = useState<PlanDuration>("12");
   const curr = CURRENCIES[currency] || CURRENCIES.SAR;
-  const priceObj = plan.prices[duration];
+  const priceObj = plan.prices[duration] ?? plan.prices["12"];
   const price = priceObj[curr.code] || priceObj.SAR;
   const oldSar = priceObj.oldSar;
   const discount = oldSar ? Math.round((1 - priceObj.SAR / oldSar) * 100) : 0;
   const others = PRICING_PLANS.filter((p) => p.id !== plan.id);
   const nameOnly = plan.serverName.split("(")[0].trim();
+  const availableDurations = AVAILABLE_DURATIONS.filter((d) => plan.prices[d] !== undefined);
 
   const durationLabels: Record<"3" | "6" | "12" | "24", string> = {
     "3": "3 شهور",
@@ -91,12 +93,11 @@ export default function PlanPage({
             <p className="mt-2 text-[12.5px] text-black/45 font-medium leading-relaxed">
               {PROVIDER_SPECS_NOTE}
             </p>
-            <dl className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] font-bold">
+            <dl className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 text-[12px] font-bold">
               {[
                 ["القنوات لدى المزود", plan.channelsCount],
                 ["الأفلام والمسلسلات لدى المزود", plan.vodCount],
                 ["الجودة المعلنة", plan.quality],
-                ["الأجهزة في نفس اللحظة", plan.devices],
               ].map(([k, v]) => (
                 <div key={k} className="rounded-2xl bg-white border border-black/10 p-3.5">
                   <dt className="text-black/40">{k}</dt>
@@ -132,6 +133,8 @@ export default function PlanPage({
                 "مناسبة لمن لديه سرعة إنترنت محدودة (من 4 ميجابت) أو يستخدم بيانات الهاتف، وللباحثين عن أفضل قيمة مقابل السعر مع مكتبة متنوعة وقنوات بديلة للمباريات."}
               {plan.serverCode === "nova" &&
                 "مناسبة لعشّاق المباريات والدوريات الكبرى الذين يشاهدون في أوقات الذروة، ولمن يريد ثباتاً عالياً مع تنويع مصادر البث لكل قناة رياضية."}
+              {plan.serverCode === "x" &&
+                "مناسبة لعشّاق المباريات والدوريات الكبرى الذين يبحثون عن ثبات مرتفع وتعدد مصادر البث لكل قناة، وفق المواصفات المعلنة لباقة X."}
               {plan.serverCode === "istar" &&
                 "مناسبة للعائلات ولمن يشاهد الأفلام والمسلسلات أكثر من الرياضة، مع توازن بين المكتبة والسعر واستهلاك بيانات متوسط."}
             </p>
@@ -151,8 +154,18 @@ export default function PlanPage({
           {/* بطاقة الشراء */}
           <Reveal variant="up" className="lg:col-span-5 lg:sticky lg:top-32">
             <div className="rounded-[28px] bg-[#0b0b0f] text-white p-6 sm:p-7 grain overflow-hidden relative">
-              <div className="absolute -top-24 -end-24 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
-              <div className="relative">
+              <div className="absolute -top-24 -end-24 z-0 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
+              <img
+                src={SERVER_WATERMARKS[plan.serverCode].src}
+                alt=""
+                aria-hidden="true"
+                width={SERVER_WATERMARKS[plan.serverCode].width}
+                height={SERVER_WATERMARKS[plan.serverCode].height}
+                loading="lazy"
+                decoding="async"
+                className={SERVER_WATERMARK_CLASS}
+              />
+              <div className="relative z-10">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[12.5px] font-black text-white/60">اختر المدة</span>
                   {discount > 0 && (
@@ -163,7 +176,7 @@ export default function PlanPage({
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  {DURATIONS.map((d) => (
+                  {availableDurations.map((d) => (
                     <button
                       key={d}
                       onClick={() => setDuration(d)}
@@ -314,7 +327,7 @@ export default function PlanPage({
 
       {/* باقة أسئلة تُرسم مسبقاً — مفيدة للفهرسة */}
       <div className="mt-16">
-        <FAQ />
+        <FAQ hideDeviceCount />
       </div>
 
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">

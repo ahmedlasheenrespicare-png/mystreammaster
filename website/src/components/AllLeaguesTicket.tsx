@@ -1,5 +1,6 @@
 import LeagueIconBadge from "./LeagueIconBadge";
-import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, type FeaturedClash } from "./LeagueTicketCard";
+import { leagueLandingById } from "../content/competitions";
+import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, IstarTicketBrand, MokaTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -15,7 +16,8 @@ import "./league-ticket.css";
      خصائصها الحيّة مأخوذة من إعدادات FEATURED_CLASHES نفسه (مصدر واحد
      يمنع أي انحراف بين نسختي الشريحة في التذكرتين):
        1) أبطال أوروبا «قمة الجولة» — باريس × برشلونة
-       2) أبطال أوروبا «مباراة الليلة» — بايرن × أرسنال
+       2) أبطال أوروبا «قمة الجولة» — بايرن × أرسنال (وحّدها المالك —
+          كانت «مباراة الليلة»)
        3) الإسباني «مواجهة الكلاسيكو» — ريال مدريد × برشلونة
        4) الإنجليزي «قمة الجولة» — تشيلسي × توتنهام
        5) الإنجليزي «قمة الجولة» — أرسنال × إيفرتون
@@ -60,24 +62,63 @@ function AllLeaguesTicketBase() {
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
       <span className="league-ticket-symbol" />
-      {/* شعار نوفا المقصوص أعلى اليسار الفيزيائي — على تذكرة جدول
-          المواعيد الجامعة بالكامل (وكذلك ظهورها في هيرو الرئيسية
-          باعتبارها الوحدة نفسها) بتوجيه المالك */}
-      <NovaTicketBrand />
+      {/* رباعي الأعلام متوسّطًا أعلى التذكرة (الحاوية المرنة ذاتها بعد
+          تعميم المالك نقلَها من اليسار إلى المركز على كل التذاكر): نوفا
+          الكاملة على تذكرة جدول المواعيد الجامعة، وX بجانبها نفس
+          الإثراء (تعميم موازٍ)، ثم ايستار فموكا بعد أن عمّمهما المالك
+          على نطاق نوفا/X نفسه — وظهورها في هيرو الرئيسية يتبع لهذه
+          الوحدة ذاتها */}
+      <span className="league-ticket-brands">
+        <NovaTicketBrand />
+        <XtvTicketBrand />
+        <IstarTicketBrand />
+        <MokaTicketBrand />
+      </span>
+      {/* الثلاثية المتوسّطة (تعميم المالك لتذكرة الجامعة كاملة): شعار
+          الاتحاد الدولي لكرة القدم «FIFA» بطلب المالك — النصّيّ الأزرق
+          الملكي الشفاف من أصول العلامة المحلية — بديلاً عن الكأس المحايدة
+          («كل البطولات» لا شعار بطولة واحد لها والفيفا جامعها الأعلى) —
+          ثم الخط الرأسي فالمربع الدوّار واسم ستريم ماستر؛ وتنزاح مبطّطةً
+          (--under-brands) تحت صف الأعلام المتوسّط فوقها كسائر التذاكر
+          الحاملة بعد تعميم المركز؛ وظهورها في هيرو الرئيسية يتبع لهذه
+          الوحدة ذاتها */}
+      <div className="league-ticket-header league-ticket-header--brand league-ticket-header--under-brands">
+        {/* وبطلب المالك صارت أيقونة الفيفا رابطاً لصفحة «مواعيد
+            المباريات» /matches/ — نقرة فأرة بنفس قاعدة روابط الأعلام
+            وأيقونات البطولات (حيّز زخرفي محفوظ بلا تغيير: tabIndex=-1
+            وتلميح الاسم عند التحويم) */}
+        <a className="league-ticket-badge-link" href="/matches/" title="مواعيد المباريات" tabIndex={-1}>
+          <LeagueIconBadge leagueId="matches" iconSrc="/images/brand/fifa-ticket.png" size={60} eager />
+        </a>
+        <StreamMasterTicketWordmark />
+      </div>
       {/* نجوم البطولات (مولّدة من صورهم المعتمدة) خلف النص — عنقود
           الفريق في الوسط بغطاء معتم يحمي قراءة الاسم المعدني */}
       <img className="league-ticket-player all-leagues-ticket-players" src="/images/players/all-stars.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
       <span className="all-leagues-ticket-veil" aria-hidden="true" />
+      {/* أيقونات البطولات الثماني — بطلب المالك صارت روابط لصفحاتها
+          المخصصة /matches/{السلاج}/: نقرة الفأرة فوق أي أيقونة تفتح
+          صفحة هبوط بطولتها، وتلميح التحويم يعرض اسمها المختصر — وتبقى
+          في الحيّز الزخرفي للتذكرة (aria-hidden المحفوظ كما أقفلته
+          حُرّاس المواصفات) فلا تدخل ترتيب لوحة المفاتيح (tabIndex=-1) */}
       <div className="leagues-ticket-icons">
-        {TICKET_LEAGUES.map((id) => (
-          <LeagueIconBadge key={id} leagueId={id} size={46} eager />
-        ))}
+        {TICKET_LEAGUES.map((id) => {
+          /* الثمانية كلها موثّقة في LEAGUE_LANDINGS بلا استثناء */
+          const landing = leagueLandingById(id)!;
+          return (
+            <a key={id} className="leagues-ticket-icon-link" href={`/matches/${landing.slug}/`} title={landing.shortName} tabIndex={-1}>
+              <LeagueIconBadge leagueId={id} size={46} eager />
+            </a>
+          );
+        })}
       </div>
+      {/* المتن: الاسم المعدني الكبير وحده بطلب المالك — سطرا «مواعيد ·
+          نتائج · ترتيب / يُحدَّث كل دقيقة» أُخفيا من هنا فهما مكتوبان
+          بوضوح في متن صفحة المواعيد تحت التذكرة مباشرةً؛ وتحمل التدرّج
+          المعدني الآن لمعة ليمونية مسحوبة (فئة مخصصة — القاعدة بملف
+          الأنماط) تتحرك على الجوال والمكتب سواءً */}
       <div className="league-ticket-body">
-        <em>كل البطولات الكبرى</em>
-        مواعيد · نتائج · ترتيب
-        <br />
-        يُحدَّث كل دقيقة
+        <em className="all-leagues-ticket-name">كل البطولات الكبرى</em>
       </div>
     </div>
   );

@@ -14,12 +14,111 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
   await page.goto('/');
   await expect(page.locator('h1')).toHaveText(/(شاهِد|تابِع|اكتشِف) كل ما تحب/);
   await expect(page.locator('header select')).toHaveValue('USD');
+  await expect(page.locator('#pricing')).toContainText('20');
   await expect(page.locator('#pricing')).toContainText('25');
   await expect(page.locator('#pricing')).toContainText('35');
   await expect(page.locator('#pricing')).toContainText('45');
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(250, 249, 246)');
   await expect.poll(() => page.locator('img[src*="slide-sports"]').first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
   expect(errors).toEqual([]);
+});
+
+test('X plan card uses the XTV watermark, annual price, and hides device count and official-guide feature', async ({ page }) => {
+  await page.goto('/store/');
+  const logo = page.locator('#pricing img[src="/images/brand/xtv-ticket.png"]');
+  await expect(logo).toHaveCount(1);
+  await expect(logo).toBeVisible();
+  const card = logo.locator('..');
+  await expect(card).toContainText('20');
+  await expect(card).toContainText('سيرفر X');
+  await expect(card).not.toContainText('حتى 3 أجهزة');
+  await expect(card).not.toContainText('دليل خيارات المشاهدة الرسمية');
+
+  await card.getByRole('button', { name: /أضف إلى السلة/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'سلة المشتريات' });
+  await expect(dialog).toContainText('سيرفر X');
+  await expect(dialog).toContainText('20');
+});
+
+test('iStar and Moka cards show their logos and share the Nova/X dark lime style', async ({ page }) => {
+  await page.goto('/store/');
+  const novaClasses = await page.locator('#pricing img[src="/images/brand/nova-ticket.png"]').locator('..').getAttribute('class');
+  const xClasses = await page.locator('#pricing img[src="/images/brand/xtv-ticket.png"]').locator('..').getAttribute('class');
+  expect(novaClasses).toBe(xClasses);
+
+  for (const logoPath of ['/images/brand/istar-ticket.png', '/images/brand/moka-ticket.png']) {
+    const logo = page.locator(`#pricing img[src="${logoPath}"]`);
+    await expect(logo).toHaveCount(1);
+    await expect(logo).toBeVisible();
+    await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+
+    const card = logo.locator('..');
+    await expect(card).toHaveAttribute('class', novaClasses!);
+    await expect(card).toHaveCSS('background-color', 'rgb(11, 11, 15)');
+    await expect(card).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(card).not.toContainText('حتى جهازين');
+    await expect(card).not.toContainText('دليل خيارات المشاهدة الرسمية');
+  }
+
+  for (const server of ['istar', 'moka']) {
+    await page.goto(`/${server}/`);
+    await expect(page.locator('main')).not.toContainText('حتى جهازين');
+    await expect(page.locator('main')).toContainText('دليل خيارات المشاهدة الرسمية');
+  }
+});
+
+test('each Arabic and English plan page shows its matching server watermark', async ({ page }) => {
+  const servers = [
+    { code: 'nova', logo: 'nova-ticket' },
+    { code: 'istar', logo: 'istar-ticket' },
+    { code: 'moka', logo: 'moka-ticket' },
+    { code: 'x', logo: 'xtv-ticket' },
+  ];
+
+  for (const server of servers) {
+    for (const route of [`/${server.code}/`, `/en/${server.code}/`]) {
+      await page.goto(route);
+      const logo = page.locator(`main img[src="/images/brand/${server.logo}.png"]`);
+      await expect(logo).toHaveCount(1);
+      await expect(logo).toBeVisible();
+      await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
+      await expect(logo.locator('..')).toHaveCSS('background-color', 'rgb(11, 11, 15)');
+
+      if (route.startsWith('/en/')) {
+        const specsCard = page.getByRole('heading', { name: 'What the external provider announces' }).locator('xpath=../..');
+        await expect(specsCard).not.toContainText(/Simultaneous devices|Up to [23] devices/);
+      } else {
+        const specs = page.locator('main dl').first();
+        await expect(specs).not.toContainText('الأجهزة في نفس اللحظة');
+        await expect(specs).not.toContainText(/حتى (?:3 أجهزة|جهازين)/);
+        await expect(specs.locator('div')).toHaveCount(3);
+        await expect(page.locator('#faq')).not.toContainText('هل يعمل الاشتراك على أكثر من جهاز؟');
+        await expect(page.locator('#faq')).not.toContainText('ما الفرق بين سيرفر نوفا وإيستار برو وموكا وX؟');
+      }
+    }
+  }
+});
+
+test('X purchase page offers only the confirmed 12-month term', async ({ page }) => {
+  await page.goto('/x/');
+  await expect(page.getByRole('button', { name: '12 شهر (سنة كاملة)', exact: true })).toHaveCount(1);
+  for (const term of ['3 شهور', '6 شهور', '24 شهر (سنتان)']) {
+    await expect(page.getByRole('button', { name: term, exact: true })).toHaveCount(0);
+  }
+  await expect(page.locator('main')).toContainText('20');
+});
+
+test('English catalog includes X at $20/year without exposing its device count on the card', async ({ page }) => {
+  await page.goto('/en/');
+  const heading = page.getByRole('heading', { level: 3, name: 'X Server' });
+  await expect(heading).toBeVisible();
+  const card = heading.locator('xpath=..');
+  await expect(card).toContainText('$20');
+  await expect(card).not.toContainText('Up to 3 devices');
+  await expect(card.getByRole('link', { name: /X Server — details & activation/ })).toHaveAttribute('href', '/en/x/');
+
+  await page.goto('/en/x/');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('X Server');
 });
 
 test('trial modal is above navigation, supports keyboard dismissal, and uses existing contact', async ({ page }) => {

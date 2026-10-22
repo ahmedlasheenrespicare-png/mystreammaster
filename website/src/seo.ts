@@ -73,6 +73,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "en/nova": "nova",
   "en/istar": "istar",
   "en/moka": "moka",
+  "en/x": "x",
   "en/faq": "faq",
   "channels": "channels",
   "channels/sports": "channels-sports",
@@ -89,6 +90,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "nova": "nova",
   "istar": "istar",
   "moka": "moka",
+  "x": "x",
   "blog": "blog",
   /* صفحة وظيفية (noindex) — لا تُشارك، فتبقى على صورة الرئيسية */
   "cart": "home",
@@ -345,15 +347,15 @@ export function getSeo(path: string): SeoMeta {
       ...base,
       title: `متجر الاشتراكات | ${BRAND_NAME}`,
       description:
-        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
       canonical,
-      ogImageAlt: `متجر اشتراكات ${BRAND_NAME} — باقات نوفا وإيستار وموكا`,
+      ogImageAlt: `متجر اشتراكات ${BRAND_NAME} — باقات نوفا وإيستار وموكا وX`,
       jsonLd: [
         webPageLd({
           canonical,
           name: `متجر الاشتراكات | ${BRAND_NAME}`,
           description:
-            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
           mainEntityId: `${canonical}#plans`,
         }),
         crumbs,
@@ -378,15 +380,15 @@ export function getSeo(path: string): SeoMeta {
       ...base,
       title: `السيرفرات والباقات | ${BRAND_NAME}`,
       description:
-        "قارن سيرفرات نوفا وإيستار وموكا: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
+        "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
       canonical,
-      ogImageAlt: `مقارنة سيرفرات ${BRAND_NAME} — نوفا وإيستار وموكا`,
+      ogImageAlt: `مقارنة سيرفرات ${BRAND_NAME} — نوفا وإيستار وموكا وX`,
       jsonLd: [
         webPageLd({
           canonical,
           name: `السيرفرات والباقات | ${BRAND_NAME}`,
           description:
-            "قارن سيرفرات نوفا وإيستار وموكا: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
+            "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
         }),
         breadcrumbs(
           [
@@ -403,7 +405,7 @@ export function getSeo(path: string): SeoMeta {
   if (clean === "/faq") {
     const canonical = absolute("faq");
     const description =
-      "أكثر من 25 إجابة مفصلة عن التفعيل والربط التقني وإعداد المشغلات: استلام بيانات الاشتراك، الدفع وحالات الاسترجاع، الأجهزة المدعومة، والتجديد والترقية بين نوفا وإيستار وموكا.";
+      "أكثر من 25 إجابة مفصلة عن التفعيل والربط التقني وإعداد المشغلات: استلام بيانات الاشتراك، الدفع وحالات الاسترجاع، الأجهزة المدعومة، والتجديد والترقية بين نوفا وإيستار وموكا وX.";
     return {
       ...base,
       title: `الأسئلة الشائعة | ${BRAND_NAME}`,
@@ -514,14 +516,17 @@ export function getSeo(path: string): SeoMeta {
             category: "Technical setup and activation service",
             url: canonical,
             image: OG_IMAGE,
-            offers: AVAILABLE_DURATIONS.map((months) => ({
-              "@type": "Offer",
-              name: `${Number(months)} months`,
-              price: String(enPlan.prices[months].USD),
-              priceCurrency: "USD",
-              availability: "https://schema.org/InStock",
-              url: canonical,
-            })),
+            offers: AVAILABLE_DURATIONS.flatMap((months) => {
+              const price = enPlan.prices[months];
+              return price ? [{
+                "@type": "Offer",
+                name: `${Number(months)} months`,
+                price: String(price.USD),
+                priceCurrency: "USD",
+                availability: "https://schema.org/InStock",
+                url: canonical,
+              }] : [];
+            }),
           },
           /* الأسئلة الأربعة ظاهرة كلها في صفحة السيرفر الإنجليزية */
           faqLd(canonical, EN_PLAN_FAQS),
@@ -773,8 +778,12 @@ export function getSeo(path: string): SeoMeta {
           offers: {
             "@type": "AggregateOffer",
             priceCurrency: "USD",
-            lowPrice: "25",
-            highPrice: "45",
+            lowPrice: String(
+              Math.min(...PRICING_PLANS.map((plan) => plan.prices[AVAILABLE_DURATIONS[0]].USD))
+            ),
+            highPrice: String(
+              Math.max(...PRICING_PLANS.map((plan) => plan.prices[AVAILABLE_DURATIONS[0]].USD))
+            ),
             offerCount: String(PRICING_PLANS.length),
             availability: "https://schema.org/InStock",
           },
@@ -824,14 +833,17 @@ export function getSeo(path: string): SeoMeta {
           category: "Technical setup and activation service",
           url: canonical,
           image: OG_IMAGE,
-          offers: AVAILABLE_DURATIONS.map((months) => ({
-            "@type": "Offer",
-            name: `${Number(months)} شهر`,
-            price: String(plan.prices[months].USD),
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
-            url: canonical,
-          })),
+          offers: AVAILABLE_DURATIONS.flatMap((months) => {
+            const price = plan.prices[months];
+            return price ? [{
+              "@type": "Offer",
+              name: `${Number(months)} شهر`,
+              price: String(price.USD),
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+              url: canonical,
+            }] : [];
+          }),
         },
       ],
     };

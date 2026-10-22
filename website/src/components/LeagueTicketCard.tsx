@@ -299,13 +299,26 @@ function TeamCrest({ src, monogram }: { src: string; monogram: string }) {
 const NOVA_BRAND_WHOLE = new Set(["fra.1", "ger.1", "ita.1", "egy.1", "sau.1"]);
 const NOVA_BRAND_BASE = new Set(["eng.1", "esp.1", "uefa.champions"]);
 export function NovaTicketBrand() {
-  return <img className="league-ticket-brand-nova" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+  /* بطلب المالك صار العلم رابطاً لصفحة سيرفره المخصصة — نقرة فأرة فوق
+     التذكرة تصل /nova/؛ ويبقى بحيّز التذكرة الزخرفي (aria-hidden بلا
+     تغيير) فلا يدخل ترتيب لوحة المفاتيح (tabIndex=-1) ويسمّي title
+     الوجهة عند التحويم */
+  return (
+    <a className="league-ticket-brand-link" href="/nova/" title="سيرفر نوفا" tabIndex={-1}>
+      <img className="league-ticket-brand-nova" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
 }
 
 /* لوجو «X» المقصوص من نصّه IPTV (اختيار المالك للأيقونة الداكنة) — يجلس
    بجانب نوفا مباشرة أينما ظهرت بعد التعميم في #163 وبمساحتها نفسها */
 export function XtvTicketBrand() {
-  return <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+  /* رابط «سيرفر X» /x/ — نفس قاعدة النقرة الزخرفية الموثّقة عند نوفا */
+  return (
+    <a className="league-ticket-brand-link" href="/x/" title="سيرفر X" tabIndex={-1}>
+      <img className="league-ticket-brand-xtv" src="/images/brand/xtv-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
 }
 
 /* لوجو سيرفر «ايستار» — اللافتة الرسمية لهيدر istar-tv.com (نجمة
@@ -313,7 +326,12 @@ export function XtvTicketBrand() {
    دخل أولاً فرنسياً بطلب المالك ثم عمّمه المالك مع موكا على نطاق
    نوفا/X نفسه حرفياً، وبمساحة X نفسها */
 export function IstarTicketBrand() {
-  return <img className="league-ticket-brand-istar" src="/images/brand/istar-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+  /* رابط «سيرفر إيستار» /istar/ — نفس قاعدة النقرة الزخرفية الموثّقة عند نوفا */
+  return (
+    <a className="league-ticket-brand-link" href="/istar/" title="سيرفر إيستار" tabIndex={-1}>
+      <img className="league-ticket-brand-istar" src="/images/brand/istar-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
 }
 
 /* لوجو سيرفر «موكا» — القرص الأبيض MOKA IPTV من الصفحة الرسمية
@@ -321,7 +339,12 @@ export function IstarTicketBrand() {
    فرنسي أولاً ثم معمّم على نطاق نوفا/X نفسه، يلاصقه يساراً وبمساحة
    X نفسها */
 export function MokaTicketBrand() {
-  return <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />;
+  /* رابط «سيرفر موكا» /moka/ — نفس قاعدة النقرة الزخرفية الموثّقة عند نوفا */
+  return (
+    <a className="league-ticket-brand-link" href="/moka/" title="سيرفر موكا" tabIndex={-1}>
+      <img className="league-ticket-brand-moka" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager" decoding="async" />
+    </a>
+  );
 }
 
 /* قاعدة ظهور صف الأعلام — مشتق واحد يطابق أصله في TicketBrandPair

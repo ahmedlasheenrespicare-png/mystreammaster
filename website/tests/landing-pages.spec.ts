@@ -777,6 +777,50 @@ test('universal ticket base carries the fifa crest, a full-width stars cluster a
   await expect(body).not.toContainText('يُحدَّث');
 });
 
+test('ticket league icons and server brands link to their dedicated pages (owner request)', async ({ page }) => {
+  await mockSource(page, {});
+  /* بطلب المالك: أيقونات البطولات الثماني في أساس التذكرة الجامعة
+     تفتح صفحات هبوطها المخصصة، وأعلام السيرفرات الأربعة تفتح صفحات
+     سيرفراتها الجذرية — روابط فأرة داخل الحيّز الزخرفي (tabIndex=-1
+     وaria-hidden المحفوظان بلا مساس) */
+  await page.goto('/matches/');
+  const base = page.locator('.league-ticket-carousel .league-ticket-slide').first();
+  const LEAGUE_HREFS = [
+    '/matches/دوري-أبطال-أوروبا/', '/matches/الدوري-الإنجليزي/', '/matches/الدوري-الإسباني/', '/matches/الدوري-الإيطالي/',
+    '/matches/الدوري-الألماني/', '/matches/الدوري-الفرنسي/', '/matches/الدوري-السعودي/', '/matches/الدوري-المصري/',
+  ] as const;
+  const iconLinks = base.locator('.leagues-ticket-icons a.leagues-ticket-icon-link');
+  await expect(iconLinks, 'eight league links in row order').toHaveCount(8);
+  for (const [i, href] of LEAGUE_HREFS.entries()) {
+    await expect(iconLinks.nth(i), `league icon ${href}`).toHaveAttribute('href', href);
+    await expect(iconLinks.nth(i)).toHaveAttribute('tabindex', '-1');
+  }
+  const BRAND_HREFS = [
+    ['nova', '/nova/'], ['xtv', '/x/'], ['istar', '/istar/'], ['moka', '/moka/'],
+  ] as const;
+  for (const [brand, href] of BRAND_HREFS) {
+    const link = base.locator(`.league-ticket-brands a.league-ticket-brand-link:has(img.league-ticket-brand-${brand})`);
+    await expect(link, `index base: ${brand} linked`).toHaveCount(1);
+    await expect(link).toHaveAttribute('href', href);
+    await expect(link).toHaveAttribute('tabindex', '-1');
+  }
+  /* ونفس السلوك على تذكرة دوري ساكنة (الفرنسية أربعة أعلام مرتبطة) */
+  await page.goto('/matches/الدوري-الفرنسي/');
+  await expect(page.locator('.matches-hero-title .league-ticket .league-ticket-brands a.league-ticket-brand-link')).toHaveCount(4);
+
+  /* النقرة الفعلية تفتح الوجهة: أيقونة أبطال أوروبا أولاً ثم علم نوفا */
+  await page.goto('/matches/');
+  const baseAgain = page.locator('.league-ticket-carousel .league-ticket-slide').first();
+  await baseAgain.locator('.leagues-ticket-icons a.leagues-ticket-icon-link').first().click();
+  await page.waitForLoadState('domcontentloaded');
+  expect(decodeURIComponent(page.url()), 'league icon navigates to its landing').toContain('/matches/دوري-أبطال-أوروبا/');
+  await page.goto('/matches/');
+  await page.locator('.league-ticket-carousel .league-ticket-slide').first()
+    .locator('.league-ticket-brands a.league-ticket-brand-link').first().click();
+  await page.waitForLoadState('domcontentloaded');
+  expect(page.url(), 'nova brand navigates to its server page').toMatch(/\/nova\/$/);
+});
+
 test('the four server brands are distributed by the owner rollout rule across every ticket', async ({ page }) => {
   await mockSource(page, {});
   /* قاعدة التوزيع واحدة للأعلام كلها (نوفا + X + ايستار + موكا) بعد أن

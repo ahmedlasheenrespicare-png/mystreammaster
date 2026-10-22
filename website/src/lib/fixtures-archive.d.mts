@@ -42,6 +42,10 @@ type RatedEntry = StandingsEntry & {
   winPct: number | null;
   /** الفرق الدقيق عن متوسط الدوري (موجب = أعلى من المتوسط) */
   attackDelta: number | null; defenceDelta: number | null;
+  /** درجة Z للمعدل داخل توزيع الفرق (متوسط العمود وانحرافه المعياري) */
+  attackZ: number | null; defenceZ: number | null;
+  /** مؤشر القوة المركّب = attackZ − defenceZ (مشتق مُعلن الصيغة) */
+  power: number | null;
   tactic: TacticCode | null;
   logo?: string | null;
 };
@@ -56,6 +60,68 @@ export interface StandingsLeagueSummary {
   maxDefence: number | null;
   bestGdPerMatch: { value: number; teams: RatedEntry[] } | null;
   bestPpm: { value: number; teams: RatedEntry[] } | null;
+  /**
+   * صف «متوسط المسابقة» للجدول التحليلي: متوسط لكل عمود من مساهميه ذوي
+   * القيم فقط — الأعداد الخام بمتوسطها على الفرق، والمعدلات من إجماليات
+   * المسابقة (مجموع ÷ مجموع) فتتسق كفريقٍ متوسطٍ واحد (attack فيه هو
+   * averagePerTeam نفسه)، ومتوسطا الفارق موزونان بالمباريات. null لكل
+   * عمود غاب كل مساهميه.
+   */
+  averages: {
+    played: number | null;
+    goalsFor: number | null;
+    goalsAgainst: number | null;
+    goalDifference: number | null;
+    attack: number | null;
+    defence: number | null;
+    gdPerMatch: number | null;
+    ppm: number | null;
+    winPct: number | null;
+    attackDelta: number | null;
+    defenceDelta: number | null;
+    power: number | null;
+  };
+  /**
+   * متصدّر كل مقياس من مقاييس الجدول التحليلي الاثني عشر باتجاهه الدلالي
+   * «الأفضل أولاً» (الأدنى للمستقبَل ومعدله وفارقه، والأعلى لسواه) وبكل
+   * المتعادلين بأولوية المركز ثم الاسم. null لأي مقياس ينقص أيَّ فريقٍ
+   * قيمتُه — لا يُحسم متصدّر بجدول جزئي.
+   */
+  leaders: Record<
+    | 'played'
+    | 'goalsFor'
+    | 'goalsAgainst'
+    | 'goalDifference'
+    | 'attack'
+    | 'attackDelta'
+    | 'defence'
+    | 'defenceDelta'
+    | 'gdPerMatch'
+    | 'power'
+    | 'ppm'
+    | 'winPct',
+    { value: number; teams: RatedEntry[] } | null
+  >;
+  /**
+   * توزيع كل مقياس عبر الفرق: متوسط قيم العمود البسيط ووسيطها وانحرافها
+   * المعياري على مجتمع الفرق (مرجع درجات Z ومؤشر القوة — ومختلف عن
+   * averagePerTeam الموزون بالمباريات). null لمقياس بلا أي قيمة.
+   */
+  distributions: Record<
+    | 'played'
+    | 'goalsFor'
+    | 'goalsAgainst'
+    | 'goalDifference'
+    | 'attack'
+    | 'attackDelta'
+    | 'defence'
+    | 'defenceDelta'
+    | 'gdPerMatch'
+    | 'power'
+    | 'ppm'
+    | 'winPct',
+    { mean: number; median: number; sd: number; n: number } | null
+  >;
 }
 export function standingsRates(entries: Partial<StandingsEntry>[]): {
   rows: RatedEntry[];

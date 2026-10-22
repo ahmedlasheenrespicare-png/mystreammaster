@@ -178,6 +178,108 @@ export function standingsRates(entries) {
             ? 'defensive'
             : 'struggling';
   }
+  /* توزيع كل مقياس عبر الفرق (متوسط بسيط لقيم العمود ووسيطها وانحرافها
+     المعياري على مجتمع الفرق كله — مرجع درجات Z ومؤشر القوة) — وهو مرجع مختلف
+     صراحةً عن متوسط المسابقة الموزون بالمباريات (averagePerTeam)
+     المستعمل في الفوارق والتصنيف التكتيكي: هنا وحدة القياس «الفريق»
+     وهناك «المباراة». التوزيع من ذوي القيم فقط، وغيابهم يعني null،
+     وانحراف صفري (كل القيم متساوية أو قيمة واحدة) يترك الدرجات null
+     فلا قسمة على صفر ولا «قوة» مختلقة من توزيع مسطّح. */
+  const distributionOf = (field) => {
+    const values = rows.map((t) => t[field]).filter((v) => typeof v === 'number' && Number.isFinite(v));
+    if (!values.length) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    const mean = values.reduce((s, v) => s + v, 0) / values.length;
+    const mid = Math.floor(sorted.length / 2);
+    const median = sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    const sd = Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length);
+    return { mean, median, sd, n: values.length };
+  };
+  const metricFields = ['played', 'goalsFor', 'goalsAgainst', 'goalDifference', 'attack', 'attackDelta', 'defence', 'defenceDelta', 'gdPerMatch', 'ppm', 'winPct'];
+  const distributions = {};
+  for (const field of metricFields) distributions[field] = distributionOf(field);
+  /* درجات Z للهجوم والدفاع ومؤشر القوة المركّب = فرقهما: كم يتفوق
+     هجوم الفريق على متوسط الفرق (بانحرافات معيارية) فوق ما يتفوق به
+     «استقباله» — مؤشر مشتق مُعلن الصيغة، لا قياس مصدر. غياب أي ركن
+     (معدل أو توزيع أو انحراف غير صفري) يترك الكل null لذلك الفريق. */
+  const zOf = (value, dist) => (value !== null && dist && dist.sd > 0 ? (value - dist.mean) / dist.sd : null);
+  for (const t of rows) {
+    t.attackZ = zOf(t.attack, distributions.attack);
+    t.defenceZ = zOf(t.defence, distributions.defence);
+    t.power = t.attackZ !== null && t.defenceZ !== null ? t.attackZ - t.defenceZ : null;
+  }
+  distributions.power = distributionOf('power');
+  /* متصدّر كل مقياس من مقاييس الجدول التحليلي الاثني عشر — «الأفضل» في
+     اتجاه المقياس الدلالي (الأدنى للمستقبَل ومعدله وفارقه، والأعلى
+     لسواه)، وبكل المتعادلين بأولوية الترتيب نفسها. بقاعدة صرامة
+     التصنيفات الرئيسة: أي فريق ناقص القيمة في مقياس يمنع حسم متصدّره
+     (null) فلا يُعلن أولٌ قد يتجاوزه غائب. القيم الخام قد تكون undefined
+     في المدخلات الجزئية فتُطبَّع هنا لرقم أو null قبل أي مقارنة. */
+  const leaderOf = (field, direction) => {
+    if (!rows.length) return null;
+    const valueOf = (t) => (typeof t[field] === 'number' && Number.isFinite(t[field]) ? t[field] : null);
+    if (rows.some((t) => valueOf(t) === null)) return null;
+    const value = Math[direction](...rows.map(valueOf));
+    return { value, teams: rows.filter((t) => valueOf(t) === value).sort(byStandingPriority) };
+  };
+  const leaders = {
+    played: leaderOf('played', 'max'),
+    goalsFor: leaderOf('goalsFor', 'max'),
+    goalsAgainst: leaderOf('goalsAgainst', 'min'),
+    goalDifference: leaderOf('goalDifference', 'max'),
+    attack: leaderOf('attack', 'max'),
+    attackDelta: leaderOf('attackDelta', 'max'),
+    defence: leaderOf('defence', 'min'),
+    defenceDelta: leaderOf('defenceDelta', 'min'),
+    gdPerMatch: leaderOf('gdPerMatch', 'max'),
+    power: leaderOf('power', 'max'),
+    ppm: leaderOf('ppm', 'max'),
+    winPct: leaderOf('winPct', 'max'),
+  };
+  /* صف «متوسط المسابقة» للجدول التحليلي: متوسط لكل عمود من مساهميه ذوي
+     القيم فقط — الأعداد الخام بمتوسطها على الفرق، والمعدلات من إجماليات
+     المسابقة (مجموع ÷ مجموع) لا من متوسط معدلات الفرق، فيتسق الصف
+     داخلياً كأنه «فريق متوسط» واحد (هجومه = إجمالي أهدافه ÷ مبارياته)،
+     ومتوسطا الفارق عن المتوسط موزونان بالمباريات فيؤولان لصفر بالتعريف.
+     ناقص أي مدخل يبقى خارج حساب عموده وحده، وغياب المساهمين يعني null. */
+  const finite = (v) => typeof v === 'number' && Number.isFinite(v);
+  const meanOf = (list, pick) => {
+    const values = list.map(pick).filter(finite);
+    return values.length ? values.reduce((s, v) => s + v, 0) / values.length : null;
+  };
+  const ratioOf = (list, num, den) => {
+    const usable = list.filter((t) => finite(num(t)) && validPlayed(den(t)));
+    if (!usable.length) return null;
+    const d = usable.reduce((s, t) => s + den(t), 0);
+    return d > 0 ? usable.reduce((s, t) => s + num(t), 0) / d : null;
+  };
+  const deltaWeighted = (field) => {
+    const usable = rows.filter((t) => t[field] !== null && validPlayed(t.played));
+    if (!usable.length) return null;
+    const v = usable.reduce((s, t) => s + t[field] * t.played, 0) / usable.reduce((s, t) => s + t.played, 0);
+    return Math.abs(v) < 1e-9 ? 0 : v;
+  };
+  const winRateAverage = ratioOf(rows, (t) => t.wins, (t) => t.played);
+  const averages = {
+    played: meanOf(rows.filter((t) => validPlayed(t.played)), (t) => t.played),
+    goalsFor: meanOf(rows.filter((t) => validGoals(t.goalsFor)), (t) => t.goalsFor),
+    goalsAgainst: meanOf(rows.filter((t) => validGoals(t.goalsAgainst)), (t) => t.goalsAgainst),
+    goalDifference: meanOf(rows, (t) => t.goalDifference),
+    attack: averagePerTeam,
+    defence: ratioOf(rows.filter((t) => validGoals(t.goalsAgainst)), (t) => t.goalsAgainst, (t) => t.played),
+    gdPerMatch: ratioOf(
+      rows.filter((t) => validGoals(t.goalsFor) && validGoals(t.goalsAgainst)),
+      (t) => t.goalsFor - t.goalsAgainst,
+      (t) => t.played,
+    ),
+    ppm: ratioOf(rows, (t) => t.points, (t) => t.played),
+    winPct: winRateAverage === null ? null : winRateAverage * 100,
+    attackDelta: deltaWeighted('attackDelta'),
+    defenceDelta: deltaWeighted('defenceDelta'),
+    /* متوسط «القوة» على مكتملَي المعدلين صفر بنيوياً (متوسطا الدرجتين
+       صفران) — تُصفَّر بقايا الفاصلة العائمة كي لا يظهر «-0.00» */
+    power: (() => { const m = meanOf(rows, (t) => t.power); return m !== null && Math.abs(m) < 1e-9 ? 0 : m; })(),
+  };
   return {
     rows,
     bestAttack,
@@ -194,6 +296,9 @@ export function standingsRates(entries) {
       maxDefence,
       bestGdPerMatch: topBy('gdPerMatch', 'max'),
       bestPpm: topBy('ppm', 'max'),
+      averages,
+      leaders,
+      distributions,
     },
   };
 }

@@ -1205,8 +1205,8 @@ test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and c
   const rows = details.locator('tbody tr[data-rate-row]');
   await expect(rows).toHaveCount(20);
 
-  /* الجدول التحليلي: أعمدة MP/GF/GA/GD + معدلات مع Mini Bar + تصنيف تكتيكي */
-  await expect(details.locator('[data-rate-sort]')).toHaveCount(9);
+  /* الجدول التحليلي: أعمدة MP/GF/GA/GD + معدلات وفارقا المتوسط ومؤشر القوة مع Mini Bar + تصنيف تكتيكي */
+  await expect(details.locator('[data-rate-sort]')).toHaveCount(12);
   await expect(details.locator('[data-rate-tactic]')).toHaveCount(20);
   await expect(details.locator('[data-rate-tactic="elite-balanced"]')).not.toHaveCount(0);
   await expect(details.locator('.ls-minibar')).not.toHaveCount(0);
@@ -1224,6 +1224,57 @@ test('attack & defence rates card: responsive 4/2/1 layout, no truncation, and c
   /* الفرز حسب نقاط/م: Manchester City (3.00) في الصدارة */
   await details.locator('[data-rate-sort="ppm"]').click();
   await expect(rows.first().locator('.ls-an-name')).toHaveText('Manchester City');
+
+  /* الفرز حسب «هجوم ±»: Brighton الأعلى فوق متوسط الدوري (+1.53) ومركزه
+     في المقياس #1 — وعمود مركز المقياس يظهر أثناء الفرز فقط */
+  await details.locator('[data-rate-sort="attackDelta"]').click();
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Brighton & Hove Albion');
+  await expect(rows.first().locator('[data-rate-attack-delta]')).toContainText('+1.53');
+  await expect(rows.first().locator('[data-rate-metric-rank]')).toContainText('#1');
+  await expect(details.locator('[data-rate-metric-rank]')).toHaveCount(20);
+
+  /* صف «متوسط المسابقة»: هجومه متوسط الدوري نفسه (179÷122)، وأهدافه
+     179÷20، ومتوسط فارق الهجوم الموزون بالمباريات صفر بالتعريف */
+  const averages = details.locator('[data-rates-averages]');
+  await expect(averages).toHaveCount(1);
+  await expect(averages.locator('[data-rates-avg="attack"]')).toContainText('1.47');
+  await expect(averages.locator('[data-rates-avg="goalsFor"]')).toContainText('8.95');
+  await expect(averages.locator('[data-rates-avg="attackDelta"]')).toContainText('0.00');
+
+  /* شريط «الأول في كل مقياس»: 11 شريحة بترتيب الأعمدة — هجوم برايتون،
+     و«لعب» متعادل (تشيلسي وإيفرتون 7)، وضغط شريحة نقاط/م يفرز الجدول
+     بها فيعلو صاحبها بمركز مقياسه #1 */
+  await expect(details.locator('[data-rates-leaders] [data-rate-leader]')).toHaveCount(12);
+  await expect(details.locator('[data-rate-leader="attack"]')).toContainText('Brighton & Hove Albion');
+  await expect(details.locator('[data-rate-leader="attack"]')).toContainText('3.00');
+  await expect(details.locator('[data-rate-leader="played"]')).toContainText('تعادل');
+  await details.locator('[data-rate-leader="ppm"]').click();
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Manchester City');
+  await expect(rows.first().locator('[data-rate-metric-rank]')).toContainText('#1');
+  await expect(details.locator('[data-rate-leader="ppm"]')).toHaveAttribute('aria-pressed', 'true');
+
+  /* فرز «عليه» الأول: الأدنى استقبالاً (الأقوى) كعمود الدفاع — سيتي أولاً
+     بفارق المركز الرسمي بين أصحاب الـ5 أهداف */
+  await details.locator('[data-rate-sort="goalsAgainst"]').click();
+  await expect(details.locator('th[aria-sort="ascending"] [data-rate-sort="goalsAgainst"]')).toHaveCount(1);
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Manchester City');
+
+  /* مؤشر القوة المركّب (Z الهجوم − Z الدفاع): برايتون يتصدّره (+3.78)
+     رغم صدارة سيتي لنقاط/م — ترتيب تحليلي مستقل عن ترتيب النقاط */
+  await expect(details.locator('[data-rate-leader="power"]')).toContainText('Brighton & Hove Albion');
+  await details.locator('[data-rate-sort="power"]').click();
+  await expect(rows.first().locator('.ls-an-name')).toHaveText('Brighton & Hove Albion');
+  await expect(rows.first().locator('[data-rate-power]')).toContainText('+3.78');
+  await expect(rows.first().locator('[data-rate-metric-rank]')).toContainText('#1');
+
+  /* الشذوذ الإحصائي: هجوم برايتون وحده أبعد من انحرافين معياريين (Z≈2.46) */
+  await expect(details.locator('[data-rate-outlier="attack"]')).toHaveCount(1);
+  await expect(rows.first().locator('[data-rate-outlier="attack"]')).toHaveCount(1);
+  await expect(details.locator('[data-rate-outlier="defence"]')).toHaveCount(0);
+
+  /* صفّا التوزيع من توزيع الفرق: وسيط هجوم المسابقة وانحرافه المعياري */
+  await expect(details.locator('[data-rates-median="attack"]')).toContainText('1.33');
+  await expect(details.locator('[data-rates-sd="attack"]')).toContainText('0.62');
   expect(unexpectedExternalRequests).toEqual([]);
 });
 

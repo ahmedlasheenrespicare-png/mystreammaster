@@ -17,6 +17,8 @@ export interface FeaturedNewsItem {
   images?: { src: string; alt: string }[];
   /** صورة خلفية للبطاقة تعبّر عن المباراة (اختيارية، مسار داخلي) */
   backgroundImage?: string;
+  /** لوحة المواجهة: صورة واحدة تجمع لاعبي المباراة مع النتيجة (تُعرض أعلى البطاقة) */
+  matchupImage?: string;
   /** بطاقة كبيرة بتصميم الخبر المميز (عرض مزدوج وخلفية وصور) */
   featured?: boolean;
 }
@@ -30,10 +32,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/bayern-arsenal-2-2/",
     featured: true,
     backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
-    images: [
-      { src: "images/players/ger-kane.webp", alt: "هاري كين" },
-      { src: "images/players/eng-rice.webp", alt: "ديكلان رايس" },
-    ],
+    matchupImage: "images/news/bayern-arsenal-2-2-match.jpg",
   },
   {
     category: "دوري أبطال أوروبا",
@@ -43,10 +42,6 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/psg-barcelona-4-2/",
     featured: true,
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
-    images: [
-      { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },
-      { src: "images/players/esp-flick.webp", alt: "هانز فليك" },
-      { src: "images/players/fra-dembele.webp", alt: "عثمان ديمبيلي" },
-    ],
+    matchupImage: "images/news/psg-barcelona-4-2-match.jpg",
   },
 ];

@@ -38,6 +38,7 @@ interface Card {
   images?: { src: string; alt: string }[];
   background?: string;
   featured: boolean;
+  matchup?: string;
 }
 
 function useUpcomingMatches(): Match[] {
@@ -102,6 +103,7 @@ export default function FeaturedNewsCards() {
     images: item.images?.map(img => ({ ...img, src: to(img.src) })),
     background: item.backgroundImage ? to(item.backgroundImage) : undefined,
     featured: item.featured === true,
+    matchup: item.matchupImage ? to(item.matchupImage) : undefined,
   }));
 
   const matchCards: Card[] = upcoming.map(match => ({
@@ -162,6 +164,15 @@ export default function FeaturedNewsCards() {
                         className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0b0b0f]/95 via-[#0b0b0f]/60 to-[#2b4eff]/30"
                       />
                     </>
+                  )}
+                  {card.matchup && (
+                    <img
+                      src={card.matchup}
+                      alt={card.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="mb-5 w-full rounded-2xl border border-white/15 object-cover shadow-[0_12px_30px_rgba(0,0,0,0.35)] aspect-[15/7]"
+                    />
                   )}
                   {card.images && card.images.length > 0 && (
                     <div className="mb-4 flex h-44 items-end justify-center md:h-56" aria-hidden={false}>

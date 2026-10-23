@@ -296,7 +296,12 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
             />
           ))}
         </div>
-        {/* تدرج داكن أسفل الشريحة ليبقى النص مقروءاً فوق الصور */}
+        {/* ستارة داكنة خلف النص في المنتصف وتدرج خفيف أسفل الشريحة لقراءة النص فوق الصور */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-[2]"
+          style={{ background: "radial-gradient(ellipse 70% 45% at 50% 50%, rgba(11,11,15,0.78) 0%, rgba(11,11,15,0.4) 60%, rgba(11,11,15,0) 100%)" }}
+        />
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[72%]"
@@ -311,12 +316,15 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           ))}
           <span>{item.dateLabel}</span>
         </div>
-        <h3 className="relative z-10 mt-3 line-clamp-2 font-display text-[17px] font-black leading-snug tracking-tight">
-          {item.title}
-        </h3>
-        <p className="relative z-10 mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-white/75">
-          {item.description}
-        </p>
+        {/* النص في منتصف التذكرة: العنوان بنفس هيئة اسم البطولة الكبرى في الشريحة الأولى */}
+        <div className="relative z-10 flex flex-1 items-center justify-center">
+          <div className="league-ticket-body">
+            <em>{item.title}</em>
+            <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-snug text-white/85">
+              {item.description}
+            </p>
+          </div>
+        </div>
         <div className="relative z-10 mt-auto flex items-center justify-between gap-2 pt-2">
           <span className="flex items-center gap-2">
             {logo && (

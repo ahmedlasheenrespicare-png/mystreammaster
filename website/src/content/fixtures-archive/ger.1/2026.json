@@ -1424,6 +1424,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261101&limit=500"
       },
       "fetchedAt": "2026-10-18T08:03:24.305Z"
+    },
+    {
+      "id": "401884739",
+      "date": "2026-11-06T19:30:00.000Z",
+      "home": {
+        "id": "127",
+        "name": "Hamburg SV"
+      },
+      "away": {
+        "id": "268",
+        "name": "Borussia Mönchengladbach"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261106&limit=500"
+      },
+      "fetchedAt": "2026-10-23T08:34:10.994Z"
     }
   ]
 }

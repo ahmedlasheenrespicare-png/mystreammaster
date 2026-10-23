@@ -3272,6 +3272,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
       },
       "fetchedAt": "2026-10-21T08:36:15.809Z"
+    },
+    {
+      "id": "401874815",
+      "date": "2026-11-06T19:45:00.000Z",
+      "home": {
+        "id": "17530",
+        "name": "Venezia"
+      },
+      "away": {
+        "id": "118",
+        "name": "Udinese"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261106&limit=500"
+      },
+      "fetchedAt": "2026-10-23T08:34:10.994Z"
     }
   ]
 }

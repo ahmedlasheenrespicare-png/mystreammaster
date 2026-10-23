@@ -36,9 +36,64 @@
   padding: 12px 11px 10px;
 }
 
+/* تذكرة المباريات على الجوال (132px): حشو أضيق ليتّسع التبويب والشريحة
+   وشريط الأسهم كاملاً بلا قصّ */
+@media (max-width: 1023px) {
+  .hero-side-ticket--matches .hero-side-ticket-inner {
+    padding: 8px 9px 7px;
+  }
+}
+
 /* على الجوال تبقى التذكرتان مختصرتين بلا فراغ كبير أسفل المحتوى */
 @media (max-width: 1023px) {
   .hero-side-ticket-inner {
     padding: 11px 10px 9px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   تذكرة المباريات (أمس/اليوم/غد): على الجوال نصف طول التذكرة الرئيسية
+   (265px ÷ 2 ≈ 132px) لأنها تعلوها هناك، ثم تعود تلقائية الارتفاع على
+   الأجهزة المتوسطة (حيث تصطف الجانبيتان جنباً إلى جنب) و265px من lg حيث
+   تصطف التذاكر الثلاث في صفّ واحد بارتفاع واحد.
+-------------------------------------------------------------------------- */
+.hero-side-ticket--matches {
+  height: 132px;
+}
+
+@media (min-width: 768px) {
+  .hero-side-ticket--matches {
+    height: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-side-ticket--matches {
+    height: 265px;
+  }
+}
+
+/* شريحة المباراة — تلاشٍ خفيف عند التقليب التلقائي/اليدوي */
+/* الشريحة بارتفاع محتواها وتُوسَّط داخل اللوح — فلا فراغ داخل البطاقة */
+.hero-match-slide {
+  display: flex;
+  flex-direction: column;
+  animation: hero-match-slide-in 0.35s ease both;
+}
+
+@keyframes hero-match-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-match-slide {
+    animation: none;
   }
 }

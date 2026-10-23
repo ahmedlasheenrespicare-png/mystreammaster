@@ -3,7 +3,7 @@ import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from ".
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket from "./AllLeaguesTicket";
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
-import { HeroNewsTicket, HeroTodayMatchesTicket } from "./HeroSideTickets";
+import { HeroMatchesTicket, HeroNewsTicket } from "./HeroSideTickets";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -377,12 +377,13 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             الوسط بعرض لوحة العرض الوسطى في الماكيت الكبير نفسه — نفس قالب
             شبكة TvMockup بالحرف (`190px 1fr 230px`) فيتطابق العرضان في كل
             مقاس، وعلى يمينها تذكرة مباريات اليوم، وعلى يسارها تذكرة آخر
-            الأخبار. تحت lg: الرئيسية بعرض كامل ثم الجانبيتان (جنباً إلى جنب
-            من md، ومتتاليتان على الجوال) — فلا يضيق شيء على الشاشات الصغيرة. */}
+            الأخبار. تحت lg: تذكرة المباريات تعلو الرئيسية على الجوال بنصف
+            طولها، ثم الرئيسية بعرض كامل، ثم الأخبار؛ ومن md تصطف الجانبيتان
+            جنباً إلى جنب تحت الرئيسية — فلا يضيق شيء على الشاشات الصغيرة. */}
         <Reveal variant="up" delay={140} className="mt-7 w-full">
           <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)_230px] lg:gap-0">
-            <HeroTodayMatchesTicket className="order-2 md:order-2 lg:order-1 lg:pe-2.5" />
-            <div className="home-matches-ticket order-1 min-w-0 md:col-span-2 lg:order-2 lg:col-span-1">
+            <HeroMatchesTicket className="order-1 md:order-2 lg:order-1 lg:pe-2.5" />
+            <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               <AllLeaguesTicket
                 slideOverrides={{
                   0: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,

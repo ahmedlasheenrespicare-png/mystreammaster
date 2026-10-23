@@ -237,9 +237,9 @@ for (const width of [320, 390, 640, 768, 1440]) {
 
 /* صفّ تذاكر الهيرو: تذكرة المواعيد الرئيسية بالعرض نفسه الذي تحمله لوحة
    العرض الوسطى في الماكيت الكبير (نفس قالب شبكة TvMockup)، وعلى يمينها
-   تذكرة مباريات اليوم، وعلى يسارها تذكرة آخر الأخبار — والمحتوى من مصادر
-   الموقع (scoreboard.php وFEATURED_NEWS) لا من نصّ مكتوب هنا. */
-test('hero ticket row mirrors the mockup center panel with today/news side tickets', async ({ page }) => {
+   تذكرة مباريات أمس/اليوم/غد، وعلى يسارها تذكرة آخر الأخبار — والمحتوى من
+   مصادر الموقع (scoreboard.php وFEATURED_NEWS) لا من نصّ مكتوب هنا. */
+test('hero ticket row mirrors the mockup center panel with matches/news side tickets', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
 
@@ -252,44 +252,117 @@ test('hero ticket row mirrors the mockup center panel with today/news side ticke
   expect(mainBox && panelBox).toBeTruthy();
   /* نفس عرض لوحة العرض الوسطى (±4px: فروق الحدود الدقيقة بين الشبكتين) */
   expect(Math.abs(mainBox!.width - panelBox!.width)).toBeLessThanOrEqual(4);
-  /* الرئيسية بعرض التذكرة نفسها (265px) وفي صفّ واحد مع لوحة العرض */
+  /* الرئيسية بعرض التذكرة نفسها (265px) */
   expect(mainBox!.height).toBeCloseTo(265, 0);
 
-  const sides = page.locator('.hero-side-ticket');
-  await expect(sides).toHaveCount(2);
-  const todayTicket = sides.filter({ hasText: 'مباريات اليوم' });
-  const newsTicket = sides.filter({ hasText: 'آخر الأخبار' });
-  const todayBox = await todayTicket.boundingBox();
+  const matchesTicket = page.locator('[data-hero-side="matches"]');
+  const newsTicket = page.locator('[data-hero-side="news"]');
+  await expect(matchesTicket).toHaveCount(1);
+  await expect(newsTicket).toHaveCount(1);
+  const matchesBox = await matchesTicket.boundingBox();
   const newsBox = await newsTicket.boundingBox();
-  expect(todayBox && newsBox).toBeTruthy();
+  expect(matchesBox && newsBox).toBeTruthy();
 
-  /* RTL: يمين التذكرة الرئيسية = مباريات اليوم، يسارها = الأخبار */
-  expect(todayBox!.x).toBeGreaterThanOrEqual(mainBox!.x + mainBox!.width - 2);
+  /* RTL: يمين التذكرة الرئيسية = المباريات، يسارها = الأخبار */
+  expect(matchesBox!.x).toBeGreaterThanOrEqual(mainBox!.x + mainBox!.width - 2);
   expect(newsBox!.x + newsBox!.width).toBeLessThanOrEqual(mainBox!.x + 2);
   /* الثلاث على استقامة واحدة بنفس الارتفاع */
-  for (const box of [todayBox!, newsBox!]) {
+  for (const box of [matchesBox!, newsBox!]) {
     expect(Math.abs(box.y - mainBox!.y)).toBeLessThanOrEqual(2);
     expect(Math.abs(box.height - mainBox!.height)).toBeLessThanOrEqual(2);
   }
 
-  /* المحتوى من مصدره: رابط صفحة المواعيد في تذكرة اليوم، ورابط الخبر
+  /* المحتوى من مصدره: رابط صفحة المواعيد في تذكرة المباريات، ورابط الخبر
      الداخلي في تذكرة الأخبار */
-  await expect(todayTicket.locator('a[href*="/matches/"]').first()).toBeVisible();
+  await expect(matchesTicket.locator('a[href*="/matches/"]').first()).toBeVisible();
   await expect(newsTicket.locator('a[href*="/news/"]').first()).toHaveAttribute('href', /\/news\//);
 });
 
-test('hero side tickets stack under the main ticket on mobile without overflow', async ({ page }) => {
+/* التبويبات الثلاثة (أمس/اليوم/غد) وشرائح المباريات بسهمَيها: الشعارات من
+   المصدر، والتقليب يعمل يدوياً وتلقائياً. تُموَّل استجابات scoreboard.php هنا
+   لأن الخادم الثابت لا يخدم PHP — والمصدر نفسه هو ما يُختبر شكله وسلوكه. */
+test('hero matches ticket has yesterday/today/tomorrow tabs, club logos and arrows', async ({ page }) => {
+  /* تواريخ اليوم الحقيقي بتوقيت القاهرة — فلا يتقادم الاختبار مع الأيام */
+  const cairoDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const shift = (day: string, offset: number) => {
+    const date = new Date(`${day}T12:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + offset);
+    return date.toISOString().slice(0, 10);
+  };
+  const event = (id: string, day: string, hour: string, home: string, away: string, score: [number, number] | null) => ({
+    id,
+    date: `${day}T${hour}:00Z`,
+    competitions: [{
+      date: `${day}T${hour}:00Z`,
+      status: { type: { name: score ? 'STATUS_FULL_TIME' : 'STATUS_SCHEDULED', state: score ? 'post' : 'pre', completed: Boolean(score) } },
+      competitors: [
+        { homeAway: 'home', score: score ? String(score[0]) : undefined, team: { displayName: home, logo: 'https://a.espncdn.com/i/teamlogos/soccer/500/1.png' } },
+        { homeAway: 'away', score: score ? String(score[1]) : undefined, team: { displayName: away, logo: 'https://a.espncdn.com/i/teamlogos/soccer/500/2.png' } },
+      ],
+    }],
+  });
+  /* بطولة لكل يوم — كل طلب يحمل نطاق ثلاثة أيام حول يومه، وmatchesForDay
+     تنتقي يوم التبويب نفسه، فتظهر في كل تبويب مبارياته وحدها */
+  const byLeague: Record<string, unknown[]> = {
+    'esp.1': [event('h1', shift(cairoDay, -1), '16', 'الأهلي', 'الزمالك', [2, 1])],
+    'eng.1': [event('t1', cairoDay, '18', 'مانشستر سيتي', 'ليفربول', null), event('t2', cairoDay, '20', 'ريال مدريد', 'برشلونة', null)],
+    'ger.1': [event('f1', shift(cairoDay, 1), '19', 'بايرن ميونخ', 'دورتموند', null)],
+  };
+  await page.route('**/scoreboard.php*', route => {
+    const league = new URL(route.request().url()).searchParams.get('league') ?? '';
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, events: byLeague[league] ?? [] }) });
+  });
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+
+  const ticket = page.locator('[data-hero-side="matches"]');
+  const tabs = ticket.getByRole('tab');
+  await expect(tabs).toHaveCount(3);
+  await expect(ticket.getByRole('tab', { name: 'اليوم' })).toHaveAttribute('aria-selected', 'true');
+  await expect(ticket.getByRole('tab', { name: 'أمس' })).toHaveAttribute('aria-selected', 'false');
+
+  /* شرائح اليوم: شعار للناديَّين في كل من نسختَي الشريحة (الجوال والمكتب)
+     + عدّاد 1/2 + سهمان */
+  await expect(ticket.locator('img[data-club-logo]')).toHaveCount(4);
+  await expect(ticket.locator('text=1/2')).toBeVisible();
+  const next = ticket.getByRole('button', { name: 'المباراة التالية' });
+  const prev = ticket.getByRole('button', { name: 'المباراة السابقة' });
+  await expect(next).toBeEnabled();
+  await next.click();
+  await expect(ticket.locator('text=2/2')).toBeVisible();
+  await prev.click();
+  await expect(ticket.locator('text=1/2')).toBeVisible();
+
+  /* التبويبات تبدّل يوم الشرائح: أمس فيه مباراة واحدة، وغد كذلك */
+  await ticket.getByRole('tab', { name: 'أمس' }).click();
+  await expect(ticket.getByRole('tab', { name: 'أمس' })).toHaveAttribute('aria-selected', 'true');
+  await expect(ticket.getByRole('link', { name: /الأهلي/ })).toBeVisible();
+  await expect(ticket.locator('text=1/1')).toBeVisible();
+  await expect(next).toBeDisabled();
+
+  await ticket.getByRole('tab', { name: 'غد' }).click();
+  await expect(ticket.getByRole('link', { name: /بايرن ميونخ/ })).toBeVisible();
+
+  /* التقليب التلقائي: يعود إلى تبويب اليوم ثم ينتقل من 1/2 إلى 2/2 وحده */
+  await ticket.getByRole('tab', { name: 'اليوم' }).click();
+  await expect(ticket.locator('text=1/2')).toBeVisible();
+  await expect.poll(async () => ticket.locator('text=2/2').isVisible(), { timeout: 25000, intervals: [500] }).toBeTruthy();
+});
+
+test('hero matches ticket sits above the main ticket on mobile at half its height', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto('/');
+  const matches = await page.locator('[data-hero-side="matches"]').boundingBox();
   const main = await page.locator('.hero-ticket-row .home-matches-ticket').boundingBox();
-  const today = await page.locator('.hero-side-ticket').filter({ hasText: 'مباريات اليوم' }).boundingBox();
-  const news = await page.locator('.hero-side-ticket').filter({ hasText: 'آخر الأخبار' }).boundingBox();
-  expect(main && today && news).toBeTruthy();
-  /* الرئيسية أولاً ثم الجانبيتان تحتها — بلا تراكب */
-  expect(main!.height).toBeCloseTo(265, 0);
-  expect(today!.y).toBeGreaterThanOrEqual(main!.y + main!.height);
-  expect(news!.y).toBeGreaterThanOrEqual(today!.y + today!.height);
-  for (const box of [main!, today!, news!]) expect(box.width).toBeLessThanOrEqual(390);
+  const news = await page.locator('[data-hero-side="news"]').boundingBox();
+  expect(matches && main && news).toBeTruthy();
+  /* فوق التذكرة الرئيسية، وبنصف طولها */
+  expect(matches!.y + matches!.height).toBeLessThanOrEqual(main!.y);
+  expect(Math.abs(matches!.height - main!.height / 2)).toBeLessThanOrEqual(4);
+  /* ثم الأخبار تحتهما */
+  expect(news!.y).toBeGreaterThanOrEqual(main!.y + main!.height);
+  for (const box of [matches!, main!, news!]) expect(box.width).toBeLessThanOrEqual(390);
   const dimensions = await page.evaluate(() => [innerWidth, document.documentElement.scrollWidth]);
   expect(dimensions[1]).toBeLessThanOrEqual(dimensions[0] + 1);
 });

@@ -479,11 +479,13 @@
   .league-ticket-player--seq { height: 84%; }
 }
 
-/* تدفق الإطارات — بعد طلب «كأنها فيديو» صار الإيقاع ثمانية وضعيات
-   على 14 خانة متساوية (الصعود 8 ثم الهبوط 6 بلا تكرار الطرفين)،
-   الخانة 300ms والدورة 4.2 ثانية: كثافة الإطارات تذيب القفزات فتقرأ
-   الحركة لقطةً متتابعة، ويبقى الانتقال جافاً بين الجيران المتطابقي
-   الأبعاد بضبط القوام الموحّد — بلا جافاسكربت وطبقة تركيب واحدة */
+/* تدفق الإطارات — وبملاحظته «التبديل سريع لا يبدو فيديو»: أُبطئت
+   الخانة من 300ms إلى 450ms (الدورة 6.3 ثانية بإيقاع هادئ) واستُبدل
+   القطع الجاف بين الوضعيات بذوبان متداخل (cross-fade) حول كل حدّ:
+   كل إطار يخفت ويصعد جاره في الفترة نفسها (±1.25% من الدورة حول حدّ
+   الخانة) فيقرأ الدماغ الوضعيتين الممتزجتين حركةً مستمرة لا قفزةً —
+   بلا جافاسكربت وطبقة تركيب واحدة، والجدول: الصعود 8 والهبوط 6
+   بلا تكرار الطرفين */
 .league-ticket-player__seq-frame {
   position: absolute;
   inset: 0;
@@ -491,7 +493,7 @@
   width: 100%;
   object-fit: contain;
   opacity: 0;
-  animation: league-ticket-seq 4.2s infinite;
+  animation: league-ticket-seq 6.3s infinite;
 }
 
 .league-ticket-player__seq-frame--1 { animation-name: league-ticket-seq-1; }
@@ -520,57 +522,64 @@
 .league-ticket-player--video-on .league-ticket-player__seq-video { display: block; }
 .league-ticket-player--video-on .league-ticket-player__seq-frame { display: none; }
 
-/* الجدول الزمني: خانة = 7.143% من الدورة — الإطار i يضيء في خانته
-   صعوداً وفي مرآتها هبوطاً (الطرفان الأقصيان خانتان متفردتان) */
+/* الجدول الزمني بالذوبان: خانة = 7.143% من الدورة، وذوبان ±1.25% حول
+   كل حدّ خانة (B) — الإطار i يخفت في الفترة [B−1.25, B+1.25] نفسها
+   التي يصعد فيها جاره، فيتزامن 0.5+0.5 عند الحدّ تماماً. الطرفان
+   الأقصيان (1 و8) خانتان متفردتان، وحافة الدورة ملفوفة رياضياً:
+   الإطاران 1 و2 يكتمل ذوبانهما عبر الختم (0% = 100% = 0.5) بلا طفرة */
 @keyframes league-ticket-seq-1 {
-  0%, 7.142% { opacity: 1; }
-  7.143%, 100% { opacity: 0; }
+  0% { opacity: 0.5; }
+  1.25%, 5.893% { opacity: 1; }
+  8.393%, 98.75% { opacity: 0; }
+  100% { opacity: 0.5; }
 }
 @keyframes league-ticket-seq-2 {
-  0%, 7.142% { opacity: 0; }
-  7.143%, 14.285% { opacity: 1; }
-  14.286%, 92.857% { opacity: 0; }
-  92.858%, 100% { opacity: 1; }
+  0% { opacity: 0.5; }
+  1.25%, 5.893% { opacity: 0; }
+  8.393%, 13.036% { opacity: 1; }
+  15.536%, 91.608% { opacity: 0; }
+  94.108%, 98.75% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 @keyframes league-ticket-seq-3 {
-  0%, 14.285% { opacity: 0; }
-  14.286%, 21.428% { opacity: 1; }
-  21.429%, 85.714% { opacity: 0; }
-  85.715%, 92.857% { opacity: 1; }
-  92.858%, 100% { opacity: 0; }
+  0%, 13.036% { opacity: 0; }
+  15.536%, 20.179% { opacity: 1; }
+  22.679%, 84.465% { opacity: 0; }
+  86.965%, 91.608% { opacity: 1; }
+  94.108%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-4 {
-  0%, 21.428% { opacity: 0; }
-  21.429%, 28.571% { opacity: 1; }
-  28.572%, 78.571% { opacity: 0; }
-  78.572%, 85.714% { opacity: 1; }
-  85.715%, 100% { opacity: 0; }
+  0%, 20.179% { opacity: 0; }
+  22.679%, 27.322% { opacity: 1; }
+  29.822%, 77.322% { opacity: 0; }
+  79.822%, 84.465% { opacity: 1; }
+  86.965%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-5 {
-  0%, 28.571% { opacity: 0; }
-  28.572%, 35.714% { opacity: 1; }
-  35.715%, 71.428% { opacity: 0; }
-  71.429%, 78.571% { opacity: 1; }
-  78.572%, 100% { opacity: 0; }
+  0%, 27.322% { opacity: 0; }
+  29.822%, 34.465% { opacity: 1; }
+  36.965%, 70.179% { opacity: 0; }
+  72.679%, 77.322% { opacity: 1; }
+  79.822%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-6 {
-  0%, 35.714% { opacity: 0; }
-  35.715%, 42.857% { opacity: 1; }
-  42.858%, 64.285% { opacity: 0; }
-  64.286%, 71.428% { opacity: 1; }
-  71.429%, 100% { opacity: 0; }
+  0%, 34.465% { opacity: 0; }
+  36.965%, 41.608% { opacity: 1; }
+  44.108%, 63.036% { opacity: 0; }
+  65.536%, 70.179% { opacity: 1; }
+  72.679%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-7 {
-  0%, 42.857% { opacity: 0; }
-  42.858%, 50% { opacity: 1; }
-  50.001%, 57.143% { opacity: 0; }
-  57.144%, 64.285% { opacity: 1; }
-  64.286%, 100% { opacity: 0; }
+  0%, 41.608% { opacity: 0; }
+  44.108%, 48.75% { opacity: 1; }
+  51.25%, 55.893% { opacity: 0; }
+  58.393%, 63.036% { opacity: 1; }
+  65.536%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-8 {
-  0%, 50% { opacity: 0; }
-  50.001%, 57.143% { opacity: 1; }
-  57.144%, 100% { opacity: 0; }
+  0%, 48.75% { opacity: 0; }
+  51.25%, 55.893% { opacity: 1; }
+  58.393%, 100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

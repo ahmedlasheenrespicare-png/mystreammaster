@@ -37,6 +37,7 @@ export const KEYWORDS = {
   "/blog/افضل-سيرفر-iptv-في-مصر": { primary: "أفضل سيرفر IPTV في مصر", intent: "comparison" },
   "/blog/افضل-سيرفر-iptv-في-السعودية": { primary: "أفضل سيرفر IPTV في السعودية", intent: "comparison" },
   "/blog/افضل-سيرفر-iptv-في-الإمارات": { primary: "أفضل سيرفر IPTV في الإمارات", intent: "comparison" },
+  "/blog/افضل-سيرفر-iptv-في-الجزائر": { primary: "أفضل سيرفر IPTV في الجزائر", intent: "comparison" },
   "/blog/تقطيع-بث-iptv": { primary: "تقطيع بث IPTV", intent: "informational" },
   "/blog/رسيفر-iptv": { primary: "رسيفر IPTV", intent: "informational" },
   "/blog/ارخص-اشتراك-iptv": { primary: "أرخص اشتراك IPTV", intent: "comparison" },

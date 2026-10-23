@@ -109,6 +109,7 @@ const OG_BY_ROUTE: Record<string, string> = {
   "blog/افضل-سيرفر-iptv-في-مصر": "blog-iptv-egypt",
   "blog/افضل-سيرفر-iptv-في-السعودية": "blog-iptv-saudi",
   "blog/افضل-سيرفر-iptv-في-الإمارات": "blog-iptv-uae",
+  "blog/افضل-سيرفر-iptv-في-الجزائر": "blog-iptv-algeria",
   "blog/تقطيع-بث-iptv": "blog-iptv-buffering",
   "blog/رسيفر-iptv": "blog-iptv-receiver",
   "blog/ارخص-اشتراك-iptv": "blog-iptv-cheapest",

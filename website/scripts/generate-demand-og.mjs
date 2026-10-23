@@ -48,6 +48,14 @@ const CARDS = [
     pills: ["نوفا", "إيستار", "موكا", "X"],
   },
   {
+    file: "blog-iptv-algeria",
+    kicker: "السوق المغاربي",
+    title: "أفضل سيرفر <span class=\"lat\">IPTV</span> في الجزائر",
+    sub: "أسعار بالدولار · أحسن جهاز استقبال · اختبار قبل الدفع",
+    size: 62,
+    pills: ["نوفا", "إيستار", "موكا", "X"],
+  },
+  {
     file: "blog-arabic-channels-germany",
     kicker: "المغتربون",
     title: "قنوات عربية في ألمانيا وأوروبا",

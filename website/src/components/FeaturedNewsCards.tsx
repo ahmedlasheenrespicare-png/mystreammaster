@@ -308,7 +308,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         {/* النص في منتصف التذكرة: العنوان بنفس هيئة اسم البطولة الكبرى في الشريحة الأولى */}
         <div className="relative z-10 flex flex-1 items-center justify-center">
           <div className="league-ticket-body">
-            <em style={{ background: "none", color: "#f6f4ec", WebkitTextFillColor: "#f6f4ec" }}>{item.title}</em>
+            <em style={{ background: "none", color: "#c9ced8", WebkitTextFillColor: "#c9ced8" }}>{item.title}</em>
             <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-snug text-white/85">
               {item.description}
             </p>

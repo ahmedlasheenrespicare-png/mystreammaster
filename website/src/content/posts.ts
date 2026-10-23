@@ -6,6 +6,8 @@
 
 export interface PostSection {
   heading?: string;
+  /** معرّف ثابت للقسم في الرابط (#...) بدل s-<الرقم> — للروابط التي تُكتب في المحتوى */
+  anchor?: string;
   paragraphs?: string[];
   bullets?: string[];
   steps?: string[];
@@ -33,8 +35,18 @@ export interface BlogPost {
   relatedPlan?: "nova" | "istar" | "moka" | "x";
   /** صورة المقال الرئيسية (اختيارية) — تُرسم وقت البناء بلا JS */
   hero?: { src: string; avif?: string; alt: string };
-  /** شريط بطاقات السيرفرات الأربعة (تصميم كارت uiverse) بدل صورة الغلاف */
-  serverStrip?: boolean;
+  /** شريط بطاقات السيرفرات (تصميم كارت uiverse) بدل صورة الغلاف.
+      true = كل باقات المتجر · كائن = جزء منها بسعر ووجهة محددة */
+  serverStrip?:
+    | boolean
+    | {
+        /** السيرفرات المعروضة بترتيبها */
+        codes: ("nova" | "istar" | "moka" | "x")[];
+        /** "egp" = سعر العرض المصري من content/egypt-pricing.ts بدل سعر المتجر */
+        price?: "egp";
+        /** وجهة كل كارت (قسم داخل الصفحة) بدل صفحة السيرفر */
+        href?: string;
+      };
   /** إخفاء سطر «دقائق قراءة + التاريخ» في المقال وبطاقته بالفهرس */
   hideMeta?: boolean;
   /** "guide" = دليل تعريفي محايد بدون صندوق بيع */

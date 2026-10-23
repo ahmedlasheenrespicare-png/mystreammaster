@@ -88,6 +88,21 @@ test('جدول الأسعار يُرسم فقط بعد وصول الأرقام،
   }
 });
 
+test('بطاقتا السيرفرين: اثنتان فقط وبسعر الجنيه المصري', () => {
+  /* نطاق الفحص: شريط البطاقات وحده — تذييل الموقع يربط السيرفرات الأربعة لكل الصفحات */
+  const start = egyptHtml.indexOf('aria-label="السيرفران');
+  assert.ok(start > 0, 'شريط البطاقتين غائب عن الصفحة');
+  const deck = egyptHtml.slice(start, egyptHtml.indexOf('srv-deck-dots', start));
+  const cards = [...deck.matchAll(/data-server="([a-z]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(cards, ['nova', 'x'], 'البطاقات يجب أن تكون نوفا وX فقط بترتيبهما');
+  assert.ok(!deck.includes('سيرفر إيستار') && !deck.includes('سيرفر موكا'),
+    'بطاقة سيرفر غير معروض في العرض المصري');
+  /* السعر الظاهر على البطاقة هو 12 شهراً من ملف الأسعار (600) وليس سعر المتجر بالريال */
+  assert.ok(deck.includes('600'), 'سعر 12 شهراً غائب عن البطاقات');
+  assert.ok(deck.includes('ج.م'), 'عملة الجنيه غائبة عن البطاقات');
+  assert.ok(!deck.includes('ر.س'), 'سعر المتجر بالريال مسرّب إلى بطاقات العرض المصري');
+});
+
 test('الحدود الجغرافية معلنة على الصفحة: داخل مصر فقط', () => {
   const text = egyptHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   assert.ok(text.includes('تعمل داخل مصر فقط'), 'شارة «داخل مصر فقط» غائبة عن الصفحة');

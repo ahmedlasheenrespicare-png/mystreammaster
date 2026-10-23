@@ -15,9 +15,13 @@ import "./server-deck.css";
    --------------------------------------------------------------------------
    نفس الهندسة: مروحة كروت مائلة 15° داخل إطار 300×160 مخفي الفائض، وكل كارت
    فيه لوحه الزجاجي الخاص (‎--pd:4px) بحرف ضخم مفرّغ، وخطّا توهّج أسفل المروحة.
-   الفرق: أربعة كروت — كل سيرفر في كارت — والكارت الأمامي (z-index أعلى) يتبدّل
-   كل 3 ثوانٍ كما في التصميم الأصلي. يتوقّف التبديل عند المرور/التركيز،
-   ويُلغى مع prefers-reduced-motion، وتسمح النقاط بتثبيت أي سيرفر.
+   الفرق: كارت لكل سيرفر — والكارت الأمامي (z-index أعلى) يتبدّل كل 3 ثوانٍ كما
+   في التصميم الأصلي. يتوقّف التبديل عند المرور/التركيز، ويُلغى مع
+   prefers-reduced-motion، وتسمح النقاط بتثبيت أي سيرفر.
+
+   الافتراضي أربعة كروت (كل باقات المتجر). ويمكن تمرير `codes` لعرض جزء منها
+   (مقال مصر يعرض نوفا وX فقط)، مع `prices` لعرض سعر بعملة أخرى من مصدر واحد،
+   و`href` لتحويل الكروت إلى قسم داخل الصفحة نفسها بدل صفحة السيرفر.
    ========================================================================== */
 
 type ServerCode = PricingPlan["serverCode"];
@@ -33,11 +37,54 @@ const SLOTS = [
   { left: 58, top: 18, rot: -7 }, // خلف الوسط
 ];
 
+/* كروت السيرفرين: بطاقتان مستقلّتان جنباً إلى جنب، كل واحدة ظاهرة كاملة
+   بلا تغطية — ميل خفيف في اتجاهين متعاكسين فقط. (مواضع الأربعة أعلاه
+   تُخفي إحداهما خلف الأخرى، وهذا يناسب التبديل لا العرض الثابت.)
+   الترتيب يوافق القراءة العربية: السيرفر الأول على اليمين. */
+const SLOTS_TWO = [
+  { left: 208, top: 14, rot: 9 }, // يمين — السيرفر الأول
+  { left: 22, top: 26, rot: -9 }, // يسار — السيرفر الثاني
+];
+const PAIR_WIDTH = 380;
+
+/** سعر معروض على الكارت بعملة محددة (يأتي من مصدر الأسعار نفسه) */
+export interface DeckPrice {
+  amount: number;
+  /** رمز العرض بجانب الرقم: "ج.م" أو "ر.س" */
+  currency: string;
+  /** وصف المدة كما يُعرض: "12 شهراً" */
+  termLabel: string;
+}
+
 const ROTATE_MS = 3000;
 
-export default function ServerDeck({ label }: { label?: string }) {
-  const plans = PRICING_PLANS;
+export default function ServerDeck({
+  label,
+  codes,
+  prices,
+  href,
+}: {
+  label?: string;
+  /** أكواد السيرفرات المعروضة بترتيبها — بلا تمرير تُعرض كل باقات المتجر */
+  codes?: ServerCode[];
+  /** أسعار بديلة لكل سيرفر (مقال مصر يعرض الجنيه المصري من ملف أسعاره) */
+  prices?: Partial<Record<ServerCode, DeckPrice>>;
+  /** رابط واحد لكل كروت الشريط (قسم داخل الصفحة) بدل صفحة السيرفر */
+  href?: string;
+}) {
+  const plans = useMemo(
+    () =>
+      codes
+        ? codes
+            .map((code) => PRICING_PLANS.find((plan) => plan.serverCode === code))
+            .filter((plan): plan is PricingPlan => Boolean(plan))
+        : PRICING_PLANS,
+    [codes]
+  );
   const count = plans.length;
+  const slots = count === 2 ? SLOTS_TWO : SLOTS;
+  const isPair = count === 2;
+  /* بطاقتان: عرض ثابت بلا تبديل — لا معنى لدوران «الأمامي» وكلتاهما مرئية */
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = useRef(false);
@@ -54,7 +101,7 @@ export default function ServerDeck({ label }: { label?: string }) {
   }, []);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || count < 3) return;
     const id = window.setInterval(() => {
       if (reduced.current || document.hidden) return;
       setActive((a) => (a + 1) % count);
@@ -65,36 +112,47 @@ export default function ServerDeck({ label }: { label?: string }) {
   return (
     <section aria-label={label ?? "السيرفرات الأربعة"} className="mt-8">
       <div
-        className="srv-deck-wrap"
+        className={`srv-deck-wrap${isPair ? " srv-deck-wrap--pair" : ""}`}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocusCapture={() => setPaused(true)}
         onBlurCapture={() => setPaused(false)}
       >
-        <div className="srv-deck">
+        <div
+          className={`srv-deck${isPair ? " srv-deck--pair" : ""}`}
+          style={isPair ? { width: `${PAIR_WIDTH}px` } : undefined}
+        >
           {/* مروحة الكروت: كل سيرفر بكارت ولوح زجاجي وحرفه */}
           {plans.map((p, i) => {
             const slot = (i - active + count) % count;
-            const s = SLOTS[slot];
+            const s = slots[slot];
             const isFront = slot === 0;
+            /* بطاقتان مستقلّتان: لا رفع ولا تغطية — متساويتان في الحضور */
+            const lifted = false;
             return (
               <div
                 key={p.id}
-                className={`srv-deck-card${isFront ? " is-front" : ""}`}
+                className={`srv-deck-card${isFront ? " is-front" : ""}${isPair ? " srv-deck-card--pair" : ""}`}
                 data-server={p.serverCode}
-                aria-hidden={!isFront}
+                aria-hidden={isPair ? undefined : !isFront}
                 style={{
                   left: `${s.left}px`,
                   top: `${s.top}px`,
                   zIndex: isFront ? 4 : slot === 3 ? 3 : 2,
-                  transform: `rotate(${s.rot}deg)`,
+                  transform: `rotate(${s.rot}deg)${lifted ? " translateY(-8px)" : ""}`,
                 }}
               >
                 <div className="srv-deck-content">
                   <span className="srv-deck-glyph" aria-hidden="true">
                     {GLYPH[p.serverCode]}
                   </span>
-                  <CardBody plan={p} duration={duration} focusable={isFront} />
+                  <CardBody
+                    plan={p}
+                    duration={duration}
+                    focusable={isFront || isPair}
+                    priceView={prices?.[p.serverCode]}
+                    href={href}
+                  />
                 </div>
               </div>
             );
@@ -108,8 +166,8 @@ export default function ServerDeck({ label }: { label?: string }) {
         </div>
       </div>
 
-      {/* نقاط التنقّل — تسمح للزائر بتثبيت السيرفر الذي يريده */}
-      <div className="srv-deck-dots">
+      {/* نقاط التنقّل — تسمح للزائر بتثبيت السيرفر الذي يريده (لا معنى لها مع بطاقتين) */}
+      <div className="srv-deck-dots" hidden={isPair}>
         {plans.map((p, i) => (
           <button
             key={p.id}
@@ -129,26 +187,33 @@ function CardBody({
   plan,
   duration,
   focusable,
+  priceView,
+  href,
 }: {
   plan: PricingPlan;
   duration: PlanDuration;
   focusable: boolean;
+  priceView?: DeckPrice;
+  href?: string;
 }) {
   const nameOnly = plan.serverName.split("(")[0].trim();
   const logo = SERVER_WATERMARKS[plan.serverCode];
   const price = useMemo(() => plan.prices[duration] ?? plan.prices["12"], [plan, duration]);
 
+  /* السعر المعروض: من ملف الأسعار الممرَّر إن وُجد، وإلا سعر المتجر بالريال */
+  const shown = priceView ?? { amount: price.SAR, currency: "ر.س", termLabel: "12 شهراً" };
+
   /* رسالة واتساب جاهزة: السيرفر + المدة + السعر — يفتحها الزر مباشرة */
-  const waMessage = `مرحبًا ستريم ماستر، أريد تفعيل اشتراك ${nameOnly} — 12 شهرًا — ${price.SAR} ر.س`;
+  const waMessage = `مرحبًا ستريم ماستر، أريد تفعيل اشتراك ${nameOnly} — ${shown.termLabel} — ${shown.amount} ${shown.currency}`;
   const waHref = getWhatsAppUrl(waMessage);
 
   return (
     <div className="srv-deck-body">
       <a
-        href={to(`${plan.serverCode}/`)}
+        href={href ?? to(`${plan.serverCode}/`)}
         className="srv-deck-link"
         tabIndex={focusable ? 0 : -1}
-        aria-label={`${nameOnly} — صفحة السيرفر، ${price.SAR} ر.س لكل 12 شهراً`}
+        aria-label={`${nameOnly} — ${shown.amount} ${shown.currency} لكل ${shown.termLabel}`}
       >
         <span className="srv-deck-logo">
           <img
@@ -163,7 +228,7 @@ function CardBody({
         </span>
         <span className="srv-deck-name">{nameOnly}</span>
         <span className="srv-deck-price">
-          <b>{price.SAR}</b> ر.س / 12 شهراً
+          <b>{shown.amount}</b> {shown.currency} / {shown.termLabel}
         </span>
       </a>
 

@@ -8,6 +8,7 @@ import {
   hasEgyptPricing,
   monthlyEquivalent,
 } from "../content/egypt-pricing";
+import type { DeckPrice } from "../components/ServerDeck";
 import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
@@ -23,6 +24,25 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
   /* أقسام مرتبطة ببيانات لم تصل بعد لا تُرسم (ولا يظهر عنوانها فارغاً) */
   const sections = post.sections.filter((s) => !(s.egyptPricing && !hasEgyptPricing()));
   const toc = sections.filter((s) => Boolean(s.heading));
+
+  /* شريط البطاقات: true = كل المتجر، أو كائن يحدد سيرفرات وسعراً ووجهة */
+  const strip = post.serverStrip;
+  const stripCodes = typeof strip === "object" ? strip.codes : undefined;
+  const stripHref = typeof strip === "object" ? strip.href : undefined;
+  /* سعر العرض المصري لبطاقات الشريط: 12 شهراً من مصدر الأسعار نفسه */
+  const stripPrices: Partial<Record<string, DeckPrice>> | undefined =
+    typeof strip === "object" && strip.price === "egp" && hasEgyptPricing()
+      ? Object.fromEntries(
+          EGYPT_PRICING.filter(
+            (server) => !stripCodes || stripCodes.includes(server.code)
+          ).flatMap((server) => {
+            const amount = server.prices["12"];
+            return typeof amount === "number"
+              ? [[server.code, { amount, currency: "ج.م", termLabel: "12 شهراً" } satisfies DeckPrice]]
+              : [];
+          })
+        )
+      : undefined;
 
   return (
     <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
@@ -88,7 +108,18 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             </div>
           )}
 
-          {post.serverStrip && <ServerDeck label="السيرفرات الأربعة في نظرة واحدة" />}
+          {strip && (
+            <ServerDeck
+              label={
+                stripCodes
+                  ? `${stripCodes.length === 2 ? "السيرفران" : "السيرفرات"} في نظرة واحدة`
+                  : "السيرفرات الأربعة في نظرة واحدة"
+              }
+              codes={stripCodes}
+              prices={stripPrices}
+              href={stripHref}
+            />
+          )}
 
           {toc.length >= 5 && (
             <nav
@@ -104,7 +135,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                   return (
                     <li key={t.heading}>
                       <a
-                        href={`#s-${index}`}
+                        href={`#${t.anchor ?? `s-${index}`}`}
                         className="text-[13.5px] font-bold text-black/65 hover:text-[#2b4eff] transition"
                       >
                         {t.heading}
@@ -121,7 +152,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
               <section key={i}>
                 {s.heading && (
                   <h2
-                    id={`s-${i}`}
+                    id={s.anchor ?? `s-${i}`}
                     className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug scroll-mt-32"
                   >
                     {s.heading}

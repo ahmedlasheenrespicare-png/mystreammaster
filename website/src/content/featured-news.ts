@@ -48,7 +48,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     images: [
       { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },
       { src: "images/players/esp-flick.webp", alt: "هانز فليك" },
-      { src: "images/players/fra-dembele.webp", alt: "عثمان ديمبيلي" },
+      { src: "images/players/fra-dembele-celebration.webp", alt: "عثمان ديمبيلي يحتفل" },
     ],
   },
 ];

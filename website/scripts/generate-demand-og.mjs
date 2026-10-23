@@ -56,6 +56,22 @@ const CARDS = [
     pills: ["أندرويد", "شاشة ذكية", "Apple TV"],
   },
   {
+    file: "blog-iptv-android",
+    kicker: "الأجهزة والإعداد",
+    title: "تشغيل <span class=\"lat\">IPTV</span> على أندرويد",
+    sub: "من المتجر الرسمي · M3U وXtream · حلول أشهر الأخطاء",
+    size: 64,
+    pills: ["Android TV", "هاتف", "رسيفر"],
+  },
+  {
+    file: "blog-what-is-iptv",
+    kicker: "أساسيات",
+    title: "ما هو <span class=\"lat\">IPTV</span>؟",
+    sub: "أربعة عناصر · الفرق عن القمر والكابل · أشهر المفاهيم الخاطئة",
+    size: 80,
+    pills: ["المزوّد", "القائمة", "المشغّل", "الشبكة"],
+  },
+  {
     file: "blog-iptv-cheapest",
     kicker: "دليل المشتري",
     title: "أرخص اشتراك <span class=\"lat\">IPTV</span>",

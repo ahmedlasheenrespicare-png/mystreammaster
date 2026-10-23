@@ -42,6 +42,8 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/psg-barcelona-4-2/",
     featured: true,
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
-    matchupImage: "images/news/psg-barcelona-4-2-match.jpg",
+    images: [
+      { src: "images/players/fra-dembele-celebration.webp", alt: "عثمان ديمبيلي يحتفل" },
+    ],
   },
 ];

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Hero from "../components/Hero";
 import HeroValueCards from "../components/HeroValueCards";
+import FeaturedNewsCards from "../components/FeaturedNewsCards";
 import LibrarySection from "../components/LibrarySection";
 import ContentTicker from "../components/ContentTicker";
 import WordBand from "../components/WordBand";
@@ -70,6 +71,7 @@ export default function HomePage({
       {/* أقسام خرجت من الهيرو في إعادة هيكلته: بطاقات القيمة ثم قسم المكتبة
           الداكن — بنفس ترتيبهما السابق (البطاقات قبل القسم الداكن) */}
       <HeroValueCards onOpenTrial={onOpenTrial} />
+      <FeaturedNewsCards />
       <LibrarySection />
       <ContentTicker />
       <WordBand />

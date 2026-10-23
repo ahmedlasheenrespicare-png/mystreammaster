@@ -40,6 +40,7 @@ interface Card {
   background?: string;
   featured: boolean;
   matchup?: string;
+  logo?: string;
 }
 
 function useUpcomingMatches(): Match[] {
@@ -104,6 +105,7 @@ export default function FeaturedNewsCards() {
     images: item.images?.map(img => ({ ...img, src: to(img.src) })),
     background: item.backgroundImage ? to(item.backgroundImage) : undefined,
     featured: item.featured === true,
+    logo: item.backgroundLogo,
     matchup: item.matchupImage ? to(item.matchupImage) : undefined,
   }));
 
@@ -150,6 +152,13 @@ export default function FeaturedNewsCards() {
                     href={card.href}
                     className="group relative isolate flex h-full flex-col overflow-hidden rounded-[23px] p-6 text-[#f6f4ec] bg-[radial-gradient(circle_280px_at_0%_0%,#2c2c33,#0b0b0f)] border border-[#232327]"
                   >
+                    {card.logo && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -left-10 top-1/2 h-[135%] w-[60%] -translate-y-1/2 bg-contain bg-center bg-no-repeat opacity-[0.12] blur-[1px]"
+                        style={{ backgroundImage: `url(${card.logo})` }}
+                      />
+                    )}
                     <span aria-hidden="true" className="league-ticket-ray" />
                     <span aria-hidden="true" className="league-ticket-line league-ticket-line--top" />
                     <span aria-hidden="true" className="league-ticket-line league-ticket-line--bottom" />

@@ -19,6 +19,8 @@ export interface FeaturedNewsItem {
   backgroundImage?: string;
   /** لوحة المواجهة: صورة واحدة تجمع لاعبي المباراة مع النتيجة (تُعرض أعلى البطاقة) */
   matchupImage?: string;
+  /** شعار البطولة يُعرض كخلفية عميقة خافتة في البطاقة الكبيرة (رابط كامل) */
+  backgroundLogo?: string;
   /** بطاقة كبيرة بتصميم الخبر المميز (عرض مزدوج وخلفية وصور) */
   featured?: boolean;
 }
@@ -31,6 +33,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     description: "تقدم بايرن بركلة جزاء لكين، ثم عادل رايس قبل النهاية بعشر دقائق.",
     href: "news/bayern-arsenal-2-2/",
     featured: true,
+    backgroundLogo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
     backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
     images: [
       { src: "images/players/ger-kane.webp", alt: "هاري كين" },
@@ -44,6 +47,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     description: "ستة أهداف في ملعب الأمير، وأول خسارة لبرشلونة هذا الموسم في أي مسابقة.",
     href: "news/psg-barcelona-4-2/",
     featured: true,
+    backgroundLogo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [
       { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },

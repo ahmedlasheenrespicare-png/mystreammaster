@@ -19,7 +19,7 @@ export interface PostSection {
   egyptPricing?: boolean;
   /** عملة جدول `pricing` في هذا القسم — الافتراضي ر.س كما في المتجر.
       صفحة بلد آخر (الإمارات) تستخدم درهمها من نفس ملف الأسعار، فلا يُكتب رقم يدوياً. */
-  pricingCurrency?: "SAR" | "AED" | "USD";
+  pricingCurrency?: "SAR" | "AED" | "USD" | "KWD";
   /** روابط داخلية تُعرض أسفل القسم */
   links?: { label: string; href: string }[];
 }

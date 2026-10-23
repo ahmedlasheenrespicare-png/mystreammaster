@@ -697,12 +697,15 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
   basePlayers: ReactElement[];
   base?: ReactElement;
+  /* محتوى بديل لشريحة قمة بفهرسها (0 = أول قمة بعد الأساس) — يبقى داخل
+     المنزلقة نفسها بالحركة والنقاط والإيقاف دون تغيير شيء آخر */
+  slideOverrides?: Partial<Record<number, ReactElement>>;
   /* تذكرة مواعيد المباريات الجامعة: اللوجو على كل شرائحها (الأساس
      الجامع + شرائح القمم) بتوجيه المالك */
   showNovaBrand?: boolean;
@@ -788,10 +791,12 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         </div>
         {clashes.map((clash, i) => (
           <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
+            {slideOverrides?.[i] ?? (
             <div className="league-ticket league-ticket--match league-ticket--in-track">
               <TicketBrandPair leagueId={leagueId} scope="clash" showNovaBrand={showNovaBrand} />
               <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} underBrands={ticketWordmark(leagueId, "clash") && hasTicketBrands(leagueId, "clash", showNovaBrand)} />
             </div>
+            )}
           </div>
         ))}
       </div>

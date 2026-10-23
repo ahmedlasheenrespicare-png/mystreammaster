@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { TicketImage } from "./TicketImage";
 import { leagueLandingById } from "../content/competitions";
@@ -125,14 +126,13 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket({ hiddenClashIndexes = [] }: { hiddenClashIndexes?: number[] } = {}) {
-  /* إخفاء شرائح محددة من المنزلقة (فهرس الشريحة في INDEX_CLASHES، والشريحة الأساسية غير قابلة للإخفاء) */
-  const clashes = INDEX_CLASHES.filter((_, i) => !hiddenClashIndexes.includes(i));
+export default function AllLeaguesTicket({ slideOverrides }: { slideOverrides?: Partial<Record<number, ReactElement>> } = {}) {
   return (
     <LeagueTicketCarousel
       leagueId="matches"
       name="كل البطولات الكبرى"
-      clashes={clashes}
+      clashes={INDEX_CLASHES}
+      slideOverrides={slideOverrides}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand

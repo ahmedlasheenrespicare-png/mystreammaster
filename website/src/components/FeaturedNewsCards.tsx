@@ -264,7 +264,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
   if (!item) return null;
   const logo = item.backgroundLogo ? to(item.backgroundLogo) : undefined;
   // صور الشريحة: يامال الحزين وفليك الغاضب وديمبيلي يحتفل ولويس إنريكي، جنباً إلى جنب على اليمين
-  const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry|fra-dembele-celebration|fra-enrique-triumph/.test(img.src));
+  const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry|fra-dembele-celebration|fra-enrique-triumph|ger-kane|eng-rice/.test(img.src));
   return (
     <div className="league-ticket league-ticket--match league-ticket--in-track">
       <div className="league-ticket-bg league-ticket-holographic">

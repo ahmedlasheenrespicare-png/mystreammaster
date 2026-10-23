@@ -22,6 +22,13 @@ export interface FeaturedNewsItem {
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "دوري أبطال أوروبا",
+    dateLabel: "21 أكتوبر 2026",
+    title: "بايرن ميونخ وأرسنال يتعادلان 2-2 بهدف متأخر لرايس",
+    description: "تقدم بايرن بركلة جزاء لكين، ثم عادل رايس قبل النهاية بعشر دقائق.",
+    href: "news/bayern-arsenal-2-2/",
+  },
+  {
+    category: "دوري أبطال أوروبا",
     dateLabel: "20 أكتوبر 2026",
     title: "باريس سان جيرمان يهزم برشلونة 4-2 ويكسر سجله المثالي",
     description: "ستة أهداف في ملعب الأمير، وأول خسارة لبرشلونة هذا الموسم في أي مسابقة.",

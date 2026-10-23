@@ -107,6 +107,10 @@ const OG_BY_ROUTE: Record<string, string> = {
   "blog/what-is-unlicensed-streaming": "blog-what-is-unlicensed-streaming",
   "blog/افضل-اشتراك-iptv-2026": "best-iptv-2026",
   "blog/افضل-سيرفر-iptv-في-مصر": "blog-iptv-egypt",
+  "blog/افضل-سيرفر-iptv-في-السعودية": "blog-iptv-saudi",
+  "blog/تقطيع-بث-iptv": "blog-iptv-buffering",
+  "blog/رسيفر-iptv": "blog-iptv-receiver",
+  "blog/ارخص-اشتراك-iptv": "blog-iptv-cheapest",
   /* صفحات هبوط البطولات — /matches/{slug} */
   "matches/الدوري-الإنجليزي": "league-premier-league",
   "matches/الدوري-السعودي": "league-saudi-pro-league",

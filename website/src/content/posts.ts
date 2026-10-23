@@ -55,6 +55,7 @@ export interface BlogPost {
 
 import { GUIDE_POSTS } from "./guide-posts";
 import { EGYPT_POSTS } from "./egypt-post";
+import { DEMAND_POSTS } from "./demand-posts";
 
 const RETAINED_POSTS: BlogPost[] = [
   {
@@ -434,8 +435,14 @@ const RETAINED_POSTS: BlogPost[] = [
   },
 ];
 
-/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم مقال السوق المصري، ثم المقالات المحفوظة */
-export const BLOG_POSTS: BlogPost[] = [...GUIDE_POSTS, ...EGYPT_POSTS, ...RETAINED_POSTS];
+/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم مقالات الطلب البحثي الجديدة،
+   ثم مقال السوق المصري، ثم المقالات المحفوظة */
+export const BLOG_POSTS: BlogPost[] = [
+  ...GUIDE_POSTS,
+  ...DEMAND_POSTS,
+  ...EGYPT_POSTS,
+  ...RETAINED_POSTS,
+];
 
 export function getPost(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

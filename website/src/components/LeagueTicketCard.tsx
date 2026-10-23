@@ -96,16 +96,21 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
         tokens: ["barcelona", "برشلونة", "بارسلونة"],
       },
       /* بطلب المالك: إطارات التسلسل الأربعة لديمبيلي صارت كاملة الجسم
-         (رأس إلى الأحذية) بخلفيات مزالة لونياً — الفليب-بوك نفسه يتنفس
-         الآن بقوام كامل لا بنصف علوي، وبقي حجم اللوحة 1280×1600 موحّداً
-         بأسفلها ملامساً قاع التذكرة كما كان التقعيد */
+         (رأس إلى الأحذية) بخلفيات مزالة لونياً — وبسؤاله «هل تصير
+         كأنها فيديو؟» زُرعت أربع وضعيات بينية مولّدة من التوأمين
+         المجاورين (خفض→رفع→نزول للصدغ→ضغط) فأصبح التتابع ثمانياً
+         بقوام 1480px الموحّد نفسه فيقترب الإقبال بسلاسة مقطع حقيقي */
       homePlayer: "/images/players/fra-dembele-phone.png",
       awayPlayer: "/images/players/esp-yamal.png",
       homePlayerSequence: [
         "/images/players/fra-dembele-phone-stage-1.png",
+        "/images/players/fra-dembele-phone-seq-rising.png",
         "/images/players/fra-dembele-phone-stage-2.png",
+        "/images/players/fra-dembele-phone-seq-landing.png",
         "/images/players/fra-dembele-phone-stage-3.png",
+        "/images/players/fra-dembele-phone-seq-press.png",
         "/images/players/fra-dembele-phone-stage-4.png",
+        "/images/players/fra-dembele-phone-seq-peak.png",
       ],
     },
     {

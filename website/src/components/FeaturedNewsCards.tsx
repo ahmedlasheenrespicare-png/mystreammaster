@@ -307,7 +307,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         </div>
         {/* النص في الثلث الأخير من التذكرة (أسفل الصور وفوق شعار ستريم ماستر) */}
         <div className="relative z-10 flex flex-1 items-end justify-center pb-3">
-          <div className="league-ticket-body">
+          <div className="league-ticket-body" style={{ alignSelf: "flex-end" }}>
             <em style={{ background: "none", color: "#c9ced8", WebkitTextFillColor: "#c9ced8" }}>{item.title}</em>
             <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-snug text-white/85">
               {item.description}

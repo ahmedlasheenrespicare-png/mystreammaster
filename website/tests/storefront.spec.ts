@@ -386,6 +386,14 @@ test('hero slide shows the competition logo of its own league in the background'
   await expect(logo).toHaveCount(1);
   await expect(logo).toHaveAttribute('src', /\/23\.png$/);
   await expect(logo).toHaveAttribute('aria-hidden', 'true');
+  /* الشعار داكن أصلاً (الإنجليزي بنفسجي داكن) — الطبقة تُرسم ظِلاًّ أبيض
+     موحّداً بشفافية كافية، وإلا ذاب الشعار الداكن على اللوح الداكن ولم يُرَ */
+  const watermark = await logo.evaluate(el => {
+    const style = getComputedStyle(el);
+    return { filter: style.filter, opacity: Number(style.opacity) };
+  });
+  expect(watermark.filter).toContain('invert(1)');
+  expect(watermark.opacity).toBeGreaterThanOrEqual(0.15);
 
   /* الثانية (المصري) بلا شعار موثّق — لا صورة ولا شعار مخترع */
   await ticket.getByRole('button', { name: 'المباراة التالية' }).click();

@@ -219,7 +219,6 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                         <tr className="bg-[#0b0b0f] text-white">
                           <th scope="col" className="p-4 text-[13px] font-black">السيرفر</th>
                           <th scope="col" className="p-4 text-[13px] font-black">الأنسب لمن</th>
-                          <th scope="col" className="p-4 text-[13px] font-black">الأجهزة</th>
                           <th scope="col" className="p-4 text-[13px] font-black">الجودة المعلنة</th>
                           <th scope="col" className="p-4 text-[13px] font-black">القنوات</th>
                           <th scope="col" className="p-4 text-[13px] font-black">سعر {durationLabel}</th>
@@ -291,7 +290,6 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                             size={26}
                             textClassName="font-black text-[15px]"
                           />
-                          <span className="text-[11.5px] font-bold text-black/45">{server.devices}</span>
                         </div>
                         <p className="mt-1.5 text-[12.5px] font-medium text-black/55">{server.bestFor}</p>
                         <ul className="mt-3 divide-y divide-black/[0.07] border-t border-black/[0.07]">
@@ -339,7 +337,6 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                         <tr className="bg-[#0b0b0f] text-white">
                           <th scope="col" className="p-4 text-[13px] font-black">السيرفر</th>
                           <th scope="col" className="p-4 text-[13px] font-black">الأنسب لـ</th>
-                          <th scope="col" className="p-4 text-[13px] font-black">الأجهزة</th>
                           {EGYPT_TERMS.map((term) => (
                             <th key={term} scope="col" className="p-4 text-[13px] font-black whitespace-nowrap">
                               {term} أشهر
@@ -359,7 +356,6 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                               />
                             </th>
                             <td className="p-4 text-[13px] font-medium text-black/70">{server.bestFor}</td>
-                            <td className="p-4 text-[13px] font-medium text-black/70">{server.devices}</td>
                             {EGYPT_TERMS.map((term) => {
                               const price = server.prices[term];
                               const monthly = monthlyEquivalent(price, term);

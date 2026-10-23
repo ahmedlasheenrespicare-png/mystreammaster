@@ -45,6 +45,7 @@ interface Card {
   featured: boolean;
   matchup?: string;
   logo?: string;
+  badges?: string[];
 }
 
 function useUpcomingMatches(): Match[] {
@@ -110,6 +111,7 @@ export default function FeaturedNewsCards() {
     background: item.backgroundImage ? to(item.backgroundImage) : undefined,
     featured: item.featured === true,
     logo: item.backgroundLogo ? to(item.backgroundLogo) : undefined,
+    badges: item.teamBadges?.map(src => to(src)),
     matchup: item.matchupImage ? to(item.matchupImage) : undefined,
   }));
 
@@ -189,6 +191,13 @@ export default function FeaturedNewsCards() {
                         </span>
                       ) : (
                         <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
+                      )}
+                      {card.badges && card.badges.length > 0 && (
+                        <span className="inline-flex items-center gap-1.5">
+                          {card.badges.map(src => (
+                            <img key={src} src={src} alt="" aria-hidden="true" className="h-7 w-7 object-contain" loading="lazy" decoding="async" />
+                          ))}
+                        </span>
                       )}
                       <span className="inline-flex items-center gap-1">
                         <IconClock className="w-3.5 h-3.5" /> {card.meta}
@@ -272,7 +281,16 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           />
         )}
         <div className="relative flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
-          <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
+          {logo ? (
+            <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-2.5 py-1">
+              <img src={logo} alt={item.category} className="h-3.5 w-auto" loading="lazy" decoding="async" />
+            </span>
+          ) : (
+            <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
+          )}
+          {(item.teamBadges ?? []).map(src => (
+            <img key={src} src={to(src)} alt="" aria-hidden="true" className="h-5 w-5 object-contain" loading="lazy" decoding="async" />
+          ))}
           <span>{item.dateLabel}</span>
         </div>
         <div className="relative mt-2 flex h-[110px] items-end justify-center">

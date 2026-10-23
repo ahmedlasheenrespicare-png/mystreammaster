@@ -296,17 +296,6 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
             />
           ))}
         </div>
-        {/* ستارة داكنة خلف النص في المنتصف وتدرج خفيف أسفل الشريحة لقراءة النص فوق الصور */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[2]"
-          style={{ background: "radial-gradient(ellipse 70% 45% at 50% 50%, rgba(11,11,15,0.78) 0%, rgba(11,11,15,0.4) 60%, rgba(11,11,15,0) 100%)" }}
-        />
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[72%]"
-          style={{ background: "linear-gradient(to top, #0b0b0f 0%, rgba(11,11,15,0.8) 40%, rgba(11,11,15,0) 100%)" }}
-        />
         <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
@@ -319,7 +308,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         {/* النص في منتصف التذكرة: العنوان بنفس هيئة اسم البطولة الكبرى في الشريحة الأولى */}
         <div className="relative z-10 flex flex-1 items-center justify-center">
           <div className="league-ticket-body">
-            <em>{item.title}</em>
+            <em style={{ background: "none", color: "#f6f4ec", WebkitTextFillColor: "#f6f4ec" }}>{item.title}</em>
             <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-snug text-white/85">
               {item.description}
             </p>

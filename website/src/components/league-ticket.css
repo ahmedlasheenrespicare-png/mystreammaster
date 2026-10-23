@@ -467,16 +467,26 @@
    ارتفاع الحاوية يعلو إلى 96% على المكتب (84% على الجوال) فيقرّب
    ديمبيلي مقام زميله النصف-علويّ جانبه، والقناع السفلي يعمّق التلاشي
    إلى 86% بدل 72% حتى لا يبتلع الساقين والحذاء آخرَ الأطوال */
+/* وبطلبه الأخير «قرّب اللاعب ليظهر نصفه العلوي فقط»: القصّ عرضي لا
+   أصولي — الإطارات والمقطع كاملة الجسم (1280×1600) والحاوية صارت
+   بنسبة 1280/961 (حتى الحزام تقريباً) مع object-fit: cover مثبّتاً
+   على القمة فيختفي النصف السفلي تحت قصّ الحاوية، والارتفاع 78%
+   (زوم ≈×1.35) فيكبُر رأس ديمبيلي ويقارب مقام يامال النصف-علويّ
+   جنبه، والقناع السفلي يذيب خط الحزام تلاشياً ناعماً بلا كسر بصري */
 .league-ticket-player--seq {
   width: auto;
-  aspect-ratio: 1280 / 1600;
-  height: 96%;
-  mask-image: linear-gradient(180deg, #000 86%, transparent 99.5%);
-  -webkit-mask-image: linear-gradient(180deg, #000 86%, transparent 99.5%);
+  aspect-ratio: 1280 / 961;
+  height: 78%;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, #000 82%, transparent 99%);
+  -webkit-mask-image: linear-gradient(180deg, #000 82%, transparent 99%);
 }
 
 @media (max-width: 700px) {
-  .league-ticket-player--seq { height: 84%; }
+  /* على الشاشة الضيقة يهدأ الزوم (70←54% فعلية) حتى لا يزاحم عمود
+     النص المتوسط — ويُقوَّى المحدد قاعدتين ليتغلب على قاعدة اللاعب
+     العامة (70%) اللاحقة في الملف بنفس الخانة الإعلامية */
+  .league-ticket-player.league-ticket-player--seq { height: 54%; }
 }
 
 /* تدفق الإطارات — وبملاحظته «التبديل سريع لا يبدو فيديو»: أُبطئت
@@ -491,9 +501,13 @@
   inset: 0;
   height: 100%;
   width: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: 50% 0;
   opacity: 0;
-  animation: league-ticket-seq 6.3s infinite;
+  /* وبأمره «أبطأ أكثر»: الخانة 450→650ms والدورة 9.1 ثانية، وذوبان
+     ±1.25% من الدورة (≈228ms كاملة حول كل حدّ) يتمطّط معها فيغدو
+     المزج أرقّ — سلو-موشن متصل لا قفزات */
+  animation: league-ticket-seq 9.1s infinite;
 }
 
 .league-ticket-player__seq-frame--1 { animation-name: league-ticket-seq-1; }
@@ -515,7 +529,8 @@
   inset: 0;
   height: 100%;
   width: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: 50% 0;
   display: none;
 }
 

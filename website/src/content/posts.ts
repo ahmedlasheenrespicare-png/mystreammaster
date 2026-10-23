@@ -56,6 +56,7 @@ export interface BlogPost {
 import { GUIDE_POSTS } from "./guide-posts";
 import { EGYPT_POSTS } from "./egypt-post";
 import { DEMAND_POSTS } from "./demand-posts";
+import { GAP_POSTS } from "./gap-posts";
 
 const RETAINED_POSTS: BlogPost[] = [
   {
@@ -440,6 +441,7 @@ const RETAINED_POSTS: BlogPost[] = [
 export const BLOG_POSTS: BlogPost[] = [
   ...GUIDE_POSTS,
   ...DEMAND_POSTS,
+  ...GAP_POSTS,
   ...EGYPT_POSTS,
   ...RETAINED_POSTS,
 ];

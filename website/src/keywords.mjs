@@ -39,6 +39,8 @@ export const KEYWORDS = {
   "/blog/تقطيع-بث-iptv": { primary: "تقطيع بث IPTV", intent: "informational" },
   "/blog/رسيفر-iptv": { primary: "رسيفر IPTV", intent: "informational" },
   "/blog/ارخص-اشتراك-iptv": { primary: "أرخص اشتراك IPTV", intent: "comparison" },
+  "/blog/تشغيل-iptv-على-أندرويد": { primary: "تشغيل IPTV على أندرويد", intent: "informational" },
+  "/blog/ما-هو-iptv": { primary: "ما هو IPTV", intent: "informational" },
   "/blog/افضل-قنوات-iptv-الرياضية": { primary: "القنوات الرياضية الناقلة", intent: "informational" },
   "/blog/الدول-العربية-في-كأس-العالم-2026": { primary: "المنتخبات العربية", intent: "informational" },
   "/blog/تثبيت-iptv-على-samsung-smart-tv": { primary: "Samsung Smart TV", intent: "informational" },

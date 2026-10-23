@@ -111,6 +111,8 @@ const OG_BY_ROUTE: Record<string, string> = {
   "blog/تقطيع-بث-iptv": "blog-iptv-buffering",
   "blog/رسيفر-iptv": "blog-iptv-receiver",
   "blog/ارخص-اشتراك-iptv": "blog-iptv-cheapest",
+  "blog/تشغيل-iptv-على-أندرويد": "blog-iptv-android",
+  "blog/ما-هو-iptv": "blog-what-is-iptv",
   /* صفحات هبوط البطولات — /matches/{slug} */
   "matches/الدوري-الإنجليزي": "league-premier-league",
   "matches/الدوري-السعودي": "league-saudi-pro-league",

@@ -276,18 +276,6 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         href={to(item.href)}
         className="group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec]"
       >
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-end justify-center">
-          {(item.images ?? []).map((img, idx, all) => (
-            <img
-              key={img.src}
-              src={to(img.src)}
-              alt={img.alt}
-              loading="lazy"
-              decoding="async"
-              className={`relative h-full w-auto max-w-[36%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-3" : "-mx-3") : "-mx-1"}`}
-            />
-          ))}
-        </div>
         <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
@@ -297,9 +285,9 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           ))}
           <span>{item.dateLabel}</span>
         </div>
-        {/* الوسط مقسوم نصفين: اليسار للنصوص، واليمين للصور (بدون قص: object-contain) */}
+        {/* النص في وسط الشريحة (بدون صور اللاعبين) */}
         <div className="relative z-10 mt-2 min-h-0 flex-1">
-          <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center pe-2 text-center">
+          <div className="absolute inset-0 flex flex-col justify-center px-2 text-center">
             {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}
             <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-10 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />
             <em
@@ -319,18 +307,6 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
             >
               {item.description}
             </p>
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex w-1/2 items-end justify-center">
-            {(item.images ?? []).map((img, idx, all) => (
-              <img
-                key={img.src}
-                src={to(img.src)}
-                alt={img.alt}
-                loading="lazy"
-                decoding="async"
-                className={`relative h-full w-auto max-w-[55%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-2" : "-mx-2") : "-mx-1"}`}
-              />
-            ))}
           </div>
         </div>
         <div className="relative z-10 mt-auto flex items-center justify-between gap-2 pt-2">

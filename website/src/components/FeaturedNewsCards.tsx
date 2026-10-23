@@ -305,14 +305,11 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           ))}
           <span>{item.dateLabel}</span>
         </div>
-        {/* النص في الثلث الأخير من التذكرة (أسفل الصور وفوق شعار ستريم ماستر) */}
-        <div className="relative z-10 flex flex-1 items-end justify-center pb-3">
-          <div
-            className="league-ticket-body"
-            style={{ alignSelf: "flex-end", textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
-          >
+        {/* الوسط مقسوم نصفين: اليسار للنصوص، واليمين للصور (بدون قص: object-contain) */}
+        <div className="relative z-10 mt-2 min-h-0 flex-1">
+          <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center pe-2 text-center">
             {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}
-            <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-12 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />
+            <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-10 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />
             <em
               style={{
                 background: "none",
@@ -324,9 +321,24 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
             >
               {item.title}
             </em>
-            <p className="mx-auto mt-2.5 line-clamp-2 max-w-[92%] text-[12.5px] font-medium leading-relaxed text-white/90">
+            <p
+              className="mx-auto mt-2 line-clamp-3 text-[12px] font-medium leading-relaxed text-white/90"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}
+            >
               {item.description}
             </p>
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex w-1/2 items-end justify-center">
+            {(item.images ?? []).map((img, idx, all) => (
+              <img
+                key={img.src}
+                src={to(img.src)}
+                alt={img.alt}
+                loading="lazy"
+                decoding="async"
+                className={`relative h-full w-auto max-w-[55%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-2" : "-mx-2") : "-mx-1"}`}
+              />
+            ))}
           </div>
         </div>
         <div className="relative z-10 mt-auto flex items-center justify-between gap-2 pt-2">

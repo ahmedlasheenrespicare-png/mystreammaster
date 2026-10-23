@@ -6,6 +6,8 @@
 
 export interface PostSection {
   heading?: string;
+  /** معرّف ثابت للقسم في الرابط (#...) بدل s-<الرقم> — للروابط التي تُكتب في المحتوى */
+  anchor?: string;
   paragraphs?: string[];
   bullets?: string[];
   steps?: string[];
@@ -13,6 +15,8 @@ export interface PostSection {
   note?: string;
   /** جدول مقارنة الباقات — يُبنى من PRICING_PLANS وقت البناء فلا ينفصل عن المتجر */
   pricing?: boolean;
+  /** جدول أسعار السوق المصري — يُبنى من content/egypt-pricing.ts ولا يظهر قبل وصول الأرقام */
+  egyptPricing?: boolean;
   /** روابط داخلية تُعرض أسفل القسم */
   links?: { label: string; href: string }[];
 }
@@ -31,8 +35,18 @@ export interface BlogPost {
   relatedPlan?: "nova" | "istar" | "moka" | "x";
   /** صورة المقال الرئيسية (اختيارية) — تُرسم وقت البناء بلا JS */
   hero?: { src: string; avif?: string; alt: string };
-  /** شريط بطاقات السيرفرات الأربعة (تصميم كارت uiverse) بدل صورة الغلاف */
-  serverStrip?: boolean;
+  /** شريط بطاقات السيرفرات (تصميم كارت uiverse) بدل صورة الغلاف.
+      true = كل باقات المتجر · كائن = جزء منها بسعر ووجهة محددة */
+  serverStrip?:
+    | boolean
+    | {
+        /** السيرفرات المعروضة بترتيبها */
+        codes: ("nova" | "istar" | "moka" | "x")[];
+        /** "egp" = سعر العرض المصري من content/egypt-pricing.ts بدل سعر المتجر */
+        price?: "egp";
+        /** وجهة كل كارت (قسم داخل الصفحة) بدل صفحة السيرفر */
+        href?: string;
+      };
   /** إخفاء سطر «دقائق قراءة + التاريخ» في المقال وبطاقته بالفهرس */
   hideMeta?: boolean;
   /** "guide" = دليل تعريفي محايد بدون صندوق بيع */
@@ -40,6 +54,7 @@ export interface BlogPost {
 }
 
 import { GUIDE_POSTS } from "./guide-posts";
+import { EGYPT_POSTS } from "./egypt-post";
 
 const RETAINED_POSTS: BlogPost[] = [
   {
@@ -419,8 +434,8 @@ const RETAINED_POSTS: BlogPost[] = [
   },
 ];
 
-/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم المقالات المحفوظة */
-export const BLOG_POSTS: BlogPost[] = [...GUIDE_POSTS, ...RETAINED_POSTS];
+/* الأدلة التعريفية أولاً (أحدث تاريخاً)، ثم مقال السوق المصري، ثم المقالات المحفوظة */
+export const BLOG_POSTS: BlogPost[] = [...GUIDE_POSTS, ...EGYPT_POSTS, ...RETAINED_POSTS];
 
 export function getPost(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

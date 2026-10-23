@@ -71,7 +71,8 @@ export default function HomePage({
       {/* أقسام خرجت من الهيرو في إعادة هيكلته: بطاقات القيمة ثم قسم المكتبة
           الداكن — بنفس ترتيبهما السابق (البطاقات قبل القسم الداكن) */}
       <HeroValueCards onOpenTrial={onOpenTrial} />
-      <FeaturedNewsCards />
+      {/* مؤقتاً: قسم الأخبار مخفي — أعد السطر التالي لإظهاره */}
+      {/* <FeaturedNewsCards /> */}
       <LibrarySection />
       <ContentTicker />
       <WordBand />

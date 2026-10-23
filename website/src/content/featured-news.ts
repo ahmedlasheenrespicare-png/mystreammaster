@@ -55,7 +55,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [
       { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },
-      { src: "images/players/esp-flick.webp", alt: "هانز فليك" },
+      { src: "images/players/esp-flick-angry.webp", alt: "هانز فليك غاضباً" },
       { src: "images/players/fra-dembele-celebration.webp", alt: "عثمان ديمبيلي يحتفل" },
       { src: "images/players/fra-enrique-triumph.png", alt: "لويس إنريكي يحتفل" },
     ],

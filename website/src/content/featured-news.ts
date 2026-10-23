@@ -33,7 +33,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     description: "تقدم بايرن بركلة جزاء لكين، ثم عادل رايس قبل النهاية بعشر دقائق.",
     href: "news/bayern-arsenal-2-2/",
     featured: true,
-    backgroundLogo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
+    backgroundLogo: "images/brand/ucl-logo-white.png",
     backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
     images: [
       { src: "images/players/ger-kane.webp", alt: "هاري كين" },
@@ -47,7 +47,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     description: "ستة أهداف في ملعب الأمير، وأول خسارة لبرشلونة هذا الموسم في أي مسابقة.",
     href: "news/psg-barcelona-4-2/",
     featured: true,
-    backgroundLogo: "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
+    backgroundLogo: "images/brand/ucl-logo-white.png",
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [
       { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },

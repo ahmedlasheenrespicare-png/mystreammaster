@@ -105,7 +105,7 @@ export default function FeaturedNewsCards() {
     images: item.images?.map(img => ({ ...img, src: to(img.src) })),
     background: item.backgroundImage ? to(item.backgroundImage) : undefined,
     featured: item.featured === true,
-    logo: item.backgroundLogo,
+    logo: item.backgroundLogo ? to(item.backgroundLogo) : undefined,
     matchup: item.matchupImage ? to(item.matchupImage) : undefined,
   }));
 
@@ -155,7 +155,7 @@ export default function FeaturedNewsCards() {
                     {card.logo && (
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute -left-10 top-1/2 h-[135%] w-[60%] -translate-y-1/2 bg-contain bg-center bg-no-repeat opacity-[0.12] blur-[1px]"
+                        className="pointer-events-none absolute inset-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-[0.22]"
                         style={{ backgroundImage: `url(${card.logo})` }}
                       />
                     )}

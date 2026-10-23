@@ -234,3 +234,62 @@ for (const width of [320, 390, 640, 768, 1440]) {
     expect(dimensions[1]).toBeLessThanOrEqual(dimensions[0] + 1);
   });
 }
+
+/* صفّ تذاكر الهيرو: تذكرة المواعيد الرئيسية بالعرض نفسه الذي تحمله لوحة
+   العرض الوسطى في الماكيت الكبير (نفس قالب شبكة TvMockup)، وعلى يمينها
+   تذكرة مباريات اليوم، وعلى يسارها تذكرة آخر الأخبار — والمحتوى من مصادر
+   الموقع (scoreboard.php وFEATURED_NEWS) لا من نصّ مكتوب هنا. */
+test('hero ticket row mirrors the mockup center panel with today/news side tickets', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+
+  const main = page.locator('.hero-ticket-row .home-matches-ticket');
+  const panel = page.locator('[aria-label="مقارنة سيرفرات المشاهدة"] > div.grid > div').nth(1);
+  await main.scrollIntoViewIfNeeded();
+
+  const mainBox = await main.boundingBox();
+  const panelBox = await panel.boundingBox();
+  expect(mainBox && panelBox).toBeTruthy();
+  /* نفس عرض لوحة العرض الوسطى (±4px: فروق الحدود الدقيقة بين الشبكتين) */
+  expect(Math.abs(mainBox!.width - panelBox!.width)).toBeLessThanOrEqual(4);
+  /* الرئيسية بعرض التذكرة نفسها (265px) وفي صفّ واحد مع لوحة العرض */
+  expect(mainBox!.height).toBeCloseTo(265, 0);
+
+  const sides = page.locator('.hero-side-ticket');
+  await expect(sides).toHaveCount(2);
+  const todayTicket = sides.filter({ hasText: 'مباريات اليوم' });
+  const newsTicket = sides.filter({ hasText: 'آخر الأخبار' });
+  const todayBox = await todayTicket.boundingBox();
+  const newsBox = await newsTicket.boundingBox();
+  expect(todayBox && newsBox).toBeTruthy();
+
+  /* RTL: يمين التذكرة الرئيسية = مباريات اليوم، يسارها = الأخبار */
+  expect(todayBox!.x).toBeGreaterThanOrEqual(mainBox!.x + mainBox!.width - 2);
+  expect(newsBox!.x + newsBox!.width).toBeLessThanOrEqual(mainBox!.x + 2);
+  /* الثلاث على استقامة واحدة بنفس الارتفاع */
+  for (const box of [todayBox!, newsBox!]) {
+    expect(Math.abs(box.y - mainBox!.y)).toBeLessThanOrEqual(2);
+    expect(Math.abs(box.height - mainBox!.height)).toBeLessThanOrEqual(2);
+  }
+
+  /* المحتوى من مصدره: رابط صفحة المواعيد في تذكرة اليوم، ورابط الخبر
+     الداخلي في تذكرة الأخبار */
+  await expect(todayTicket.locator('a[href*="/matches/"]').first()).toBeVisible();
+  await expect(newsTicket.locator('a[href*="/news/"]').first()).toHaveAttribute('href', /\/news\//);
+});
+
+test('hero side tickets stack under the main ticket on mobile without overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/');
+  const main = await page.locator('.hero-ticket-row .home-matches-ticket').boundingBox();
+  const today = await page.locator('.hero-side-ticket').filter({ hasText: 'مباريات اليوم' }).boundingBox();
+  const news = await page.locator('.hero-side-ticket').filter({ hasText: 'آخر الأخبار' }).boundingBox();
+  expect(main && today && news).toBeTruthy();
+  /* الرئيسية أولاً ثم الجانبيتان تحتها — بلا تراكب */
+  expect(main!.height).toBeCloseTo(265, 0);
+  expect(today!.y).toBeGreaterThanOrEqual(main!.y + main!.height);
+  expect(news!.y).toBeGreaterThanOrEqual(today!.y + today!.height);
+  for (const box of [main!, today!, news!]) expect(box.width).toBeLessThanOrEqual(390);
+  const dimensions = await page.evaluate(() => [innerWidth, document.documentElement.scrollWidth]);
+  expect(dimensions[1]).toBeLessThanOrEqual(dimensions[0] + 1);
+});

@@ -179,7 +179,7 @@ export default function FeaturedNewsCards() {
                             alt={img.alt}
                             loading="lazy"
                             decoding="async"
-                            className={`relative z-10 h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.5)] ${idx === 1 ? "z-20 -mx-3" : "-mx-1"}`}
+                            className={`relative z-10 h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.5)] ${card.images!.length > 2 ? (idx === 1 ? "z-20 -mx-6" : "-mx-6") : (idx === 1 ? "z-20 -mx-3" : "-mx-1")}`}
                           />
                         ))}
                       </div>
@@ -301,7 +301,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
               alt={img.alt}
               loading="lazy"
               decoding="async"
-              className={`relative h-full w-auto max-w-[34%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 && idx === 1 ? "z-20 -mx-2" : "-mx-1"}`}
+              className={`relative h-full w-auto max-w-[34%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-4" : "-mx-4") : "-mx-1"}`}
             />
           ))}
         </div>

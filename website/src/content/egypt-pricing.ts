@@ -24,8 +24,6 @@ export interface EgyptServerPrice {
   name: string;
   /** وصف قصير: الأنسب لمن */
   bestFor: string;
-  /** عدد الأجهزة المتزامنة كما يعلنه مزوّد السيرفر */
-  devices: string;
   /** إجمالي سعر المدة بالجنيه المصري، أو null إن لم تكن المدة متاحة */
   prices: Record<EgyptTerm, number | null>;
 }
@@ -38,14 +36,12 @@ export const EGYPT_PRICING: EgyptServerPrice[] = [
     code: "nova",
     name: "نوفا (Nova)",
     bestFor: "الخيار الأكثر طلباً للمباريات والذروة",
-    devices: "حتى 3 أجهزة",
     prices: { "3": 350, "6": 450, "12": 600 },
   },
   {
     code: "x",
     name: "X (XTV)",
     bestFor: "سيرفر أحدث بنفس السعة والسعر",
-    devices: "حتى 3 أجهزة",
     prices: { "3": 350, "6": 450, "12": 600 },
   },
 ];

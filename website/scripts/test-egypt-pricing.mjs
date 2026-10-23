@@ -137,6 +137,14 @@ test('الحدود الجغرافية معلنة على الصفحة: داخل �
   assert.match(String(outside.acceptedAnswer?.text ?? ''), /لا\./, 'جواب خارج مصر يجب أن يكون قاطعاً بالنفي');
 });
 
+test('لا يُذكر عدد الأجهزة المتزامنة في الصفحة', () => {
+  const text = egyptHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  for (const pattern of [/\d+\s*أجهزة/, /جهازين/, /عدد الأجهزة/, /أجهزة متزامنة/, /اتصالات متزامنة/]) {
+    assert.ok(!pattern.test(text), `عدد الأجهزة ما زال ظاهراً في الصفحة: ${pattern}`);
+  }
+  assert.ok(!/data-term="[^"]*" \/>[\s\S]{0,400}?الأجهزة/.test(egyptHtml), 'عمود الأجهزة عاد إلى جدول الأسعار');
+});
+
 test('الأسئلة المنظّمة (FAQPage) مطابقة لأسئلة ظاهرة فعلاً', () => {
   const visibleQuestions = [...egyptHtml.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/g)].length;
   const faqLd = (egyptSeo.jsonLd ?? []).find((node) => node['@type'] === 'FAQPage');

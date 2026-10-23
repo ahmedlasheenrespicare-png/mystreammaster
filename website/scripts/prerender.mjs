@@ -15,6 +15,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { assertAdsAllowed } from "./ads-guard.mjs";
 import {
   assertKeywordInTitle,
   assertTitleLength,
@@ -179,6 +180,8 @@ function writeRouteHtml(template, route, body) {
   const withBody = template.includes('<div id="root"></div>')
     ? template.replace('<div id="root"></div>', `<div id="root">${body}</div>`)
     : template;
+  /* حارس AdSense: لا إعلانات على صفحة نصّها أقل من الحد (سياسة Google) */
+  assertAdsAllowed(withBody, route);
   const dir = route === "/" ? DIST : path.join(DIST, route);
   return fs.mkdir(dir, { recursive: true }).then(() =>
     fs.writeFile(path.join(dir, "index.html"), withBody)

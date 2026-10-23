@@ -14,6 +14,7 @@ import { applyLegacyAnalysisSeo } from './apply-legacy-analysis-seo.mjs';
 import { getLegacyAnalysisSeo } from '../dist-ssr/entry-server.js';
 import { keywordsFor, hasKeywordEntry } from '../src/keywords.mjs';
 import { assertKeywordInTitle, assertTitleLength, noteBrandInTitle } from './seo-guard.mjs';
+import { assertAdsAllowed } from './ads-guard.mjs';
 
 /* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — الصفحات المفهرسة
    فقط، وتحوّل المخالفات المانعة إلى فشل بناء عند SEO_STRICT=1. */
@@ -233,9 +234,11 @@ for (const file of await files(path.join(website, 'legacy'))) {
   }
 
   stripAdsense($, relative);
+  const finalHtml = $.html().replace(/[ \t]+$/gm, '');
+  assertAdsAllowed(finalHtml, `/${relative.replace(/(^|\/)index\.html$/, '')}`);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
-  await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));
+  await fs.writeFile(destination, finalHtml);
   count++;
 }
 

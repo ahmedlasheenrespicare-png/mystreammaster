@@ -22,7 +22,7 @@ for (const route of routes) {
       assert.equal(canonicalSource(`script[src="${gaLoader}"]`).length, 1);
       assert.equal(canonicalSource(`script[src="${adLoader}"]`).length, 1);
     }
-    for (const $ of [source, published]) {
+    for (const [label, $] of [['source', source], ['published', published]]) {
       assert.equal($('html').attr('lang'), 'ar'); assert.equal($('html').attr('dir'), 'rtl');
       assert.equal($('main h1').length, 1);
       assert.equal($('title').text(), seo.title);
@@ -36,7 +36,12 @@ for (const route of routes) {
       const graph = JSON.parse($('script[type="application/ld+json"]').text())['@graph'];
       assert.deepEqual(graph, seo.jsonLd);
       assert.equal($(`script[src="${gaLoader}"]`).length, 1);
-      assert.equal($(`script[src="${adLoader}"]`).length, 1);
+      /* صفحات watch الأربع أُخرجت من برنامج الإعلانات في النشر (محتواها 86–91
+         كلمة، والإعلان على صفحة بلا محتوى مخالف لسياسة AdSense). يبقى
+         المُحمِّل في المصدر فقط، ويُشترط غيابه في الملف المنشور. */
+      const adsExpected = label === 'published' && route.endsWith('/watch') ? 0 : 1;
+      assert.equal($(`script[src="${adLoader}"]`).length, adsExpected,
+        `AdSense loader count mismatch (${label}) on ${route}`);
       assert.equal($('script').toArray().filter(e => $(e).text().includes("gtag('config', 'G-N7VT67MW57')")).length, 1);
       assert.equal($('link[href*="fonts.googleapis"],link[href*="fonts.gstatic"]').length, 0);
       assert.equal($('main iframe,main video,.ma-banner,.ma-photo-credit').length, 0);

@@ -66,8 +66,41 @@ const DARK_PAGES = new Set([
    لا تمر بمسار الغلاف — تُنسخ كاملة مع تنظيف المسافات في آخر الأسطر فقط. */
 const STANDALONE_PAGES = new Set(['player.html']);
 
+/* صفحات لا يجوز عرض إعلانات AdSense عليها — حماية حساب الناشر:
+   • صفحات `watch` الأربع (86–91 كلمة): محتوى شبه معدوم، والإعلان على صفحة
+     بلا محتوى مخالف؛
+   • live-free.html: واجهة مشغّل فيديو، وسياسة AdSense تمنع الإعلانات على
+     واجهات البث/المشغّلات؛
+   • player.html: مشغّل بملء الشاشة (لا يحتوي المُحمِّل أصلاً، ويُترك هنا
+     صراحةً حتى لا يعود عبر أي قالب مستقبلي).
+   يُحذف مُحمِّل adsbygoogle فقط، ويبقى GA4 كما هو دون أي مساس (قاعدة مطلقة). */
+const NO_ADS_PAGES = new Set([
+  'live-free.html',
+  'player.html',
+  /* صفحتان وظيفيتان قديمتان تُنشران من legacy وتكتبان فوق نسخة React:
+     74 كلمة (واجهة لعبة توقعات) و106 كلمات (حالة السيرفرات). */
+  'predictions/index.html',
+  'status/index.html',
+  'galatasaray-barcelona/watch/index.html',
+  'manchester-city-psg/watch/index.html',
+  'manchester-united-atletico/watch/index.html',
+  'roma-real-madrid/watch/index.html',
+]);
+
+function stripAdsense($, relative) {
+  if (!NO_ADS_PAGES.has(relative)) return;
+  $('script[src]').each((_, el) => {
+    if (/adsbygoogle\.js/.test($(el).attr('src') || '')) $(el).remove();
+  });
+  $('link[href*="googlesyndication"]').remove();
+  if ($.html().includes('googlesyndication')) {
+    throw new Error(`AdSense ما زال موجوداً في صفحة مستثناة: ${relative}`);
+  }
+}
+
 async function publishStandalone(file, relative) {
   const $ = load(await fs.readFile(file, 'utf8'));
+  stripAdsense($, relative);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
   await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));
@@ -199,6 +232,7 @@ for (const file of await files(path.join(website, 'legacy'))) {
     if (brandNote) seoBrandNotes.push(brandNote);
   }
 
+  stripAdsense($, relative);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
   await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));

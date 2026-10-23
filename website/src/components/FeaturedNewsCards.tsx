@@ -263,8 +263,8 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
   const item = FEATURED_NEWS.find(news => news.href === href);
   if (!item) return null;
   const logo = item.backgroundLogo ? to(item.backgroundLogo) : undefined;
-  const slideImage = item.images?.find(img => img.src.includes("esp-yamal-sad"));
-  const slideImageSrc = slideImage ? to(slideImage.src) : undefined;
+  // صور الشريحة: لامين جمال الحزين وهانز فليك الغاضب جنباً إلى جنب على اليمين
+  const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry/.test(img.src));
   return (
     <div className="league-ticket league-ticket--match league-ticket--in-track">
       <div className="league-ticket-bg league-ticket-holographic">
@@ -289,15 +289,20 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         </div>
         {/* النص في وسط الشريحة (بدون صور اللاعبين) */}
         <div className="relative z-10 mt-2 min-h-0 flex-1">
-          {/* صورة واحدة فقط في الشريحة: لامين جمال الحزين (على اليمين) */}
-          {slideImage && (
-            <img
-              src={slideImageSrc}
-              alt={slideImage.alt}
-              loading="lazy"
-              decoding="async"
-              className="pointer-events-none absolute inset-y-0 right-0 z-[1] h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)]"
-            />
+          {/* صورتان فقط في الشريحة: لامين جمال الحزين وبجانبه هانز فليك الغاضب (على اليمين) */}
+          {slideImages.length > 0 && (
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] flex w-1/2 items-end justify-center">
+              {slideImages.map((img, idx) => (
+                <img
+                  key={img.src}
+                  src={to(img.src)}
+                  alt={img.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className={`relative h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : "-ms-2"}`}
+                />
+              ))}
+            </div>
           )}
           <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center px-2 text-center">
             {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}

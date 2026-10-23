@@ -37,6 +37,7 @@ interface Card {
   href: string;
   images?: { src: string; alt: string }[];
   background?: string;
+  featured: boolean;
 }
 
 function useUpcomingMatches(): Match[] {
@@ -100,6 +101,7 @@ export default function FeaturedNewsCards() {
     href: to(item.href),
     images: item.images?.map(img => ({ ...img, src: to(img.src) })),
     background: item.backgroundImage ? to(item.backgroundImage) : undefined,
+    featured: item.featured === true,
   }));
 
   const matchCards: Card[] = upcoming.map(match => ({
@@ -109,6 +111,7 @@ export default function FeaturedNewsCards() {
     title: `${match.home.name} ضد ${match.away.name}`,
     description: match.venue ? `الملعب: ${match.venue}` : "تابع المباراة وقنوات النقل من صفحة المواعيد.",
     href: to("matches/"),
+    featured: false,
   }));
 
   const cards = [...news, ...matchCards].slice(0, MAX_CARDS);
@@ -135,7 +138,7 @@ export default function FeaturedNewsCards() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {cards.map((card, i) => {
-            const featured = i === 0;
+            const featured = card.featured;
             return (
               <Reveal key={card.key} variant="up" delay={i * 90} className={featured ? "md:col-span-2 lg:col-span-2" : ""}>
                 <a

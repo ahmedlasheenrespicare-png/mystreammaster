@@ -17,6 +17,8 @@ export interface FeaturedNewsItem {
   images?: { src: string; alt: string }[];
   /** صورة خلفية للبطاقة تعبّر عن المباراة (اختيارية، مسار داخلي) */
   backgroundImage?: string;
+  /** بطاقة كبيرة بتصميم الخبر المميز (عرض مزدوج وخلفية وصور) */
+  featured?: boolean;
 }
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
@@ -26,6 +28,12 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "بايرن ميونخ وأرسنال يتعادلان 2-2 بهدف متأخر لرايس",
     description: "تقدم بايرن بركلة جزاء لكين، ثم عادل رايس قبل النهاية بعشر دقائق.",
     href: "news/bayern-arsenal-2-2/",
+    featured: true,
+    backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
+    images: [
+      { src: "images/players/ger-kane.webp", alt: "هاري كين" },
+      { src: "images/players/eng-rice.webp", alt: "ديكلان رايس" },
+    ],
   },
   {
     category: "دوري أبطال أوروبا",
@@ -33,6 +41,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "باريس سان جيرمان يهزم برشلونة 4-2 ويكسر سجله المثالي",
     description: "ستة أهداف في ملعب الأمير، وأول خسارة لبرشلونة هذا الموسم في أي مسابقة.",
     href: "news/psg-barcelona-4-2/",
+    featured: true,
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [
       { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },

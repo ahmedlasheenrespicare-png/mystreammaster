@@ -59,6 +59,16 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             <p className="mt-4 text-[15.5px] md:text-[17px] text-black/60 font-medium leading-[1.9]">
               {post.intro}
             </p>
+            {/* مقال يحمل أسعار السوق المصري: تنبيه الحدود الجغرافية فوق الطية */}
+            {post.sections.some((sec) => sec.egyptPricing) && (
+              <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-4 py-2 text-[12.5px] font-black text-[#1e3bbf]">
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" />
+                  <circle cx="12" cy="10" r="2.6" />
+                </svg>
+                الأسعار والباقات في هذه الصفحة تعمل داخل مصر فقط
+              </p>
+            )}
           </header>
 
           {post.hero && (
@@ -261,7 +271,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                       </div>
                     ))}
                     <p className="text-[11.5px] font-bold text-black/40">
-                      إجمالي كل مدة بالجنيه المصري
+                      إجمالي كل مدة بالجنيه المصري · يعمل داخل مصر فقط
                       {EGYPT_PRICING_UPDATED ? ` · آخر تحديث ${EGYPT_PRICING_UPDATED}` : ""}
                     </p>
                   </div>
@@ -271,7 +281,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                   <div className="mt-5 hidden overflow-x-auto rounded-2xl border border-black/10 bg-white md:block">
                     <table className="w-full text-right border-collapse min-w-[720px]">
                       <caption className="p-4 text-right text-[12.5px] font-bold text-black/50">
-                        أسعار اشتراك IPTV في مصر بالجنيه المصري — إجمالي كل مدة
+                        أسعار اشتراك IPTV في مصر بالجنيه المصري — إجمالي كل مدة · داخل مصر فقط
                         {EGYPT_PRICING_UPDATED ? ` · آخر تحديث ${EGYPT_PRICING_UPDATED}` : ""}
                       </caption>
                       <thead>

@@ -88,6 +88,17 @@ test('جدول الأسعار يُرسم فقط بعد وصول الأرقام،
   }
 });
 
+test('الحدود الجغرافية معلنة على الصفحة: داخل مصر فقط', () => {
+  const text = egyptHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.ok(text.includes('تعمل داخل مصر فقط'), 'شارة «داخل مصر فقط» غائبة عن الصفحة');
+  const outside = (egyptSeo.jsonLd ?? [])
+    .filter((node) => node['@type'] === 'FAQPage')
+    .flatMap((node) => node.mainEntity ?? [])
+    .find((q) => String(q.name ?? '').includes('خارج مصر'));
+  assert.ok(outside, 'سؤال «خارج مصر» غائب عن الأسئلة المنظّمة');
+  assert.match(String(outside.acceptedAnswer?.text ?? ''), /لا\./, 'جواب خارج مصر يجب أن يكون قاطعاً بالنفي');
+});
+
 test('الأسئلة المنظّمة (FAQPage) مطابقة لأسئلة ظاهرة فعلاً', () => {
   const visibleQuestions = [...egyptHtml.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/g)].length;
   const faqLd = (egyptSeo.jsonLd ?? []).find((node) => node['@type'] === 'FAQPage');

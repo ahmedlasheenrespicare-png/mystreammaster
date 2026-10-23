@@ -67,7 +67,7 @@ h1 .lat { font-family: Grotesk, Tajawal, sans-serif; font-weight: 700; font-size
 <div class="top"><span class="dot"></span><span class="brand">ستريم ماستر برو</span></div>
 <div class="kicker">دليل السوق المصري</div>
 <h1>أفضل سيرفر <span class="lat">IPTV</span> في مصر</h1>
-<div class="sub">نوفا وX · أسعار بالجنيه المصري · اختبار قبل الدفع</div>
+<div class="sub">نوفا وX · أسعار بالجنيه المصري · تعمل داخل مصر فقط</div>
 </div><div class="pills"><span class="pill lime">نوفا</span><span class="pill">X</span></div><div class="year">2026</div></main></body></html>`;
 
   await page.setContent(html, { waitUntil: "load" });

@@ -88,19 +88,42 @@ test('جدول الأسعار يُرسم فقط بعد وصول الأرقام،
   }
 });
 
-test('بطاقتا السيرفرين: اثنتان فقط وبسعر الجنيه المصري', () => {
+test('ست بطاقات للسيرفرين: كل مدة بسعرها بالجنيه', () => {
   /* نطاق الفحص: شريط البطاقات وحده — تذييل الموقع يربط السيرفرات الأربعة لكل الصفحات */
-  const start = egyptHtml.indexOf('aria-label="السيرفران');
-  assert.ok(start > 0, 'شريط البطاقتين غائب عن الصفحة');
-  const deck = egyptHtml.slice(start, egyptHtml.indexOf('srv-deck-dots', start));
-  const cards = [...deck.matchAll(/data-server="([a-z]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(cards, ['nova', 'x'], 'البطاقات يجب أن تكون نوفا وX فقط بترتيبهما');
-  assert.ok(!deck.includes('سيرفر إيستار') && !deck.includes('سيرفر موكا'),
-    'بطاقة سيرفر غير معروض في العرض المصري');
-  /* السعر الظاهر على البطاقة هو 12 شهراً من ملف الأسعار (600) وليس سعر المتجر بالريال */
-  assert.ok(deck.includes('600'), 'سعر 12 شهراً غائب عن البطاقات');
+  const start = egyptHtml.indexOf('aria-label="ستّ باقات');
+  assert.ok(start > 0, 'شريط البطاقات الست غائب عن الصفحة');
+  const end = egyptHtml.indexOf('</section>', start);
+  const deck = egyptHtml.slice(start, end > start ? end : undefined);
+
+  /* كارت لكل (سيرفر × مدة): نوفا ثم X، وكل سيرفر بثلاث مدد */
+  const cards = [...deck.matchAll(/data-server="([a-z]+)" data-term="([^"]+)"/g)].map(
+    (m) => `${m[1]}|${m[2]}`
+  );
+  assert.deepEqual(
+    cards,
+    [
+      'nova|3 أشهر',
+      'nova|6 أشهر',
+      'nova|12 شهراً',
+      'x|3 أشهر',
+      'x|6 أشهر',
+      'x|12 شهراً',
+    ],
+    'البطاقات يجب أن تكون نوفا وX × 3/6/12 شهراً بترتيبها'
+  );
+
+  /* الأسعار الثلاثة كلها ظاهرة، بالجنيه المصري، وبلا تسرّب سعر المتجر بالريال */
+  for (const amount of ['350', '450', '600']) {
+    assert.ok(deck.includes(`<b>${amount}</b>`), `سعر ${amount} ج.م غائب عن البطاقات`);
+  }
   assert.ok(deck.includes('ج.م'), 'عملة الجنيه غائبة عن البطاقات');
   assert.ok(!deck.includes('ر.س'), 'سعر المتجر بالريال مسرّب إلى بطاقات العرض المصري');
+  assert.ok(!deck.includes('سيرفر إيستار') && !deck.includes('سيرفر موكا'),
+    'بطاقة سيرفر غير معروض في العرض المصري');
+
+  /* تبديل تلقائي: نقطة تنقّل لكل بطاقة */
+  const dots = [...deck.matchAll(/class="srv-deck-dot"/g)].length;
+  assert.equal(dots, 6, 'عدد نقاط التنقّل يجب أن يساوي عدد البطاقات');
 });
 
 test('الحدود الجغرافية معلنة على الصفحة: داخل مصر فقط', () => {

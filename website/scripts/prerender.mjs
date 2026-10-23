@@ -15,6 +15,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { assertAdsAllowed } from "./ads-guard.mjs";
 import {
   assertKeywordInTitle,
   assertTitleLength,
@@ -155,7 +156,14 @@ function applyHead(template, seo) {
    جوجل يعتبر هذه الصفحات مواضع إعلانية غير صالحة ووجود الإعلانات عليها
    يعرّض حساب الناشر للخطر، فيُحذف مُحمِّل adsbygoogle من HTML المُسلَّم
    لها فقط — بينما يبقى GA4 كما هو دون أي مساس (قاعدة مطلقة). */
-const NO_ADS_ROUTES = new Set(["/cart", "/__notfound__"]);
+const NO_ADS_ROUTES = new Set([
+  "/cart",
+  "/__notfound__",
+  /* صفحات وظيفية بلا محتوى يُذكر (74 و106 كلمة) أو واجهة لعبة توقعات.
+     إعلانات Google على «واجهات الألعاب» والصفحات الفارغة مخالفة صريحة. */
+  "/predictions",
+  "/status",
+]);
 const ADSENSE_COMMENT = /<!-- Google AdSense[^>]*-->\s*/;
 const ADSENSE_LOADER =
   /<script[^>]*pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js[^>]*>\s*<\/script>/;
@@ -172,6 +180,8 @@ function writeRouteHtml(template, route, body) {
   const withBody = template.includes('<div id="root"></div>')
     ? template.replace('<div id="root"></div>', `<div id="root">${body}</div>`)
     : template;
+  /* حارس AdSense: لا إعلانات على صفحة نصّها أقل من الحد (سياسة Google) */
+  assertAdsAllowed(withBody, route);
   const dir = route === "/" ? DIST : path.join(DIST, route);
   return fs.mkdir(dir, { recursive: true }).then(() =>
     fs.writeFile(path.join(dir, "index.html"), withBody)

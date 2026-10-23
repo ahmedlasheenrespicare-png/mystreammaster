@@ -263,6 +263,8 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
   const item = FEATURED_NEWS.find(news => news.href === href);
   if (!item) return null;
   const logo = item.backgroundLogo ? to(item.backgroundLogo) : undefined;
+  const slideImage = item.images?.find(img => img.src.includes("esp-yamal-sad"));
+  const slideImageSrc = slideImage ? to(slideImage.src) : undefined;
   return (
     <div className="league-ticket league-ticket--match league-ticket--in-track">
       <div className="league-ticket-bg league-ticket-holographic">
@@ -287,7 +289,17 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         </div>
         {/* النص في وسط الشريحة (بدون صور اللاعبين) */}
         <div className="relative z-10 mt-2 min-h-0 flex-1">
-          <div className="absolute inset-0 flex flex-col justify-center px-2 text-center">
+          {/* صورة واحدة فقط في الشريحة: لامين جمال الحزين (على اليمين) */}
+          {slideImage && (
+            <img
+              src={slideImageSrc}
+              alt={slideImage.alt}
+              loading="lazy"
+              decoding="async"
+              className="pointer-events-none absolute inset-y-0 right-0 z-[1] h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)]"
+            />
+          )}
+          <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center px-2 text-center">
             {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}
             <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-10 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />
             <em

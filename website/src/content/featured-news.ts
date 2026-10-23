@@ -54,7 +54,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     teamBadges: ["images/teams/paris-saint-germain-badge.webp", "images/teams/barcelona-badge.webp"],
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [
-      { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },
+      { src: "images/players/esp-yamal-sad.webp", alt: "لامين جمال حزيناً" },
       { src: "images/players/esp-flick-angry.webp", alt: "هانز فليك غاضباً" },
       { src: "images/players/fra-dembele-celebration.webp", alt: "عثمان ديمبيلي يحتفل" },
       { src: "images/players/fra-enrique-triumph.png", alt: "لويس إنريكي يحتفل" },

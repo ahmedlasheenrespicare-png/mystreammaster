@@ -13,6 +13,9 @@ import { FEATURED_NEWS } from "../content/featured-news";
 import { IconArrowUpRight, IconClock } from "./Icons";
 import { Reveal } from "./motion";
 import { StreamMasterTicketWordmark } from "./LeagueTicketCard";
+import { ServerIcon } from "./ServerIcon";
+
+const SERVER_CODES = ["nova", "istar", "moka", "x"] as const;
 import "./league-ticket.css";
 
 /* =========================================================================
@@ -197,8 +200,13 @@ export default function FeaturedNewsCards() {
                     <p className="relative mt-2.5 text-[13.5px] leading-relaxed font-medium text-white/75">
                       {card.description}
                     </p>
-                    <span className="relative mt-auto pt-5 inline-flex items-center">
+                    <span className="relative mt-auto pt-5 flex w-full items-center justify-between gap-3">
                       <StreamMasterTicketWordmark />
+                      <span className="flex items-center gap-2">
+                        {SERVER_CODES.map(code => (
+                          <ServerIcon key={code} code={code} size={28} />
+                        ))}
+                      </span>
                     </span>
                   </a>
                   </div>

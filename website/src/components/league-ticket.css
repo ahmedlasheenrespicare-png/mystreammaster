@@ -503,6 +503,23 @@
 .league-ticket-player__seq-frame--7 { animation-name: league-ticket-seq-7; }
 .league-ticket-player__seq-frame--8 { animation-name: league-ticket-seq-8; }
 
+/* طبقة الفيديو الشفاف (WebM/VP9+alpha): هندسة الإطارات نفسها — طبقة
+   مطلقة مملوءة بـ contain فوق القالب — مخفية افتراضياً ولا تظهر إلا
+   على حاوية --video-on التي يفعّلها العميل بعد شروط الدعم الأربعة
+   وcanplay الناجحة؛ وحين تظهر تُطفأ إطارات الفليب-بوك خلفها حتى لا
+   يشفّ عنها إطار متخالف الإيقاع من تحت مناطق ألفا */
+.league-ticket-player__seq-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  display: none;
+}
+
+.league-ticket-player--video-on .league-ticket-player__seq-video { display: block; }
+.league-ticket-player--video-on .league-ticket-player__seq-frame { display: none; }
+
 /* الجدول الزمني: خانة = 7.143% من الدورة — الإطار i يضيء في خانته
    صعوداً وفي مرآتها هبوطاً (الطرفان الأقصيان خانتان متفردتان) */
 @keyframes league-ticket-seq-1 {
@@ -560,6 +577,8 @@
   .league-ticket-player__seq-frame { animation: none; opacity: 0; }
   /* السكنى على «التلفون» المكتمل — أثبت الإطارات السبعة البصرية تقليدياً */
   .league-ticket-player__seq-frame--7 { opacity: 1; }
+  /* ولا مقطع أصلاً مع تقليل الحركة — JS لا يفعّله والقاعدة تحسم */
+  .league-ticket-player__seq-video { display: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {

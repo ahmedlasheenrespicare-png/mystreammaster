@@ -279,11 +279,30 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         {logo && (
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
+            className="pointer-events-none absolute inset-0 z-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
             style={{ backgroundImage: `url(${logo})` }}
           />
         )}
-        <div className="relative flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
+        {/* الصور تملأ الشريحة كاملة خلفية (بدون قص: object-contain) */}
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-end justify-center">
+          {(item.images ?? []).map((img, idx, all) => (
+            <img
+              key={img.src}
+              src={to(img.src)}
+              alt={img.alt}
+              loading="lazy"
+              decoding="async"
+              className={`relative h-full w-auto max-w-[36%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-3" : "-mx-3") : "-mx-1"}`}
+            />
+          ))}
+        </div>
+        {/* تدرج داكن أسفل الشريحة ليبقى النص مقروءاً فوق الصور */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[72%]"
+          style={{ background: "linear-gradient(to top, #0b0b0f 0%, rgba(11,11,15,0.8) 40%, rgba(11,11,15,0) 100%)" }}
+        />
+        <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
           )}
@@ -292,25 +311,13 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           ))}
           <span>{item.dateLabel}</span>
         </div>
-        <div className="relative mt-2 flex h-[110px] items-end justify-center">
-          {(item.images ?? []).map((img, idx, all) => (
-            <img
-              key={img.src}
-              src={to(img.src)}
-              alt={img.alt}
-              loading="lazy"
-              decoding="async"
-              className={`relative h-full w-auto max-w-[34%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-4" : "-mx-4") : "-mx-1"}`}
-            />
-          ))}
-        </div>
-        <h3 className="relative mt-2 line-clamp-2 font-display text-[17px] font-black leading-snug tracking-tight">
+        <h3 className="relative z-10 mt-3 line-clamp-2 font-display text-[17px] font-black leading-snug tracking-tight">
           {item.title}
         </h3>
-        <p className="relative mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-white/75">
+        <p className="relative z-10 mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-white/75">
           {item.description}
         </p>
-        <div className="relative mt-auto flex items-center justify-between gap-2 pt-2">
+        <div className="relative z-10 mt-auto flex items-center justify-between gap-2 pt-2">
           <span className="flex items-center gap-2">
             {logo && (
               <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-2.5 py-1">

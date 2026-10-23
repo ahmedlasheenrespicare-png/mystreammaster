@@ -276,14 +276,6 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         href={to(item.href)}
         className="group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec]"
       >
-        {logo && (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
-            style={{ backgroundImage: `url(${logo})` }}
-          />
-        )}
-        {/* الصور تملأ الشريحة كاملة خلفية (بدون قص: object-contain) */}
         <div className="pointer-events-none absolute inset-0 z-[1] flex items-end justify-center">
           {(item.images ?? []).map((img, idx, all) => (
             <img

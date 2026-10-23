@@ -185,11 +185,7 @@ export default function FeaturedNewsCards() {
                       </div>
                     )}
                     <div className="relative flex flex-wrap items-center gap-2.5 text-[11.5px] font-black text-white/70">
-                      {card.logo ? (
-                        <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-3 py-1.5">
-                          <img src={card.logo} alt={card.category} className="h-5 w-auto" loading="lazy" decoding="async" />
-                        </span>
-                      ) : (
+                      {!card.logo && (
                         <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
                       )}
                       {card.badges && card.badges.length > 0 && (
@@ -210,7 +206,14 @@ export default function FeaturedNewsCards() {
                       {card.description}
                     </p>
                     <span className="relative mt-auto pt-5 flex w-full items-center justify-between gap-3">
-                      <StreamMasterTicketWordmark />
+                      <span className="flex items-center gap-3">
+                        {card.logo && (
+                          <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-3 py-1.5">
+                            <img src={card.logo} alt={card.category} className="h-5 w-auto" loading="lazy" decoding="async" />
+                          </span>
+                        )}
+                        <StreamMasterTicketWordmark />
+                      </span>
                       <span className="flex items-center gap-2">
                         {SERVER_CODES.map(code => (
                           <ServerIcon key={code} code={code} size={28} />
@@ -281,11 +284,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           />
         )}
         <div className="relative flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
-          {logo ? (
-            <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-2.5 py-1">
-              <img src={logo} alt={item.category} className="h-3.5 w-auto" loading="lazy" decoding="async" />
-            </span>
-          ) : (
+          {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
           )}
           {(item.teamBadges ?? []).map(src => (
@@ -312,7 +311,14 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           {item.description}
         </p>
         <div className="relative mt-auto flex items-center justify-between gap-2 pt-2">
-          <StreamMasterTicketWordmark />
+          <span className="flex items-center gap-2">
+            {logo && (
+              <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-2.5 py-1">
+                <img src={logo} alt={item.category} className="h-3.5 w-auto" loading="lazy" decoding="async" />
+              </span>
+            )}
+            <StreamMasterTicketWordmark />
+          </span>
           <span className="flex items-center gap-1.5">
             {SERVER_CODES.map(code => (
               <ServerIcon key={code} code={code} size={22} />

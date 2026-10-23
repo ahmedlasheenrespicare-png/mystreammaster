@@ -260,25 +260,22 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         <span className="league-ticket-line league-ticket-line--left" />
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
-      <a href={to(item.href)} className="absolute inset-0 z-10 flex flex-col p-4 text-[#f6f4ec]">
-        <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-3 py-1">
-            {logo ? (
-              <img src={logo} alt={item.category} className="h-4 w-auto" loading="lazy" decoding="async" />
-            ) : (
-              <span className="text-[11px] font-black text-[#d8ff3e]">{item.category}</span>
-            )}
-          </span>
-          <span className="text-[11px] font-black text-white/60">{item.dateLabel}</span>
+      <a
+        href={to(item.href)}
+        className="group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec]"
+      >
+        {logo && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
+            style={{ backgroundImage: `url(${logo})` }}
+          />
+        )}
+        <div className="relative flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
+          <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
+          <span>{item.dateLabel}</span>
         </div>
-        <div className="relative mt-2 flex h-[120px] items-end justify-center">
-          {logo && (
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
-              style={{ backgroundImage: `url(${logo})` }}
-            />
-          )}
+        <div className="relative mt-2 flex h-[110px] items-end justify-center">
           {(item.images ?? []).map((img, idx, all) => (
             <img
               key={img.src}
@@ -286,16 +283,21 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
               alt={img.alt}
               loading="lazy"
               decoding="async"
-              className={`relative h-full w-auto max-w-[34%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 && idx === 1 ? "z-20 -mx-2" : all.length > 2 ? "-mx-1" : "mx-1"}`}
+              className={`relative h-full w-auto max-w-[34%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 && idx === 1 ? "z-20 -mx-2" : "-mx-1"}`}
             />
           ))}
         </div>
-        <h3 className="mt-2 line-clamp-2 font-display text-[14px] font-black leading-snug">{item.title}</h3>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+        <h3 className="relative mt-2 line-clamp-2 font-display text-[17px] font-black leading-snug tracking-tight">
+          {item.title}
+        </h3>
+        <p className="relative mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-white/75">
+          {item.description}
+        </p>
+        <div className="relative mt-auto flex items-center justify-between gap-2 pt-2">
           <StreamMasterTicketWordmark />
           <span className="flex items-center gap-1.5">
             {SERVER_CODES.map(code => (
-              <ServerIcon key={code} code={code} size={20} />
+              <ServerIcon key={code} code={code} size={22} />
             ))}
           </span>
         </div>

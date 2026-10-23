@@ -125,12 +125,14 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket() {
+export default function AllLeaguesTicket({ hiddenClashIndexes = [] }: { hiddenClashIndexes?: number[] } = {}) {
+  /* إخفاء شرائح محددة من المنزلقة (فهرس الشريحة في INDEX_CLASHES، والشريحة الأساسية غير قابلة للإخفاء) */
+  const clashes = INDEX_CLASHES.filter((_, i) => !hiddenClashIndexes.includes(i));
   return (
     <LeagueTicketCarousel
       leagueId="matches"
       name="كل البطولات الكبرى"
-      clashes={INDEX_CLASHES}
+      clashes={clashes}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand

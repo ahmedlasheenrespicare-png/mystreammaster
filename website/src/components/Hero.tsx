@@ -376,7 +376,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             الست (الأساسية + قمم الأبطال والكلاسيكو والإنجليزي) ووظائفه الحيّة. */}
         <Reveal variant="up" delay={140} className="mt-7">
           <div className="home-matches-ticket mx-auto w-full max-w-[1120px]">
-            <AllLeaguesTicket />
+            <AllLeaguesTicket hiddenClashIndexes={[0, 1]} />
           </div>
         </Reveal>
 

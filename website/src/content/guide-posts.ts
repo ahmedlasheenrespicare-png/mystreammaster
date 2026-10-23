@@ -73,9 +73,6 @@ export const GUIDE_POSTS: BlogPost[] = [
   },
   {
     slug: "internet-speed-for-video-streaming",
-    seoTitle: "سرعة الإنترنت المطلوبة لمشاهدة الفيديو: كم تحتاج لكل جودة؟",
-    seoDescription:
-      "سرعة الإنترنت المطلوبة لكل جودة (HD وFHD و4K): أرقام عملية، وطريقة قياس سرعتك الفعلية في وقت الذروة، ومتى يكون السبب في الشبكة لا في السيرفر.",
     kind: "guide",
     title: "سرعة الإنترنت المطلوبة لمشاهدة الفيديو: كم تحتاج لكل جودة؟",
     description:
@@ -185,9 +182,6 @@ export const GUIDE_POSTS: BlogPost[] = [
   },
   {
     slug: "android-tv-boxes-buying-guide",
-    seoTitle: "صناديق Android TV: كيف تختار جهاز بث موثوقاً؟",
-    seoDescription:
-      "صناديق Android TV وأجهزة البث: معايير الذاكرة والمعالج ودعم الصيغ والتحديثات، وعلامات الجهاز غير الموثوق، وكيف تتحقق قبل الشراء.",
     kind: "guide",
     title: "Android TV وصناديق البث: كيف تختار جهازاً موثوقاً؟",
     description:
@@ -251,9 +245,6 @@ export const GUIDE_POSTS: BlogPost[] = [
   },
   {
     slug: "phone-and-computer-viewing-setup",
-    seoTitle: "المشاهدة على الهاتف والكمبيوتر: إعدادات وبطارية",
-    seoDescription:
-      "المشاهدة على الهاتف والكمبيوتر: إعدادات الشبكة والتطبيقات، وتقليل استهلاك البطارية والحرارة، وما يفرق فعلاً في جودة الصورة وثباتها.",
     kind: "guide",
     title: "الهاتف والكمبيوتر: إعدادات أساسية لمشاهدة أفضل وبطارية أطول",
     description:
@@ -305,9 +296,6 @@ export const GUIDE_POSTS: BlogPost[] = [
   },
   {
     slug: "risks-of-unverified-apps",
-    seoTitle: "التطبيقات غير الموثوقة: خطرها على جهازك",
-    seoDescription:
-      "التطبيقات غير الموثوقة: كيف تستغل الأذونات وبيانات الدخول، وعلامات التحذير قبل التثبيت، وخطوات عملية إذا كنت قد ثبّتّ تطبيقاً مشبوهاً بالفعل.",
     kind: "guide",
     title: "التطبيقات غير الموثوقة: لماذا تشكّل خطراً على جهازك وبياناتك؟",
     description:

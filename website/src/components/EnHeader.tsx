@@ -1,6 +1,6 @@
 import { to, WHATSAPP_NUMBER } from "../config";
 import { EN_PAGES } from "../navigation.mjs";
-import { counterpartPath } from "../i18n";
+import { counterpartHref } from "../i18n";
 import { useRouter } from "../router";
 import { IconPlay } from "./Icons";
 
@@ -8,7 +8,6 @@ import { IconPlay } from "./Icons";
    بين الصفحات التجارية الإنجليزية الخمس ومبدّل للعربية. */
 export default function EnHeader() {
   const { path } = useRouter();
-  const arPath = counterpartPath(path);
 
   return (
     <header className="fixed top-9 inset-x-0 z-[55]">
@@ -50,7 +49,7 @@ export default function EnHeader() {
 
           <div className="flex items-center gap-2">
             <a
-              href={to(arPath === "/" ? "" : arPath.replace(/^\//, ""))}
+              href={to(counterpartHref(path))}
               hrefLang="ar"
               className="h-10 inline-flex items-center rounded-full border border-black/10 bg-white px-3.5 text-[12.5px] font-black hover:border-black transition"
             >

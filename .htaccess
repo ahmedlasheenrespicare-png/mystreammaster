@@ -116,6 +116,26 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^servers/[a-z0-9_-]+/?$ /servers/ [R=301,L,NC]
 
+# 3.5) بقايا موقع قديم ما زالت تُعرَض في نتائج البحث بلا صفحة (تقرير الصفحات):
+#      /iptv-stability (2 ظهور) · /iptv-support-guide (1) · /iptv-ui-guide (4)
+#      /Subscribe-Now (7) — كلها بصفر نقر وتصل إلى 404. تُحوَّل إلى أقرب صفحة
+#      حيّة تناسب نيّتها، بدل أن تضيع.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^iptv-stability/?$ /blog/test-iptv-server-stability/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^iptv-support-guide/?$ /blog/%D8%A3%D9%87%D9%85%D9%8A%D8%A9-%D8%A7%D9%84%D8%AF%D8%B9%D9%85-%D8%A7%D9%84%D9%81%D9%86%D9%8A-%D9%81%D9%8A-%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%D8%A7%D8%AA-iptv/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^iptv-ui-guide/?$ /blog/iptv-samsung-lg-setup/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^Subscribe-Now/?$ /store/ [R=301,L,NC]
+
 # لا تعيد توجيه الملفات الموجودة
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

@@ -283,33 +283,6 @@ function faqLd(canonical: string, faqs: { q: string; a: string }[]) {
   };
 }
 
-/* نصوص صفحات الباقات — العنوان يبدأ باسم الباقة نفسها (وهي الكلمة المستهدفة
-   للصفحة)، والسعر لا يُكتب هنا بل يُمرَّر من data.ts حتى يبقى الرقم في مصدره
-   الوحيد. الصياغة تصف ما نقدّمه فعلاً (تفعيل وربط تقني وإعداد مشغّل) وتنسب
-   مواصفات السيرفر إلى المزود الخارجي بلفظ «يُعلن المزود». */
-const PLAN_SEO: Record<string, { title: string; desc: (from: number) => string }> = {
-  nova: {
-    title: "باقة نوفا: تفعيل وربط تقني لسيرفر نوفا",
-    desc: (from) =>
-      `باقة نوفا: تفعيل وربط تقني لقوائم المزود الخارجي وإعداد المشغل ودعم بالعربية. يُعلن المزود ثباتاً مرتفعاً وقت ضغط المباريات — من ${from} دولاراً سنوياً.`,
-  },
-  istar: {
-    title: "باقة إيستار: تفعيل وربط تقني لسيرفر إيستار برو",
-    desc: (from) =>
-      `باقة إيستار: تفعيل وربط تقني لقوائم المزود وإعداد المشغل ودعم بالعربية. يُعلن المزود توازناً بين الرياضة والترفيه وسرعة جيدة — من ${from} دولاراً سنوياً.`,
-  },
-  moka: {
-    title: "باقة موكا: تفعيل وربط تقني لسيرفر موكا",
-    desc: (from) =>
-      `باقة موكا: تفعيل وربط تقني لقوائم المزود وإعداد المشغل ودعم بالعربية. يُعلن المزود تحمّلاً للمشاهدة الطويلة وجودات تناسب السرعات المنخفضة — من ${from} دولاراً.`,
-  },
-  x: {
-    title: "باقة X: تفعيل وربط تقني لسيرفر X",
-    desc: (from) =>
-      `سيرفر X عبر باقة تفعيل وربط تقني: قوائم المزود الخارجي وإعداد المشغل ودعم بالعربية. يُعلن المزود تعدداً في مصادر البث لكل قناة — من ${from} دولاراً سنوياً.`,
-  },
-};
-
 export function getSeo(path: string): SeoMeta {
   const clean = `/${path.replace(/^\/+|\/+$/g, "")}`;
   const routeKey = clean.replace(/^\/|\/$/g, "");
@@ -373,17 +346,17 @@ export function getSeo(path: string): SeoMeta {
     );
     return {
       ...base,
-      title: `سعر باقات التفعيل: متجر الاشتراكات والأسعار | ${BRAND_NAME}`,
+      title: `متجر الاشتراكات | ${BRAND_NAME}`,
       description:
-        "سعر باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية طوال الباقة.",
+        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
       canonical,
       ogImageAlt: `متجر اشتراكات ${BRAND_NAME} — باقات نوفا وإيستار وموكا وX`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `سعر باقات التفعيل: متجر الاشتراكات والأسعار | ${BRAND_NAME}`,
+          name: `متجر الاشتراكات | ${BRAND_NAME}`,
           description:
-            "سعر باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية طوال الباقة.",
+            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
           mainEntityId: `${canonical}#plans`,
         }),
         crumbs,
@@ -406,17 +379,17 @@ export function getSeo(path: string): SeoMeta {
     const canonical = absolute("servers");
     return {
       ...base,
-      title: `مقارنة السيرفرات: نوفا وإيستار وموكا وX | ${BRAND_NAME}`,
+      title: `السيرفرات والباقات | ${BRAND_NAME}`,
       description:
-        "مقارنة السيرفرات الأربعة: القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، مع توصية بأي باقة تفعيل وربط تقني تناسب سرعتك وجهازك وميزانيتك.",
+        "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
       canonical,
       ogImageAlt: `مقارنة سيرفرات ${BRAND_NAME} — نوفا وإيستار وموكا وX`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `مقارنة السيرفرات: نوفا وإيستار وموكا وX | ${BRAND_NAME}`,
+          name: `السيرفرات والباقات | ${BRAND_NAME}`,
           description:
-            "مقارنة السيرفرات الأربعة: القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، مع توصية بأي باقة تفعيل وربط تقني تناسب سرعتك وجهازك وميزانيتك.",
+            "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
         }),
         breadcrumbs(
           [
@@ -433,17 +406,17 @@ export function getSeo(path: string): SeoMeta {
   if (clean === "/faq") {
     const canonical = absolute("faq");
     const description =
-      "أسئلة تفعيل IPTV الأكثر تكراراً: استلام بيانات الاشتراك، الدفع وحالات الاسترجاع، الأجهزة المدعومة، والتجديد والترقية بين نوفا وإيستار وموكا وX.";
+      "أكثر من 25 إجابة مفصلة عن التفعيل والربط التقني وإعداد المشغلات: استلام بيانات الاشتراك، الدفع وحالات الاسترجاع، الأجهزة المدعومة، والتجديد والترقية بين نوفا وإيستار وموكا وX.";
     return {
       ...base,
-      title: `أسئلة تفعيل IPTV: الدفع والأجهزة والتجديد | ${BRAND_NAME}`,
+      title: `الأسئلة الشائعة | ${BRAND_NAME}`,
       description,
       canonical,
       ogImageAlt: `الأسئلة الشائعة — ${BRAND_NAME}`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `أسئلة تفعيل IPTV: الدفع والأجهزة والتجديد | ${BRAND_NAME}`,
+          name: `الأسئلة الشائعة | ${BRAND_NAME}`,
           description,
           mainEntityId: `${canonical}#faq`,
         }),
@@ -465,7 +438,7 @@ export function getSeo(path: string): SeoMeta {
     const canonical = absolute("trial");
     const title = `تجربة IPTV مجانية 6 ساعات | ${BRAND_NAME}`;
     const description =
-      "تجربة IPTV مجانية 6 ساعات من المزود الخارجي: افحص توافق المشغّل مع جهازك وثبات البث وجودة الصورة على اتصالك قبل الدفع، وبدون بطاقة أو التزام.";
+      "اطلب كود فحص وتجربة مجانياً من المزود الخارجي لمدة 6 ساعات: افحص توافق المشغّل مع جهازك وثبات البث وجودة الصورة على اتصالك قبل دفع أي مبلغ، وبدون بطاقة أو التزام.";
     return {
       ...base,
       title,
@@ -565,7 +538,7 @@ export function getSeo(path: string): SeoMeta {
       const canonical = absolute("en/faq");
       const title = `FAQ — Activation, Payment, Devices & Renewals | ${BRAND_EN}`;
       const description =
-        "FAQ about technical activation and player setup: receiving your subscription details, payment and refunds, supported devices, and switching servers.";
+        "Answers in English about technical activation and player setup: receiving your subscription details, payment and refunds, supported devices and switching servers.";
       return {
         ...base,
         title,
@@ -591,17 +564,17 @@ export function getSeo(path: string): SeoMeta {
   if (clean === "/match-center") {
     const canonical = absolute("match-center");
     const description =
-      "مركز المباراة: كل المباريات المغطاة في مكان واحد — نتائج وتشكيلات وأحداث وإحصاءات، مع تحليلات دوري أبطال أوروبا ومراجع يمكنك التحقق منها.";
+      "مركز المباراة — كل المباريات المغطاة في مكان واحد: نتائج مباشرة، تشكيلات، أحداث وإحصائيات، مع تحليلات دوري أبطال أوروبا.";
     return {
       ...base,
-      title: `مركز المباراة: النتائج والتشكيلات والإحصاءات | ${BRAND_NAME}`,
+      title: `مركز المباراة | ${BRAND_NAME}`,
       description,
       canonical,
       ogImageAlt: `مركز المباراة — ${BRAND_NAME}`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `مركز المباراة: النتائج والتشكيلات والإحصاءات | ${BRAND_NAME}`,
+          name: `مركز المباراة | ${BRAND_NAME}`,
           description,
         }),
         breadcrumbs(
@@ -830,21 +803,17 @@ export function getSeo(path: string): SeoMeta {
     const cheapest = plan.prices["12"].USD;
     const nameOnly = plan.serverName.split("(")[0].trim();
     const canonical = absolute(`${plan.serverCode}/`);
-    const copy = PLAN_SEO[plan.serverCode];
-    const pageTitle = copy ? copy.title : `${nameOnly} — باقة تفعيل وربط تقني`;
-    const description = copy
-      ? copy.desc(cheapest)
-      : `${plan.description} خدمتنا هي التفعيل والربط التقني والدعم الفني — تبدأ من ${cheapest} دولار سنوياً.`;
+    const description = `${plan.description} خدمتنا هي التفعيل والربط التقني والدعم الفني — تبدأ من ${cheapest} دولار سنوياً.`;
     return {
       ...base,
-      title: `${pageTitle} | ${BRAND_NAME}`,
+      title: `${nameOnly} — باقة تفعيل وربط تقني | ${BRAND_NAME}`,
       description,
       canonical,
       ogImageAlt: `${nameOnly} — باقة تفعيل وربط تقني من ${BRAND_NAME}`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `${pageTitle} | ${BRAND_NAME}`,
+          name: `${nameOnly} — باقة تفعيل وربط تقني | ${BRAND_NAME}`,
           description,
           mainEntityId: `${canonical}#product`,
         }),
@@ -884,9 +853,9 @@ export function getSeo(path: string): SeoMeta {
   /* ===== صفحة القنوات ===== */
   if (clean === "/channels") {
     const canonical = absolute("channels/");
-    const title = "دليل القنوات: التصنيفات وروابط الجهات الرسمية";
+    const title = "فهرس القنوات لدى المزوّدين وروابط الجهات الرسمية";
     const description =
-      "دليل القنوات مصنّفاً حسب النوع: قوائم وصفية لما يدرجه مزودون خارجيون، مع روابط الجهات الرسمية لكل تصنيف. لا بث داخل الموقع، والتفاصيل لدى كل جهة.";
+      "فهرس وصفي لأسماء وتصنيفات القنوات التي يدرجها مزودون خارجيون، مع صفحات مستقلة لروابط الجهات الرسمية. لا يتضمن الفهرس روابط بث؛ تفاصيل المحتوى والتوفر لدى كل جهة.";
     return {
       ...base,
       title,
@@ -936,23 +905,23 @@ export function getSeo(path: string): SeoMeta {
         imageAlt: "قنوات الترفيه — دليل المشاهدة الرسمية",
       },
       platforms: {
-        title: "منصات المشاهدة: روابط رسمية وخيارات الوصول",
-        description: "منصات المشاهدة وروابطها الرسمية: مكتبة كل منصة واشتراكاتها والتوفر الجغرافي. الموقع لا يبيع اشتراكاتها ولا يستضيف محتواها؛ تحقق من التفاصيل لدى المنصة.",
+        title: "منصات المشاهدة وروابط الجهات الرسمية وخيارات الوصول",
+        description: "قائمة منصات المشاهدة وروابطها الرسمية؛ راجع كل منصة لمكتبتها واشتراكاتها والتوفر الجغرافي، فالموقع لا يبيع اشتراكاتها أو يستضيف محتواها. تحقق من التفاصيل لدى المنصة.",
         imageAlt: "منصات المشاهدة — روابط المواقع الرسمية",
       },
       documentaries: {
-        title: "القنوات الوثائقية: الجهات وروابطها الرسمية",
-        description: "القنوات الوثائقية في الدليل: الجهات وروابط مواقعها الأصلية لمراجعة البرامج والتوفر. الموقع لا يستضيف المواد ولا يعيد بثها، والتفاصيل لدى كل جهة.",
+        title: "القنوات الوثائقية وروابط الجهات الرسمية في دليل المشاهدة",
+        description: "جهات الوثائقيات المسجلة في الدليل مع روابط مواقعها الأصلية؛ تحقق من البرامج وطرق المتابعة والتوفر لدى الجهة، فالموقع لا يستضيف أو يعيد بث المواد. راجع الجهة للتفاصيل.",
         imageAlt: "القنوات الوثائقية — دليل المشاهدة الرسمية",
       },
       kids: {
-        title: "قنوات الأطفال: دليل الجهات والضوابط العمرية",
-        description: "قنوات الأطفال في الدليل: الجهات المدرجة وروابط مواقعها الرسمية، مع القيود العمرية وخيارات الوصول في منطقتك. الموقع لا يستضيف بثاً للأطفال؛ راجع الجهة.",
+        title: "قنوات الأطفال وروابط المواقع الرسمية في دليل المشاهدة",
+        description: "دليل الجهات المدرجة للأطفال وروابط مواقعها الرسمية؛ راجع كل جهة للمحتوى والقيود العمرية والتوفر في منطقتك، فهذا الموقع لا يستضيف بثاً للأطفال. تابع التفاصيل في الموقع الرسمي.",
         imageAlt: "قنوات الأطفال — دليل روابط الجهات الرسمية",
       },
       music: {
-        title: "القنوات الموسيقية: دليل الجهات وروابطها الرسمية",
-        description: "القنوات الموسيقية في الدليل: جهات الموسيقى وروابط مواقعها الأصلية لمعرفة طرق الاستماع والتوفر في منطقتك. الموقع لا يستضيف الموسيقى ولا يعيد بثها.",
+        title: "قنوات الموسيقى وروابط الجهات الرسمية في دليل المشاهدة",
+        description: "قائمة الجهات الموسيقية وروابط مواقعها الأصلية لمعرفة طرق الاستماع أو المشاهدة والتوفر؛ لا يشغّل الموقع الموسيقى ولا يستضيفها أو يعيد بثها. تفقّد موقع الجهة.",
         imageAlt: "القنوات الموسيقية — دليل المشاهدة الرسمية",
       },
       religious: {
@@ -1015,17 +984,17 @@ export function getSeo(path: string): SeoMeta {
   if (clean === "/blog") {
     const canonical = absolute("blog/");
     const description =
-      "أدلة تشغيل عملية: كيف تختبر ثبات السيرفر، وتشغّل الاشتراك على سامسونج وLG، وكيف تختار السيرفر المناسب لسرعتك وجهازك قبل الدفع.";
+      "دلائل عملية: كيف تختبر ثبات السيرفر، وطريقة تشغيل الاشتراك على شاشات سامسونج وLG، وكيف تختار السيرفر المناسب لسرعتك.";
     return {
       ...base,
-      title: `أدلة تشغيل IPTV: مقالات ومشغلات ودليل شراء | ${BRAND_NAME}`,
+      title: `مقالات ودلائل تشغيل الـ IPTV | ${BRAND_NAME}`,
       description,
       canonical,
       ogImageAlt: `مدونة ${BRAND_NAME} — مقالات ودلائل تشغيل`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `أدلة تشغيل IPTV: مقالات ومشغلات ودليل شراء | ${BRAND_NAME}`,
+          name: `مقالات ودلائل تشغيل الـ IPTV | ${BRAND_NAME}`,
           description,
           mainEntityId: `${canonical}#blog`,
         }),
@@ -1055,16 +1024,12 @@ export function getSeo(path: string): SeoMeta {
   const post = BLOG_POSTS.find((p) => clean === `/blog/${p.slug}`);
   if (post) {
     const canonical = absolute(`blog/${post.slug}/`);
-    /* نص الفهرسة قد يختلف عن H1 المرئي: seoTitle/seoDescription اختياريان
-       في بيانات المقال، والفصل يمنع تغيير عنوان القرّاء من أجل محرك بحث. */
-    const metaTitle = post.seoTitle ?? post.title;
-    const metaDescription = post.seoDescription ?? post.description;
-    const fullTitle = `${metaTitle} | ${BRAND_NAME}`;
+    const fullTitle = `${post.title} | ${BRAND_NAME}`;
     const jsonLd: Record<string, unknown>[] = [
       webPageLd({
         canonical,
         name: fullTitle,
-        description: metaDescription,
+        description: post.description,
         published: post.date,
         modified: post.updated ?? post.date,
         mainEntityId: `${canonical}#article`,
@@ -1118,8 +1083,8 @@ export function getSeo(path: string): SeoMeta {
     return {
       ...base,
       /* العناوين الطويلة تُنشر بلا لاحقة العلامة حتى لا تُقتطع في النتائج */
-      title: fullTitle.length > 72 ? metaTitle : fullTitle,
-      description: metaDescription,
+      title: fullTitle.length > 72 ? post.title : fullTitle,
+      description: post.description,
       canonical,
       ogType: "article",
       ogImageAlt: post.title,

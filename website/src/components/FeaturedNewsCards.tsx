@@ -307,9 +307,24 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         </div>
         {/* النص في الثلث الأخير من التذكرة (أسفل الصور وفوق شعار ستريم ماستر) */}
         <div className="relative z-10 flex flex-1 items-end justify-center pb-3">
-          <div className="league-ticket-body" style={{ alignSelf: "flex-end" }}>
-            <em style={{ background: "none", color: "#c9ced8", WebkitTextFillColor: "#c9ced8" }}>{item.title}</em>
-            <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-snug text-white/85">
+          <div
+            className="league-ticket-body"
+            style={{ alignSelf: "flex-end", textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
+          >
+            {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}
+            <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-12 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />
+            <em
+              style={{
+                background: "none",
+                color: "#c9ced8",
+                WebkitTextFillColor: "#c9ced8",
+                letterSpacing: "0.01em",
+                textShadow: "0 1px 0 rgba(255,255,255,0.18), 0 3px 16px rgba(0,0,0,0.75)",
+              }}
+            >
+              {item.title}
+            </em>
+            <p className="mx-auto mt-2.5 line-clamp-2 max-w-[92%] text-[12.5px] font-medium leading-relaxed text-white/90">
               {item.description}
             </p>
           </div>

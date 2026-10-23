@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { TicketImage } from "./TicketImage";
 import { leagueLandingById } from "../content/competitions";
@@ -125,12 +126,13 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket() {
+export default function AllLeaguesTicket({ slideOverrides }: { slideOverrides?: Partial<Record<number, ReactElement>> } = {}) {
   return (
     <LeagueTicketCarousel
       leagueId="matches"
       name="كل البطولات الكبرى"
       clashes={INDEX_CLASHES}
+      slideOverrides={slideOverrides}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand

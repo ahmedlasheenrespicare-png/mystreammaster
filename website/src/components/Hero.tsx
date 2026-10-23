@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket from "./AllLeaguesTicket";
+import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -376,7 +377,12 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             الست (الأساسية + قمم الأبطال والكلاسيكو والإنجليزي) ووظائفه الحيّة. */}
         <Reveal variant="up" delay={140} className="mt-7">
           <div className="home-matches-ticket mx-auto w-full max-w-[1120px]">
-            <AllLeaguesTicket />
+            <AllLeaguesTicket
+              slideOverrides={{
+                0: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
+                1: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
+              }}
+            />
           </div>
         </Reveal>
 

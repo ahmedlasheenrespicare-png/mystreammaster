@@ -263,8 +263,8 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
   const item = FEATURED_NEWS.find(news => news.href === href);
   if (!item) return null;
   const logo = item.backgroundLogo ? to(item.backgroundLogo) : undefined;
-  // صور الشريحة: لامين جمال الحزين وهانز فليك الغاضب وديمبيلي يحتفل، جنباً إلى جنب على اليمين
-  const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry|fra-dembele-celebration/.test(img.src));
+  // صور الشريحة: يامال الحزين وفليك الغاضب وديمبيلي يحتفل ولويس إنريكي، جنباً إلى جنب على اليمين
+  const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry|fra-dembele-celebration|fra-enrique-triumph/.test(img.src));
   return (
     <div className="league-ticket league-ticket--match league-ticket--in-track">
       <div className="league-ticket-bg league-ticket-holographic">

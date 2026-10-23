@@ -12,6 +12,7 @@ import { to } from "../config";
 import { FEATURED_NEWS } from "../content/featured-news";
 import { IconArrowUpRight, IconClock } from "./Icons";
 import { Reveal } from "./motion";
+import { StreamMasterTicketWordmark } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
 /* =========================================================================
@@ -196,8 +197,8 @@ export default function FeaturedNewsCards() {
                     <p className="relative mt-2.5 text-[13.5px] leading-relaxed font-medium text-white/75">
                       {card.description}
                     </p>
-                    <span className="relative mt-auto pt-5 inline-flex items-center gap-1.5 text-[13px] font-black text-[#d8ff3e]">
-                      {card.href.includes("/news/") ? "اقرأ الخبر" : "كل المواعيد"} <IconArrowUpRight className="w-3.5 h-3.5" />
+                    <span className="relative mt-auto pt-5 inline-flex items-center">
+                      <StreamMasterTicketWordmark />
                     </span>
                   </a>
                   </div>

@@ -12,6 +12,7 @@ import { to } from "../config";
 import { FEATURED_NEWS } from "../content/featured-news";
 import { IconArrowUpRight, IconClock } from "./Icons";
 import { Reveal } from "./motion";
+import "./league-ticket.css";
 
 /* =========================================================================
    «أخبار مميزة» في الصفحة الرئيسية
@@ -143,69 +144,70 @@ export default function FeaturedNewsCards() {
             const featured = card.featured;
             return (
               <Reveal key={card.key} variant="up" delay={i * 90} className={featured ? "md:col-span-2 lg:col-span-2" : ""}>
+                {featured ? (
+                  <div className="p-px rounded-[24px] bg-[radial-gradient(circle_230px_at_0%_0%,#d8ff3e,#0b0b0f)] h-full shadow-[0_14px_34px_rgba(11,11,15,0.18)]">
+                  <a
+                    href={card.href}
+                    className="group relative isolate flex h-full flex-col overflow-hidden rounded-[23px] p-6 text-[#f6f4ec] bg-[radial-gradient(circle_280px_at_0%_0%,#2c2c33,#0b0b0f)] border border-[#232327]"
+                  >
+                    <span aria-hidden="true" className="league-ticket-ray" />
+                    <span aria-hidden="true" className="league-ticket-line league-ticket-line--top" />
+                    <span aria-hidden="true" className="league-ticket-line league-ticket-line--bottom" />
+                    <span aria-hidden="true" className="league-ticket-line league-ticket-line--left" />
+                    <span aria-hidden="true" className="league-ticket-line league-ticket-line--right" />
+                    {card.images && card.images.length > 0 && (
+                      <div className="relative mb-4 flex h-44 items-end justify-center md:h-56">
+                        {card.images.map((img, idx) => (
+                          <img
+                            key={img.src}
+                            src={img.src}
+                            alt={img.alt}
+                            loading="lazy"
+                            decoding="async"
+                            className={`h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.5)] ${idx === 1 ? "z-10 -mx-3" : "-mx-1"}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <div className="relative flex flex-wrap items-center gap-2.5 text-[11.5px] font-black text-white/70">
+                      <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
+                      <span className="inline-flex items-center gap-1">
+                        <IconClock className="w-3.5 h-3.5" /> {card.meta}
+                      </span>
+                    </div>
+                    <h3 className="relative mt-4 font-display font-black leading-snug tracking-tight text-[26px] md:text-[32px]">
+                      {card.title}
+                    </h3>
+                    <p className="relative mt-2.5 text-[13.5px] leading-relaxed font-medium text-white/75">
+                      {card.description}
+                    </p>
+                    <span className="relative mt-auto pt-5 inline-flex items-center gap-1.5 text-[13px] font-black text-[#d8ff3e]">
+                      {card.href.includes("/news/") ? "اقرأ الخبر" : "كل المواعيد"} <IconArrowUpRight className="w-3.5 h-3.5" />
+                    </span>
+                  </a>
+                  </div>
+                ) : (
                 <a
                   href={card.href}
-                  className={`group relative isolate flex h-full flex-col overflow-hidden rounded-[24px] border border-black/10 p-6 transition-all duration-300 hover:border-black ${
-                    featured ? "bg-gradient-to-br from-[#2b4eff] to-[#7c5cff] text-white" : "bg-white hover:bg-[#fffdf5]"
-                  }`}
+                  className="group flex h-full flex-col rounded-[24px] border border-black/10 p-6 transition-all duration-300 hover:border-black bg-white hover:bg-[#fffdf5]"
                 >
-                  {card.background && (
-                    <>
-                      <img
-                        src={card.background}
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div
-                        aria-hidden="true"
-                        className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0b0b0f]/95 via-[#0b0b0f]/60 to-[#2b4eff]/30"
-                      />
-                    </>
-                  )}
-                  {card.matchup && (
-                    <img
-                      src={card.matchup}
-                      alt={card.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="mb-5 w-full rounded-2xl border border-white/15 object-cover shadow-[0_12px_30px_rgba(0,0,0,0.35)] aspect-[15/7]"
-                    />
-                  )}
-                  {card.images && card.images.length > 0 && (
-                    <div className="mb-4 flex h-44 items-end justify-center md:h-56" aria-hidden={false}>
-                      {card.images.map((img, idx) => (
-                        <img
-                          key={img.src}
-                          src={img.src}
-                          alt={img.alt}
-                          loading="lazy"
-                          decoding="async"
-                          className={`h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.35)] ${idx === 1 ? "z-10 -mx-3" : "-mx-1"}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  <div className={`flex flex-wrap items-center gap-2.5 text-[11.5px] font-black ${featured ? "text-white/75" : "text-black/45"}`}>
+                  <div className="flex flex-wrap items-center gap-2.5 text-[11.5px] font-black text-black/45">
                     <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
                     <span className="inline-flex items-center gap-1">
                       <IconClock className="w-3.5 h-3.5" /> {card.meta}
                     </span>
                   </div>
-                  <h3
-                    className={`mt-4 font-display font-black leading-snug tracking-tight ${featured ? "text-[26px] md:text-[32px]" : "text-[18px]"} ${featured ? "" : "group-hover:text-[#2b4eff]"}`}
-                  >
+                  <h3 className="mt-4 font-display font-black leading-snug tracking-tight text-[18px] group-hover:text-[#2b4eff]">
                     {card.title}
                   </h3>
-                  <p className={`mt-2.5 text-[13.5px] leading-relaxed font-medium ${featured ? "text-white/80" : "text-black/55"}`}>
+                  <p className="mt-2.5 text-[13.5px] leading-relaxed font-medium text-black/55">
                     {card.description}
                   </p>
-                  <span className={`mt-auto pt-5 inline-flex items-center gap-1.5 text-[13px] font-black ${featured ? "text-white" : "text-[#2b4eff]"}`}>
+                  <span className="mt-auto pt-5 inline-flex items-center gap-1.5 text-[13px] font-black text-[#2b4eff]">
                     {card.href.includes("/news/") ? "اقرأ الخبر" : "كل المواعيد"} <IconArrowUpRight className="w-3.5 h-3.5" />
                   </span>
                 </a>
+                )}
               </Reveal>
             );
           })}

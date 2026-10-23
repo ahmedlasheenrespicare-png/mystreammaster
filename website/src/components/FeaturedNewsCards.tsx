@@ -299,7 +299,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
                   alt={img.alt}
                   loading="lazy"
                   decoding="async"
-                  className={`relative h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-2" : "-ms-8 z-[2]"}`}
+                  className={`relative h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-4" : "-ms-12 z-[2]"}`}
                 />
               ))}
             </div>

@@ -31,8 +31,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     description: "تقدم بايرن بركلة جزاء لكين، ثم عادل رايس قبل النهاية بعشر دقائق.",
     href: "news/bayern-arsenal-2-2/",
     featured: true,
-    backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
-    matchupImage: "images/news/bayern-arsenal-2-2-match.jpg",
+    backgroundImage: "images/news/bayern-arsenal-2-2-reaction.jpg",
   },
   {
     category: "دوري أبطال أوروبا",
@@ -41,7 +40,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     description: "ستة أهداف في ملعب الأمير، وأول خسارة لبرشلونة هذا الموسم في أي مسابقة.",
     href: "news/psg-barcelona-4-2/",
     featured: true,
-    backgroundImage: "images/news/psg-barcelona-4-2.jpg",
+    backgroundImage: "images/news/psg-barcelona-4-2-reaction.jpg",
     images: [
       { src: "images/players/fra-dembele-celebration.webp", alt: "عثمان ديمبيلي يحتفل" },
     ],

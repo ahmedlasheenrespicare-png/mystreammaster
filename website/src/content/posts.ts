@@ -17,6 +17,9 @@ export interface PostSection {
   pricing?: boolean;
   /** جدول أسعار السوق المصري — يُبنى من content/egypt-pricing.ts ولا يظهر قبل وصول الأرقام */
   egyptPricing?: boolean;
+  /** عملة جدول `pricing` في هذا القسم — الافتراضي ر.س كما في المتجر.
+      صفحة بلد آخر (الإمارات) تستخدم درهمها من نفس ملف الأسعار، فلا يُكتب رقم يدوياً. */
+  pricingCurrency?: "SAR" | "AED";
   /** روابط داخلية تُعرض أسفل القسم */
   links?: { label: string; href: string }[];
 }
@@ -57,6 +60,7 @@ import { GUIDE_POSTS } from "./guide-posts";
 import { EGYPT_POSTS } from "./egypt-post";
 import { DEMAND_POSTS } from "./demand-posts";
 import { GAP_POSTS } from "./gap-posts";
+import { GEO_POSTS } from "./geo-posts";
 
 const RETAINED_POSTS: BlogPost[] = [
   {
@@ -442,6 +446,7 @@ export const BLOG_POSTS: BlogPost[] = [
   ...GUIDE_POSTS,
   ...DEMAND_POSTS,
   ...GAP_POSTS,
+  ...GEO_POSTS,
   ...EGYPT_POSTS,
   ...RETAINED_POSTS,
 ];

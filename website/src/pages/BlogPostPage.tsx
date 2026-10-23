@@ -245,7 +245,8 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.quality}</td>
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.channelsCount}</td>
                               <td className="p-4 text-[13px] font-black whitespace-nowrap">
-                                {price.SAR} ر.س
+                                {price[s.pricingCurrency ?? "SAR"]}{" "}
+                                {s.pricingCurrency === "AED" ? "د.إ" : "ر.س"}
                                 <span className="mt-0.5 block text-[11px] font-bold text-black/40 font-latin">
                                   ≈ {price.USD} USD
                                 </span>

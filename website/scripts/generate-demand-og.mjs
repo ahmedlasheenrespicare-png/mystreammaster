@@ -40,6 +40,22 @@ const CARDS = [
     pills: ["نوفا", "إيستار", "موكا", "X"],
   },
   {
+    file: "blog-iptv-uae",
+    kicker: "السوق الخليجي",
+    title: "أفضل سيرفر <span class=\"lat\">IPTV</span> في الإمارات",
+    sub: "أسعار بالدرهم · خطوط اتصالات وdu · اختبار قبل الدفع",
+    size: 62,
+    pills: ["نوفا", "إيستار", "موكا", "X"],
+  },
+  {
+    file: "blog-arabic-channels-germany",
+    kicker: "المغتربون",
+    title: "قنوات عربية في ألمانيا وأوروبا",
+    sub: "التوقيت · السرعة · التفعيل عن بُعد · القنوات الرسمية أولاً",
+    size: 62,
+    pills: ["ألمانيا", "أوروبا", "المغتربون"],
+  },
+  {
     file: "blog-iptv-buffering",
     kicker: "حل المشكلات",
     title: "تقطيع بث <span class=\"lat\">IPTV</span>",

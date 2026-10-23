@@ -179,7 +179,13 @@ export default function FeaturedNewsCards() {
                       </div>
                     )}
                     <div className="relative flex flex-wrap items-center gap-2.5 text-[11.5px] font-black text-white/70">
-                      <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
+                      {card.logo ? (
+                        <span className="inline-flex items-center rounded-full border border-white/15 bg-[#0b0b0f] px-3 py-1.5">
+                          <img src={card.logo} alt={card.category} className="h-5 w-auto" loading="lazy" decoding="async" />
+                        </span>
+                      ) : (
+                        <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
+                      )}
                       <span className="inline-flex items-center gap-1">
                         <IconClock className="w-3.5 h-3.5" /> {card.meta}
                       </span>

@@ -36,6 +36,7 @@ interface Card {
   description: string;
   href: string;
   images?: { src: string; alt: string }[];
+  background?: string;
 }
 
 function useUpcomingMatches(): Match[] {
@@ -98,6 +99,7 @@ export default function FeaturedNewsCards() {
     description: item.description,
     href: to(item.href),
     images: item.images?.map(img => ({ ...img, src: to(img.src) })),
+    background: item.backgroundImage ? to(item.backgroundImage) : undefined,
   }));
 
   const matchCards: Card[] = upcoming.map(match => ({
@@ -138,10 +140,26 @@ export default function FeaturedNewsCards() {
               <Reveal key={card.key} variant="up" delay={i * 90} className={featured ? "md:col-span-2 lg:col-span-2" : ""}>
                 <a
                   href={card.href}
-                  className={`group flex h-full flex-col rounded-[24px] border border-black/10 p-6 transition-all duration-300 hover:border-black ${
+                  className={`group relative isolate flex h-full flex-col overflow-hidden rounded-[24px] border border-black/10 p-6 transition-all duration-300 hover:border-black ${
                     featured ? "bg-gradient-to-br from-[#2b4eff] to-[#7c5cff] text-white" : "bg-white hover:bg-[#fffdf5]"
                   }`}
                 >
+                  {card.background && (
+                    <>
+                      <img
+                        src={card.background}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div
+                        aria-hidden="true"
+                        className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0b0b0f]/95 via-[#0b0b0f]/60 to-[#2b4eff]/30"
+                      />
+                    </>
+                  )}
                   {card.images && card.images.length > 0 && (
                     <div className="mb-4 flex h-44 items-end justify-center md:h-56" aria-hidden={false}>
                       {card.images.map((img, idx) => (

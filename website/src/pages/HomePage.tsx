@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Hero from "../components/Hero";
 import HeroValueCards from "../components/HeroValueCards";
-import FeaturedNewsCards from "../components/FeaturedNewsCards";
+// import FeaturedNewsCards from "../components/FeaturedNewsCards"; // مؤقتاً
 import LibrarySection from "../components/LibrarySection";
 import ContentTicker from "../components/ContentTicker";
 import WordBand from "../components/WordBand";

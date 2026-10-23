@@ -350,6 +350,50 @@ test('hero matches ticket has yesterday/today/tomorrow tabs, club logos and arro
   await expect.poll(async () => ticket.locator('text=2/2').isVisible(), { timeout: 25000, intervals: [500] }).toBeTruthy();
 });
 
+/* شعار البطولة في خلفية الشريحة: من الخريطة الموثّقة LEAGUE_ICONS بحسب
+   بطولة المباراة نفسها، ولا شعار للبطولة التي لا شعار موثّق لها (الدوري
+   المصري عند المصدر). */
+test('hero slide shows the competition logo of its own league in the background', async ({ page }) => {
+  const cairoDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const event = (id: string, hour: string, home: string, away: string) => ({
+    id,
+    date: `${cairoDay}T${hour}:00Z`,
+    competitions: [{
+      date: `${cairoDay}T${hour}:00Z`,
+      status: { type: { name: 'STATUS_SCHEDULED', state: 'pre', completed: false } },
+      competitors: [
+        { homeAway: 'home', team: { displayName: home } },
+        { homeAway: 'away', team: { displayName: away } },
+      ],
+    }],
+  });
+  const byLeague: Record<string, unknown[]> = {
+    'eng.1': [event('eng1', '18', 'مانشستر سيتي', 'ليفربول')],
+    'egy.1': [event('egy1', '20', 'الأهلي', 'الزمالك')],
+  };
+  await page.route('**/scoreboard.php*', route => {
+    const league = new URL(route.request().url()).searchParams.get('league') ?? '';
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, events: byLeague[league] ?? [] }) });
+  });
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+  const ticket = page.locator('[data-hero-side="matches"]');
+  await expect(ticket.locator('text=1/2')).toBeVisible();
+
+  /* البطولة الأولى (الإنجليزي) لها شعار موثّق في الخلفية */
+  const logo = ticket.locator('img[data-league-logo]');
+  await expect(logo).toHaveCount(1);
+  await expect(logo).toHaveAttribute('src', /\/23\.png$/);
+  await expect(logo).toHaveAttribute('aria-hidden', 'true');
+
+  /* الثانية (المصري) بلا شعار موثّق — لا صورة ولا شعار مخترع */
+  await ticket.getByRole('button', { name: 'المباراة التالية' }).click();
+  await expect(ticket.locator('text=2/2')).toBeVisible();
+  await expect(ticket.getByRole('link', { name: /الأهلي/ })).toBeVisible();
+  await expect(ticket.locator('img[data-league-logo]')).toHaveCount(0);
+});
+
 test('hero matches ticket sits above the main ticket on mobile at half its height', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto('/');

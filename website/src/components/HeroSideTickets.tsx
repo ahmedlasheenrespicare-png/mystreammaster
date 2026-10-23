@@ -11,6 +11,7 @@ import {
   type Match,
   type MatchTeam,
 } from "../lib/matches.mjs";
+import { leagueIcon } from "../lib/league-icons.mjs";
 import { to } from "../config";
 import { FEATURED_NEWS } from "../content/featured-news";
 import "./league-ticket.css";
@@ -269,6 +270,10 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
   const slides = day.status === "ready" ? day.matches.slice(0, MAX_SLIDES) : [];
   const count = slides.length;
   const current = count > 0 ? slides[Math.min(index, count - 1)] : null;
+  /* شعار بطولة الشريحة من الخريطة الموثّقة نفسها التي تستخدمها أيقونات
+     البطولات (LEAGUE_ICONS): البطولة بلا شعار موثّق (الدوري المصري
+     والتصفيات والودّية) تبقى بلا شعار في الخلفية — لا يُخترع شعار */
+  const leagueLogo = current ? leagueIcon(current.league) : undefined;
 
   /* التقليب التلقائي يبدأ بعد أول إطار كامل، ولا يعمل إلا مع وجود شرائح */
   useEffect(() => {
@@ -360,8 +365,25 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
           <a
             key={current.id}
             href={to("matches/")}
-            className="hero-match-slide rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
+            className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
           >
+            {/* خلفية الشريحة: شعار بطولة المباراة نفسها (زخرفي، خافت، تحت
+                النص) — يظهر فقط لبطولة لها شعار موثّق */}
+            {leagueLogo && (
+              <img
+                data-league-logo=""
+                src={leagueLogo}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                className="hero-match-slide-logo"
+                onError={event => {
+                  event.currentTarget.style.visibility = "hidden";
+                }}
+              />
+            )}
             <span className="flex items-center justify-between gap-1 text-[10px] font-bold text-white/60 lg:text-[9.5px]">
               <span className="min-w-0 truncate">{leagueName(current.league)}</span>
               {current.state === "live" ? (

@@ -81,6 +81,33 @@
   animation: hero-match-slide-in 0.35s ease both;
 }
 
+/* شعار البطولة في خلفية الشريحة — خافت وتحت النص (z-index سالب داخل عزل
+   البطاقة) فلا يُنافس الأسماء والنتيجة على القراءة */
+.hero-match-slide-logo {
+  position: absolute;
+  z-index: -1;
+  inset-block-end: -16px;
+  inset-inline-end: -14px;
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  opacity: 0.16;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* الجوال: البطاقة قصيرة، فيصغر الشعار ويتزحلق إلى الزاوية تماماً فلا
+   يزاحم اسم الفريق (يُقرأ مع ذلك كعلامة مائية للبطولة) */
+@media (max-width: 1023px) {
+  .hero-match-slide-logo {
+    inset-block-end: -14px;
+    inset-inline-end: -14px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.12;
+  }
+}
+
 @keyframes hero-match-slide-in {
   from {
     opacity: 0;

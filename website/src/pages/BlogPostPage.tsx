@@ -14,6 +14,10 @@ import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
+/* رمز العملة في جدول الأسعار — صفحة كل سوق تعرض عملتها من نفس كتالوج المتجر.
+   الافتراضي "SAR" فتبقى كل المقالات القائمة كما هي حرفاً بحرف. */
+const PRICE_SYMBOL: Record<string, string> = { SAR: "ر.س", AED: "د.إ", USD: "$", KWD: "د.ك" };
+
 /* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر */
 export default function BlogPostPage({ post }: { post: BlogPost }) {
   const plan = post.relatedPlan
@@ -245,10 +249,12 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.quality}</td>
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.channelsCount}</td>
                               <td className="p-4 text-[13px] font-black whitespace-nowrap">
-                                {price.SAR} ر.س
-                                <span className="mt-0.5 block text-[11px] font-bold text-black/40 font-latin">
-                                  ≈ {price.USD} USD
-                                </span>
+                                {price[s.pricingCurrency ?? "SAR"]} {PRICE_SYMBOL[s.pricingCurrency ?? "SAR"]}
+                                {s.pricingCurrency !== "USD" && (
+                                  <span className="mt-0.5 block text-[11px] font-bold text-black/40 font-latin">
+                                    ≈ {price.USD} USD
+                                  </span>
+                                )}
                               </td>
                             </tr>
                           );

@@ -28,3 +28,15 @@ export function counterpartPath(path: string): string {
   }
   return LOCALE_PAIRS.find((p) => p.ar === path)?.en ?? "/en";
 }
+
+/**
+ * رابط المبدّل جاهزاً لـ href: ينتهي بشرطة مائلة دائماً (إلا الجذر).
+ * السبب تقني بحت: كل صفحة على الموقع تُنشر كمجلد (‎/en/‎ ويحمل canonical
+ * بشرطة ختامية)، فرابط بلا شرطة يعني 301 إضافياً في كل نقرة داخلية —
+ * وقد ظهرت النسختان مفهرستان في Search Console (‎/en‎ و‎/en/‎) لأن 770
+ * رابطاً داخلياً كانت تشير إلى الصيغة الخاطئة.
+ */
+export function counterpartHref(path: string): string {
+  const target = counterpartPath(path);
+  return target === "/" ? "/" : `${target.replace(/\/+$/, "")}/`;
+}

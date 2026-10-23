@@ -239,3 +239,15 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
     assert.ok(!NOINDEX.has(rel) && !isMatchDetailPage(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
   }
 });
+
+/* حراسة التكرار بين الخريطتين — الخطأ الذي وقع فعلاً (أكتوبر 2026):
+   مقال صار صفحة React فدخل الخريطة المولَّدة، وبقي سطره القديم في
+   sitemap-0.xml، فأعلن الموقع 84 رابطاً مقابل 83 صفحة قابلة للفهرسة.
+   القاعدة: sitemap-0.xml للمسارات القديمة اليدوية فقط، وما يولّده البناء
+   لا يُكرَّر يدوياً. */
+test('الخريطتان لا تتنازعان رابطاً واحداً (لا تكرار بين المولَّد واليدوي)', async () => {
+  const generated = new Set(await sitemapUrls('sitemap.xml'));
+  const manual = await sitemapUrls('sitemap-0.xml');
+  const duplicates = manual.filter((url) => generated.has(url));
+  assert.deepEqual(duplicates, [], `رابط مكرر في sitemap.xml وsitemap-0.xml: ${duplicates.join(' · ')}`);
+});

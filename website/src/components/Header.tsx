@@ -15,7 +15,7 @@ import {
 import { leagueIcon } from "../lib/league-icons.mjs";
 import { CURRENCIES, getWhatsAppUrl, LOWEST_PLAN_PRICE_USD } from "../data";
 import { to } from "../config";
-import { counterpartPath } from "../i18n";
+import { counterpartHref } from "../i18n";
 import { useRouter } from "../router";
 import {
   HOME_SECTIONS,
@@ -253,7 +253,7 @@ export default function Header({
             <div className="flex items-center gap-2">
               {/* مبدّل اللغة — للصفحات التجارية الإنجليزية */}
               <a
-                href={to(counterpartPath(path).replace(/^\//, ""))}
+                href={to(counterpartHref(path))}
                 hrefLang="en"
                 aria-label="English version"
                 className="h-10 inline-flex items-center rounded-full border border-black/10 bg-white px-3 text-[12px] font-black tracking-wide transition hover:border-black"

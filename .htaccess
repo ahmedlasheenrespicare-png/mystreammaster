@@ -67,6 +67,13 @@ ExpiresByType application/vnd.apple.mpegurl "access plus 1 hour"
 RewriteEngine On
 RewriteBase /
 
+# 3.0) نطاق واحد: www → بدون www (301 دائم)
+#      بعد 90 يوماً من البيانات ظهرت نسختان مفهرستان من كل صفحة على www
+#      (10 نقرات و84 ظهوراً) — الوسم canonical وحده لم يكفِ. القاعدة هنا
+#      تُوحّد الإشارة وتنهي المحتوى المكرر بين النطاقين.
+RewriteCond %{HTTP_HOST} ^www\.streammasterstore\.com$ [NC]
+RewriteRule ^ https://streammasterstore.com%{REQUEST_URI} [R=301,L]
+
 # 3.1) مشغّل البث الخاص: /player/<مسار> يمر عبر وسيط التضمين (embed.php)
 #      فيبقى مصدر المشغّل على نفس النطاق (بلا تعديل في CSP ولا رابط نفق ظاهر).
 #      القاعدة قبل فحص وجود الملف حتى لا يُخدَم /player/ كمجلد.
@@ -94,6 +101,40 @@ RewriteRule ^manchester-united-atletico(/.*)?$ /matches/%D8%AF%D9%88%D8%B1%D9%8A
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^galatasaray-barcelona(/.*)?$ /matches/%D8%AF%D9%88%D8%B1%D9%8A-%D8%A3%D8%A8%D8%B7%D8%A7%D9%84-%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7/galatasaray-barcelona/ [R=301,L]
+
+# 3.4) هيكل قديم: /servers/<code>/ — بقايا ما قبل إعادة التصميم.
+#      الصفحات لم تعد موجودة، وGoogle ما زال يرسل إليها نقرات فتصل إلى 404
+#      (تقرير الصفحات 23 أكتوبر: 37 نقرة و548 ظهوراً على سبعة روابط ميتة،
+#      أعلاها /servers/istar/ بـ18 نقرة بينما /istar/ الحيّة عند صفر).
+#      تُحوَّل 301 إلى الصفحة الحيّة، وغير المتاح (hulk/shark/falcon/aronium)
+#      إلى صفحة المقارنة — ولا تُعاد كتابة محتوى سيرفرات لم يعد الموقع يعرضها.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^servers/(istar|nova|moka|x)/?$ /$1/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^servers/[a-z0-9_-]+/?$ /servers/ [R=301,L,NC]
+
+# 3.5) بقايا موقع قديم ما زالت تُعرَض في نتائج البحث بلا صفحة (تقرير الصفحات):
+#      /iptv-stability (2 ظهور) · /iptv-support-guide (1) · /iptv-ui-guide (4)
+#      /Subscribe-Now (7) — كلها بصفر نقر وتصل إلى 404. تُحوَّل إلى أقرب صفحة
+#      حيّة تناسب نيّتها، بدل أن تضيع.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^iptv-stability/?$ /blog/test-iptv-server-stability/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^iptv-support-guide/?$ /blog/%D8%A3%D9%87%D9%85%D9%8A%D8%A9-%D8%A7%D9%84%D8%AF%D8%B9%D9%85-%D8%A7%D9%84%D9%81%D9%86%D9%8A-%D9%81%D9%8A-%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%D8%A7%D8%AA-iptv/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^iptv-ui-guide/?$ /blog/iptv-samsung-lg-setup/ [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^Subscribe-Now/?$ /store/ [R=301,L,NC]
 
 # لا تعيد توجيه الملفات الموجودة
 RewriteCond %{REQUEST_FILENAME} -f [OR]

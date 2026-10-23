@@ -5,6 +5,7 @@ website/dist-ssr/
 # مخرجات سكربت جلب لقطة الترتيب — تُرفع كمصنوع (artifact) للمراجعة قبل الالتزام
 website/.standings-out/
 website/test-results/
+test-results/
 website/playwright-report/
 *.log
 

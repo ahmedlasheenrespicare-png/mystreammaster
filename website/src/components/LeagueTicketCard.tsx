@@ -108,6 +108,11 @@ const TicketSeqPlayer = ({ cssClass, frames, video }: { cssClass: string; frames
     if (/safari/i.test(ua) && !/chrome|chromium|edg|opr/i.test(ua)) return;
     if (v.canPlayType('video/webm; codecs="vp9"') === "") return;
     v.muted = true;
+    /* وبملاحظة «سريع لا يبدو فيديو»: يتباطأ التشغيل ×0.7 فيتمدد
+       إحساس الدورة من 4.3 إلى ~6.2 ثانية بسلو موشن سينمائي — نفس
+       هدوء ذوبان الفليب-بوك الجديد */
+    v.defaultPlaybackRate = 0.7;
+    v.playbackRate = 0.7;
     const show = () => {
       v.play().then(() => setVideoOn(true)).catch(() => setVideoOn(false));
     };

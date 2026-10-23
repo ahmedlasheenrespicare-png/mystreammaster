@@ -152,13 +152,6 @@ export default function FeaturedNewsCards() {
                     href={card.href}
                     className="group relative isolate flex h-full flex-col overflow-hidden rounded-[23px] p-6 text-[#f6f4ec] bg-[radial-gradient(circle_280px_at_0%_0%,#2c2c33,#0b0b0f)] border border-[#232327]"
                   >
-                    {card.logo && (
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-[0.22]"
-                        style={{ backgroundImage: `url(${card.logo})` }}
-                      />
-                    )}
                     <span aria-hidden="true" className="league-ticket-ray" />
                     <span aria-hidden="true" className="league-ticket-line league-ticket-line--top" />
                     <span aria-hidden="true" className="league-ticket-line league-ticket-line--bottom" />
@@ -166,6 +159,13 @@ export default function FeaturedNewsCards() {
                     <span aria-hidden="true" className="league-ticket-line league-ticket-line--right" />
                     {card.images && card.images.length > 0 && (
                       <div className="relative mb-4 flex h-44 items-end justify-center md:h-56">
+                        {card.logo && (
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-0 z-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
+                            style={{ backgroundImage: `url(${card.logo})` }}
+                          />
+                        )}
                         {card.images.map((img, idx) => (
                           <img
                             key={img.src}
@@ -173,7 +173,7 @@ export default function FeaturedNewsCards() {
                             alt={img.alt}
                             loading="lazy"
                             decoding="async"
-                            className={`h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.5)] ${idx === 1 ? "z-10 -mx-3" : "-mx-1"}`}
+                            className={`relative z-10 h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.5)] ${idx === 1 ? "z-20 -mx-3" : "-mx-1"}`}
                           />
                         ))}
                       </div>

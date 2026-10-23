@@ -5,6 +5,7 @@
     "setup": "npm ci --prefix website",
     "dev": "npm run dev --prefix website",
     "build": "npm run build --prefix website",
+    "build:strict": "SEO_STRICT=1 npm run build --prefix website",
     "typecheck": "npm run typecheck --prefix website",
     "test": "npm test --prefix website",
     "test:ui": "npm run test:ui --prefix website",

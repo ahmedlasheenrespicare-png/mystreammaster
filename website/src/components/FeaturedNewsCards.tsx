@@ -282,9 +282,18 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
           )}
-          {(item.teamBadges ?? []).map(src => (
-            <img key={src} src={to(src)} alt="" aria-hidden="true" className="h-5 w-5 object-contain" loading="lazy" decoding="async" />
-          ))}
+          {(item.teamBadges ?? []).length > 0 && (
+            <span className="inline-flex flex-col items-center gap-1">
+              <span className="inline-flex items-center gap-1.5">
+                {(item.teamBadges ?? []).map(src => (
+                  <img key={src} src={to(src)} alt="" aria-hidden="true" className="h-5 w-5 object-contain" loading="lazy" decoding="async" />
+                ))}
+              </span>
+              {item.score && (
+                <span dir="ltr" className="text-[12px] font-black tracking-wide text-[#c9ced8]">{item.score}</span>
+              )}
+            </span>
+          )}
           <span>{item.dateLabel}</span>
         </div>
         {/* النص في وسط الشريحة (بدون صور اللاعبين) */}

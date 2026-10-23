@@ -52,12 +52,19 @@ export interface FeaturedClash {
   away: ClashTeamSide;
   homePlayer: string;
   awayPlayer: string;
-  /* تسلسل احتفال متحرك (فليب-بوك 4 إطارات ثابتة بلا خلفية، محاذاة
+  /* تسلسل احتفال متحرك (فليب-بوك 8 إطارات ثابتة بلا خلفية، محاذاة
      موحّدة 1280×1600): إن حُدِّد لجهةٍ عُرض بدل الصورة الساكنة كطبقات
-     تتبدّل بشفافية CSS — تشبه الفيديو بأربع صور فقط، وتتجمد على الإطار
-     الأخير مع تفضيل تقليل الحركة */
+     تتبدّل بشفافية CSS — تشبه الفيديو بثماني صور، وتتجمد على إطار
+     «التلفون» مع تفضيل تقليل الحركة */
   homePlayerSequence?: string[];
   awayPlayerSequence?: string[];
+  /* ترقية «كأنه فيديو» الحقيقية: مقطع WebM شفاف (VP9 بطبقة ألفا
+     BlockAdditional، 15 وضعية فريدة مولّدة/بينية مستوفاة حركياً إلى
+     57 إطاراً بدورة 4.3 ثانية) يعلو الفليب-بوك حيث دُعم — كروم/
+     فايرفوكس/إيدج يقرؤون ألفا فيرون الفيديو، وسفاري/آي أو إس يبقون
+     على الفليب-بوك بلا انكسار. التفعيل عميلاً بعد canplay فعلية */
+  homePlayerSequenceVideo?: string;
+  awayPlayerSequenceVideo?: string;
   /* مصدر البطولة المغذِّية لهذه المواجهة (مفتاح ESPN نفسه): في تذكرة
      البطولة يُورَّث من التذكرة نفسها ولا يُذكر، وفي التذكرة الجامعة
      بصفحة «مواعيد المباريات» يُثبَّت صراحةً على بطولة المواجهة فيُرسَم
@@ -80,6 +87,55 @@ export interface FeaturedClash {
 const celebrationClass = (src: string): string =>
   /-(celebration|phone|playstation)\.png$/.test(src) ? " league-ticket-player--celebrate" : "";
 
+/* حاوية التسلسل — فليب-بوك CSS، يعلوه مقطع WebM الشفاف حين يتاح فعلاً.
+   التفعيل عميلاً فقط وتحت أربعة شروط مجتمعة: لا تفضيلَ لتقليل الحركة،
+   لا آي أو إس (كل متصفحاته WebKit بلا ألفا VP9)، لا سفاري ماك (يقرأ
+   WebM لكن ألفاه غير مضمونة فنبقى على الأضمن)، والمتصفح يقرّ بقدرة
+   vp9/webm. ثم لا يظهر المقطع إلا بعد canplay وتشغيل ناجحَين — وإن
+   خان الملف أو الترميز (خطأ تحميل) أخفيناه وعاد الفليب-بوك تحته بلا
+   وميض؛ وعند الظهور تُخفى إطارات CSS خلفه حتى لا تشفّ مناطقه الشفافة
+   عن إطارٍ متخالف يتحرك في العمق */
+const TicketSeqPlayer = ({ cssClass, frames, video }: { cssClass: string; frames: string[]; video?: string }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoOn, setVideoOn] = useState(false);
+  useEffect(() => {
+    if (!video) return;
+    const v = videoRef.current;
+    if (!v) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ua = navigator.userAgent;
+    if (/iPad|iPhone|iPod/.test(ua)) return;
+    if (/safari/i.test(ua) && !/chrome|chromium|edg|opr/i.test(ua)) return;
+    if (v.canPlayType('video/webm; codecs="vp9"') === "") return;
+    v.muted = true;
+    const show = () => {
+      v.play().then(() => setVideoOn(true)).catch(() => setVideoOn(false));
+    };
+    if (v.readyState >= 3) show();
+    else v.addEventListener("canplay", show, { once: true });
+    return () => v.removeEventListener("canplay", show);
+  }, [video]);
+  return (
+    <span className={`${cssClass}${videoOn ? " league-ticket-player--video-on" : ""}`} data-player-src={frames[frames.length - 1]} aria-hidden="true">
+      {frames.map((src, i) => (
+        <img key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
+      ))}
+      {video ? (
+        <video
+          ref={videoRef}
+          className="league-ticket-player__seq-video"
+          src={video}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onError={() => setVideoOn(false)}
+        />
+      ) : null}
+    </span>
+  );
+};
+
 export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
   "uefa.champions": [
     {
@@ -96,12 +152,29 @@ export const FEATURED_CLASHES: Record<string, FeaturedClash[]> = {
         mono: "برم",
         tokens: ["barcelona", "برشلونة", "بارسلونة"],
       },
-      /* بطلب المالك: صورة ديمبيلي صارت «phone-celebration» — القصاصة
-         الجديدة كاملة الجسم (رأس إلى القماش والأحذية) بخلفية مزالة
-         إزالة لونية نظيفة، وتُعرض ساكنةً بنبضة الاحتفال نفسها بدل
-         تسلسل الفليب-بوك الذي كان يكتفي بالنصف العلوي */
-      homePlayer: "/images/players/fra-dembele-phone-celebration.png",
+      /* بطلب المالك: إطارات التسلسل الأربعة لديمبيلي صارت كاملة الجسم
+         (رأس إلى الأحذية) بخلفيات مزالة لونياً — وبسؤاله «هل تصير
+         كأنها فيديو؟» زُرعت أربع وضعيات بينية مولّدة من التوأمين
+         المجاورين (خفض→رفع→نزول للصدغ→ضغط) فأصبح التتابع ثمانياً
+         بقوام 1480px الموحّد نفسه فيقترب الإقبال بسلاسة مقطع حقيقي */
+      homePlayer: "/images/players/fra-dembele-phone.png",
       awayPlayer: "/images/players/esp-yamal.png",
+      homePlayerSequence: [
+        "/images/players/fra-dembele-phone-stage-1.png",
+        "/images/players/fra-dembele-phone-seq-rising.png",
+        "/images/players/fra-dembele-phone-stage-2.png",
+        "/images/players/fra-dembele-phone-seq-landing.png",
+        "/images/players/fra-dembele-phone-stage-3.png",
+        "/images/players/fra-dembele-phone-seq-press.png",
+        "/images/players/fra-dembele-phone-stage-4.png",
+        "/images/players/fra-dembele-phone-seq-peak.png",
+      ],
+      /* وبأمره «١» (فيديو حقيقي بلا خلفية): سبع وضعيات بينية جديدة
+         من التوأمين زادت الوضعيات الفريدة إلى 15، واستيفاء حركي
+         (minterpolate على RGB وألفا منفصلين) ضاعفها إلى 57 إطاراً
+         بدورة 4.3 ثانية ≈ 13.3fps في WebM شفاف 512×640 بحجم 495KB —
+         والفليب-بوك أعلاه هو الاحتياطي التلقائي حيث لا يُدعم ألفا */
+      homePlayerSequenceVideo: "/images/players/fra-dembele-phone-seq.webm",
     },
     {
       /* بطلب المالك: كانت العبارة التصنيفية «مباراة الليلة» وصارت
@@ -527,6 +600,8 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
   /* تسلسل الاحتفال يتبع انعكاس الضيافة نفسه — الجهة تحمل إطاراتها مهما دار الترتيب */
   const rightSequence = homeIsConfigHome ? clash.homePlayerSequence : clash.awayPlayerSequence;
   const leftSequence = homeIsConfigHome ? clash.awayPlayerSequence : clash.homePlayerSequence;
+  const rightSequenceVideo = homeIsConfigHome ? clash.homePlayerSequenceVideo : clash.awayPlayerSequenceVideo;
+  const leftSequenceVideo = homeIsConfigHome ? clash.awayPlayerSequenceVideo : clash.homePlayerSequenceVideo;
 
   return (
     <>
@@ -536,20 +611,12 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
           تسلسل احتفال تُرسَم حاويةً طبقية (4 إطارات تتبدّل بشفافية
           CSS كفليب-بوك) بدل الصورة الساكنة */}
       {leftSequence ? (
-        <span className="league-ticket-player league-ticket-player--left league-ticket-player--celebrate league-ticket-player--seq" data-player-src={leftSequence[leftSequence.length - 1]} aria-hidden="true">
-          {leftSequence.map((src, i) => (
-            <TicketImage key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
-          ))}
-        </span>
+        <TicketSeqPlayer cssClass="league-ticket-player league-ticket-player--left league-ticket-player--celebrate league-ticket-player--seq" frames={leftSequence} video={leftSequenceVideo} />
       ) : (
         <TicketImage className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       )}
       {rightSequence ? (
-        <span className="league-ticket-player league-ticket-player--right league-ticket-player--celebrate league-ticket-player--seq" data-player-src={rightSequence[rightSequence.length - 1]} aria-hidden="true">
-          {rightSequence.map((src, i) => (
-            <TicketImage key={src} className={`league-ticket-player__seq-frame league-ticket-player__seq-frame--${i + 1}`} src={src} alt="" loading="eager" decoding="async" />
-          ))}
-        </span>
+        <TicketSeqPlayer cssClass="league-ticket-player league-ticket-player--right league-ticket-player--celebrate league-ticket-player--seq" frames={rightSequence} video={rightSequenceVideo} />
       ) : (
         <TicketImage className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
       )}

@@ -467,12 +467,28 @@
    هندسة الخانة بنسبة الإطار، والإطارات طبقات مطلقة تتبدّل شفافيتها
    بمقاطع متتالية — ذهاب وعودة (1→2→3→4→3→2) كل 600 مللي كأنها فيديو
    قصير، بلا جافاسكربت. مع تقليل الحركة: الإطارات الثلاثة الأولى
-   تُخفى ويبقى الإطار الأخير (ذروة الاحتفال) ثابتاً */
+   تُخفى ويبقى الإطار الأخير (ذروة الاحتفال) ثابتاً.
+   وبطلب المالك بعد أن صارت الإطارات كاملة القوام: «قرّب» الحضور —
+   ارتفاع الحاوية يعلو إلى 96% على المكتب (84% على الجوال) فيقرّب
+   ديمبيلي مقام زميله النصف-علويّ جانبه، والقناع السفلي يعمّق التلاشي
+   إلى 86% بدل 72% حتى لا يبتلع الساقين والحذاء آخرَ الأطوال */
 .league-ticket-player--seq {
   width: auto;
   aspect-ratio: 1280 / 1600;
+  height: 96%;
+  mask-image: linear-gradient(180deg, #000 86%, transparent 99.5%);
+  -webkit-mask-image: linear-gradient(180deg, #000 86%, transparent 99.5%);
 }
 
+@media (max-width: 700px) {
+  .league-ticket-player--seq { height: 84%; }
+}
+
+/* تدفق الإطارات — بعد طلب «كأنها فيديو» صار الإيقاع ثمانية وضعيات
+   على 14 خانة متساوية (الصعود 8 ثم الهبوط 6 بلا تكرار الطرفين)،
+   الخانة 300ms والدورة 4.2 ثانية: كثافة الإطارات تذيب القفزات فتقرأ
+   الحركة لقطةً متتابعة، ويبقى الانتقال جافاً بين الجيران المتطابقي
+   الأبعاد بضبط القوام الموحّد — بلا جافاسكربت وطبقة تركيب واحدة */
 .league-ticket-player__seq-frame {
   position: absolute;
   inset: 0;
@@ -480,40 +496,94 @@
   width: 100%;
   object-fit: contain;
   opacity: 0;
-  animation: league-ticket-seq 3.6s infinite;
+  animation: league-ticket-seq 4.2s infinite;
 }
 
 .league-ticket-player__seq-frame--1 { animation-name: league-ticket-seq-1; }
 .league-ticket-player__seq-frame--2 { animation-name: league-ticket-seq-2; }
 .league-ticket-player__seq-frame--3 { animation-name: league-ticket-seq-3; }
 .league-ticket-player__seq-frame--4 { animation-name: league-ticket-seq-4; }
+.league-ticket-player__seq-frame--5 { animation-name: league-ticket-seq-5; }
+.league-ticket-player__seq-frame--6 { animation-name: league-ticket-seq-6; }
+.league-ticket-player__seq-frame--7 { animation-name: league-ticket-seq-7; }
+.league-ticket-player__seq-frame--8 { animation-name: league-ticket-seq-8; }
 
+/* طبقة الفيديو الشفاف (WebM/VP9+alpha): هندسة الإطارات نفسها — طبقة
+   مطلقة مملوءة بـ contain فوق القالب — مخفية افتراضياً ولا تظهر إلا
+   على حاوية --video-on التي يفعّلها العميل بعد شروط الدعم الأربعة
+   وcanplay الناجحة؛ وحين تظهر تُطفأ إطارات الفليب-بوك خلفها حتى لا
+   يشفّ عنها إطار متخالف الإيقاع من تحت مناطق ألفا */
+.league-ticket-player__seq-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  display: none;
+}
+
+.league-ticket-player--video-on .league-ticket-player__seq-video { display: block; }
+.league-ticket-player--video-on .league-ticket-player__seq-frame { display: none; }
+
+/* الجدول الزمني: خانة = 7.143% من الدورة — الإطار i يضيء في خانته
+   صعوداً وفي مرآتها هبوطاً (الطرفان الأقصيان خانتان متفردتان) */
 @keyframes league-ticket-seq-1 {
-  0%, 16.6% { opacity: 1; }
-  16.7%, 100% { opacity: 0; }
+  0%, 7.142% { opacity: 1; }
+  7.143%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-2 {
-  0%, 16.6% { opacity: 0; }
-  16.7%, 33.3% { opacity: 1; }
-  33.4%, 83.3% { opacity: 0; }
-  83.4%, 100% { opacity: 1; }
+  0%, 7.142% { opacity: 0; }
+  7.143%, 14.285% { opacity: 1; }
+  14.286%, 92.857% { opacity: 0; }
+  92.858%, 100% { opacity: 1; }
 }
 @keyframes league-ticket-seq-3 {
-  0%, 33.3% { opacity: 0; }
-  33.4%, 50% { opacity: 1; }
-  50.1%, 66.6% { opacity: 0; }
-  66.7%, 83.3% { opacity: 1; }
-  83.4%, 100% { opacity: 0; }
+  0%, 14.285% { opacity: 0; }
+  14.286%, 21.428% { opacity: 1; }
+  21.429%, 85.714% { opacity: 0; }
+  85.715%, 92.857% { opacity: 1; }
+  92.858%, 100% { opacity: 0; }
 }
 @keyframes league-ticket-seq-4 {
+  0%, 21.428% { opacity: 0; }
+  21.429%, 28.571% { opacity: 1; }
+  28.572%, 78.571% { opacity: 0; }
+  78.572%, 85.714% { opacity: 1; }
+  85.715%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-5 {
+  0%, 28.571% { opacity: 0; }
+  28.572%, 35.714% { opacity: 1; }
+  35.715%, 71.428% { opacity: 0; }
+  71.429%, 78.571% { opacity: 1; }
+  78.572%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-6 {
+  0%, 35.714% { opacity: 0; }
+  35.715%, 42.857% { opacity: 1; }
+  42.858%, 64.285% { opacity: 0; }
+  64.286%, 71.428% { opacity: 1; }
+  71.429%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-7 {
+  0%, 42.857% { opacity: 0; }
+  42.858%, 50% { opacity: 1; }
+  50.001%, 57.143% { opacity: 0; }
+  57.144%, 64.285% { opacity: 1; }
+  64.286%, 100% { opacity: 0; }
+}
+@keyframes league-ticket-seq-8 {
   0%, 50% { opacity: 0; }
-  50.1%, 66.6% { opacity: 1; }
-  66.7%, 100% { opacity: 0; }
+  50.001%, 57.143% { opacity: 1; }
+  57.144%, 100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .league-ticket-player__seq-frame { animation: none; opacity: 0; }
-  .league-ticket-player__seq-frame--4 { opacity: 1; }
+  /* السكنى على «التلفون» المكتمل — أثبت الإطارات السبعة البصرية تقليدياً */
+  .league-ticket-player__seq-frame--7 { opacity: 1; }
+  /* ولا مقطع أصلاً مع تقليل الحركة — JS لا يفعّله والقاعدة تحسم */
+  .league-ticket-player__seq-video { display: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce), (max-width: 700px) {

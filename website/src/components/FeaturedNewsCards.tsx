@@ -35,6 +35,7 @@ interface Card {
   title: string;
   description: string;
   href: string;
+  images?: { src: string; alt: string }[];
 }
 
 function useUpcomingMatches(): Match[] {
@@ -96,6 +97,7 @@ export default function FeaturedNewsCards() {
     title: item.title,
     description: item.description,
     href: to(item.href),
+    images: item.images?.map(img => ({ ...img, src: to(img.src) })),
   }));
 
   const matchCards: Card[] = upcoming.map(match => ({
@@ -140,6 +142,20 @@ export default function FeaturedNewsCards() {
                     featured ? "bg-gradient-to-br from-[#2b4eff] to-[#7c5cff] text-white" : "bg-white hover:bg-[#fffdf5]"
                   }`}
                 >
+                  {card.images && card.images.length > 0 && (
+                    <div className="mb-4 flex h-44 items-end justify-center md:h-56" aria-hidden={false}>
+                      {card.images.map((img, idx) => (
+                        <img
+                          key={img.src}
+                          src={img.src}
+                          alt={img.alt}
+                          loading="lazy"
+                          decoding="async"
+                          className={`h-full w-auto max-w-[34%] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.35)] ${idx === 1 ? "z-10 -mx-3" : "-mx-1"}`}
+                        />
+                      ))}
+                    </div>
+                  )}
                   <div className={`flex flex-wrap items-center gap-2.5 text-[11.5px] font-black ${featured ? "text-white/75" : "text-black/45"}`}>
                     <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{card.category}</span>
                     <span className="inline-flex items-center gap-1">

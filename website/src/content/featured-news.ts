@@ -13,6 +13,8 @@ export interface FeaturedNewsItem {
   description: string;
   /** مسار داخلي بلا بادئة الموقع، يُمرَّر إلى to() */
   href: string;
+  /** صور مقصوصة بخلفية شفافة تُعرض أعلى البطاقة (اختياري) */
+  images?: { src: string; alt: string }[];
 }
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
@@ -22,5 +24,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "باريس سان جيرمان يهزم برشلونة 4-2 ويكسر سجله المثالي",
     description: "ستة أهداف في ملعب الأمير، وأول خسارة لبرشلونة هذا الموسم في أي مسابقة.",
     href: "news/psg-barcelona-4-2/",
+    images: [
+      { src: "images/players/esp-yamal.webp", alt: "لامين جمال" },
+      { src: "images/players/esp-flick.webp", alt: "هانز فليك" },
+      { src: "images/players/fra-dembele.webp", alt: "عثمان ديمبيلي" },
+    ],
   },
 ];

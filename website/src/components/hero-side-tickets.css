@@ -1,0 +1,44 @@
+/* ==========================================================================
+   تذكرتا جانبي هيرو الصفحة الرئيسية — يمين التذكرة الرئيسية (مباريات اليوم)
+   ويسارها (آخر الأخبار)
+   --------------------------------------------------------------------------
+   الشكل من league-ticket.css نفسه: الإطار المضيء الشعاعي (1px حشو + تدرّج
+   ليموني)، اللوح الداكن، ونقطة الضوء. الفرق الوحيد أن الارتفاع هنا يتكيّف مع
+   المحتوى على الجوال، ثم يثبت 265px — ارتفاع التذكرة الرئيسية في
+   .league-ticket-track — من lg (1024px) حيث تصطف التذاكر الثلاث في صف واحد
+   بعرض لوحة العرض الوسطى في الماكيت الكبير.
+========================================================================== */
+
+.hero-side-ticket {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  padding: 1px;
+  border-radius: 10px;
+  background: radial-gradient(circle 230px at 0% 0%, #d8ff3e, #0b0b0f);
+  box-shadow: 0 14px 34px rgba(11, 11, 15, 0.18);
+  color: #f6f4ec;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .hero-side-ticket {
+    height: 265px;
+  }
+}
+
+.hero-side-ticket-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: 12px 11px 10px;
+}
+
+/* على الجوال تبقى التذكرتان مختصرتين بلا فراغ كبير أسفل المحتوى */
+@media (max-width: 1023px) {
+  .hero-side-ticket-inner {
+    padding: 11px 10px 9px;
+  }
+}

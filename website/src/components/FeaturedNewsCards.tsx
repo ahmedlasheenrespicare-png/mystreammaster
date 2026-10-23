@@ -278,6 +278,14 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         href={to(item.href)}
         className="group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec]"
       >
+        {/* شعار دوري أبطال أوروبا في الخلفية العميقة للشريحة */}
+        {logo && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
+            style={{ backgroundImage: `url(${logo})` }}
+          />
+        )}
         <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>

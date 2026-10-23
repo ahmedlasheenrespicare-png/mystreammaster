@@ -1,5 +1,14 @@
 import type { BlogPost } from "../content/posts";
 import { AVAILABLE_DURATIONS, getWhatsAppUrl, PRICING_PLANS } from "../data";
+import {
+  EGYPT_PRICING,
+  EGYPT_PRICING_UPDATED,
+  EGYPT_TERMS,
+  formatEgp,
+  hasEgyptPricing,
+  monthlyEquivalent,
+} from "../content/egypt-pricing";
+import type { DeckCard } from "../components/ServerDeck";
 import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
@@ -12,7 +21,52 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
     : undefined;
   const duration = AVAILABLE_DURATIONS[0];
   const durationLabel = duration === "12" ? "12 شهراً" : `${duration} أشهر`;
-  const toc = post.sections.filter((s) => Boolean(s.heading));
+  /* أقسام مرتبطة ببيانات لم تصل بعد لا تُرسم (ولا يظهر عنوانها فارغاً) */
+  const sections = post.sections.filter((s) => !(s.egyptPricing && !hasEgyptPricing()));
+  const toc = sections.filter((s) => Boolean(s.heading));
+
+  /* شريط البطاقات: true = كل المتجر، أو كائن يحدد سيرفرات وسعراً ووجهة */
+  const strip = post.serverStrip;
+  const stripCodes = typeof strip === "object" ? strip.codes : undefined;
+  const stripHref = typeof strip === "object" ? strip.href : undefined;
+
+  /* كروت الشريط: كارت لكل (سيرفر × مدة) — مقال مصر: سيرفران × 3 مدد = 6 كروت.
+     الأرقام تُقرأ من ملف الأسعار المصري نفسه، فلا نسخ يدوي داخل الصفحة. */
+  const stripCards: DeckCard[] | undefined =
+    typeof strip === "object" && strip.price === "egp" && hasEgyptPricing()
+      ? EGYPT_PRICING.filter((server) => !stripCodes || stripCodes.includes(server.code))
+          .flatMap((server) =>
+            EGYPT_TERMS.flatMap((term) => {
+              const amount = server.prices[term];
+              if (typeof amount !== "number") return [];
+              return [
+                {
+                  key: `${server.code}-${term}`,
+                  code: server.code,
+                  name: server.name.split("(")[0].trim(),
+                  termLabel: term === "12" ? "12 شهراً" : `${term} أشهر`,
+                  amount,
+                  currency: "ج.م",
+                  href: stripHref ?? "#egypt-prices",
+                } satisfies DeckCard,
+              ];
+            })
+          )
+      : undefined;
+
+  /* عنوان شريط البطاقات لقارئ الشاشة: «ستّ باقات السيرفرين في نظرة واحدة» */
+  const STRIP_COUNTS: Record<number, string> = {
+    2: "باقتان",
+    3: "ثلاث باقات",
+    4: "أربع باقات",
+    5: "خمس باقات",
+    6: "ستّ باقات",
+  };
+  const stripLabel = stripCards
+    ? `${STRIP_COUNTS[stripCards.length] ?? `${stripCards.length} باقات`} ${
+        stripCodes?.length === 2 ? "السيرفرين" : "السيرفرات"
+      } في نظرة واحدة`
+    : undefined;
 
   return (
     <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
@@ -49,6 +103,16 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             <p className="mt-4 text-[15.5px] md:text-[17px] text-black/60 font-medium leading-[1.9]">
               {post.intro}
             </p>
+            {/* مقال يحمل أسعار السوق المصري: تنبيه الحدود الجغرافية فوق الطية */}
+            {post.sections.some((sec) => sec.egyptPricing) && (
+              <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#2b4eff]/25 bg-[#2b4eff]/[0.06] px-4 py-2 text-[12.5px] font-black text-[#1e3bbf]">
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" />
+                  <circle cx="12" cy="10" r="2.6" />
+                </svg>
+                الأسعار والباقات في هذه الصفحة تعمل داخل مصر فقط
+              </p>
+            )}
           </header>
 
           {post.hero && (
@@ -68,7 +132,14 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
             </div>
           )}
 
-          {post.serverStrip && <ServerDeck label="السيرفرات الأربعة في نظرة واحدة" />}
+          {strip && (
+            <ServerDeck
+              label={
+                stripCards ? stripLabel : "السيرفرات الأربعة في نظرة واحدة"
+              }
+              cards={stripCards}
+            />
+          )}
 
           {toc.length >= 5 && (
             <nav
@@ -80,11 +151,11 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
               </p>
               <ol className="mt-3 grid gap-2 sm:grid-cols-2">
                 {toc.map((t) => {
-                  const index = post.sections.indexOf(t);
+                  const index = sections.indexOf(t);
                   return (
                     <li key={t.heading}>
                       <a
-                        href={`#s-${index}`}
+                        href={`#${t.anchor ?? `s-${index}`}`}
                         className="text-[13.5px] font-bold text-black/65 hover:text-[#2b4eff] transition"
                       >
                         {t.heading}
@@ -97,11 +168,11 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           )}
 
           <div className="mt-10 space-y-9">
-            {post.sections.map((s, i) => (
+            {sections.map((s, i) => (
               <section key={i}>
                 {s.heading && (
                   <h2
-                    id={`s-${i}`}
+                    id={s.anchor ?? `s-${i}`}
                     className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug scroll-mt-32"
                   >
                     {s.heading}
@@ -203,6 +274,128 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                       className="inline-flex items-center gap-2 border border-black/15 font-black text-[14px] px-6 py-3 rounded-full hover:bg-white transition"
                     >
                       <IconChat className="w-4 h-4" /> تجربة 6 ساعات قبل الدفع
+                    </a>
+                  </div>
+                )}
+
+                {/* نسخة الجوال: بطاقات تُظهر الأسعار كاملة بلا تمرير أفقي — تسبق الجدول
+                    لأن أعمدة الأسعار تخرج من الشاشة في الجدول الضيق. */}
+                {s.egyptPricing && hasEgyptPricing() && (
+                  <div className="mt-5 grid gap-3 md:hidden">
+                    {EGYPT_PRICING.map((server) => (
+                      <div key={server.code} className="rounded-2xl border border-black/10 bg-white p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <ServerLink
+                            code={server.code}
+                            label={server.name.split("(")[0].trim()}
+                            size={26}
+                            textClassName="font-black text-[15px]"
+                          />
+                          <span className="text-[11.5px] font-bold text-black/45">{server.devices}</span>
+                        </div>
+                        <p className="mt-1.5 text-[12.5px] font-medium text-black/55">{server.bestFor}</p>
+                        <ul className="mt-3 divide-y divide-black/[0.07] border-t border-black/[0.07]">
+                          {EGYPT_TERMS.map((term) => {
+                            const price = server.prices[term];
+                            const monthly = monthlyEquivalent(price, term);
+                            return (
+                              <li key={term} className="flex items-baseline justify-between gap-3 py-2.5">
+                                <span className="text-[13px] font-bold text-black/60">
+                                  {term} أشهر
+                                  {monthly && (
+                                    <span className="ms-1 text-[11px] font-bold text-black/35">
+                                      ({Math.round(monthly)} ج.م شهرياً)
+                                    </span>
+                                  )}
+                                </span>
+                                <span className="text-[15px] font-black whitespace-nowrap">
+                                  {typeof price === "number" ? (
+                                    formatEgp(price)
+                                  ) : (
+                                    <span className="text-[13px] font-bold text-black/35">باتفاق</span>
+                                  )}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    ))}
+                    <p className="text-[11.5px] font-bold text-black/40">
+                      إجمالي كل مدة بالجنيه المصري · يعمل داخل مصر فقط
+                      {EGYPT_PRICING_UPDATED ? ` · آخر تحديث ${EGYPT_PRICING_UPDATED}` : ""}
+                    </p>
+                  </div>
+                )}
+
+                {s.egyptPricing && hasEgyptPricing() && (
+                  <div className="mt-5 hidden overflow-x-auto rounded-2xl border border-black/10 bg-white md:block">
+                    <table className="w-full text-right border-collapse min-w-[720px]">
+                      <caption className="p-4 text-right text-[12.5px] font-bold text-black/50">
+                        أسعار اشتراك IPTV في مصر بالجنيه المصري — إجمالي كل مدة · داخل مصر فقط
+                        {EGYPT_PRICING_UPDATED ? ` · آخر تحديث ${EGYPT_PRICING_UPDATED}` : ""}
+                      </caption>
+                      <thead>
+                        <tr className="bg-[#0b0b0f] text-white">
+                          <th scope="col" className="p-4 text-[13px] font-black">السيرفر</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الأنسب لـ</th>
+                          <th scope="col" className="p-4 text-[13px] font-black">الأجهزة</th>
+                          {EGYPT_TERMS.map((term) => (
+                            <th key={term} scope="col" className="p-4 text-[13px] font-black whitespace-nowrap">
+                              {term} أشهر
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-black/[0.07]">
+                        {EGYPT_PRICING.map((server) => (
+                          <tr key={server.code} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
+                            <th scope="row" className="p-4 text-[13px] font-black text-right bg-[#f4f3ef]">
+                              <ServerLink
+                                code={server.code}
+                                label={server.name.split("(")[0].trim()}
+                                size={26}
+                                textClassName="hover:text-[#2b4eff] underline underline-offset-4 decoration-black/20"
+                              />
+                            </th>
+                            <td className="p-4 text-[13px] font-medium text-black/70">{server.bestFor}</td>
+                            <td className="p-4 text-[13px] font-medium text-black/70">{server.devices}</td>
+                            {EGYPT_TERMS.map((term) => {
+                              const price = server.prices[term];
+                              const monthly = monthlyEquivalent(price, term);
+                              return (
+                                <td key={term} className="p-4 text-[13px] font-black whitespace-nowrap">
+                                  {typeof price === "number" ? (
+                                    <>
+                                      {formatEgp(price)}
+                                      {monthly && (
+                                        <span className="mt-0.5 block text-[11px] font-bold text-black/40">
+                                          ≈ {Math.round(monthly)} ج.م شهرياً
+                                        </span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span className="font-bold text-black/35">باتفاق</span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {s.egyptPricing && hasEgyptPricing() && (
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <a
+                      href={getWhatsAppUrl("مرحبًا، أريد الاشتراك في باقة IPTV داخل مصر ومعرفة السعر النهائي")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-[#0b0b0f] text-white font-black text-[14px] px-6 py-3 rounded-full"
+                    >
+                      <IconChat className="w-4 h-4" /> اطلب السعر النهائي على واتساب
                     </a>
                   </div>
                 )}

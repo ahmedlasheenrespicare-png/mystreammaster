@@ -263,6 +263,8 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
   const item = FEATURED_NEWS.find(news => news.href === href);
   if (!item) return null;
   const logo = item.backgroundLogo ? to(item.backgroundLogo) : undefined;
+  // صور الشريحة: يامال الحزين وفليك الغاضب وديمبيلي يحتفل ولويس إنريكي، جنباً إلى جنب على اليمين
+  const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry|fra-dembele-celebration|fra-enrique-triumph|ger-kane|eng-rice/.test(img.src));
   return (
     <div className="league-ticket league-ticket--match league-ticket--in-track">
       <div className="league-ticket-bg league-ticket-holographic">
@@ -276,40 +278,59 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
         href={to(item.href)}
         className="group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec]"
       >
-        {logo && (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-no-repeat bg-[center_center] bg-[length:auto_100%] opacity-20"
-            style={{ backgroundImage: `url(${logo})` }}
-          />
-        )}
-        {/* الصور تملأ الشريحة كاملة خلفية (بدون قص: object-contain) */}
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-end justify-center">
-          {(item.images ?? []).map((img, idx, all) => (
-            <img
-              key={img.src}
-              src={to(img.src)}
-              alt={img.alt}
-              loading="lazy"
-              decoding="async"
-              className={`relative h-full w-auto max-w-[36%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${all.length > 2 ? (idx === 1 ? "z-20 -mx-3" : "-mx-3") : "-mx-1"}`}
-            />
-          ))}
-        </div>
         <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
           )}
-          {(item.teamBadges ?? []).map(src => (
-            <img key={src} src={to(src)} alt="" aria-hidden="true" className="h-5 w-5 object-contain" loading="lazy" decoding="async" />
-          ))}
+          {(item.teamBadges ?? []).length > 0 && (
+            <span className="inline-flex flex-col items-center gap-1">
+              <span className="inline-flex items-center gap-1.5">
+                {(item.teamBadges ?? []).map(src => (
+                  <img key={src} src={to(src)} alt="" aria-hidden="true" className="h-5 w-5 object-contain" loading="lazy" decoding="async" />
+                ))}
+              </span>
+              {item.score && (
+                <span dir="ltr" className="text-[12px] font-black tracking-wide text-[#c9ced8]">{item.score}</span>
+              )}
+            </span>
+          )}
           <span>{item.dateLabel}</span>
         </div>
-        {/* النص في الثلث الأخير من التذكرة (أسفل الصور وفوق شعار ستريم ماستر) */}
-        <div className="relative z-10 flex flex-1 items-end justify-center pb-3">
-          <div className="league-ticket-body" style={{ alignSelf: "flex-end" }}>
-            <em style={{ background: "none", color: "#c9ced8", WebkitTextFillColor: "#c9ced8" }}>{item.title}</em>
-            <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-snug text-white/85">
+        {/* النص في وسط الشريحة (بدون صور اللاعبين) */}
+        <div className="relative z-10 mt-2 min-h-0 flex-1">
+          {/* صورتان فقط في الشريحة: لامين جمال الحزين وبجانبه هانز فليك الغاضب (على اليمين) */}
+          {slideImages.length > 0 && (
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] flex w-1/2 items-end justify-center">
+              {slideImages.map((img, idx) => (
+                <img
+                  key={img.src}
+                  src={to(img.src)}
+                  alt={img.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className={`relative h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
+                />
+              ))}
+            </div>
+          )}
+          <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center px-2 text-center">
+            {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}
+            <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-10 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />
+            <em
+              style={{
+                background: "none",
+                color: "#c9ced8",
+                WebkitTextFillColor: "#c9ced8",
+                letterSpacing: "0.01em",
+                textShadow: "0 1px 0 rgba(255,255,255,0.18), 0 3px 16px rgba(0,0,0,0.75)",
+              }}
+            >
+              {item.title}
+            </em>
+            <p
+              className="mx-auto mt-2 line-clamp-3 text-[12px] font-medium leading-relaxed text-white/90"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7)" }}
+            >
               {item.description}
             </p>
           </div>

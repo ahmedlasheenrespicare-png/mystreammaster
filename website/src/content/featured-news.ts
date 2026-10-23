@@ -21,6 +21,8 @@ export interface FeaturedNewsItem {
   matchupImage?: string;
   /** شعارا الفريقين (مسارات داخلية) يُعرضان بجانب شعار البطولة */
   teamBadges?: string[];
+  /** نتيجة المباراة تُعرض تحت شعارَي الفريقين (اختيارية) */
+  score?: string;
   /** شعار البطولة يُعرض كخلفية عميقة خافتة في البطاقة الكبيرة (رابط كامل) */
   backgroundLogo?: string;
   /** بطاقة كبيرة بتصميم الخبر المميز (عرض مزدوج وخلفية وصور) */
@@ -37,6 +39,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     featured: true,
     backgroundLogo: "images/brand/ucl-logo-white.png",
     teamBadges: ["images/teams/bayern-munich-badge.webp", "images/teams/arsenal-badge.webp"],
+    score: "2 - 2",
     backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
     images: [
       { src: "images/players/ger-kane.webp", alt: "هاري كين" },
@@ -52,6 +55,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     featured: true,
     backgroundLogo: "images/brand/ucl-logo-white.png",
     teamBadges: ["images/teams/paris-saint-germain-badge.webp", "images/teams/barcelona-badge.webp"],
+    score: "4 - 2",
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [
       { src: "images/players/esp-yamal-sad.webp", alt: "لامين جمال حزيناً" },

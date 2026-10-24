@@ -53,6 +53,10 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./
           server-dir: ./
+          # مهلة مقبس التحكّم: الرفع الكامل (~800 ملف) على Hostinger يتجاوز
+          # المهلة الافتراضية 30 ثانية فيفشل بـ «Timeout (control socket)»
+          # رغم سلامة الملفات. 120 ثانية تحفظ النشر بلا تعليق طويل.
+          timeout: 120000
           # Only repo tooling is excluded here, plus the one path that cannot be
           # written over FTP.
           exclude: |

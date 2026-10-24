@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
-import AllLeaguesTicket from "./AllLeaguesTicket";
+import AllLeaguesTicket, { INDEX_CLASHES } from "./AllLeaguesTicket";
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
 import { ServerIcon } from "./ServerIcon";
@@ -381,10 +381,13 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
             <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
+              {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
               <AllLeaguesTicket
+                clashes={[...INDEX_CLASHES, INDEX_CLASHES[2]]}
                 slideOverrides={{
                   0: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
                   1: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
+                  2: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
                 }}
               />
             </div>

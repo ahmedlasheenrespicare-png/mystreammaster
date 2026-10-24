@@ -374,14 +374,11 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </Reveal>
 
         {/* صفّ التذاكر الثلاث بعد الشارة مباشرةً: تذكرة المباريات الجامعة في
-            الوسط بعرض لوحة العرض الوسطى في الماكيت الكبير نفسه — نفس قالب
-            شبكة TvMockup بالحرف (`190px 1fr 230px`) فيتطابق العرضان في كل
-            مقاس، وعلى يمينها تذكرة مباريات اليوم، وعلى يسارها تذكرة آخر
-            الأخبار. تحت lg: تذكرة المباريات تعلو الرئيسية على الجوال بنصف
-            طولها، ثم الرئيسية بعرض كامل، ثم الأخبار؛ ومن md تصطف الجانبيتان
-            جنباً إلى جنب تحت الرئيسية — فلا يضيق شيء على الشاشات الصغيرة. */}
+            على الكمبيوتر: المباريات يميناً بعرض 190px، والرئيسية تشغل
+            بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
+            يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
         <Reveal variant="up" delay={140} className="mt-7 w-full">
-          <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)_230px] lg:gap-0">
+          <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
             <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               <AllLeaguesTicket
@@ -392,7 +389,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               />
             </div>
             {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
-                يُحفظ عمود سطح المكتب كي لا يتغيّر عرض التذكرة الوسطى. */}
+                الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
           </div>
         </Reveal>
 

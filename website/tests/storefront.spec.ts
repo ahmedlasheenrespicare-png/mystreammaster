@@ -239,19 +239,20 @@ for (const width of [320, 390, 640, 768, 1440]) {
    العرض الوسطى في الماكيت الكبير (نفس قالب شبكة TvMockup)، وعلى يمينها
    تذكرة مباريات أمس/اليوم/غد، وعلى يسارها تذكرة آخر الأخبار — والمحتوى من
    مصادر الموقع (scoreboard.php وFEATURED_NEWS) لا من نصّ مكتوب هنا. */
-test('hero ticket row mirrors the mockup center panel with matches/news side tickets', async ({ page }) => {
+test('hero main ticket fills the hidden news space beside the matches ticket', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
 
   const main = page.locator('.hero-ticket-row .home-matches-ticket');
-  const panel = page.locator('[aria-label="مقارنة سيرفرات المشاهدة"] > div.grid > div').nth(1);
+  const row = page.locator('.hero-ticket-row');
   await main.scrollIntoViewIfNeeded();
 
   const mainBox = await main.boundingBox();
-  const panelBox = await panel.boundingBox();
-  expect(mainBox && panelBox).toBeTruthy();
-  /* نفس عرض لوحة العرض الوسطى (±4px: فروق الحدود الدقيقة بين الشبكتين) */
-  expect(Math.abs(mainBox!.width - panelBox!.width)).toBeLessThanOrEqual(4);
+  const rowBox = await row.boundingBox();
+  expect(mainBox && rowBox).toBeTruthy();
+  // No empty news column: main fills the entire remaining desktop width.
+  expect(Math.abs(mainBox!.width - (rowBox!.width - 190))).toBeLessThanOrEqual(2);
+  expect(Math.abs(mainBox!.x - rowBox!.x)).toBeLessThanOrEqual(2);
   /* الرئيسية بعرض التذكرة نفسها (265px) */
   expect(mainBox!.height).toBeCloseTo(265, 0);
 

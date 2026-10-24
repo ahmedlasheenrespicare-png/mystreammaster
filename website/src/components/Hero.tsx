@@ -385,6 +385,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                 slideOverrides={{
                   0: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
                   1: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
+                  2: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
                 }}
               />
             </div>

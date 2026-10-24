@@ -31,6 +31,18 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإنجليزي",
+    dateLabel: "24 أكتوبر 2026",
+    title: "أستون فيلا يهزم مانشستر سيتي 2-1 بثنائية جاكسون",
+    description: "فوز في فيلا بارك ينهي بداية سيتي المثالية في الدوري، وجاكسون يسجل هدفين.",
+    href: "news/man-city-aston-villa/",
+    teamBadges: ["images/teams/aston-villa-badge.webp", "images/teams/manchester-city-badge.webp"],
+    score: "2 - 1",
+    images: [
+      { src: "images/players/eng-jackson-celebration.webp", alt: "نيكولاس جاكسون يحتفل" },
+    ],
+  },
+  {
     category: "دوري أبطال أوروبا",
     dateLabel: "21 أكتوبر 2026",
     title: "بايرن ميونخ وأرسنال يتعادلان 2-2 بهدف متأخر لرايس",

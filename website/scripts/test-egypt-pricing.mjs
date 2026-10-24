@@ -88,42 +88,55 @@ test('جدول الأسعار يُرسم فقط بعد وصول الأرقام،
   }
 });
 
-test('ست بطاقات للسيرفرين: كل مدة بسعرها بالجنيه', () => {
+test('تبويبات المدد: 3 أشهر و6 أشهر وسنة، وفي كل تبويب بطاقتان', () => {
   /* نطاق الفحص: شريط البطاقات وحده — تذييل الموقع يربط السيرفرات الأربعة لكل الصفحات */
   const start = egyptHtml.indexOf('aria-label="ستّ باقات');
   assert.ok(start > 0, 'شريط البطاقات الست غائب عن الصفحة');
   const end = egyptHtml.indexOf('</section>', start);
   const deck = egyptHtml.slice(start, end > start ? end : undefined);
 
-  /* كارت لكل (سيرفر × مدة): نوفا ثم X، وكل سيرفر بثلاث مدد */
-  const cards = [...deck.matchAll(/data-server="([a-z]+)" data-term="([^"]+)"/g)].map(
+  /* ثلاثة تبويبات بترتيبها، ونصّها كما يُعرض للزائر */
+  const tabs = [...deck.matchAll(/role="tab"[^>]*data-term="([^"]+)"[\s\S]*?srv-tab-label">([^<]+)</g)].map(
     (m) => `${m[1]}|${m[2]}`
   );
   assert.deepEqual(
-    cards,
-    [
-      'nova|3 أشهر',
-      'nova|6 أشهر',
-      'nova|12 شهراً',
-      'x|3 أشهر',
-      'x|6 أشهر',
-      'x|12 شهراً',
-    ],
-    'البطاقات يجب أن تكون نوفا وX × 3/6/12 شهراً بترتيبها'
+    tabs,
+    ['3|3 أشهر', '6|6 أشهر', '12|سنة'],
+    'تبويبات المدد يجب أن تكون 3 أشهر و6 أشهر وسنة بترتيبها'
   );
 
-  /* الأسعار الثلاثة كلها ظاهرة، بالجنيه المصري، وبلا تسرّب سعر المتجر بالريال */
-  for (const amount of ['300', '400', '500', '350', '450', '600']) {
-    assert.ok(deck.includes(`<b>${amount}</b>`), `سعر ${amount} ج.م غائب عن البطاقات`);
+  /* لوح لكل تبويب، وفي كل لوح بطاقتان فقط: نوفا ثم X بنفس المدة */
+  const panels = deck.split('role="tabpanel"').slice(1);
+  assert.equal(panels.length, 3, 'يجب أن يكون لكل مدة لوح مستقل');
+  const expected = { '3': '3 أشهر', '6': '6 أشهر', '12': '12 شهراً' };
+  for (const panel of panels) {
+    const term = panel.match(/data-term="([^"]+)"/)[1];
+    const cards = [...panel.matchAll(/data-server="([a-z]+)" data-term="([^"]+)"/g)].map(
+      (m) => `${m[1]}|${m[2]}`
+    );
+    assert.deepEqual(
+      cards,
+      [`nova|${expected[term]}`, `x|${expected[term]}`],
+      `تبويب ${term}: يجب أن يحوي بطاقتين فقط (نوفا وX) لنفس المدة`
+    );
+  }
+
+  /* كل سعر بالجنيه ظاهر في بطاقته، وبلا تسرّب سعر المتجر بالريال */
+  const nova = { '3': '300', '6': '400', '12': '500' };
+  const xtv = { '3': '350', '6': '450', '12': '600' };
+  for (const panel of panels) {
+    const term = panel.match(/data-term="([^"]+)"/)[1];
+    assert.ok(panel.includes(`<b>${nova[term]}</b>`), `سعر نوفا لـ${term} غائب عن بطاقته`);
+    assert.ok(panel.includes(`<b>${xtv[term]}</b>`), `سعر X لـ${term} غائب عن بطاقته`);
   }
   assert.ok(deck.includes('ج.م'), 'عملة الجنيه غائبة عن البطاقات');
   assert.ok(!deck.includes('ر.س'), 'سعر المتجر بالريال مسرّب إلى بطاقات العرض المصري');
   assert.ok(!deck.includes('سيرفر إيستار') && !deck.includes('سيرفر موكا'),
     'بطاقة سيرفر غير معروض في العرض المصري');
 
-  /* تبديل تلقائي: نقطة تنقّل لكل بطاقة */
-  const dots = [...deck.matchAll(/class="srv-deck-dot"/g)].length;
-  assert.equal(dots, 6, 'عدد نقاط التنقّل يجب أن يساوي عدد البطاقات');
+  /* التبويب النشط هو الأول في HTML (قبل التفاعل)، والنقاط لم تعد تُرسم */
+  assert.match(deck, /role="tab"[^>]*aria-selected="true"/, 'لا تبويب نشط في HTML');
+  assert.ok(!deck.includes('srv-deck-dot'), 'نقاط التنقّل القديمة ما زالت تُرسم مع التبويبات');
 });
 
 test('الحدود الجغرافية معلنة على الصفحة: داخل مصر فقط', () => {

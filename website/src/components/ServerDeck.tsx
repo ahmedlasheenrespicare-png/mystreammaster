@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   AVAILABLE_DURATIONS,
   getWhatsAppUrl,
@@ -79,20 +79,48 @@ export interface DeckCard {
   badge?: string;
 }
 
+/** تبويب مدة: عنوان + بطاقتان (سيرفر لكل بطاقة) لنفس المدة */
+export interface DeckTab {
+  /** معرّف التبويب — مدة الاشتراك: "3" أو "6" أو "12" */
+  key: string;
+  /** نص التبويب كما يظهر: "3 أشهر" */
+  label: string;
+  /** سطر صغير تحت النص: "من 300 ج.م" */
+  hint?: string;
+  /** بطاقات هذه المدة — بطاقتان في العرض المصري (نوفا وX) */
+  cards: DeckCard[];
+}
+
+/* موضعا البطاقتين داخل إطار التبويب: كلتاهما كاملة ومرئية، بميل خفيف
+   يحفظ لغة المروحة الأصلية (‎-7° و‎+7°) دون أن يتغطى أي كارت. */
+const PAIR_SLOTS = [
+  { left: 26, top: 14, rot: -7 },
+  { left: 204, top: 14, rot: 7 },
+];
+const PAIR_WIDTH = 380;
+const PAIR_HEIGHT = 250;
+
 /* ارتفاع الإطار في المروحة الموسّعة: يكفي لإظهار الكارت الأمامي كاملاً مع زر
    التفعيل، بدل قصّه عند ارتفاع التصميم الأصلي (160) المخصّص للأربعة. */
 const FAN_HEIGHT = 268;
 
 const ROTATE_MS = 3000;
 
-export default function ServerDeck({
-  label,
-  cards,
-}: {
+export interface ServerDeckProps {
   label?: string;
   /** كروت صريحة (سيرفر × مدة) — بلا تمرير تُعرض باقات المتجر الأربع */
   cards?: DeckCard[];
-}) {
+  /** تبويبات مدد (3 / 6 / 12) — كل تبويب بطاقتان: يسبقها شريط التبويبات */
+  tabs?: DeckTab[];
+}
+
+export default function ServerDeck({ label, cards, tabs }: ServerDeckProps) {
+  /* مع التبويبات: شريط مدد فوق المروحة، وبطاقتان كاملتان لكل مدة */
+  if (tabs && tabs.length > 0) return <TabbedDeck label={label} tabs={tabs} />;
+  return <FanDeck label={label} cards={cards} />;
+}
+
+function FanDeck({ label, cards }: { label?: string; cards?: DeckCard[] }) {
   const duration = AVAILABLE_DURATIONS[0];
 
   /* المسار الافتراضي: باقة لكل سيرفر بسعر المتجر بالريال ومدة 12 شهراً */
@@ -213,6 +241,124 @@ export default function ServerDeck({
           />
         ))}
       </div>
+    </section>
+  );
+}
+
+/* ==========================================================================
+   وضع التبويبات — شريط مدد مستوحى من uiverse.io/dexter-st/pretty-dolphin-68
+   --------------------------------------------------------------------------
+   من التصميم الأصلي أُخذت لغته لا هندسته الدائرية: حبّة زجاجية بيضاء بسماكة
+   داخلية ولمعة علوية، ومؤشّر أزرق لامع (btn) ينزلق بين الخيارات بحركة مرنة
+   (cubic-bezier(.22,1,.36,1.15))، وداخله ضوء مخروطي (selector-light) يدور
+   ببطء. والأهم: التبويب النشط هو الذي يتحرّك إليه الضوء، لا شريط سفلي رفيع.
+   كل تبويب يعرض بطاقتين كاملتين (نوفا وX) بميل خفيف يحفظ لغة المروحة.
+   ========================================================================== */
+function TabbedDeck({ label, tabs }: { label?: string; tabs: DeckTab[] }) {
+  const [active, setActive] = useState(0);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const count = tabs.length;
+  const activeIndex = Math.min(active, count - 1);
+
+  /* تنقّل بلوحة المفاتيح كمعيار tablist: الأسهم في اتجاه RTL، وHome/End للأطراف */
+  const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const step =
+      event.key === "ArrowLeft" ? 1 : event.key === "ArrowRight" ? -1 : 0;
+    let next = -1;
+    if (step) next = (index + step + count) % count;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = count - 1;
+    if (next < 0) return;
+    event.preventDefault();
+    setActive(next);
+    tabRefs.current[next]?.focus();
+  };
+
+  return (
+    <section aria-label={label ?? "السيرفرات في نظرة واحدة"} className="mt-8">
+      <div
+        className="srv-tabs"
+        style={{ "--tab": activeIndex, "--srv-tabs-count": count } as CSSProperties}
+      >
+        <div className="srv-tabs-track" role="tablist" aria-label="اختر مدة الاشتراك">
+          <span className="srv-tabs-light" aria-hidden="true" />
+          {tabs.map((tab, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                id={`srv-tab-${tab.key}`}
+                data-term={tab.key}
+                className={`srv-tab${isActive ? " is-active" : ""}`}
+                aria-selected={isActive}
+                aria-controls={`srv-panel-${tab.key}`}
+                tabIndex={isActive ? 0 : -1}
+                ref={(node) => {
+                  tabRefs.current[index] = node;
+                }}
+                onClick={() => setActive(index)}
+                onKeyDown={(event) => onKeyDown(event, index)}
+              >
+                <span className="srv-tab-label">{tab.label}</span>
+                {tab.hint && <span className="srv-tab-hint">{tab.hint}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {tabs.map((tab, index) => (
+        <div
+          key={tab.key}
+          id={`srv-panel-${tab.key}`}
+          role="tabpanel"
+          aria-labelledby={`srv-tab-${tab.key}`}
+          className="srv-panel"
+          data-term={tab.key}
+          data-active={index === activeIndex}
+          hidden={index !== activeIndex}
+        >
+          <div className="srv-deck-wrap srv-deck-wrap--pair">
+            <div
+              className="srv-deck srv-deck--pair"
+              style={{ width: `${PAIR_WIDTH}px`, height: `${PAIR_HEIGHT}px` }}
+            >
+              {tab.cards.map((card, cardIndex) => {
+                const slot = PAIR_SLOTS[cardIndex] ?? PAIR_SLOTS[PAIR_SLOTS.length - 1];
+                return (
+                  <div
+                    key={card.key}
+                    className="srv-deck-card is-front"
+                    data-server={card.code}
+                    data-term={card.termLabel}
+                    style={{
+                      left: `${slot.left}px`,
+                      top: `${slot.top}px`,
+                      zIndex: 2 - cardIndex,
+                      transform: `rotate(${slot.rot}deg)`,
+                    }}
+                  >
+                    <div className="srv-deck-content">
+                      <span className="srv-deck-glyph" aria-hidden="true">
+                        {GLYPH[card.code]}
+                      </span>
+                      <CardBody card={card} focusable showBadge />
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* خطّا التوهّج أسفل البطاقتين */}
+              <div className="srv-deck-lines" aria-hidden="true">
+                <span className="srv-deck-line" />
+                <span className="srv-deck-line" />
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </section>
   );
 }

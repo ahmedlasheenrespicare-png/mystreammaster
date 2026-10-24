@@ -130,3 +130,17 @@
     animation: none;
   }
 }
+
+/* شريحة الخبر — كل خبر في شريحته وحدها، تُوسَّط داخل اللوح وتظهر بتلاشٍ
+   خفيف عند التقليب (نفس حركة شريحة المباراة) */
+.hero-news-slide {
+  display: flex;
+  flex-direction: column;
+  animation: hero-match-slide-in 0.35s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-news-slide {
+    animation: none;
+  }
+}

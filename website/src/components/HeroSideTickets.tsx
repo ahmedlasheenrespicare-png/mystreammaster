@@ -41,6 +41,8 @@ import "./hero-side-tickets.css";
 const HOME_ZONE = "Africa/Cairo";
 /* أقصى عدد شرائح في التبويب الواحد (بقيّة اليوم على صفحة المواعيد) */
 const MAX_SLIDES = 12;
+/* أقصى عدد شرائح أخبار (كل الأخبار المعلنة الآن خبران، ويتّسع لما يُضاف) */
+const MAX_NEWS_SLIDES = 8;
 const ROTATE_MS = 4500;
 const MANUAL_PAUSE_MS = 15_000;
 
@@ -163,15 +165,26 @@ function SideTicketShell({
   className = "",
   ariaLabel,
   side,
+  onPause,
   children,
 }: {
   className?: string;
   ariaLabel: string;
   side: "matches" | "news";
+  /* إيقاف التقليب التلقائي مؤقتاً عند التحويم بالمؤشر أو دخول التركيز */
+  onPause?: () => void;
   children: React.ReactNode;
 }) {
   return (
-    <section aria-label={ariaLabel} data-hero-side={side} className={`hero-side-ticket hero-side-ticket--${side} ${className}`}>
+    <section
+      aria-label={ariaLabel}
+      data-hero-side={side}
+      className={`hero-side-ticket hero-side-ticket--${side} ${className}`}
+      onPointerEnter={event => {
+        if (event.pointerType === "mouse") onPause?.();
+      }}
+      onFocusCapture={onPause}
+    >
       <div className="league-ticket-bg league-ticket-holographic" aria-hidden="true">
         <span className="league-ticket-ray" />
         <span className="league-ticket-line league-ticket-line--top" />
@@ -193,6 +206,75 @@ function SideTicketHead({ title, meta }: { title: string; meta: string }) {
         {title}
       </span>
       <span className="min-w-0 truncate text-[10px] font-bold text-white/65 lg:text-[9.5px]">{meta}</span>
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   تقليب الشرائح — سلوك واحد للتذكرتين (لا نسختان):
+   تلقائي كل 4.5 ثانية، يتوقف عند التحويم أو التركيز أو أي اختيار يدوي
+   15 ثانية ثم يعود، ولا يعمل في التبويب المخفي.
+-------------------------------------------------------------------------- */
+function useSlideRotation(count: number, startDelay = 1500) {
+  const [index, setIndex] = useState(0);
+  const [auto, setAuto] = useState(false);
+  const pauseUntil = useRef(0);
+
+  useEffect(() => {
+    const starter = window.setTimeout(() => setAuto(true), startDelay);
+    return () => window.clearTimeout(starter);
+  }, [startDelay]);
+
+  useEffect(() => {
+    if (!auto || count < 2) return;
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      if (Date.now() < pauseUntil.current) return;
+      setIndex(prev => (prev + 1) % count);
+    }, ROTATE_MS);
+    return () => window.clearInterval(timer);
+  }, [auto, count]);
+
+  const hold = () => {
+    pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
+  };
+  const step = (delta: number) => {
+    if (count < 2) return;
+    hold();
+    setIndex(prev => (prev + delta + count) % count);
+  };
+  const reset = () => {
+    hold();
+    setIndex(0);
+  };
+
+  return { index: count > 0 ? Math.min(index, count - 1) : 0, step, reset, hold };
+}
+
+/* سهمان + عدّاد الشريحة — نفس الشكل في تذكرة المباريات وتذكرة الأخبار */
+function SlideArrows({
+  label,
+  index,
+  count,
+  onStep,
+}: {
+  label: string;
+  index: number;
+  count: number;
+  onStep: (delta: number) => void;
+}) {
+  const button = "grid h-5 w-5 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white/70 transition-colors hover:border-[#d8ff3e]/50 hover:text-[#d8ff3e] disabled:opacity-30 disabled:hover:border-white/15 disabled:hover:text-white/70";
+  return (
+    <div className="flex items-center gap-1">
+      <button type="button" onClick={() => onStep(-1)} disabled={count < 2} aria-label={`${label} ${label === "المباراة" ? "السابقة" : "السابق"}`} className={button}>
+        <Chevron dir="start" />
+      </button>
+      <span dir="ltr" className="min-w-[26px] text-center text-[9.5px] tabular-nums text-white/55">
+        {count ? `${index + 1}/${count}` : "0/0"}
+      </span>
+      <button type="button" onClick={() => onStep(1)} disabled={count < 2} aria-label={`${label} ${label === "المباراة" ? "التالية" : "التالي"}`} className={button}>
+        <Chevron dir="end" />
+      </button>
     </div>
   );
 }
@@ -261,50 +343,26 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
   }, []);
 
   const [activeDay, setActiveDay] = useState<DayKey>("today");
-  const [index, setIndex] = useState(0);
-  const [auto, setAuto] = useState(false);
-  const pauseUntil = useRef(0);
   const states = useDayMatches(days, activeDay);
 
   const day = states[activeDay];
   const slides = day.status === "ready" ? day.matches.slice(0, MAX_SLIDES) : [];
   const count = slides.length;
-  const current = count > 0 ? slides[Math.min(index, count - 1)] : null;
+  const { index, step, reset, hold } = useSlideRotation(count);
+  const current = count > 0 ? slides[index] : null;
   /* شعار بطولة الشريحة من الخريطة الموثّقة نفسها التي تستخدمها أيقونات
      البطولات (LEAGUE_ICONS): البطولة بلا شعار موثّق (الدوري المصري
      والتصفيات والودّية) تبقى بلا شعار في الخلفية — لا يُخترع شعار */
   const leagueLogo = current ? leagueIcon(current.league) : undefined;
 
-  /* التقليب التلقائي يبدأ بعد أول إطار كامل، ولا يعمل إلا مع وجود شرائح */
-  useEffect(() => {
-    const starter = window.setTimeout(() => setAuto(true), 1500);
-    return () => window.clearTimeout(starter);
-  }, []);
-
-  useEffect(() => {
-    if (!auto || count < 2) return;
-    const timer = window.setInterval(() => {
-      if (document.hidden) return;
-      if (Date.now() < pauseUntil.current) return;
-      setIndex(prev => (prev + 1) % count);
-    }, ROTATE_MS);
-    return () => window.clearInterval(timer);
-  }, [auto, count]);
-
-  const step = (delta: number) => {
-    if (count < 2) return;
-    pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
-    setIndex(prev => (prev + delta + count) % count);
-  };
-
+  /* تبديل اليوم يبدأ من الشريحة الأولى ويؤجّل التقليب التلقائي */
   const selectDay = (key: DayKey) => {
-    pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
+    reset();
     setActiveDay(key);
-    setIndex(0);
   };
 
   return (
-    <SideTicketShell ariaLabel="مباريات أمس واليوم وغد" side="matches" className={className}>
+    <SideTicketShell ariaLabel="مباريات أمس واليوم وغد" side="matches" className={className} onPause={hold}>
       <div className="flex items-center gap-1.5">
         <div
           role="tablist"
@@ -435,29 +493,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
         <a className="shrink-0 font-black text-[#d8ff3e]" href={to("matches/")}>
           كل المواعيد
         </a>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            disabled={count < 2}
-            aria-label="المباراة السابقة"
-            className="grid h-5 w-5 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white/70 transition-colors hover:border-[#d8ff3e]/50 hover:text-[#d8ff3e] disabled:opacity-30 disabled:hover:border-white/15 disabled:hover:text-white/70"
-          >
-            <Chevron dir="start" />
-          </button>
-          <span dir="ltr" className="min-w-[26px] text-center text-[9.5px] tabular-nums text-white/55">
-            {count ? `${Math.min(index, count - 1) + 1}/${count}` : "0/0"}
-          </span>
-          <button
-            type="button"
-            onClick={() => step(1)}
-            disabled={count < 2}
-            aria-label="المباراة التالية"
-            className="grid h-5 w-5 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white/70 transition-colors hover:border-[#d8ff3e]/50 hover:text-[#d8ff3e] disabled:opacity-30 disabled:hover:border-white/15 disabled:hover:text-white/70"
-          >
-            <Chevron dir="end" />
-          </button>
-        </div>
+        <SlideArrows label="المباراة" index={index} count={count} onStep={step} />
       </div>
     </SideTicketShell>
   );
@@ -465,41 +501,78 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
 
 /* --------------------------------------------------------------------------
    تذكرة يسار التذكرة الرئيسية — آخر الأخبار
-   (FEATURED_NEWS وحدها: العنوان والتصنيف والتاريخ من الملف نفسه)
-   -------------------------------------------------------------------------- */
+   --------------------------------------------------------------------------
+   كل خبر في شريحة مستقلة (لا شريحتان مكدّستان): التصنيف والتاريخ والعنوان
+   والوصف والنتيجة وشعارا الفريقين من FEATURED_NEWS وحدها، والسهمان
+   والعدّاد يقلّبان بين الأخبار تلقائياً كل 4.5 ثانية أو يدوياً — بنفس سلوك
+   شرائح المباريات (useSlideRotation نفسه).
+   الشريحة كلها رابط إلى صفحة الخبر الداخلية.
+-------------------------------------------------------------------------- */
 export function HeroNewsTicket({ className = "" }: { className?: string }) {
-  const items = FEATURED_NEWS.slice(0, 2);
+  /* كل الأخبار المميزة المعلنة — العدد يحدّده الملف لا هذه الواجهة */
+  const items = FEATURED_NEWS.slice(0, MAX_NEWS_SLIDES);
+  const { index, step, hold } = useSlideRotation(items.length);
+  const item = items[index] ?? null;
 
   return (
-    <SideTicketShell ariaLabel="آخر الأخبار" side="news" className={className}>
+    <SideTicketShell ariaLabel="آخر الأخبار" side="news" className={className} onPause={hold}>
       <SideTicketHead title="آخر الأخبار" meta={newsCountCaption(FEATURED_NEWS.length)} />
 
-      <div className="mt-1 flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
-        {items.map(item => (
+      <div className="mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
+        {item ? (
           <a
             key={item.href}
             href={to(item.href)}
-            className="flex flex-1 flex-col rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
+            className="hero-news-slide relative isolate flex flex-col overflow-hidden rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
           >
             <span className="flex items-center justify-between gap-1 text-[10px] font-bold text-white/60 lg:text-[9.5px]">
               <span className="min-w-0 truncate">{item.category}</span>
               <span className="shrink-0">{item.dateLabel}</span>
             </span>
-            <span className="mt-1 block line-clamp-2 text-[13px] font-black leading-snug lg:text-[11px]">{item.title}</span>
-            {item.score && (
-              <span dir="ltr" className="mt-auto block pt-1 text-[10.5px] font-black tabular-nums text-white/55 lg:text-[9.5px]">
-                {item.score}
+            <span className="mt-1 block line-clamp-2 text-[13.5px] font-black leading-snug lg:line-clamp-3 lg:text-[12px]">{item.title}</span>
+            <span className="mt-1 hidden text-[10px] font-medium leading-relaxed text-white/45 lg:line-clamp-2 lg:block">
+              {item.description}
+            </span>
+            <span className="mt-auto flex items-center justify-between gap-1 pt-1.5">
+              <span className="flex items-center gap-1">
+                {(item.teamBadges ?? []).slice(0, 2).map(src => (
+                  <img
+                    key={src}
+                    src={to(src)}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-4 w-4 object-contain lg:h-[18px] lg:w-[18px]"
+                    onError={event => {
+                      event.currentTarget.style.visibility = "hidden";
+                    }}
+                  />
+                ))}
+                {item.score && (
+                  <span dir="ltr" className="text-[10px] font-black tabular-nums text-white/55 lg:text-[9.5px]">
+                    {item.score}
+                  </span>
+                )}
               </span>
-            )}
+              <span className="shrink-0 text-[10px] font-black text-[#d8ff3e] lg:text-[9.5px]">اقرأ الخبر</span>
+            </span>
           </a>
-        ))}
+        ) : (
+          <div className="text-[12px] font-bold leading-relaxed text-white/55 lg:text-[10px]">
+            <p>لا أخبار منشورة بعد.</p>
+            <a className="mt-1 inline-block font-black text-[#d8ff3e]" href={to("blog/")}>
+              صفحة المقالات
+            </a>
+          </div>
+        )}
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-white/10 pt-1.5 text-[10.5px] font-bold lg:text-[9.5px]">
-        <span className="text-white/45">أخبار ومقالات الموقع</span>
+      <div className="mt-auto flex items-center justify-between gap-1 border-t border-white/10 pt-1.5 text-[10.5px] font-bold lg:text-[9.5px]">
         <a className="shrink-0 font-black text-[#d8ff3e]" href={to("blog/")}>
-          المزيد
+          كل الأخبار
         </a>
+        <SlideArrows label="الخبر" index={index} count={items.length} onStep={step} />
       </div>
     </SideTicketShell>
   );

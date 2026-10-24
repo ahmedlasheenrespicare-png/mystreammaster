@@ -3,7 +3,7 @@ import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from ".
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket from "./AllLeaguesTicket";
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
-import { HeroMatchesTicket, HeroNewsTicket } from "./HeroSideTickets";
+import { HeroMatchesTicket } from "./HeroSideTickets";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -382,7 +382,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             جنباً إلى جنب تحت الرئيسية — فلا يضيق شيء على الشاشات الصغيرة. */}
         <Reveal variant="up" delay={140} className="mt-7 w-full">
           <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)_230px] lg:gap-0">
-            <HeroMatchesTicket className="order-1 md:order-2 lg:order-1 lg:pe-2.5" />
+            <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               <AllLeaguesTicket
                 slideOverrides={{
@@ -391,7 +391,8 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                 }}
               />
             </div>
-            <HeroNewsTicket className="order-3 lg:order-3 lg:ps-2.5" />
+            {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
+                يُحفظ عمود سطح المكتب كي لا يتغيّر عرض التذكرة الوسطى. */}
           </div>
         </Reveal>
 

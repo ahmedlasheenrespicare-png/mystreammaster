@@ -2535,18 +2535,29 @@
         "name": "Nottingham Forest"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 29198,
+      "statistics": {
+        "home": {
+          "possession": 49.4,
+          "shots": 7,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 50.6,
+          "shots": 17,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261023&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     },
     {
       "id": "401879256",
@@ -3047,6 +3058,106 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261106&limit=500"
       },
       "fetchedAt": "2026-10-23T08:34:10.994Z"
+    },
+    {
+      "id": "401878758",
+      "date": "2026-11-07T12:30:00.000Z",
+      "home": {
+        "id": "357",
+        "name": "Leeds United"
+      },
+      "away": {
+        "id": "367",
+        "name": "Tottenham Hotspur"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401878760",
+      "date": "2026-11-07T15:00:00.000Z",
+      "home": {
+        "id": "359",
+        "name": "Arsenal"
+      },
+      "away": {
+        "id": "306",
+        "name": "Hull City"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401879241",
+      "date": "2026-11-07T15:00:00.000Z",
+      "home": {
+        "id": "370",
+        "name": "Fulham"
+      },
+      "away": {
+        "id": "361",
+        "name": "Newcastle United"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401878757",
+      "date": "2026-11-07T17:30:00.000Z",
+      "home": {
+        "id": "393",
+        "name": "Nottingham Forest"
+      },
+      "away": {
+        "id": "382",
+        "name": "Manchester City"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     }
   ]
 }

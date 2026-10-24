@@ -987,18 +987,29 @@
         "name": "Borussia Mönchengladbach"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 3
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 60000,
+      "statistics": {
+        "home": {
+          "possession": 70.4,
+          "shots": 15,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 29.6,
+          "shots": 16,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261023&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     },
     {
       "id": "401884755",
@@ -1449,6 +1460,131 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261106&limit=500"
       },
       "fetchedAt": "2026-10-23T08:34:10.994Z"
+    },
+    {
+      "id": "401884737",
+      "date": "2026-11-07T14:30:00.000Z",
+      "home": {
+        "id": "3307",
+        "name": "SC Paderborn 07"
+      },
+      "away": {
+        "id": "125",
+        "name": "Eintracht Frankfurt"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401884740",
+      "date": "2026-11-07T14:30:00.000Z",
+      "home": {
+        "id": "2950",
+        "name": "Mainz"
+      },
+      "away": {
+        "id": "132",
+        "name": "Bayern Munich"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401884744",
+      "date": "2026-11-07T14:30:00.000Z",
+      "home": {
+        "id": "11420",
+        "name": "RB Leipzig"
+      },
+      "away": {
+        "id": "3841",
+        "name": "FC Augsburg"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401884745",
+      "date": "2026-11-07T14:30:00.000Z",
+      "home": {
+        "id": "124",
+        "name": "Borussia Dortmund"
+      },
+      "away": {
+        "id": "10388",
+        "name": "SV Elversberg"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401884743",
+      "date": "2026-11-07T17:30:00.000Z",
+      "home": {
+        "id": "134",
+        "name": "VfB Stuttgart"
+      },
+      "away": {
+        "id": "137",
+        "name": "Werder Bremen"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     }
   ]
 }

@@ -987,18 +987,29 @@
         "name": "Nice"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 50.2,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 49.8,
+          "shots": 9,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261023&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     },
     {
       "id": "401876427",
@@ -1177,7 +1188,7 @@
     },
     {
       "id": "401876422",
-      "date": "2026-10-25T19:45:00.000Z",
+      "date": "2026-10-26T19:30:00.000Z",
       "home": {
         "id": "160",
         "name": "Paris Saint-Germain"
@@ -1196,9 +1207,9 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261025&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261026&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     },
     {
       "id": "401876421",
@@ -1449,6 +1460,56 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261106&limit=500"
       },
       "fetchedAt": "2026-10-23T08:34:10.994Z"
+    },
+    {
+      "id": "401876411",
+      "date": "2026-11-07T16:15:00.000Z",
+      "home": {
+        "id": "172",
+        "name": "AJ Auxerre"
+      },
+      "away": {
+        "id": "6851",
+        "name": "Paris FC"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401876407",
+      "date": "2026-11-07T19:45:00.000Z",
+      "home": {
+        "id": "160",
+        "name": "Paris Saint-Germain"
+      },
+      "away": {
+        "id": "170",
+        "name": "Troyes"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-10-24T08:09:04.391Z"
     }
   ]
 }

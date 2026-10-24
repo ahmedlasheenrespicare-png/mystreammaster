@@ -402,6 +402,35 @@ test('hero slide shows the competition logo of its own league in the background'
   await expect(ticket.locator('img[data-league-logo]')).toHaveCount(0);
 });
 
+/* تذكرة الأخبار: كل خبر في شريحة مستقلة تُقلَّب بسهمين وتلقائياً — من
+   FEATURED_NEWS وحدها، وكل شريحة رابط إلى صفحة الخبر الداخلية. */
+test('hero news ticket shows one news item per slide with arrows and auto-rotation', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+  const ticket = page.locator('[data-hero-side="news"]');
+  await ticket.scrollIntoViewIfNeeded();
+
+  /* شريحة واحدة ظاهرة في كل لحظة — لا شريحتان مكدّستان */
+  await expect(ticket.locator('.hero-news-slide')).toHaveCount(1);
+  const firstHref = await ticket.locator('.hero-news-slide').getAttribute('href');
+  expect(firstHref).toMatch(/\/news\//);
+  await expect(ticket.locator('text=1/2')).toBeVisible();
+
+  /* السهمان: التالي ثم السابق يعودان بنفس الترتيب */
+  await ticket.getByRole('button', { name: 'الخبر التالي' }).click();
+  await expect(ticket.locator('text=2/2')).toBeVisible();
+  const secondHref = await ticket.locator('.hero-news-slide').getAttribute('href');
+  expect(secondHref).toMatch(/\/news\//);
+  expect(secondHref).not.toBe(firstHref);
+  /* الشريحة الظاهرة هي نفسها الرابط، ونصّها من ملف الأخبار */
+  await expect(ticket.locator('.hero-news-slide')).toHaveAttribute('href', secondHref!);
+  await ticket.getByRole('button', { name: 'الخبر السابق' }).click();
+  await expect(ticket.locator('text=1/2')).toBeVisible();
+
+  /* التقليب التلقائي: يتقدّم وحده خلال دورة 4.5 ثانية */
+  await expect.poll(async () => ticket.locator('text=2/2').isVisible(), { timeout: 20000, intervals: [500] }).toBeTruthy();
+});
+
 test('hero matches ticket sits above the main ticket on mobile at half its height', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto('/');

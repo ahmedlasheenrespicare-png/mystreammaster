@@ -229,6 +229,9 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                         <tr className="bg-[#0b0b0f] text-white">
                           <th scope="col" className="p-4 text-[13px] font-black">السيرفر</th>
                           <th scope="col" className="p-4 text-[13px] font-black">الأنسب لمن</th>
+                          {!s.hideDevices && (
+                            <th scope="col" className="p-4 text-[13px] font-black">عدد الأجهزة</th>
+                          )}
                           <th scope="col" className="p-4 text-[13px] font-black">الجودة المعلنة</th>
                           <th scope="col" className="p-4 text-[13px] font-black">القنوات</th>
                           <th scope="col" className="p-4 text-[13px] font-black">سعر {durationLabel}</th>
@@ -251,7 +254,9 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                                 )}
                               </th>
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.tag}</td>
-                              <td className="p-4 text-[13px] font-medium text-black/70">{p.devices}</td>
+                              {!s.hideDevices && (
+                                <td className="p-4 text-[13px] font-medium text-black/70">{p.devices}</td>
+                              )}
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.quality}</td>
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.channelsCount}</td>
                               <td className="p-4 text-[13px] font-black whitespace-nowrap">

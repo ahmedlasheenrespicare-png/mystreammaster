@@ -81,37 +81,24 @@
   animation: hero-match-slide-in 0.35s ease both;
 }
 
-/* شعار البطولة في خلفية الشريحة — خافت وتحت النص (z-index سالب داخل عزل
-   البطاقة) فلا يُنافس الأسماء والنتيجة على القراءة.
-   ⚠️ شعارات البطولات ترد بألوان المصدر نفسها، وبعضها داكن أصلاً (شعار
-   الدوري الإنجليزي بنفسجي داكن): على اللوح الداكن كان الشعار الداكن يذوب
-   تماماً فلا يُرى. لذلك تُرسم الطبقة ظِلاًّ أبيض موحّداً
-   (brightness(0) invert(1)) فيظهر شعار كل بطولة بشكلها — لا لونها — بوضوح
-   على أي لوح، بلا نسخة ثانية من الشعار ولا خلفية بيضاء. */
+/* شعار البطولة بألوان المصدر في مركز الشريحة، على وهج محايد خافت
+   لتمييز الشعارات الداكنة دون تحويل ألوانها أو إضافة لوح أبيض. */
 .hero-match-slide-logo {
   position: absolute;
   z-index: -1;
-  inset-block-end: -16px;
-  inset-inline-end: -14px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 96px;
   height: 96px;
   object-fit: contain;
-  opacity: 0.22;
-  filter: brightness(0) invert(1) drop-shadow(0 2px 10px rgba(11, 11, 15, 0.55));
+  opacity: 0.42;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,.65));
   pointer-events: none;
   user-select: none;
 }
-
-/* الجوال: البطاقة قصيرة، فيصغر الشعار ويتزحلق إلى الزاوية تماماً فلا
-   يزاحم اسم الفريق (يُقرأ مع ذلك كعلامة مائية للبطولة) */
 @media (max-width: 1023px) {
-  .hero-match-slide-logo {
-    inset-block-end: -14px;
-    inset-inline-end: -14px;
-    width: 60px;
-    height: 60px;
-    opacity: 0.18;
-  }
+  .hero-match-slide-logo { width: 60px; height: 60px; opacity: 0.35; }
 }
 
 @keyframes hero-match-slide-in {

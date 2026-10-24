@@ -1,3 +1,4 @@
+import { useTicketSwipe } from "./useTicketSwipe";
 import { TicketImage } from "./TicketImage";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
@@ -742,6 +743,8 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
     setActive(index);
   };
 
+  const swipe = useTicketSwipe(delta => go((active + delta + count) % count));
+
   /* مفتاح الشريحة يجمع الحاجب بأسماء الفريقين — قد تتقاسم قمّتان
      الحاجب نفسه («قمة الجولة») في البطولة الواحدة */
   const clashKey = (clash: FeaturedClash) => `clash-${clash.eyebrow}-${clash.home.name}-${clash.away.name}`;
@@ -765,7 +768,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
       {clashes.map((clash, i) => (
         <p key={clashKey(clash)} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
       ))}
-      <div className="league-ticket-track" aria-hidden="true">
+      <div className="league-ticket-track" aria-hidden="true" {...swipe} style={{ touchAction: "pan-y pinch-zoom" }}>
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
           {base ?? (
             <div className="league-ticket league-ticket--in-track">

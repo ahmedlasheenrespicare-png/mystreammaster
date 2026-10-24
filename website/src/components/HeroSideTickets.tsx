@@ -1,3 +1,4 @@
+import { useTicketSwipe } from "./useTicketSwipe";
 import { matchCenterLink } from '../lib/match-center-link';
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -41,8 +42,6 @@ import "./hero-side-tickets.css";
    ========================================================================== */
 
 const HOME_ZONE = "Africa/Cairo";
-/* أقصى عدد شرائح في التبويب الواحد (بقيّة اليوم على صفحة المواعيد) */
-const MAX_SLIDES = 12;
 /* أقصى عدد شرائح أخبار (كل الأخبار المعلنة الآن خبران، ويتّسع لما يُضاف) */
 const MAX_NEWS_SLIDES = 8;
 const ROTATE_MS = 4500;
@@ -348,9 +347,10 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
   const states = useDayMatches(days, activeDay);
 
   const day = states[activeDay];
-  const slides = day.status === "ready" ? day.matches.slice(0, MAX_SLIDES) : [];
+  const slides = day.status === "ready" ? day.matches : [];
   const count = slides.length;
   const { index, step, reset, hold } = useSlideRotation(count);
+  const swipe = useTicketSwipe(step);
   const current = count > 0 ? slides[index] : null;
   /* شعار بطولة الشريحة من الخريطة الموثّقة نفسها التي تستخدمها أيقونات
      البطولات (LEAGUE_ICONS): البطولة بلا شعار موثّق (الدوري المصري
@@ -424,6 +424,8 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
         {current && (
           <a
             key={current.id}
+            {...swipe}
+            style={{ touchAction: "pan-y pinch-zoom" }}
             href={matchCenterLink(current) ?? to("matches/")}
             className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
           >

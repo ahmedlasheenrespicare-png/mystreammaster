@@ -459,3 +459,50 @@ test('hero live match shows source minute and links only to its registered match
   expect(home!.x).toBeGreaterThan(away!.x);
 
 });
+
+test('ticket touch gestures reach finished matches beyond twelve in every day tab and change main slides', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.route('**/scoreboard.php*', route => {
+    const league = new URL(route.request().url()).searchParams.get('league');
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    const events = [-1, 0, 1].flatMap(offset => {
+      const date = new Date(`${today}T12:00:00Z`);
+      date.setUTCDate(date.getUTCDate() + offset);
+      return Array.from({ length: 13 }, (_, i) => ({ id: `${offset}-${i}`, date: date.toISOString(), competitions: [{
+        status: { type: { state: i === 12 ? 'post' : 'pre', completed: i === 12 } },
+        competitors: [
+          { homeAway: 'home', score: '3', team: { displayName: `مضيف ${i}` } },
+          { homeAway: 'away', score: '1', team: { displayName: `ضيف ${i}` } },
+        ],
+      }] }));
+    });
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: league === 'eng.1' ? events : [] }) });
+  });
+  await page.goto('/');
+  const ticket = page.locator('[data-hero-side="matches"]');
+  const swipe = async (locator: ReturnType<typeof page.locator>, dx: number, dy = 0) => {
+    await locator.evaluate((el, { dx, dy }) => {
+      const touch = (x: number, y: number) => new Touch({ identifier: 1, target: el, clientX: x, clientY: y });
+      el.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [touch(100, 100)] }));
+      el.dispatchEvent(new TouchEvent('touchend', { bubbles: true, changedTouches: [touch(100 + dx, 100 + dy)] }));
+    }, { dx, dy });
+  };
+  for (const day of ['اليوم', 'أمس', 'غد']) {
+    await ticket.getByRole('tab', { name: day, exact: true }).click();
+    await expect(ticket.getByText('1/13', { exact: true })).toBeVisible();
+    await swipe(ticket.locator('.hero-match-slide'), -90);
+    await expect(ticket.getByText('13/13', { exact: true })).toBeVisible();
+    await expect(ticket.locator('.hero-match-slide')).toContainText('انتهت');
+    await swipe(ticket.locator('.hero-match-slide'), 90);
+    await expect(ticket.getByText('1/13', { exact: true })).toBeVisible();
+    await swipe(ticket.locator('.hero-match-slide'), 5, 100);
+    await expect(ticket.getByText('1/13', { exact: true })).toBeVisible();
+  }
+  const track = page.locator('.home-matches-ticket .league-ticket-track');
+  const activeIndex = () => track.locator('.league-ticket-slide').evaluateAll(els => els.findIndex(el => el.classList.contains('is-active')));
+  const before = await activeIndex();
+  await swipe(track, 90);
+  await expect.poll(activeIndex).toBe((before + 1) % 6);
+  await swipe(track, -90);
+  await expect.poll(activeIndex).toBe(before);
+});

@@ -259,14 +259,14 @@ export default function FeaturedNewsCards() {
    بارتفاع الشريحة نفسه، وتحوي صور اللاعبين وشعار البطولة وعنوان الخبر
    ويُستخدم بديلاً عن شرائح القمم في منزلقة التذكرة الرئيسية فقط.
 ========================================================================= */
-export function FeaturedNewsTicketSlide({ href }: { href: string }) {
+export function FeaturedNewsTicketSlide({ href, compact = false }: { href: string; compact?: boolean }) {
   const item = FEATURED_NEWS.find(news => news.href === href);
   if (!item) return null;
   const logo = item.backgroundLogo ? to(item.backgroundLogo) : undefined;
   // صور الشريحة: يامال الحزين وفليك الغاضب وديمبيلي يحتفل ولويس إنريكي، جنباً إلى جنب على اليمين
   const slideImages = (item.images ?? []).filter(img => /esp-yamal-sad|esp-flick-angry|fra-dembele-celebration|fra-enrique-triumph|ger-kane|eng-rice/.test(img.src));
   return (
-    <div className="league-ticket league-ticket--match league-ticket--in-track">
+    <div className={`league-ticket league-ticket--match league-ticket--in-track ${compact ? "hero-news-design" : ""}`}>
       <div className="league-ticket-bg league-ticket-holographic">
         <span className="league-ticket-ray" />
         <span className="league-ticket-line league-ticket-line--top" />
@@ -276,7 +276,7 @@ export function FeaturedNewsTicketSlide({ href }: { href: string }) {
       </div>
       <a
         href={to(item.href)}
-        className="group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec]"
+        className={`group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec] ${compact ? "hero-news-slide" : ""}`}
       >
         {/* شعار دوري أبطال أوروبا في الخلفية العميقة للشريحة */}
         {logo && (

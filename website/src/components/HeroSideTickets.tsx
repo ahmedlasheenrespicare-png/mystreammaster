@@ -1,3 +1,4 @@
+import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LEAGUES,
@@ -396,7 +397,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
         <span className="min-w-0 shrink-0 truncate text-[9.5px] font-bold text-white/55 lg:text-[9px]">{dayLabel(days[activeDay])}</span>
       </div>
 
-      <div id="hero-matches-panel" role="tabpanel" aria-label={DAY_TABS.find(tab => tab.key === activeDay)?.label} className="mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
+      <div id="hero-matches-panel" role="tabpanel" aria-label={DAY_TABS.find(tab => tab.key === activeDay)?.label} className="hero-news-stage mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
         {day.status === "loading" && (
           <p className="text-[12px] font-bold leading-relaxed text-white/45 lg:text-[10px]">جارٍ تحديث المواعيد…</p>
         )}
@@ -518,46 +519,9 @@ export function HeroNewsTicket({ className = "" }: { className?: string }) {
     <SideTicketShell ariaLabel="آخر الأخبار" side="news" className={className} onPause={hold}>
       <SideTicketHead title="آخر الأخبار" meta={newsCountCaption(FEATURED_NEWS.length)} />
 
-      <div className="mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
+      <div className="hero-news-stage mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
         {item ? (
-          <a
-            key={item.href}
-            href={to(item.href)}
-            className="hero-news-slide relative isolate flex flex-col overflow-hidden rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
-          >
-            <span className="flex items-center justify-between gap-1 text-[10px] font-bold text-white/60 lg:text-[9.5px]">
-              <span className="min-w-0 truncate">{item.category}</span>
-              <span className="shrink-0">{item.dateLabel}</span>
-            </span>
-            <span className="mt-1 block line-clamp-2 text-[13.5px] font-black leading-snug lg:line-clamp-3 lg:text-[12px]">{item.title}</span>
-            <span className="mt-1 hidden text-[10px] font-medium leading-relaxed text-white/45 lg:line-clamp-2 lg:block">
-              {item.description}
-            </span>
-            <span className="mt-auto flex items-center justify-between gap-1 pt-1.5">
-              <span className="flex items-center gap-1">
-                {(item.teamBadges ?? []).slice(0, 2).map(src => (
-                  <img
-                    key={src}
-                    src={to(src)}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                    className="h-4 w-4 object-contain lg:h-[18px] lg:w-[18px]"
-                    onError={event => {
-                      event.currentTarget.style.visibility = "hidden";
-                    }}
-                  />
-                ))}
-                {item.score && (
-                  <span dir="ltr" className="text-[10px] font-black tabular-nums text-white/55 lg:text-[9.5px]">
-                    {item.score}
-                  </span>
-                )}
-              </span>
-              <span className="shrink-0 text-[10px] font-black text-[#d8ff3e] lg:text-[9.5px]">اقرأ الخبر</span>
-            </span>
-          </a>
+          <FeaturedNewsTicketSlide key={item.href} href={item.href} compact />
         ) : (
           <div className="text-[12px] font-bold leading-relaxed text-white/55 lg:text-[10px]">
             <p>لا أخبار منشورة بعد.</p>

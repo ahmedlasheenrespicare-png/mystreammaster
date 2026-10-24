@@ -448,4 +448,14 @@ test('hero live match shows source minute and links only to its registered match
   await expect(slide).toContainText('مباشر');
   await expect(slide).toContainText('67′');
   await expect(slide).toHaveAttribute('href', matchCenterPath(fixture));
+  // Arabic mobile row: home team and its score are on the right.
+  await page.setViewportSize({ width: 390, height: 900 });
+  const score = slide.locator('[data-match-score]');
+  await expect(score).toHaveAttribute('dir', 'rtl');
+  await expect(score.locator('[data-score-home]')).toHaveText('1');
+  await expect(score.locator('[data-score-away]')).toHaveText('0');
+  const home = await score.locator('[data-score-home]').boundingBox();
+  const away = await score.locator('[data-score-away]').boundingBox();
+  expect(home!.x).toBeGreaterThan(away!.x);
+
 });

@@ -472,8 +472,10 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
                 <span className="min-w-0 truncate">{current.home.name}</span>
               </span>
               {current.home.score != null && current.away.score != null && (
-                <span dir="ltr" className="shrink-0 tabular-nums text-white/65">
-                  {current.home.score} - {current.away.score}
+                <span data-match-score="" dir="rtl" className="inline-flex shrink-0 items-center gap-1 tabular-nums text-white/65">
+                  <bdi data-score-home="" dir="ltr">{current.home.score}</bdi>
+                  <span aria-hidden="true">-</span>
+                  <bdi data-score-away="" dir="ltr">{current.away.score}</bdi>
                 </span>
               )}
               <span className="flex min-w-0 items-center gap-1">

@@ -412,6 +412,10 @@ test('hero news ticket shows one news item per slide with arrows and auto-rotati
 
   /* شريحة واحدة ظاهرة في كل لحظة — لا شريحتان مكدّستان */
   await expect(ticket.locator('.hero-news-slide')).toHaveCount(1);
+  // Reuse the main ticket's illustrated news design, not a text-only card.
+  await expect(ticket.locator('.hero-news-design')).toHaveCount(1);
+  await expect(ticket.locator('.hero-news-slide em')).toBeVisible();
+  await expect(ticket.locator('.hero-news-slide img[alt]:not([alt=""])').first()).toBeVisible();
   const firstHref = await ticket.locator('.hero-news-slide').getAttribute('href');
   expect(firstHref).toMatch(/\/news\//);
   await expect(ticket.locator('text=1/2')).toBeVisible();

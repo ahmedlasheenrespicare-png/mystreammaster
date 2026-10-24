@@ -144,3 +144,35 @@
     animation: none;
   }
 }
+
+/* نفس مكوّن شريحتي الأخبار في التذكرة الوسطى، بمقاسات اللوح الجانبي. */
+.hero-news-stage { position: relative; }
+.hero-news-stage .hero-news-design {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  flex: 1;
+  margin: 0;
+}
+.hero-news-design > a { padding: 8px; }
+.hero-news-design > a > div:first-of-type { font-size: 8px; gap: 4px; }
+.hero-news-design > a > div:first-of-type img { width: 16px; height: 16px; }
+.hero-news-design em {
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1.5;
+}
+.hero-news-design em + p { display: none; }
+.hero-news-design > a > div:last-child { gap: 3px; padding-top: 4px; }
+.hero-news-design > a > div:last-child > span { gap: 3px; }
+.hero-news-design > a > div:last-child img { max-width: 18px; max-height: 14px; object-fit: contain; }
+.hero-news-design > a > div:last-child svg { max-width: 34px; }
+@media (max-width: 1023px) {
+  .hero-side-ticket--news { min-height: 265px; }
+  .hero-news-design em { font-size: 13px; }
+}
+.hero-news-design > a > div:nth-of-type(2) > div:first-child img + img {
+  margin-inline-start: -8px;
+}

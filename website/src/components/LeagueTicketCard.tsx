@@ -747,11 +747,11 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
 
   /* مفتاح الشريحة يجمع الحاجب بأسماء الفريقين — قد تتقاسم قمّتان
      الحاجب نفسه («قمة الجولة») في البطولة الواحدة */
-  const clashKey = (clash: FeaturedClash) => `clash-${clash.eyebrow}-${clash.home.name}-${clash.away.name}`;
+  const clashKey = (clash: FeaturedClash, i: number) => `clash-${i}-${clash.eyebrow}-${clash.home.name}-${clash.away.name}`;
   const slides = [
     { key: "base", label: `تذكرة ${name}` },
-    ...clashes.map(clash => ({
-      key: clashKey(clash),
+    ...clashes.map((clash, i) => ({
+      key: clashKey(clash, i),
       label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}`,
     })),
   ];
@@ -766,7 +766,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
       onFocusCapture={() => { pauseUntil.current = Date.now() + MANUAL_PAUSE_MS; }}
     >
       {clashes.map((clash, i) => (
-        <p key={clashKey(clash)} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
+        <p key={clashKey(clash, i)} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
       ))}
       <div className="league-ticket-track" aria-hidden="true" {...swipe} style={{ touchAction: "pan-y pinch-zoom" }}>
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
@@ -793,7 +793,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           )}
         </div>
         {clashes.map((clash, i) => (
-          <div key={clashKey(clash)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
+          <div key={clashKey(clash, i)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             {slideOverrides?.[i] ?? (
             <div className="league-ticket league-ticket--match league-ticket--in-track">
               <TicketBrandPair leagueId={leagueId} scope="clash" showNovaBrand={showNovaBrand} />

@@ -31,7 +31,7 @@ import "./league-ticket.css";
 
 /* مواجهات التذكرة الجامعة — نفس عناصر FEATURED_CLASHES المعتمدة في
    تذاكر بطولاتها حرفاً مع تثبيت مصدر كل منها */
-const INDEX_CLASHES: FeaturedClash[] = [
+export const INDEX_CLASHES: FeaturedClash[] = [
   { ...FEATURED_CLASHES["uefa.champions"][0], source: "uefa.champions" },
   { ...FEATURED_CLASHES["uefa.champions"][1], source: "uefa.champions" },
   { ...FEATURED_CLASHES["esp.1"][0], source: "esp.1" },
@@ -126,12 +126,12 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket({ slideOverrides }: { slideOverrides?: Partial<Record<number, ReactElement>> } = {}) {
+export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[] } = {}) {
   return (
     <LeagueTicketCarousel
       leagueId="matches"
       name="كل البطولات الكبرى"
-      clashes={INDEX_CLASHES}
+      clashes={clashes}
       slideOverrides={slideOverrides}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}

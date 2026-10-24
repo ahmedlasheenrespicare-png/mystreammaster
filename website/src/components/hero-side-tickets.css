@@ -57,8 +57,46 @@
    الأجهزة المتوسطة (حيث تصطف الجانبيتان جنباً إلى جنب) و265px من lg حيث
    تصطف التذاكر الثلاث في صفّ واحد بارتفاع واحد.
 -------------------------------------------------------------------------- */
+/* Card frame adapted from disnaker_4924, kind-mayfly-18 (MIT):
+   https://uiverse.io/disnaker_4924/kind-mayfly-18
+   Preserve the existing holographic panel, ray, lines and competition logo.
+   Only the matches shell gets the olive frame / white upper-left glow.
+   Responsive dimensions intentionally stay unchanged. */
 .hero-side-ticket--matches {
   height: 132px;
+  isolation: isolate;
+  padding: 2px;
+  border-radius: 12px;
+  background: #333e1d;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.22),
+              0 8px 10px -6px rgb(0 0 0 / 0.18);
+}
+
+.hero-side-ticket--matches::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 224px;
+  height: 192px;
+  left: -50%;
+  top: -50%;
+  background: #fff;
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.hero-side-ticket--matches > .league-ticket-bg {
+  inset: 2px;
+  border-radius: 10px;
+}
+
+.hero-side-ticket--matches .hero-match-slide {
+  border-radius: 10px;
+}
+
+.hero-side-ticket--matches .hero-match-slide:focus-visible {
+  outline: 2px solid #d8ff3e;
+  outline-offset: -2px;
 }
 
 @media (min-width: 768px) {

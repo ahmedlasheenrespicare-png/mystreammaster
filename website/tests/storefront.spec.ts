@@ -507,3 +507,23 @@ test('ticket touch gestures reach finished matches beyond twelve in every day ta
   await swipe(track, -90);
   await expect.poll(activeIndex).toBe(before);
 });
+
+test('matches ticket uses the reference olive frame and white glow without losing its background layers', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const ticket = page.locator('[data-hero-side="matches"]');
+    const frame = await ticket.evaluate(el => {
+      const style = getComputedStyle(el);
+      const glow = getComputedStyle(el, '::before');
+      return { radius: style.borderRadius, color: style.backgroundColor,
+        glow: glow.backgroundColor, blur: glow.filter, pointerEvents: glow.pointerEvents };
+    });
+    expect(frame).toEqual({ radius: '12px', color: 'rgb(51, 62, 29)',
+      glow: 'rgb(255, 255, 255)', blur: 'blur(50px)', pointerEvents: 'none' });
+    await expect(ticket.locator('.league-ticket-holographic')).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-ray')).toHaveCount(1);
+    await expect(ticket.locator('.league-ticket-line')).toHaveCount(4);
+    await expect(ticket.getByRole('tab')).toHaveCount(3);
+  }
+});

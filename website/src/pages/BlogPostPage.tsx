@@ -8,7 +8,7 @@ import {
   hasEgyptPricing,
   monthlyEquivalent,
 } from "../content/egypt-pricing";
-import type { DeckCard } from "../components/ServerDeck";
+import type { DeckCard, DeckTab } from "../components/ServerDeck";
 import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
@@ -34,28 +34,34 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
   const stripCodes = typeof strip === "object" ? strip.codes : undefined;
   const stripHref = typeof strip === "object" ? strip.href : undefined;
 
-  /* كروت الشريط: كارت لكل (سيرفر × مدة) — مقال مصر: سيرفران × 3 مدد = 6 كروت.
-     الأرقام تُقرأ من ملف الأسعار المصري نفسه، فلا نسخ يدوي داخل الصفحة. */
-  const stripCards: DeckCard[] | undefined =
+  /* تبويبات الشريط: تبويب لكل مدة (3 / 6 / 12)، وفي كل تبويب بطاقة لكل سيرفر
+     — مقال مصر: ثلاث مدد × بطاقتين (نوفا وX) = ست بطاقات. الأرقام تُقرأ من
+     ملف الأسعار المصري نفسه، فلا نسخ يدوي داخل الصفحة. */
+  const stripTabs: DeckTab[] | undefined =
     typeof strip === "object" && strip.price === "egp" && hasEgyptPricing()
-      ? EGYPT_PRICING.filter((server) => !stripCodes || stripCodes.includes(server.code))
-          .flatMap((server) =>
-            EGYPT_TERMS.flatMap((term) => {
-              const amount = server.prices[term];
-              if (typeof amount !== "number") return [];
-              return [
-                {
-                  key: `${server.code}-${term}`,
-                  code: server.code,
-                  name: server.name.split("(")[0].trim(),
-                  termLabel: term === "12" ? "12 شهراً" : `${term} أشهر`,
-                  amount,
-                  currency: "ج.م",
-                  href: stripHref ?? "#egypt-prices",
-                } satisfies DeckCard,
-              ];
-            })
-          )
+      ? EGYPT_TERMS.map((term) => {
+          const servers = EGYPT_PRICING.filter(
+            (server) =>
+              (!stripCodes || stripCodes.includes(server.code)) &&
+              typeof server.prices[term] === "number"
+          );
+          const cards: DeckCard[] = servers.map((server) => ({
+            key: `${server.code}-${term}`,
+            code: server.code,
+            name: server.name.split("(")[0].trim(),
+            termLabel: term === "12" ? "12 شهراً" : `${term} أشهر`,
+            amount: server.prices[term] as number,
+            currency: "ج.م",
+            href: stripHref ?? "#egypt-prices",
+          }));
+          const cheapest = Math.min(...cards.map((card) => card.amount));
+          return {
+            key: term,
+            label: term === "12" ? "سنة" : `${term} أشهر`,
+            hint: `من ${cheapest} ج.م`,
+            cards,
+          } satisfies DeckTab;
+        }).filter((tab) => tab.cards.length > 0)
       : undefined;
 
   /* عنوان شريط البطاقات لقارئ الشاشة: «ستّ باقات السيرفرين في نظرة واحدة» */
@@ -66,8 +72,10 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
     5: "خمس باقات",
     6: "ستّ باقات",
   };
-  const stripLabel = stripCards
-    ? `${STRIP_COUNTS[stripCards.length] ?? `${stripCards.length} باقات`} ${
+  const stripCount =
+    stripTabs?.reduce((total, tab) => total + tab.cards.length, 0) ?? 0;
+  const stripLabel = stripTabs
+    ? `${STRIP_COUNTS[stripCount] ?? `${stripCount} باقات`} ${
         stripCodes?.length === 2 ? "السيرفرين" : "السيرفرات"
       } في نظرة واحدة`
     : undefined;
@@ -138,10 +146,8 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
 
           {strip && (
             <ServerDeck
-              label={
-                stripCards ? stripLabel : "السيرفرات الأربعة في نظرة واحدة"
-              }
-              cards={stripCards}
+              label={stripTabs ? stripLabel : "السيرفرات الأربعة في نظرة واحدة"}
+              tabs={stripTabs}
             />
           )}
 

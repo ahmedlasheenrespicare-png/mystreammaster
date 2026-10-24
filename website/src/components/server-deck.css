@@ -52,6 +52,227 @@
   height: calc(268px * var(--deck-scale));
 }
 
+/* ==========================================================================
+   شريط المدد (التبويبات) — مستوحى من uiverse.io/dexter-st/pretty-dolphin-68
+   --------------------------------------------------------------------------
+   العناصر المنقولة من التصميم الأصلي:
+   • الحبّة الزجاجية (.menu-ring): خلفية بيضاء + طبقة تظليل علوية + تدرّج
+     مخروطي دقيق للنسيج + ظلال داخلية متعدّدة (inset) تجعلها محدّبة.
+   • زر الإجراء (.btn): تدرّج لامع من أعلى + وهج داخلي أبيض + ظل خارجي،
+     وهو هنا «المؤشّر» الذي ينتقل بين التبويبات.
+   • الضوء المخروطي (.selector-light): conic-gradient يدور ببطء داخل
+     المؤشّر (@property على الزاوية كما في الأصل).
+   • الحركة: cubic-bezier(.22, 1, .36, 1.15) أي ارتداد مرن عند الانتقال.
+   الفرق: التصميم الأصلي قائمة دائرية، وهذه تبويبات أفقية — نفس اللغة لا نفس
+   الهندسة.
+   ========================================================================== */
+
+@property --srv-tab-glow {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.srv-tabs {
+  --srv-tabs-count: 3;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: min(100%, 470px);
+  margin: 4px auto 18px;
+  padding: 5px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% -120%, rgba(127, 143, 155, 0.55) 0%, rgba(0, 0, 0, 0) 72%),
+    linear-gradient(180deg, #ffffff 0%, #eceef3 100%);
+  box-shadow:
+    inset 0 -2px 1px rgba(0, 0, 0, 0.07),
+    inset 0 -4px 2px rgba(0, 0, 0, 0.05),
+    inset 0 8px 16px rgba(255, 255, 255, 0.95),
+    0 2px 1px rgba(0, 0, 0, 0.06),
+    0 16px 30px -18px rgba(11, 11, 15, 0.6);
+  isolation: isolate;
+}
+
+/* نسيج التصميم الأصلي (conic-gradient رباعي) فوق الحبّة، خفيف جداً */
+.srv-tabs::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    #ffffff00 0.25turn,
+    rgba(255, 255, 255, 0.5) 0.25turn 0.5turn,
+    #ffffff00 0.5turn 0.75turn,
+    rgba(255, 255, 255, 0.5) 0.75turn
+  );
+  background-size: 6px 6px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.srv-tabs-track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* المؤشّر المنزلق (.btn في الأصل): حبّة زجاجية زرقاء لامعة */
+.srv-tabs-light {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: calc(100% / var(--srv-tabs-count));
+  z-index: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% -110%, rgba(127, 143, 155, 0.85) 0%, rgba(0, 0, 0, 0) 74%),
+    linear-gradient(180deg, #4d6bff 0%, #2b4eff 55%, #1f39c9 100%);
+  box-shadow:
+    inset 0 -2px 1px rgba(0, 0, 0, 0.2),
+    inset 0 -4px 2px rgba(0, 0, 0, 0.12),
+    inset 0 8px 16px rgba(255, 255, 255, 0.42),
+    0 2px 1px rgba(0, 0, 0, 0.1),
+    0 10px 20px -10px rgba(43, 78, 255, 0.85);
+  /* RTL: التبويب الأول على اليمين، فالإزاحة سالبة على المحور الأفقي */
+  transform: translateX(calc(var(--tab, 0) * -100%));
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1.15);
+}
+
+/* الضوء الدوّار داخل المؤشّر (.selector-light في الأصل) */
+.srv-tabs-light::after {
+  content: "";
+  position: absolute;
+  inset: -70%;
+  background: conic-gradient(
+    from var(--srv-tab-glow),
+    rgba(255, 255, 255, 0) 0deg,
+    rgba(255, 255, 255, 0.55) 42deg,
+    rgba(255, 255, 255, 0) 108deg
+  );
+  animation: srv-tab-sweep 5.5s linear infinite;
+}
+
+@keyframes srv-tab-sweep {
+  to {
+    --srv-tab-glow: 360deg;
+  }
+}
+
+.srv-tab {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-height: 46px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11, 11, 15, 0.72);
+  cursor: pointer;
+  font-family: "Tajawal", system-ui, sans-serif;
+  transition:
+    color 0.35s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1.15);
+}
+
+.srv-tab:hover {
+  color: #0b0b0f;
+}
+
+.srv-tab:active {
+  transform: scale(0.97);
+}
+
+.srv-tab:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 3px;
+}
+
+.srv-tab.is-active {
+  color: #ffffff;
+}
+
+.srv-tab-label {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.srv-tab-hint {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: rgba(11, 11, 15, 0.5);
+  white-space: nowrap;
+  transition: color 0.35s ease;
+}
+
+.srv-tab.is-active .srv-tab-hint {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---- لوح التبويب: بطاقتان كاملتان لكل مدة ---- */
+.srv-panel {
+  display: block;
+}
+
+.srv-panel[hidden] {
+  display: none;
+}
+
+/* المقياس أكبر من المروحة لأن البطاقتين فقط تُعرضان كاملتين — الحضور البصري
+   مطلوب، وسطر التبويبات فوقهما يحفظ الإيقاع. */
+.srv-deck-wrap--pair {
+  --deck-scale: 1.16;
+  height: calc(244px * var(--deck-scale));
+}
+
+.srv-deck--pair {
+  height: 244px;
+}
+
+/* الحرف العملاق زخرفي (aria-hidden) — لكن داخل اللوح الزجاجي (backdrop-filter)
+   يتحوّل background-clip:text إلى مستطيل باهت يشوّه البطاقة. في وضع البطاقتين
+   الظاهرتين معاً يُخفى بلا خسارة: الشعار والاسم والسعر والزر تحمل كل المعنى. */
+.srv-deck--pair .srv-deck-glyph {
+  display: none;
+}
+
+/* دخول البطاقتين عند تغيير التبويب — بالخاصية translate حتى لا تُلغى زاوية
+   الميل المكتوبة inline في transform */
+.srv-panel[data-active="true"] .srv-deck-card {
+  animation: srv-pair-in 0.6s cubic-bezier(0.22, 1, 0.36, 1.15) both;
+}
+
+.srv-panel[data-active="true"] .srv-deck-card:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+@keyframes srv-pair-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 /* ---- الكروت: كل سيرفر في كارت بلونه ---- */
 .srv-deck-card {
   position: absolute;
@@ -525,6 +746,9 @@
   .srv-deck-wrap--fan {
     --deck-scale: 0.85;
   }
+  .srv-deck-wrap--pair {
+    --deck-scale: 0.95;
+  }
 }
 @media (max-width: 640px) {
   .srv-deck-wrap {
@@ -533,6 +757,9 @@
   .srv-deck-wrap--fan {
     --deck-scale: 0.72;
   }
+  .srv-deck-wrap--pair {
+    --deck-scale: 0.86;
+  }
 }
 @media (max-width: 420px) {
   .srv-deck-wrap {
@@ -540,6 +767,9 @@
   }
   .srv-deck-wrap--fan {
     --deck-scale: 0.64;
+  }
+  .srv-deck-wrap--pair {
+    --deck-scale: 0.8;
   }
 }
 
@@ -550,8 +780,16 @@
   .srv-wa,
   .srv-wa-clip,
   .srv-wa-corner,
-  .srv-wa-arrow {
+  .srv-wa-arrow,
+  .srv-tabs-light,
+  .srv-tab {
     transition: none !important;
+    animation: none !important;
+  }
+  .srv-tabs-light::after {
+    animation: none !important;
+  }
+  .srv-panel[data-active="true"] .srv-deck-card {
     animation: none !important;
   }
 }

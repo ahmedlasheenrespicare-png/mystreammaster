@@ -258,16 +258,14 @@ test('hero ticket row mirrors the mockup center panel with matches/news side tic
   const matchesTicket = page.locator('[data-hero-side="matches"]');
   const newsTicket = page.locator('[data-hero-side="news"]');
   await expect(matchesTicket).toHaveCount(1);
-  await expect(newsTicket).toHaveCount(1);
+  await expect(newsTicket).toHaveCount(0);
   const matchesBox = await matchesTicket.boundingBox();
-  const newsBox = await newsTicket.boundingBox();
-  expect(matchesBox && newsBox).toBeTruthy();
+  expect(matchesBox).toBeTruthy();
 
   /* RTL: يمين التذكرة الرئيسية = المباريات، يسارها = الأخبار */
   expect(matchesBox!.x).toBeGreaterThanOrEqual(mainBox!.x + mainBox!.width - 2);
-  expect(newsBox!.x + newsBox!.width).toBeLessThanOrEqual(mainBox!.x + 2);
   /* الثلاث على استقامة واحدة بنفس الارتفاع */
-  for (const box of [matchesBox!, newsBox!]) {
+  for (const box of [matchesBox!]) {
     expect(Math.abs(box.y - mainBox!.y)).toBeLessThanOrEqual(2);
     expect(Math.abs(box.height - mainBox!.height)).toBeLessThanOrEqual(2);
   }
@@ -275,7 +273,6 @@ test('hero ticket row mirrors the mockup center panel with matches/news side tic
   /* المحتوى من مصدره: رابط صفحة المواعيد في تذكرة المباريات، ورابط الخبر
      الداخلي في تذكرة الأخبار */
   await expect(matchesTicket.locator('a[href*="/matches/"]').first()).toBeVisible();
-  await expect(newsTicket.locator('a[href*="/news/"]').first()).toHaveAttribute('href', /\/news\//);
 });
 
 /* التبويبات الثلاثة (أمس/اليوم/غد) وشرائح المباريات بسهمَيها: الشعارات من
@@ -404,35 +401,13 @@ test('hero slide shows the competition logo of its own league in the background'
 
 /* تذكرة الأخبار: كل خبر في شريحة مستقلة تُقلَّب بسهمين وتلقائياً — من
    FEATURED_NEWS وحدها، وكل شريحة رابط إلى صفحة الخبر الداخلية. */
-test('hero news ticket shows one news item per slide with arrows and auto-rotation', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/');
-  const ticket = page.locator('[data-hero-side="news"]');
-  await ticket.scrollIntoViewIfNeeded();
-
-  /* شريحة واحدة ظاهرة في كل لحظة — لا شريحتان مكدّستان */
-  await expect(ticket.locator('.hero-news-slide')).toHaveCount(1);
-  // Reuse the main ticket's illustrated news design, not a text-only card.
-  await expect(ticket.locator('.hero-news-design')).toHaveCount(1);
-  await expect(ticket.locator('.hero-news-slide em')).toBeVisible();
-  await expect(ticket.locator('.hero-news-slide img[alt]:not([alt=""])').first()).toBeVisible();
-  const firstHref = await ticket.locator('.hero-news-slide').getAttribute('href');
-  expect(firstHref).toMatch(/\/news\//);
-  await expect(ticket.locator('text=1/2')).toBeVisible();
-
-  /* السهمان: التالي ثم السابق يعودان بنفس الترتيب */
-  await ticket.getByRole('button', { name: 'الخبر التالي' }).click();
-  await expect(ticket.locator('text=2/2')).toBeVisible();
-  const secondHref = await ticket.locator('.hero-news-slide').getAttribute('href');
-  expect(secondHref).toMatch(/\/news\//);
-  expect(secondHref).not.toBe(firstHref);
-  /* الشريحة الظاهرة هي نفسها الرابط، ونصّها من ملف الأخبار */
-  await expect(ticket.locator('.hero-news-slide')).toHaveAttribute('href', secondHref!);
-  await ticket.getByRole('button', { name: 'الخبر السابق' }).click();
-  await expect(ticket.locator('text=1/2')).toBeVisible();
-
-  /* التقليب التلقائي: يتقدّم وحده خلال دورة 4.5 ثانية */
-  await expect.poll(async () => ticket.locator('text=2/2').isVisible(), { timeout: 20000, intervals: [500] }).toBeTruthy();
+test('hero side news ticket is temporarily hidden on desktop and mobile', async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    await expect(page.locator('[data-hero-side="news"]')).toHaveCount(0);
+    await expect(page.locator('.home-matches-ticket')).toBeVisible();
+  }
 });
 
 test('hero matches ticket sits above the main ticket on mobile at half its height', async ({ page }) => {
@@ -440,14 +415,11 @@ test('hero matches ticket sits above the main ticket on mobile at half its heigh
   await page.goto('/');
   const matches = await page.locator('[data-hero-side="matches"]').boundingBox();
   const main = await page.locator('.hero-ticket-row .home-matches-ticket').boundingBox();
-  const news = await page.locator('[data-hero-side="news"]').boundingBox();
-  expect(matches && main && news).toBeTruthy();
+  expect(matches && main).toBeTruthy();
   /* فوق التذكرة الرئيسية، وبنصف طولها */
   expect(matches!.y + matches!.height).toBeLessThanOrEqual(main!.y);
   expect(Math.abs(matches!.height - main!.height / 2)).toBeLessThanOrEqual(4);
-  /* ثم الأخبار تحتهما */
-  expect(news!.y).toBeGreaterThanOrEqual(main!.y + main!.height);
-  for (const box of [matches!, main!, news!]) expect(box.width).toBeLessThanOrEqual(390);
+  for (const box of [matches!, main!]) expect(box.width).toBeLessThanOrEqual(390);
   const dimensions = await page.evaluate(() => [innerWidth, document.documentElement.scrollWidth]);
   expect(dimensions[1]).toBeLessThanOrEqual(dimensions[0] + 1);
 });

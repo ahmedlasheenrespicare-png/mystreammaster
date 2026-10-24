@@ -1,26 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, hasCompleteScore, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
-import { matchByExternalId, matchCenterPath } from '../content/match-center.mjs';
+import { matchCenterLink } from '../lib/match-center-link';
 import { leagueLandingsInPageOrder } from '../content/competitions';
 import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
 import AllLeaguesTicket from '../components/AllLeaguesTicket';
 import LeagueStatsCarousel from '../components/LeagueStatsCarousel';
-import { to } from '../config';
 import './matches.css';
 
 /* البند 3: «إضافة رابط مركز المباراة إلى البطاقة في صفحة المواعيد القائمة —
    بلا صفحة مكررة». الربط **بمعرّف المباراة من المصدر**، لا باسم الفريق ولا
    بوقت البداية: ثلاثة أحداث في eng.1 تبدأ 14:00Z يوم 2026-10-17، فالربط
    بالاسم أو بالوقت يخطئ، والمعرّف وحده لا. */
-function matchCenterLink(match: Match): string | null {
-  /* `Match.id` في هذه الصفحة مركّب: `${league}:${eventId}`. */
-  const separator = match.id.indexOf(':');
-  const eventId = separator === -1 ? match.id : match.id.slice(separator + 1);
-  if (!eventId) return null;
-  const found = matchByExternalId('espn', eventId);
-  /* ولا رابط إلا إن تطابقت المسابقة أيضاً — فلا يربط معرّفٌ صفحةً ببطولة أخرى. */
-  return found && found.leagueId === match.league ? to(matchCenterPath(found).replace(/^\//, '')) : null;
-}
 
 const REFRESH_MS = 60_000;
 type Board = { matches: Match[]; updated: string };

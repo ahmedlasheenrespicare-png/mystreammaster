@@ -379,18 +379,23 @@ test('hero slide shows the competition logo of its own league in the background'
   await expect(ticket.locator('text=1/2')).toBeVisible();
 
   /* البطولة الأولى (الإنجليزي) لها شعار موثّق في الخلفية */
+  await expect(ticket.locator('.hero-match-slide')).toHaveAttribute('href', '/matches/');
   const logo = ticket.locator('img[data-league-logo]');
   await expect(logo).toHaveCount(1);
   await expect(logo).toHaveAttribute('src', /\/23\.png$/);
   await expect(logo).toHaveAttribute('aria-hidden', 'true');
-  /* الشعار داكن أصلاً (الإنجليزي بنفسجي داكن) — الطبقة تُرسم ظِلاًّ أبيض
-     موحّداً بشفافية كافية، وإلا ذاب الشعار الداكن على اللوح الداكن ولم يُرَ */
   const watermark = await logo.evaluate(el => {
     const style = getComputedStyle(el);
-    return { filter: style.filter, opacity: Number(style.opacity) };
+    const rect = el.getBoundingClientRect();
+    const card = el.closest('a')!.getBoundingClientRect();
+    return { filter: style.filter, opacity: Number(style.opacity),
+      dx: Math.abs(rect.x + rect.width / 2 - card.x - card.width / 2),
+      dy: Math.abs(rect.y + rect.height / 2 - card.y - card.height / 2) };
   });
-  expect(watermark.filter).toContain('invert(1)');
-  expect(watermark.opacity).toBeGreaterThanOrEqual(0.15);
+  expect(watermark.filter).not.toMatch(/invert|brightness|grayscale/);
+  expect(watermark.opacity).toBeGreaterThanOrEqual(0.3);
+  expect(watermark.dx).toBeLessThanOrEqual(2);
+  expect(watermark.dy).toBeLessThanOrEqual(2);
 
   /* الثانية (المصري) بلا شعار موثّق — لا صورة ولا شعار مخترع */
   await ticket.getByRole('button', { name: 'المباراة التالية' }).click();
@@ -422,4 +427,25 @@ test('hero matches ticket sits above the main ticket on mobile at half its heigh
   for (const box of [matches!, main!]) expect(box.width).toBeLessThanOrEqual(390);
   const dimensions = await page.evaluate(() => [innerWidth, document.documentElement.scrollWidth]);
   expect(dimensions[1]).toBeLessThanOrEqual(dimensions[0] + 1);
+});
+
+test('hero live match shows source minute and links only to its registered match center', async ({ page }) => {
+  const { matchByExternalId, matchCenterPath } = await import('../src/content/match-center.mjs');
+  const fixture = matchByExternalId('espn', '401879259')!;
+  await page.route('**/scoreboard.php*', route => {
+    const url = new URL(route.request().url());
+    const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: url.searchParams.get('league') === 'eng.1' ? [{
+      id: '401879259', date: `${date}T14:00:00Z`,
+      competitions: [{ status: { displayClock: "67′", type: { state: 'in', completed: false } }, competitors: [
+        { homeAway: 'home', score: '1', team: { displayName: 'مانشستر سيتي' } },
+        { homeAway: 'away', score: '0', team: { displayName: 'إيبسويتش تاون' } },
+      ] }],
+    }] : [] }) });
+  });
+  await page.goto('/');
+  const slide = page.locator('[data-hero-side="matches"] .hero-match-slide');
+  await expect(slide).toContainText('مباشر');
+  await expect(slide).toContainText('67′');
+  await expect(slide).toHaveAttribute('href', matchCenterPath(fixture));
 });

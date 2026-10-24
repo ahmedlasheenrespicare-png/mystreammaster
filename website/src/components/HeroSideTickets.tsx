@@ -1,3 +1,4 @@
+import { matchCenterLink } from '../lib/match-center-link';
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -423,7 +424,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
         {current && (
           <a
             key={current.id}
-            href={to("matches/")}
+            href={matchCenterLink(current) ?? to("matches/")}
             className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
           >
             {/* خلفية الشريحة: شعار بطولة المباراة نفسها (زخرفي، خافت، تحت
@@ -449,6 +450,9 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
                 <span className="inline-flex shrink-0 items-center gap-1 font-black text-[#ff6b5c]">
                   <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#ff6b5c]" />
                   مباشر
+                  {current.detail && current.detail !== "مباشر" && (
+                    <bdi className="tabular-nums">{current.detail}</bdi>
+                  )}
                 </span>
               ) : current.state === "finished" ? (
                 <span className="shrink-0 font-black text-white/55">انتهت</span>

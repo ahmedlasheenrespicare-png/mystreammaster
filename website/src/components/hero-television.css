@@ -116,12 +116,13 @@
   .hero-tv {
     width: 280px;
     left: 0;
-    top: 85px;
-    aspect-ratio: 16 / 11;
+    top: 65px;
+    aspect-ratio: 10 / 11;
     transform-origin: top left;
     transform: perspective(1100px) rotateY(-16deg) rotateZ(-12deg) scale(.75);
   }
-  .hero-tv-frame { aspect-ratio: 16 / 10; }
+  /* Taller small-screen panel; keep the compact width and uniform device scale. */
+  .hero-tv-frame { aspect-ratio: 1 / 1; }
   .hero-tv-topbar { padding: 8px 12px; font-size: 9px; }
   .hero-tv-demo { font-size: 7px; }
   .hero-tv-welcome, .hero-tv-apps {

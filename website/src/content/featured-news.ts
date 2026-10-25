@@ -35,9 +35,11 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الإسباني",
     dateLabel: "25 أكتوبر 2026",
-    title: "الكلاسيكو: مبابي يمنح ريال مدريد التقدم على برشلونة في الشوط الأول",
-    description: "هدف مبابي في الدقيقة 41 في كامب نو، وفرصة ضائعة ليامال قبل الاستراحة.",
+    title: "الكلاسيكو: ريال مدريد يفوز 2-1 على برشلونة بهدفي مبابي",
+    description: "مبابي يسجل في الدقيقة 41 و87 في كامب نو، وأول خسارة لبرشلونة في الدوري هذا الموسم.",
     href: "news/clasico-first-half-2026/",
+    teamBadges: ["images/teams/barcelona-club-badge.webp", "images/teams/real-madrid-club-badge.webp"],
+    score: "1 - 2",
     fullImage: true,
     images: [
       { src: "images/players/esp-mbappe-goal.webp", alt: "مبابي يحتفل بهدفه في الشوط الأول من الكلاسيكو" },

@@ -703,3 +703,26 @@ test('hero top promotional badge is hidden while the tickets and headline remain
   await expect(hero.locator('.hero-ticket-row')).toBeVisible();
   await expect(hero.locator('h1')).toBeVisible();
 });
+
+test('television welcome places archived cinema artwork left of its text and hides it with the welcome screen', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const tv = page.locator('[data-hero-tv]');
+    await tv.scrollIntoViewIfNeeded();
+    const art = tv.locator('.hero-tv-welcome-art');
+    await expect(art).toHaveAttribute('src', /images\/cinema\/superman-batman-stark\.png$/);
+    await expect.poll(() => art.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBeTruthy();
+    const positions = await tv.evaluate(el => {
+      const art = el.querySelector('.hero-tv-welcome-art') as HTMLElement;
+      const copy = el.querySelector('.hero-tv-welcome-copy') as HTMLElement;
+      return { art: art.offsetLeft + art.offsetWidth, copy: copy.offsetLeft };
+    });
+    expect(positions.art).toBeLessThanOrEqual(positions.copy);
+    const button = tv.getByRole('button');
+    await button.focus();
+    await button.press('Enter');
+    await expect(tv.locator('.hero-tv-welcome')).toHaveCSS('opacity', '0');
+    await expect(tv.locator('.hero-tv-apps')).toHaveCSS('opacity', '1');
+  }
+});

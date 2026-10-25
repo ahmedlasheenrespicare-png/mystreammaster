@@ -653,3 +653,25 @@ test('angled television sits behind the phone and supports touch and keyboard wi
     await expect(screen).toHaveAttribute('aria-pressed', 'true');
   }
 });
+
+test('small-screen phone stays below the television content without clipping either device', async ({ page }) => {
+  for (const width of [320, 390, 600, 767]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const stage = page.locator('.hero-phone-stage');
+    await stage.scrollIntoViewIfNeeded();
+    const phone = stage.locator('[data-hero-phone]');
+    const tv = stage.locator('[data-hero-tv]');
+    const device = await phone.boundingBox();
+    const frame = await tv.locator('.hero-tv-frame').boundingBox();
+    const content = await tv.locator('.hero-tv-apps').boundingBox();
+    const container = await stage.boundingBox();
+    expect(device!.y).toBeGreaterThan(content!.y + content!.height);
+    expect(device!.width).toBe(180);
+    expect(device!.x).toBeGreaterThanOrEqual(0);
+    expect(frame!.x).toBeGreaterThanOrEqual(0);
+    expect(frame!.x + frame!.width).toBeLessThanOrEqual(width);
+    expect(device!.y + device!.height).toBeLessThanOrEqual(container!.y + container!.height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});

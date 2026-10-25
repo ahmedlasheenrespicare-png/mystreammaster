@@ -192,7 +192,7 @@ test('all eight leader banners use the live match-card crest source, with no oth
     await expect(image).toHaveAttribute('loading', 'lazy');
     await expect(image).toHaveAttribute('draggable', 'false');
     // الشعار المحلي البديل معروف المسار (وجوده الفعلي يُفحَص أدناه).
-    expect(localFallback).toMatch(/^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/);
+    expect(localFallback).toMatch(/^\/images\/teams\/[a-z0-9-]+-club-badge\.(?:webp|avif)$/);
   }
 
   // كل صورة في البانر تُفكّ فعلاً (لا صفحة HTML من fallback التوجيه).
@@ -291,7 +291,7 @@ for (const width of [1440, 390]) {
     // خطأ صورة المصدر ينزل إلى الشعار المحلي بدل إظهار صورة مكسورة.
     await image.evaluate(element => element.dispatchEvent(new Event('error')));
     await expect(image).toHaveAttribute('data-crest-source', 'local');
-    await expect(image).toHaveAttribute('src', '/images/teams/paris-saint-germain-club-badge.webp');
+    await expect(image).toHaveAttribute('src', /^\/images\/teams\/paris-saint-germain-club-badge\.(?:webp|avif)$/);
     await expect(image).toBeVisible();
     // وفشل البديل المحلي أيضاً يُخفي الصورة وحدها ويُبقي الأحرف.
     await image.evaluate(element => element.dispatchEvent(new Event('error')));

@@ -531,7 +531,9 @@ test('home hero hosts the matches index ticket with all six live slides', async 
   await page.goto('/');
   const homeTicket = page.locator('#hero .league-ticket-carousel');
   await expect(homeTicket).toHaveCount(1);
-  await expect(homeTicket.locator('.league-ticket-dot'), 'home hero dots').toHaveCount(6);
+  /* الشرائح تأتي من ردود المصدر المحاكاة؛ نمنح التطبيق مهلة واقعية ليطبّقها
+     بدل انتظار افتراضي قصير يفشل تحت حِمل آلة CI. */
+  await expect(homeTicket.locator('.league-ticket-dot'), 'home hero dots').toHaveCount(6, { timeout: 20000 });
   /* الأساسية: عنوان «كل البطولات الكبرى» كما في صفحة المواعيد */
   const baseSlide = homeTicket.locator('.league-ticket-slide').first();
   await expect(baseSlide.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');

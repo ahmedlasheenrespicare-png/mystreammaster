@@ -92,7 +92,7 @@
   width: 100%;
 }
 .hero-phone-lock > .hero-phone-servers {
-  margin-top: 32px;
+  margin-top: 16px;
   padding: 0 12px;
 }
 .hero-phone-apps > .hero-phone-servers { margin-top: 8px; }
@@ -109,3 +109,29 @@
   line-height: 1.5;
   color: #ffffffe6;
 }
+
+/* Lock-screen notification: the service introduction now lives inside the phone. */
+.hero-phone-notification {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: calc(100% - 20px);
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid #ffffff26;
+  border-radius: 14px;
+  background: #ffffff1f;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px #0002;
+  text-align: right;
+}
+.hero-phone-notification-heading { display: flex; align-items: center; gap: 5px; }
+.hero-phone-notification-logo {
+  display: grid; place-items: center; width: 20px; height: 20px;
+  flex-shrink: 0; border-radius: 6px; background: #0b0b0f; color: #d8ff3e;
+}
+.hero-phone-notification-logo svg { width: 10px; height: 10px; }
+.hero-phone-notification-heading strong { font-size: 9px; font-weight: 900; }
+.hero-phone-notification-heading small { margin-inline-start: auto; font-size: 7px; color: #ffffff99; }
+.hero-phone-notification-copy { font-size: 8.5px; line-height: 1.65; color: #ffffffe6; font-weight: 500; }
+.hero-phone-app-rows { display: flex; flex-direction: column; gap: 22px; }

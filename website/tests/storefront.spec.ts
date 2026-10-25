@@ -695,3 +695,11 @@ test('small screens show a miniature tilted television behind the full-size phon
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('hero top promotional badge is hidden while the tickets and headline remain', async ({ page }) => {
+  await page.goto('/');
+  const hero = page.locator('#hero');
+  await expect(hero.getByText('متعة المشاهدة تبدأ هنا', { exact: true })).toHaveCount(0);
+  await expect(hero.locator('.hero-ticket-row')).toBeVisible();
+  await expect(hero.locator('h1')).toBeVisible();
+});

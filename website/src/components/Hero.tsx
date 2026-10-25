@@ -364,22 +364,13 @@ export default function Hero({ onOpenTrial }: HeroProps) {
       </div>
 
       <div className="max-w-[1200px] mx-auto px-5 text-center">
-        {/* الشارة العلوية */}
-        <Reveal variant="fade" duration={700}>
-          <div className="inline-flex max-w-full flex-wrap justify-center items-center gap-x-2 gap-y-2 bg-white border border-black/10 rounded-3xl sm:rounded-full px-3 py-2 text-[12px] sm:text-[13px] font-bold shadow-sm">
-            <span className="bg-[#0b0b0f] text-[#d8ff3e] text-[11px] font-black px-2.5 py-1 rounded-full">
-              متعة المشاهدة تبدأ هنا
-            </span>
-            — رياضة وسينما على جميع شاشاتك
-            <IconArrow className="w-3.5 h-3.5 shrink-0" />
-          </div>
-        </Reveal>
+        {/* الشارة العلوية مخفية بناءً على طلب المالك. */}
 
-        {/* صفّ التذاكر الثلاث بعد الشارة مباشرةً: تذكرة المباريات الجامعة في
+        {/* صف التذاكر في بداية الهيرو:
             على الكمبيوتر: المباريات يميناً بعرض 190px، والرئيسية تشغل
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
-        <Reveal variant="up" delay={140} className="mt-7 w-full">
+        <Reveal variant="up" delay={140} className="w-full">
           <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
             <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">

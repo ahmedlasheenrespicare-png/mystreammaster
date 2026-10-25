@@ -35,6 +35,15 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الإنجليزي",
     dateLabel: "25 أكتوبر 2026",
+    title: "ليفربول يتقدم 2-0 على برايتون في أنفيلد",
+    description: "هدف عكسي لغروس وهدف لإيساك حتى الدقيقة 64، والمباراة مستمرة.",
+    href: "news/liverpool-brighton-live/",
+    teamBadges: ["images/teams/brighton-badge.webp", "images/teams/liverpool-badge.webp"],
+    score: "2 - 0",
+  },
+  {
+    category: "الدوري الإنجليزي",
+    dateLabel: "25 أكتوبر 2026",
     title: "بورنموث يتقدم 2-0 على مانشستر يونايتد في أولد ترافورد",
     description: "رايان وتافرنييه يسجلان قبل نهاية الشوط الأول، وفيرنانديز على دكة البدلاء.",
     href: "news/man-utd-bournemouth-live/",

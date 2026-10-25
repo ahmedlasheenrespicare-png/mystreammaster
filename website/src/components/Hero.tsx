@@ -1,3 +1,4 @@
+import { HeroPhone } from "./HeroPhone";
 import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
@@ -422,6 +423,12 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           <p className="text-[15.5px] md:text-[18px] text-black/60 max-w-[640px] mx-auto leading-relaxed font-medium">
             استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.
           </p>
+        </Reveal>
+
+        <Reveal variant="up" delay={320} className="mt-6">
+          <div className="hero-phone-stage">
+            <HeroPhone />
+          </div>
         </Reveal>
 
         {/* التقييم */}

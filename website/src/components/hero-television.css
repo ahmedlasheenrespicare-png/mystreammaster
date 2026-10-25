@@ -141,14 +141,62 @@
 }
 
 /* Archived cinema artwork on the physical left, independent of RTL text. */
-.hero-tv-welcome-art {
+.hero-tv-welcome-gallery {
   position: absolute;
   left: 0;
+  top: 0;
   bottom: 0;
   width: 43%;
-  height: 100%;
+  isolation: isolate;
+  pointer-events: none;
+}
+/* Fan-shaped composition: two high portraits, two angled wings,
+   and the cinema trio anchoring the foreground. No separate rows or plates. */
+.hero-tv-welcome-gallery::before {
+  content: "";
+  position: absolute;
+  inset: 10% -8% 0;
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 55%, #b6a1ff30, transparent 68%);
+  pointer-events: none;
+}
+.hero-tv-football-art {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  direction: ltr;
+}
+.hero-tv-football-art img {
+  position: absolute;
+  width: 48%;
+  height: 68%;
+  object-fit: contain;
+  object-position: center top;
+  filter: drop-shadow(0 3px 5px #0006);
+  mask-image: linear-gradient(#000 72%, transparent 100%);
+}
+.hero-tv-football-art img:nth-child(1) {
+  left: -8%; top: 22%; transform: rotate(-12deg); z-index: 2;
+}
+.hero-tv-football-art img:nth-child(2) {
+  left: 10%; top: -5%; height: 72%; transform: rotate(-4deg);
+}
+.hero-tv-football-art img:nth-child(3) {
+  right: -10%; top: 28%; height: 64%; transform: rotate(12deg); z-index: 2;
+}
+.hero-tv-football-art img:nth-child(4) {
+  right: 8%; top: 1%; height: 66%; transform: rotate(5deg);
+}
+.hero-tv-welcome-art {
+  position: absolute;
+  z-index: 3;
+  left: 7%;
+  bottom: -2%;
+  width: 86%;
+  height: 68%;
   object-fit: contain;
   object-position: center bottom;
+  filter: drop-shadow(0 4px 7px #0008);
   pointer-events: none;
 }
 .hero-tv-welcome-copy {

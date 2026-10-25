@@ -221,3 +221,24 @@
   .hero-tv-welcome-copy .hero-tv-eyebrow { font-size: 7px; }
   .hero-tv-welcome-copy .hero-tv-prompt { font-size: 7px; padding: 4px; }
 }
+
+/* Click/tap either device to bring it forward. Keep an exposed phone edge
+   available to restore the original composition, without moving the layout. */
+.hero-tv { transition: transform .5s ease, filter .5s ease; }
+.hero-phone-stage > .hero-phone { transition: transform .5s ease, box-shadow .5s ease; }
+.hero-phone-stage[data-front-device="tv"] > .hero-tv {
+  z-index: 4;
+  transform: none;
+  filter: drop-shadow(0 12px 16px #0002);
+}
+.hero-phone-stage[data-front-device="tv"] > .hero-phone {
+  z-index: 2;
+  transform: translateX(8px) scale(.96);
+}
+@media (max-width: 767px) {
+  .hero-phone-stage[data-front-device="tv"] > .hero-tv { transform: scale(.75); }
+  .hero-phone-stage[data-front-device="tv"] > .hero-phone { transform: scale(.96); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-tv, .hero-phone-stage > .hero-phone { transition: none; }
+}

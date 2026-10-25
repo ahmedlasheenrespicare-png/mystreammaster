@@ -12,7 +12,7 @@ const TV_SERVERS = [
 ] as const;
 
 /** CSS-only device illustration; the screen is a demo, not an actual player. */
-export function HeroTelevision() {
+export function HeroTelevision({ onActivate }: { onActivate?: () => void }) {
   const [apps, setApps] = useState(false);
   return (
     <div className="hero-tv" data-hero-tv="">
@@ -22,7 +22,10 @@ export function HeroTelevision() {
         data-apps={apps}
         aria-label="عرض السيرفرات في نموذج التلفاز"
         aria-pressed={apps}
-        onClick={() => setApps(value => !value)}
+        onClick={() => {
+          onActivate?.();
+          setApps(value => !value);
+        }}
       >
         <span className="sr-only">نموذج تلفاز توضيحي؛ اضغط للتبديل بين الواجهة الترحيبية والسيرفرات.</span>
         <span className="hero-tv-display" aria-hidden="true" dir="rtl">

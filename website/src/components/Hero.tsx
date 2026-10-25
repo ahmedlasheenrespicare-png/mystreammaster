@@ -344,6 +344,7 @@ interface HeroProps {
 
 export default function Hero({ onOpenTrial }: HeroProps) {
   const [heroWord, setHeroWord] = useState(0);
+  const [frontDevice, setFrontDevice] = useState<"phone" | "tv">("phone");
 
   /* تدوير كلمة العنوان الرئيسي */
   useEffect(() => {
@@ -424,9 +425,10 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </h1>
 
         <Reveal variant="up" delay={320} className="mt-6">
-          <div className="hero-phone-stage">
-            <HeroTelevision />
-            <HeroPhone />
+          <div className="hero-phone-stage" data-front-device={frontDevice}>
+            <HeroTelevision onActivate={() => setFrontDevice("tv")} />
+            <HeroPhone onActivate={() => setFrontDevice("phone")} />
+            <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : "الجوال في المقدمة"}</span>
           </div>
         </Reveal>
 

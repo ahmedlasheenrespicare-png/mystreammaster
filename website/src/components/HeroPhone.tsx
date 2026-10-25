@@ -78,8 +78,8 @@ export function HeroPhone() {
       <span id={descriptionId} className="sr-only">{description}</span>
       <span className="hero-phone-screen" aria-hidden="true" dir="ltr">
         <span className="hero-phone-wallpaper" />
-        <span className="hero-phone-orb hero-phone-orb--purple" />
-        <span className="hero-phone-orb hero-phone-orb--cyan" />
+        <span className="hero-phone-orb hero-phone-orb--lime" />
+        <span className="hero-phone-orb hero-phone-orb--olive" />
         <span className="hero-phone-status"><span data-phone-status-time="">{time}</span><span className="hero-phone-indicators"><svg viewBox="0 0 24 24"><path d="M3 20h18V2L3 20Z" /></svg><svg viewBox="0 0 24 24"><path d="M2 5h17v14H2V5Zm18 5h3v4h-3v-4Z" /></svg></span></span>
         <span className="hero-phone-lock">
           <span className="hero-phone-date" dir="rtl" title="بتوقيت القاهرة">{date}</span>

@@ -1,3 +1,4 @@
+import "./hero-title-holo.css";
 import { HeroPhone } from "./HeroPhone";
 import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState } from "react";
@@ -398,13 +399,24 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             step={130}
             lines={[
               <>
-                <span key={heroWord} className="inline-block animate-word-in">
-                  {HERO_TITLE_WORDS[heroWord]}
+                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
+                  <span className="hero-title-holo__stack">
+                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">{HERO_TITLE_WORDS[heroWord]}</span>
+                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">{HERO_TITLE_WORDS[heroWord]}</span>
+                    <span className="hero-title-holo__layer hero-title-holo__layer--front">{HERO_TITLE_WORDS[heroWord]}</span>
+                  </span>
                 </span>
                 {" كل ما تحب "}
               </>,
               <>
-                بجودة 4K{" "}
+                بجودة{" "}
+                <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
+                  <span className="hero-title-holo__stack">
+                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">4K</span>
+                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">4K</span>
+                    <span className="hero-title-holo__layer hero-title-holo__layer--front">4K</span>
+                  </span>
+                </span>{" "}
                 <span className="font-serif italic font-normal">وبلا تقطيع</span>
               </>,
             ]}

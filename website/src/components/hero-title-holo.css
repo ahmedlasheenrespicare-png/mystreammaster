@@ -1,0 +1,87 @@
+/* Adapted from Thomas-Cabrit / tall-falcon-70, Uiverse.io (MIT).
+   https://uiverse.io/Thomas-Cabrit/tall-falcon-70
+   Inline adaptation: inherit the existing heading's typography and dimensions,
+   not the reference's fixed 140px card. Arabic letter spacing stays unchanged. */
+.hero-title-holo { perspective: 900px; }
+.hero-title-holo__stack {
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
+  animation: hero-title-holo-wobble 6.2s ease-in-out infinite;
+}
+.hero-title-holo__layer {
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  background: linear-gradient(90deg, #6a8019 0%, #d8ff3e 35%, #b6d52a 60%, #70871a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: .6px #607316;
+  transform-style: preserve-3d;
+}
+.hero-title-holo__layer--front {
+  position: relative;
+  opacity: .98;
+  filter: drop-shadow(0 2px 3px #35400b26);
+  transform: translateZ(0);
+}
+.hero-title-holo__layer--mid,
+.hero-title-holo__layer--back {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hero-title-holo__layer--mid {
+  opacity: .42;
+  filter: blur(.4px);
+  transform: translateZ(-.4em);
+}
+.hero-title-holo__layer--back {
+  opacity: .18;
+  filter: blur(1px);
+  transform: translateZ(-.83em);
+}
+.hero-title-holo__stack::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: .3em;
+  background: radial-gradient(circle at 40% 35%, #d8ff3e24, transparent 62%);
+  filter: blur(8px);
+  transform: translateZ(-.95em);
+  pointer-events: none;
+}
+.hero-title-holo__stack::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid #a6bc3429;
+  border-radius: .3em;
+  background: linear-gradient(120deg,#ffffff0d,#ffffff03 45%,transparent);
+  opacity: .55;
+  transform: translateZ(-.53em);
+  pointer-events: none;
+}
+@keyframes hero-title-holo-wobble {
+  0%, 100% { transform: rotateX(16deg) rotateY(-18deg); }
+  50% { transform: rotateX(18deg) rotateY(18deg); }
+}
+/* Touch screens animate without hover. A shorter, wider swing stays visible
+   even while the headline word rotates; no change to inline layout dimensions. */
+@media (max-width: 767px) {
+  .hero-title-holo { perspective: 600px; }
+  .hero-title-holo__stack {
+    animation-name: hero-title-holo-mobile;
+    animation-duration: 3.2s;
+  }
+}
+@keyframes hero-title-holo-mobile {
+  0%, 100% { transform: rotateX(12deg) rotateY(-24deg); }
+  50% { transform: rotateX(20deg) rotateY(24deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-holo__stack { animation: none; transform: none; }
+}

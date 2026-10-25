@@ -49,7 +49,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     category: "الدوري الإسباني",
     dateLabel: "25 أكتوبر 2026",
     title: "الكلاسيكو: غيابات برشلونة وريال مدريد وترشيحات المباراة",
-    description: "فينيسيوس ورودريغو غائبان عن مدريد، وأولمو وكونده يغيبان عن برشلونة، وبرشلونة هو المرشح الأول.",
+    description: "قبل المباراة: غيابات الفريقين وترشيحات الكلاسيكو، وقد انتهت بفوز ريال مدريد 2-1.",
     href: "news/clasico-preview-absences-predictions/",
     fullImage: true,
     images: [

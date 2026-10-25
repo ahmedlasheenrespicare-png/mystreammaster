@@ -41,7 +41,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     teamBadges: ["images/teams/chelsea-badge.webp", "images/teams/tottenham-badge.webp"],
     score: "0 - 2",
     images: [
-      { src: "images/players/eng-tel-trio-celebration.webp", alt: "ماتيس تيل ولاعبو توتنهام يحتفلون" },
+      { src: "images/players/eng-tel-trio-celebration-v2.webp", alt: "ماتيس تيل ولاعبو توتنهام يحتفلون" },
     ],
     fullImage: true,
   },

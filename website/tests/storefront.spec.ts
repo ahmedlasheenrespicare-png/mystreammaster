@@ -620,3 +620,36 @@ test('phone Cairo clock updates automatically including the date at midnight', a
   await expect(phone.locator('.hero-phone-date')).toHaveText(date(next));
   expect(date(next)).not.toBe(date(start));
 });
+
+test('angled television sits behind the phone and supports touch and keyboard without overflow', async ({ page }) => {
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const stage = page.locator('.hero-phone-stage');
+    await stage.scrollIntoViewIfNeeded();
+    const tv = stage.locator('[data-hero-tv]');
+    const phone = stage.locator('[data-hero-phone]');
+    await expect(tv).toBeVisible();
+    await expect(phone).toBeVisible();
+    expect(await tv.evaluate(el => getComputedStyle(el).transform)).not.toBe('none');
+    const box = await tv.boundingBox();
+    const device = await phone.boundingBox();
+    expect(box!.x).toBeLessThan(device!.x);
+    // Overlap is intentional; the phone is painted above the TV.
+    expect(box!.x + box!.width).toBeGreaterThan(device!.x);
+    expect(await phone.evaluate(el => Number(getComputedStyle(el).zIndex))).toBeGreaterThan(await tv.evaluate(el => Number(getComputedStyle(el).zIndex)));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const screen = tv.getByRole('button', { name: 'عرض السيرفرات في نموذج التلفاز' });
+    await expect(screen).toHaveAttribute('aria-pressed', 'false');
+    await screen.focus();
+    await screen.press('Enter');
+    await expect(screen).toHaveAttribute('aria-pressed', 'true');
+    await expect(screen.locator('[data-tv-server]')).toHaveCount(4);
+    await expect(screen.locator('.hero-tv-apps')).toHaveCSS('opacity', '1');
+    await screen.press('Space');
+    await expect(screen).toHaveAttribute('aria-pressed', 'false');
+    // The exposed left edge remains clickable even with the phone in front.
+    await screen.click({ position: { x: 70, y: 80 } });
+    await expect(screen).toHaveAttribute('aria-pressed', 'true');
+  }
+});

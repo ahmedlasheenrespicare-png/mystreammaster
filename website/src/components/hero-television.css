@@ -1,0 +1,105 @@
+/* Original CSS-only television, layered behind the existing interactive phone. */
+.hero-phone-stage {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 740px);
+  min-height: 410px;
+  margin-inline: auto;
+  padding: 40px 24px 14px;
+  align-items: flex-end;
+  justify-content: flex-end;
+  direction: ltr;
+}
+.hero-phone-stage > .hero-phone { z-index: 3; }
+.hero-tv {
+  position: absolute;
+  z-index: 1;
+  left: 12px;
+  top: 24px;
+  width: 78%;
+  max-width: 570px;
+  aspect-ratio: 16 / 10;
+  transform: perspective(1100px) rotateY(-12deg) rotateZ(-5deg);
+  transform-origin: center;
+  color: #f6f4ec;
+  text-align: right;
+}
+.hero-tv-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 7px 7px 15px;
+  border: 1px solid #646b79;
+  border-radius: 13px;
+  background: linear-gradient(130deg,#59616d,#141823 25%,#080a10 75%,#555f6c);
+  box-shadow: 5px 9px 0 -3px #0c111a, 0 25px 45px -15px #11182780, inset 0 1px 1px #ffffff80;
+  cursor: pointer;
+}
+.hero-tv-frame:focus-visible { outline: 3px solid #2b4eff; outline-offset: 6px; }
+.hero-tv-display {
+  position: relative;
+  display: block;
+  width: 100%; height: 100%; overflow: hidden;
+  border: 1px solid #000;
+  border-radius: 5px;
+  background: #0c1023;
+  isolation: isolate;
+}
+.hero-tv-aurora {
+  position: absolute; inset: 0; z-index: -2;
+  background: radial-gradient(ellipse at 15% 95%,#16afbd55,transparent 55%),radial-gradient(ellipse at 70% 0%,#8054f080,transparent 65%),linear-gradient(120deg,#081824,#16142f 60%,#090e1d);
+}
+.hero-tv-orbit { position: absolute; z-index: -1; width: 85%; height: 100%; border: 1px solid #a5c5ff26; border-radius: 50%; transform: rotate(-35deg); pointer-events: none; }
+.hero-tv-orbit--one { top: -48%; left: -25%; box-shadow: 0 0 50px #55ccff0d; }
+.hero-tv-orbit--two { bottom: -65%; right: -10%; border-color: #b59fff33; }
+.hero-tv-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; font-size: 10px; }
+.hero-tv-wordmark { display: inline-flex; align-items: center; gap: 5px; font-weight: 900; }
+.hero-tv-wordmark svg { width: 12px; height: 12px; color: #d8ff3e; }
+.hero-tv-demo { font-size: 8px; color: #ffffff73; }
+/* Keep the demo content in the exposed left portion of the screen. */
+.hero-tv-welcome, .hero-tv-apps {
+  position: absolute; inset: 54px 28% 32px 7%;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  transition: opacity .45s, transform .45s;
+}
+.hero-tv-eyebrow { font-size: 9px; font-weight: 700; color: #b8c9ed; }
+.hero-tv-welcome > strong { margin-top: 8px; font-size: clamp(18px,2.5vw,32px); font-weight: 900; line-height: 1.5; }
+.hero-tv-welcome em { font-style: normal; color: #d8ff3e; }
+.hero-tv-caption { margin-top: 5px; font-size: 9px; color: #ffffffa6; }
+.hero-tv-prompt { display: inline-flex; align-items: center; gap: 5px; margin-top: 12px; padding: 6px 10px; border: 1px solid #ffffff26; border-radius: 99px; background: #ffffff0d; font-size: 8px; }
+.hero-tv-prompt svg { width: 8px; height: 8px; }
+.hero-tv-apps { opacity: 0; transform: translateY(10px); }
+.hero-tv-apps > strong { margin-top: 7px; font-size: 22px; font-weight: 900; }
+.hero-tv-server-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; width: 100%; margin-top: 18px; }
+.hero-tv-server { display: flex; min-width: 0; align-items: center; flex-direction: column; gap: 9px; padding: 12px 3px; border: 1px solid #ffffff1f; border-radius: 12px; background: #ffffff08; font-size: 9px; }
+.hero-tv-frame[data-apps="true"] .hero-tv-welcome { opacity: 0; transform: translateY(-10px); }
+.hero-tv-frame[data-apps="true"] .hero-tv-apps { opacity: 1; transform: none; }
+.hero-tv-bottom { position: absolute; bottom: 12px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 6px; letter-spacing: .16em; color: #ffffff66; }
+.hero-tv-pagination { display: flex; align-items: center; gap: 4px; }
+.hero-tv-pagination i { width: 4px; height: 4px; border-radius: 99px; background: #ffffff40; }
+.hero-tv-pagination i.is-active { width: 14px; background: #d8ff3e; }
+.hero-tv-reflection { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(125deg,#ffffff10,transparent 35%,transparent 64%,#ffffff05); }
+.hero-tv-chin { position: absolute; bottom: 3px; left: 12px; right: 12px; height: 9px; display: flex; justify-content: center; align-items: center; color: #c5cbd7; font-size: 4px; letter-spacing: .25em; }
+.hero-tv-chin i { position: absolute; right: 12px; width: 2px; height: 2px; border-radius: 50%; background: #b5edc9; box-shadow: 0 0 4px #b5edc9; }
+.hero-tv-neck { position: absolute; top: 88%; left: 44%; width: 12%; height: 9%; z-index: -1; background: linear-gradient(90deg,#1c2330,#69717f 45%,#171c27); }
+.hero-tv-base { position: absolute; top: 96%; left: 28%; width: 44%; height: 4%; border-radius: 50% 50% 15% 15%; background: linear-gradient(#666e79,#202632 65%,#10151e); box-shadow: 0 5px 7px #0003; }
+.hero-tv-floor-shadow { position: absolute; top: 99%; left: 15%; width: 70%; height: 10%; border-radius: 50%; background: #11182738; filter: blur(15px); z-index: -2; pointer-events: none; }
+@media (max-width: 600px) {
+  .hero-phone-stage { min-height: 460px; padding: 110px 4px 4px; }
+  .hero-tv { width: 93%; left: 2%; top: 22px; }
+  .hero-tv-topbar { padding: 9px 12px; font-size: 8px; }
+  .hero-tv-demo { font-size: 6px; }
+  .hero-tv-welcome, .hero-tv-apps { inset: 35px 10% 25px 8%; justify-content: flex-start; }
+  .hero-tv-welcome > strong { font-size: 19px; margin-top: 4px; }
+  .hero-tv-caption { font-size: 7px; }
+  .hero-tv-prompt { margin-top: 6px; padding: 4px 8px; font-size: 7px; }
+  .hero-tv-apps > strong { font-size: 16px; margin-top: 4px; }
+  .hero-tv-server-grid { gap: 4px; margin-top: 8px; }
+  .hero-tv-server { gap: 4px; padding: 6px 1px; font-size: 7px; border-radius: 7px; }
+  .hero-tv-server > span:first-child { width: 24px !important; height: 24px !important; }
+  .hero-tv-bottom { bottom: 8px; left: 12px; right: 12px; font-size: 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-tv *, .hero-tv *::before { transition: none !important; }
+}

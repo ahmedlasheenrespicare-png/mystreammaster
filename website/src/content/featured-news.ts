@@ -33,6 +33,15 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الإنجليزي",
     dateLabel: "24 أكتوبر 2026",
+    title: "توتنهام يهزم تشيلسي 2-0 بهدف عكسي وهدف لتيل",
+    description: "طرد كول بالمر في الدقيقة 80، وتيل يحسم الفوز في ستامفورد بريدج.",
+    href: "news/tottenham-chelsea-2-0/",
+    teamBadges: ["images/teams/chelsea-badge.webp", "images/teams/tottenham-badge.webp"],
+    score: "0 - 2",
+  },
+  {
+    category: "الدوري الإنجليزي",
+    dateLabel: "24 أكتوبر 2026",
     title: "أستون فيلا يهزم مانشستر سيتي 2-1 بثنائية جاكسون",
     description: "فوز في فيلا بارك ينهي بداية سيتي المثالية في الدوري، وجاكسون يسجل هدفين.",
     href: "news/man-city-aston-villa/",

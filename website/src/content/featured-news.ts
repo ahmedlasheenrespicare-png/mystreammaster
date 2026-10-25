@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإسباني",
+    dateLabel: "25 أكتوبر 2026",
+    title: "الكلاسيكو: غيابات برشلونة وريال مدريد وترشيحات المباراة",
+    description: "فينيسيوس ورودريغو غائبان عن مدريد، وأولمو وكونده يغيبان عن برشلونة، وبرشلونة هو المرشح الأول.",
+    href: "news/clasico-preview-absences-predictions/",
+  },
+  {
     category: "الدوري الإنجليزي",
     dateLabel: "25 أكتوبر 2026",
     title: "ليفربول يفوز 2-0 على برايتون في أنفيلد",

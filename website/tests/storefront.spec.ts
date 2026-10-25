@@ -654,7 +654,7 @@ test('angled television sits behind the phone and supports touch and keyboard wi
   }
 });
 
-test('small-screen phone stays below the television content without clipping either device', async ({ page }) => {
+test('small screens show a miniature tilted television behind the full-size phone', async ({ page }) => {
   for (const width of [320, 390, 600, 767]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
@@ -664,9 +664,14 @@ test('small-screen phone stays below the television content without clipping eit
     const tv = stage.locator('[data-hero-tv]');
     const device = await phone.boundingBox();
     const frame = await tv.locator('.hero-tv-frame').boundingBox();
-    const content = await tv.locator('.hero-tv-apps').boundingBox();
+    const television = await tv.boundingBox();
     const container = await stage.boundingBox();
-    expect(device!.y).toBeGreaterThan(content!.y + content!.height);
+    expect(television!.width).toBeLessThan(250);
+    expect(television!.height).toBeLessThan(device!.height);
+    expect(television!.y).toBeGreaterThan(device!.y);
+    expect(television!.y).toBeLessThan(device!.y + device!.height);
+    expect(television!.x).toBeLessThan(device!.x);
+    expect(television!.x + television!.width).toBeGreaterThan(device!.x);
     expect(device!.width).toBe(180);
     expect(device!.x).toBeGreaterThanOrEqual(0);
     expect(frame!.x).toBeGreaterThanOrEqual(0);

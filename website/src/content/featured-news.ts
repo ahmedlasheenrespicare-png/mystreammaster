@@ -33,12 +33,25 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإيطالي",
+    dateLabel: "25 أكتوبر 2026",
+    title: "إنتر يقلب على فيورنتينا 2-1 بهدفين في الوقت بدل الضائع",
+    description: "تقدم فيورنتينا بهدف لخيمينيز، ثم عادل ثورام وحسم زيلينسكي بركلة جزاء في سان سيرو.",
+    href: "news/inter-fiorentina-2-1/",
+    teamBadges: ["images/teams/fiorentina-badge.webp", "images/teams/internazionale-club-badge.webp"],
+    score: "2 - 1",
+    fullImage: true,
+    images: [
+      { src: "images/players/ita-lautaro.webp", alt: "لاوتارو مارتينيز" },
+    ],
+  },
+  {
     category: "الدوري الإنجليزي",
     dateLabel: "24 أكتوبر 2026",
     title: "توتنهام يهزم تشيلسي 2-0 بهدف عكسي وهدف لتيل",
     description: "طرد كول بالمر في الدقيقة 80، وتيل يحسم الفوز في ستامفورد بريدج.",
     href: "news/tottenham-chelsea-2-0/",
-    teamBadges: ["images/teams/chelsea-badge.webp", "images/teams/tottenham-badge.webp"],
+    teamBadges: ["images/teams/tottenham-badge.webp", "images/teams/chelsea-badge.webp"],
     score: "0 - 2",
     images: [
       { src: "images/players/eng-tel-trio-celebration-v2.webp", alt: "ماتيس تيل ولاعبو توتنهام يحتفلون" },

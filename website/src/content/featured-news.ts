@@ -27,6 +27,8 @@ export interface FeaturedNewsItem {
   backgroundLogo?: string;
   /** بطاقة كبيرة بتصميم الخبر المميز (عرض مزدوج وخلفية وصور) */
   featured?: boolean;
+  /** شريحة التذكرة: تعرض الصورة كاملة داخل نصف الشريحة دون قصّ أو تصغير زائد */
+  fullImage?: boolean;
 }
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
@@ -41,6 +43,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     images: [
       { src: "images/players/eng-tel-trio-celebration.webp", alt: "ماتيس تيل ولاعبو توتنهام يحتفلون" },
     ],
+    fullImage: true,
   },
   {
     category: "الدوري الإنجليزي",

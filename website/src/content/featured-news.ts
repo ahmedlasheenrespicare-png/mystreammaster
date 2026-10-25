@@ -64,7 +64,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "أستون فيلا يهزم مانشستر سيتي 2-1 بثنائية جاكسون",
     description: "فوز في فيلا بارك ينهي بداية سيتي المثالية في الدوري، وجاكسون يسجل هدفين.",
     href: "news/man-city-aston-villa/",
-    teamBadges: ["images/teams/aston-villa-badge.webp", "images/teams/manchester-city-badge.webp"],
+    teamBadges: ["images/teams/manchester-city-badge.webp", "images/teams/aston-villa-badge.webp"],
     score: "2 - 1",
     images: [
       { src: "images/players/eng-jackson-celebration.webp", alt: "نيكولاس جاكسون يحتفل" },
@@ -94,7 +94,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/psg-barcelona-4-2/",
     featured: true,
     backgroundLogo: "images/brand/ucl-logo-white.png",
-    teamBadges: ["images/teams/paris-saint-germain-badge.webp", "images/teams/barcelona-badge.webp"],
+    teamBadges: ["images/teams/barcelona-badge.webp", "images/teams/paris-saint-germain-badge.webp"],
     score: "4 - 2",
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [

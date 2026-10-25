@@ -33,6 +33,15 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإنجليزي",
+    dateLabel: "25 أكتوبر 2026",
+    title: "بورنموث يتقدم 2-0 على مانشستر يونايتد في أولد ترافورد",
+    description: "رايان وتافرنييه يسجلان قبل نهاية الشوط الأول، وفيرنانديز على دكة البدلاء.",
+    href: "news/man-utd-bournemouth-live/",
+    teamBadges: ["images/teams/bournemouth-badge.webp", "images/teams/manchester-united-club-badge.webp"],
+    score: "0 - 2",
+  },
+  {
     category: "الدوري الإيطالي",
     dateLabel: "25 أكتوبر 2026",
     title: "إنتر يقلب على فيورنتينا 2-1 بهدفين في الوقت بدل الضائع",

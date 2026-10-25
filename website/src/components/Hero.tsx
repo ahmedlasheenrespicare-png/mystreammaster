@@ -378,13 +378,14 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
               <AllLeaguesTicket
-                clashes={[...INDEX_CLASHES, INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
+                clashes={[...INDEX_CLASHES, INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
                 slideOverrides={{
                   0: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
                   1: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
                   2: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
                   5: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
                   6: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
+                  7: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
                 }}
               />
             </div>

@@ -598,3 +598,25 @@ test('phone contains branded service notification and restores apps above server
   const servers = await apps.locator('.hero-phone-servers').boundingBox();
   expect(grid!.y + grid!.height).toBeLessThan(servers!.y);
 });
+
+test('phone Cairo clock updates automatically including the date at midnight', async ({ page }) => {
+  const start = new Date('2026-10-25T20:59:30Z');
+  await page.clock.install({ time: start });
+  await page.goto('/');
+  const phone = page.locator('[data-hero-phone]');
+  const time = (at: Date) => new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).format(at);
+  const date = (at: Date) => new Intl.DateTimeFormat('ar-EG', {
+    timeZone: 'Africa/Cairo', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  }).format(at);
+  await expect(phone.locator('.hero-phone-time')).toHaveText(time(start));
+  await expect(phone.locator('.hero-phone-date')).toHaveText(date(start));
+  await expect(phone.locator('[data-phone-status-time]')).toHaveText(time(start));
+  await page.clock.fastForward(60_000);
+  const next = new Date(start.getTime() + 60_000);
+  await expect(phone.locator('.hero-phone-time')).toHaveText(time(next));
+  await expect(phone.locator('[data-phone-status-time]')).toHaveText(time(next));
+  await expect(phone.locator('.hero-phone-date')).toHaveText(date(next));
+  expect(date(next)).not.toBe(date(start));
+});

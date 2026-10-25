@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الكلاسيكو: غيابات برشلونة وريال مدريد وترشيحات المباراة",
     description: "فينيسيوس ورودريغو غائبان عن مدريد، وأولمو وكونده يغيبان عن برشلونة، وبرشلونة هو المرشح الأول.",
     href: "news/clasico-preview-absences-predictions/",
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-clasico-duel.webp", alt: "يامال ومبابي في مواجهة الكلاسيكو" },
+    ],
   },
   {
     category: "الدوري الإنجليزي",

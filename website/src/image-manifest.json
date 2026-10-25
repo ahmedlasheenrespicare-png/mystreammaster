@@ -1,0 +1,810 @@
+{
+  "/icon-192.png": [
+    192,
+    192
+  ],
+  "/icon-512.png": [
+    512,
+    512
+  ],
+  "/images/articles/apple-tv-1280w.avif": [
+    1280,
+    720
+  ],
+  "/images/articles/apple-tv-1280w.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/apple-tv-480w.avif": [
+    480,
+    270
+  ],
+  "/images/articles/apple-tv-480w.webp": [
+    480,
+    270
+  ],
+  "/images/articles/apple-tv-768w.avif": [
+    768,
+    432
+  ],
+  "/images/articles/apple-tv-768w.webp": [
+    768,
+    432
+  ],
+  "/images/articles/apple-tv.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/best-iptv-2026-1280w.avif": [
+    1280,
+    720
+  ],
+  "/images/articles/best-iptv-2026-1280w.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/best-iptv-2026-480w.avif": [
+    480,
+    270
+  ],
+  "/images/articles/best-iptv-2026-480w.webp": [
+    480,
+    270
+  ],
+  "/images/articles/best-iptv-2026-768w.avif": [
+    768,
+    432
+  ],
+  "/images/articles/best-iptv-2026-768w.webp": [
+    768,
+    432
+  ],
+  "/images/articles/best-iptv-2026.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/comparison-1280w.avif": [
+    1280,
+    715
+  ],
+  "/images/articles/comparison-1280w.webp": [
+    1280,
+    715
+  ],
+  "/images/articles/comparison-480w.avif": [
+    480,
+    268
+  ],
+  "/images/articles/comparison-480w.webp": [
+    480,
+    268
+  ],
+  "/images/articles/comparison-768w.avif": [
+    768,
+    429
+  ],
+  "/images/articles/comparison-768w.webp": [
+    768,
+    429
+  ],
+  "/images/articles/comparison.webp": [
+    1376,
+    768
+  ],
+  "/images/articles/http-protocols/http-request-cycle.png": [
+    1000,
+    545
+  ],
+  "/images/articles/http-protocols/http2-multiplexing.png": [
+    1000,
+    545
+  ],
+  "/images/articles/http-protocols/tcp-handshake.png": [
+    1000,
+    545
+  ],
+  "/images/articles/netflix-vs-1280w.avif": [
+    1280,
+    720
+  ],
+  "/images/articles/netflix-vs-1280w.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/netflix-vs-480w.avif": [
+    480,
+    270
+  ],
+  "/images/articles/netflix-vs-480w.webp": [
+    480,
+    270
+  ],
+  "/images/articles/netflix-vs-768w.avif": [
+    768,
+    432
+  ],
+  "/images/articles/netflix-vs-768w.webp": [
+    768,
+    432
+  ],
+  "/images/articles/netflix-vs.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/samsung-tv-1280w.avif": [
+    1280,
+    699
+  ],
+  "/images/articles/samsung-tv-1280w.webp": [
+    1280,
+    699
+  ],
+  "/images/articles/samsung-tv-480w.avif": [
+    480,
+    262
+  ],
+  "/images/articles/samsung-tv-480w.webp": [
+    480,
+    262
+  ],
+  "/images/articles/samsung-tv-768w.avif": [
+    768,
+    419
+  ],
+  "/images/articles/samsung-tv-768w.webp": [
+    768,
+    419
+  ],
+  "/images/articles/samsung-tv.webp": [
+    1408,
+    768
+  ],
+  "/images/articles/security-1280w.avif": [
+    1280,
+    720
+  ],
+  "/images/articles/security-1280w.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/security-480w.avif": [
+    480,
+    270
+  ],
+  "/images/articles/security-480w.webp": [
+    480,
+    270
+  ],
+  "/images/articles/security-768w.avif": [
+    768,
+    432
+  ],
+  "/images/articles/security-768w.webp": [
+    768,
+    432
+  ],
+  "/images/articles/security.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/support-1280w.avif": [
+    1280,
+    720
+  ],
+  "/images/articles/support-1280w.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/support-480w.avif": [
+    480,
+    270
+  ],
+  "/images/articles/support-480w.webp": [
+    480,
+    270
+  ],
+  "/images/articles/support-768w.avif": [
+    768,
+    432
+  ],
+  "/images/articles/support-768w.webp": [
+    768,
+    432
+  ],
+  "/images/articles/support.webp": [
+    1280,
+    720
+  ],
+  "/images/articles/world-cup-1280w.avif": [
+    1280,
+    544
+  ],
+  "/images/articles/world-cup-1280w.webp": [
+    1280,
+    544
+  ],
+  "/images/articles/world-cup.webp": [
+    1584,
+    672
+  ],
+  "/images/brand/fifa-ticket.png": [
+    440,
+    159
+  ],
+  "/images/brand/istar-ticket.png": [
+    144,
+    72
+  ],
+  "/images/brand/moka-ticket.png": [
+    296,
+    296
+  ],
+  "/images/brand/nova-ticket.png": [
+    217,
+    132
+  ],
+  "/images/brand/ucl-logo-white.png": [
+    860,
+    865
+  ],
+  "/images/brand/xtv-mark.png": [
+    146,
+    146
+  ],
+  "/images/brand/xtv-ticket.png": [
+    172,
+    112
+  ],
+  "/images/cinema/superman-batman-stark.png": [
+    824,
+    1005
+  ],
+  "/images/hero/slide-cinema.jpg": [
+    1376,
+    768
+  ],
+  "/images/hero/slide-devices.jpg": [
+    1376,
+    768
+  ],
+  "/images/hero/slide-sports.jpg": [
+    1376,
+    768
+  ],
+  "/images/logos/adsports.png": [
+    227,
+    88
+  ],
+  "/images/logos/alkass.png": [
+    131,
+    46
+  ],
+  "/images/logos/appletv.png": [
+    232,
+    88
+  ],
+  "/images/logos/bein.png": [
+    176,
+    88
+  ],
+  "/images/logos/cartoon.png": [
+    151,
+    88
+  ],
+  "/images/logos/discovery.png": [
+    352,
+    88
+  ],
+  "/images/logos/hbo.png": [
+    213,
+    88
+  ],
+  "/images/logos/mbc.png": [
+    210,
+    88
+  ],
+  "/images/logos/natgeo.png": [
+    298,
+    88
+  ],
+  "/images/logos/netflix.png": [
+    324,
+    88
+  ],
+  "/images/logos/osn.png": [
+    210,
+    24
+  ],
+  "/images/logos/paramount.png": [
+    380,
+    88
+  ],
+  "/images/logos/rotana.png": [
+    71,
+    88
+  ],
+  "/images/logos/shahid.png": [
+    310,
+    88
+  ],
+  "/images/logos/ssc.png": [
+    158,
+    88
+  ],
+  "/images/players/all-stars.avif": [
+    731,
+    900
+  ],
+  "/images/players/all-stars.png": [
+    843,
+    1038
+  ],
+  "/images/players/all-stars.webp": [
+    731,
+    900
+  ],
+  "/images/players/chelsea-palmer.avif": [
+    688,
+    900
+  ],
+  "/images/players/chelsea-palmer.png": [
+    1158,
+    1515
+  ],
+  "/images/players/chelsea-palmer.webp": [
+    688,
+    900
+  ],
+  "/images/players/egy-ashour.avif": [
+    600,
+    900
+  ],
+  "/images/players/egy-ashour.png": [
+    1024,
+    1536
+  ],
+  "/images/players/egy-ashour.webp": [
+    600,
+    900
+  ],
+  "/images/players/egy-elsaid.avif": [
+    900,
+    859
+  ],
+  "/images/players/egy-elsaid.png": [
+    905,
+    864
+  ],
+  "/images/players/egy-elsaid.webp": [
+    900,
+    859
+  ],
+  "/images/players/eng-bou-duo-celebration.png": [
+    742,
+    1180
+  ],
+  "/images/players/eng-bou-duo-celebration.webp": [
+    742,
+    1180
+  ],
+  "/images/players/eng-grealish.avif": [
+    624,
+    767
+  ],
+  "/images/players/eng-grealish.png": [
+    624,
+    767
+  ],
+  "/images/players/eng-grealish.webp": [
+    624,
+    767
+  ],
+  "/images/players/eng-haaland-header.png": [
+    998,
+    1257
+  ],
+  "/images/players/eng-jackson-celebration.png": [
+    742,
+    898
+  ],
+  "/images/players/eng-jackson-celebration.webp": [
+    742,
+    898
+  ],
+  "/images/players/eng-liv-goal-scene.png": [
+    848,
+    1264
+  ],
+  "/images/players/eng-liv-goal-scene.webp": [
+    848,
+    1264
+  ],
+  "/images/players/eng-marmoush.avif": [
+    688,
+    900
+  ],
+  "/images/players/eng-marmoush.png": [
+    1158,
+    1515
+  ],
+  "/images/players/eng-marmoush.webp": [
+    688,
+    900
+  ],
+  "/images/players/eng-rice.avif": [
+    651,
+    900
+  ],
+  "/images/players/eng-rice.png": [
+    1654,
+    2288
+  ],
+  "/images/players/eng-rice.webp": [
+    506,
+    700
+  ],
+  "/images/players/eng-saka.avif": [
+    850,
+    900
+  ],
+  "/images/players/eng-saka.png": [
+    1477,
+    1564
+  ],
+  "/images/players/eng-saka.webp": [
+    850,
+    900
+  ],
+  "/images/players/eng-szoboszlai.avif": [
+    600,
+    900
+  ],
+  "/images/players/eng-szoboszlai.png": [
+    843,
+    1264
+  ],
+  "/images/players/eng-szoboszlai.webp": [
+    600,
+    900
+  ],
+  "/images/players/eng-tel-trio-celebration-v2.webp": [
+    1024,
+    1426
+  ],
+  "/images/players/epl-star.avif": [
+    600,
+    900
+  ],
+  "/images/players/epl-star.png": [
+    843,
+    1264
+  ],
+  "/images/players/epl-star.webp": [
+    600,
+    900
+  ],
+  "/images/players/esp-clasico-duel.png": [
+    772,
+    627
+  ],
+  "/images/players/esp-clasico-duel.webp": [
+    772,
+    627
+  ],
+  "/images/players/esp-flick-angry.png": [
+    1704,
+    2224
+  ],
+  "/images/players/esp-flick-angry.webp": [
+    900,
+    1175
+  ],
+  "/images/players/esp-mbappe.avif": [
+    900,
+    900
+  ],
+  "/images/players/esp-mbappe.png": [
+    1024,
+    1024
+  ],
+  "/images/players/esp-mbappe.webp": [
+    700,
+    700
+  ],
+  "/images/players/esp-yamal-sad.png": [
+    940,
+    1504
+  ],
+  "/images/players/esp-yamal-sad.webp": [
+    750,
+    1200
+  ],
+  "/images/players/esp-yamal.avif": [
+    600,
+    900
+  ],
+  "/images/players/esp-yamal.png": [
+    843,
+    1264
+  ],
+  "/images/players/esp-yamal.webp": [
+    467,
+    700
+  ],
+  "/images/players/fra-dembele-celebration.png": [
+    1671,
+    1410
+  ],
+  "/images/players/fra-dembele-celebration.webp": [
+    700,
+    591
+  ],
+  "/images/players/fra-dembele-phone-seq-landing.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-seq-peak.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-seq-press.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-seq-rising.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-stage-1.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-stage-2.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-stage-3.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele-phone-stage-4.png": [
+    1280,
+    1600
+  ],
+  "/images/players/fra-dembele.avif": [
+    600,
+    900
+  ],
+  "/images/players/fra-dembele.png": [
+    843,
+    1264
+  ],
+  "/images/players/fra-dembele.webp": [
+    467,
+    700
+  ],
+  "/images/players/fra-enrique-triumph.png": [
+    973,
+    1398
+  ],
+  "/images/players/fra-gouiri.avif": [
+    600,
+    900
+  ],
+  "/images/players/fra-gouiri.png": [
+    1024,
+    1536
+  ],
+  "/images/players/fra-gouiri.webp": [
+    600,
+    900
+  ],
+  "/images/players/ger-kane.avif": [
+    634,
+    900
+  ],
+  "/images/players/ger-kane.png": [
+    864,
+    1226
+  ],
+  "/images/players/ger-kane.webp": [
+    493,
+    700
+  ],
+  "/images/players/ger-olise.avif": [
+    600,
+    900
+  ],
+  "/images/players/ger-olise.png": [
+    1024,
+    1536
+  ],
+  "/images/players/ger-olise.webp": [
+    600,
+    900
+  ],
+  "/images/players/ita-dybala.avif": [
+    600,
+    900
+  ],
+  "/images/players/ita-dybala.png": [
+    1024,
+    1536
+  ],
+  "/images/players/ita-dybala.webp": [
+    600,
+    900
+  ],
+  "/images/players/ita-inter-group-celebration.png": [
+    805,
+    1059
+  ],
+  "/images/players/ita-inter-group-celebration.webp": [
+    805,
+    1059
+  ],
+  "/images/players/ita-lautaro.avif": [
+    604,
+    900
+  ],
+  "/images/players/ita-lautaro.png": [
+    848,
+    1264
+  ],
+  "/images/players/ita-lautaro.webp": [
+    470,
+    700
+  ],
+  "/images/players/sau-dawsari.avif": [
+    511,
+    900
+  ],
+  "/images/players/sau-dawsari.png": [
+    857,
+    1510
+  ],
+  "/images/players/sau-dawsari.webp": [
+    511,
+    900
+  ],
+  "/images/players/sau-felix.avif": [
+    466,
+    900
+  ],
+  "/images/players/sau-felix.png": [
+    579,
+    1119
+  ],
+  "/images/players/sau-felix.webp": [
+    466,
+    900
+  ],
+  "/images/players/ucl-messi.avif": [
+    604,
+    900
+  ],
+  "/images/players/ucl-messi.png": [
+    848,
+    1264
+  ],
+  "/images/players/ucl-messi.webp": [
+    604,
+    900
+  ],
+  "/images/players/ucl-star.avif": [
+    900,
+    823
+  ],
+  "/images/players/ucl-star.png": [
+    1085,
+    992
+  ],
+  "/images/players/ucl-star.webp": [
+    900,
+    823
+  ],
+  "/images/teams/al-qadsiah-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/arsenal-badge.webp": [
+    135,
+    160
+  ],
+  "/images/teams/as-monaco-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/as-roma-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/aston-villa-badge.webp": [
+    400,
+    392
+  ],
+  "/images/teams/atletico-madrid-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/barcelona-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/barcelona-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/bayern-munich-badge.webp": [
+    148,
+    160
+  ],
+  "/images/teams/bournemouth-badge.webp": [
+    209,
+    256
+  ],
+  "/images/teams/brighton-badge.webp": [
+    256,
+    256
+  ],
+  "/images/teams/chelsea-badge.webp": [
+    332,
+    400
+  ],
+  "/images/teams/fiorentina-badge.webp": [
+    256,
+    256
+  ],
+  "/images/teams/galatasaray-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/internazionale-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/liverpool-badge.webp": [
+    256,
+    210
+  ],
+  "/images/teams/manchester-city-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/manchester-city-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/manchester-united-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/paris-saint-germain-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/paris-saint-germain-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/pyramids-fc-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/real-madrid-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/real-madrid-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/sc-freiburg-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/tottenham-badge.webp": [
+    155,
+    320
+  ]
+}

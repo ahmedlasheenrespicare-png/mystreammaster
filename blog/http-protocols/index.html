@@ -15,13 +15,6 @@
     <meta content="دليل شامل لفهم بروتوكول HTTP: المفاهيم الأساسية وطرق الطلب والاستجابة، ثم ما أضافه HTTP/2 وHTTP/3 من سرعة وأداء — شرح تقني مبسط من ستريم ماستر برو." name="description">
     <link href="https://streammasterstore.com/blog/http-protocols/" rel="canonical">
     <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-SA" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-AE" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-KW" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-QA" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-BH" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-OM" rel="alternate">
-    <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="ar-EG" rel="alternate">
     <link href="https://streammasterstore.com/blog/http-protocols/" hreflang="x-default" rel="alternate">
     <meta content="website" property="og:type">
     <meta content="بروتوكول HTTP: من الأساسيات إلى HTTP/2 و HTTP/3 | ستريم ماستر برو" property="og:title">
@@ -44,8 +37,8 @@
     <link href="/icon-192.png" rel="apple-touch-icon">
     <link href="/icon-192.png" rel="icon" sizes="192x192" type="image/png">
     <link href="/icon-512.png" rel="icon" sizes="512x512" type="image/png">
-    
-    
+
+
     <link href="/_assets/about.DmQb4ha_.css" rel="stylesheet">
     <script src="/_assets/page.DTIbhfSr.js" type="module"></script>
     <style>
@@ -185,7 +178,7 @@ Client ◄───── HTTP Response ◄─── Server
       <h3 id="فهم-خاصية-http-stateless">فهم خاصية HTTP Stateless</h3>
       <p>عندما نقول إن **HTTP Stateless**، فالمقصود ليس أن السيرفر لا يخزن بيانات أبدًا، ولكن معناه أن **كل طلب يجب أن يكون مستقلًا ويفهم نفسه بنفسه** دون الاعتماد على الطلبات السابقة أو حالة السيرفر remembered state.</p>
       <div class="prose-img">
-      <img src="/images/articles/http-protocols/http-request-cycle.png" alt="تدفق طلب واستجابة HTTP - طلب العميل إلى السيرفر واستجابة السيرفر بالبيانات المطلوبة" loading="lazy" width="100%">
+      <img src="/images/articles/http-protocols/http-request-cycle.avif" alt="تدفق طلب واستجابة HTTP - طلب العميل إلى السيرفر واستجابة السيرفر بالبيانات المطلوبة" loading="lazy" width="1000" height="545" decoding="async">
       </div>
       <p>### المثال التطبيقي:</p>
       <p>لنفترض سيناريو تسجيل دخول واجهة المستخدم:</p>
@@ -229,7 +222,7 @@ JS → TCP Connection → Response → Close
       </pre>
       <p>هذا يعني **تكلفة متكررة** في إنشاء اتصالات قبل بدء نقل البيانات، حيث يجب على العميل والخادم إتمام handshake يتكون من ثلاث مراحل:
       <div class="prose-img">
-      <img src="/images/articles/http-protocols/tcp-handshake.png" alt="عملية handshake ثلاثي الطبقات TCP - اتصال العميل بالسيرفر عبر ثلاث مراحل: SYN, SYN-ACK, ACK" loading="lazy" width="100%">
+      <img src="/images/articles/http-protocols/tcp-handshake.avif" alt="عملية handshake ثلاثي الطبقات TCP - اتصال العميل بالسيرفر عبر ثلاث مراحل: SYN, SYN-ACK, ACK" loading="lazy" width="1000" height="545" decoding="async">
       </div></p>
       <ol>
       <li>العميل: "أريد فتح اتصال"</li>
@@ -298,7 +291,7 @@ Connection 4 → API
       </ul>
       <p>جميع هذه streams تشترك في نفس اتصال TCP، لكن كل Stream لها Identificador خاص، مما يسمح للسيرفر بالرد على كل Request بشكل مستقل دون انتظار انتهاء الآخر.
       <div class="prose-img">
-      <img src="/images/articles/http-protocols/http2-multiplexing.png" alt="توضيح multiplexing في HTTP/2 - عدة تدفقات (Streams A, B, C) تعمل Simultaneously على اتصال TCP واحد، مع تبادل البيانات دون حظر Head-of-Line" loading="lazy" width="100%">
+      <img src="/images/articles/http-protocols/http2-multiplexing.avif" alt="توضيح multiplexing في HTTP/2 - عدة تدفقات (Streams A, B, C) تعمل Simultaneously على اتصال TCP واحد، مع تبادل البيانات دون حظر Head-of-Line" loading="lazy" width="1000" height="545" decoding="async">
       </div></p>
       <h5 id="المميزات-الرئيسية">المميزات الرئيسية:</h5>
       <ul>

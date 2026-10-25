@@ -251,3 +251,102 @@ test('الخريطتان لا تتنازعان رابطاً واحداً (لا �
   const duplicates = manual.filter((url) => generated.has(url));
   assert.deepEqual(duplicates, [], `رابط مكرر في sitemap.xml وsitemap-0.xml: ${duplicates.join(' · ')}`);
 });
+
+/* ==========================================================================
+   حراسة صفحات الأخبار — الخطأ الذي وقع فعلاً (٢٥ أكتوبر ٢٠٢٦):
+   أُضيف الخبر الخامس news/inter-fiorentina-2-1 إلى website/public/news/
+   وارتبط من كاروسيل الرئيسية، لكن سطره اليدوي لم يُضَف إلى sitemap-0.xml،
+   فبقي صفحة قابلة للفهرسة خارج كل خريطة — ومصدر اكتشافه الوحيد كاروسيل
+   دائري يتبدّل، أي خطر يتيم حقيقي.
+   السبب أن loadPages() يفحص جذر المستودع فقط، وجذر news/ مخرج بناء لا
+   مصدر: في CI تُشغَّل الاختبارات قبل `npm run build`، فالصفحة لم تكن
+   موجودة في الجذر أصلاً ولم يفحصها أي شيء.
+   لذلك تُقرأ هنا **بذرة** الصفحات (website/public/news) لا مخرجها.
+   الاتجاهان محروسان: كل صفحة بذرة في خريطة، وكل سطر خبر في الخريطة له بذرة.
+   ========================================================================== */
+async function newsSources() {
+  const dir = path.join(website, 'public', 'news');
+  const out = new Map();
+  let entries = [];
+  try { entries = await fs.readdir(dir, { withFileTypes: true }); } catch { return out; }
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const file = path.join(dir, entry.name, 'index.html');
+    try { out.set(entry.name, await fs.readFile(file, 'utf8')); } catch { /* مجلد بلا صفحة */ }
+  }
+  return out;
+}
+
+test('صفحات الأخبار: كل بذرة مُعلنة في خريطة، ومؤهّلة للفهرسة، ولها صورة مشاركة على القرص', async () => {
+  const sources = await newsSources();
+  assert.ok(sources.size > 0, 'لا صفحات أخبار في website/public/news');
+
+  /* الخريطة اليدوية تُقرأ من **مصدرها** (website/public) لا من نسختها في الجذر:
+     الجذر مخرج بناء، وأي سطر يُضاف هناك فقط يُمحى عند أول بناء. */
+  const manualSource = path.join(website, 'public', 'sitemap-0.xml');
+  const manualXml = await fs.readFile(manualSource, 'utf8');
+  const manual = [...manualXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => decodeURIComponent(m[1]));
+  const generated = new Set(await sitemapUrls('sitemap.xml'));
+  const inSitemap = new Set([...generated, ...manual]);
+
+  for (const [slug, html] of sources) {
+    const url = `${SITE}/news/${slug}/`;
+    const rel = `news/${slug}/index.html`;
+
+    /* ١) الاكتشاف — الصفحة في خريطة واحدة على الأقل */
+    assert.ok(inSitemap.has(url), `${rel}: غير معلنة في أي sitemap — صفحة قابلة للفهرسة بلا خريطة`);
+
+    /* ٢) canonical مطلق يطابق مسارها، وrobots تسمح بالفهرسة صراحةً */
+    const canonical = (html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i) || [])[1];
+    assert.equal(canonical && decodeURIComponent(canonical), url, `${rel}: canonical لا يطابق المسار`);
+    assert.match(meta(html, 'name', 'robots') || '', /^index, follow/, `${rel}: robots ليست index, follow صراحة`);
+
+    /* ٣) عنوان ووصف فريدان بالطول المطلوب — بلا عنوان لا نتيجة بحث أصلاً */
+    const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.replace(/\s+/g, ' ').trim();
+    assert.ok(title, `${rel}: بلا <title>`);
+    assert.ok(title.length <= 80, `${rel}: العنوان طويل (${title.length})`);
+    const desc = meta(html, 'name', 'description');
+    assert.ok(desc && desc.length >= 70 && desc.length <= 175, `${rel}: وصف بطول ${desc?.length}`);
+
+    /* ٤) صورة المشاركة: بطاقة كبيرة + الأبعاد معلنة + الملف موجود فعلاً */
+    assert.equal(meta(html, 'name', 'twitter:card'), 'summary_large_image', `${rel}: twitter:card ليست summary_large_image`);
+    for (const key of ['og:image', 'og:image:width', 'og:image:height', 'og:image:alt', 'twitter:image', 'twitter:image:alt']) {
+      assert.ok(meta(html, 'property', key) || meta(html, 'name', key), `${rel}: ينقصه ${key}`);
+    }
+    const image = meta(html, 'property', 'og:image');
+    const imagePath = decodeURIComponent(new URL(image).pathname).replace(/^\//, '');
+    /* المصدر هو website/public: صورة موجودة في الجذر وحده تنجو اليوم لأنها
+       مُلتزمة هناك، لكن أول بناء ينظّف المخرج يُفقدها. لذلك يُشترط المصدر. */
+    const inSource = await fs.access(path.join(website, 'public', imagePath)).then(() => true, () => false);
+    assert.ok(inSource, `${rel}: og:image غير موجود في المصدر website/public (${imagePath})`);
+    const inBuild = await fs.access(path.join(root, imagePath)).then(() => true, () => false);
+    assert.ok(inBuild, `${rel}: og:image غير موجود في المخرج المنشور (${imagePath}) — أعد البناء`);
+
+    /* ٥) h1 واحد، وبيانات منظّمة أخبارية كاملة */
+    assert.equal([...html.matchAll(/<h1\b/gi)].length, 1, `${rel}: عدد h1 ليس ١`);
+    const nodes = ldNodes(html, rel);
+    const types = nodes.flatMap(typesOf);
+    for (const required of ['NewsArticle', 'WebPage', 'BreadcrumbList']) {
+      assert.ok(types.includes(required), `${rel}: بلا كيان ${required}`);
+    }
+    const article = nodes.find((n) => typesOf(n).includes('NewsArticle'));
+    /* author وpublisher من خصائص Article المطلوبة لدى Google — بلا أحدهما
+       لا يظهر الخبر كنتيجة مقال غنية حتى لو فُهرس. */
+    for (const field of ['headline', 'description', 'datePublished', 'dateModified', 'image', 'author', 'publisher']) {
+      assert.ok(article[field], `${rel}: NewsArticle ينقصه ${field}`);
+    }
+  }
+
+  /* انحراف النسختين يخفي سطراً أُضيف في مكان لم يُبنَ بعد — يُفحص صراحةً.
+     بعد فحص الصفحات حتى تظهر الرسالة الأخصّ أولاً. */
+  const published = await fs.readFile(path.join(root, 'sitemap-0.xml'), 'utf8');
+  assert.equal(published.trim(), manualXml.trim(),
+    'نسخة sitemap-0.xml في الجذر لا تطابق مصدرها في website/public — أعد البناء');
+
+  /* الاتجاه المعاكس: لا سطر خبر في الخريطة بلا بذرة تقابله */
+  const declared = [...manual, ...generated].filter((u) => /\/news\/[^/]+\/$/.test(u));
+  for (const url of declared) {
+    const slug = decodeURIComponent(new URL(url).pathname).replace(/^\/news\/|\/$/g, '');
+    assert.ok(sources.has(slug), `sitemap يشير إلى خبر بلا صفحة مصدر: ${url}`);
+  }
+});

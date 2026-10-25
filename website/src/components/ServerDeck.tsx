@@ -16,6 +16,7 @@ import {
 } from "../data";
 import { to } from "../config";
 import { SERVER_WATERMARKS } from "../lib/server-branding";
+import { dragOffset, pickAxis, swipeDirection } from "./deck-swipe.mjs";
 import "./server-deck.css";
 
 /* ==========================================================================
@@ -132,16 +133,16 @@ export default function ServerDeck({ label, currency, cards, tabs }: ServerDeckP
 }
 
 /* ==========================================================================
-   التقليب باللمس — سحب الإصبع أفقيّاً يقلّب الكارت، والسحب الرأسي يمرّر الصفحة
+   التقليب باللمس — الكروت تتحرّك مع الإصبع فعلياً، لا مجرد تبديل بعد الرفع
    --------------------------------------------------------------------------
-   • نبدأ التتبّع عند أول لمسة، ونحسم المحور بعد 8px: أفقي = تقليب، رأسي =
-     تمرير عادي للصفحة (لا نعترضه إطلاقاً، و touch-action: pan-y في CSS).
-   • أثناء السحب يتحرّك شريط الكروت قليلاً مع الإصبع كتغذية راجعة، ثم يعود.
-   • الحدّ 42px، والعتبة نفسها على الماوس (سحب بالسحب) وعلى لوحة المفاتيح
-     (سهمان) وقارئ الشاشة (يُعلَن الكارت الأمامي في منطقة حيّة).
+   • قفل المحور بعد 8px: أفقي = تقليب، رأسي = تمرير الصفحة (touch-action: pan-y).
+   • أثناء السحب تُكتب إزاحة الشريط على العنصر مباشرة (`--deck-drag`) بلا
+     إعادة رسم React، فتتبع الكروت الإصبع بنسبة 1:1 (dragOffset) بلا تلعثم.
+   • عند الرفع: إن تجاوزت المسافة 42px يُقلَّب الكارت، ثم يرتدّ الشريط بحركة
+     مرنة؛ وإن كانت أقل يرتدّ وحده.
+   • النقرة الناتجة عن السحب تُكتَم حتى لا يُفتح رابط السيرفر أو زر «تفعيل».
+   الحساب نفسه في deck-swipe.mjs ليختبره scripts/test-deck-swipe.mjs.
    ========================================================================== */
-const SWIPE_THRESHOLD = 42;
-
 function useDeckSwipe({
   onNext,
   onPrev,
@@ -153,25 +154,49 @@ function useDeckSwipe({
   onDragStart: () => void;
   onDragEnd: () => void;
 }) {
-  const origin = useRef<{ x: number; y: number; id: number } | null>(null);
+  /* العنصر يُؤخذ من الحدث نفسه لا من ref: في وضع التبويبات هناك شريط لكل مدة،
+     وref واحد كان يشير إلى آخر شريط مرسوم فيُكتب السحب على شريط مخفي. */
+  const origin = useRef<{ x: number; y: number; id: number; el: HTMLDivElement } | null>(null);
   const axis = useRef<"x" | "y" | null>(null);
   const lastDx = useRef(0);
+  const dragging = useRef<HTMLDivElement | null>(null);
   /* السحب فوق زر أو رابط لا يجب أن يُفعّله: نكتم النقرة التي تلي السحب */
   const swallowClick = useRef(false);
-  const [dragX, setDragX] = useState(0);
 
-  const reset = () => {
-    origin.current = null;
-    axis.current = null;
-    lastDx.current = 0;
-    setDragX(0);
+  const setDrag = (el: HTMLDivElement | null, px: number) => {
+    el?.style.setProperty("--deck-drag", `${px}px`);
+  };
+
+  const startDragging = (el: HTMLDivElement) => {
+    if (dragging.current === el) return;
+    dragging.current = el;
+    el.classList.add("is-dragging");
+  };
+
+  const endDragging = (el: HTMLDivElement | null) => {
+    if (!el) return;
+    if (dragging.current !== el) {
+      setDrag(el, 0);
+      return;
+    }
+    dragging.current = null;
+    /* نرفع الصنف أولاً (فيعمل الانتقال) ثم نصفر الإزاحة في الإطار التالي،
+       فيرتدّ الشريط بحركة مرنة مرئية بدل أن يقفز إلى مكانه */
+    el.classList.remove("is-dragging");
+    requestAnimationFrame(() => setDrag(el, 0));
   };
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    origin.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    origin.current = {
+      x: event.clientX,
+      y: event.clientY,
+      id: event.pointerId,
+      el: event.currentTarget,
+    };
     axis.current = null;
     lastDx.current = 0;
+    setDrag(event.currentTarget, 0);
     onDragStart();
   };
 
@@ -181,13 +206,18 @@ function useDeckSwipe({
     const dx = event.clientX - start.x;
     const dy = event.clientY - start.y;
     if (!axis.current) {
-      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-      axis.current = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-      if (axis.current === "x") event.currentTarget.setPointerCapture?.(event.pointerId);
+      const picked = pickAxis(dx, dy);
+      if (!picked) return;
+      axis.current = picked;
+      /* السحب الرأسي ليس لنا: نترك الصفحة تتمرّر ولا نلمس الشكل */
+      if (picked === "y") return;
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      startDragging(start.el);
     }
     if (axis.current !== "x") return;
     lastDx.current = dx;
-    setDragX(Math.max(-96, Math.min(96, dx)));
+    /* الكروت تتبع الإصبع مباشرة — بلا setState لكل حركة */
+    setDrag(start.el, Math.round(dragOffset(dx)));
   };
 
   const finish = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -195,7 +225,11 @@ function useDeckSwipe({
     if (!start || start.id !== event.pointerId) return;
     const dx = lastDx.current;
     const horizontal = axis.current === "x";
-    reset();
+    const el = start.el;
+    origin.current = null;
+    axis.current = null;
+    lastDx.current = 0;
+    endDragging(el);
     /* نقرة عابرة بلا سحب لا تُلغي إيقاف التبديل التلقائي عند المرور */
     if (horizontal) {
       onDragEnd();
@@ -204,15 +238,18 @@ function useDeckSwipe({
         swallowClick.current = false;
       }, 400);
     }
-    if (!horizontal) return;
-    /* السحب لليسار يقدّم الكارت التالي (الكروت تتدفق يمين ← يسار) */
-    if (dx <= -SWIPE_THRESHOLD) onNext();
-    else if (dx >= SWIPE_THRESHOLD) onPrev();
+    const direction = horizontal ? swipeDirection(dx) : null;
+    if (direction === "next") onNext();
+    else if (direction === "prev") onPrev();
   };
 
   const cancel = () => {
     const horizontal = axis.current === "x";
-    reset();
+    const el = origin.current?.el ?? null;
+    origin.current = null;
+    axis.current = null;
+    lastDx.current = 0;
+    endDragging(el);
     if (horizontal) onDragEnd();
   };
 
@@ -225,8 +262,6 @@ function useDeckSwipe({
   };
 
   return {
-    dragX,
-    dragging: dragX !== 0,
     handlers: {
       onPointerDown,
       onPointerMove,
@@ -308,7 +343,7 @@ function FanDeck({
   };
 
   /* التقليب باللمس (وأيضاً بالسحب بالماوس) — يوقف التبديل التلقائي أثناءه */
-  const { dragX, dragging, handlers } = useDeckSwipe({
+  const { handlers } = useDeckSwipe({
     onNext: goNext,
     onPrev: goPrev,
     onDragStart: () => setPaused(true),
@@ -339,14 +374,11 @@ function FanDeck({
         onBlurCapture={() => setPaused(false)}
       >
         <div
-          className={`srv-deck${isDefaultFan ? " srv-deck--default" : ""}${dragging ? " is-dragging" : ""}`}
+          className={`srv-deck${isDefaultFan ? " srv-deck--default" : ""}`}
           style={
-            {
-              ...(isDefaultFan
-                ? null
-                : { width: `${FAN_WIDTH}px`, height: `${FAN_HEIGHT}px` }),
-              "--deck-drag": `${Math.round(dragX * 0.18)}px`,
-            } as CSSProperties
+            isDefaultFan
+              ? undefined
+              : { width: `${FAN_WIDTH}px`, height: `${FAN_HEIGHT}px` }
           }
           role="group"
           aria-roledescription="شريط كروت قابل للتقليب"
@@ -444,7 +476,7 @@ function TabbedDeck({ label, tabs }: { label?: string; tabs: DeckTab[] }) {
   const activeIndex = Math.min(active, count - 1);
 
   /* التقليب باللمس بين المدد أيضاً: السحب أفقيّاً ينقل إلى المدة التالية */
-  const { dragX, dragging, handlers } = useDeckSwipe({
+  const { handlers } = useDeckSwipe({
     onNext: () => setActive((a) => Math.min(count - 1, a + 1)),
     onPrev: () => setActive((a) => Math.max(0, a - 1)),
     onDragStart: () => undefined,
@@ -513,14 +545,8 @@ function TabbedDeck({ label, tabs }: { label?: string; tabs: DeckTab[] }) {
         >
           <div className="srv-deck-wrap srv-deck-wrap--pair">
             <div
-              className={`srv-deck srv-deck--pair${dragging ? " is-dragging" : ""}`}
-              style={
-                {
-                  width: `${PAIR_WIDTH}px`,
-                  height: `${PAIR_HEIGHT}px`,
-                  "--deck-drag": `${Math.round(dragX * 0.18)}px`,
-                } as CSSProperties
-              }
+              className="srv-deck srv-deck--pair"
+              style={{ width: `${PAIR_WIDTH}px`, height: `${PAIR_HEIGHT}px` }}
               {...handlers}
             >
               {tab.cards.map((card, cardIndex) => {

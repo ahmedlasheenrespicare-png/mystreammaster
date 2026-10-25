@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IconPlay } from './Icons';
 import { ServerIcon } from './ServerIcon';
 import './hero-television.css';
+import { to } from '../config';
 
 const TV_SERVERS = [
   { code: 'nova', name: 'نوفا' },
@@ -30,10 +31,13 @@ export function HeroTelevision() {
           <span className="hero-tv-orbit hero-tv-orbit--two" />
           <span className="hero-tv-topbar"><span className="hero-tv-wordmark"><IconPlay /> ستريم ماستر</span><span className="hero-tv-demo">واجهة توضيحية</span></span>
           <span className="hero-tv-welcome">
+            <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+            <span className="hero-tv-welcome-copy">
             <span className="hero-tv-eyebrow">عالمك على شاشة أكبر</span>
             <strong>متعة المشاهدة<br /><em>تبدأ هنا.</em></strong>
             <span className="hero-tv-caption">تعرّف على خيارات السيرفرات</span>
             <span className="hero-tv-prompt"><IconPlay /> استكشف الواجهة</span>
+            </span>
           </span>
           <span className="hero-tv-apps">
             <span className="hero-tv-eyebrow">خيارات المشاهدة</span>

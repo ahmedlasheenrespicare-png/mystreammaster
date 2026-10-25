@@ -508,19 +508,29 @@ test('ticket touch gestures reach finished matches beyond twelve in every day ta
   await expect.poll(activeIndex).toBe(before);
 });
 
-test('matches ticket uses the reference olive frame and white glow without losing its background layers', async ({ page }) => {
+test('matches ticket uses the simple reference frame with blue hover and keyboard focus', async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
     const ticket = page.locator('[data-hero-side="matches"]');
+    await ticket.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
     const frame = await ticket.evaluate(el => {
       const style = getComputedStyle(el);
-      const glow = getComputedStyle(el, '::before');
-      return { radius: style.borderRadius, color: style.backgroundColor,
-        glow: glow.backgroundColor, blur: glow.filter, pointerEvents: glow.pointerEvents };
+      return { radius: parseFloat(style.borderRadius), color: style.borderTopColor,
+        border: parseFloat(style.borderTopWidth), shadow: style.boxShadow,
+        glow: getComputedStyle(el, '::before').content };
     });
-    expect(frame).toEqual({ radius: '12px', color: 'rgb(51, 62, 29)',
-      glow: 'rgb(255, 255, 255)', blur: 'blur(50px)', pointerEvents: 'none' });
+    expect(frame.radius).toBeCloseTo(6.4, 0);
+    expect(frame.color).toBe('rgb(250, 250, 250)');
+    expect(frame.border).toBeGreaterThanOrEqual(3);
+    expect(frame.shadow).not.toBe('none');
+    expect(frame.glow).toBe('none');
+    await ticket.hover();
+    await expect(ticket).toHaveCSS('border-top-color', 'rgb(0, 111, 255)');
+    await page.mouse.move(0, 0);
+    await ticket.getByRole('tab', { name: 'اليوم', exact: true }).focus();
+    await expect(ticket).toHaveCSS('border-top-color', 'rgb(0, 111, 255)');
     await expect(ticket.locator('.league-ticket-holographic')).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-ray')).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-line')).toHaveCount(4);

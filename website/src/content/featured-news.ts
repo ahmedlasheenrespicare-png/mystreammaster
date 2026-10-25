@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الكلاسيكو: مبابي يمنح ريال مدريد التقدم على برشلونة في الشوط الأول",
     description: "هدف مبابي في الدقيقة 41 في كامب نو، وفرصة ضائعة ليامال قبل الاستراحة.",
     href: "news/clasico-first-half-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-mbappe-goal.webp", alt: "مبابي يحتفل بهدفه في الشوط الأول من الكلاسيكو" },
+    ],
   },
   {
     category: "الدوري الإسباني",

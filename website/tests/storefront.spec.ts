@@ -527,3 +527,30 @@ test('matches ticket uses the reference olive frame and white glow without losin
     await expect(ticket.getByRole('tab')).toHaveCount(3);
   }
 });
+
+test('hero phone demo sits between the headline and stars and supports touch and keyboard', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const phone = page.getByRole('button', { name: 'عرض تطبيقات نموذج الهاتف', exact: true });
+  await phone.scrollIntoViewIfNeeded();
+  await expect(phone).toHaveAttribute('aria-pressed', 'false');
+  const headline = await page.locator('#hero h1').boundingBox();
+  const device = await phone.boundingBox();
+  const stars = await page.getByText('على شاشتك وجوالك', { exact: true }).boundingBox();
+  expect(headline && device && stars).toBeTruthy();
+  expect(device!.y).toBeGreaterThan(headline!.y + headline!.height);
+  expect(device!.y + device!.height).toBeLessThan(stars!.y);
+  expect(device!.width).toBe(180);
+  expect(device!.height).toBe(350);
+  await phone.click();
+  await expect(phone).toHaveAttribute('aria-pressed', 'true');
+  await expect(phone.locator('.hero-phone-apps')).toHaveCSS('opacity', '1');
+  await phone.press('Enter');
+  await expect(phone).toHaveAttribute('aria-pressed', 'false');
+  await phone.press('Space');
+  await expect(phone).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(phone).toBeVisible();
+});

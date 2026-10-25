@@ -59,6 +59,10 @@
     768,
     432
   ],
+  "/images/articles/best-iptv-2026.avif": [
+    1280,
+    720
+  ],
   "/images/articles/best-iptv-2026.webp": [
     1280,
     720
@@ -91,13 +95,25 @@
     1376,
     768
   ],
+  "/images/articles/http-protocols/http-request-cycle.avif": [
+    900,
+    491
+  ],
   "/images/articles/http-protocols/http-request-cycle.png": [
     1000,
     545
   ],
+  "/images/articles/http-protocols/http2-multiplexing.avif": [
+    900,
+    491
+  ],
   "/images/articles/http-protocols/http2-multiplexing.png": [
     1000,
     545
+  ],
+  "/images/articles/http-protocols/tcp-handshake.avif": [
+    900,
+    491
   ],
   "/images/articles/http-protocols/tcp-handshake.png": [
     1000,
@@ -227,104 +243,208 @@
     1584,
     672
   ],
+  "/images/brand/fifa-ticket.avif": [
+    440,
+    159
+  ],
   "/images/brand/fifa-ticket.png": [
     440,
     159
+  ],
+  "/images/brand/istar-ticket.avif": [
+    144,
+    72
   ],
   "/images/brand/istar-ticket.png": [
     144,
     72
   ],
+  "/images/brand/moka-ticket.avif": [
+    296,
+    296
+  ],
   "/images/brand/moka-ticket.png": [
     296,
     296
+  ],
+  "/images/brand/nova-ticket.avif": [
+    217,
+    132
   ],
   "/images/brand/nova-ticket.png": [
     217,
     132
   ],
+  "/images/brand/ucl-logo-white.avif": [
+    860,
+    865
+  ],
   "/images/brand/ucl-logo-white.png": [
     860,
     865
+  ],
+  "/images/brand/xtv-mark.avif": [
+    146,
+    146
   ],
   "/images/brand/xtv-mark.png": [
     146,
     146
   ],
+  "/images/brand/xtv-ticket.avif": [
+    172,
+    112
+  ],
   "/images/brand/xtv-ticket.png": [
     172,
     112
+  ],
+  "/images/cinema/superman-batman-stark.avif": [
+    738,
+    900
   ],
   "/images/cinema/superman-batman-stark.png": [
     824,
     1005
   ],
+  "/images/hero/slide-cinema.avif": [
+    900,
+    502
+  ],
   "/images/hero/slide-cinema.jpg": [
     1376,
     768
+  ],
+  "/images/hero/slide-devices.avif": [
+    900,
+    502
   ],
   "/images/hero/slide-devices.jpg": [
     1376,
     768
   ],
+  "/images/hero/slide-sports.avif": [
+    900,
+    502
+  ],
   "/images/hero/slide-sports.jpg": [
     1376,
     768
+  ],
+  "/images/logos/adsports.avif": [
+    227,
+    88
   ],
   "/images/logos/adsports.png": [
     227,
     88
   ],
+  "/images/logos/alkass.avif": [
+    131,
+    46
+  ],
   "/images/logos/alkass.png": [
     131,
     46
   ],
+  "/images/logos/appletv.avif": [
+    232,
+    88
+  ],
   "/images/logos/appletv.png": [
     232,
+    88
+  ],
+  "/images/logos/bein.avif": [
+    176,
     88
   ],
   "/images/logos/bein.png": [
     176,
     88
   ],
+  "/images/logos/cartoon.avif": [
+    151,
+    88
+  ],
   "/images/logos/cartoon.png": [
     151,
+    88
+  ],
+  "/images/logos/discovery.avif": [
+    352,
     88
   ],
   "/images/logos/discovery.png": [
     352,
     88
   ],
+  "/images/logos/hbo.avif": [
+    213,
+    88
+  ],
   "/images/logos/hbo.png": [
     213,
+    88
+  ],
+  "/images/logos/mbc.avif": [
+    210,
     88
   ],
   "/images/logos/mbc.png": [
     210,
     88
   ],
+  "/images/logos/natgeo.avif": [
+    298,
+    88
+  ],
   "/images/logos/natgeo.png": [
     298,
+    88
+  ],
+  "/images/logos/netflix.avif": [
+    324,
     88
   ],
   "/images/logos/netflix.png": [
     324,
     88
   ],
+  "/images/logos/osn.avif": [
+    210,
+    24
+  ],
   "/images/logos/osn.png": [
     210,
     24
   ],
+  "/images/logos/paramount.avif": [
+    380,
+    88
+  ],
   "/images/logos/paramount.png": [
     380,
+    88
+  ],
+  "/images/logos/rotana.avif": [
+    71,
     88
   ],
   "/images/logos/rotana.png": [
     71,
     88
   ],
+  "/images/logos/shahid.avif": [
+    310,
+    88
+  ],
   "/images/logos/shahid.png": [
     310,
+    88
+  ],
+  "/images/logos/ssc.avif": [
+    158,
     88
   ],
   "/images/logos/ssc.png": [
@@ -398,6 +518,10 @@
   "/images/players/eng-grealish.webp": [
     624,
     767
+  ],
+  "/images/players/eng-haaland-header.avif": [
+    715,
+    900
   ],
   "/images/players/eng-haaland-header.png": [
     998,
@@ -499,6 +623,14 @@
     900,
     1175
   ],
+  "/images/players/esp-mbappe-goal.png": [
+    1004,
+    1421
+  ],
+  "/images/players/esp-mbappe-goal.webp": [
+    1004,
+    1421
+  ],
   "/images/players/esp-mbappe.avif": [
     900,
     900
@@ -539,33 +671,65 @@
     700,
     591
   ],
+  "/images/players/fra-dembele-phone-seq-landing.avif": [
+    720,
+    900
+  ],
   "/images/players/fra-dembele-phone-seq-landing.png": [
     1280,
     1600
+  ],
+  "/images/players/fra-dembele-phone-seq-peak.avif": [
+    720,
+    900
   ],
   "/images/players/fra-dembele-phone-seq-peak.png": [
     1280,
     1600
   ],
+  "/images/players/fra-dembele-phone-seq-press.avif": [
+    720,
+    900
+  ],
   "/images/players/fra-dembele-phone-seq-press.png": [
     1280,
     1600
+  ],
+  "/images/players/fra-dembele-phone-seq-rising.avif": [
+    720,
+    900
   ],
   "/images/players/fra-dembele-phone-seq-rising.png": [
     1280,
     1600
   ],
+  "/images/players/fra-dembele-phone-stage-1.avif": [
+    720,
+    900
+  ],
   "/images/players/fra-dembele-phone-stage-1.png": [
     1280,
     1600
+  ],
+  "/images/players/fra-dembele-phone-stage-2.avif": [
+    720,
+    900
   ],
   "/images/players/fra-dembele-phone-stage-2.png": [
     1280,
     1600
   ],
+  "/images/players/fra-dembele-phone-stage-3.avif": [
+    720,
+    900
+  ],
   "/images/players/fra-dembele-phone-stage-3.png": [
     1280,
     1600
+  ],
+  "/images/players/fra-dembele-phone-stage-4.avif": [
+    720,
+    900
   ],
   "/images/players/fra-dembele-phone-stage-4.png": [
     1280,
@@ -582,6 +746,10 @@
   "/images/players/fra-dembele.webp": [
     467,
     700
+  ],
+  "/images/players/fra-enrique-triumph.avif": [
+    626,
+    900
   ],
   "/images/players/fra-enrique-triumph.png": [
     973,

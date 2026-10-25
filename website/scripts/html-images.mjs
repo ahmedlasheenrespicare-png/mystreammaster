@@ -6,6 +6,8 @@
      ٢) يضيف width/height من src/image-manifest.json إن غابا (منع انزياح
         التخطيط CLS — وهو ما يقيسه Google).
      ٣) يضيف decoding="async" إن غاب.
+     ٤) يمنح أول صورة ظاهرة في الصفحة (غير lazy) fetchpriority="high" حتى
+        يحمّلها المتصفح قبل بقية الصور — إصلاح LCP كما يوصي Lighthouse.
    ولا يلفّ الصورة بـ<picture> ولا يغيّر أي عنصر آخر: بعض قواعد CSS في
    الموقع تعتمد على `img:nth-child(...)` داخل حاوية، ولفّها بغلاف جديد
    يكسر هذا التحديد ويبدّل مواضع صور الهيرو.
@@ -63,14 +65,16 @@ function setAttrs(tag, updates) {
   return out;
 }
 
-/** النسخة الحديثة الأنسب لصورة أصلية، أو null إن لم تكن أصغر فعلاً */
+/** النسخة الحديثة الأنسب لصورة أصلية، أو null إن لم تكن أصغر فعلاً.
+    تشمل webp → avif: كثير من الصور تُصدَّر webp فقط، وavif أصغر منها. */
 function modernVariant(src) {
-  if (!RASTER.test(src)) return null;
-  const stem = src.replace(RASTER, '');
+  const stem = RASTER.test(src) ? src.replace(RASTER, '') : /\.webp$/i.test(src) ? src.replace(/\.webp$/i, '') : null;
+  if (!stem) return null;
   const originalSize = sizeOf(src);
   let best = null;
   for (const ext of ['.webp', '.avif']) {
     const candidate = stem + ext;
+    if (candidate === src) continue;
     const size = sizeOf(candidate);
     if (size < originalSize && (!best || size < sizeOf(best))) best = candidate;
   }
@@ -80,16 +84,18 @@ function modernVariant(src) {
 export function optimizeHtmlImages(html) {
   if (!html.includes('<img')) return html;
 
-  /* نطاقات <picture> — صورها تختار الصيغة بنفسها، فلا يُبدَّل src داخلها */
+  /* نطاقات <picture> التي فيها <source> فعلاً — هي وحدها تختار الصيغة بنفسها،
+     فلا يُبدَّل src داخلها. أما <picture> الفارغ (بلا source) فالمتصفح يحمّل
+     src كما هو، فيجوز تبديله إلى الصيغة الأصغر. */
   const pictureRanges = [];
   for (const match of html.matchAll(/<picture\b[^>]*>[\s\S]*?<\/picture>/g)) {
-    pictureRanges.push([match.index, match.index + match[0].length]);
+    pictureRanges.push([match.index, match.index + match[0].length, /<source\b/i.test(match[0])]);
   }
-  const insidePicture = (index) => pictureRanges.some(([start, end]) => index >= start && index < end);
+  const insidePicture = (index) => pictureRanges.some(([start, end, hasSource]) => hasSource && index >= start && index < end);
 
   const dims = imageManifest();
 
-  return html.replace(/<img\b[^>]*>/gi, (tag, offset) => {
+  const out = html.replace(/<img\b[^>]*>/gi, (tag, offset) => {
     const src = attrValue(tag, 'src');
     if (!src || /^(https?:|data:|\/\/)/i.test(src)) return tag;
     /* المسارات ترد مطلقة (/images/…) ونسبية (images/…) في نفس الموقع */
@@ -118,5 +124,20 @@ export function optimizeHtmlImages(html) {
     if (!attrValue(tag, 'decoding')) updates.decoding = 'async';
 
     return Object.keys(updates).length ? setAttrs(tag, updates) : tag;
+  });
+
+  return markFirstPriorityImage(out);
+}
+
+/* أول صورة غير مؤجَّلة = مرشّح LCP. نرفع أولويتها بلا مساس بأي شيء آخر.
+   الصور المؤجَّلة (loading="lazy") تُتجاهل لأنها تحت الطية أصلاً. */
+function markFirstPriorityImage(html) {
+  let done = false;
+  return html.replace(/<img\b[^>]*>/gi, (tag) => {
+    if (done) return tag;
+    if ((attrValue(tag, 'loading') || '').toLowerCase() === 'lazy') return tag;
+    done = true;
+    if (/\sfetchpriority\s*=/i.test(tag)) return tag;
+    return setAttrs(tag, { fetchpriority: 'high' });
   });
 }

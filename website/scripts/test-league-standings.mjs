@@ -480,7 +480,7 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
     // أو شعار البطولة نفسه من خريطة الأيقونات الواحدة (رأس التذكرة) لا غير
     card.find('img').each((_, img) => {
       const src = $(img).attr('src') || '';
-      const isLocal = /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/.test(src);
+      const isLocal = /^\/images\/teams\/[a-z0-9-]+-club-badge\.(?:webp|avif)$/.test(src);
       const isLeagueIcon = Object.values(LEAGUE_ICONS).includes(src);
       assert.ok(isLocal || isLeagueIcon || isApprovedCrestUrl(src), `${file}: مصدر شعار غير معتمد: ${src}`);
     });
@@ -493,7 +493,7 @@ test('بطاقة «الهجوم والدفاع — معدلات أهداف ال�
   assert.ok(engCardText.includes('Brighton & Hove Albion'), 'اسم Brighton & Hove Albion غير ظاهر بشكل سليم');
   assert.equal(engCardText.includes('&amp;'), false, 'ظهر ترميز &amp; خام للمستخدم');
   assert.equal(
-    $eng('[data-standings-rates="eng.1"] [data-rate-card="best-defence"] img[src="/images/teams/manchester-city-club-badge.webp"]').length,
+    $eng('[data-standings-rates="eng.1"] [data-rate-card="best-defence"] img[src^="/images/teams/manchester-city-club-badge."]').length,
     1,
     'شعار Manchester City المحلي المعتمد غير معروض في البطاقة الفرعية',
   );

@@ -666,8 +666,10 @@ test('small screens show a miniature tilted television behind the full-size phon
     const frame = await tv.locator('.hero-tv-frame').boundingBox();
     const television = await tv.boundingBox();
     const container = await stage.boundingBox();
-    expect(television!.width).toBeLessThan(250);
+    expect(television!.width).toBeLessThan(280);
     expect(television!.height).toBeLessThan(device!.height);
+    // The compact TV is taller now, proportionate to the full-height phone.
+    expect(frame!.height).toBeGreaterThan(device!.height * 0.6);
     expect(television!.y).toBeGreaterThan(device!.y);
     expect(television!.y).toBeLessThan(device!.y + device!.height);
     expect(television!.x).toBeLessThan(device!.x);

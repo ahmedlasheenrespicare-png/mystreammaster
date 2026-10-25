@@ -42,7 +42,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     score: "2 - 1",
     fullImage: true,
     images: [
-      { src: "images/players/ita-lautaro.webp", alt: "لاوتارو مارتينيز" },
+      { src: "images/players/ita-inter-group-celebration.webp", alt: "ثورام وزيلينسكي يحتفلان بهدفَي قلب النتيجة على فيورنتينا" },
     ],
   },
   {

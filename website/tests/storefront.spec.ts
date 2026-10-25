@@ -394,7 +394,8 @@ test('hero slide shows the competition logo of its own league in the background'
       dy: Math.abs(rect.y + rect.height / 2 - card.y - card.height / 2) };
   });
   expect(watermark.filter).not.toMatch(/invert|brightness|grayscale/);
-  expect(watermark.opacity).toBeGreaterThanOrEqual(0.3);
+  expect(watermark.opacity).toBeGreaterThanOrEqual(0.12);
+  expect(watermark.opacity).toBeLessThanOrEqual(0.2);
   expect(watermark.dx).toBeLessThanOrEqual(2);
   expect(watermark.dy).toBeLessThanOrEqual(2);
 
@@ -508,7 +509,7 @@ test('ticket touch gestures reach finished matches beyond twelve in every day ta
   await expect.poll(activeIndex).toBe(before);
 });
 
-test('matches ticket uses the simple reference frame with blue hover and keyboard focus', async ({ page }) => {
+test('matches ticket uses the white and lime reference frame with accessible dark text', async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
@@ -527,13 +528,15 @@ test('matches ticket uses the simple reference frame with blue hover and keyboar
     expect(frame.shadow).not.toBe('none');
     expect(frame.glow).toBe('none');
     await ticket.hover();
-    await expect(ticket).toHaveCSS('border-top-color', 'rgb(0, 111, 255)');
+    await expect(ticket).toHaveCSS('border-top-color', 'rgb(216, 255, 62)');
     await page.mouse.move(0, 0);
     await ticket.getByRole('tab', { name: 'اليوم', exact: true }).focus();
-    await expect(ticket).toHaveCSS('border-top-color', 'rgb(0, 111, 255)');
-    await expect(ticket.locator('.league-ticket-holographic')).toHaveCount(1);
-    await expect(ticket.locator('.league-ticket-ray')).toHaveCount(1);
-    await expect(ticket.locator('.league-ticket-line')).toHaveCount(4);
+    await expect(ticket).toHaveCSS('border-top-color', 'rgb(216, 255, 62)');
+    await expect(ticket).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(ticket).toHaveCSS('color', 'rgb(11, 11, 15)');
+    await expect(ticket.locator('.league-ticket-holographic')).toHaveCount(0);
+    await expect(ticket.locator('.league-ticket-ray')).toHaveCount(0);
+    await expect(ticket.locator('.league-ticket-line')).toHaveCount(0);
     await expect(ticket.getByRole('tab')).toHaveCount(3);
   }
 });

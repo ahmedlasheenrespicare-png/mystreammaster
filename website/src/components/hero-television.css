@@ -104,20 +104,22 @@
   .hero-tv *, .hero-tv *::before { transition: none !important; }
 }
 
-/* Small screens: overlap at the TV stand, not over its readable screen.
-   Keep the phone at its native size so its notification and logos stay legible. */
+/* Small screens: a miniature angled television behind the full-size phone.
+   Scale the whole TV together, including its stand and interface. */
 @media (max-width: 767px) {
   .hero-phone-stage {
-    min-height: 0;
-    padding: clamp(205px, 57vw, 420px) 12px 16px;
+    width: min(100%, 380px);
+    min-height: 382px;
+    padding: 12px 0 20px;
   }
-  .hero-phone-stage > .hero-phone { margin-right: 4%; }
+  .hero-phone-stage > .hero-phone { margin-right: 0; }
   .hero-tv {
-    width: 94%;
-    left: 3%;
-    top: 12px;
+    width: 280px;
+    left: 0;
+    top: 85px;
     aspect-ratio: 16 / 11;
-    transform: perspective(1100px) rotateY(-6deg) rotateZ(-3deg);
+    transform-origin: top left;
+    transform: perspective(1100px) rotateY(-16deg) rotateZ(-12deg) scale(.75);
   }
   .hero-tv-frame { aspect-ratio: 16 / 10; }
   .hero-tv-topbar { padding: 8px 12px; font-size: 9px; }

@@ -144,9 +144,12 @@
 .hero-tv-welcome-gallery {
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
+  top: 50%;
   width: 43%;
+  /* Preserve the ensemble's geometry when the TV becomes taller on mobile:
+     one proportionate canvas, with all portraits positioned as percentages. */
+  aspect-ratio: 3 / 4;
+  transform: translateY(-50%);
   isolation: isolate;
   pointer-events: none;
 }
@@ -179,13 +182,17 @@
   left: -8%; top: 22%; transform: rotate(-12deg); z-index: 2;
 }
 .hero-tv-football-art img:nth-child(2) {
-  left: 10%; top: -5%; height: 72%; transform: rotate(-4deg);
+  left: 0; top: 0; height: 72%; transform: rotate(-6deg);
 }
 .hero-tv-football-art img:nth-child(3) {
   right: -10%; top: 28%; height: 64%; transform: rotate(12deg); z-index: 2;
 }
 .hero-tv-football-art img:nth-child(4) {
-  right: 8%; top: 1%; height: 66%; transform: rotate(5deg);
+  right: 0; top: 5%; height: 66%; transform: rotate(7deg);
+}
+/* Dembélé crowns the fan; stagger the flanking portraits to keep faces apart. */
+.hero-tv-football-art img:nth-child(5) {
+  left: 29%; top: -12%; width: 42%; height: 70%; z-index: 1;
 }
 .hero-tv-welcome-art {
   position: absolute;

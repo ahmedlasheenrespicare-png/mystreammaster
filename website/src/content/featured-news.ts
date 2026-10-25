@@ -49,6 +49,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/man-utd-bournemouth-live/",
     teamBadges: ["images/teams/bournemouth-badge.webp", "images/teams/manchester-united-club-badge.webp"],
     score: "0 - 2",
+    fullImage: true,
+    images: [
+      { src: "images/players/eng-bou-duo-celebration.webp", alt: "رايان وتافيرنييه يحتفلان بتقدم بورنموث 2-0 في أولد ترافورد" },
+    ],
   },
   {
     category: "الدوري الإيطالي",

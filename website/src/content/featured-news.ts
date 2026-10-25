@@ -38,6 +38,9 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/tottenham-chelsea-2-0/",
     teamBadges: ["images/teams/chelsea-badge.webp", "images/teams/tottenham-badge.webp"],
     score: "0 - 2",
+    images: [
+      { src: "images/players/eng-tel-trio-celebration.webp", alt: "ماتيس تيل ولاعبو توتنهام يحتفلون" },
+    ],
   },
   {
     category: "الدوري الإنجليزي",

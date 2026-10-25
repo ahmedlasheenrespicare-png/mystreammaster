@@ -1,4 +1,5 @@
 import { HeroPhone } from "./HeroPhone";
+import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
@@ -421,6 +422,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
 
         <Reveal variant="up" delay={320} className="mt-6">
           <div className="hero-phone-stage">
+            <HeroTelevision />
             <HeroPhone />
           </div>
         </Reveal>

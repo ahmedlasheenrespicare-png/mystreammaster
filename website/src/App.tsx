@@ -146,7 +146,8 @@ export default function App() {
   } else if (path === "/blog") {
     page = <BlogIndexPage />;
   } else if (post) {
-    page = <BlogPostPage post={post} />;
+    /* العملة من الهيدر: أسعار كروت المقال وجدوله تتبع اختيار الزائر */
+    page = <BlogPostPage post={post} currency={currency} />;
   } else if (plan) {
     /* العملة تُمرَّر من هنا (مصدر واحد) — وإلا أضاف المستخدم باقة بسعر عملة
        صفحة الباقة بينما تُسجَّل في السلة بعملة أخرى (خطأ سعري حقيقي). */

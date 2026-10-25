@@ -1,6 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import {
   AVAILABLE_DURATIONS,
+  CURRENCIES,
   getWhatsAppUrl,
   PRICING_PLANS,
   type PricingPlan,
@@ -108,20 +117,138 @@ const ROTATE_MS = 3000;
 
 export interface ServerDeckProps {
   label?: string;
+  /** عملة العرض المختارة من زر الهيدر — تُطبَّق على أسعار المتجر */
+  currency?: string;
   /** كروت صريحة (سيرفر × مدة) — بلا تمرير تُعرض باقات المتجر الأربع */
   cards?: DeckCard[];
   /** تبويبات مدد (3 / 6 / 12) — كل تبويب بطاقتان: يسبقها شريط التبويبات */
   tabs?: DeckTab[];
 }
 
-export default function ServerDeck({ label, cards, tabs }: ServerDeckProps) {
+export default function ServerDeck({ label, currency, cards, tabs }: ServerDeckProps) {
   /* مع التبويبات: شريط مدد فوق المروحة، وبطاقتان كاملتان لكل مدة */
   if (tabs && tabs.length > 0) return <TabbedDeck label={label} tabs={tabs} />;
-  return <FanDeck label={label} cards={cards} />;
+  return <FanDeck label={label} cards={cards} currency={currency} />;
 }
 
-function FanDeck({ label, cards }: { label?: string; cards?: DeckCard[] }) {
+/* ==========================================================================
+   التقليب باللمس — سحب الإصبع أفقيّاً يقلّب الكارت، والسحب الرأسي يمرّر الصفحة
+   --------------------------------------------------------------------------
+   • نبدأ التتبّع عند أول لمسة، ونحسم المحور بعد 8px: أفقي = تقليب، رأسي =
+     تمرير عادي للصفحة (لا نعترضه إطلاقاً، و touch-action: pan-y في CSS).
+   • أثناء السحب يتحرّك شريط الكروت قليلاً مع الإصبع كتغذية راجعة، ثم يعود.
+   • الحدّ 42px، والعتبة نفسها على الماوس (سحب بالسحب) وعلى لوحة المفاتيح
+     (سهمان) وقارئ الشاشة (يُعلَن الكارت الأمامي في منطقة حيّة).
+   ========================================================================== */
+const SWIPE_THRESHOLD = 42;
+
+function useDeckSwipe({
+  onNext,
+  onPrev,
+  onDragStart,
+  onDragEnd,
+}: {
+  onNext: () => void;
+  onPrev: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+}) {
+  const origin = useRef<{ x: number; y: number; id: number } | null>(null);
+  const axis = useRef<"x" | "y" | null>(null);
+  const lastDx = useRef(0);
+  /* السحب فوق زر أو رابط لا يجب أن يُفعّله: نكتم النقرة التي تلي السحب */
+  const swallowClick = useRef(false);
+  const [dragX, setDragX] = useState(0);
+
+  const reset = () => {
+    origin.current = null;
+    axis.current = null;
+    lastDx.current = 0;
+    setDragX(0);
+  };
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    origin.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    axis.current = null;
+    lastDx.current = 0;
+    onDragStart();
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = origin.current;
+    if (!start || start.id !== event.pointerId) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (!axis.current) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      axis.current = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (axis.current === "x") event.currentTarget.setPointerCapture?.(event.pointerId);
+    }
+    if (axis.current !== "x") return;
+    lastDx.current = dx;
+    setDragX(Math.max(-96, Math.min(96, dx)));
+  };
+
+  const finish = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = origin.current;
+    if (!start || start.id !== event.pointerId) return;
+    const dx = lastDx.current;
+    const horizontal = axis.current === "x";
+    reset();
+    /* نقرة عابرة بلا سحب لا تُلغي إيقاف التبديل التلقائي عند المرور */
+    if (horizontal) {
+      onDragEnd();
+      swallowClick.current = true;
+      window.setTimeout(() => {
+        swallowClick.current = false;
+      }, 400);
+    }
+    if (!horizontal) return;
+    /* السحب لليسار يقدّم الكارت التالي (الكروت تتدفق يمين ← يسار) */
+    if (dx <= -SWIPE_THRESHOLD) onNext();
+    else if (dx >= SWIPE_THRESHOLD) onPrev();
+  };
+
+  const cancel = () => {
+    const horizontal = axis.current === "x";
+    reset();
+    if (horizontal) onDragEnd();
+  };
+
+  /* يلتقط النقرة الناتجة عن نهاية السحب قبل أن تصل إلى الرابط/الزر */
+  const onClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!swallowClick.current) return;
+    swallowClick.current = false;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  return {
+    dragX,
+    dragging: dragX !== 0,
+    handlers: {
+      onPointerDown,
+      onPointerMove,
+      onPointerUp: finish,
+      onPointerCancel: cancel,
+      onPointerLeave: cancel,
+      onClickCapture,
+    },
+  };
+}
+
+function FanDeck({
+  label,
+  cards,
+  currency = "SAR",
+}: {
+  label?: string;
+  cards?: DeckCard[];
+  currency?: string;
+}) {
   const duration = AVAILABLE_DURATIONS[0];
+  const curr = CURRENCIES[currency] ?? CURRENCIES.SAR;
 
   /* المسار الافتراضي: باقة لكل سيرفر بسعر المتجر بالريال ومدة 12 شهراً */
   const items = useMemo<DeckCard[]>(() => {
@@ -133,17 +260,20 @@ function FanDeck({ label, cards }: { label?: string; cards?: DeckCard[] }) {
         code: plan.serverCode,
         name: plan.serverName.split("(")[0].trim(),
         termLabel: "12 شهراً",
-        amount: price.SAR,
-        currency: "ر.س",
+        amount: price[curr.code] ?? price.SAR,
+        currency: curr.symbol,
         href: to(`${plan.serverCode}/`),
       };
     });
-  }, [cards, duration]);
+  }, [cards, duration, curr.code, curr.symbol]);
 
   const count = items.length;
   const isDefaultFan = count === 4;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  /* بعد أول تفاعل يدوي (لمس/نقرة/سهم) يتوقف التدوير التلقائي نهائياً، فلا
+     يتحرك الكارت من تحت عين المستخدم وهو يقرأ سعره */
+  const [manual, setManual] = useState(false);
   const reduced = useRef(false);
 
   useEffect(() => {
@@ -157,16 +287,47 @@ function FanDeck({ label, cards }: { label?: string; cards?: DeckCard[] }) {
   }, []);
 
   useEffect(() => {
-    if (paused || count < 2) return;
+    if (paused || manual || count < 2) return;
     const id = window.setInterval(() => {
       if (reduced.current || document.hidden) return;
       setActive((a) => (a + 1) % count);
     }, ROTATE_MS);
     return () => window.clearInterval(id);
-  }, [paused, count]);
+  }, [paused, manual, count]);
 
   /* حماية من مؤشر قديم إن تغيّر عدد الكروت */
   const activeIndex = active % count;
+
+  const goNext = () => {
+    setManual(true);
+    setActive((a) => (a + 1) % count);
+  };
+  const goPrev = () => {
+    setManual(true);
+    setActive((a) => (a - 1 + count) % count);
+  };
+
+  /* التقليب باللمس (وأيضاً بالسحب بالماوس) — يوقف التبديل التلقائي أثناءه */
+  const { dragX, dragging, handlers } = useDeckSwipe({
+    onNext: goNext,
+    onPrev: goPrev,
+    onDragStart: () => setPaused(true),
+    onDragEnd: () => setPaused(false),
+  });
+
+  /* الأسهم تقلّب الكروت مثل اللمس تماماً */
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowLeft") goNext();
+    else if (event.key === "ArrowRight") goPrev();
+    else if (event.key === "Home") {
+      setManual(true);
+      setActive(0);
+    }
+    else return;
+    event.preventDefault();
+  };
+
+  const front = items[activeIndex];
 
   return (
     <section aria-label={label ?? "السيرفرات في نظرة واحدة"} className="mt-8">
@@ -178,12 +339,21 @@ function FanDeck({ label, cards }: { label?: string; cards?: DeckCard[] }) {
         onBlurCapture={() => setPaused(false)}
       >
         <div
-          className="srv-deck"
+          className={`srv-deck${isDefaultFan ? " srv-deck--default" : ""}${dragging ? " is-dragging" : ""}`}
           style={
-            isDefaultFan
-              ? undefined
-              : { width: `${FAN_WIDTH}px`, height: `${FAN_HEIGHT}px` }
+            {
+              ...(isDefaultFan
+                ? null
+                : { width: `${FAN_WIDTH}px`, height: `${FAN_HEIGHT}px` }),
+              "--deck-drag": `${Math.round(dragX * 0.18)}px`,
+            } as CSSProperties
           }
+          role="group"
+          aria-roledescription="شريط كروت قابل للتقليب"
+          aria-label="اسحب يميناً أو يساراً للتنقّل بين السيرفرات"
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          {...handlers}
         >
           {items.map((card, i) => {
             const r = (i - activeIndex + count) % count;
@@ -237,10 +407,23 @@ function FanDeck({ label, cards }: { label?: string; cards?: DeckCard[] }) {
             className="srv-deck-dot"
             aria-pressed={i === activeIndex}
             aria-label={`اعرض ${card.name} — ${card.termLabel}`}
-            onClick={() => setActive(i)}
+            onClick={() => {
+              setManual(true);
+              setActive(i);
+            }}
           />
         ))}
       </div>
+
+      {/* تلميح اللمس: يظهر على الشاشات الصغيرة فقط (CSS) */}
+      <p className="srv-deck-hint" aria-hidden="true">
+        <span>اسحب يميناً أو يساراً لتبديل السيرفر</span>
+      </p>
+
+      {/* إعلان قارئ الشاشة للكارت الأمامي */}
+      <p className="sr-only" aria-live="polite">
+        {`${front.name} — ${front.amount} ${front.currency} لكل ${front.termLabel}`}
+      </p>
     </section>
   );
 }
@@ -259,6 +442,14 @@ function TabbedDeck({ label, tabs }: { label?: string; tabs: DeckTab[] }) {
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const count = tabs.length;
   const activeIndex = Math.min(active, count - 1);
+
+  /* التقليب باللمس بين المدد أيضاً: السحب أفقيّاً ينقل إلى المدة التالية */
+  const { dragX, dragging, handlers } = useDeckSwipe({
+    onNext: () => setActive((a) => Math.min(count - 1, a + 1)),
+    onPrev: () => setActive((a) => Math.max(0, a - 1)),
+    onDragStart: () => undefined,
+    onDragEnd: () => undefined,
+  });
 
   /* تنقّل بلوحة المفاتيح كمعيار tablist: الأسهم في اتجاه RTL، وHome/End للأطراف */
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -322,8 +513,15 @@ function TabbedDeck({ label, tabs }: { label?: string; tabs: DeckTab[] }) {
         >
           <div className="srv-deck-wrap srv-deck-wrap--pair">
             <div
-              className="srv-deck srv-deck--pair"
-              style={{ width: `${PAIR_WIDTH}px`, height: `${PAIR_HEIGHT}px` }}
+              className={`srv-deck srv-deck--pair${dragging ? " is-dragging" : ""}`}
+              style={
+                {
+                  width: `${PAIR_WIDTH}px`,
+                  height: `${PAIR_HEIGHT}px`,
+                  "--deck-drag": `${Math.round(dragX * 0.18)}px`,
+                } as CSSProperties
+              }
+              {...handlers}
             >
               {tab.cards.map((card, cardIndex) => {
                 const slot = PAIR_SLOTS[cardIndex] ?? PAIR_SLOTS[PAIR_SLOTS.length - 1];

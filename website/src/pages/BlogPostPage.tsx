@@ -1,5 +1,5 @@
 import type { BlogPost } from "../content/posts";
-import { AVAILABLE_DURATIONS, getWhatsAppUrl, PRICING_PLANS } from "../data";
+import { AVAILABLE_DURATIONS, CURRENCIES, getWhatsAppUrl, PRICING_PLANS } from "../data";
 import {
   EGYPT_PRICING,
   EGYPT_PRICING_UPDATED,
@@ -15,12 +15,19 @@ import ServerDeck from "../components/ServerDeck";
 import DeviceStage from "../components/DeviceStage";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
-/* رمز العملة في جدول الأسعار — صفحة كل سوق تعرض عملتها من نفس كتالوج المتجر.
-   الافتراضي "SAR" فتبقى كل المقالات القائمة كما هي حرفاً بحرف. */
-const PRICE_SYMBOL: Record<string, string> = { SAR: "ر.س", AED: "د.إ", USD: "$", KWD: "د.ك" };
-
-/* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر */
-export default function BlogPostPage({ post }: { post: BlogPost }) {
+/* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر.
+   `currency` هي العملة المختارة من زر الهيدر: بها تُحسب أسعار كروت السيرفرات
+   وجدول المقارنة معاً، فتتغيّر الأسعار فوراً عند تغيير الاختيار. */
+export default function BlogPostPage({
+  post,
+  currency = "SAR",
+}: {
+  post: BlogPost;
+  currency?: string;
+}) {
+  /* عملة الصفحة: قسم قد يفرض عملة سوقه (صفحات مصر تُسعّر بالجنيه)، وإلا
+     العملة المختارة من الهيدر */
+  const curr = CURRENCIES[currency] ?? CURRENCIES.SAR;
   const plan = post.relatedPlan
     ? PRICING_PLANS.find((p) => p.serverCode === post.relatedPlan)
     : undefined;
@@ -148,6 +155,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           {strip && (
             <ServerDeck
               label={stripTabs ? stripLabel : "السيرفرات الأربعة في نظرة واحدة"}
+              currency={currency}
               tabs={stripTabs}
             />
           )}
@@ -247,6 +255,13 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                       <tbody className="divide-y divide-black/[0.07]">
                         {PRICING_PLANS.map((p) => {
                           const price = p.prices[duration] ?? p.prices["12"];
+                          /* قسم يفرض عملة سوقه، وإلا عملة الهيدر */
+                          const cellCurr = CURRENCIES[s.pricingCurrency ?? currency] ?? curr;
+                          const cellPrice = {
+                            code: cellCurr.code,
+                            symbol: cellCurr.symbol,
+                            amount: price[cellCurr.code] ?? price.SAR,
+                          };
                           return (
                             <tr key={p.id} className="hover:bg-[#d8ff3e]/[0.12] transition-colors">
                               <th scope="row" className="p-4 text-[13px] font-black text-right bg-[#f4f3ef]">
@@ -267,8 +282,8 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.quality}</td>
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.channelsCount}</td>
                               <td className="p-4 text-[13px] font-black whitespace-nowrap">
-                                {price[s.pricingCurrency ?? "SAR"]} {PRICE_SYMBOL[s.pricingCurrency ?? "SAR"]}
-                                {s.pricingCurrency !== "USD" && (
+                                {cellPrice.amount} {cellPrice.symbol}
+                                {cellPrice.code !== "USD" && (
                                   <span className="mt-0.5 block text-[11px] font-bold text-black/40 font-latin">
                                     ≈ {price.USD} USD
                                   </span>

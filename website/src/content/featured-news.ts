@@ -33,12 +33,25 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإيطالي",
+    dateLabel: "25 أكتوبر 2026",
+    title: "إنتر يقلب على فيورنتينا 2-1 بهدفين في الوقت بدل الضائع",
+    description: "تقدم فيورنتينا بهدف لخيمينيز، ثم عادل ثورام وحسم زيلينسكي بركلة جزاء في سان سيرو.",
+    href: "news/inter-fiorentina-2-1/",
+    teamBadges: ["images/teams/fiorentina-badge.webp", "images/teams/internazionale-club-badge.webp"],
+    score: "2 - 1",
+    fullImage: true,
+    images: [
+      { src: "images/players/ita-lautaro.webp", alt: "لاوتارو مارتينيز" },
+    ],
+  },
+  {
     category: "الدوري الإنجليزي",
     dateLabel: "24 أكتوبر 2026",
     title: "توتنهام يهزم تشيلسي 2-0 بهدف عكسي وهدف لتيل",
     description: "طرد كول بالمر في الدقيقة 80، وتيل يحسم الفوز في ستامفورد بريدج.",
     href: "news/tottenham-chelsea-2-0/",
-    teamBadges: ["images/teams/chelsea-badge.webp", "images/teams/tottenham-badge.webp"],
+    teamBadges: ["images/teams/tottenham-badge.webp", "images/teams/chelsea-badge.webp"],
     score: "0 - 2",
     images: [
       { src: "images/players/eng-tel-trio-celebration-v2.webp", alt: "ماتيس تيل ولاعبو توتنهام يحتفلون" },
@@ -51,7 +64,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "أستون فيلا يهزم مانشستر سيتي 2-1 بثنائية جاكسون",
     description: "فوز في فيلا بارك ينهي بداية سيتي المثالية في الدوري، وجاكسون يسجل هدفين.",
     href: "news/man-city-aston-villa/",
-    teamBadges: ["images/teams/aston-villa-badge.webp", "images/teams/manchester-city-badge.webp"],
+    teamBadges: ["images/teams/manchester-city-badge.webp", "images/teams/aston-villa-badge.webp"],
     score: "2 - 1",
     images: [
       { src: "images/players/eng-jackson-celebration.webp", alt: "نيكولاس جاكسون يحتفل" },
@@ -81,7 +94,7 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/psg-barcelona-4-2/",
     featured: true,
     backgroundLogo: "images/brand/ucl-logo-white.png",
-    teamBadges: ["images/teams/paris-saint-germain-badge.webp", "images/teams/barcelona-badge.webp"],
+    teamBadges: ["images/teams/barcelona-badge.webp", "images/teams/paris-saint-germain-badge.webp"],
     score: "4 - 2",
     backgroundImage: "images/news/psg-barcelona-4-2.jpg",
     images: [

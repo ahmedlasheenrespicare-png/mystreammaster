@@ -40,6 +40,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/liverpool-brighton-live/",
     teamBadges: ["images/teams/brighton-badge.webp", "images/teams/liverpool-badge.webp"],
     score: "2 - 0",
+    fullImage: true,
+    images: [
+      { src: "images/players/eng-liv-goal-scene.webp", alt: "إيساك يحتفل بهدفه الثاني في أنفيلد وباركولا خلفه" },
+    ],
   },
   {
     category: "الدوري الإنجليزي",

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './hero-phone.css';
+import { ServerIcon } from './ServerIcon';
 
 /* Adapted from ashif_6672 / wise-ape-51 (variation of mobinkakei), MIT.
    https://uiverse.io/ashif_6672/wise-ape-51
@@ -17,6 +18,26 @@ function PhoneIcon({ kind }: { kind: 'weather' | 'camera' | 'flash' | 'call' | '
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[kind]} /></svg>;
 }
 
+const PHONE_SERVERS = [
+  { code: 'nova', label: 'نوفا' },
+  { code: 'istar', label: 'إيستار' },
+  { code: 'moka', label: 'موكا' },
+  { code: 'x', label: 'X' },
+] as const;
+
+function PhoneServers() {
+  return (
+    <span className="hero-phone-servers" dir="rtl">
+      {PHONE_SERVERS.map(server => (
+        <span key={server.code} className="hero-phone-server" data-phone-server={server.code}>
+          <ServerIcon code={server.code} size={28} />
+          <span className="hero-phone-server-label">{server.label}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function HeroPhone() {
   const [open, setOpen] = useState(false);
   return (
@@ -29,7 +50,7 @@ export function HeroPhone() {
       aria-pressed={open}
       onClick={() => setOpen(value => !value)}
     >
-      <span className="sr-only">نموذج توضيحي تفاعلي؛ اضغط للتبديل بين شاشة القفل والتطبيقات.</span>
+      <span className="sr-only">نموذج توضيحي تفاعلي يعرض شعارات نوفا وإيستار وموكا وX؛ اضغط للتبديل بين شاشة القفل والتطبيقات.</span>
       <span className="hero-phone-screen" aria-hidden="true" dir="ltr">
         <span className="hero-phone-wallpaper" />
         <span className="hero-phone-orb hero-phone-orb--purple" />
@@ -38,16 +59,12 @@ export function HeroPhone() {
         <span className="hero-phone-lock">
           <span className="hero-phone-date">TUESDAY, 10 DEC</span>
           <span className="hero-phone-time">09:41</span>
+          <PhoneServers />
           <span className="hero-phone-shortcuts"><span><PhoneIcon kind="flash" /></span><span><PhoneIcon kind="camera" /></span></span>
           <span className="hero-phone-home-bar" />
         </span>
         <span className="hero-phone-apps">
-          <span className="hero-phone-grid">
-            <span className="hero-phone-app hero-phone-app--weather"><PhoneIcon kind="weather" /></span>
-            <span className="hero-phone-app hero-phone-app--calendar"><small>Tue</small><span>10</span></span>
-            <span className="hero-phone-app hero-phone-app--photos"><span /></span>
-            <span className="hero-phone-app hero-phone-app--camera"><PhoneIcon kind="camera" /></span>
-          </span>
+          <PhoneServers />
           <span className="hero-phone-dock">
             <span className="hero-phone-app hero-phone-app--call"><PhoneIcon kind="call" /></span>
             <span className="hero-phone-app hero-phone-app--chat"><PhoneIcon kind="chat" /></span>

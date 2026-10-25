@@ -419,12 +419,6 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           />
         </h1>
 
-        <Reveal variant="up" delay={260} className="mt-6">
-          <p className="text-[15.5px] md:text-[18px] text-black/60 max-w-[640px] mx-auto leading-relaxed font-medium">
-            استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.
-          </p>
-        </Reveal>
-
         <Reveal variant="up" delay={320} className="mt-6">
           <div className="hero-phone-stage">
             <HeroPhone />

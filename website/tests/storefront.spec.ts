@@ -576,3 +576,25 @@ test('phone lock and apps screens share the four official server logos without w
   await expect(phone.locator('.hero-phone-apps')).toHaveCSS('opacity', '1');
   await expect(phone).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('phone contains branded service notification and restores apps above server logos', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/');
+  const phone = page.locator('[data-hero-phone]');
+  await phone.scrollIntoViewIfNeeded();
+  const notification = phone.locator('.hero-phone-notification');
+  await expect(notification).toContainText('ستريم ماستر');
+  await expect(notification).toContainText('استكشف خيارات المشاهدة');
+  await expect(notification.locator('.hero-phone-notification-logo svg')).toHaveCount(1);
+  await expect(page.locator('#hero > div p').filter({ hasText: 'استكشف خيارات المشاهدة' })).toHaveCount(0);
+  const box = await notification.boundingBox();
+  const shortcuts = await phone.locator('.hero-phone-shortcuts').boundingBox();
+  expect(box!.y + box!.height).toBeLessThanOrEqual(shortcuts!.y);
+  await phone.click();
+  const apps = phone.locator('.hero-phone-apps');
+  await expect(apps.locator('.hero-phone-grid > .hero-phone-app')).toHaveCount(4);
+  await expect(apps.locator('[data-phone-server]')).toHaveCount(4);
+  const grid = await apps.locator('.hero-phone-grid').boundingBox();
+  const servers = await apps.locator('.hero-phone-servers').boundingBox();
+  expect(grid!.y + grid!.height).toBeLessThan(servers!.y);
+});

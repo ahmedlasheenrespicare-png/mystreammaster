@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import './hero-phone.css';
 import { ServerIcon } from './ServerIcon';
+import { IconPlay } from './Icons';
 
 /* Adapted from ashif_6672 / wise-ape-51 (variation of mobinkakei), MIT.
    https://uiverse.io/ashif_6672/wise-ape-51
@@ -40,6 +41,8 @@ function PhoneServers() {
 
 export function HeroPhone() {
   const [open, setOpen] = useState(false);
+  const descriptionId = useId();
+  const description = "استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.";
   return (
     <button
       type="button"
@@ -48,9 +51,11 @@ export function HeroPhone() {
       data-hero-phone=""
       aria-label="عرض تطبيقات نموذج الهاتف"
       aria-pressed={open}
+      aria-describedby={descriptionId}
       onClick={() => setOpen(value => !value)}
     >
       <span className="sr-only">نموذج توضيحي تفاعلي يعرض شعارات نوفا وإيستار وموكا وX؛ اضغط للتبديل بين شاشة القفل والتطبيقات.</span>
+      <span id={descriptionId} className="sr-only">{description}</span>
       <span className="hero-phone-screen" aria-hidden="true" dir="ltr">
         <span className="hero-phone-wallpaper" />
         <span className="hero-phone-orb hero-phone-orb--purple" />
@@ -60,11 +65,27 @@ export function HeroPhone() {
           <span className="hero-phone-date">TUESDAY, 10 DEC</span>
           <span className="hero-phone-time">09:41</span>
           <PhoneServers />
+          <span className="hero-phone-notification" dir="rtl">
+            <span className="hero-phone-notification-heading">
+              <span className="hero-phone-notification-logo"><IconPlay /></span>
+              <strong>ستريم ماستر</strong>
+              <small>الآن</small>
+            </span>
+            <span className="hero-phone-notification-copy">{description}</span>
+          </span>
           <span className="hero-phone-shortcuts"><span><PhoneIcon kind="flash" /></span><span><PhoneIcon kind="camera" /></span></span>
           <span className="hero-phone-home-bar" />
         </span>
         <span className="hero-phone-apps">
-          <PhoneServers />
+          <span className="hero-phone-app-rows">
+            <span className="hero-phone-grid">
+              <span className="hero-phone-app hero-phone-app--weather"><PhoneIcon kind="weather" /></span>
+              <span className="hero-phone-app hero-phone-app--calendar"><small>Tue</small><span>10</span></span>
+              <span className="hero-phone-app hero-phone-app--photos"><span /></span>
+              <span className="hero-phone-app hero-phone-app--camera"><PhoneIcon kind="camera" /></span>
+            </span>
+            <PhoneServers />
+          </span>
           <span className="hero-phone-dock">
             <span className="hero-phone-app hero-phone-app--call"><PhoneIcon kind="call" /></span>
             <span className="hero-phone-app hero-phone-app--chat"><PhoneIcon kind="chat" /></span>

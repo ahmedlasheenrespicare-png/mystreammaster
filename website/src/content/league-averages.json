@@ -1,42 +1,42 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-24T08:19:22.460Z",
+  "generatedAt": "2026-10-25T08:37:07.485Z",
   "source": "content/fixtures-archive (verified provider records only)",
   "definition": "متوسط لكل فريق في المباراة الواحدة، من مباريات منتهية حملت أرقام الطرفين معاً؛ عينة أدنى من 10 مباريات تُسقط البطولة.",
   "leagues": {
     "eng.1": {
       "season": "2026",
-      "matches": 71,
+      "matches": 75,
       "possession": 50,
-      "shots": 13.7,
-      "passAccuracy": 81.4
+      "shots": 13.6,
+      "passAccuracy": 81.6
     },
     "esp.1": {
       "season": "2026",
-      "matches": 31,
+      "matches": 35,
       "possession": 50,
-      "shots": 14.5,
-      "passAccuracy": 83.2
+      "shots": 14.7,
+      "passAccuracy": 83.4
     },
     "fra.1": {
       "season": "2026",
-      "matches": 28,
+      "matches": 29,
       "possession": 50,
-      "shots": 13.3,
+      "shots": 13.1,
       "passAccuracy": 85
     },
     "ger.1": {
       "season": "2026",
-      "matches": 28,
+      "matches": 34,
       "possession": 50,
-      "shots": 15.5,
-      "passAccuracy": 81.4
+      "shots": 15.1,
+      "passAccuracy": 81
     },
     "ita.1": {
       "season": "2026",
-      "matches": 71,
+      "matches": 75,
       "possession": 50,
-      "shots": 14.6,
+      "shots": 14.5,
       "passAccuracy": 83.8
     }
   }

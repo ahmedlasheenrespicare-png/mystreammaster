@@ -1023,18 +1023,29 @@
         "name": "Hamburg SV"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 61.6,
+          "shots": 16,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 38.4,
+          "shots": 8,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401884756",
@@ -1048,18 +1059,29 @@
         "name": "Schalke 04"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 62,
+          "shots": 14,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 38,
+          "shots": 9,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401884757",
@@ -1073,18 +1095,29 @@
         "name": "Werder Bremen"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 53.3,
+          "shots": 18,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 46.7,
+          "shots": 17,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401884758",
@@ -1098,18 +1131,29 @@
         "name": "1. FC Union Berlin"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 66.3,
+          "shots": 25,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 33.7,
+          "shots": 6,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401884762",
@@ -1123,18 +1167,29 @@
         "name": "SV Elversberg"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 55.1,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 44.9,
+          "shots": 5,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401884763",
@@ -1148,18 +1203,29 @@
         "name": "Eintracht Frankfurt"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 58.4,
+          "shots": 18,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 41.6,
+          "shots": 8,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401884760",
@@ -1585,6 +1651,81 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261107&limit=500"
       },
       "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401884738",
+      "date": "2026-11-08T14:30:00.000Z",
+      "home": {
+        "id": "122",
+        "name": "FC Cologne"
+      },
+      "away": {
+        "id": "131",
+        "name": "Bayer Leverkusen"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401884741",
+      "date": "2026-11-08T16:30:00.000Z",
+      "home": {
+        "id": "126",
+        "name": "SC Freiburg"
+      },
+      "away": {
+        "id": "598",
+        "name": "1. FC Union Berlin"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401884742",
+      "date": "2026-11-08T18:30:00.000Z",
+      "home": {
+        "id": "7911",
+        "name": "TSG Hoffenheim"
+      },
+      "away": {
+        "id": "133",
+        "name": "Schalke 04"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     }
   ]
 }

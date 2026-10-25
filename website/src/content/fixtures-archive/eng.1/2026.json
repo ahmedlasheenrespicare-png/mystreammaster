@@ -2571,18 +2571,29 @@
         "name": "Manchester City"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 36743,
+      "statistics": {
+        "home": {
+          "possession": 36.8,
+          "shots": 8,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 63.2,
+          "shots": 15,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401878768",
@@ -2596,18 +2607,29 @@
         "name": "Everton"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 60207,
+      "statistics": {
+        "home": {
+          "possession": 58,
+          "shots": 20,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 42,
+          "shots": 8,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401879255",
@@ -2621,18 +2643,29 @@
         "name": "Fulham"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 31449,
+      "statistics": {
+        "home": {
+          "possession": 36,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 64,
+          "shots": 12,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401878767",
@@ -2646,18 +2679,29 @@
         "name": "Tottenham Hotspur"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 31.5,
+          "shots": 7,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 68.5,
+          "shots": 15,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261024&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     },
     {
       "id": "401878765",
@@ -3158,6 +3202,131 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261107&limit=500"
       },
       "fetchedAt": "2026-10-24T08:09:04.391Z"
+    },
+    {
+      "id": "401878759",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "373",
+        "name": "Ipswich Town"
+      },
+      "away": {
+        "id": "349",
+        "name": "AFC Bournemouth"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401879239",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "366",
+        "name": "Sunderland"
+      },
+      "away": {
+        "id": "363",
+        "name": "Chelsea"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401879243",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "384",
+        "name": "Crystal Palace"
+      },
+      "away": {
+        "id": "364",
+        "name": "Liverpool"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401879244",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "331",
+        "name": "Brighton & Hove Albion"
+      },
+      "away": {
+        "id": "337",
+        "name": "Brentford"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401879240",
+      "date": "2026-11-08T16:30:00.000Z",
+      "home": {
+        "id": "360",
+        "name": "Manchester United"
+      },
+      "away": {
+        "id": "362",
+        "name": "Aston Villa"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-10-25T08:26:33.492Z"
     }
   ]
 }

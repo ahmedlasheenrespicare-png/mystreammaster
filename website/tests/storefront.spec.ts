@@ -726,3 +726,27 @@ test('television welcome places archived cinema artwork left of its text and hid
     await expect(tv.locator('.hero-tv-apps')).toHaveCSS('opacity', '1');
   }
 });
+
+test('TV portrait ensemble keeps the same proportions and layer order on small screens', async ({ page }) => {
+  const layouts: number[][] = [];
+  for (const width of [320, 390, 767, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const gallery = page.locator('.hero-tv-welcome-gallery');
+    await expect(gallery.locator('.hero-tv-football-art img')).toHaveCount(5);
+    layouts.push(await gallery.evaluate(el => {
+      const box = el as HTMLElement;
+      const normalized = [box.offsetWidth / box.offsetHeight];
+      for (const img of box.querySelectorAll('img')) {
+        normalized.push(img.offsetLeft / box.offsetWidth, img.offsetTop / box.offsetHeight,
+          img.offsetWidth / box.offsetWidth, img.offsetHeight / box.offsetHeight,
+          Number(getComputedStyle(img).zIndex) || 0);
+      }
+      return normalized;
+    }));
+  }
+  for (const layout of layouts) {
+    expect(layout[0]).toBeCloseTo(0.75, 1);
+    layout.forEach((value, i) => expect(Math.abs(value - layouts[0][i])).toBeLessThan(0.04));
+  }
+});

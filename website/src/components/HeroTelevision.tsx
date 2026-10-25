@@ -37,6 +37,7 @@ export function HeroTelevision() {
                 <img src={to('images/players/eng-haaland-header.png')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/esp-yamal.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/ger-kane.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={to('images/players/fra-dembele.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
               </span>
             <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.png')} alt="" loading="lazy" decoding="async" draggable={false} />
             </span>

@@ -35,6 +35,13 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الإسباني",
     dateLabel: "25 أكتوبر 2026",
+    title: "الكلاسيكو: مبابي يمنح ريال مدريد التقدم على برشلونة في الشوط الأول",
+    description: "هدف مبابي في الدقيقة 41 في كامب نو، وفرصة ضائعة ليامال قبل الاستراحة.",
+    href: "news/clasico-first-half-2026/",
+  },
+  {
+    category: "الدوري الإسباني",
+    dateLabel: "25 أكتوبر 2026",
     title: "الكلاسيكو: غيابات برشلونة وريال مدريد وترشيحات المباراة",
     description: "فينيسيوس ورودريغو غائبان عن مدريد، وأولمو وكونده يغيبان عن برشلونة، وبرشلونة هو المرشح الأول.",
     href: "news/clasico-preview-absences-predictions/",

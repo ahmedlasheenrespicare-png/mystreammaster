@@ -750,3 +750,58 @@ test('TV portrait ensemble keeps the same proportions and layer order on small s
     layout.forEach((value, i) => expect(Math.abs(value - layouts[0][i])).toBeLessThan(0.04));
   }
 });
+
+test('animated hero word has inline holographic layers without resizing its typography', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const word = page.locator('#hero h1 .hero-title-holo').first();
+    await page.locator('#hero h1').scrollIntoViewIfNeeded();
+    await expect(word.locator('.hero-title-holo__layer')).toHaveCount(3);
+    await expect(word.locator('[aria-hidden="true"]')).toHaveCount(2);
+    const sizes = await word.evaluate(el => {
+      const title = el.closest('h1')!;
+      const front = el.querySelector('.hero-title-holo__layer--front')!;
+      return { title: getComputedStyle(title).fontSize, word: getComputedStyle(front).fontSize,
+        animation: getComputedStyle(el.querySelector('.hero-title-holo__stack')!).animationName };
+    });
+    expect(sizes.word).toBe(sizes.title);
+    expect(sizes.animation).toBe('none');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+
+test('hero 4K uses the same three-layer effect at the existing headline size', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const quality = page.locator('#hero h1 .hero-title-holo--quality');
+  await expect(quality).toHaveAttribute('dir', 'ltr');
+  await expect(quality.locator('.hero-title-holo__layer')).toHaveCount(3);
+  await expect(quality.locator('.hero-title-holo__layer--front')).toHaveText('4K');
+  const sizes = await quality.evaluate(el => ({
+    title: getComputedStyle(el.closest('h1')!).fontSize,
+    quality: getComputedStyle(el.querySelector('.hero-title-holo__layer--front')!).fontSize,
+  }));
+  expect(sizes.quality).toBe(sizes.title);
+});
+
+test('holographic word and 4K animate automatically on touch phones', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'no-preference' });
+  const page = await context.newPage();
+  await page.goto('/');
+  await page.locator('#hero h1').scrollIntoViewIfNeeded();
+  for (const selector of ['.hero-title-holo:not(.hero-title-holo--quality)', '.hero-title-holo--quality']) {
+    const stack = page.locator(`#hero h1 ${selector} .hero-title-holo__stack`);
+    await expect(stack).toHaveCSS('animation-name', 'hero-title-holo-mobile');
+    await expect(stack).toHaveCSS('animation-play-state', 'running');
+  }
+  const quality = page.locator('.hero-title-holo--quality .hero-title-holo__stack');
+  const before = await quality.evaluate(el => getComputedStyle(el).transform);
+  await page.waitForTimeout(400);
+  expect(await quality.evaluate(el => getComputedStyle(el).transform)).not.toBe(before);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(quality).toHaveCSS('animation-name', 'none');
+  await context.close();
+});

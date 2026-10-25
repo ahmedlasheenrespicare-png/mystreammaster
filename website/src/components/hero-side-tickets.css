@@ -57,46 +57,43 @@
    الأجهزة المتوسطة (حيث تصطف الجانبيتان جنباً إلى جنب) و265px من lg حيث
    تصطف التذاكر الثلاث في صفّ واحد بارتفاع واحد.
 -------------------------------------------------------------------------- */
-/* Card frame adapted from disnaker_4924, kind-mayfly-18 (MIT):
-   https://uiverse.io/disnaker_4924/kind-mayfly-18
-   Preserve the existing holographic panel, ray, lines and competition logo.
-   Only the matches shell gets the olive frame / white upper-left glow.
-   Responsive dimensions intentionally stay unchanged. */
+/* Card frame adapted from Sujitkavaiya / mighty-pig-81 (MIT):
+   https://uiverse.io/Sujitkavaiya/mighty-pig-81
+   Reference: light 0.2em border, 0.4em corners, soft shadow and blue hover.
+   Keep the current dark holographic interior and all responsive dimensions. */
 .hero-side-ticket--matches {
   height: 132px;
   isolation: isolate;
-  padding: 2px;
-  border-radius: 12px;
-  background: #333e1d;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.22),
-              0 8px 10px -6px rgb(0 0 0 / 0.18);
+  padding: 0;
+  border: 0.2em solid rgb(250, 250, 250);
+  border-radius: 0.4em;
+  background: #fff;
+  box-shadow: 0.3em 0.3em 0.7em #00000015;
+  transition: border-color 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.hero-side-ticket--matches::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  width: 224px;
-  height: 192px;
-  left: -50%;
-  top: -50%;
-  background: #fff;
-  filter: blur(50px);
-  pointer-events: none;
+.hero-side-ticket--matches:hover,
+.hero-side-ticket--matches:focus-within {
+  border-color: #006fff;
 }
 
 .hero-side-ticket--matches > .league-ticket-bg {
-  inset: 2px;
-  border-radius: 10px;
+  inset: 0;
+  border: 0;
+  border-radius: 0.2em;
 }
 
 .hero-side-ticket--matches .hero-match-slide {
-  border-radius: 10px;
+  border-radius: 0.4em;
 }
 
 .hero-side-ticket--matches .hero-match-slide:focus-visible {
-  outline: 2px solid #d8ff3e;
+  outline: 2px solid #006fff;
   outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-side-ticket--matches { transition: none; }
 }
 
 @media (min-width: 768px) {

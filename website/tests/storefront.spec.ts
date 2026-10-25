@@ -805,3 +805,34 @@ test('holographic word and 4K animate automatically on touch phones', async ({ b
   await expect(quality).toHaveCSS('animation-name', 'none');
   await context.close();
 });
+
+test('clicking devices brings TV forward straight and restores the tilted TV behind the phone', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const stage = page.locator('.hero-phone-stage');
+    await stage.scrollIntoViewIfNeeded();
+    const tv = stage.locator('[data-hero-tv]');
+    const tvButton = tv.getByRole('button');
+    const phone = stage.locator('[data-hero-phone]');
+    await expect(stage).toHaveAttribute('data-front-device', 'phone');
+    const original = await tv.evaluate(el => getComputedStyle(el).transform);
+    await tvButton.click({ position: { x: 70, y: 80 } });
+    await expect(stage).toHaveAttribute('data-front-device', 'tv');
+    await expect(tv).toHaveCSS('transform', width < 768 ? 'matrix(0.75, 0, 0, 0.75, 0, 0)' : 'none');
+    expect(await tv.evaluate(el => Number(getComputedStyle(el).zIndex))).toBeGreaterThan(await phone.evaluate(el => Number(getComputedStyle(el).zIndex)));
+    // An exposed lower part remains tappable to restore the phone.
+    await phone.click({ position: { x: 150, y: 320 } });
+    await expect(stage).toHaveAttribute('data-front-device', 'phone');
+    await expect(tv).toHaveCSS('transform', original);
+    expect(await phone.evaluate(el => Number(getComputedStyle(el).zIndex))).toBeGreaterThan(await tv.evaluate(el => Number(getComputedStyle(el).zIndex)));
+    // The same controls work through the keyboard.
+    await tvButton.focus();
+    await tvButton.press('Enter');
+    await expect(stage).toHaveAttribute('data-front-device', 'tv');
+    await phone.focus();
+    await phone.press('Space');
+    await expect(stage).toHaveAttribute('data-front-device', 'phone');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});

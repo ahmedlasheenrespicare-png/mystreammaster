@@ -39,7 +39,7 @@ function PhoneServers() {
   );
 }
 
-export function HeroPhone() {
+export function HeroPhone({ onActivate }: { onActivate?: () => void }) {
   const [open, setOpen] = useState(false);
   const descriptionId = useId();
   // Client-only initialization keeps prerendered HTML and hydration identical.
@@ -72,7 +72,10 @@ export function HeroPhone() {
       aria-label="عرض تطبيقات نموذج الهاتف"
       aria-pressed={open}
       aria-describedby={descriptionId}
-      onClick={() => setOpen(value => !value)}
+      onClick={() => {
+          onActivate?.();
+          setOpen(value => !value);
+        }}
     >
       <span className="sr-only">نموذج توضيحي تفاعلي يعرض شعارات نوفا وإيستار وموكا وX؛ اضغط للتبديل بين شاشة القفل والتطبيقات.</span>
       <span id={descriptionId} className="sr-only">{description}</span>

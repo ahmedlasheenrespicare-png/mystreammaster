@@ -186,6 +186,7 @@ function SideTicketShell({
       }}
       onFocusCapture={onPause}
     >
+      {side === "news" && <>
       <div className="league-ticket-bg league-ticket-holographic" aria-hidden="true">
         <span className="league-ticket-ray" />
         <span className="league-ticket-line league-ticket-line--top" />
@@ -194,6 +195,7 @@ function SideTicketShell({
         <span className="league-ticket-line league-ticket-line--right" />
       </div>
       <span className="league-ticket-symbol" aria-hidden="true" />
+      </>}
       <div className="hero-side-ticket-inner">{children}</div>
     </section>
   );
@@ -264,13 +266,13 @@ function SlideArrows({
   count: number;
   onStep: (delta: number) => void;
 }) {
-  const button = "grid h-5 w-5 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white/70 transition-colors hover:border-[#d8ff3e]/50 hover:text-[#d8ff3e] disabled:opacity-30 disabled:hover:border-white/15 disabled:hover:text-white/70";
+  const button = "hero-slide-arrow grid h-5 w-5 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white/70 transition-colors hover:border-[#d8ff3e]/50 hover:text-[#d8ff3e] disabled:opacity-30 disabled:hover:border-white/15 disabled:hover:text-white/70";
   return (
     <div className="flex items-center gap-1">
       <button type="button" onClick={() => onStep(-1)} disabled={count < 2} aria-label={`${label} ${label === "المباراة" ? "السابقة" : "السابق"}`} className={button}>
         <Chevron dir="start" />
       </button>
-      <span dir="ltr" className="min-w-[26px] text-center text-[9.5px] tabular-nums text-white/55">
+      <span dir="ltr" className="hero-slide-count min-w-[26px] text-center text-[9.5px] tabular-nums text-white/55">
         {count ? `${index + 1}/${count}` : "0/0"}
       </span>
       <button type="button" onClick={() => onStep(1)} disabled={count < 2} aria-label={`${label} ${label === "المباراة" ? "التالية" : "التالي"}`} className={button}>
@@ -293,7 +295,7 @@ function Chevron({ dir }: { dir: "start" | "end" }) {
 function ClubMark({ team }: { team: MatchTeam }) {
   if (!team.logo) {
     return (
-      <span aria-hidden="true" className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-white/10 text-white/40 lg:h-6 lg:w-6">
+      <span aria-hidden="true" className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-black/5 text-black/50 lg:h-6 lg:w-6">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-3 w-3">
           <circle cx="12" cy="12" r="9" />
           <path d="m12 8 3.4 2.5-1.3 4h-4.2l-1.3-4L12 8Z" />
@@ -325,7 +327,7 @@ function TeamLine({ team }: { team: MatchTeam }) {
       <ClubMark team={team} />
       <span className="min-w-0 flex-1 truncate">{team.name}</span>
       {team.score != null && (
-        <span dir="ltr" className="shrink-0 tabular-nums text-white/70">
+        <span dir="ltr" className="shrink-0 tabular-nums text-black/70">
           {team.score}
         </span>
       )}
@@ -369,7 +371,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
         <div
           role="tablist"
           aria-label="يوم المباريات"
-          className="flex min-w-0 flex-1 items-center gap-0.5 rounded-full border border-white/10 bg-[#0b0b0f]/45 p-0.5"
+          className="flex min-w-0 flex-1 items-center gap-0.5 rounded-full border border-black/10 bg-[#f7f8f2] p-0.5"
           onKeyDown={event => {
             if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
             event.preventDefault();
@@ -388,34 +390,34 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
               tabIndex={activeDay === tab.key ? 0 : -1}
               onClick={() => selectDay(tab.key)}
               className={`flex-1 rounded-full px-1 py-0.5 text-[11px] font-black transition-colors lg:text-[10px] ${
-                activeDay === tab.key ? "bg-[#d8ff3e] text-[#0b0b0f]" : "text-white/60 hover:text-white"
+                activeDay === tab.key ? "bg-[#d8ff3e] text-[#0b0b0f]" : "text-black/60 hover:text-black"
               }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <span className="min-w-0 shrink-0 truncate text-[9.5px] font-bold text-white/55 lg:text-[9px]">{dayLabel(days[activeDay])}</span>
+        <span className="min-w-0 shrink-0 truncate text-[9.5px] font-bold text-black/60 lg:text-[9px]">{dayLabel(days[activeDay])}</span>
       </div>
 
       <div id="hero-matches-panel" role="tabpanel" aria-label={DAY_TABS.find(tab => tab.key === activeDay)?.label} className="hero-news-stage mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
         {day.status === "loading" && (
-          <p className="text-[12px] font-bold leading-relaxed text-white/45 lg:text-[10px]">جارٍ تحديث المواعيد…</p>
+          <p className="text-[12px] font-bold leading-relaxed text-black/60 lg:text-[10px]">جارٍ تحديث المواعيد…</p>
         )}
 
         {day.status === "error" && (
-          <div className="text-[12px] font-bold leading-relaxed text-white/55 lg:text-[10px]">
+          <div className="text-[12px] font-bold leading-relaxed text-black/60 lg:text-[10px]">
             <p>تعذّر تحديث مواعيد هذا اليوم.</p>
-            <a className="mt-1 inline-block font-black text-[#d8ff3e]" href={to("matches/")}>
+            <a className="mt-1 inline-block font-black text-[#0b0b0f]" href={to("matches/")}>
               افتح صفحة المواعيد
             </a>
           </div>
         )}
 
         {day.status === "ready" && !current && (
-          <div className="text-[12px] font-bold leading-relaxed text-white/55 lg:text-[10px]">
+          <div className="text-[12px] font-bold leading-relaxed text-black/60 lg:text-[10px]">
             <p>لا مباريات في البطولات المتابَعة.</p>
-            <a className="mt-1 inline-block font-black text-[#d8ff3e]" href={to("matches/")}>
+            <a className="mt-1 inline-block font-black text-[#0b0b0f]" href={to("matches/")}>
               كل المواعيد القادمة
             </a>
           </div>
@@ -427,7 +429,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
             {...swipe}
             style={{ touchAction: "pan-y pinch-zoom" }}
             href={matchCenterLink(current) ?? to("matches/")}
-            className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-white/[0.12] bg-[#0b0b0f]/45 px-2 py-1.5 text-start transition-colors hover:border-[#d8ff3e]/50 hover:bg-[#0b0b0f]/70"
+            className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-black/10 bg-[#f7f8f2] px-2 py-1.5 text-start transition-colors hover:border-[#b3d21f] hover:bg-[#f5f9e6]"
           >
             {/* خلفية الشريحة: شعار بطولة المباراة نفسها (زخرفي، خافت، تحت
                 النص) — يظهر فقط لبطولة لها شعار موثّق */}
@@ -446,10 +448,10 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
                 }}
               />
             )}
-            <span className="flex items-center justify-between gap-1 text-[10px] font-bold text-white/60 lg:text-[9.5px]">
+            <span className="flex items-center justify-between gap-1 text-[10px] font-bold text-black/60 lg:text-[9.5px]">
               <span className="min-w-0 truncate">{leagueName(current.league)}</span>
               {current.state === "live" ? (
-                <span className="inline-flex shrink-0 items-center gap-1 font-black text-[#ff6b5c]">
+                <span className="inline-flex shrink-0 items-center gap-1 font-black text-[#bd291d]">
                   <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#ff6b5c]" />
                   مباشر
                   {current.detail && current.detail !== "مباشر" && (
@@ -457,11 +459,11 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
                   )}
                 </span>
               ) : current.state === "finished" ? (
-                <span className="shrink-0 font-black text-white/55">انتهت</span>
+                <span className="shrink-0 font-black text-black/60">انتهت</span>
               ) : current.state === "other" ? (
-                <span className="shrink-0 font-black text-white/55">تغيّر الموعد</span>
+                <span className="shrink-0 font-black text-black/60">تغيّر الموعد</span>
               ) : (
-                <span dir="ltr" className="shrink-0 font-black tabular-nums text-white/70">
+                <span dir="ltr" className="shrink-0 font-black tabular-nums text-black/70">
                   {kickoff(current.date, HOME_ZONE)}
                 </span>
               )}
@@ -474,7 +476,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
                 <span className="min-w-0 truncate">{current.home.name}</span>
               </span>
               {current.home.score != null && current.away.score != null && (
-                <span data-match-score="" dir="rtl" className="inline-flex shrink-0 items-center gap-1 tabular-nums text-white/65">
+                <span data-match-score="" dir="rtl" className="inline-flex shrink-0 items-center gap-1 tabular-nums text-black/75">
                   <bdi data-score-home="" dir="ltr">{current.home.score}</bdi>
                   <span aria-hidden="true">-</span>
                   <bdi data-score-away="" dir="ltr">{current.away.score}</bdi>
@@ -491,15 +493,15 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
             </span>
             {/* سطر الملعب: يُحجز دائماً (مسافة عند غيابه) فلا يتغيّر ارتفاع
                 البطاقة بين شريحة وأخرى أثناء التقليب */}
-            <span className="mt-2 hidden truncate text-[10px] font-bold text-white/40 lg:block">
+            <span className="mt-2 hidden truncate text-[10px] font-bold text-black/50 lg:block">
               {current.venue || "\u00A0"}
             </span>
           </a>
         )}
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-1 border-t border-white/10 pt-1.5 text-[10.5px] font-bold lg:text-[9.5px]">
-        <a className="shrink-0 font-black text-[#d8ff3e]" href={to("matches/")}>
+      <div className="mt-auto flex items-center justify-between gap-1 border-t border-black/10 pt-1.5 text-[10.5px] font-bold lg:text-[9.5px]">
+        <a className="shrink-0 font-black text-[#0b0b0f]" href={to("matches/")}>
           كل المواعيد
         </a>
         <SlideArrows label="المباراة" index={index} count={count} onStep={step} />

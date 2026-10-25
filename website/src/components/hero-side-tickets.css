@@ -59,8 +59,8 @@
 -------------------------------------------------------------------------- */
 /* Card frame adapted from Sujitkavaiya / mighty-pig-81 (MIT):
    https://uiverse.io/Sujitkavaiya/mighty-pig-81
-   Reference: light 0.2em border, 0.4em corners, soft shadow and blue hover.
-   Keep the current dark holographic interior and all responsive dimensions. */
+   Reference: light 0.2em border, 0.4em corners and soft shadow.
+   White-and-lime theme; preserve all responsive dimensions. */
 .hero-side-ticket--matches {
   height: 132px;
   isolation: isolate;
@@ -68,19 +68,14 @@
   border: 0.2em solid rgb(250, 250, 250);
   border-radius: 0.4em;
   background: #fff;
+  color: #0b0b0f;
   box-shadow: 0.3em 0.3em 0.7em #00000015;
   transition: border-color 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .hero-side-ticket--matches:hover,
 .hero-side-ticket--matches:focus-within {
-  border-color: #006fff;
-}
-
-.hero-side-ticket--matches > .league-ticket-bg {
-  inset: 0;
-  border: 0;
-  border-radius: 0.2em;
+  border-color: #d8ff3e;
 }
 
 .hero-side-ticket--matches .hero-match-slide {
@@ -88,7 +83,7 @@
 }
 
 .hero-side-ticket--matches .hero-match-slide:focus-visible {
-  outline: 2px solid #006fff;
+  outline: 2px solid #819a00;
   outline-offset: -2px;
 }
 
@@ -127,13 +122,13 @@
   width: 96px;
   height: 96px;
   object-fit: contain;
-  opacity: 0.42;
-  filter: drop-shadow(0 0 8px rgba(255,255,255,.65));
+  opacity: 0.16;
+  filter: none;
   pointer-events: none;
   user-select: none;
 }
 @media (max-width: 1023px) {
-  .hero-match-slide-logo { width: 60px; height: 60px; opacity: 0.35; }
+  .hero-match-slide-logo { width: 60px; height: 60px; opacity: 0.14; }
 }
 
 @keyframes hero-match-slide-in {
@@ -197,4 +192,25 @@
 }
 .hero-news-design > a > div:nth-of-type(2) > div:first-child img + img {
   margin-inline-start: -8px;
+}
+
+/* Scoped controls keep the hidden news ticket's dark theme unchanged. */
+.hero-side-ticket--matches .hero-slide-arrow {
+  color: #40443a;
+  background: #f4f5ef;
+  border-color: #daddd1;
+}
+.hero-side-ticket--matches .hero-slide-arrow:hover:not(:disabled) {
+  color: #0b0b0f;
+  background: #d8ff3e;
+  border-color: #b3d21f;
+}
+.hero-side-ticket--matches .hero-slide-arrow:disabled { color: #63675d; }
+.hero-side-ticket--matches .hero-slide-count { color: #54584e; }
+.hero-side-ticket--matches button:focus-visible,
+.hero-side-ticket--matches a:focus-visible { outline: 2px solid #819a00; outline-offset: -2px; }
+.hero-side-ticket--matches .hero-side-ticket-inner > div:last-child > a:hover {
+  text-decoration: underline;
+  text-decoration-color: #819a00;
+  text-underline-offset: 3px;
 }

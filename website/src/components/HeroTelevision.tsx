@@ -31,7 +31,15 @@ export function HeroTelevision() {
           <span className="hero-tv-orbit hero-tv-orbit--two" />
           <span className="hero-tv-topbar"><span className="hero-tv-wordmark"><IconPlay /> ستريم ماستر</span><span className="hero-tv-demo">واجهة توضيحية</span></span>
           <span className="hero-tv-welcome">
+            <span className="hero-tv-welcome-gallery">
+              <span className="hero-tv-football-art">
+                <img src={to('images/players/esp-mbappe.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={to('images/players/eng-haaland-header.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={to('images/players/esp-yamal.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={to('images/players/ger-kane.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
+              </span>
             <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+            </span>
             <span className="hero-tv-welcome-copy">
             <span className="hero-tv-eyebrow">عالمك على شاشة أكبر</span>
             <strong>متعة المشاهدة<br /><em>تبدأ هنا.</em></strong>

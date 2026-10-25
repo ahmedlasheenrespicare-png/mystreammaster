@@ -771,7 +771,9 @@ test('universal ticket base carries the fifa crest, a full-width stars cluster a
      المقصوص — ولا فيفا أخرى في الصفحة كلها */
   const fifa = base.locator('.league-ticket-header .league-carousel-badge img.league-carousel-logo');
   await expect(fifa).toHaveCount(1);
-  await expect(fifa).toHaveAttribute('src', /fifa-ticket\.png$/);
+  /* الصيغة تفصيل تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)
+     عندما تكون أصغر فعلاً، والأصل png يبقى مرجعاً في المصدر. */
+  await expect(fifa).toHaveAttribute('src', /fifa-ticket\.(?:png|webp|avif)$/);
   await expect.poll(async () => fifa.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
   await expect(page.locator('img.league-carousel-logo[src*="fifa-ticket"]')).toHaveCount(1);
   /* العنقود بعرض الكرت: صندوقه يطابق عرض التذكرة وحدها (هامش قياس

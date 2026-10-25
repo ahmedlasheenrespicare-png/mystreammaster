@@ -8,6 +8,9 @@
      ٣) يضيف decoding="async" إن غاب.
      ٤) يمنح أول صورة ظاهرة في الصفحة (غير lazy) fetchpriority="high" حتى
         يحمّلها المتصفح قبل بقية الصور — إصلاح LCP كما يوصي Lighthouse.
+     ٥) يحوّل <link rel="preload" as="image"> إلى النسخة الحديثة نفسها التي
+        يحمّلها <img>، وإلا نزّل المتصفح الأصل الثقيل في التهيئة ثم النسخة
+        الخفيفة في الصورة: تحميل مزدوج بلا فائدة.
    ولا يلفّ الصورة بـ<picture> ولا يغيّر أي عنصر آخر: بعض قواعد CSS في
    الموقع تعتمد على `img:nth-child(...)` داخل حاوية، ولفّها بغلاف جديد
    يكسر هذا التحديد ويبدّل مواضع صور الهيرو.
@@ -126,7 +129,23 @@ export function optimizeHtmlImages(html) {
     return Object.keys(updates).length ? setAttrs(tag, updates) : tag;
   });
 
-  return markFirstPriorityImage(out);
+  return modernizeImagePreloads(markFirstPriorityImage(out));
+}
+
+/* روابط preload للصور: لو <img> سيحمّل النسخة الحديثة، فلتُحمَّل هي مسبقاً
+   بدل الأصل. يشمل href النسبي والمطلق كما في بقية الدالة. */
+function modernizeImagePreloads(html) {
+  return html.replace(/<link\b[^>]*>/gi, (tag) => {
+    if (!/\srel\s*=\s*["']?preload/i.test(tag)) return tag;
+    if (!/\sas\s*=\s*["']?image/i.test(tag)) return tag;
+    const href = attrValue(tag, 'href');
+    if (!href || /^(https?:|data:|\/\/)/i.test(href)) return tag;
+    const abs = href.startsWith('/') ? href : /^images\//.test(href) ? `/${href}` : null;
+    if (!abs) return tag;
+    const modern = modernVariant(abs.split('?')[0]);
+    if (!modern) return tag;
+    return setAttrs(tag, { href: href.startsWith('/') ? modern : modern.replace(/^\//, '') });
+  });
 }
 
 /* أول صورة غير مؤجَّلة = مرشّح LCP. نرفع أولويتها بلا مساس بأي شيء آخر.

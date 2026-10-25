@@ -237,11 +237,13 @@ test('all eight leader banners use the live match-card crest source, with no oth
 
 test('a failing live crest falls back to the local crest, then to the initials with the banner height intact', async ({ page }) => {
   const live = 'https://a.espncdn.com/i/teamlogos/soccer/500/174.png';
-  const local = '/images/teams/as-monaco-club-badge.webp';
+  /* الصيغة تفصيل تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)،
+     فالحجب يجب أن يلتقط أي صيغة لنفس الشعار المحلي. */
+  const local = /^\/images\/teams\/as-monaco-club-badge\.(?:png|webp|avif)$/;
   const blocked: string[] = [];
   await openHub(page, { width: 1440, height: 1000 }, (url, route) => {
     const isBrokenLive = url.href.startsWith(live);
-    const isBrokenLocal = url.pathname === local;
+    const isBrokenLocal = local.test(url.pathname);
     if (!isBrokenLive && !isBrokenLocal) return false;
     blocked.push(url.href);
     void route.fulfill({ status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: '<!doctype html><title>404</title>' });
@@ -267,7 +269,7 @@ test('a failing live crest falls back to the local crest, then to the initials w
   await expect(banner.locator('.league-carousel-monogram')).toContainText('AM');
   expect((await banner.boundingBox())!.height).toBe(before.height);
   expect(blocked.some(url => url.startsWith(live))).toBe(true);
-  expect(blocked.some(url => new URL(url).pathname === local)).toBe(true);
+  expect(blocked.some(url => local.test(new URL(url).pathname))).toBe(true);
 });
 
 for (const width of [1440, 390]) {

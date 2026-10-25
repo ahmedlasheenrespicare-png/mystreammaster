@@ -316,7 +316,7 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
                   alt={img.alt}
                   loading="lazy"
                   decoding="async"
-                  className={`relative h-full w-auto max-w-[50%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
+                  className={`relative h-full w-auto ${item.fullImage ? "max-w-full" : "max-w-[50%]"} object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
                 />
               ))}
             </div>

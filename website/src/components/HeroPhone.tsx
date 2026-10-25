@@ -1,11 +1,11 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import './hero-phone.css';
 import { ServerIcon } from './ServerIcon';
 import { IconPlay } from './Icons';
 
 /* Adapted from ashif_6672 / wise-ape-51 (variation of mobinkakei), MIT.
    https://uiverse.io/ashif_6672/wise-ape-51
-   A visual phone demo, not a real device status or music player. */
+   Visual phone demo with a real Cairo clock; no real device status or music player. */
 function PhoneIcon({ kind }: { kind: 'weather' | 'camera' | 'flash' | 'call' | 'chat' | 'search' | 'music' }) {
   const paths = {
     weather: 'M7 17a4 4 0 0 1-1-7.9A6 6 0 0 1 18 8a4.5 4.5 0 0 1 0 9H7Z',
@@ -42,6 +42,26 @@ function PhoneServers() {
 export function HeroPhone() {
   const [open, setOpen] = useState(false);
   const descriptionId = useId();
+  // Client-only initialization keeps prerendered HTML and hydration identical.
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    const refresh = () => setNow(new Date());
+    refresh();
+    const timer = window.setInterval(refresh, 1000);
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('focus', refresh);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', refresh);
+      window.removeEventListener('focus', refresh);
+    };
+  }, []);
+  const time = now ? new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).format(now) : '—:—';
+  const date = now ? new Intl.DateTimeFormat('ar-EG', {
+    timeZone: 'Africa/Cairo', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  }).format(now) : '…';
   const description = "استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.";
   return (
     <button
@@ -60,10 +80,10 @@ export function HeroPhone() {
         <span className="hero-phone-wallpaper" />
         <span className="hero-phone-orb hero-phone-orb--purple" />
         <span className="hero-phone-orb hero-phone-orb--cyan" />
-        <span className="hero-phone-status"><span>9:41</span><span className="hero-phone-indicators"><svg viewBox="0 0 24 24"><path d="M3 20h18V2L3 20Z" /></svg><svg viewBox="0 0 24 24"><path d="M2 5h17v14H2V5Zm18 5h3v4h-3v-4Z" /></svg></span></span>
+        <span className="hero-phone-status"><span data-phone-status-time="">{time}</span><span className="hero-phone-indicators"><svg viewBox="0 0 24 24"><path d="M3 20h18V2L3 20Z" /></svg><svg viewBox="0 0 24 24"><path d="M2 5h17v14H2V5Zm18 5h3v4h-3v-4Z" /></svg></span></span>
         <span className="hero-phone-lock">
-          <span className="hero-phone-date">TUESDAY, 10 DEC</span>
-          <span className="hero-phone-time">09:41</span>
+          <span className="hero-phone-date" dir="rtl" title="بتوقيت القاهرة">{date}</span>
+          <span className="hero-phone-time" dir="ltr" title="بتوقيت القاهرة">{time}</span>
           <PhoneServers />
           <span className="hero-phone-notification" dir="rtl">
             <span className="hero-phone-notification-heading">

@@ -12,6 +12,7 @@ import type { DeckCard, DeckTab } from "../components/ServerDeck";
 import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
+import DeviceStage from "../components/DeviceStage";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
 /* رمز العملة في جدول الأسعار — صفحة كل سوق تعرض عملتها من نفس كتالوج المتجر.
@@ -149,6 +150,12 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
               label={stripTabs ? stripLabel : "السيرفرات الأربعة في نظرة واحدة"}
               tabs={stripTabs}
             />
+          )}
+
+          {post.deviceStage && (
+            <div className="mt-10">
+              <DeviceStage />
+            </div>
           )}
 
           {toc.length >= 5 && (

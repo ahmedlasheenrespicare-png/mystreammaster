@@ -35,8 +35,21 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الإسباني",
     dateLabel: "25 أكتوبر 2026",
+    title: "الكلاسيكو: ريال مدريد يفوز 2-1 على برشلونة بهدفي مبابي",
+    description: "مبابي يسجل في الدقيقة 41 و87 في كامب نو، وأول خسارة لبرشلونة في الدوري هذا الموسم.",
+    href: "news/clasico-first-half-2026/",
+    teamBadges: ["images/teams/barcelona-club-badge.webp", "images/teams/real-madrid-club-badge.webp"],
+    score: "1 - 2",
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-mbappe-goal.webp", alt: "مبابي يحتفل بهدفه في الشوط الأول من الكلاسيكو" },
+    ],
+  },
+  {
+    category: "الدوري الإسباني",
+    dateLabel: "25 أكتوبر 2026",
     title: "الكلاسيكو: غيابات برشلونة وريال مدريد وترشيحات المباراة",
-    description: "فينيسيوس ورودريغو غائبان عن مدريد، وأولمو وكونده يغيبان عن برشلونة، وبرشلونة هو المرشح الأول.",
+    description: "قبل المباراة: غيابات الفريقين وترشيحات الكلاسيكو، وقد انتهت بفوز ريال مدريد 2-1.",
     href: "news/clasico-preview-absences-predictions/",
     fullImage: true,
     images: [

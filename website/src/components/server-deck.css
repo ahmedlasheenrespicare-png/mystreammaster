@@ -42,15 +42,28 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   cursor: grab;
-  transform: scale(var(--deck-scale)) translateX(var(--deck-drag, 0px));
+  /* ترتيب الدوال مقصود: الإزاحة أولاً ثم التكبير، فتصبح حركة الكروت مع
+     الإصبع 1:1 بالبكسل (لو عُكست لكانت مضروبة في --deck-scale) */
+  transform: translate3d(var(--deck-drag, 0px), 0, 0) scale(var(--deck-scale));
   transition: transform 0.45s cubic-bezier(0.75, 0, 0, 1.01);
   transform-origin: top center;
+  will-change: transform;
 }
 
 /* أثناء السحب: يتبع الإصبع بلا تلعثم ولا انتقال */
 .srv-deck.is-dragging {
   cursor: grabbing;
   transition: none;
+}
+
+/* أثناء السحب: الكروت نفسها بلا انتقال، فتتحرّك مع الإصبع فوراً لا بعد 0.9s */
+.srv-deck.is-dragging .srv-deck-card {
+  transition: none;
+}
+
+/* ظل أخف على الكارت الأمامي أثناء السحب: إشارة أن الشريط بيدك */
+.srv-deck.is-dragging .srv-deck-card.is-front .srv-deck-content {
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.45);
 }
 
 .srv-deck:focus-visible {

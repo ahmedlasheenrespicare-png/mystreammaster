@@ -554,3 +554,25 @@ test('hero phone demo sits between the headline and stars and supports touch and
   await page.setViewportSize({ width: 1440, height: 1000 });
   await expect(phone).toBeVisible();
 });
+
+test('phone lock and apps screens share the four official server logos without white plates', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/');
+  const phone = page.locator('[data-hero-phone]');
+  await phone.scrollIntoViewIfNeeded();
+  for (const screen of ['.hero-phone-lock', '.hero-phone-apps']) {
+    const servers = phone.locator(`${screen} [data-phone-server]`);
+    await expect(servers).toHaveCount(4);
+    for (const code of ['nova', 'istar', 'moka', 'x']) {
+      const server = phone.locator(`${screen} [data-phone-server="${code}"]`);
+      await expect(server.locator('img')).toHaveCount(1);
+      await expect(server).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      const lockSrc = await phone.locator(`.hero-phone-lock [data-phone-server="${code}"] img`).getAttribute('src');
+      await expect(server.locator('img')).toHaveAttribute('src', lockSrc!);
+    }
+  }
+  await expect(phone.locator('.hero-phone-lock')).toHaveCSS('opacity', '1');
+  await phone.click();
+  await expect(phone.locator('.hero-phone-apps')).toHaveCSS('opacity', '1');
+  await expect(phone).toHaveAttribute('aria-pressed', 'true');
+});

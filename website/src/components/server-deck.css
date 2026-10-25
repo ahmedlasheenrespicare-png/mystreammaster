@@ -37,8 +37,25 @@
   border-radius: 16px;
   overflow: hidden;
   isolation: isolate;
-  transform: scale(var(--deck-scale));
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: grab;
+  transform: scale(var(--deck-scale)) translateX(var(--deck-drag, 0px));
+  transition: transform 0.45s cubic-bezier(0.75, 0, 0, 1.01);
   transform-origin: top center;
+}
+
+/* أثناء السحب: يتبع الإصبع بلا تلعثم ولا انتقال */
+.srv-deck.is-dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.srv-deck:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 6px;
 }
 
 /* --------------------------------------------------------------------------
@@ -675,6 +692,26 @@
   outline-offset: 2px;
 }
 
+/* تلميح اللمس أسفل النقاط — مخفي على سطح المكتب */
+.srv-deck-hint {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(11, 11, 15, 0.4);
+}
+
+.srv-deck-hint span::before {
+  content: "\2194  ";
+  font-weight: 900;
+}
+
+@media (min-width: 768px) {
+  .srv-deck-hint {
+    display: none;
+  }
+}
+
 /* ---- خطّا التوهّج أسفل الكارت (.lines في الأصل) ---- */
 .srv-deck-lines {
   position: absolute;
@@ -774,6 +811,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .srv-deck,
   .srv-deck-card,
   .srv-deck-glyph,
   .srv-deck-logo,

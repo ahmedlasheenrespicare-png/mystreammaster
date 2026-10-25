@@ -286,6 +286,21 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
             style={{ backgroundImage: `url(${logo})` }}
           />
         )}
+        {/* صورة الاحتفال الكاملة: مساحة كبيرة على يمين الشريحة كلها (لا تُقصّ) */}
+        {item.fullImage && slideImages.length > 0 && (
+          <div className="pointer-events-none absolute top-16 bottom-10 right-3 z-[1] flex w-[55%] items-end justify-center">
+            {slideImages.map((img, idx) => (
+              <img
+                key={img.src}
+                src={to(img.src)}
+                alt={img.alt}
+                loading="lazy"
+                decoding="async"
+                className={`relative ${item.fullImage ? "h-full w-full" : "h-full w-auto max-w-[50%]"} object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
+              />
+            ))}
+          </div>
+        )}
         <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
@@ -307,8 +322,8 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
         {/* النص في وسط الشريحة (بدون صور اللاعبين) */}
         <div className="relative z-10 mt-2 min-h-0 flex-1">
           {/* صورتان فقط في الشريحة: لامين جمال الحزين وبجانبه هانز فليك الغاضب (على اليمين) */}
-          {slideImages.length > 0 && (
-            <div className={`pointer-events-none absolute inset-y-0 right-0 z-[1] flex w-1/2 items-end justify-center ${item.fullImage ? "p-3" : ""}`}>
+          {!item.fullImage && slideImages.length > 0 && (
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] flex w-1/2 items-end justify-center">
               {slideImages.map((img, idx) => (
                 <img
                   key={img.src}

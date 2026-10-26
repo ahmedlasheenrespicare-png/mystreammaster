@@ -717,7 +717,7 @@ test('television welcome places archived cinema artwork left of its text and hid
     const tv = page.locator('[data-hero-tv]');
     await tv.scrollIntoViewIfNeeded();
     const art = tv.locator('.hero-tv-welcome-art');
-    await expect(art).toHaveAttribute('src', /images\/cinema\/superman-batman-stark\.png$/);
+    await expect(art).toHaveAttribute('src', /images\/cinema\/superman-batman-stark\.(?:png|webp|avif)$/);
     await expect.poll(() => art.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBeTruthy();
     const positions = await tv.evaluate(el => {
       const art = el.querySelector('.hero-tv-welcome-art') as HTMLElement;

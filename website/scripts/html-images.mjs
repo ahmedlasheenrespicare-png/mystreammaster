@@ -2,17 +2,19 @@
    تحويل صور HTML عند النشر — بلا لمس بنية الصفحة.
 
    ما يفعله على كل <img> محلي:
-     ١) يبدّل src إلى نسخة WebP/AVIF إن وُجدت فعلاً على القرص وكانت أصغر.
-     ٢) يضيف width/height من src/image-manifest.json إن غابا (منع انزياح
-        التخطيط CLS — وهو ما يقيسه Google).
-     ٣) يضيف decoding="async" إن غاب.
-   ولا يلفّ الصورة بـ<picture> ولا يغيّر أي عنصر آخر: بعض قواعد CSS في
+     ١) يختار النسخة الأصغر. PNG/WebP المعروفان بالشفافية يقتصران على WebP؛
+        PNG/WebP غير المعروفين عن الشفافية يُستخدم لهما WebP احتياطياً فقط،
+        وتستمر AVIF للنسخ المعروفة بالعتامة وJPEG.
+     ٢) يصلح سمات مصدر AVIF داخل <picture> إذا ثبت أن الأصل شفاف، من دون
+        إضافة أو حذف أي عنصر من بنية الصفحة.
+     ٣) يضيف width/height من src/image-manifest.json إن غابا، وdecoding="async".
+   لا يضيف أغلفة <picture> جديدة ولا يغيّر بنية الصفحة: بعض قواعد CSS في
    الموقع تعتمد على `img:nth-child(...)` داخل حاوية، ولفّها بغلاف جديد
    يكسر هذا التحديد ويبدّل مواضع صور الهيرو.
 
    تبديل src يعطي المكسب نفسه (‎3.4MB ← 47KB لصورة الهيرو) دون أي أثر على
-   التخطيط أو على محدّدات CSS. الصور المبنية أصلاً داخل <picture> تُترك
-   كما هي لأن <source> يختار الصيغة بنفسه.
+   التخطيط أو على محدّدات CSS. تُترك مصادر الصور كما هي، باستثناء AVIF
+   الذي قد يفقد الشفافية؛ عندئذٍ تُعدَّل سماته فقط إلى WebP آمن.
 ========================================================================== */
 import fss from 'node:fs';
 import path from 'node:path';
@@ -30,11 +32,23 @@ export function imageManifest() {
   return manifestCache;
 }
 
+let transparencyManifestCache = null;
+function imageTransparencyInfo() {
+  if (transparencyManifestCache) return transparencyManifestCache;
+  const file = path.join(website, 'src', 'image-transparency-manifest.json');
+  const data = fss.existsSync(file) ? JSON.parse(fss.readFileSync(file, 'utf8')) : {};
+  /* القديم كان قائمة جذوع شفافة فقط؛ ابقَ متوافقاً معها أثناء الانتقال. */
+  transparencyManifestCache = Array.isArray(data)
+    ? { checked: new Set(), transparent: new Set(data) }
+    : { checked: new Set(data.checked || []), transparent: new Set(data.transparent || []) };
+  return transparencyManifestCache;
+}
+
 const RASTER = /\.(png|jpe?g)$/i;
 const IMAGE = /\.(png|jpe?g|webp|avif)$/i;
 
 function locate(urlPath) {
-  const rel = decodeURIComponent(urlPath.split('?')[0]).replace(/^\//, '');
+  const rel = decodeURIComponent(urlPath.split(/[?#]/)[0]).replace(/^\//, '');
   for (const dir of [publicDir, root]) {
     const file = path.join(dir, rel);
     if (fss.existsSync(file) && fss.statSync(file).isFile()) return file;
@@ -63,14 +77,41 @@ function setAttrs(tag, updates) {
   return out;
 }
 
+function imageStem(url) {
+  if (!url || /^(https?:|data:|\/\/)/i.test(url)) return null;
+  const bareUrl = url.split(/[?#]/)[0];
+  let decoded;
+  try { decoded = decodeURIComponent(bareUrl); } catch { decoded = bareUrl; }
+  const absolute = decoded.startsWith('/') ? decoded : /^images\//i.test(decoded) ? `/${decoded}` : null;
+  return absolute ? absolute.replace(IMAGE, '') : null;
+}
+
+function hasTransparency(url) {
+  const stem = imageStem(url);
+  return Boolean(stem && imageTransparencyInfo().transparent.has(stem));
+}
+
 /** النسخة الحديثة الأنسب لصورة أصلية، أو null إن لم تكن أصغر فعلاً.
-    تشمل webp → avif: كثير من الصور تُصدَّر webp فقط، وavif أصغر منها. */
+    لا نختار AVIF لمصدر PNG/WebP لأن النسخ الحالية فقدت الشفافية؛ WebP يحافظ
+    عليها. وإذا كان HTML قديماً يشير مباشرةً إلى AVIF شفاف، نعيده إلى WebP/PNG. */
 function modernVariant(src) {
-  const stem = RASTER.test(src) ? src.replace(RASTER, '') : /\.webp$/i.test(src) ? src.replace(/\.webp$/i, '') : null;
-  if (!stem) return null;
+  const extension = (src.match(IMAGE) || [])[0]?.toLowerCase();
+  if (!extension) return null;
+  const stem = src.slice(0, -extension.length);
   const originalSize = sizeOf(src);
+
+  if (hasTransparency(src)) {
+    const fallback = [stem + '.webp', stem + '.png'].find((candidate) => sizeOf(candidate) < Infinity);
+    if (!fallback || fallback === src) return null;
+    return extension === '.avif' || sizeOf(fallback) < originalSize ? fallback : null;
+  }
+
+  if (extension === '.avif') return null;
+  const alphaCapableSource = extension === '.png' || extension === '.webp';
+  const alphaStatusKnown = imageTransparencyInfo().checked.has(stem);
   let best = null;
-  for (const ext of ['.webp', '.avif']) {
+  const formats = alphaCapableSource && !alphaStatusKnown ? ['.webp'] : ['.webp', '.avif'];
+  for (const ext of formats) {
     const candidate = stem + ext;
     if (candidate === src) continue;
     const size = sizeOf(candidate);
@@ -79,15 +120,70 @@ function modernVariant(src) {
   return best;
 }
 
+function srcSetEntries(value) {
+  return (value || '').split(',').map((part) => {
+    const tokens = part.trim().split(/\s+/);
+    return { url: tokens[0] || '', descriptor: tokens.slice(1).join(' ') };
+  }).filter(({ url }) => url);
+}
+
+function safeAvifCandidate(url, extension) {
+  const match = url.match(/\.avif(?=([?#]|$))/i);
+  if (!match) return null;
+  const end = match.index + match[0].length;
+  const candidate = `${url.slice(0, match.index)}.${extension}${url.slice(end)}`;
+  return sizeOf(candidate) < Infinity ? candidate : null;
+}
+
+function repairTransparentAvifSources(html) {
+  return html.replace(/<picture\b[^>]*>[\s\S]*?<\/picture>/gi, (picture) => {
+    const img = (picture.match(/<img\b[^>]*>/i) || [])[0] || '';
+    const fallbackIsTransparent = hasTransparency(attrValue(img, 'src'));
+    return picture.replace(/<source\b[^>]*>/gi, (source) => {
+      const entries = srcSetEntries(attrValue(source, 'srcset'));
+      const urls = entries.map(({ url }) => url);
+      const avifSource = /image\/avif/i.test(attrValue(source, 'type') || '') || urls.some((url) => /\.avif(?:$|[?#])/i.test(url));
+      const transparentSource = fallbackIsTransparent || urls.some(hasTransparency);
+      if (!avifSource || !transparentSource) return source;
+
+      for (const extension of ['webp', 'png']) {
+        const rewritten = entries.map(({ url, descriptor }) => {
+          const candidate = /\.avif(?:$|[?#])/i.test(url) ? safeAvifCandidate(url, extension) : url;
+          return candidate ? `${candidate}${descriptor ? ` ${descriptor}` : ''}` : null;
+        });
+        if (rewritten.length && rewritten.every(Boolean)) {
+          return setAttrs(source, {
+            type: `image/${extension === 'webp' ? 'webp' : 'png'}`,
+            srcset: rewritten.join(', '),
+          });
+        }
+      }
+
+      /* لا يوجد ملف بديل بنفس المقاسات؛ عطّل هذا المصدر بالسمات فقط،
+         ثم دع صورة img الاحتياطية تختار صيغة شفافة متاحة. */
+      return setAttrs(source, { srcset: '', media: 'not all' });
+    });
+  });
+}
+
+function hasActivePictureSource(picture) {
+  return [...picture.matchAll(/<source\b[^>]*>/gi)].some((match) => {
+    const source = match[0];
+    const srcset = attrValue(source, 'srcset');
+    const media = (attrValue(source, 'media') || '').trim().toLowerCase();
+    return Boolean(srcset && srcset.trim()) && media !== 'not all';
+  });
+}
+
 export function optimizeHtmlImages(html) {
   if (!html.includes('<img')) return html;
+  html = repairTransparentAvifSources(html);
 
-  /* نطاقات <picture> التي فيها <source> فعلاً — هي وحدها تختار الصيغة بنفسها،
-     فلا يُبدَّل src داخلها. أما <picture> الفارغ (بلا source) فالمتصفح يحمّل
-     src كما هو، فيجوز تبديله إلى الصيغة الأصغر. */
+  /* الصور داخل <picture> ذي مصدر فعّال تترك اختيار الصيغة للمتصفح؛
+     إن عُطّل AVIF غير الآمن وبقيت الصورة احتياطية فقط، يجوز تحسين src. */
   const pictureRanges = [];
-  for (const match of html.matchAll(/<picture\b[^>]*>[\s\S]*?<\/picture>/g)) {
-    pictureRanges.push([match.index, match.index + match[0].length, /<source\b/i.test(match[0])]);
+  for (const match of html.matchAll(/<picture\b[^>]*>[\s\S]*?<\/picture>/gi)) {
+    pictureRanges.push([match.index, match.index + match[0].length, hasActivePictureSource(match[0])]);
   }
   const insidePicture = (index) => pictureRanges.some(([start, end, hasSource]) => hasSource && index >= start && index < end);
 

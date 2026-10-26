@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الكرة الذهبية",
+    dateLabel: "26 أكتوبر 2026",
+    title: "الكرة الذهبية 2026: موعد الحفل والمرشحون والغيابات",
+    description: "حفل الكرة الذهبية الـ70 اليوم في لندن، مع المرشحين الأبرز والغيابات المعلنة وعودة ريال مدريد إلى الحفل.",
+    href: "news/ballon-dor-2026-ceremony-preview/",
+  },
+  {
     category: "الدوري الفرنسي",
     dateLabel: "26 أكتوبر 2026",
     title: "مواجهة الليلة: باريس سان جيرمان ضد ليون في الدوري الفرنسي",

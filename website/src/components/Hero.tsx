@@ -378,22 +378,23 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
               <AllLeaguesTicket
-                clashes={[INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[3], INDEX_CLASHES[4], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
+                clashes={[INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[3], INDEX_CLASHES[4], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
                 slideOverrides={{
-                  0: <FeaturedNewsTicketSlide href="news/psg-lyon-tonight/" />,
-                  1: <FeaturedNewsTicketSlide href="news/clasico-post-match-reactions-2026/" />,
-                  2: <FeaturedNewsTicketSlide href="news/clasico-first-half-2026/" />,
-                  4: <FeaturedNewsTicketSlide href="news/clasico-preview-absences-predictions/" />,
-                  5: <FeaturedNewsTicketSlide href="news/liverpool-brighton-live/" />,
-                  6: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
-                  7: <FeaturedNewsTicketSlide href="news/bundesliga-bayern-freiburg-2026/" />,
-                  8: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
-                  9: <FeaturedNewsTicketSlide href="news/bundesliga-dortmund-frankfurt-2026/" />,
-                  10: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
-                  13: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
-                  14: <FeaturedNewsTicketSlide href="news/bundesliga-kompany-hospitalized-2026/" />,
-                  15: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
-                  16: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
+                  0: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-ceremony-preview/" />,
+                  1: <FeaturedNewsTicketSlide href="news/psg-lyon-tonight/" />,
+                  2: <FeaturedNewsTicketSlide href="news/clasico-post-match-reactions-2026/" />,
+                  3: <FeaturedNewsTicketSlide href="news/clasico-first-half-2026/" />,
+                  5: <FeaturedNewsTicketSlide href="news/clasico-preview-absences-predictions/" />,
+                  6: <FeaturedNewsTicketSlide href="news/liverpool-brighton-live/" />,
+                  7: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
+                  8: <FeaturedNewsTicketSlide href="news/bundesliga-bayern-freiburg-2026/" />,
+                  9: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
+                  10: <FeaturedNewsTicketSlide href="news/bundesliga-dortmund-frankfurt-2026/" />,
+                  11: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
+                  14: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
+                  15: <FeaturedNewsTicketSlide href="news/bundesliga-kompany-hospitalized-2026/" />,
+                  16: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
+                  17: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
                 }}
               />
             </div>

@@ -31,7 +31,7 @@ test('the season cards and every match report use local club crests with descrip
   const $=load(await fs.readFile(new URL(`../${slug}/index.html`,website),'utf8'));
   const images=$('main img');assert.equal(images.length,slug==='match-analysis'?8:2);
   for(const img of images.toArray()){
-   const src=$(img).attr('src');assert.match(src,/^\/images\/teams\/[a-z-]+-club-badge\.webp$/);
+   const src=$(img).attr('src');assert.match(src,/^\/images\/teams\/[a-z-]+-club-badge\.(?:webp|avif)$/);
    assert.match($(img).attr('alt'),/^شعار .+/);assert.ok(Number($(img).attr('width'))>0&&Number($(img).attr('height'))>0);
    await fs.access(new URL('public'+src,website));count++;
   }

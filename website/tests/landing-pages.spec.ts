@@ -531,7 +531,13 @@ test('home hero hosts the matches index ticket with all six live slides', async 
   await page.goto('/');
   const homeTicket = page.locator('#hero .league-ticket-carousel');
   await expect(homeTicket).toHaveCount(1);
-  await expect(homeTicket.locator('.league-ticket-dot'), 'home hero dots').toHaveCount(6);
+  /* التذكرة تحمل أساساً شرائح «قمة الجولة» المرسومة مسبقاً بجانب ردود المصدر
+     الحيّة، وعددها يتغيّر مع نافذة المواعيد؛ المطلوب أن تكون كل شرائح المصدر
+     المحاكاة ظاهرة (الأساسية + 5) لا أن يتجمّد العدد عند 6. */
+  await expect(homeTicket.locator('.league-ticket-dot').first()).toBeVisible();
+  await expect
+    .poll(() => homeTicket.locator('.league-ticket-dot').count(), { timeout: 20000 })
+    .toBeGreaterThanOrEqual(6);
   /* الأساسية: عنوان «كل البطولات الكبرى» كما في صفحة المواعيد */
   const baseSlide = homeTicket.locator('.league-ticket-slide').first();
   await expect(baseSlide.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');
@@ -771,7 +777,9 @@ test('universal ticket base carries the fifa crest, a full-width stars cluster a
      المقصوص — ولا فيفا أخرى في الصفحة كلها */
   const fifa = base.locator('.league-ticket-header .league-carousel-badge img.league-carousel-logo');
   await expect(fifa).toHaveCount(1);
-  await expect(fifa).toHaveAttribute('src', /fifa-ticket\.png$/);
+  /* الصيغة تفصيل تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)
+     عندما تكون أصغر فعلاً، والأصل png يبقى مرجعاً في المصدر. */
+  await expect(fifa).toHaveAttribute('src', /fifa-ticket\.(?:png|webp|avif)$/);
   await expect.poll(async () => fifa.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
   await expect(page.locator('img.league-carousel-logo[src*="fifa-ticket"]')).toHaveCount(1);
   /* العنقود بعرض الكرت: صندوقه يطابق عرض التذكرة وحدها (هامش قياس

@@ -15,6 +15,8 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 import { assertAdsAllowed } from "./ads-guard.mjs";
 import {
   assertKeywordInTitle,
@@ -188,19 +190,56 @@ function writeRouteHtml(template, route, body) {
   );
 }
 
-function sitemap(routes) {
-  const today = new Date().toISOString().slice(0, 10);
+/* lastmod = تاريخ آخر تعديل فعلي للمصدر، لا تاريخ البناء.
+   كتابة «اليوم» في كل بناء تعلّم Google أن يتجاهل الوسم نهائياً (يوصي
+   صراحةً بأن يكون lastmod موثوقاً)، فيفقد الموقع أسرع إشارة تحديث لديه.
+   المصدر: تاريخ آخر commit لمس ملفات المحتوى/المكوّنات التي تُبنى منها
+   الصفحة. وإن تعذّر الوصول إلى git (بناء بلا تاريخ) يُحذف الوسم بدل
+   إرسال قيمة كاذبة: الغياب الصادق أفضل من الحضور الزائف. */
+const LASTMOD_SOURCES = {
+  home: ['src/App.tsx', 'src/components/Hero.tsx', 'src/seo.ts'],
+  blog: ['src/content/posts.ts', 'src/seo.ts'],
+  other: ['src/seo.ts'],
+};
+
+function gitTime(websiteDir, paths) {
+  try {
+    const out = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...paths], {
+      cwd: websiteDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    return out ? Number(out) * 1000 : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function lastmodTable(websiteDir) {
+  const table = {};
+  for (const [key, paths] of Object.entries(LASTMOD_SOURCES)) {
+    const time = gitTime(websiteDir, paths);
+    if (time) table[key] = new Date(time).toISOString().slice(0, 10);
+  }
+  return table;
+}
+
+function sitemap(routes, lastmods = {}) {
   const urls = routes
-    .map(
+    .map((r) => {
+      const slug = decodeURIComponent(r.replace(/^\//, ''));
+      const key = r === '/' ? 'home' : slug === 'blog' || slug.startsWith('blog/') ? 'blog' : 'other';
+      const lastmod = lastmods[key];
       /* encodeURI يرمّز السلاجات العربية ويبقي بنية الرابط — نفس صيغة sitemap-0.xml */
-      (r) => `  <url>
-    <loc>${encodeURI(`${SITE_URL}/${r === "/" ? "" : r.replace(/^\//, "") + "/"}`)}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${r === "/" ? "daily" : "weekly"}</changefreq>
-    <priority>${r === "/" ? "1.0" : "0.8"}</priority>
-  </url>`
-    )
-    .join("\n");
+      const loc = `    <loc>${encodeURI(`${SITE_URL}/${r === "/" ? "" : r.replace(/^\//, "") + "/"}`)}</loc>`;
+      return [
+        '  <url>',
+        loc,
+        ...(lastmod ? [`    <lastmod>${lastmod}</lastmod>`] : []),
+        `    <changefreq>${r === '/' ? 'daily' : 'weekly'}</changefreq>`,
+        `    <priority>${r === '/' ? '1.0' : '0.8'}</priority>`,
+        '  </url>',
+      ].join('\n');
+    })
+    .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -313,7 +352,7 @@ async function main() {
   }
 
   /* خريطة الموقع */
-  await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(indexableRoutes));
+  await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(indexableRoutes, lastmodTable(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."))));
 
   console.log(`\n✅ تم الرسم المسبق ${count} مساراً + 404.html + sitemap.xml`);
 }

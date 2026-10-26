@@ -15,6 +15,7 @@ import { getLegacyAnalysisSeo } from '../dist-ssr/entry-server.js';
 import { keywordsFor, hasKeywordEntry } from '../src/keywords.mjs';
 import { assertKeywordInTitle, assertTitleLength, noteBrandInTitle } from './seo-guard.mjs';
 import { assertAdsAllowed } from './ads-guard.mjs';
+import { optimizeHtmlImages } from './html-images.mjs';
 
 /* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — الصفحات المفهرسة
    فقط، وتحوّل المخالفات المانعة إلى فشل بناء عند SEO_STRICT=1. */
@@ -44,7 +45,7 @@ for (const file of await files(path.join(website, 'dist'))) {
   const relative = path.relative(path.join(website, 'dist'), file);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
-  if (file.endsWith('.html')) await fs.writeFile(destination, (await fs.readFile(file, 'utf8')).replace(/[ \t]+$/gm, ''));
+  if (file.endsWith('.html')) await fs.writeFile(destination, optimizeHtmlImages((await fs.readFile(file, 'utf8')).replace(/[ \t]+$/gm, '')));
   else await fs.copyFile(file, destination);
 }
 
@@ -104,7 +105,7 @@ async function publishStandalone(file, relative) {
   stripAdsense($, relative);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
-  await fs.writeFile(destination, $.html().replace(/[ \t]+$/gm, ''));
+  await fs.writeFile(destination, optimizeHtmlImages($.html().replace(/[ \t]+$/gm, '')));
 }
 
 // New analysis page sources live in src/, not in generated/published HTML.
@@ -234,7 +235,7 @@ for (const file of await files(path.join(website, 'legacy'))) {
   }
 
   stripAdsense($, relative);
-  const finalHtml = $.html().replace(/[ \t]+$/gm, '');
+  const finalHtml = optimizeHtmlImages($.html().replace(/[ \t]+$/gm, ''));
   assertAdsAllowed(finalHtml, `/${relative.replace(/(^|\/)index\.html$/, '')}`);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });

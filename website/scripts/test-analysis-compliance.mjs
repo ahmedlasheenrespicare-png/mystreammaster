@@ -59,7 +59,7 @@ for (const route of routes) {
         assert.ok($('main details').toArray().some(e => normalize($(e).find('summary').text()) === normalize(question.name) && normalize($(e).find('p').text()) === normalize(question.acceptedAnswer.text)));
       }
       for (const img of $('main img').toArray()) {
-        assert.match($(img).attr('src'), /-badge\.webp$/);
+        assert.match($(img).attr('src'), /-badge\.(?:webp|avif)$/);
         assert.ok(Number($(img).attr('width')) > 0 && Number($(img).attr('height')) > 0);
         assert.ok($(img).attr('alt')?.trim());
       }

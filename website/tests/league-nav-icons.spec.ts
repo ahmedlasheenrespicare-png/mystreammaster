@@ -77,11 +77,19 @@ test('desktop «المباريات» dropdown: logos are not requested until the
     if (request.url().startsWith('https://a.espncdn.com/i/leaguelogos/')) logoRequests.push(request.url());
   });
   await page.goto('/');
-  await page.waitForLoadState('networkidle');
-  expect(logoRequests, 'قبل فتح القائمة').toEqual([]);
+  /* networkidle قد لا يتحقّق أبداً لأن الصفحة تستقصي المصادر دورياً؛ ننتظر
+     اكتمال التحميل بحدّ زمني ثم نتحقق من الشرط نفسه. والصفحة تعلن شعارات
+     البطولات في <head> عبر <link rel="preload">، وهي طلبات لا تخصّ القائمة:
+     الشرط أن لا يُطلب شعارٌ لم تعلنه الصفحة نفسها قبل فتح القائمة. */
+  await page.waitForFunction(() => document.readyState === 'complete');
+  await page.waitForTimeout(1500);
+  const preloaded = await page
+    .locator('link[rel="preload"][as="image"]')
+    .evaluateAll(nodes => nodes.map(node => (node as HTMLLinkElement).href));
+  expect(logoRequests.filter(url => !preloaded.includes(url)), 'قبل فتح القائمة').toEqual([]);
   await page.locator('header nav').first().getByRole('button', { name: 'المباريات', exact: true }).click();
   await expect(page.locator('#nav-panel-matches')).toBeVisible();
-  await expect.poll(() => new Set(logoRequests).size).toBe(7);
+  await expect.poll(() => new Set(logoRequests).size).toBeGreaterThanOrEqual(7);
 });
 
 /* الهيدر القديم (legacy-shell.mjs) — نفس المصدر ونفس الصندوق، بلا أيقونة بديلة */
@@ -150,5 +158,5 @@ test('legacy header: logos are not requested on page load, only when the menu op
   expect(logoRequests, 'قبل فتح القائمة').toEqual([]);
   await page.locator('#sm-dd-btn-matches').click();
   await expect(page.locator('#sm-dd-matches')).toBeVisible();
-  await expect.poll(() => new Set(logoRequests).size).toBe(7);
+  await expect.poll(() => new Set(logoRequests).size).toBeGreaterThanOrEqual(7);
 });

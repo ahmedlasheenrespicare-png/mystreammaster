@@ -350,3 +350,95 @@ test('صفحات الأخبار: كل بذرة مُعلنة في خريطة، و
     assert.ok(sources.has(slug), `sitemap يشير إلى خبر بلا صفحة مصدر: ${url}`);
   }
 });
+
+/* ── صور الصفحات المفهرسة: لا صورة مكسورة، ولا صورة بلا أبعاد، ولا صورة
+   ثقيلة بلا نسخة حديثة ─────────────────────────────────────────────────
+   هذا الحارس يحمي مكسبين: (١) نقل الصور من PNG ثقيل إلى WebP/AVIF خفّض
+   نقل صور الرئيسية من ١٩ ميغابايت إلى أقل من ٣، و(٢) إعلان width/height
+   منع انزياح التخطيط (CLS). أي صورة جديدة بلا نسخة حديثة أو بلا أبعاد
+   تُسقط هذا الفحص قبل أن تصل إلى الإنتاج. */
+test('صور الصفحات المفهرسة: موجودة، بأبعاد معلنة، ولها نسخة حديثة', async () => {
+  const files = await htmlFiles(root);
+  const missing = [];
+  const noDims = [];
+  const noVariant = [];
+  let checked = 0;
+
+  for (const rel of files) {
+    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) continue;
+    const html = await fs.readFile(path.join(root, rel), 'utf8');
+
+    for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
+      const src = (tag.match(/\ssrc=["']([^"']+)["']/i) || [])[1];
+      if (!src || /^(https?:|data:|\/\/)/i.test(src)) continue;
+      const urlPath = src.startsWith('/') ? src : `/${src}`;
+      if (!/\.(png|jpe?g|webp|avif)$/i.test(urlPath.split('?')[0])) continue;
+      checked++;
+
+      const rel0 = decodeURIComponent(urlPath.split('?')[0]).replace(/^\//, '');
+      const exists = await fs.access(path.join(root, rel0)).then(() => true, () => false);
+      const existsInSource = await fs.access(path.join(website, 'public', rel0)).then(() => true, () => false);
+      if (!exists && !existsInSource) { missing.push(`${rel}: ${src}`); continue; }
+
+      if (!/\swidth=["']([^"']+)["']/i.test(tag) || !/\sheight=["']([^"']+)["']/i.test(tag)) {
+        noDims.push(`${rel}: ${src}`);
+      }
+
+      /* الصور داخل <picture> تختار الصيغة بنفسها عبر <source> */
+      if (new RegExp(src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s\\S]{0,400}<\\/picture>').test(html)) continue;
+      if (/\.(png|jpe?g)$/i.test(urlPath)) {
+        const stem = urlPath.replace(/\.(png|jpe?g)$/i, '');
+        const variant = await Promise.all(['.webp', '.avif'].map((ext) =>
+          fs.access(path.join(website, 'public', decodeURIComponent(stem + ext).replace(/^\//, ''))).then(() => true, () => false)));
+        if (!variant.some(Boolean)) noVariant.push(`${rel}: ${src}`);
+      }
+    }
+  }
+
+  assert.ok(checked > 500, `عدد الصور المفحوصة صغير بشكل مريب (${checked})`);
+  assert.deepEqual(missing.slice(0, 8), [], `صور بإشارة إلى ملف غير موجود (${missing.length})`);
+  assert.deepEqual(noDims.slice(0, 8), [], `صور بلا width/height (${noDims.length})`);
+  assert.deepEqual(noVariant.slice(0, 8), [], `صور raster بلا نسخة WebP/AVIF (${noVariant.length})`);
+});
+
+/* ── hreflang: لا تكديس أكواد دول على نفس الرابط ─────────────────────────
+   قالب قديم أعلن تسع وسوم (ar, ar-SA, ar-AE, … x-default) كلها تشير إلى
+   نفس الصفحة، وهو تعارض يدفع Google إلى تجاهل الوسوم كلها. */
+test('hreflang بلا تكديس أكواد دول على الرابط نفسه', async () => {
+  const files = await htmlFiles(root);
+  const offenders = [];
+
+  for (const rel of files) {
+    const html = await fs.readFile(path.join(root, rel), 'utf8');
+    const tags = [...html.matchAll(/<link[^>]+hreflang=["']([^"']+)["'][^>]*>/gi)].map((m) => ({
+      lang: m[1].toLowerCase(),
+      href: (m[0].match(/href=["']([^"']+)["']/i) || [])[1] || '',
+    }));
+    if (tags.length <= 3) continue;
+
+    const byHref = new Map();
+    for (const tag of tags) byHref.set(tag.href, (byHref.get(tag.href) || 0) + 1);
+    for (const [href, count] of byHref) {
+      if (count > 3) offenders.push(`${rel}: ${count} وسوم لنفس الرابط ${href}`);
+    }
+  }
+
+  assert.deepEqual(offenders.slice(0, 8), [], `hreflang مكدّس (${offenders.length} صفحة)`);
+});
+
+/* ── sitemap المولّد: lastmod تاريخي لا «اليوم» ──────────────────────────
+   كتابة تاريخ البناء في كل تشغيل تعلّم محركات البحث تجاهل الوسم. الفحص:
+   لا lastmod في المستقبل، والوسم إمّا غائب (بناء بلا تاريخ git) أو صادق. */
+test('sitemap.xml: lastmod ليس تاريخ بناء متجدداً', async () => {
+  const xml = await fs.readFile(path.join(root, 'sitemap.xml'), 'utf8');
+  const urlBlocks = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((m) => m[1]);
+  assert.ok(urlBlocks.length > 50, `عدد مسارات الخريطة المولّدة صغير (${urlBlocks.length})`);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const future = [];
+  for (const block of urlBlocks) {
+    const lastmod = (block.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1];
+    if (lastmod && lastmod > today) future.push(`${block.match(/<loc>([^<]+)<\/loc>/)[1]} → ${lastmod}`);
+  }
+  assert.deepEqual(future, [], 'lastmod في المستقبل — خطأ في حساب التاريخ');
+});

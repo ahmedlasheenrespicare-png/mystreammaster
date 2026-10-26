@@ -1239,18 +1239,29 @@
         "name": "Bayer Leverkusen"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 41.6,
+          "shots": 20,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 58.4,
+          "shots": 9,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401884759",
@@ -1264,18 +1275,29 @@
         "name": "Bayern Munich"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 44.1,
+          "shots": 16,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 55.9,
+          "shots": 17,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401884746",

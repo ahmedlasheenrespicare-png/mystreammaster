@@ -2715,18 +2715,29 @@
         "name": "Brighton & Hove Albion"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 35.6,
+          "shots": 13,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 64.4,
+          "shots": 17,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401878766",
@@ -2740,18 +2751,29 @@
         "name": "Brentford"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 24259,
+      "statistics": {
+        "home": {
+          "possession": 42.4,
+          "shots": 12,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 57.6,
+          "shots": 14,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401879252",
@@ -2765,18 +2787,29 @@
         "name": "AFC Bournemouth"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 62.6,
+          "shots": 17,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 37.4,
+          "shots": 10,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401879254",
@@ -2790,18 +2823,29 @@
         "name": "Newcastle United"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 52.6,
+          "shots": 17,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 47.4,
+          "shots": 10,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401878764",
@@ -2815,18 +2859,29 @@
         "name": "Leeds United"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 46182,
+      "statistics": {
+        "home": {
+          "possession": 50.4,
+          "shots": 15,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 49.6,
+          "shots": 11,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261025&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-26T08:57:44.396Z"
     },
     {
       "id": "401879248",

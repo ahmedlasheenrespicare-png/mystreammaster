@@ -99,6 +99,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "بايرن يعود للصدارة بفوز 3-1 على فرايبورغ",
     description: "أوباميكانو وغنابري وأوليس يسجلون، وبيشوف يضيف هدفاً في مرماه، وكومباني خارج الخط.",
     href: "news/bundesliga-bayern-freiburg-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ger-gnabry-upa-celebration.webp", alt: "غنابري وأوباميكانو يحتفلان بفوز بايرن على فرايبورغ" },
+    ],
   },
   {
     category: "الدوري الإيطالي",

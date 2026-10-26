@@ -19,8 +19,8 @@ import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
-import { allMatchesVerified, matchByRoute } from "./content/match-center.mjs";
-import { dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
+import { matchByRoute } from "./content/match-center.mjs";
+import { isVerified, dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
 import { keywordsFor } from "./keywords.mjs";
 
 export interface SeoMeta {
@@ -631,9 +631,10 @@ export function getSeo(path: string): SeoMeta {
   const centerMatch = matchByRoute(clean);
   if (centerMatch) {
     const canonical = absolute(`matches/${centerMatch.competitionSlug}/${centerMatch.slug}`);
-    /* البوابة: كيان الحدث والفهرسة معاً معلقان على تأكيد المعرّفات من المصدر.
-       مباراة غير مطابَقة لا تُفهرس ولا تُنشر بكيان حدث ناقص (البندان 2 و13). */
-    const verified = allMatchesVerified();
+    /* بوابة مستقلة لكل مباراة: لا تجعل سجلاً غير مؤكّد يحجب الصفحات الأخرى.
+       المباراة التي ثبتت معرّفاتها من المصدر وحدها تصبح قابلة للفهرسة؛ غير
+       المطابقة تبقى noindex حتى التحقق منها (البندان 2 و13). */
+    const verified = isVerified(centerMatch);
     const cleanMeta = (value: unknown): string | null => typeof value === 'string' && value.trim() ? value.trim() : null;
     const homeName = cleanMeta(centerMatch.home?.name);
     const awayName = cleanMeta(centerMatch.away?.name);

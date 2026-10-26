@@ -13,7 +13,8 @@
      • كل مسار قابل للفهرسة موجود في sitemap (مع lastmod/priority)،
        وغير محظور في robots.txt، ومربوط من صفحة أخرى (لا صفحات يتيمة)
    الصفحات المستثناة صفحات وظيفية noindex بطبيعتها (404، البحث، السلة،
-   مشغّل الويب الذكي المحظور في robots.txt، وصفحة عدم الاتصال).
+   مشغّل الويب الذكي المحظور في robots.txt، وصفحة عدم الاتصال)، إضافةً إلى
+   تفاصيل المباريات التي لم تُؤكّد معرّفاتها بعد من المصدر.
 ========================================================================== */
 
 import test from 'node:test';
@@ -21,6 +22,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { MATCH_CENTER_ALL_MATCHES, matchCenterPath } from '../src/content/match-center.mjs';
+import { isVerified } from '../src/lib/match-center.mjs';
+import { optimizeHtmlImages } from './html-images.mjs';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -34,11 +38,22 @@ const NOINDEX = new Set([
   'search/index.html',
   'cart/index.html',
 ]);
-/* صفحات تفاصيل المباريات الفردية داخل أي بطولة — noindex مقصود */
+/* صفحة تفاصيل المباراة تتبع حالة توثيقها وحدها: المؤكدة قابلة للفهرسة،
+   وغير المؤكدة تبقى noindex. لا تحجب سجلات معلّقة بقية صفحات المباريات. */
+const matchVerificationByFile = new Map(MATCH_CENTER_ALL_MATCHES.map((match) => [
+  `${matchCenterPath(match).replace(/^\/+|\/+$/g, '')}/index.html`,
+  isVerified(match),
+]));
 const isMatchDetailPage = (rel) => {
   // matches/{competition}/{match-slug}/index.html  (3+ segments after matches/)
   const parts = rel.replace(/\/index\.html$/, '').split('/');
   return parts[0] === 'matches' && parts.length >= 3;
+};
+const isExpectedNoindex = (rel) => {
+  if (NOINDEX.has(rel)) return true;
+  if (!isMatchDetailPage(rel)) return false;
+  assert.ok(matchVerificationByFile.has(rel), `${rel}: مسار مباراة غير موجود في مصدر المباريات`);
+  return !matchVerificationByFile.get(rel);
 };
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'website', 'admin-dashboard', 'dist', 'dist-ssr']);
 
@@ -110,8 +125,8 @@ test('بيانات <head> كاملة وفريدة لكل صفحة قابلة ل�
   const titles = new Map();
   const descriptions = new Map();
   for (const [rel, html] of pages) {
-    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) {
-      assert.match(meta(html, 'name', 'robots') || '', /noindex/i, `${rel}: صفحة وظيفية يجب أن تكون noindex`);
+    if (isExpectedNoindex(rel)) {
+      assert.match(meta(html, 'name', 'robots') || '', /noindex/i, `${rel}: صفحة غير مؤهلة للفهرسة يجب أن تبقى noindex`);
       continue;
     }
     const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.replace(/\s+/g, ' ').trim();
@@ -154,7 +169,7 @@ test('بيانات <head> كاملة وفريدة لكل صفحة قابلة ل�
 test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المنظمة في الرئيسية فقط', async () => {
   const pages = await loadPages();
   for (const [rel, html] of pages) {
-    if (NOINDEX.has(rel)) continue;
+    if (isExpectedNoindex(rel)) continue;
     const nodes = ldNodes(html, rel);
     const types = nodes.flatMap(typesOf);
     const isHome = rel === 'index.html';
@@ -223,7 +238,7 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
   }
 
   for (const rel of pages.keys()) {
-    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) continue;
+    if (isExpectedNoindex(rel)) continue;
     const url = urlOf(rel);
     assert.ok(inSitemap.has(url), `${rel}: غير موجود في أي sitemap`);
     const route = routeOf(rel);
@@ -236,7 +251,7 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
     const route = decodeURIComponent(new URL(url).pathname);
     const rel = route === '/' ? 'index.html' : route.endsWith('/') ? `${route.slice(1)}index.html` : route.slice(1);
     assert.ok(pages.has(rel), `sitemap يشير إلى صفحة غير موجودة: ${url}`);
-    assert.ok(!NOINDEX.has(rel) && !isMatchDetailPage(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
+    assert.ok(!isExpectedNoindex(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
   }
 });
 
@@ -351,6 +366,16 @@ test('صفحات الأخبار: كل بذرة مُعلنة في خريطة، و
   }
 });
 
+test('محسّن الصور يعلن أبعاد النسخة الحديثة بعد تبديل الصيغة', () => {
+  for (const src of [
+    '/images/players/eng-liv-goal-scene.webp',
+    'images/articles/world-cup.webp',
+  ]) {
+    const optimized = optimizeHtmlImages(`<img src="${src}" alt="">`);
+    assert.match(optimized, /\swidth="[1-9]\d*"\sheight="[1-9]\d*"/, `${src}: أبعاد الصيغة المختارة غائبة`);
+  }
+});
+
 /* ── صور الصفحات المفهرسة: لا صورة مكسورة، ولا صورة بلا أبعاد، ولا صورة
    ثقيلة بلا نسخة حديثة ─────────────────────────────────────────────────
    هذا الحارس يحمي مكسبين: (١) نقل الصور من PNG ثقيل إلى WebP/AVIF خفّض
@@ -365,7 +390,7 @@ test('صور الصفحات المفهرسة: موجودة، بأبعاد معل
   let checked = 0;
 
   for (const rel of files) {
-    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) continue;
+    if (isExpectedNoindex(rel)) continue;
     const html = await fs.readFile(path.join(root, rel), 'utf8');
 
     for (const tag of html.match(/<img\b[^>]*>/gi) || []) {

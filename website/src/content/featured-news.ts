@@ -46,6 +46,15 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الإسباني",
     dateLabel: "25 أكتوبر 2026",
+    title: "الكلاسيكو: ردود الفعل بعد فوز ريال مدريد 2-1 على برشلونة",
+    description: "مورينيو وفليك يعلقان على الكلاسيكو في كامب نو، وتصريحات مورينيو عن تقنية الفيديو، وإصابات برشلونة بعد المباراة.",
+    href: "news/clasico-post-match-reactions-2026/",
+    teamBadges: ["images/teams/barcelona-club-badge.webp", "images/teams/real-madrid-club-badge.webp"],
+    score: "1 - 2",
+  },
+  {
+    category: "الدوري الإسباني",
+    dateLabel: "25 أكتوبر 2026",
     title: "الكلاسيكو: ريال مدريد يفوز 2-1 على برشلونة بهدفي مبابي",
     description: "مبابي يسجل في الدقيقة 41 و87 في كامب نو، وأول خسارة لبرشلونة في الدوري هذا الموسم.",
     href: "news/clasico-first-half-2026/",

@@ -123,6 +123,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "دورتموند يتصدر بفوزه على فرانكفورت 1-0",
     description: "هدف مكسيميليان بايير في الدقيقة 80 يمنح دورتموند صدارة الدوري الألماني.",
     href: "news/bundesliga-dortmund-frankfurt-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ger-dortmund-beier-celebration.webp", alt: "ماكسيميليان باير وجوبي بيلينغهام يحتفلان بهدف الفوز على فرانكفورت" },
+    ],
   },
   {
     category: "الدوري الإنجليزي",

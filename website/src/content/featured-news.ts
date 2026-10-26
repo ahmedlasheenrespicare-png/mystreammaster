@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الكرة الذهبية 2026: موعد الحفل والمرشحون والغيابات",
     description: "حفل الكرة الذهبية الـ70 اليوم في لندن، مع المرشحين الأبرز والغيابات المعلنة وعودة ريال مدريد إلى الحفل.",
     href: "news/ballon-dor-2026-ceremony-preview/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ballondor-golden-trophy.webp", alt: "كأس الكرة الذهبية على منصتها قبل الحفل في مسرح لندن بالاديوم" },
+    ],
   },
   {
     category: "الدوري الفرنسي",
@@ -58,6 +62,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     href: "news/clasico-post-match-reactions-2026/",
     teamBadges: ["images/teams/barcelona-club-badge.webp", "images/teams/real-madrid-club-badge.webp"],
     score: "1 - 2",
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-mourinho-flick-reactions.webp", alt: "مورينيو يحتفل بهدف مبابي الحاسم وفليك غاضب في كلاسيكو كامب نو" },
+    ],
   },
   {
     category: "الدوري الإسباني",

@@ -27,10 +27,13 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
    فيُطابَق المسار بجزئه الثابت لا بامتداد الأصل. */
 test('X plan card uses the XTV watermark, annual price, and hides device count and official-guide feature', async ({ page }) => {
   await page.goto('/store/');
-  const logo = page.locator('#pricing img[src*="/images/brand/xtv-ticket"]');
+  /* ربط البطاقة بمعرّفها الثابت (data-server) بدل الابن المباشر للشعار:
+     بنية أيقونة الشعار قد تُغلَّف بغلاف، والصيغة تُبدَّل عند النشر. */
+  const card = page.locator('#pricing article[data-server="x"]');
+  await expect(card).toHaveCount(1);
+  const logo = card.locator('img[src*="/images/brand/xtv-ticket"]');
   await expect(logo).toHaveCount(1);
   await expect(logo).toBeVisible();
-  const card = logo.locator('..');
   await expect(card).toContainText('20');
   await expect(card).toContainText('سيرفر X');
   await expect(card).not.toContainText('حتى 3 أجهزة');
@@ -44,20 +47,20 @@ test('X plan card uses the XTV watermark, annual price, and hides device count a
 
 test('iStar and Moka cards show their logos and share the Nova/X dark lime style', async ({ page }) => {
   await page.goto('/store/');
-  const novaClasses = await page.locator('#pricing img[src*="/images/brand/nova-ticket"]').locator('..').getAttribute('class');
-  const xClasses = await page.locator('#pricing img[src*="/images/brand/xtv-ticket"]').locator('..').getAttribute('class');
+  const cardOf = (server: string) => page.locator(`#pricing article[data-server="${server}"]`);
+  const novaClasses = await cardOf('nova').locator('.srv-card-inner').getAttribute('class');
+  const xClasses = await cardOf('x').locator('.srv-card-inner').getAttribute('class');
   expect(novaClasses).toBe(xClasses);
 
-  for (const logoPath of ['/images/brand/istar-ticket', '/images/brand/moka-ticket']) {
-    const logo = page.locator(`#pricing img[src*="${logoPath}"]`);
+  for (const [logoPath, server] of [['/images/brand/istar-ticket', 'istar'], ['/images/brand/moka-ticket', 'moka']]) {
+    const card = cardOf(server);
+    const logo = card.locator(`img[src*="${logoPath}"]`);
     await expect(logo).toHaveCount(1);
     await expect(logo).toBeVisible();
     await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
-
-    const card = logo.locator('..');
-    await expect(card).toHaveAttribute('class', novaClasses!);
-    await expect(card).toHaveCSS('background-color', 'rgb(11, 11, 15)');
-    await expect(card).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(card.locator('.srv-card-inner')).toHaveAttribute('class', novaClasses!);
+    await expect(card.locator('.srv-card-inner')).toHaveCSS('background-color', 'rgba(11, 11, 15, 0.95)');
+    await expect(card.locator('.srv-card-inner')).toHaveCSS('color', 'rgb(255, 255, 255)');
     await expect(card).not.toContainText('حتى جهازين');
     await expect(card).not.toContainText('دليل خيارات المشاهدة الرسمية');
   }
@@ -80,8 +83,9 @@ test('each Arabic and English plan page shows its matching server watermark', as
   for (const server of servers) {
     for (const route of [`/${server.code}/`, `/en/${server.code}/`]) {
       await page.goto(route);
-      const logo = page.locator(`main img[src*="/images/brand/${server.logo}"]`);
-      await expect(logo).toHaveCount(1);
+      /* العلامة المائية وحدها تحمل صنف mix-blend-screen في صفحات الباقات */
+      const logo = page.locator('main img.mix-blend-screen');
+      await expect(logo).toHaveAttribute('src', new RegExp(`/images/brand/${server.logo}\\.(?:png|webp|avif)$`));
       await expect(logo).toBeVisible();
       await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
       await expect(logo.locator('..')).toHaveCSS('background-color', 'rgb(11, 11, 15)');

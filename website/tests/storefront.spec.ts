@@ -23,6 +23,33 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
   expect(errors).toEqual([]);
 });
 
+test('approved Uiverse server cards are limited to the Arabic homepage', async ({ page }) => {
+  await page.goto('/');
+  const homeCards = page.locator('#pricing article.homepage-uiverse-card[data-server]');
+  await expect(homeCards).toHaveCount(4);
+  await expect(page.locator('#pricing article.srv-card')).toHaveCount(0);
+
+  const nova = page.locator('#pricing article.homepage-uiverse-card[data-server="nova"]');
+  await expect(nova.locator('.homepage-uiverse-card__logo')).toHaveAttribute('src', /\/images\/brand\/nova-ticket\.(?:png|webp|avif)$/);
+  await expect(nova.locator('.homepage-uiverse-card__price-ribbon')).toHaveCSS('background-color', 'rgb(253, 189, 74)');
+  await expect(nova).toHaveCSS('border-bottom-color', 'rgb(0, 4, 70)');
+  await expect(nova).toContainText('مواصفات يعلنها المزود');
+  await expect(nova).toContainText('ما تشمله خدمتنا');
+  await expect(nova).toContainText('تفعيل بيانات الاشتراك الصادرة من المزود');
+  await expect(nova).not.toContainText('دليل خيارات المشاهدة الرسمية');
+  await expect(nova).not.toContainText('حتى 3 أجهزة');
+  await expect(nova.getByRole('link', { name: /اطلب كود التفعيل/ })).toBeVisible();
+  await expect(nova.getByRole('button', { name: /أضف إلى السلة/ })).toBeVisible();
+
+  const x = page.locator('#pricing article.homepage-uiverse-card[data-server="x"]');
+  await expect(x).toContainText('$20');
+  await expect(x.locator('.homepage-uiverse-card__logo')).toHaveAttribute('src', /\/images\/brand\/xtv-mark\.(?:png|webp|avif)$/);
+
+  await page.goto('/store/');
+  await expect(page.locator('#pricing article.srv-card[data-server]')).toHaveCount(4);
+  await expect(page.locator('#pricing article.homepage-uiverse-card')).toHaveCount(0);
+});
+
 /* الصيغة امتداد تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)،
    فيُطابَق المسار بجزئه الثابت لا بامتداد الأصل. */
 test('X plan card uses the XTV watermark, annual price, and hides device count and official-guide feature', async ({ page }) => {

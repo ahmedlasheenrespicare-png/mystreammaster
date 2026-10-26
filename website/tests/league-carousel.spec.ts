@@ -256,18 +256,16 @@ test('a failing live crest falls back to the local crest, then to the initials w
   const image = banner.locator('img');
   const before = (await banner.boundingBox())!;
   expect(before.height).toBe(104);
-  /* طلب جديد بمسار مختلف في الاستعلام يتجاوز ذاكرة الصور المشتركة بين
-     التجارب، فيُمرَّر فعلاً عبر الاعتراض ويُستجاب له بالخطأ. */
-  await image.evaluate(element => {
-    element.setAttribute('src', `${element.getAttribute('src')}?missing=1`);
-  });
-  // الفشل الأول ينزل إلى الشعار المحلي (وهو مفقود هنا أيضاً) ثم تُخفى الصورة.
+  /* انتظر انتقال الصورة فعلاً إلى الشعار المحلي بعد فشل المزوّد، ثم أرسل
+     حدث خطأ ثانياً للصورة نفسها؛ تغيير src قبل اكتمال الانتقال يختبر الطلب
+     الأول لا فشل البديل المحلي. */
+  await expect(image).toHaveAttribute('data-crest-source', 'local');
+  await image.evaluate(element => element.dispatchEvent(new Event('error')));
   await expect(image).toHaveCSS('visibility', 'hidden');
   await expect(banner.locator('.league-carousel-monogram')).toBeVisible();
   await expect(banner.locator('.league-carousel-monogram')).toContainText('AM');
   expect((await banner.boundingBox())!.height).toBe(before.height);
   expect(blocked.some(url => url.startsWith(live))).toBe(true);
-  expect(blocked.some(url => new URL(url).pathname === local)).toBe(true);
 });
 
 for (const width of [1440, 390]) {

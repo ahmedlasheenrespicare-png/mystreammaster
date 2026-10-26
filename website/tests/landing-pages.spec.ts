@@ -541,13 +541,13 @@ test('home hero hosts the matches index ticket with all six live slides', async 
   /* الأساسية: عنوان «كل البطولات الكبرى» كما في صفحة المواعيد */
   const baseSlide = homeTicket.locator('.league-ticket-slide').first();
   await expect(baseSlide.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');
-  /* وشريحة حيّه واحد بينها على الأقل تثبّت الخصائص: «قمة الجولة»
-     الأبطال تُعرض بنتيجة المضيف يمين النقطتين RTL */
-  const firstClash = homeTicket.locator('.league-ticket-slide').nth(1);
-  await expect(firstClash.locator('.league-ticket-eyebrow')).toHaveText('قمة الجولة');
+  /* الشريحتان الأولى والثانية مستبدلتان ببطاقتي خبر؛ أول مواجهة حيّة
+     غير مستبدلة هي الكلاسيكو في الشريحة الرابعة، ونتيجته من بيانات الاختبار. */
+  const firstClash = homeTicket.locator('.league-ticket-slide').nth(3);
+  await expect(firstClash.locator('.league-ticket-eyebrow')).toHaveText('مواجهة الكلاسيكو');
   const goals = firstClash.locator('.league-ticket-goals');
   await expect(goals).toBeVisible();
-  await expect(goals).toHaveText(/4\s*:\s*2/);
+  await expect(goals).toHaveText(/3\s*:\s*1/);
   const dir = await goals.evaluate(el => getComputedStyle(el).direction);
   expect(dir).toBe('rtl');
 });

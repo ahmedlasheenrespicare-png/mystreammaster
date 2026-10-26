@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { IconPlay } from './Icons';
 import { ServerIcon } from './ServerIcon';
 import './hero-television.css';
@@ -12,7 +12,7 @@ const TV_SERVERS = [
 ] as const;
 
 /** CSS-only device illustration; the screen is a demo, not an actual player. */
-export function HeroTelevision({ onActivate }: { onActivate?: () => void }) {
+export function HeroTelevision({ onActivate, headline }: { onActivate?: () => void; headline?: ReactNode }) {
   const [apps, setApps] = useState(false);
   return (
     <div className="hero-tv" data-hero-tv="">
@@ -46,7 +46,7 @@ export function HeroTelevision({ onActivate }: { onActivate?: () => void }) {
             </span>
             <span className="hero-tv-welcome-copy">
             <span className="hero-tv-eyebrow">عالمك على شاشة أكبر</span>
-            <strong>متعة المشاهدة<br /><em>تبدأ هنا.</em></strong>
+            {headline ?? <strong>متعة المشاهدة<br /><em>تبدأ هنا.</em></strong>}
             <span className="hero-tv-caption">تعرّف على خيارات السيرفرات</span>
             <span className="hero-tv-prompt"><IconPlay /> استكشف الواجهة</span>
             </span>

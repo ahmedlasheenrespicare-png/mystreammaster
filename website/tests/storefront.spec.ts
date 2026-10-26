@@ -869,3 +869,21 @@ test('clicking devices brings TV forward straight and restores the tilted TV beh
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('preview headline appears inside the TV welcome with animated word and 4K', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const tv = page.locator('[data-hero-tv]');
+    await tv.scrollIntoViewIfNeeded();
+    const title = tv.locator('.hero-tv-headline');
+    await expect(title).toBeVisible();
+    await expect(title).toContainText('كل ما تحب');
+    await expect(title).toContainText('وبلا تقطيع');
+    await expect(title.locator('.hero-title-holo__layer--front')).toHaveCount(2);
+    await expect(title.locator('.hero-title-holo--quality .hero-title-holo__layer--front')).toHaveText('4K');
+    await expect(page.locator('#hero h1')).toHaveCount(1);
+    await expect(tv.locator('.hero-tv-welcome-gallery')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});

@@ -301,7 +301,7 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
             ))}
           </div>
         )}
-        <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
+        <div className="relative z-10 flex flex-wrap items-center justify-end gap-2 text-[11px] font-black text-white/70">
           {!logo && (
             <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
           )}

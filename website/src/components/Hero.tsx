@@ -3,7 +3,7 @@ import { HeroPhone } from "./HeroPhone";
 import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
-import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
+import { MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket, { INDEX_CLASHES } from "./AllLeaguesTicket";
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
@@ -403,42 +403,31 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        {/* العنوان الرئيسي — كشف سطر بسطر من خلف قناع
-            حجم الجوال مخفّض إلى 9vw (كان 11.5vw) للسطرين معاً، ومن sm
-            (640px) فصاعداً تبقى الأحجام كما هي تماماً. */}
-        <h1 className="mt-6 font-display font-black tracking-tight leading-[1.12] text-[9vw] sm:text-[56px] md:text-[76px] lg:text-[84px]">
-          <LineReveal
-            threshold={0.3}
-            step={130}
-            lines={[
-              <>
-                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
+        {/* Keep the semantic H1 accessible outside the illustrative button;
+            its visual version now lives inside the television's welcome screen. */}
+        <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
+
+        <Reveal variant="up" delay={320} className="mt-6">
+          <div className="hero-phone-stage" data-front-device={frontDevice}>
+            <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
+                  <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
                   <span className="hero-title-holo__stack">
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">{HERO_TITLE_WORDS[heroWord]}</span>
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">{HERO_TITLE_WORDS[heroWord]}</span>
                     <span className="hero-title-holo__layer hero-title-holo__layer--front">{HERO_TITLE_WORDS[heroWord]}</span>
                   </span>
                 </span>
-                {" كل ما تحب "}
-              </>,
-              <>
-                بجودة{" "}
-                <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
+ كل ما تحب</span>
+                  <span>بجودة                 <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
                   <span className="hero-title-holo__stack">
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">4K</span>
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">4K</span>
                     <span className="hero-title-holo__layer hero-title-holo__layer--front">4K</span>
                   </span>
                 </span>{" "}
-                <span className="font-serif italic font-normal">وبلا تقطيع</span>
-              </>,
-            ]}
-          />
-        </h1>
-
-        <Reveal variant="up" delay={320} className="mt-6">
-          <div className="hero-phone-stage" data-front-device={frontDevice}>
-            <HeroTelevision onActivate={() => setFrontDevice("tv")} />
+</span>
+                  <span className="hero-tv-headline-tagline">وبلا تقطيع</span>
+                </span>} />
             <HeroPhone onActivate={() => setFrontDevice("phone")} />
             <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : "الجوال في المقدمة"}</span>
           </div>

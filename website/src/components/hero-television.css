@@ -242,3 +242,27 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-tv, .hero-phone-stage > .hero-phone { transition: none; }
 }
+
+/* Preview: headline moves into the welcome screen; keep gallery on its left. */
+.hero-tv-headline {
+  display: flex;
+  flex-direction: column;
+  gap: .16em;
+  margin-top: 7px;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(18px, 2.2vw, 28px);
+  font-weight: 900;
+  line-height: 1.55;
+  letter-spacing: -.025em;
+  color: #f6f4ec;
+}
+.hero-tv-headline > span { display: block; }
+.hero-tv-headline-tagline { font-size: .65em; font-weight: 500; }
+.hero-tv-headline .hero-title-holo__layer {
+  background-image: linear-gradient(90deg, #b5d42a, #efffb0 35%, #d8ff3e 65%, #b3ce40);
+  -webkit-text-stroke-color: #c9e85b;
+}
+@media (max-width: 767px) {
+  .hero-tv-headline { font-size: 16px; line-height: 1.65; }
+  .hero-tv-welcome-copy .hero-tv-eyebrow { font-size: 6px; }
+}

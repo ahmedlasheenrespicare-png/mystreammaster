@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الفرنسي",
+    dateLabel: "26 أكتوبر 2026",
+    title: "مواجهة الليلة: باريس سان جيرمان ضد ليون في الدوري الفرنسي",
+    description: "تنطلق المباراة الساعة 8:30 مساءً بتوقيت باريس في حديقة الأمراء، بعد تأجيلها من الأحد.",
+    href: "news/psg-lyon-tonight/",
+  },
+  {
     category: "الدوري الإسباني",
     dateLabel: "25 أكتوبر 2026",
     title: "الكلاسيكو: ريال مدريد يفوز 2-1 على برشلونة بهدفي مبابي",

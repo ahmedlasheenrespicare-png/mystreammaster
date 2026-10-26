@@ -275,17 +275,9 @@
     217,
     132
   ],
-  "/images/brand/ucl-logo-white.avif": [
-    860,
-    865
-  ],
   "/images/brand/ucl-logo-white.png": [
     860,
     865
-  ],
-  "/images/brand/xtv-mark.avif": [
-    146,
-    146
   ],
   "/images/brand/xtv-mark.png": [
     146,
@@ -307,144 +299,72 @@
     824,
     1005
   ],
-  "/images/hero/slide-cinema.avif": [
-    900,
-    502
-  ],
   "/images/hero/slide-cinema.jpg": [
     1376,
     768
-  ],
-  "/images/hero/slide-devices.avif": [
-    900,
-    502
   ],
   "/images/hero/slide-devices.jpg": [
     1376,
     768
   ],
-  "/images/hero/slide-sports.avif": [
-    900,
-    502
-  ],
   "/images/hero/slide-sports.jpg": [
     1376,
     768
-  ],
-  "/images/logos/adsports.avif": [
-    227,
-    88
   ],
   "/images/logos/adsports.png": [
     227,
     88
   ],
-  "/images/logos/alkass.avif": [
-    131,
-    46
-  ],
   "/images/logos/alkass.png": [
     131,
     46
   ],
-  "/images/logos/appletv.avif": [
-    232,
-    88
-  ],
   "/images/logos/appletv.png": [
     232,
-    88
-  ],
-  "/images/logos/bein.avif": [
-    176,
     88
   ],
   "/images/logos/bein.png": [
     176,
     88
   ],
-  "/images/logos/cartoon.avif": [
-    151,
-    88
-  ],
   "/images/logos/cartoon.png": [
     151,
-    88
-  ],
-  "/images/logos/discovery.avif": [
-    352,
     88
   ],
   "/images/logos/discovery.png": [
     352,
     88
   ],
-  "/images/logos/hbo.avif": [
-    213,
-    88
-  ],
   "/images/logos/hbo.png": [
     213,
-    88
-  ],
-  "/images/logos/mbc.avif": [
-    210,
     88
   ],
   "/images/logos/mbc.png": [
     210,
     88
   ],
-  "/images/logos/natgeo.avif": [
-    298,
-    88
-  ],
   "/images/logos/natgeo.png": [
     298,
-    88
-  ],
-  "/images/logos/netflix.avif": [
-    324,
     88
   ],
   "/images/logos/netflix.png": [
     324,
     88
   ],
-  "/images/logos/osn.avif": [
-    210,
-    24
-  ],
   "/images/logos/osn.png": [
     210,
     24
   ],
-  "/images/logos/paramount.avif": [
-    380,
-    88
-  ],
   "/images/logos/paramount.png": [
     380,
-    88
-  ],
-  "/images/logos/rotana.avif": [
-    71,
     88
   ],
   "/images/logos/rotana.png": [
     71,
     88
   ],
-  "/images/logos/shahid.avif": [
-    310,
-    88
-  ],
   "/images/logos/shahid.png": [
     310,
-    88
-  ],
-  "/images/logos/ssc.avif": [
-    158,
     88
   ],
   "/images/logos/ssc.png": [
@@ -747,10 +667,6 @@
     467,
     700
   ],
-  "/images/players/fra-enrique-triumph.avif": [
-    626,
-    900
-  ],
   "/images/players/fra-enrique-triumph.png": [
     973,
     1398
@@ -766,6 +682,14 @@
   "/images/players/fra-gouiri.webp": [
     600,
     900
+  ],
+  "/images/players/fra-psg-lyon-duel.png": [
+    589,
+    695
+  ],
+  "/images/players/fra-psg-lyon-duel.webp": [
+    589,
+    695
   ],
   "/images/players/ger-kane.avif": [
     634,
@@ -871,7 +795,7 @@
     900,
     823
   ],
-  "/images/teams/al-qadsiah-club-badge.webp": [
+  "/images/teams/al-qadsiah-club-badge.avif": [
     280,
     280
   ],
@@ -879,7 +803,11 @@
     135,
     160
   ],
-  "/images/teams/as-monaco-club-badge.webp": [
+  "/images/teams/as-monaco-club-badge.avif": [
+    280,
+    280
+  ],
+  "/images/teams/as-roma-club-badge.avif": [
     280,
     280
   ],
@@ -891,11 +819,23 @@
     400,
     392
   ],
+  "/images/teams/atletico-madrid-club-badge.avif": [
+    280,
+    280
+  ],
   "/images/teams/atletico-madrid-club-badge.webp": [
     280,
     280
   ],
+  "/images/teams/barcelona-badge.avif": [
+    280,
+    280
+  ],
   "/images/teams/barcelona-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/barcelona-club-badge.avif": [
     280,
     280
   ],
@@ -923,7 +863,15 @@
     256,
     256
   ],
+  "/images/teams/galatasaray-club-badge.avif": [
+    280,
+    280
+  ],
   "/images/teams/galatasaray-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/internazionale-club-badge.avif": [
     280,
     280
   ],
@@ -939,7 +887,15 @@
     280,
     280
   ],
+  "/images/teams/manchester-city-club-badge.avif": [
+    280,
+    280
+  ],
   "/images/teams/manchester-city-club-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/manchester-united-club-badge.avif": [
     280,
     280
   ],
@@ -947,7 +903,15 @@
     280,
     280
   ],
+  "/images/teams/paris-saint-germain-badge.avif": [
+    280,
+    280
+  ],
   "/images/teams/paris-saint-germain-badge.webp": [
+    280,
+    280
+  ],
+  "/images/teams/paris-saint-germain-club-badge.avif": [
     280,
     280
   ],
@@ -955,7 +919,11 @@
     280,
     280
   ],
-  "/images/teams/pyramids-fc-club-badge.webp": [
+  "/images/teams/pyramids-fc-club-badge.avif": [
+    280,
+    280
+  ],
+  "/images/teams/real-madrid-badge.avif": [
     280,
     280
   ],
@@ -963,11 +931,15 @@
     280,
     280
   ],
+  "/images/teams/real-madrid-club-badge.avif": [
+    280,
+    280
+  ],
   "/images/teams/real-madrid-club-badge.webp": [
     280,
     280
   ],
-  "/images/teams/sc-freiburg-club-badge.webp": [
+  "/images/teams/sc-freiburg-club-badge.avif": [
     280,
     280
   ],

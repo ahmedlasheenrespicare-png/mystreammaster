@@ -83,6 +83,7 @@ export default function HomePage({
         onCurrencyChange={onCurrencyChange}
         onAddToCart={onAddToCart}
         highlightedPlanId={highlightedPlanId}
+        homepageCardDesign
       />
       <ServerFinder onSelectPlan={onSelectPlan} onOpenTrial={onOpenTrial} />
       <ServersComparison />

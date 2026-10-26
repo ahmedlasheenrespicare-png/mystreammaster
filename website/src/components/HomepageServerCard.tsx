@@ -1,0 +1,142 @@
+import { getWhatsAppUrl, type PlanDuration, type PricingPlan } from "../data";
+import { to } from "../config";
+import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
+import { IconCart } from "./Icons";
+import "./homepage-server-card.css";
+
+const DISPLAY_NAME: Record<PricingPlan["serverCode"], string> = {
+  nova: "سيرفر نوفا",
+  istar: "إيستار برو",
+  moka: "موكا",
+  x: "سيرفر X",
+};
+
+const SUBTITLE: Record<PricingPlan["serverCode"], string> = {
+  nova: "الأكثر طلباً للمباريات ⚽",
+  istar: "باقة الترفيه الشاملة 🎬",
+  moka: "للمشاهدة الطويلة والسرعات المحدودة ⚡",
+  x: "اختيار جديد للمباريات ⚡",
+};
+
+const CHECK_PATH =
+  "M243.8 339.8C232.9 350.7 215.1 350.7 204.2 339.8L140.2 275.8C129.3 264.9 129.3 247.1 140.2 236.2C151.1 225.3 168.9 225.3 179.8 236.2L224 280.4L332.2 172.2C343.1 161.3 360.9 161.3 371.8 172.2C382.7 183.1 382.7 200.9 371.8 211.8L243.8 339.8zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z";
+
+function CheckList({ items, label }: { items: string[]; label: string }) {
+  return (
+    <ul aria-label={label}>
+      {items.map((item) => (
+        <li key={item}>
+          <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+            <path d={CHECK_PATH} />
+          </svg>
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const ROCKET_PATH =
+  "M156.6 384.9L125.7 353.1C117.2 345.5 114.2 333.1 117.1 321.8C120.1 312.9 124.1 301.3 129.8 288H24C15.38 288 7.414 283.4 3.146 275.9C-1.123 268.4-1.042 259.2 3.357 251.8L55.83 163.3C68.79 141.4 92.33 127.1 117.8 127.1H200C202.4 124 204.8 120.3 207.2 116.7C289.1-4.07 411.1-8.142 483.9 5.275C495.6 7.414 504.6 16.43 506.7 28.06C520.1 100.9 516.1 222.9 395.3 304.8C391.8 307.2 387.1 309.6 384 311.1V394.2C384 419.7 370.6 443.2 348.7 456.2L260.2 508.6C252.8 513 243.6 513.1 236.1 508.9C228.6 504.6 224 496.6 224 488V380.8C209.9 385.6 197.6 389.7 188.3 392.7C177.1 396.3 164.9 393.2 156.6 384.9V384.9zM384 167.1C406.1 167.1 424 150.1 424 127.1C424 105.9 406.1 87.1 384 87.1C361.9 87.1 344 105.9 344 127.1C344 150.1 361.9 167.1 384 167.1Z";
+
+interface HomepageServerCardProps {
+  plan: PricingPlan;
+  price: number;
+  currencySymbol: string;
+  duration: PlanDuration;
+  durationLabel: string;
+  onAddToCart: (plan: PricingPlan, months: PlanDuration, price: number) => void;
+  highlighted?: boolean;
+}
+
+/** Homepage-only adaptation of Uiverse's "odd-zebra-96" pricing-card design. */
+export default function HomepageServerCard({
+  plan,
+  price,
+  currencySymbol,
+  duration,
+  durationLabel,
+  onAddToCart,
+  highlighted = false,
+}: HomepageServerCardProps) {
+  const serverName = DISPLAY_NAME[plan.serverCode];
+  const mark = SERVER_WATERMARKS[plan.serverCode];
+  const logoSrc = SERVER_MARK_SRC[plan.serverCode] ?? mark.src;
+  const priceTerm = duration === "12" ? "12 شهر" : durationLabel;
+  const providerSpecs = [plan.channelsCount, plan.vodCount, `جودة ${plan.quality}`];
+  // Keep the official-viewing guide off pricing cards, matching the existing storefront rule.
+  const serviceIncludes = plan.features.filter((feature) => !feature.startsWith("دليل خيارات المشاهدة الرسمية"));
+  const whatsappMessage = `مرحبًا ستريم ماستر، أود طلب كود تفعيل تقني لدى المزود لـ ${plan.serverName} لمدة ${durationLabel} بسعر ${price} ${currencySymbol}`;
+
+  return (
+    <article
+      className={`homepage-uiverse-card${highlighted ? " is-highlighted" : ""}`}
+      data-server={plan.serverCode}
+      data-highlighted={highlighted ? "true" : undefined}
+    >
+      <header className="homepage-uiverse-card__heading">
+        <a
+          className="homepage-uiverse-card__server-link"
+          href={to(`${plan.serverCode}/`)}
+          aria-label={`${plan.serverName} — صفحة السيرفر`}
+        >
+          <img
+            className="homepage-uiverse-card__logo"
+            src={logoSrc}
+            alt=""
+            width={mark.width}
+            height={mark.height}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+          <span className="homepage-uiverse-card__heading-copy">
+            <span className="homepage-uiverse-card__server-name">{serverName}</span>
+            <span className="homepage-uiverse-card__subtitle">{SUBTITLE[plan.serverCode]}</span>
+          </span>
+        </a>
+      </header>
+
+      <div className="homepage-uiverse-card__price-ribbon" aria-label={`السعر ${price} ${currencySymbol} لمدة ${priceTerm}`}>
+        <p className="homepage-uiverse-card__price-line" dir="ltr">
+          <span className="homepage-uiverse-card__currency">{currencySymbol}</span>
+          <span>{price}</span>
+          <span className="homepage-uiverse-card__term">/ {priceTerm}</span>
+        </p>
+        <span className="homepage-uiverse-card__fold" aria-hidden="true" />
+      </div>
+
+      <section className="homepage-uiverse-card__section homepage-uiverse-card__provider-specs" aria-label="ما يعلنه المزود">
+        <h4 className="homepage-uiverse-card__section-title">مواصفات يعلنها المزود</h4>
+        <CheckList items={providerSpecs} label="مواصفات يعلنها المزود" />
+      </section>
+
+      <section className="homepage-uiverse-card__section homepage-uiverse-card__service-includes" aria-label="ما تشمله خدمتنا">
+        <h4 className="homepage-uiverse-card__section-title">ما تشمله خدمتنا</h4>
+        <CheckList items={serviceIncludes} label="ما تشمله خدمتنا" />
+      </section>
+
+      <div className="homepage-uiverse-card__actions">
+        <a
+          className="homepage-uiverse-card__primary-action"
+          href={getWhatsAppUrl(whatsappMessage)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg viewBox="0 0 512 512" className="homepage-uiverse-card__rocket" aria-hidden="true" focusable="false">
+            <path d={ROCKET_PATH} />
+          </svg>
+          <span>اطلب كود التفعيل</span>
+        </a>
+        <button
+          type="button"
+          className="homepage-uiverse-card__cart-action"
+          onClick={() => onAddToCart(plan, duration, price)}
+        >
+          <IconCart className="homepage-uiverse-card__cart-icon" />
+          <span>أضف إلى السلة</span>
+        </button>
+      </div>
+    </article>
+  );
+}

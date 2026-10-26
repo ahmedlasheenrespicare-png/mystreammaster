@@ -11,8 +11,8 @@
      node scripts/optimize-images.mjs --force    # يعيد توليد الكل
 
    المخرجات لكل أصل raster مشار إليه:
-     <name>.webp  — جودة 80، أقصى عرض 900px
-     <name>.avif  — جودة 55، أقصى عرض 900px
+     <name>.webp  — جودة 80، أقصى عرض 900px، مع الحفاظ على الشفافية
+     <name>.avif  — جودة 55، أقصى عرض 900px، للصور المعتمة فقط
      src/image-manifest.json — { "/images/x.png": [w, h], ... } للأبعاد
 
    الأصول تُقرأ من website/public أولاً ثم من جذر المستودع: بعض صور
@@ -108,6 +108,24 @@ async function dimensions(file) {
   const [w, h] = stdout.trim().split(/\s+/).map(Number);
   return { w, h };
 }
+const transparencyCache = new Map();
+async function hasTransparency(file) {
+  if (transparencyCache.has(file)) return transparencyCache.get(file);
+  const { stdout } = await run('identify', ['-format', '%[opaque]', file]);
+  const transparent = stdout.trim().toLowerCase() === 'false';
+  transparencyCache.set(file, transparent);
+  return transparent;
+}
+async function imageFiles(dir, out = []) {
+  if (!fss.existsSync(dir)) return out;
+  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    if (entry.name.startsWith('.')) continue;
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) await imageFiles(full, out);
+    else if (/\.(png|webp)$/i.test(entry.name)) out.push(full);
+  }
+  return out;
+}
 async function convert(src, dest, format) {
   await fs.mkdir(path.dirname(dest), { recursive: true });
   await run('convert', [src, '-strip', '-resize', `${MAX_WIDTH}x${MAX_WIDTH}>`, '-quality', QUALITY[format], dest]);
@@ -135,16 +153,29 @@ for (const entry of [...bases].sort()) {
   bytesBefore += stat.size;
 
   let best = Infinity;
-  for (const format of ['webp', 'avif']) {
+  /* ImageMagick's AVIF delegate in this build flattens alpha. Never publish or
+     choose that variant for transparent PNGs; the WebP encoder preserves it.
+     Also validate an existing WebP before keeping it, since older conversions
+     may have flattened alpha too. */
+  const transparentSource = /\.png$/i.test(entry) && await hasTransparency(source);
+  const formats = transparentSource ? ['webp'] : ['webp', 'avif'];
+  for (const format of formats) {
     const target = publicTarget(entry.replace(RASTER, `.${format}`));
     const exists = fss.existsSync(target);
-    if (exists && !force && fss.statSync(target).size <= stat.size) {
+    const existingWebpLostAlpha = transparentSource && format === 'webp' && exists && !await hasTransparency(target);
+    if (exists && !force && !existingWebpLostAlpha && fss.statSync(target).size <= stat.size) {
       kept++;
       best = Math.min(best, fss.statSync(target).size);
       continue;
     }
     await convert(source, target, format);
     made++;
+    if (transparentSource && format === 'webp') {
+      transparencyCache.delete(target);
+      if (!await hasTransparency(target)) {
+        throw new Error(`WebP output lost alpha for transparent source: ${entry}`);
+      }
+    }
     best = Math.min(best, fss.statSync(target).size);
   }
   bytesAfter += Math.min(best, stat.size);
@@ -162,6 +193,27 @@ const manifestPath = path.join(website, 'src', 'image-manifest.json');
 const sorted = Object.fromEntries(Object.entries(manifest).sort(([a], [b]) => a.localeCompare(b)));
 await fs.writeFile(manifestPath, JSON.stringify(sorted, null, 2) + '\n');
 
+const checkedStems = new Set();
+const transparentStems = new Set();
+for (const dir of [publicDir, path.join(root, 'images')]) {
+  for (const file of await imageFiles(dir)) {
+    const relative = path.relative(dir, file).split(path.sep).join('/');
+    const urlPath = dir === publicDir
+      ? `/${relative}`
+      : `/${path.relative(root, file).split(path.sep).join('/')}`;
+    const stem = urlPath.replace(/\.(png|webp)$/i, '');
+    checkedStems.add(stem);
+    if (await hasTransparency(file)) transparentStems.add(stem);
+  }
+}
+const transparencyPath = path.join(website, 'src', 'image-transparency-manifest.json');
+const transparencyManifest = {
+  checked: [...checkedStems].sort(),
+  transparent: [...transparentStems].sort(),
+};
+await fs.writeFile(transparencyPath, JSON.stringify(transparencyManifest, null, 2) + '\n');
+
 console.log(`أصول: ${bases.size} · نسخ مولّدة: ${made} · موجودة: ${kept}`);
 console.log(`حجم الأصل ${(bytesBefore / 1048576).toFixed(1)}MB → أفضل نسخة ${(bytesAfter / 1048576).toFixed(1)}MB`);
 console.log(`المانيفست: ${Object.keys(sorted).length} صورة → ${path.relative(root, manifestPath)}`);
+console.log(`صور شفافة: ${transparentStems.size} من أصل ${checkedStems.size} مساراً → ${path.relative(root, transparencyPath)}`);

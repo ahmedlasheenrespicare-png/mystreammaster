@@ -442,3 +442,49 @@ test('sitemap.xml: lastmod ليس تاريخ بناء متجدداً', async () 
   }
   assert.deepEqual(future, [], 'lastmod في المستقبل — خطأ في حساب التاريخ');
 });
+
+test('الصور ذات الشفافية لا تُقدّم بصيغة AVIF المعتمة', async () => {
+  const { optimizeHtmlImages } = await import('./html-images.mjs');
+  const html = optimizeHtmlImages('<img src="/images/brand/nova-ticket.png" alt="">');
+  assert.match(html, /src="\/images\/brand\/nova-ticket\.webp"/, 'يجب استخدام WebP الشفاف بدل AVIF');
+  assert.doesNotMatch(html, /nova-ticket\.avif/);
+
+  const legacyAvif = optimizeHtmlImages('<img src="/images/brand/nova-ticket.avif" alt="">');
+  assert.match(legacyAvif, /src="\/images\/brand\/nova-ticket\.webp"/, 'يجب إصلاح HTML القديم الذي يشير إلى AVIF معتم');
+  const pictureInput = '<picture><source type="image/avif" srcset="/images/brand/nova-ticket.avif"><source type="image/webp" srcset="/images/brand/nova-ticket.webp"><img src="/images/brand/nova-ticket.png" alt=""></picture>';
+  const picture = optimizeHtmlImages(pictureInput);
+  assert.doesNotMatch(picture, /nova-ticket\.avif/, 'يجب ألا يظل مصدر AVIF معتم لصورة شفافة');
+  assert.match(picture, /type="image\/webp" srcset="\/images\/brand\/nova-ticket\.webp"/);
+  assert.equal((picture.match(/<source\b/gi) || []).length, (pictureInput.match(/<source\b/gi) || []).length, 'تُصلح السمات فقط ولا يتغير عدد عناصر source');
+
+  const missingVariantPicture = optimizeHtmlImages('<picture><source type="image/avif" srcset="/images/brand/nova-ticket-missing.avif"><img src="/images/brand/nova-ticket.png" alt=""></picture>');
+  assert.doesNotMatch(missingVariantPicture, /nova-ticket-missing\.avif/);
+  assert.match(missingVariantPicture, /media="not all"/);
+  assert.match(missingVariantPicture, /<img src="\/images\/brand\/nova-ticket\.webp"/);
+  assert.equal((missingVariantPicture.match(/<source\b/gi) || []).length, 1, 'يبقى هيكل picture دون حذف عناصر');
+
+  const opaque = optimizeHtmlImages('<img src="/images/articles/http-protocols/http2-multiplexing.png" alt="">');
+  assert.match(opaque, /src="\/images\/articles\/http-protocols\/http2-multiplexing\.avif"/, 'تبقى AVIF متاحة للصور المعتمة');
+
+  const ticketImage = await fs.readFile(path.join(website, 'src/components/TicketImage.tsx'), 'utf8');
+  assert.match(ticketImage, /type="image\/webp"/);
+  assert.match(ticketImage, /type="image\/png"/);
+  assert.doesNotMatch(ticketImage, /type="image\/avif"/, 'صور اللاعب الشفافة لا تختار AVIF');
+});
+
+test('كل HTML المنشور يتجنب AVIF للأصول الشفافة في الصور والبيانات الوصفية', async () => {
+  const transparency = JSON.parse(await fs.readFile(path.join(website, 'src/image-transparency-manifest.json'), 'utf8'));
+  const stems = new Set(transparency.transparent || []);
+  const files = await htmlFiles(root);
+  const offenders = [];
+  const avifUrl = /(?:https?:\/\/|\/\/|\/|\.\.?\/|images\/)[^\s"'<>]*?\.avif(?:[?#][^\s"'<>]*)?/gi;
+  for (const rel of files) {
+    const html = await fs.readFile(path.join(root, rel), 'utf8');
+    for (const match of html.matchAll(avifUrl)) {
+      let stem;
+      try { stem = decodeURIComponent(new URL(match[0], SITE).pathname).replace(/\.avif$/i, ''); } catch { continue; }
+      if (stems.has(stem)) offenders.push(`${rel}: ${match[0]}`);
+    }
+  }
+  assert.deepEqual(offenders.slice(0, 10), [], `مراجع AVIF فقدت الشفافية (${offenders.length})`);
+});

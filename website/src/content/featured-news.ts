@@ -94,6 +94,13 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     ],
   },
   {
+    category: "الدوري الألماني",
+    dateLabel: "25 أكتوبر 2026",
+    title: "بايرن يعود للصدارة بفوز 3-1 على فرايبورغ",
+    description: "أوباميكانو وغنابري وأوليس يسجلون، وبيشوف يضيف هدفاً في مرماه، وكومباني خارج الخط.",
+    href: "news/bundesliga-bayern-freiburg-2026/",
+  },
+  {
     category: "الدوري الإيطالي",
     dateLabel: "25 أكتوبر 2026",
     title: "إنتر يقلب على فيورنتينا 2-1 بهدفين في الوقت بدل الضائع",
@@ -105,6 +112,13 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     images: [
       { src: "images/players/ita-inter-group-celebration.webp", alt: "ثورام وزيلينسكي يحتفلان بهدفَي قلب النتيجة على فيورنتينا" },
     ],
+  },
+  {
+    category: "الدوري الألماني",
+    dateLabel: "24 أكتوبر 2026",
+    title: "دورتموند يتصدر بفوزه على فرانكفورت 1-0",
+    description: "هدف مكسيميليان بايير في الدقيقة 80 يمنح دورتموند صدارة الدوري الألماني.",
+    href: "news/bundesliga-dortmund-frankfurt-2026/",
   },
   {
     category: "الدوري الإنجليزي",
@@ -130,6 +144,13 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     images: [
       { src: "images/players/eng-jackson-celebration.webp", alt: "نيكولاس جاكسون يحتفل" },
     ],
+  },
+  {
+    category: "الدوري الألماني",
+    dateLabel: "23 أكتوبر 2026",
+    title: "كومباني في المستشفى بعد انهياره في تدريب بايرن",
+    description: "المدرب فينسنت كومباني في المستشفى بعد انهياره خلال التدريب، وحالته مستقرة.",
+    href: "news/bundesliga-kompany-hospitalized-2026/",
   },
   {
     category: "دوري أبطال أوروبا",

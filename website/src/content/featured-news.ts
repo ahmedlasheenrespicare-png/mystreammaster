@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "مواجهة الليلة: باريس سان جيرمان ضد ليون في الدوري الفرنسي",
     description: "تنطلق المباراة الساعة 8:30 مساءً بتوقيت باريس في حديقة الأمراء، بعد تأجيلها من الأحد.",
     href: "news/psg-lyon-tonight/",
+    fullImage: true,
+    images: [
+      { src: "images/players/fra-psg-lyon-duel.webp", alt: "فوفانا وفران توريس في مواجهة قمة الدوري الفرنسي" },
+    ],
   },
   {
     category: "الدوري الإسباني",

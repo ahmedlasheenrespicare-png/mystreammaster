@@ -84,7 +84,7 @@ async function collectFromFiles(dir) {
     if (entry.isDirectory()) await collectFromFiles(full);
     else if (/\.(html|tsx?|mjs|json)$/.test(entry.name)) {
       const text = await fs.readFile(full, 'utf8');
-      for (const match of text.matchAll(/(?:src|srcSet|srcset)="([^"]+)"/g)) collect(match[1]);
+      for (const match of text.matchAll(/["']?(?:src|srcSet|srcset)["']?\s*[:=]\s*["']([^"']+)["']/g)) collect(match[1]);
     }
   }
 }
@@ -187,6 +187,20 @@ for (const urlPath of referenced) {
   const file = localFile(urlPath);
   if (!file) continue;
   try { const { w, h } = await dimensions(file); manifest[urlPath] = [w, h]; } catch { /* ignore */ }
+}
+
+/* مفاتيح كل نسخ الصيغ الموجودة على القرص لأي مسار مرجعي — حقن الأبعاد
+   يبدّل الامتدادات (png→webp/avif أو webp→avif) فتحتاج كل الشقيقات مفاتيح. */
+for (const urlPath of referenced) {
+  const stem = urlPath.split('?')[0].replace(/\.(png|jpe?g|webp|avif)$/i, '');
+  if (!stem || urlPath.startsWith('!')) continue;
+  for (const ext of ['.webp', '.avif']) {
+    const variant = stem + ext;
+    if (manifest[variant]) continue;
+    const file = localFile(variant);
+    if (!file) continue;
+    try { const { w, h } = await dimensions(file); manifest[variant] = [w, h]; } catch { /* ignore */ }
+  }
 }
 
 const manifestPath = path.join(website, 'src', 'image-manifest.json');

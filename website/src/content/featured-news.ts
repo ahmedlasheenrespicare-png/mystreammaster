@@ -159,6 +159,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "كومباني في المستشفى بعد انهياره في تدريب بايرن",
     description: "المدرب فينسنت كومباني في المستشفى بعد انهياره خلال التدريب، وحالته مستقرة.",
     href: "news/bundesliga-kompany-hospitalized-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ger-kompany-support-wave.webp", alt: "فينسان كومباني يلوّح للجماهير شكراً على رسائل الدعم خلال فترة العلاج" },
+    ],
   },
   {
     category: "دوري أبطال أوروبا",

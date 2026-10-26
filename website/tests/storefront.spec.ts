@@ -23,11 +23,9 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
   expect(errors).toEqual([]);
 });
 
-/* الصيغة تفصيل تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)
-   فيُطابَق المسار ببادئته، لا بامتداد الأصل. */
 test('X plan card uses the XTV watermark, annual price, and hides device count and official-guide feature', async ({ page }) => {
   await page.goto('/store/');
-  const logo = page.locator('#pricing img[src^="/images/brand/xtv-ticket."]');
+  const logo = page.locator('#pricing img[src="/images/brand/xtv-ticket.png"]');
   await expect(logo).toHaveCount(1);
   await expect(logo).toBeVisible();
   const card = logo.locator('..');
@@ -44,12 +42,12 @@ test('X plan card uses the XTV watermark, annual price, and hides device count a
 
 test('iStar and Moka cards show their logos and share the Nova/X dark lime style', async ({ page }) => {
   await page.goto('/store/');
-  const novaClasses = await page.locator('#pricing img[src^="/images/brand/nova-ticket."]').locator('..').getAttribute('class');
-  const xClasses = await page.locator('#pricing img[src^="/images/brand/xtv-ticket."]').locator('..').getAttribute('class');
+  const novaClasses = await page.locator('#pricing img[src="/images/brand/nova-ticket.png"]').locator('..').getAttribute('class');
+  const xClasses = await page.locator('#pricing img[src="/images/brand/xtv-ticket.png"]').locator('..').getAttribute('class');
   expect(novaClasses).toBe(xClasses);
 
-  for (const logoPath of ['/images/brand/istar-ticket', '/images/brand/moka-ticket']) {
-    const logo = page.locator(`#pricing img[src^="${logoPath}."]`);
+  for (const logoPath of ['/images/brand/istar-ticket.png', '/images/brand/moka-ticket.png']) {
+    const logo = page.locator(`#pricing img[src="${logoPath}"]`);
     await expect(logo).toHaveCount(1);
     await expect(logo).toBeVisible();
     await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
@@ -80,7 +78,7 @@ test('each Arabic and English plan page shows its matching server watermark', as
   for (const server of servers) {
     for (const route of [`/${server.code}/`, `/en/${server.code}/`]) {
       await page.goto(route);
-      const logo = page.locator(`main img[src^="/images/brand/${server.logo}."]`);
+      const logo = page.locator(`main img[src="/images/brand/${server.logo}.png"]`);
       await expect(logo).toHaveCount(1);
       await expect(logo).toBeVisible();
       await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBeTruthy();
@@ -713,7 +711,7 @@ test('television welcome places archived cinema artwork left of its text and hid
     const tv = page.locator('[data-hero-tv]');
     await tv.scrollIntoViewIfNeeded();
     const art = tv.locator('.hero-tv-welcome-art');
-    await expect(art).toHaveAttribute('src', /images\/cinema\/superman-batman-stark\.(?:png|webp|avif)$/);
+    await expect(art).toHaveAttribute('src', /images\/cinema\/superman-batman-stark\.png$/);
     await expect.poll(() => art.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBeTruthy();
     const positions = await tv.evaluate(el => {
       const art = el.querySelector('.hero-tv-welcome-art') as HTMLElement;

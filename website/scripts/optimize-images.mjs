@@ -101,8 +101,6 @@ for (const urlPath of referenced) {
   /* النسخة الحديثة نفسها مطلوبة حتى لو غاب الأصل (حالة srcset في المقالات) */
   if (original) bases.add(original);
   else if (!localFile(urlPath)) bases.add(`!${urlPath}`);
-  /* webp بلا أصل نقطي: نشتق منه avif — أصغر عادةً بـ35–50% */
-  else if (urlPath.endsWith('.webp')) bases.add(`!${stem}.avif`);
 }
 
 async function dimensions(file) {
@@ -122,11 +120,9 @@ for (const entry of [...bases].sort()) {
   if (entry.startsWith('!')) {
     const urlPath = entry.slice(1);
     const stem = urlPath.replace(MODERN, '');
-    const source = ['.png', '.jpg', '.jpeg', '.webp'].map((ext) => localFile(stem + ext)).find(Boolean);
+    const source = ['.png', '.jpg', '.jpeg'].map((ext) => localFile(stem + ext)).find(Boolean);
     if (!source) { console.warn(`  ⚠ لا أصل لـ${urlPath}`); continue; }
-    const target = publicTarget(urlPath);
-    if (fss.existsSync(target) && !force && fss.statSync(target).size <= fss.statSync(source).size) { kept++; continue; }
-    await convert(source, target, urlPath.endsWith('.avif') ? 'avif' : 'webp');
+    await convert(source, publicTarget(urlPath), urlPath.endsWith('.avif') ? 'avif' : 'webp');
     made++;
     continue;
   }

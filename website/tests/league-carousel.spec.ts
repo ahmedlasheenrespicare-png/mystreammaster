@@ -192,7 +192,7 @@ test('all eight leader banners use the live match-card crest source, with no oth
     await expect(image).toHaveAttribute('loading', 'lazy');
     await expect(image).toHaveAttribute('draggable', 'false');
     // الشعار المحلي البديل معروف المسار (وجوده الفعلي يُفحَص أدناه).
-    expect(localFallback).toMatch(/^\/images\/teams\/[a-z0-9-]+-club-badge\.(?:webp|avif)$/);
+    expect(localFallback).toMatch(/^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/);
   }
 
   // كل صورة في البانر تُفكّ فعلاً (لا صفحة HTML من fallback التوجيه).
@@ -237,13 +237,11 @@ test('all eight leader banners use the live match-card crest source, with no oth
 
 test('a failing live crest falls back to the local crest, then to the initials with the banner height intact', async ({ page }) => {
   const live = 'https://a.espncdn.com/i/teamlogos/soccer/500/174.png';
-  /* الصيغة تفصيل تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)،
-     فالحجب يجب أن يلتقط أي صيغة لنفس الشعار المحلي. */
-  const local = /^\/images\/teams\/as-monaco-club-badge\.(?:png|webp|avif)$/;
+  const local = '/images/teams/as-monaco-club-badge.webp';
   const blocked: string[] = [];
   await openHub(page, { width: 1440, height: 1000 }, (url, route) => {
     const isBrokenLive = url.href.startsWith(live);
-    const isBrokenLocal = local.test(url.pathname);
+    const isBrokenLocal = url.pathname === local;
     if (!isBrokenLive && !isBrokenLocal) return false;
     blocked.push(url.href);
     void route.fulfill({ status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: '<!doctype html><title>404</title>' });
@@ -269,7 +267,7 @@ test('a failing live crest falls back to the local crest, then to the initials w
   await expect(banner.locator('.league-carousel-monogram')).toContainText('AM');
   expect((await banner.boundingBox())!.height).toBe(before.height);
   expect(blocked.some(url => url.startsWith(live))).toBe(true);
-  expect(blocked.some(url => local.test(new URL(url).pathname))).toBe(true);
+  expect(blocked.some(url => new URL(url).pathname === local)).toBe(true);
 });
 
 for (const width of [1440, 390]) {
@@ -291,7 +289,7 @@ for (const width of [1440, 390]) {
     // خطأ صورة المصدر ينزل إلى الشعار المحلي بدل إظهار صورة مكسورة.
     await image.evaluate(element => element.dispatchEvent(new Event('error')));
     await expect(image).toHaveAttribute('data-crest-source', 'local');
-    await expect(image).toHaveAttribute('src', /^\/images\/teams\/paris-saint-germain-club-badge\.(?:webp|avif)$/);
+    await expect(image).toHaveAttribute('src', '/images/teams/paris-saint-germain-club-badge.webp');
     await expect(image).toBeVisible();
     // وفشل البديل المحلي أيضاً يُخفي الصورة وحدها ويُبقي الأحرف.
     await image.evaluate(element => element.dispatchEvent(new Event('error')));

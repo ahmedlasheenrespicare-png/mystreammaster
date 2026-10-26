@@ -77,11 +77,7 @@ test('desktop «المباريات» dropdown: logos are not requested until the
     if (request.url().startsWith('https://a.espncdn.com/i/leaguelogos/')) logoRequests.push(request.url());
   });
   await page.goto('/');
-  /* networkidle قد لا يتحقّق أبداً لأن الصفحة تستقصي المصادر دورياً؛
-     ننتظر انتهاء التحميل الفعلي بحدّ زمني ثم نتحقق من الشرط نفسه:
-     لا شعار بطولة قبل فتح القائمة. */
-  await page.waitForFunction(() => document.readyState === 'complete');
-  await page.waitForTimeout(1500);
+  await page.waitForLoadState('networkidle');
   expect(logoRequests, 'قبل فتح القائمة').toEqual([]);
   await page.locator('header nav').first().getByRole('button', { name: 'المباريات', exact: true }).click();
   await expect(page.locator('#nav-panel-matches')).toBeVisible();

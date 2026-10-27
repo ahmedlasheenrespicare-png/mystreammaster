@@ -49,8 +49,15 @@ const RATE_WINDOW        = 60;   // نافذة حساب معدل الطلبات 
 
 const MAX_SPAN_DAYS      = 7;    // أقصى مدى زمني مسموح في معامل dates
 
+/* نفس القائمة والترتيب في LEAGUES بـ website/src/lib/matches.mjs —
+   أي إضافة هنا بلا مقابلها هناك تُسقط اختبار المطابقة في
+   website/scripts/test-matches.mjs، والعكس صحيح. البطولات المضافة
+   (القارية caf.* و afc.* والكؤوس الإنجليزية eng.fa و eng.league_cup)
+   تُجلب من ESPN كسائر البطولات غير المدرجة في ROUND_LEAGUES. */
 const ALLOWED_LEAGUES = [
     'eng.1',
+    'eng.league_cup',
+    'eng.fa',
     'esp.1',
     'ita.1',
     'ger.1',
@@ -59,6 +66,9 @@ const ALLOWED_LEAGUES = [
     'egy.1',
     'uefa.champions',
     'uefa.europa',
+    'caf.champions',
+    'caf.confed',
+    'afc.champions',
     'fifa.worldq.caf',
     'fifa.worldq.uefa',
     'fifa.friendly',

@@ -1,0 +1,113 @@
+{
+  "probedAt": "2026-10-28",
+  "base": "https://site.api.espn.com",
+  "tool": "website/scripts/probe-matches-leagues.mjs",
+  "note": "إثبات أن المصدر يخدم معرّف البطولة في جدول المواعيد. لا يثبت الترتيب (بوابته probe-standings.mjs) ولا الأرشيف (بوابته docs/fixtures-archive.md). اليوم يُطلب مفرداً لأن ESPN يرفض نطاق التواريخ — انظر rangeFinding.",
+  "rangeFinding": {
+    "claim": "ESPN لا يقبل نطاق تواريخ في معامل dates؛ الطلب ?dates=YYYYMMDD-YYYYMMDD يُرجع HTTP 400 «Failed to get events endpoint.»",
+    "verifiedOn": [
+      {
+        "league": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261020-20261103&limit=500",
+        "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+      },
+      {
+        "league": "caf.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/caf.champions/scoreboard?dates=20261020-20261103&limit=500",
+        "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+      }
+    ],
+    "consequence": "الفشل برمز 400 على نطاق تواريخ ليس علامة على معرّف خاطئ. لذلك يسأل المسبار يوماً واحداً في كل طلب ويدمج النتائج — وهو نفس سلوك scoreboard.php عبر sm_espn_days → single_day_upstream_url."
+  },
+  "probe": [
+    {
+      "league": "caf.champions",
+      "ok": true,
+      "name": "دوري أبطال أفريقيا",
+      "slugEchoedBySource": "caf.champions",
+      "leagueIdAtSource": "2391",
+      "uid": "s:600~l:2391",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 CAF Champions League",
+      "sampledDay": "2026-10-25",
+      "sample": [
+        { "date": "2026-10-25T13:00Z", "home": "Simba SC", "away": "15 de Agosto", "score": "3-0", "state": "finished", "venue": "Uhuru Stadium" },
+        { "date": "2026-10-25T15:00Z", "home": "Colombe Sportiv Du Dja Et Lobo", "away": "Teungueth", "state": "finished", "venue": "Stade Omnisport Ahmadou Ahidjo" }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2391.png",
+      "currentPhase": "Second Preliminary Round (Oct 16-25) ثم Group (Oct 27-Jan 25)"
+    },
+    {
+      "league": "caf.confed",
+      "ok": true,
+      "name": "كأس الكونفدرالية الأفريقية",
+      "slugEchoedBySource": "caf.confed",
+      "leagueIdAtSource": "18000",
+      "uid": "s:600~l:18000",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 CAF Confederation Cup",
+      "sampledDay": "2026-10-25",
+      "sample": [
+        { "date": "2026-10-25T13:00Z", "home": "AS Maniema Union", "away": "Kabuscorp", "score": "4-1", "state": "finished", "venue": "Stade des Martyrs" },
+        { "date": "2026-10-25T13:00Z", "home": "ASPL 2000", "away": "Durban City", "state": "finished", "venue": "Cote d'Or National Sports Complex" }
+      ],
+      "leagueLogoAtSource": null,
+      "logoNote": "المصدر يُرجع شعاراً عاماً (default-team-logo-500 عبر combiner) لا شعار بطولة، فلا يُضاف إلى src/lib/league-icons.mjs — البديل المحايد يظهر بدله.",
+      "currentPhase": "Second Preliminary Round (Oct 16-25) ثم Group (Oct 26-Feb 21)"
+    },
+    {
+      "league": "afc.champions",
+      "ok": true,
+      "name": "دوري أبطال آسيا للنخبة",
+      "slugEchoedBySource": "afc.champions",
+      "leagueIdAtSource": "3902",
+      "uid": "s:600~l:3902",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 AFC Champions League Elite",
+      "sampledDay": "2026-10-28",
+      "sample": [
+        { "date": "2026-10-28T10:00Z", "home": "Gamba Osaka", "away": "Buriram United", "state": "scheduled", "venue": "Suita City Football Stadium" }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2200.png",
+      "currentPhase": "League Stage (Sep 14-Feb 16) — East/West Region"
+    },
+    {
+      "league": "eng.league_cup",
+      "ok": true,
+      "name": "كأس الرابطة الإنجليزية",
+      "slugEchoedBySource": "eng.league_cup",
+      "leagueIdAtSource": "3920",
+      "uid": "s:600~l:3920",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 English Carabao Cup",
+      "sampledDay": "2026-10-28",
+      "sample": [
+        { "date": "2026-10-28T19:30Z", "home": "Manchester City", "away": "Brighton & Hove Albion", "state": "scheduled", "venue": "Etihad Stadium" }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/41.png",
+      "currentPhase": "Fourth Round (Oct 27-29) ثم Quarterfinals (Nov 3-Dec 28)"
+    },
+    {
+      "league": "eng.fa",
+      "ok": true,
+      "name": "كأس الاتحاد الإنجليزي",
+      "slugEchoedBySource": "eng.fa",
+      "leagueIdAtSource": "3918",
+      "uid": "s:600~l:3918",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 English FA Cup",
+      "sampledDay": "2026-11-07",
+      "sample": [
+        { "date": "2026-11-07T15:00Z", "home": "Accrington Stanley", "away": "Wycombe Wanderers", "state": "scheduled", "venue": "Wham Stadium" }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/40.png",
+      "currentPhase": "First Round (Nov 6-9) ثم Second Round (Dec 1-Jan 2)",
+      "emptyDaysNote": "يوم 2026-10-28 أعاد مصفوفة أحداث فارغة — وهذا متوقّع لا فشل: الجولة الأولى تبدأ 6 نوفمبر. أُثبت المعرّف بيوم من جولته الأولى بدل الاكتفاء بنافذة فارغة."
+    }
+  ],
+  "outOfScope": {
+    "standings": "لم يُفحص. إدخال جدول ترتيب لأي من هذه البطولات يستلزم مسبار probe-standings.mjs مستقلاً وإدراجاً في standings.php، ولا يُستنتج من نجاح مسبار المباريات.",
+    "archive": "ARCHIVE_LEAGUES يبقى اثنتي عشرة بطولة؛ إدراج بطولة قارية في الأرشيف يستلزم بوابة docs/fixtures-archive.md.",
+    "landingPages": "لا صفحة /matches/<slug>/ لهذه البطولات. الشعاران الموثّقان أعلاه (caf.champions → 2391، afc.champions → 2200) محفوظان هنا لوقت بناء صفحة هبوط، ولم يُضافا إلى league-icons.mjs لأنهما لا يُستخدمان في الجدول."
+  }
+}

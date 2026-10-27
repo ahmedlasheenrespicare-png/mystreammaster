@@ -202,3 +202,139 @@ test('every diagnostic code the match path can emit is translated by the fronten
   const untranslated = [...codes].filter(code => !(code in DIAGNOSTIC_LABELS));
   assert.deepEqual(untranslated, [], `missing frontend labels: ${untranslated.join(', ')}`);
 });
+
+/* ==========================================================================
+   مسبار بوابة المباريات — حكمه هو ما يثبت أن المصدر يخدم معرّف البطولة،
+   فيُحكَّم هنا على استجابات مصنوعة بنفس بنية المصدر. لا شبكة خارجية: خادم
+   محلي فقط. يُحكم بـ parseScoreboard نفسه الذي تعرض به الصفحة الجدول.
+   ========================================================================== */
+const probe = await import('./probe-matches-leagues.mjs');
+
+const probeEvent = (id, date, home = 'الأهلي', away = 'الترجي') => ({
+  id,
+  date,
+  competitions: [{
+    competitors: [
+      { homeAway: 'home', score: '1', team: { displayName: home } },
+      { homeAway: 'away', score: '0', team: { displayName: away } },
+    ],
+    status: { type: { completed: true, state: 'post' } },
+  }],
+});
+
+const probeWindow = { from: '2026-10-20', to: '2026-10-22' };
+
+test('المسبار: يقبل استجابة سليمة ويحلّلها بمنطق العرض نفسه', () => {
+  const judged = probe.judgeMatchesProbe(
+    {
+      leagues: [{ slug: 'caf.champions', name: 'CAF Champions League' }],
+      events: [probeEvent('1', '2026-10-25T18:00:00Z')],
+    },
+    'caf.champions',
+  );
+  assert.equal(judged.slug, 'caf.champions');
+  assert.equal(judged.name, 'CAF Champions League');
+  assert.equal(judged.events.length, 1);
+  assert.equal(judged.events[0].home, 'الأهلي');
+  assert.equal(judged.events[0].state, 'finished');
+});
+
+test('المسبار: يرفض بطولة تُعيد معرّفاً غير المطلوب، ويرفض بنية بلا أحداث', () => {
+  /* أخطر حالة: المصدر يعيد 200 ببيانات بطولة أخرى، فيُعرض جدول مزيّف */
+  assert.throws(
+    () => probe.judgeMatchesProbe({ leagues: [{ slug: 'eng.1' }], events: [] }, 'caf.champions'),
+    /SOURCE_ID_MISMATCH/,
+  );
+  assert.throws(
+    () => probe.judgeMatchesProbe({ leagues: [{ slug: 'afc.champions' }] }, 'afc.champions'),
+    /INVALID_SCOREBOARD/,
+  );
+  assert.throws(() => probe.judgeMatchesProbe(null, 'caf.champions'), /UPSTREAM_INVALID_JSON/);
+});
+
+/* القيد الموثّق للمصدر: ESPN يرفض نطاق التواريخ (HTTP 400
+   «Failed to get events endpoint.») — مُثبت لبطلات قائمة أصلاً (eng.1)
+   كما للبطولات القارية، فليس علامة على معرّف خاطئ. لذلك يسأل المسبار
+   يوماً واحداً في كل طلب، تماماً كما يفعل scoreboard.php. يحرس هذا
+   الاختبار ألا يعود المسبار إلى صيغة النطاق فيُبلغ فشلاً كاذباً. */
+test('المسبار: يوم واحد في كل طلب — لا نطاق تواريخ يرفضه المصدر', () => {
+  assert.deepEqual(probe.probeDays('2026-10-20', '2026-10-22'), ['2026-10-20', '2026-10-21', '2026-10-22']);
+  const url = probe.probeUrl('caf.champions', '2026-10-25');
+  assert.match(url, /\/apis\/site\/v2\/sports\/soccer\/caf\.champions\/scoreboard\?dates=20261025&limit=500$/);
+  /* لا شرطة بين تاريخين: نطاق كهذا يُرجع 400 من المصدر لكل البطولات */
+  assert.doesNotMatch(url, /dates=\d{8}-\d{8}/);
+});
+
+test('المسبار يعمل على خادم محلي: نجاح، ودمج الأيام، وردّ HTTP غير سليم', async () => {
+  const http = await import('node:http');
+  const served = new Set(['caf.champions', 'afc.champions']);
+  const requested = [];
+  const server = http.createServer((request, response) => {
+    const url = new URL(request.url, 'http://127.0.0.1');
+    const league = decodeURIComponent(url.pathname.split('/')[6] || '');
+    const dates = url.searchParams.get('dates') || '';
+    requested.push({ league, dates });
+    if (!served.has(league)) {
+      response.writeHead(404).end('{}');
+      return;
+    }
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    /* يوم 21 فيه مباراتان، ويوم 22 فيه مباراة واحدة مكرّرة مع يوم 21 */
+    const events = dates === '20261021'
+      ? [probeEvent('1', '2026-10-21T18:00:00Z'), probeEvent('2', '2026-10-21T20:00:00Z')]
+      : dates === '20261022'
+        ? [probeEvent('2', '2026-10-21T20:00:00Z'), probeEvent('3', '2026-10-22T18:00:00Z', 'الهلال', 'السد')]
+        : [];
+    response.end(JSON.stringify({ leagues: [{ slug: league }], events }));
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const good = await probe.probeMatchesLeague('caf.champions', { ...probeWindow, base });
+    assert.equal(good.daysRequested, 3, 'يوم واحد لكل طلب');
+    assert.equal(good.daysWithEvents, 2);
+    assert.equal(good.events, 3, 'الحدث المكرّر بين يومين يُحسب مرة واحدة');
+    assert.equal(good.slug, 'caf.champions');
+    /* كل طلب يحمل يوماً مفرداً — لا نطاق */
+    assert.ok(requested.every((entry) => /^\d{8}$/.test(entry.dates)));
+    assert.deepEqual(requested.map((entry) => entry.dates), ['20261020', '20261021', '20261022']);
+    await assert.rejects(() => probe.probeMatchesLeague('caf.confed', { ...probeWindow, base }), /UPSTREAM_HTTP_404/);
+    /* معرّف غير مسجّل في LEAGUES يُرفض قبل أي طلب */
+    await assert.rejects(() => probe.probeMatchesLeague('made.up', { ...probeWindow, base }), /UNKNOWN_LEAGUE/);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+/* البطولات القارية الثلاث في الجدول: معرّفاتها مسجّلة في المصدر الوحيد
+   (LEAGUES) وتطابق وسيط الخادم — ويبقى إثبات خدمتها لدى ESPN بمسبار
+   مستقل، فلا يُفترض أن التسجيل في القائمة يعني التغطية. */
+test('البطولات المضافة مُسجّلة في مصدر واحد ومطابقة لقائمة وسيط الخادم', async () => {
+  const added = [
+    { id: 'caf.champions', name: 'دوري أبطال أفريقيا' },
+    { id: 'caf.confed', name: 'كأس الكونفدرالية الأفريقية' },
+    { id: 'afc.champions', name: 'دوري أبطال آسيا للنخبة' },
+    { id: 'eng.league_cup', name: 'كأس الرابطة الإنجليزية' },
+    { id: 'eng.fa', name: 'كأس الاتحاد الإنجليزي' },
+  ];
+  for (const entry of added) {
+    const found = LEAGUES.find((league) => league.id === entry.id);
+    assert.ok(found, `${entry.id} غير مسجّل في LEAGUES`);
+    assert.equal(found.name, entry.name);
+    /* كل معرّف مسجّل يملك رابط وسيط صالحاً — ولا معرّف مكرر */
+    assert.equal(scoreboardUrl(entry.id, '2026-10-25'), `/scoreboard.php?league=${encodeURIComponent(entry.id)}&dates=20261024-20261026`);
+    assert.equal(LEAGUES.filter((league) => league.id === entry.id).length, 1);
+  }
+
+  /* الترتيب يُقاس بمواضع نسبية لا بأرقام ثابتة: كل بطولة تُضاف لاحقاً
+     كانت تكسر هذا الاختبار لو قُيِّدَ بشرائح (slice) ثابتة. */
+  const ids = LEAGUES.map((league) => league.id);
+  const at = (id) => ids.indexOf(id);
+  assert.ok(at('eng.1') < at('eng.league_cup'), 'كأس الرابطة يتبع دوري بلده');
+  assert.ok(at('eng.league_cup') < at('eng.fa'), 'كأس الرابطة قبل كأس الاتحاد');
+  assert.ok(at('eng.fa') < at('esp.1'), 'بطولات إنجلترا كتلة واحدة قبل بقية الدوريات');
+  /* القارية كتلة متتابعة بين المسابقات الأوروبية والمسابقات الدولية */
+  assert.deepEqual(ids.slice(at('caf.champions'), at('fifa.worldq.caf')), ['caf.champions', 'caf.confed', 'afc.champions']);
+  assert.ok(at('afc.champions') < at('fifa.worldq.caf'), 'القارية تسبق المسابقات الدولية');
+  assert.equal(new Set(ids).size, ids.length, 'لا معرّف مكرر في قائمة البطولات');
+});

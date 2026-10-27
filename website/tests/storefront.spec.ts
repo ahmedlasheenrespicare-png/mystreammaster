@@ -887,3 +887,25 @@ test('preview headline appears inside the TV welcome with animated word and 4K',
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('Arabic header renders the approved popular-crab-39 Stream Master periodic brand mark', async ({ page }) => {
+  for (const route of ['/', '/about/']) {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      const brandLink = page.locator('header a[aria-label="ستريم ماستر — الصفحة الرئيسية"]').first();
+      await expect(brandLink).toBeVisible();
+      const mark = brandLink.locator('.sm-crab39');
+      await expect(mark).toBeVisible();
+      await expect(mark.locator('.sm-crab39__tile')).toHaveCount(2);
+      await expect(mark.locator('.sm-crab39__sup').nth(0)).toHaveText('4K');
+      await expect(mark.locator('.sm-crab39__sup').nth(1)).toHaveText('99');
+      await expect(mark.locator('.sm-crab39__sym').nth(0)).toHaveText('ست');
+      await expect(mark.locator('.sm-crab39__rest').nth(0)).toHaveText('ريم');
+      await expect(mark.locator('.sm-crab39__sym').nth(1)).toHaveText('ما');
+      await expect(mark.locator('.sm-crab39__rest').nth(1)).toHaveText('ستر');
+      await expect(mark.locator('.sm-crab39__sup').nth(0)).toHaveCSS('color', 'rgb(216, 255, 62)');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+  }
+});

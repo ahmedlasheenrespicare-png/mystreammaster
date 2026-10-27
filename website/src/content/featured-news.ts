@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "استقالة مدرب فنربخشة إسماعيل كارتال بعد الخسارة أمام غلطة سراي",
     description: "فنربخشة ينهي ارتباطه بالمدرب بالتراضي بعد خسارته 1-2 أمام غلطة سراي في ديربي القارات.",
     href: "news/fenerbahce-kartal-resignation-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/tur-kartal-resignation.webp", alt: "إسماعيل كارتال مدرب فنربخشة بأكتاف متقاطعة ونظرة عابسة بعد الاستقالة عقب خسارة ديربي غلطة سراي" },
+    ],
   },
   {
     category: "الكرة الذهبية",
@@ -78,6 +82,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "طرابزون سبور يفوز على ريزة سبور 4-3 ويصعد للمركز الثالث",
     description: "فوز مثير لطرابزون سبور بقيادة محمد صلاح، وصعود للمركز الثالث برصيد 19 نقطة.",
     href: "news/trabzonspor-rizespor-4-3-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/tur-franculino-duo-celebration.webp", alt: "فرانكولينو صاحب ثنائية ريزة يحتفل بكف مرفوع مع قائد طرابزون سبور بعد فوز 4-3" },
+    ],
   },
   {
     category: "الدوري الفرنسي",

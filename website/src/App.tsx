@@ -7,6 +7,7 @@ import FloatingActions from "./components/FloatingActions";
 import Footer from "./components/Footer";
 import TrialModal from "./components/TrialModal";
 import CartModal, { CartItem } from "./components/CartModal";
+import WelcomeSplash from "./components/WelcomeSplash";
 import { useRouter } from "./router";
 import { applySeoToDocument } from "./seo";
 import HomePage from "./pages/HomePage";
@@ -226,6 +227,7 @@ export default function App() {
     >
       <ScrollProgress />
       <SmoothScroll />
+      {!isEnPath(path) && <WelcomeSplash activeRoute={path} />}
 
       {isEnPath(path) ? (
         <EnHeader />

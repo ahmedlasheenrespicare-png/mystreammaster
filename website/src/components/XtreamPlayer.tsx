@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PROXY_BASE, WHATSAPP_NUMBER } from "../config";
+import { BrandNewtStage } from "./BrandNewtStage";
 import {
   ACCOUNTS_KEY,
   ASPECT_MODES,
@@ -1760,6 +1761,13 @@ function XtreamPlayerInner() {
           </div>
         )}
 
+        {/* ============ شاشة عرض المشغّل السينمائية في وضع الاستعداد ============ */}
+        {(phase === "form" || phase === "loading") && (
+          <div className="max-w-[520px] mx-auto mb-5">
+            <BrandNewtStage variant="player-banner" observeViewport />
+          </div>
+        )}
+
         {/* ============ نموذج الدخول ============ */}
         {phase === "form" || phase === "loading" ? (
           <Reveal variant="up" delay={100} className="max-w-[520px] mx-auto">
@@ -2134,16 +2142,19 @@ function XtreamPlayerInner() {
                           }
                           placeholder={
                             i === 0 ? (
-                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b0b0f]/80 text-center px-6">
-                                <span className="w-16 h-16 rounded-full bg-[#d8ff3e] text-black grid place-items-center mb-4">
-                                  <IconPlay className="w-7 h-7 mr-1" />
-                                </span>
-                                <p className="font-display font-black text-[19px]">
-                                  اختر قناة من القائمة لبدء المشاهدة
-                                </p>
-                                <p className="text-[13px] text-white/45 font-medium mt-1.5">
-                                  {streams.length.toLocaleString("en-US")} قناة متاحة في باقتك
-                                </p>
+                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#040904] text-center px-4 sm:px-6 overflow-hidden">
+                                <BrandNewtStage variant="player-idle" showCaption={false} />
+                                <div className="relative z-20 flex flex-col items-center mt-auto pb-4 sm:pb-6">
+                                  <span className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-[#d8ff3e] text-black grid place-items-center mb-2.5 shadow-[0_0_24px_rgba(216,255,62,0.55)]">
+                                    <IconPlay className="w-5 h-5 sm:w-6 sm:h-6 mr-0.5" />
+                                  </span>
+                                  <p className="font-display font-black text-[15px] sm:text-[18px] px-3 py-1 rounded-full bg-black/55 backdrop-blur-sm">
+                                    اختر قناة من القائمة لبدء المشاهدة
+                                  </p>
+                                  <p className="text-[12px] sm:text-[13px] text-white/65 font-medium mt-1">
+                                    {streams.length.toLocaleString("en-US")} قناة متاحة في باقتك
+                                  </p>
+                                </div>
                               </div>
                             ) : (
                               <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0b0b0f]/70 text-center px-4">

@@ -321,11 +321,18 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .storefront-header select{max-width:108px}
 @media(max-width:639px){
   .storefront-header nav{gap:8px;padding-inline:12px}
-  .storefront-header nav>a>span:last-child{font-size:17px}
-  .storefront-header nav>a>span:last-child>span{font-size:7px;letter-spacing:1px}
+  .storefront-header nav>a>span:last-child:not(.sm-crab39){font-size:17px}
+  .storefront-header nav>a>span:last-child:not(.sm-crab39)>span{font-size:7px;letter-spacing:1px}
   .storefront-header nav>a{gap:7px}
   .storefront-header select{width:76px;padding-inline:4px;font-size:11px;min-width:0}
   .storefront-header nav>div:last-child{gap:5px;flex-shrink:0}
   .storefront-header nav>div:last-child>button{width:34px;height:34px}
 }
-@media(max-width:359px){.storefront-header nav>a>span:last-child{display:none}}
+@media(max-width:359px){
+  .storefront-header>div{padding-inline:10px}
+  .storefront-header nav{gap:4px;padding-inline:8px}
+  .storefront-header select{width:58px;font-size:10px;padding-inline:2px}
+  .storefront-header nav>div:last-child{gap:3.5px}
+  .storefront-header nav>div:last-child>button,.storefront-header nav>div:last-child>a{width:30px;height:30px;padding-inline:0;font-size:10px}
+  .storefront-header nav>a>span:last-child:not(.sm-crab39){display:none}
+}

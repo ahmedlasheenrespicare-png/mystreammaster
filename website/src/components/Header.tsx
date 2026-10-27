@@ -1,4 +1,5 @@
 import { ServerIcon } from "./ServerIcon";
+import "./header-brand-crab39.css";
 import type { PricingPlan } from "../data";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
@@ -8,7 +9,6 @@ import {
   IconChevronDown,
   IconClose,
   IconMenu,
-  IconPlay,
   IconStar,
   IconZap,
 } from "./Icons";
@@ -171,14 +171,31 @@ export default function Header({
                 : "bg-white/60 backdrop-blur-md border-white/60 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.15)] h-[68px]"
             }`}
           >
-            {/* الشعار */}
-            <a href={to("")} className="flex items-center gap-2.5 shrink-0 group" aria-label="ستريم ماستر — الصفحة الرئيسية">
-              <span className="w-9 h-9 rounded-xl bg-[#0b0b0f] text-[#d8ff3e] grid place-items-center group-hover:rotate-[10deg] transition-transform">
-                <IconPlay className="w-4 h-4 mr-0.5" />
-              </span>
-              <span className="font-display font-black text-[21px] tracking-tight leading-none">
-                ستريم ماستر
-                <span className="block text-[9.5px] font-sans font-bold tracking-[0.22em] uppercase text-black/50">
+            {/* الشعار — مستوحى من uiverse.io/strav_5159/popular-crab-39 مكيّفاً بهوية ستريم ماستر */}
+            <a
+              href={to("")}
+              className="inline-flex items-center shrink-0 group"
+              aria-label="ستريم ماستر — الصفحة الرئيسية"
+            >
+              <span className="sr-only">ستريم ماستر — Stream Master Pro</span>
+              <span className="sm-crab39" dir="rtl" aria-hidden="true">
+                <span className="sm-crab39__row">
+                  <span className="sm-crab39__word">
+                    <span className="sm-crab39__tile">
+                      <sup className="sm-crab39__sup">4K</sup>
+                      <span className="sm-crab39__sym">ست</span>
+                    </span>
+                    <span className="sm-crab39__rest">ريم</span>
+                  </span>
+                  <span className="sm-crab39__word">
+                    <span className="sm-crab39__tile">
+                      <sup className="sm-crab39__sup">99</sup>
+                      <span className="sm-crab39__sym">ما</span>
+                    </span>
+                    <span className="sm-crab39__rest">ستر</span>
+                  </span>
+                </span>
+                <span className="sm-crab39__sub" dir="ltr">
                   Stream Master Pro
                 </span>
               </span>

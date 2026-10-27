@@ -60,6 +60,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الشمال يفوز على الهلال 3-1 في دوري أبطال آسيا للنخبة",
     description: "فوز الشمال 3-1 على استاد البيت، بعد تعادل 1-1 في الشوط الأول بهدفي ويسلي سعيد والدوسري.",
     href: "news/hilal-shamal-first-half-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ksa-hilal-fulltime-reaction.webp", alt: "سالم الدوسري يقود قميص الهلال بيديه على رأسه بعد صافرة نهاية خسارة الشمال 3-1 في دوري أبطال آسيا" },
+    ],
   },
   {
     category: "الدوري الفرنسي",

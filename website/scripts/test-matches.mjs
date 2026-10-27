@@ -222,63 +222,82 @@ const probeEvent = (id, date, home = 'الأهلي', away = 'الترجي') => (
   }],
 });
 
-const probeWindow = { from: '2026-10-20', to: '2026-11-03' };
+const probeWindow = { from: '2026-10-20', to: '2026-10-22' };
 
-test('المسبار: يقبل استجابة سليمة ويحصر العيّنة داخل النافذة', () => {
+test('المسبار: يقبل استجابة سليمة ويحلّلها بمنطق العرض نفسه', () => {
   const judged = probe.judgeMatchesProbe(
     {
       leagues: [{ slug: 'caf.champions', name: 'CAF Champions League' }],
-      events: [probeEvent('1', '2026-10-25T18:00:00Z'), probeEvent('2', '2026-12-20T18:00:00Z')],
+      events: [probeEvent('1', '2026-10-25T18:00:00Z')],
     },
     'caf.champions',
-    probeWindow.from,
-    probeWindow.to,
   );
   assert.equal(judged.slug, 'caf.champions');
-  assert.equal(judged.events, 2);
-  assert.equal(judged.inWindow, 1, 'الحدث خارج النافذة لا يُعرض ولا يُحتسب');
-  assert.equal(judged.sample.length, 1);
-  assert.equal(judged.sample[0].home, 'الأهلي');
+  assert.equal(judged.name, 'CAF Champions League');
+  assert.equal(judged.events.length, 1);
+  assert.equal(judged.events[0].home, 'الأهلي');
+  assert.equal(judged.events[0].state, 'finished');
 });
 
 test('المسبار: يرفض بطولة تُعيد معرّفاً غير المطلوب، ويرفض بنية بلا أحداث', () => {
   /* أخطر حالة: المصدر يعيد 200 ببيانات بطولة أخرى، فيُعرض جدول مزيّف */
   assert.throws(
-    () => probe.judgeMatchesProbe({ leagues: [{ slug: 'eng.1' }], events: [] }, 'caf.champions', probeWindow.from, probeWindow.to),
+    () => probe.judgeMatchesProbe({ leagues: [{ slug: 'eng.1' }], events: [] }, 'caf.champions'),
     /SOURCE_ID_MISMATCH/,
   );
   assert.throws(
-    () => probe.judgeMatchesProbe({ leagues: [{ slug: 'afc.champions' }] }, 'afc.champions', probeWindow.from, probeWindow.to),
+    () => probe.judgeMatchesProbe({ leagues: [{ slug: 'afc.champions' }] }, 'afc.champions'),
     /INVALID_SCOREBOARD/,
   );
-  assert.throws(() => probe.judgeMatchesProbe(null, 'caf.champions', probeWindow.from, probeWindow.to), /UPSTREAM_INVALID_JSON/);
+  assert.throws(() => probe.judgeMatchesProbe(null, 'caf.champions'), /UPSTREAM_INVALID_JSON/);
 });
 
-test('المسبار: نافذة بلا مباريات نتيجة مقبولة لا فشل (أسبوع بلا جولة)', () => {
-  const judged = probe.judgeMatchesProbe({ leagues: [{ slug: 'caf.confed' }], events: [] }, 'caf.confed', probeWindow.from, probeWindow.to);
-  assert.equal(judged.events, 0);
-  assert.equal(judged.inWindow, 0);
-  assert.deepEqual(judged.sample, []);
+/* القيد الموثّق للمصدر: ESPN يرفض نطاق التواريخ (HTTP 400
+   «Failed to get events endpoint.») — مُثبت لبطلات قائمة أصلاً (eng.1)
+   كما للبطولات القارية، فليس علامة على معرّف خاطئ. لذلك يسأل المسبار
+   يوماً واحداً في كل طلب، تماماً كما يفعل scoreboard.php. يحرس هذا
+   الاختبار ألا يعود المسبار إلى صيغة النطاق فيُبلغ فشلاً كاذباً. */
+test('المسبار: يوم واحد في كل طلب — لا نطاق تواريخ يرفضه المصدر', () => {
+  assert.deepEqual(probe.probeDays('2026-10-20', '2026-10-22'), ['2026-10-20', '2026-10-21', '2026-10-22']);
+  const url = probe.probeUrl('caf.champions', '2026-10-25');
+  assert.match(url, /\/apis\/site\/v2\/sports\/soccer\/caf\.champions\/scoreboard\?dates=20261025&limit=500$/);
+  /* لا شرطة بين تاريخين: نطاق كهذا يُرجع 400 من المصدر لكل البطولات */
+  assert.doesNotMatch(url, /dates=\d{8}-\d{8}/);
 });
 
-test('المسبار يعمل على خادم محلي: نجاح وردّ HTTP غير سليم', async () => {
+test('المسبار يعمل على خادم محلي: نجاح، ودمج الأيام، وردّ HTTP غير سليم', async () => {
   const http = await import('node:http');
   const served = new Set(['caf.champions', 'afc.champions']);
+  const requested = [];
   const server = http.createServer((request, response) => {
-    const league = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname.split('/')[6] || '');
-    if (served.has(league)) {
-      response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify({ leagues: [{ slug: league }], events: [probeEvent('1', '2026-10-25T18:00:00Z')] }));
+    const url = new URL(request.url, 'http://127.0.0.1');
+    const league = decodeURIComponent(url.pathname.split('/')[6] || '');
+    const dates = url.searchParams.get('dates') || '';
+    requested.push({ league, dates });
+    if (!served.has(league)) {
+      response.writeHead(404).end('{}');
       return;
     }
-    response.writeHead(404).end('{}');
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    /* يوم 21 فيه مباراتان، ويوم 22 فيه مباراة واحدة مكرّرة مع يوم 21 */
+    const events = dates === '20261021'
+      ? [probeEvent('1', '2026-10-21T18:00:00Z'), probeEvent('2', '2026-10-21T20:00:00Z')]
+      : dates === '20261022'
+        ? [probeEvent('2', '2026-10-21T20:00:00Z'), probeEvent('3', '2026-10-22T18:00:00Z', 'الهلال', 'السد')]
+        : [];
+    response.end(JSON.stringify({ leagues: [{ slug: league }], events }));
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
     const good = await probe.probeMatchesLeague('caf.champions', { ...probeWindow, base });
-    assert.equal(good.inWindow, 1);
-    assert.match(good.url, /\/apis\/site\/v2\/sports\/soccer\/caf\.champions\/scoreboard\?dates=20261020-20261103&limit=500$/);
+    assert.equal(good.daysRequested, 3, 'يوم واحد لكل طلب');
+    assert.equal(good.daysWithEvents, 2);
+    assert.equal(good.events, 3, 'الحدث المكرّر بين يومين يُحسب مرة واحدة');
+    assert.equal(good.slug, 'caf.champions');
+    /* كل طلب يحمل يوماً مفرداً — لا نطاق */
+    assert.ok(requested.every((entry) => /^\d{8}$/.test(entry.dates)));
+    assert.deepEqual(requested.map((entry) => entry.dates), ['20261020', '20261021', '20261022']);
     await assert.rejects(() => probe.probeMatchesLeague('caf.confed', { ...probeWindow, base }), /UPSTREAM_HTTP_404/);
     /* معرّف غير مسجّل في LEAGUES يُرفض قبل أي طلب */
     await assert.rejects(() => probe.probeMatchesLeague('made.up', { ...probeWindow, base }), /UNKNOWN_LEAGUE/);

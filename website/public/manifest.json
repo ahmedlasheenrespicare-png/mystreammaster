@@ -1,0 +1,45 @@
+{
+  "name": "ستريم ماستر برو — Stream Master Pro",
+  "short_name": "ستريم ماستر",
+  "description": "خدمات ربط تقني وإعداد مشغلات البث ودليل المشاهدة الرسمية — تفعيل فوري ودعم فني بالعربية.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#faf9f6",
+  "theme_color": "#162b12",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": [
+    "sports",
+    "entertainment",
+    "utilities"
+  ],
+  "lang": "ar",
+  "dir": "rtl"
+}

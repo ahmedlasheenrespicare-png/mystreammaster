@@ -31,8 +31,21 @@
       "seasonDisplayName": "2026-27 CAF Champions League",
       "sampledDay": "2026-10-25",
       "sample": [
-        { "date": "2026-10-25T13:00Z", "home": "Simba SC", "away": "15 de Agosto", "score": "3-0", "state": "finished", "venue": "Uhuru Stadium" },
-        { "date": "2026-10-25T15:00Z", "home": "Colombe Sportiv Du Dja Et Lobo", "away": "Teungueth", "state": "finished", "venue": "Stade Omnisport Ahmadou Ahidjo" }
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "Simba SC",
+          "away": "15 de Agosto",
+          "score": "3-0",
+          "state": "finished",
+          "venue": "Uhuru Stadium"
+        },
+        {
+          "date": "2026-10-25T15:00Z",
+          "home": "Colombe Sportiv Du Dja Et Lobo",
+          "away": "Teungueth",
+          "state": "finished",
+          "venue": "Stade Omnisport Ahmadou Ahidjo"
+        }
       ],
       "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2391.png",
       "currentPhase": "Second Preliminary Round (Oct 16-25) ثم Group (Oct 27-Jan 25)"
@@ -48,8 +61,21 @@
       "seasonDisplayName": "2026-27 CAF Confederation Cup",
       "sampledDay": "2026-10-25",
       "sample": [
-        { "date": "2026-10-25T13:00Z", "home": "AS Maniema Union", "away": "Kabuscorp", "score": "4-1", "state": "finished", "venue": "Stade des Martyrs" },
-        { "date": "2026-10-25T13:00Z", "home": "ASPL 2000", "away": "Durban City", "state": "finished", "venue": "Cote d'Or National Sports Complex" }
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "AS Maniema Union",
+          "away": "Kabuscorp",
+          "score": "4-1",
+          "state": "finished",
+          "venue": "Stade des Martyrs"
+        },
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "ASPL 2000",
+          "away": "Durban City",
+          "state": "finished",
+          "venue": "Cote d'Or National Sports Complex"
+        }
       ],
       "leagueLogoAtSource": null,
       "logoNote": "المصدر يُرجع شعاراً عاماً (default-team-logo-500 عبر combiner) لا شعار بطولة، فلا يُضاف إلى src/lib/league-icons.mjs — البديل المحايد يظهر بدله.",
@@ -66,7 +92,13 @@
       "seasonDisplayName": "2026-27 AFC Champions League Elite",
       "sampledDay": "2026-10-28",
       "sample": [
-        { "date": "2026-10-28T10:00Z", "home": "Gamba Osaka", "away": "Buriram United", "state": "scheduled", "venue": "Suita City Football Stadium" }
+        {
+          "date": "2026-10-28T10:00Z",
+          "home": "Gamba Osaka",
+          "away": "Buriram United",
+          "state": "scheduled",
+          "venue": "Suita City Football Stadium"
+        }
       ],
       "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2200.png",
       "currentPhase": "League Stage (Sep 14-Feb 16) — East/West Region"
@@ -82,7 +114,13 @@
       "seasonDisplayName": "2026-27 English Carabao Cup",
       "sampledDay": "2026-10-28",
       "sample": [
-        { "date": "2026-10-28T19:30Z", "home": "Manchester City", "away": "Brighton & Hove Albion", "state": "scheduled", "venue": "Etihad Stadium" }
+        {
+          "date": "2026-10-28T19:30Z",
+          "home": "Manchester City",
+          "away": "Brighton & Hove Albion",
+          "state": "scheduled",
+          "venue": "Etihad Stadium"
+        }
       ],
       "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/41.png",
       "currentPhase": "Fourth Round (Oct 27-29) ثم Quarterfinals (Nov 3-Dec 28)"
@@ -98,16 +136,135 @@
       "seasonDisplayName": "2026-27 English FA Cup",
       "sampledDay": "2026-11-07",
       "sample": [
-        { "date": "2026-11-07T15:00Z", "home": "Accrington Stanley", "away": "Wycombe Wanderers", "state": "scheduled", "venue": "Wham Stadium" }
+        {
+          "date": "2026-11-07T15:00Z",
+          "home": "Accrington Stanley",
+          "away": "Wycombe Wanderers",
+          "state": "scheduled",
+          "venue": "Wham Stadium"
+        }
       ],
       "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/40.png",
       "currentPhase": "First Round (Nov 6-9) ثم Second Round (Dec 1-Jan 2)",
       "emptyDaysNote": "يوم 2026-10-28 أعاد مصفوفة أحداث فارغة — وهذا متوقّع لا فشل: الجولة الأولى تبدأ 6 نوفمبر. أُثبت المعرّف بيوم من جولته الأولى بدل الاكتفاء بنافذة فارغة."
+    },
+    {
+      "league": "tur.1",
+      "ok": true,
+      "name": "الدوري التركي",
+      "slugEchoedBySource": "tur.1",
+      "leagueIdAtSource": "3946",
+      "uid": "s:600~l:3946",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 Turkish Super Lig",
+      "sampledDay": "2026-10-25",
+      "sample": [
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "Konyaspor",
+          "away": "Genclerbirligi",
+          "score": "2-0",
+          "state": "finished",
+          "venue": "Medas Konya Büyüksehir Stadyumu"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/18.png",
+      "currentPhase": "الموسم جارٍ بتقويم يومي (calendarType=day) من 14 أغسطس 2026 إلى 23 مايو 2027",
+      "addedFor": "صفحة نادي طرابزون سبور — /teams/طرابزون-سبور"
+    },
+    {
+      "league": "uefa.europa.conf",
+      "ok": true,
+      "name": "دوري المؤتمر الأوروبي",
+      "slugEchoedBySource": "uefa.europa.conf",
+      "leagueIdAtSource": "20296",
+      "uid": "s:600~l:20296",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 UEFA Conference League",
+      "sampledDay": "2026-11-05",
+      "sample": [
+        {
+          "date": "2026-11-05T17:45Z",
+          "home": "AGF",
+          "away": "Braga",
+          "state": "scheduled",
+          "venue": "Cepheus Park Randers"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/20296.png",
+      "currentPhase": "League Phase (Oct 15-Dec 17) ثم Knockout Round Playoffs (Dec 19-Feb 26)",
+      "slugNote": "المعرّف uefa.europa.conf لا uefa.europa_conf — الأخير يُرجع HTTP 400 كما يُثبته notCovered.wrongSlug أدناه",
+      "addedFor": "صفحة نادي طرابزون سبور — /teams/طرابزون-سبور"
     }
   ],
   "outOfScope": {
     "standings": "لم يُفحص. إدخال جدول ترتيب لأي من هذه البطولات يستلزم مسبار probe-standings.mjs مستقلاً وإدراجاً في standings.php، ولا يُستنتج من نجاح مسبار المباريات.",
     "archive": "ARCHIVE_LEAGUES يبقى اثنتي عشرة بطولة؛ إدراج بطولة قارية في الأرشيف يستلزم بوابة docs/fixtures-archive.md.",
     "landingPages": "لا صفحة /matches/<slug>/ لهذه البطولات. الشعاران الموثّقان أعلاه (caf.champions → 2391، afc.champions → 2200) محفوظان هنا لوقت بناء صفحة هبوط، ولم يُضافا إلى league-icons.mjs لأنهما لا يُستخدمان في الجدول."
+  },
+  "clubPresence": {
+    "claim": "طرابزون سبور (معرّف الفريق 997 عند المصدر) يشارك هذا الموسم في tur.1 و uefa.europa.conf بحسب صفحة مباريات النادي على ESPN",
+    "source": "https://www.espn.com/soccer/team/fixtures/_/id/997/trabzonspor",
+    "fixturesListed": [
+      {
+        "date": "2026-11-01",
+        "match": "Trabzonspor v Gaziantep FK",
+        "competition": "Turkish Super Lig"
+      },
+      {
+        "date": "2026-11-05",
+        "match": "Trabzonspor v SC Freiburg",
+        "competition": "UEFA Conference League"
+      },
+      {
+        "date": "2026-11-08",
+        "match": "Alanyaspor v Trabzonspor",
+        "competition": "Turkish Super Lig"
+      },
+      {
+        "date": "2026-11-26",
+        "match": "CSKA Sofia v Trabzonspor",
+        "competition": "UEFA Conference League"
+      }
+    ],
+    "note": "صفحة المباريات على ESPN لا تُدرج أي مباراة للنادي في كأس تركيا — اتساقاً مع عدم تغطية المصدر لها (notCovered)."
+  },
+  "notCovered": {
+    "turkishCup": {
+      "claim": "المصدر لا يوفّر كأس تركيا (Türkiye Kupası) ولا الكأس السوبر التركي: كل مرشح معرّف مُختبَر يُرجع HTTP 400، بينما البادئة tur. نفسها تعمل",
+      "tested": [
+        {
+          "league": "tur.turkey_cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.turkey_cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "league": "tur.cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "league": "tur.turkish_cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.turkish_cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "league": "tur.super_cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.super_cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        }
+      ],
+      "control": {
+        "league": "tur.2",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.2/scoreboard?dates=20261028&limit=1",
+        "result": "HTTP 200 — استجابة سليمة بصيغة مجرّدة (بلا معرّف ولا موسم ولا أحداث)، ما يُثبت أن البادئة tur. مقبولة وأن الـ400 أعلاه خاص بتلك المسابقات لا بالبادئة"
+      },
+      "consequence": "لا تُذكر هاتان المسابقتان في صفحة النادي ولا تُسألان من اللوحة: طلب بطولة غير مسموحة يُرجع INVALID_LEAGUE وتظهر اللوحة فارغة. يُراجَع هذا متى أضافها المصدر."
+    },
+    "wrongSlug": {
+      "league": "uefa.europa_conf",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_conf/scoreboard?dates=20261105&limit=1",
+      "result": "HTTP 400 — المعرّف الصحيح uefa.europa.conf (بنقطة قبل conf لا بشرطة سفلية)"
+    }
   }
 }

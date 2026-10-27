@@ -116,6 +116,7 @@ const STATIC_KEYWORDS = {
   "/world-cup-2026/تونس": { primary: "منتخب تونس", intent: "informational" },
   "/world-cup-2026/قطر": { primary: "منتخب قطر", intent: "informational" },
   "/world-cup-2026/مصر": { primary: "منتخب مصر", intent: "informational" },
+  "/teams/طرابزون-سبور": { primary: "مباريات طرابزون سبور", intent: "informational" },
 };
 
 /* كلمات صفحات تفاصيل المباريات تُشتق من أسماء الفريقين في سجلّ المباراة

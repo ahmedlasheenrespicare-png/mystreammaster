@@ -301,10 +301,13 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
             ))}
           </div>
         )}
-        <div className="relative z-10 flex flex-wrap items-center justify-end gap-2 text-[11px] font-black text-white/70">
-          {!logo && (
-            <span className="bg-[linear-gradient(45deg,#ff6547_0%,#ffb144_51%,#ff7053_100%)] text-white font-semibold uppercase tracking-[0.1em] shadow-[0_5px_10px_rgba(0,0,0,0.23)] px-2.5 py-1 rounded-full">{item.category}</span>
-          )}
+        {/* شريط الزاوية: اسم الدوري أو البطولة بتصميم شارة Premium، في الزاوية العليا اليسرى */}
+        {!logo && (
+          <span className="pointer-events-none absolute left-0 top-0 z-[5] h-20 w-20 overflow-hidden">
+            <span className="absolute -left-[22px] top-[16px] block w-[120px] -rotate-45 bg-[linear-gradient(45deg,#ff6547_0%,#ffb144_51%,#ff7053_100%)] py-[3px] text-center text-[10px] font-semibold leading-tight text-white shadow-[0_5px_10px_rgba(0,0,0,0.23)]">{item.category}</span>
+          </span>
+        )}
+        <div className={`relative z-10 flex flex-wrap items-center justify-end gap-2 text-[11px] font-black text-white/70 ${logo ? "" : "pl-16"}`}>
           {(item.teamBadges ?? []).length > 0 && (
             <span className="inline-flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-1.5">

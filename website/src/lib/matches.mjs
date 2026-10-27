@@ -1,4 +1,12 @@
 // Public scoreboard via same-origin PHP proxy: no API secrets, fabricated fixtures, or inferred live scores.
+/* ترتيب القائمة هو ترتيب العرض نفسه: أقسام جدول المواعيد وخيارات التصفية
+   تُبنى منه مباشرة بلا قائمة ثانية. ويجب أن يطابق `ALLOWED_LEAGUES` في
+   scoreboard.php عنصراً بعنصر وبنفس الترتيب — يحرس المطابقة اختبار
+   «scoreboard.php whitelist» في scripts/test-matches.mjs.
+   البطولات القارية (caf.* و afc.*) أُضيفت بقرار إضافة تغطية قارية، وإثبات
+   معرّفاتها لدى المصدر بمسبار `scripts/probe-matches-leagues.mjs` خطوة
+   لاحقة مسجّلة في README؛ وإن لم يخدم المصدر معرّفاً منها تظهر البطولة
+   برسالة «تعذر تحديث…» ورمز تشخيص صريح بدل جدول فارغ صامت. */
 export const LEAGUES = [
   { id: 'eng.1', name: 'الدوري الإنجليزي' },
   { id: 'esp.1', name: 'الدوري الإسباني' },
@@ -9,6 +17,9 @@ export const LEAGUES = [
   { id: 'egy.1', name: 'الدوري المصري' },
   { id: 'uefa.champions', name: 'دوري أبطال أوروبا' },
   { id: 'uefa.europa', name: 'الدوري الأوروبي' },
+  { id: 'caf.champions', name: 'دوري أبطال أفريقيا' },
+  { id: 'caf.confed', name: 'كأس الكونفدرالية الأفريقية' },
+  { id: 'afc.champions', name: 'دوري أبطال آسيا للنخبة' },
   { id: 'fifa.worldq.caf', name: 'تصفيات كأس العالم — أفريقيا' },
   { id: 'fifa.worldq.uefa', name: 'تصفيات كأس العالم — أوروبا' },
   { id: 'fifa.friendly', name: 'مباريات دولية ودية' },

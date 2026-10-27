@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الكرة الذهبية 2026: هاري كين يفوز بالجائزة وبوتيلاس تتوج للمرة الثالثة",
     description: "هاري كين أول إنجليزي يفوز بالكرة الذهبية منذ مايكل أوين عام 2001، وألكسيا بوتيلاس تفوز بكرة الذهب للسيدات للمرة الثالثة.",
     href: "news/ballon-dor-2026-winners/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ballondor-kane-wins.webp", alt: "هاري كين يحتضن كأس الكرة الذهبية بعد تتويجه أفضل لاعب في العالم" },
+    ],
   },
   {
     category: "الكرة الذهبية",
@@ -56,6 +60,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "باريس سان جيرمان يهزم ليون 2-0 ويتصدر الدوري الفرنسي",
     description: "هدفا مايولو وغودتس من البدلاء يمنحان باريس سان جيرمان الفوز في حديقة الأمراء، وعودته إلى صدارة الترتيب.",
     href: "news/psg-lyon-2-0/",
+    fullImage: true,
+    images: [
+      { src: "images/players/fra-psg-mayulu-godts-goals.webp", alt: "مايولو وجودتس يحتفلان بهدفا فوز باريس سان جيرمان على ليون 2-0" },
+    ],
   },
   {
     category: "الدوري الفرنسي",

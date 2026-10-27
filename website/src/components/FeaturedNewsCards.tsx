@@ -303,7 +303,7 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
         )}
         <div className="relative z-10 flex flex-wrap items-center justify-end gap-2 text-[11px] font-black text-white/70">
           {!logo && (
-            <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
+            <span className="bg-[linear-gradient(45deg,#ff6547_0%,#ffb144_51%,#ff7053_100%)] text-white font-semibold uppercase tracking-[0.1em] shadow-[0_5px_10px_rgba(0,0,0,0.23)] px-2.5 py-1 rounded-full">{item.category}</span>
           )}
           {(item.teamBadges ?? []).length > 0 && (
             <span className="inline-flex flex-col items-center gap-1">

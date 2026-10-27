@@ -290,7 +290,7 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
         )}
         {/* صورة الاحتفال الكاملة: مساحة كبيرة على يمين الشريحة كلها (لا تُقصّ) */}
         {item.fullImage && slideImages.length > 0 && (
-          <div className="pointer-events-none absolute top-16 bottom-10 right-3 z-[1] flex w-[55%] items-end justify-center">
+          <div className="pointer-events-none absolute top-5 bottom-4 right-1 z-[1] flex w-[66%] items-end justify-center">
             {slideImages.map((img, idx) => (
               <img
                 key={img.src}
@@ -298,15 +298,18 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
                 alt={img.alt}
                 loading="lazy"
                 decoding="async"
-                className={`relative ${item.fullImage ? "h-full w-full" : "h-full w-auto max-w-[50%]"} object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
+                className={`relative ${item.fullImage ? "h-full w-full" : "h-full w-auto max-w-[62%]"} object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
               />
             ))}
           </div>
         )}
-        <div className="relative z-10 flex flex-wrap items-center gap-2 text-[11px] font-black text-white/70">
-          {!logo && (
-            <span className="bg-[#d8ff3e] text-black px-2.5 py-1 rounded-full">{item.category}</span>
-          )}
+        {/* شريط الزاوية: اسم الدوري أو البطولة بتصميم شارة Premium، في الزاوية العليا اليسرى */}
+        {!logo && (
+          <span className="pointer-events-none absolute left-0 top-0 z-[5] h-20 w-20 overflow-hidden">
+            <span className="absolute -left-[22px] top-[16px] block w-[120px] -rotate-45 bg-[linear-gradient(45deg,#8a9c2a_0%,#d8ff3e_51%,#a6c532_100%)] py-[3px] text-center text-[10px] font-semibold leading-tight text-[#0b0b0f] shadow-[0_5px_10px_rgba(0,0,0,0.23)]">{item.category}</span>
+          </span>
+        )}
+        <div className={`relative z-10 flex flex-wrap items-center justify-end gap-2 text-[11px] font-black text-white/70 ${logo ? "" : "pl-16"}`}>
           {(item.teamBadges ?? []).length > 0 && (
             <span className="inline-flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-1.5">
@@ -321,23 +324,23 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
           )}
           <span>{item.dateLabel}</span>
         </div>
+        {/* الشرائح الثنائية (بدون fullImage): الحاوية على مستوى الشريحة كلها لا منطقة النص — لتكبير الصور */}
+        {!item.fullImage && slideImages.length > 0 && (
+          <div className="pointer-events-none absolute top-5 bottom-4 right-1 z-[1] flex w-[66%] items-end justify-center">
+            {slideImages.map((img, idx) => (
+              <img
+                key={img.src}
+                src={to(img.src)}
+                alt={img.alt}
+                loading="lazy"
+                decoding="async"
+                className={`relative h-full w-auto max-w-[62%] object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
+              />
+            ))}
+          </div>
+        )}
         {/* النص في وسط الشريحة (بدون صور اللاعبين) */}
         <div className="relative z-10 mt-2 min-h-0 flex-1">
-          {/* صورتان فقط في الشريحة: لامين جمال الحزين وبجانبه هانز فليك الغاضب (على اليمين) */}
-          {!item.fullImage && slideImages.length > 0 && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] flex w-1/2 items-end justify-center">
-              {slideImages.map((img, idx) => (
-                <img
-                  key={img.src}
-                  src={to(img.src)}
-                  alt={img.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className={`relative ${item.fullImage ? "h-full w-full" : "h-full w-auto max-w-[50%]"} object-contain drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)] ${idx === 0 ? "" : idx === 1 ? "-ms-8" : "-ms-20 z-[2]"}`}
-                />
-              ))}
-            </div>
-          )}
           <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center px-2 text-center">
             {/* فاصل فضي رفيع يفصل الترويسة عن العنوان */}
             <span aria-hidden="true" className="mx-auto mb-2.5 block h-px w-10 bg-gradient-to-r from-transparent via-[#c9ced8]/80 to-transparent" />

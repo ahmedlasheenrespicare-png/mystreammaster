@@ -56,7 +56,11 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
   await expect(matchLink).toBeVisible();
   await matchLink.click();
   await page.locator('.home-matches-ticket .league-ticket-dot').nth(1).click();
-  await page.locator('.home-matches-ticket .league-ticket-slide.is-active a[href*="/news/"]').click();
+  const newsLink = page.locator('.home-matches-ticket .league-ticket-slide.is-active a[href*="/news/"]');
+  const newsHref = await newsLink.getAttribute('href');
+  const expectedStoryPath = newsHref?.startsWith('/') ? newsHref.slice(1) : newsHref;
+  if (!expectedStoryPath) throw new Error('Featured news link is missing an href');
+  await newsLink.click();
 
   const pricingLink = page.locator('a[href="#pricing"]').filter({ hasText: 'مقارنة كل الباقات' }).first();
   await expect(pricingLink).toBeVisible();
@@ -77,10 +81,6 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
 
   expect(events).toEqual(expect.arrayContaining([
     expect.objectContaining({
-      name: 'hero_match_day_select',
-      params: expect.objectContaining({ placement: 'home_hero', day_key: 'tomorrow' }),
-    }),
-    expect.objectContaining({
       name: 'hero_match_open',
       params: expect.objectContaining({ placement: 'home_hero', league_id: expect.any(String) }),
     }),
@@ -90,7 +90,7 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
     }),
     expect.objectContaining({
       name: 'hero_news_open',
-      params: expect.objectContaining({ placement: 'home_hero', story_path: 'news/psg-lyon-tonight/' }),
+      params: expect.objectContaining({ placement: 'home_hero', story_path: expectedStoryPath }),
     }),
     expect.objectContaining({
       name: 'commercial_cta_click',
@@ -105,4 +105,5 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
       params: expect.objectContaining({ cta_type: 'trial', cta_location: 'trial_modal' }),
     }),
   ]));
+  expect(events.some(event => event.name === 'hero_match_day_select')).toBe(false);
 });

@@ -10,6 +10,7 @@ import {
 } from "./Icons";
 import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PlanDuration, PricingPlan } from "../data";
 import { ServerLink } from "./ServerIcon";
+import HomepageServerCard from "./HomepageServerCard";
 import "./server-card.css";
 import { Reveal } from "./motion";
 
@@ -26,6 +27,8 @@ interface PricingProps {
   onCurrencyChange: (code: string) => void;
   onAddToCart: (plan: PricingPlan, months: "3" | "6" | "12" | "24", price: number) => void;
   highlightedPlanId?: string;
+  /** Use the approved Uiverse card design on the Arabic homepage only. */
+  homepageCardDesign?: boolean;
 }
 
 export default function Pricing({
@@ -33,6 +36,7 @@ export default function Pricing({
   onCurrencyChange,
   onAddToCart,
   highlightedPlanId,
+  homepageCardDesign = false,
 }: PricingProps) {
   const [duration, setDuration] = useState<PlanDuration>("12");
 
@@ -114,6 +118,23 @@ export default function Pricing({
             if (!priceObj) return null;
             const currentPrice = priceObj[curr.code] || priceObj.SAR;
             const isHighlighted = highlightedPlanId === plan.id;
+
+            if (homepageCardDesign) {
+              return (
+                <Reveal key={plan.id} variant="up" delay={i * 110} className="h-full flex justify-center">
+                  <HomepageServerCard
+                    plan={plan}
+                    price={currentPrice}
+                    currencySymbol={curr.symbol}
+                    duration={duration}
+                    durationLabel={durationLabels[duration]}
+                    onAddToCart={onAddToCart}
+                    highlighted={isHighlighted}
+                  />
+                </Reveal>
+              );
+            }
+
             const dark = plan.isPopular || plan.isFeatured || isHighlighted;
 
             /* نسبة الخصم من السعر القديم (بالريال) */

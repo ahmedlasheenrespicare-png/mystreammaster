@@ -3,7 +3,7 @@ import { HeroPhone } from "./HeroPhone";
 import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
-import { LineReveal, MouseParallax, Parallax, Reveal } from "./motion";
+import { MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket, { INDEX_CLASHES } from "./AllLeaguesTicket";
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
@@ -378,21 +378,25 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
               <AllLeaguesTicket
-                clashes={[INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[3], INDEX_CLASHES[4], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
+                clashes={[INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[3], INDEX_CLASHES[4], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
                 slideOverrides={{
-                  0: <FeaturedNewsTicketSlide href="news/psg-lyon-tonight/" />,
-                  1: <FeaturedNewsTicketSlide href="news/clasico-first-half-2026/" />,
-                  3: <FeaturedNewsTicketSlide href="news/clasico-preview-absences-predictions/" />,
-                  4: <FeaturedNewsTicketSlide href="news/liverpool-brighton-live/" />,
-                  5: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
-                  6: <FeaturedNewsTicketSlide href="news/bundesliga-bayern-freiburg-2026/" />,
-                  7: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
-                  8: <FeaturedNewsTicketSlide href="news/bundesliga-dortmund-frankfurt-2026/" />,
-                  9: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
-                  12: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
-                  13: <FeaturedNewsTicketSlide href="news/bundesliga-kompany-hospitalized-2026/" />,
-                  14: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
-                  15: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
+                  0: <FeaturedNewsTicketSlide href="news/psg-lyon-2-0/" />,
+                  1: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-winners/" />,
+                  2: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-ceremony-preview/" />,
+                  3: <FeaturedNewsTicketSlide href="news/psg-lyon-tonight/" />,
+                  4: <FeaturedNewsTicketSlide href="news/clasico-post-match-reactions-2026/" />,
+                  5: <FeaturedNewsTicketSlide href="news/clasico-first-half-2026/" />,
+                  7: <FeaturedNewsTicketSlide href="news/clasico-preview-absences-predictions/" />,
+                  8: <FeaturedNewsTicketSlide href="news/liverpool-brighton-live/" />,
+                  9: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
+                  10: <FeaturedNewsTicketSlide href="news/bundesliga-bayern-freiburg-2026/" />,
+                  11: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
+                  12: <FeaturedNewsTicketSlide href="news/bundesliga-dortmund-frankfurt-2026/" />,
+                  13: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
+                  16: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
+                  17: <FeaturedNewsTicketSlide href="news/bundesliga-kompany-hospitalized-2026/" />,
+                  18: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
+                  19: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
                 }}
               />
             </div>
@@ -401,42 +405,31 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        {/* العنوان الرئيسي — كشف سطر بسطر من خلف قناع
-            حجم الجوال مخفّض إلى 9vw (كان 11.5vw) للسطرين معاً، ومن sm
-            (640px) فصاعداً تبقى الأحجام كما هي تماماً. */}
-        <h1 className="mt-6 font-display font-black tracking-tight leading-[1.12] text-[9vw] sm:text-[56px] md:text-[76px] lg:text-[84px]">
-          <LineReveal
-            threshold={0.3}
-            step={130}
-            lines={[
-              <>
-                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
+        {/* Keep the semantic H1 accessible outside the illustrative button;
+            its visual version now lives inside the television's welcome screen. */}
+        <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
+
+        <Reveal variant="up" delay={320} className="mt-6">
+          <div className="hero-phone-stage" data-front-device={frontDevice}>
+            <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
+                  <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
                   <span className="hero-title-holo__stack">
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">{HERO_TITLE_WORDS[heroWord]}</span>
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">{HERO_TITLE_WORDS[heroWord]}</span>
                     <span className="hero-title-holo__layer hero-title-holo__layer--front">{HERO_TITLE_WORDS[heroWord]}</span>
                   </span>
                 </span>
-                {" كل ما تحب "}
-              </>,
-              <>
-                بجودة{" "}
-                <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
+ كل ما تحب</span>
+                  <span>بجودة                 <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
                   <span className="hero-title-holo__stack">
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">4K</span>
                     <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">4K</span>
                     <span className="hero-title-holo__layer hero-title-holo__layer--front">4K</span>
                   </span>
                 </span>{" "}
-                <span className="font-serif italic font-normal">وبلا تقطيع</span>
-              </>,
-            ]}
-          />
-        </h1>
-
-        <Reveal variant="up" delay={320} className="mt-6">
-          <div className="hero-phone-stage" data-front-device={frontDevice}>
-            <HeroTelevision onActivate={() => setFrontDevice("tv")} />
+</span>
+                  <span className="hero-tv-headline-tagline">وبلا تقطيع</span>
+                </span>} />
             <HeroPhone onActivate={() => setFrontDevice("phone")} />
             <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : "الجوال في المقدمة"}</span>
           </div>

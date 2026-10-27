@@ -33,6 +33,39 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الكرة الذهبية",
+    dateLabel: "26 أكتوبر 2026",
+    title: "الكرة الذهبية 2026: هاري كين يفوز بالجائزة وبوتيلاس تتوج للمرة الثالثة",
+    description: "هاري كين أول إنجليزي يفوز بالكرة الذهبية منذ مايكل أوين عام 2001، وألكسيا بوتيلاس تفوز بكرة الذهب للسيدات للمرة الثالثة.",
+    href: "news/ballon-dor-2026-winners/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ballondor-kane-wins.webp", alt: "هاري كين يحتضن كأس الكرة الذهبية بعد تتويجه أفضل لاعب في العالم" },
+    ],
+  },
+  {
+    category: "الكرة الذهبية",
+    dateLabel: "26 أكتوبر 2026",
+    title: "الكرة الذهبية 2026: ما قبل الحفل وكيف انتهت الليلة",
+    description: "كين يفوز بالكرة الذهبية للرجال، وبوتيلاس تفوز بها للمرة الثالثة للسيدات، ومراجعة المرشحين والغيابات قبل الحفل.",
+    href: "news/ballon-dor-2026-ceremony-preview/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ballondor-golden-trophy.webp", alt: "كأس الكرة الذهبية على منصتها قبل الحفل في مسرح لندن بالاديوم" },
+    ],
+  },
+  {
+    category: "الدوري الفرنسي",
+    dateLabel: "26 أكتوبر 2026",
+    title: "باريس سان جيرمان يهزم ليون 2-0 ويتصدر الدوري الفرنسي",
+    description: "هدفا مايولو وغودتس من البدلاء يمنحان باريس سان جيرمان الفوز في حديقة الأمراء، وعودته إلى صدارة الترتيب.",
+    href: "news/psg-lyon-2-0/",
+    fullImage: true,
+    images: [
+      { src: "images/players/fra-psg-mayulu-godts-goals.webp", alt: "مايولو وجودتس يحتفلان بهدفا فوز باريس سان جيرمان على ليون 2-0" },
+    ],
+  },
+  {
     category: "الدوري الفرنسي",
     dateLabel: "26 أكتوبر 2026",
     title: "مواجهة الليلة: باريس سان جيرمان ضد ليون في الدوري الفرنسي",
@@ -41,6 +74,19 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     fullImage: true,
     images: [
       { src: "images/players/fra-psg-lyon-duel.webp", alt: "فوفانا وفران توريس في مواجهة قمة الدوري الفرنسي" },
+    ],
+  },
+  {
+    category: "الدوري الإسباني",
+    dateLabel: "25 أكتوبر 2026",
+    title: "الكلاسيكو: ردود الفعل بعد فوز ريال مدريد 2-1 على برشلونة",
+    description: "مورينيو وفليك يعلقان على الكلاسيكو في كامب نو، وتصريحات مورينيو عن تقنية الفيديو، وإصابات برشلونة بعد المباراة.",
+    href: "news/clasico-post-match-reactions-2026/",
+    teamBadges: ["images/teams/barcelona-club-badge.webp", "images/teams/real-madrid-club-badge.webp"],
+    score: "1 - 2",
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-mourinho-flick-reactions.webp", alt: "مورينيو يحتفل بهدف مبابي الحاسم وفليك غاضب في كلاسيكو كامب نو" },
     ],
   },
   {
@@ -159,6 +205,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "كومباني في المستشفى بعد انهياره في تدريب بايرن",
     description: "المدرب فينسنت كومباني في المستشفى بعد انهياره خلال التدريب، وحالته مستقرة.",
     href: "news/bundesliga-kompany-hospitalized-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/ger-kompany-support-wave.webp", alt: "فينسان كومباني يلوّح للجماهير شكراً على رسائل الدعم خلال فترة العلاج" },
+    ],
   },
   {
     category: "دوري أبطال أوروبا",

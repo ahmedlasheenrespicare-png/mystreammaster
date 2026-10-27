@@ -788,7 +788,7 @@
   border: 1px solid #8fae3c;
   background: #1a1b06;
   cursor: pointer;
-  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, width 0.25s ease, border-radius 0.25s ease;
 }
 .league-ticket-dot:hover { transform: scale(1.15); }
 .league-ticket-dot:focus-visible {
@@ -796,7 +796,10 @@
   outline-offset: 2px;
 }
 .league-ticket-dot.is-active {
-  background: #d8ff3e;
+  width: 22px;
+  border-radius: 999px;
+  border-color: #8a9c2a;
+  background: linear-gradient(45deg, #8a9c2a 0%, #d8ff3e 51%, #a6c532 100%);
   box-shadow: 0 0 10px rgba(216, 255, 62, 0.7);
 }
 
@@ -1031,4 +1034,32 @@
   .league-ticket-wordmark-badge { animation: none; }
   /* ولمعة الاسم الليمونية تثبت كذلك تقديراً للتفضيل نفسه */
   .all-leagues-ticket .all-leagues-ticket-name { animation: none; }
+}
+
+/* شريط زاوية اسم المواجهة في تذكرة الصفحة الرئيسية — بتصميم شريط الأخبار */
+.league-ticket-ribbon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  z-index: 5;
+  pointer-events: none;
+}
+.league-ticket-ribbon-band {
+  position: absolute;
+  left: -22px;
+  top: 16px;
+  display: block;
+  width: 120px;
+  padding: 3px 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(45deg, #8a9c2a 0%, #d8ff3e 51%, #a6c532 100%);
+  color: #0b0b0f;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.23);
 }

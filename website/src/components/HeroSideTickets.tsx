@@ -363,7 +363,6 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
 
   /* تبديل اليوم يبدأ من الشريحة الأولى ويؤجّل التقليب التلقائي */
   const selectDay = (key: DayKey) => {
-    trackHomeEvent("hero_match_day_select", { day_key: key });
     reset();
     setActiveDay(key);
   };

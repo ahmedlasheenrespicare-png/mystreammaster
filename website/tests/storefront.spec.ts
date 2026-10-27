@@ -23,6 +23,33 @@ test('homepage renders the reference design and local hero imagery', async ({ pa
   expect(errors).toEqual([]);
 });
 
+test('approved Uiverse server cards are limited to the Arabic homepage', async ({ page }) => {
+  await page.goto('/');
+  const homeCards = page.locator('#pricing article.homepage-uiverse-card[data-server]');
+  await expect(homeCards).toHaveCount(4);
+  await expect(page.locator('#pricing article.srv-card')).toHaveCount(0);
+
+  const nova = page.locator('#pricing article.homepage-uiverse-card[data-server="nova"]');
+  await expect(nova.locator('.homepage-uiverse-card__logo')).toHaveAttribute('src', /\/images\/brand\/nova-ticket\.(?:png|webp|avif)$/);
+  await expect(nova.locator('.homepage-uiverse-card__price-ribbon')).toHaveCSS('background-color', 'rgb(253, 189, 74)');
+  await expect(nova).toHaveCSS('border-bottom-color', 'rgb(0, 4, 70)');
+  await expect(nova).toContainText('مواصفات يعلنها المزود');
+  await expect(nova).toContainText('ما تشمله خدمتنا');
+  await expect(nova).toContainText('تفعيل بيانات الاشتراك الصادرة من المزود');
+  await expect(nova).not.toContainText('دليل خيارات المشاهدة الرسمية');
+  await expect(nova).not.toContainText('حتى 3 أجهزة');
+  await expect(nova.getByRole('link', { name: /اطلب كود التفعيل/ })).toBeVisible();
+  await expect(nova.getByRole('button', { name: /أضف إلى السلة/ })).toBeVisible();
+
+  const x = page.locator('#pricing article.homepage-uiverse-card[data-server="x"]');
+  await expect(x).toContainText('$20');
+  await expect(x.locator('.homepage-uiverse-card__logo')).toHaveAttribute('src', /\/images\/brand\/xtv-mark\.(?:png|webp|avif)$/);
+
+  await page.goto('/store/');
+  await expect(page.locator('#pricing article.srv-card[data-server]')).toHaveCount(4);
+  await expect(page.locator('#pricing article.homepage-uiverse-card')).toHaveCount(0);
+});
+
 /* الصيغة امتداد تنفيذ: النشر يبدّل src إلى أخف نسخة حديثة (avif/webp)،
    فيُطابَق المسار بجزئه الثابت لا بامتداد الأصل. */
 test('X plan card uses the XTV watermark, annual price, and hides device count and official-guide feature', async ({ page }) => {
@@ -839,6 +866,24 @@ test('clicking devices brings TV forward straight and restores the tilted TV beh
     await phone.focus();
     await phone.press('Space');
     await expect(stage).toHaveAttribute('data-front-device', 'phone');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('preview headline appears inside the TV welcome with animated word and 4K', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const tv = page.locator('[data-hero-tv]');
+    await tv.scrollIntoViewIfNeeded();
+    const title = tv.locator('.hero-tv-headline');
+    await expect(title).toBeVisible();
+    await expect(title).toContainText('كل ما تحب');
+    await expect(title).toContainText('وبلا تقطيع');
+    await expect(title.locator('.hero-title-holo__layer--front')).toHaveCount(2);
+    await expect(title.locator('.hero-title-holo--quality .hero-title-holo__layer--front')).toHaveText('4K');
+    await expect(page.locator('#hero h1')).toHaveCount(1);
+    await expect(tv.locator('.hero-tv-welcome-gallery')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });

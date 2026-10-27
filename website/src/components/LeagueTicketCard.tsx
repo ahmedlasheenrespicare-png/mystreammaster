@@ -579,7 +579,7 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
 }
 
 /* منزلقة «قمة الجولة/الكلاسيكو» — النصوص بنوعية كرت لوحة المباريات نفسها */
-function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean; underBrands?: boolean }) {
+function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands = false, ribbon = false }: { match: Match | null; clash: FeaturedClash; leagueId: string; showWordmark?: boolean; underBrands?: boolean; ribbon?: boolean }) {
   const pre = match ? match.state === "scheduled" : false;
   const live = match ? match.state === "live" : false;
   const finished = match ? match.state === "finished" : false;
@@ -611,6 +611,11 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
 
   return (
     <>
+      {ribbon ? (
+        <span className="league-ticket-ribbon" aria-hidden="true">
+          <span className="league-ticket-ribbon-band">{clash.eyebrow}</span>
+        </span>
+      ) : null}
       <TicketShell />
       {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
           ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد. جهةٌ ذات
@@ -637,7 +642,7 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
         {showWordmark ? <StreamMasterTicketWordmark /> : null}
       </div>
       <div className="league-ticket-body league-ticket-body--clash">
-        <span className="league-ticket-eyebrow">{clash.eyebrow}</span>
+        {ribbon ? null : <span className="league-ticket-eyebrow">{clash.eyebrow}</span>}
         <div className="league-ticket-clash">
           <div className="league-ticket-clash-team">
             <TeamCrest src={rightSide.crest} monogram={rightSide.mono} />
@@ -698,7 +703,7 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
@@ -710,6 +715,8 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   /* تذكرة مواعيد المباريات الجامعة: اللوجو على كل شرائحها (الأساس
      الجامع + شرائح القمم) بتوجيه المالك */
   showNovaBrand?: boolean;
+  /* شريط الزاوية باسم المواجهة بدل السطر التوضيحي (تذكرة الصفحة الرئيسية) */
+  clashRibbon?: boolean;
 }) {
   const matches = useClashes(leagueId, clashes);
   const [active, setActive] = useState(0);
@@ -797,7 +804,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
             {slideOverrides?.[i] ?? (
             <div className="league-ticket league-ticket--match league-ticket--in-track">
               <TicketBrandPair leagueId={leagueId} scope="clash" showNovaBrand={showNovaBrand} />
-              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} underBrands={ticketWordmark(leagueId, "clash") && hasTicketBrands(leagueId, "clash", showNovaBrand)} />
+              <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} underBrands={ticketWordmark(leagueId, "clash") && hasTicketBrands(leagueId, "clash", showNovaBrand)} ribbon={clashRibbon} />
             </div>
             )}
           </div>

@@ -1035,3 +1035,31 @@
   /* ولمعة الاسم الليمونية تثبت كذلك تقديراً للتفضيل نفسه */
   .all-leagues-ticket .all-leagues-ticket-name { animation: none; }
 }
+
+/* شريط زاوية اسم المواجهة في تذكرة الصفحة الرئيسية — بتصميم شريط الأخبار */
+.league-ticket-ribbon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  z-index: 5;
+  pointer-events: none;
+}
+.league-ticket-ribbon-band {
+  position: absolute;
+  left: -22px;
+  top: 16px;
+  display: block;
+  width: 120px;
+  padding: 3px 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(45deg, #8a9c2a 0%, #d8ff3e 51%, #a6c532 100%);
+  color: #0b0b0f;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.23);
+}

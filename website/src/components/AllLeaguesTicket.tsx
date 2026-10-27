@@ -136,6 +136,7 @@ export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASH
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand
+      clashRibbon
     />
   );
 }

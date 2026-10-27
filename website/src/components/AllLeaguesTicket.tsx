@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { TicketImage } from "./TicketImage";
 import { leagueLandingById } from "../content/competitions";
+import { trackHomeEvent } from "../lib/analytics";
 import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, IstarTicketBrand, MokaTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
@@ -89,7 +90,13 @@ function AllLeaguesTicketBase() {
             المباريات» /matches/ — نقرة فأرة بنفس قاعدة روابط الأعلام
             وأيقونات البطولات (حيّز زخرفي محفوظ بلا تغيير: tabIndex=-1
             وتلميح الاسم عند التحويم) */}
-        <a className="league-ticket-badge-link" href="/matches/" title="مواعيد المباريات" tabIndex={-1}>
+        <a
+          className="league-ticket-badge-link"
+          href="/matches/"
+          title="مواعيد المباريات"
+          tabIndex={-1}
+          onClick={() => trackHomeEvent("hero_competition_open", { league_id: "matches", target_path: "/matches/" })}
+        >
           <LeagueIconBadge leagueId="matches" iconSrc="/images/brand/fifa-ticket.png" size={60} eager />
         </a>
         <StreamMasterTicketWordmark />
@@ -107,8 +114,16 @@ function AllLeaguesTicketBase() {
         {TICKET_LEAGUES.map((id) => {
           /* الثمانية كلها موثّقة في LEAGUE_LANDINGS بلا استثناء */
           const landing = leagueLandingById(id)!;
+          const targetPath = `/matches/${landing.slug}/`;
           return (
-            <a key={id} className="leagues-ticket-icon-link" href={`/matches/${landing.slug}/`} title={landing.shortName} tabIndex={-1}>
+            <a
+              key={id}
+              className="leagues-ticket-icon-link"
+              href={targetPath}
+              title={landing.shortName}
+              tabIndex={-1}
+              onClick={() => trackHomeEvent("hero_competition_open", { league_id: id, target_path: targetPath })}
+            >
               <LeagueIconBadge leagueId={id} size={46} eager />
             </a>
           );

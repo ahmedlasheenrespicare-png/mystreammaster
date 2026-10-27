@@ -17,6 +17,7 @@ import {
 import { leagueIcon } from "../lib/league-icons.mjs";
 import { to } from "../config";
 import { FEATURED_NEWS } from "../content/featured-news";
+import { trackHomeEvent } from "../lib/analytics";
 import "./league-ticket.css";
 import "./hero-side-tickets.css";
 
@@ -358,9 +359,11 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
      البطولات (LEAGUE_ICONS): البطولة بلا شعار موثّق (الدوري المصري
      والتصفيات والودّية) تبقى بلا شعار في الخلفية — لا يُخترع شعار */
   const leagueLogo = current ? leagueIcon(current.league) : undefined;
+  const currentHref = current ? matchCenterLink(current) ?? to("matches/") : to("matches/");
 
   /* تبديل اليوم يبدأ من الشريحة الأولى ويؤجّل التقليب التلقائي */
   const selectDay = (key: DayKey) => {
+    trackHomeEvent("hero_match_day_select", { day_key: key });
     reset();
     setActiveDay(key);
   };
@@ -428,7 +431,13 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
             key={current.id}
             {...swipe}
             style={{ touchAction: "pan-y pinch-zoom" }}
-            href={matchCenterLink(current) ?? to("matches/")}
+            href={currentHref}
+            onClick={() => trackHomeEvent("hero_match_open", {
+              match_id: current.id,
+              league_id: current.league,
+              match_state: current.state,
+              target_path: currentHref,
+            })}
             className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-black/10 bg-[#f7f8f2] px-2 py-1.5 text-start transition-colors hover:border-[#b3d21f] hover:bg-[#f5f9e6]"
           >
             {/* خلفية الشريحة: شعار بطولة المباراة نفسها (زخرفي، خافت، تحت
@@ -501,7 +510,11 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
       </div>
 
       <div className="mt-auto flex items-center justify-between gap-1 border-t border-black/10 pt-1.5 text-[10.5px] font-bold lg:text-[9.5px]">
-        <a className="shrink-0 font-black text-[#0b0b0f]" href={to("matches/")}>
+        <a
+          className="shrink-0 font-black text-[#0b0b0f]"
+          href={to("matches/")}
+          onClick={() => trackHomeEvent("hero_schedule_open", { target_path: "/matches/" })}
+        >
           كل المواعيد
         </a>
         <SlideArrows label="المباراة" index={index} count={count} onStep={step} />

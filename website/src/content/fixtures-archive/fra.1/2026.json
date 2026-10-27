@@ -1275,18 +1275,29 @@
         "name": "Lyon"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 68.3,
+          "shots": 17,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 31.7,
+          "shots": 8,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261026&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-10-27T09:01:19.880Z"
     },
     {
       "id": "401876421",

@@ -35,6 +35,7 @@ import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { matchByRoute } from "./content/match-center.mjs";
 import { PRICING_PLANS, PricingPlan } from "./data";
 import { ScrollProgress, SmoothScroll } from "./components/motion";
+import { trackSiteEvent } from "./lib/analytics";
 
 export default function App() {
   const { path } = useRouter();
@@ -60,8 +61,62 @@ export default function App() {
     applySeoToDocument(path);
   }, [path]);
 
+  /* قياس انتقال زائر المباريات/الأخبار إلى صفحات التجربة أو الباقات، دون
+     تغيير أي نص أو معرّف GA4. يُسجَّل المسار المصدر فقط، بلا query strings. */
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const target = event.target instanceof Element
+        ? event.target
+        : event.target instanceof Node
+          ? event.target.parentElement
+          : null;
+      const link = target?.closest<HTMLAnchorElement>("a[href]");
+      if (!link) return;
+
+      let destination: URL;
+      try {
+        destination = new URL(link.href, window.location.href);
+      } catch {
+        return;
+      }
+      if (destination.origin !== window.location.origin) return;
+
+      const destinationPath = destination.pathname.replace(/\/+$/, "") || "/";
+      const plan = PRICING_PLANS.find(({ serverCode }) =>
+        destinationPath === `/${serverCode}` || destinationPath === `/en/${serverCode}`
+      );
+      const ctaType = destinationPath === "/trial"
+        ? "trial"
+        : plan
+          ? "plan"
+          : destinationPath === "/store" || destination.hash === "#pricing"
+            ? "pricing"
+            : null;
+      if (!ctaType) return;
+
+      trackSiteEvent("commercial_cta_click", {
+        cta_type: ctaType,
+        cta_location: "link",
+        source_path: path,
+        target_path: `${destinationPath}${destination.hash}`,
+        ...(plan ? { plan_code: plan.serverCode } : {}),
+      });
+    };
+
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [path]);
+
   /* مرجع ثابت للدوال — يمنع إعادة رسم الأقسام الثقيلة (المشغلات) عند كل تغيير حالة */
-  const openTrial = useCallback(() => setIsTrialOpen(true), []);
+  const openTrial = useCallback(() => {
+    trackSiteEvent("commercial_cta_click", {
+      cta_type: "trial",
+      cta_location: "trial_modal",
+      source_path: path,
+      target_path: "trial_modal",
+    });
+    setIsTrialOpen(true);
+  }, [path]);
   const closeTrial = useCallback(() => setIsTrialOpen(false), []);
   const openCart = useCallback(() => setIsCartOpen(true), []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);

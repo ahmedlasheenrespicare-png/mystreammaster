@@ -210,7 +210,18 @@ export function optimizeHtmlImages(html) {
       }
     }
 
-    const size = dims[base] || dims[base.replace(RASTER, '.webp')] || dims[base.replace(RASTER, '.avif')];
+    /* قد لا توجد أبعاد للنسخة المصدر في manifest، بينما النسخة الحديثة
+       التي سيُرسلها المتصفح لها أبعاد موثقة. افحص المصدر النهائي أولاً، ثم
+       ارجع إلى الأصل وبدائله كما كان سابقاً. */
+    const selectedSource = updates.src
+      ? (updates.src.startsWith('/') ? updates.src : `/${updates.src}`).split(/[?#]/)[0]
+      : base;
+    const size = dims[selectedSource]
+      || dims[selectedSource.replace(RASTER, '.webp')]
+      || dims[selectedSource.replace(RASTER, '.avif')]
+      || dims[base]
+      || dims[base.replace(RASTER, '.webp')]
+      || dims[base.replace(RASTER, '.avif')];
     if (size && (!attrValue(tag, 'width') || !attrValue(tag, 'height'))) {
       updates.width = String(size[0]);
       updates.height = String(size[1]);

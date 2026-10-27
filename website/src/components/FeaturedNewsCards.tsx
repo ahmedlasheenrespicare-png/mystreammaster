@@ -14,6 +14,7 @@ import { IconArrowUpRight, IconClock } from "./Icons";
 import { Reveal } from "./motion";
 import { StreamMasterTicketWordmark } from "./LeagueTicketCard";
 import { ServerIcon } from "./ServerIcon";
+import { trackHomeEvent } from "../lib/analytics";
 
 const SERVER_CODES = ["nova", "istar", "moka", "x"] as const;
 import "./league-ticket.css";
@@ -276,6 +277,7 @@ export function FeaturedNewsTicketSlide({ href, compact = false }: { href: strin
       </div>
       <a
         href={to(item.href)}
+        onClick={() => trackHomeEvent("hero_news_open", { story_path: item.href, story_category: item.category })}
         className={`group absolute inset-0 z-10 flex h-full flex-col overflow-hidden rounded-[9px] p-4 text-[#f6f4ec] ${compact ? "hero-news-slide" : ""}`}
       >
         {/* شعار دوري أبطال أوروبا في الخلفية العميقة للشريحة */}

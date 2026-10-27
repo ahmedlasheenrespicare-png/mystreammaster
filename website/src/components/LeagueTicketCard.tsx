@@ -3,6 +3,7 @@ import { TicketImage } from "./TicketImage";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { IconPlay } from "./Icons";
+import { trackHomeEvent } from "../lib/analytics";
 import {
   dayInZone,
   hasCompleteScore,
@@ -746,6 +747,10 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   }, []);
 
   const go = (index: number) => {
+    trackHomeEvent("hero_ticket_slide_select", {
+      slide_index: index,
+      slide_kind: index === 0 ? "overview" : slideOverrides?.[index - 1] ? "news" : "match",
+    });
     pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
     setActive(index);
   };

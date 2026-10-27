@@ -909,3 +909,41 @@ test('Arabic header renders the approved popular-crab-39 Stream Master periodic 
     }
   }
 });
+
+test('Google Search favicon and PWA brand icons are crawlable URLs at 48px multiples across routes', async ({ page, request }) => {
+  for (const route of ['/', '/about/', '/blog/http-protocols/']) {
+    await page.goto(route);
+    const icons = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('head link[rel="icon"], head link[rel="apple-touch-icon"]')).map((el) => ({
+        rel: el.getAttribute('rel'),
+        href: el.getAttribute('href') || '',
+        sizes: el.getAttribute('sizes') || '',
+      }))
+    );
+    expect(icons.length).toBeGreaterThanOrEqual(7);
+    for (const icon of icons) {
+      expect(icon.href.startsWith('data:')).toBe(false);
+      expect(icon.href.startsWith('/')).toBe(true);
+    }
+    expect(icons.some((i) => i.href === '/favicon.ico' && i.sizes === '48x48')).toBe(true);
+    expect(icons.some((i) => i.href === '/favicon-48x48.png' && i.sizes === '48x48')).toBe(true);
+    expect(icons.some((i) => i.href === '/favicon-96x96.png' && i.sizes === '96x96')).toBe(true);
+    expect(icons.some((i) => i.href === '/icon-192.png' && i.sizes === '192x192')).toBe(true);
+    expect(icons.some((i) => i.href === '/icon-512.png' && i.sizes === '512x512')).toBe(true);
+    expect(icons.some((i) => i.rel === 'apple-touch-icon' && i.href === '/apple-touch-icon.png')).toBe(true);
+  }
+
+  for (const [asset, expectedType] of [
+    ['/favicon.ico', 'image/x-icon'],
+    ['/favicon-48x48.png', 'image/png'],
+    ['/favicon-96x96.png', 'image/png'],
+    ['/icon-192.png', 'image/png'],
+    ['/icon-512.png', 'image/png'],
+    ['/apple-touch-icon.png', 'image/png'],
+  ]) {
+    const res = await request.get(asset);
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain(expectedType);
+    expect((await res.body()).byteLength).toBeGreaterThan(1000);
+  }
+});

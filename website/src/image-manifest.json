@@ -1,4 +1,52 @@
 {
+  "/apple-touch-icon.avif": [
+    180,
+    180
+  ],
+  "/apple-touch-icon.png": [
+    180,
+    180
+  ],
+  "/apple-touch-icon.webp": [
+    180,
+    180
+  ],
+  "/favicon-32x32.avif": [
+    32,
+    32
+  ],
+  "/favicon-32x32.png": [
+    32,
+    32
+  ],
+  "/favicon-32x32.webp": [
+    32,
+    32
+  ],
+  "/favicon-48x48.avif": [
+    48,
+    48
+  ],
+  "/favicon-48x48.png": [
+    48,
+    48
+  ],
+  "/favicon-48x48.webp": [
+    48,
+    48
+  ],
+  "/favicon-96x96.avif": [
+    96,
+    96
+  ],
+  "/favicon-96x96.png": [
+    96,
+    96
+  ],
+  "/favicon-96x96.webp": [
+    96,
+    96
+  ],
   "/icon-192.avif": [
     192,
     192

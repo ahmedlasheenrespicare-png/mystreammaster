@@ -1,5 +1,9 @@
 {
   "checked": [
+    "/apple-touch-icon",
+    "/favicon-32x32",
+    "/favicon-48x48",
+    "/favicon-96x96",
     "/icon-192",
     "/icon-512",
     "/images/articles/apple-tv",

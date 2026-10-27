@@ -309,13 +309,15 @@ test('المسبار يعمل على خادم محلي: نجاح، ودمج ال
 /* البطولات القارية الثلاث في الجدول: معرّفاتها مسجّلة في المصدر الوحيد
    (LEAGUES) وتطابق وسيط الخادم — ويبقى إثبات خدمتها لدى ESPN بمسبار
    مستقل، فلا يُفترض أن التسجيل في القائمة يعني التغطية. */
-test('البطولات القارية مُسجّلة في مصدر واحد ومطابقة لقائمة وسيط الخادم', async () => {
-  const continental = [
+test('البطولات المضافة مُسجّلة في مصدر واحد ومطابقة لقائمة وسيط الخادم', async () => {
+  const added = [
     { id: 'caf.champions', name: 'دوري أبطال أفريقيا' },
     { id: 'caf.confed', name: 'كأس الكونفدرالية الأفريقية' },
     { id: 'afc.champions', name: 'دوري أبطال آسيا للنخبة' },
+    { id: 'eng.league_cup', name: 'كأس الرابطة الإنجليزية' },
+    { id: 'eng.fa', name: 'كأس الاتحاد الإنجليزي' },
   ];
-  for (const entry of continental) {
+  for (const entry of added) {
     const found = LEAGUES.find((league) => league.id === entry.id);
     assert.ok(found, `${entry.id} غير مسجّل في LEAGUES`);
     assert.equal(found.name, entry.name);
@@ -323,8 +325,16 @@ test('البطولات القارية مُسجّلة في مصدر واحد وم
     assert.equal(scoreboardUrl(entry.id, '2026-10-25'), `/scoreboard.php?league=${encodeURIComponent(entry.id)}&dates=20261024-20261026`);
     assert.equal(LEAGUES.filter((league) => league.id === entry.id).length, 1);
   }
-  /* ترتيبها بين المسابقات القارية والمسابقات الدولية ثابت في العرض */
+
+  /* الترتيب يُقاس بمواضع نسبية لا بأرقام ثابتة: كل بطولة تُضاف لاحقاً
+     كانت تكسر هذا الاختبار لو قُيِّدَ بشرائح (slice) ثابتة. */
   const ids = LEAGUES.map((league) => league.id);
-  assert.deepEqual(ids.slice(9, 13), ['caf.champions', 'caf.confed', 'afc.champions', 'fifa.worldq.caf']);
+  const at = (id) => ids.indexOf(id);
+  assert.ok(at('eng.1') < at('eng.league_cup'), 'كأس الرابطة يتبع دوري بلده');
+  assert.ok(at('eng.league_cup') < at('eng.fa'), 'كأس الرابطة قبل كأس الاتحاد');
+  assert.ok(at('eng.fa') < at('esp.1'), 'بطولات إنجلترا كتلة واحدة قبل بقية الدوريات');
+  /* القارية كتلة متتابعة بين المسابقات الأوروبية والمسابقات الدولية */
+  assert.deepEqual(ids.slice(at('caf.champions'), at('fifa.worldq.caf')), ['caf.champions', 'caf.confed', 'afc.champions']);
+  assert.ok(at('afc.champions') < at('fifa.worldq.caf'), 'القارية تسبق المسابقات الدولية');
   assert.equal(new Set(ids).size, ids.length, 'لا معرّف مكرر في قائمة البطولات');
 });

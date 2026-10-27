@@ -70,6 +70,39 @@
       ],
       "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2200.png",
       "currentPhase": "League Stage (Sep 14-Feb 16) — East/West Region"
+    },
+    {
+      "league": "eng.league_cup",
+      "ok": true,
+      "name": "كأس الرابطة الإنجليزية",
+      "slugEchoedBySource": "eng.league_cup",
+      "leagueIdAtSource": "3920",
+      "uid": "s:600~l:3920",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 English Carabao Cup",
+      "sampledDay": "2026-10-28",
+      "sample": [
+        { "date": "2026-10-28T19:30Z", "home": "Manchester City", "away": "Brighton & Hove Albion", "state": "scheduled", "venue": "Etihad Stadium" }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/41.png",
+      "currentPhase": "Fourth Round (Oct 27-29) ثم Quarterfinals (Nov 3-Dec 28)"
+    },
+    {
+      "league": "eng.fa",
+      "ok": true,
+      "name": "كأس الاتحاد الإنجليزي",
+      "slugEchoedBySource": "eng.fa",
+      "leagueIdAtSource": "3918",
+      "uid": "s:600~l:3918",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 English FA Cup",
+      "sampledDay": "2026-11-07",
+      "sample": [
+        { "date": "2026-11-07T15:00Z", "home": "Accrington Stanley", "away": "Wycombe Wanderers", "state": "scheduled", "venue": "Wham Stadium" }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/40.png",
+      "currentPhase": "First Round (Nov 6-9) ثم Second Round (Dec 1-Jan 2)",
+      "emptyDaysNote": "يوم 2026-10-28 أعاد مصفوفة أحداث فارغة — وهذا متوقّع لا فشل: الجولة الأولى تبدأ 6 نوفمبر. أُثبت المعرّف بيوم من جولته الأولى بدل الاكتفاء بنافذة فارغة."
     }
   ],
   "outOfScope": {

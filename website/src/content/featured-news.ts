@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري التركي",
+    dateLabel: "27 أكتوبر 2026",
+    title: "استقالة مدرب فنربخشة إسماعيل كارتال بعد الخسارة أمام غلطة سراي",
+    description: "فنربخشة ينهي ارتباطه بالمدرب بالتراضي بعد خسارته 1-2 أمام غلطة سراي في ديربي القارات.",
+    href: "news/fenerbahce-kartal-resignation-2026/",
+  },
+  {
     category: "الكرة الذهبية",
     dateLabel: "26 أكتوبر 2026",
     title: "الكرة الذهبية 2026: هاري كين يفوز بالجائزة وبوتيلاس تتوج للمرة الثالثة",
@@ -64,6 +71,13 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     images: [
       { src: "images/players/ksa-hilal-fulltime-reaction.webp", alt: "سالم الدوسري يقود قميص الهلال بيديه على رأسه بعد صافرة نهاية خسارة الشمال 3-1 في دوري أبطال آسيا" },
     ],
+  },
+  {
+    category: "الدوري التركي",
+    dateLabel: "26 أكتوبر 2026",
+    title: "طرابزون سبور يفوز على ريزة سبور 4-3 ويصعد للمركز الثالث",
+    description: "فوز مثير لطرابزون سبور بقيادة محمد صلاح، وصعود للمركز الثالث برصيد 19 نقطة.",
+    href: "news/trabzonspor-rizespor-4-3-2026/",
   },
   {
     category: "الدوري الفرنسي",

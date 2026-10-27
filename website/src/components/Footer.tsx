@@ -13,6 +13,7 @@ import {
 import { getWhatsAppUrl, WHATSAPP_DISPLAY } from "../data";
 import { SUPPORT_EMAIL, to } from "../config";
 import { LineReveal, Reveal } from "./motion";
+import { BrandNewtStage } from "./BrandNewtStage";
 
 interface FooterProps {
   onOpenTrial: () => void;
@@ -24,27 +25,28 @@ export default function Footer({ onOpenTrial }: FooterProps) {
 
   return (
     <>
-      {/* نطاق الدعوة الأخيرة — بإطار متدرج على طريقة Salient */}
+      {/* نطاق الدعوة الأخيرة — بإطار متدرج ومشهد ستريم ماستر السينمائي */}
       <section className="pb-20 md:pb-28 px-4 sm:px-5 bg-[#faf9f6]">
         <Reveal variant="zoom" duration={900}>
-        <div className="max-w-[1400px] mx-auto rounded-[32px] bg-gradient-to-l from-[#2b4eff] via-[#5b3df5] to-[#ff5c4d] p-[2px]">
-          <div className="rounded-[30px] bg-[#0b0b0f] text-white px-6 py-16 md:p-20 text-center relative overflow-hidden grain">
+        <div className="max-w-[1400px] mx-auto rounded-[32px] bg-gradient-to-l from-[#162b12] via-[#3f7e2c] to-[#d8ff3e] p-[2px]">
+          <div className="rounded-[30px] bg-[#040904] text-white px-5 py-12 sm:px-6 sm:py-14 md:p-18 text-center relative overflow-hidden grain">
             <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-0 start-1/4 w-[500px] h-[300px] bg-[#2b4eff]/50 blur-[120px] rounded-full animate-blob" />
-              <div className="absolute bottom-0 end-1/4 w-[500px] h-[300px] bg-[#ff5c4d]/40 blur-[120px] rounded-full" />
+              <div className="absolute top-0 start-1/4 w-[420px] h-[260px] bg-[#3f7e2c]/35 blur-[110px] rounded-full animate-blob" />
+              <div className="absolute bottom-0 end-1/4 w-[420px] h-[260px] bg-[#d8ff3e]/15 blur-[120px] rounded-full" />
             </div>
             <div className="relative">
-              <p className="inline-flex items-center gap-2 text-[12px] font-black tracking-[0.2em] uppercase bg-white/10 border border-white/15 rounded-full px-4 py-2 mb-6">
+              <p className="inline-flex items-center gap-2 text-[11.5px] sm:text-[12px] font-black tracking-[0.16em] uppercase bg-white/10 border border-[#d8ff3e]/30 rounded-full px-4 py-2 mb-3">
                 <span className="w-2 h-2 rounded-full bg-[#d8ff3e] animate-pulse-soft" /> انضم
                 لأكثر من 45,000 مشترك
               </p>
-              <h2 className="font-display font-black tracking-tight leading-[1.15] text-[38px] md:text-[64px] max-w-4xl mx-auto">
+              <BrandNewtStage variant="cta" hold observeViewport />
+              <h2 className="font-display font-black tracking-tight leading-[1.15] text-[30px] sm:text-[38px] md:text-[56px] max-w-4xl mx-auto">
                 <LineReveal
                   threshold={0.3}
                   step={140}
                   lines={[
                     "ابدأ المشاهدة",
-                    <span className="font-serif italic font-normal bg-gradient-to-l from-[#d8ff3e] to-[#3effe0] bg-clip-text text-transparent">
+                    <span className="font-serif italic font-normal bg-gradient-to-l from-[#d8ff3e] to-[#4ade80] bg-clip-text text-transparent">
                       اليوم
                     </span>,
                   ]}

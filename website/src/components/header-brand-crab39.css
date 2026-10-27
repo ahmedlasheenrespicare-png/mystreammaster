@@ -1,12 +1,11 @@
 /* ==========================================================================
-   شعار «ستريم ماستر» في الهيدر — مستوحى من uiverse.io/strav_5159/popular-crab-39
-   المؤلف: strav_5159 — الرخصة: MIT
-   https://uiverse.io/strav_5159/popular-crab-39
+   شعار «ستريم ماستر» في الهيدر
+   • الهيكل والأبعاد: مستوحاة من uiverse.io/strav_5159/popular-crab-39 (MIT)
+   • الحركة النيونية السينمائية: مستوحاة من uiverse.io/mamyapro123/brave-newt-35 (MIT)
    --------------------------------------------------------------------------
-   مكيّف بهوية ستريم ماستر:
-   • مربعا العناصر الكيميائية الحادان (إطار 2px صلب + تدرج 136° بنسبة 60% → 92%)
-   • الرمز العربي داخل كل مربع («ست» و«ما») مع رقم علوي ليموني (#d8ff3e: 4K / 99)
-   • تكملة الكلمة بوزن 900 («ريم» و«ستر») وسطر فرعي متوسّط «STREAM MASTER PRO»
+   يحافظ بنسبة 100% على نفس الحجم والمساحة والارتفاع والعرض في الهيدر
+   على جميع الشاشات (من 320px في الجوال حتى الشاشات العريضة) عبر تحريك
+   خصائص المُركّب الرسومي فقط (transform / filter / opacity) دون المساس بالتخطيط.
 ========================================================================== */
 
 .sm-crab39 {
@@ -16,8 +15,11 @@
   --c39-sym: #fcfeff;
   --c39-sup: #d8ff3e;
   --c39-rest: #143311;
-  --c39-sub: rgba(11, 11, 15, 0.52);
-  --c39-glow: rgba(216, 255, 62, 0.22);
+  --c39-sub: rgba(11, 11, 15, 0.56);
+  --c39-glow: rgba(216, 255, 62, 0.34);
+  --c39-line: #3f7e2c;
+  --c39-line-glow: rgba(216, 255, 62, 0.75);
+  --c39-cycle: 9.5s;
 
   display: inline-flex;
   flex-direction: column;
@@ -26,6 +28,41 @@
   position: relative;
   line-height: 1;
   user-select: none;
+}
+
+/* خطا النيون العلوي والسفلي بأسلوب brave-newt-35 دون تغيير مساحة الشعار */
+.sm-crab39::before,
+.sm-crab39::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--c39-line) 18%,
+    #d8ff3e 50%,
+    var(--c39-line) 82%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px var(--c39-line-glow),
+    0 0 11px rgba(63, 126, 44, 0.45);
+  transform: scaleX(0);
+  transform-origin: center;
+  pointer-events: none;
+  animation: smCrab39Line var(--c39-cycle) cubic-bezier(0.8, 0, 0.2, 1) infinite;
+}
+
+.sm-crab39::before {
+  top: -2px;
+}
+
+.sm-crab39::after {
+  bottom: -2px;
+  animation-delay: 0.12s;
 }
 
 .sm-crab39__row {
@@ -49,32 +86,54 @@
   border: 2px solid var(--c39-border);
   border-radius: 2px;
   box-shadow:
-    0 3px 10px -3px rgba(4, 57, 24, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    0 3px 10px -3px rgba(4, 57, 24, 0.38),
+    0 0 8px rgba(216, 255, 62, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
   display: grid;
   place-items: center;
   text-align: center;
-  transition:
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.28s ease;
+  will-change: transform, filter, opacity;
+  animation:
+    smCrab39Fly var(--c39-cycle) cubic-bezier(0.2, 0.8, 0.2, 1) infinite,
+    smCrab39Flicker var(--c39-cycle) linear infinite;
+  animation-delay: var(--c39-d, 0s), 0s;
 }
 
-a:hover .sm-crab39__word:first-child .sm-crab39__tile,
-a:focus-visible .sm-crab39__word:first-child .sm-crab39__tile {
-  transform: translateY(-1.5px);
-  box-shadow:
-    0 6px 14px -4px rgba(4, 57, 24, 0.45),
-    0 0 0 1px var(--c39-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+.sm-crab39__word:first-child .sm-crab39__tile {
+  --c39-x: 9px;
+  --c39-y: -6px;
+  --c39-r: 7deg;
+  --c39-d: 0.03s;
 }
 
-a:hover .sm-crab39__word:last-child .sm-crab39__tile,
-a:focus-visible .sm-crab39__word:last-child .sm-crab39__tile {
-  transform: translateY(1.5px);
+.sm-crab39__word:first-child .sm-crab39__rest {
+  --c39-x: 5px;
+  --c39-y: 6px;
+  --c39-r: -5deg;
+  --c39-d: 0.12s;
+}
+
+.sm-crab39__word:last-child .sm-crab39__tile {
+  --c39-x: -5px;
+  --c39-y: -6px;
+  --c39-r: -6deg;
+  --c39-d: 0.2s;
+}
+
+.sm-crab39__word:last-child .sm-crab39__rest {
+  --c39-x: -9px;
+  --c39-y: 6px;
+  --c39-r: 6deg;
+  --c39-d: 0.28s;
+}
+
+a:hover .sm-crab39__tile,
+a:focus-visible .sm-crab39__tile {
   box-shadow:
-    0 6px 14px -4px rgba(4, 57, 24, 0.45),
-    0 0 0 1px var(--c39-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    0 6px 14px -4px rgba(4, 57, 24, 0.5),
+    0 0 0 1px #d8ff3e,
+    0 0 12px var(--c39-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
 .sm-crab39__sup {
@@ -88,6 +147,7 @@ a:focus-visible .sm-crab39__word:last-child .sm-crab39__tile {
   vertical-align: baseline;
   letter-spacing: -0.02em;
   color: var(--c39-sup);
+  text-shadow: 0 0 6px rgba(216, 255, 62, 0.65);
   direction: ltr;
 }
 
@@ -102,28 +162,45 @@ a:focus-visible .sm-crab39__word:last-child .sm-crab39__tile {
 }
 
 .sm-crab39__rest {
+  display: inline-block;
   color: var(--c39-rest);
-  font-family: "Tajawal", "Amiri", Georgia, serif;
+  font-family: "Tajawal", "Cairo", Georgia, serif;
   font-weight: 900;
   font-size: 18.5px;
   line-height: 1;
   padding-top: 3px;
   letter-spacing: -0.01em;
+  text-shadow: 0 0 10px rgba(216, 255, 62, 0.28);
+  will-change: transform, filter, opacity;
+  animation:
+    smCrab39Fly var(--c39-cycle) cubic-bezier(0.2, 0.8, 0.2, 1) infinite,
+    smCrab39Flicker var(--c39-cycle) linear infinite;
+  animation-delay: var(--c39-d, 0.1s), 0s;
 }
 
 .sm-crab39__sub {
   display: block;
   width: 100%;
   text-align: center;
-  font-family: "Space Grotesk", "Cairo", sans-serif;
+  font-family: "Space Grotesk", "Tajawal", system-ui, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--c39-sub);
   line-height: 1;
+  animation: smCrab39Sub var(--c39-cycle) ease infinite;
 }
 
+/* الوضع الداكن (عند استخدام الشعار فوق خلفية داكنة أو في الفوتر) */
+.sm-crab39--dark {
+  --c39-border: #d8ff3e;
+  --c39-rest: #fcfeff;
+  --c39-sub: rgba(252, 254, 255, 0.65);
+  --c39-line: #d8ff3e;
+}
+
+/* استجابة الهواتف — نفس الحجم والمساحة تماماً مع إزاحات مدمجة تناسب شاشات الجوال */
 @media (max-width: 639px) {
   .sm-crab39__row {
     gap: 4.5px;
@@ -136,6 +213,10 @@ a:focus-visible .sm-crab39__word:last-child .sm-crab39__tile {
     height: 28px;
     border-width: 1.5px;
   }
+  .sm-crab39__word:first-child .sm-crab39__tile { --c39-x: 6px; --c39-y: -4px; }
+  .sm-crab39__word:first-child .sm-crab39__rest { --c39-x: 3.5px; --c39-y: 4px; }
+  .sm-crab39__word:last-child .sm-crab39__tile { --c39-x: -3.5px; --c39-y: -4px; }
+  .sm-crab39__word:last-child .sm-crab39__rest { --c39-x: -6px; --c39-y: 4px; }
   .sm-crab39__sup {
     font-size: 6.8px;
     top: 1.5px;
@@ -167,9 +248,98 @@ a:focus-visible .sm-crab39__word:last-child .sm-crab39__tile {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (max-width: 359px) {
+  .sm-crab39__row {
+    gap: 3px;
+  }
+  .sm-crab39__word {
+    gap: 1px;
+  }
   .sm-crab39__tile {
-    transition: none;
+    width: 21px;
+    height: 21px;
+  }
+  .sm-crab39__sup {
+    font-size: 5.6px;
+    top: 1px;
+    right: 1.5px;
+  }
+  .sm-crab39__sym {
+    font-size: 9.5px;
+    padding-top: 4px;
+  }
+  .sm-crab39__rest {
+    font-size: 11.5px;
+    padding-top: 1.5px;
+  }
+}
+
+@keyframes smCrab39Fly {
+  0% {
+    opacity: 0.38;
+    filter: blur(3.5px);
+    transform: translate(var(--c39-x, 0px), var(--c39-y, 0px)) rotate(var(--c39-r, 0deg)) scale(1.12);
+  }
+  12%, 90% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  96%, 100% {
+    opacity: 0.38;
+    filter: blur(3.5px);
+    transform: translate(var(--c39-x, 0px), var(--c39-y, 0px)) rotate(var(--c39-r, 0deg)) scale(1.12);
+  }
+}
+
+@keyframes smCrab39Flicker {
+  0%, 15%, 61%, 65%, 92%, 100% {
+    opacity: 1;
+  }
+  9%, 63% {
+    opacity: 0.62;
+  }
+  96%, 100% {
+    opacity: 0.42;
+  }
+}
+
+@keyframes smCrab39Line {
+  0%, 8% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  20%, 84% {
+    transform: scaleX(1.02);
+    opacity: 0.92;
+  }
+  94%, 100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes smCrab39Sub {
+  0%, 18% {
+    opacity: 0;
+  }
+  28%, 84% {
+    opacity: 1;
+  }
+  94%, 100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-crab39::before,
+  .sm-crab39::after,
+  .sm-crab39__tile,
+  .sm-crab39__rest,
+  .sm-crab39__sub {
+    animation: none !important;
+    filter: none !important;
     transform: none !important;
+    opacity: 1 !important;
   }
 }

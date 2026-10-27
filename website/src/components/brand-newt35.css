@@ -1,0 +1,738 @@
+/* ==========================================================================
+   المشهد السينمائي المتحرك لهوية «ستريم ماستر»
+   مستوحى من uiverse.io/mamyapro123/brave-newt-35 (المؤلف: mamyapro123 — رخصة MIT)
+   ومدمج مع مربعي العناصر الكيميائية [ست⁴ᴷ]ريم [ما⁹⁹]ستر (popular-crab-39 — MIT)
+   --------------------------------------------------------------------------
+   يدعم جميع المقاسات حتى شاشات الجوال الضيقة (320px) عبر Container Queries
+   وتحجيم نسبي نظيف دون أي تجاوز أفقي (overflow: hidden).
+========================================================================== */
+
+.sm-newt35 {
+  --n35-cycle: 9.5s;
+  --n35-core: #d8ff3e;
+  --n35-emerald: #3f7e2c;
+  --n35-bg: #040904;
+  --n35-blur: 9px;
+
+  position: relative;
+  width: 100%;
+  background-color: var(--n35-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  isolation: isolate;
+  container-type: inline-size;
+}
+
+.sm-newt35--splash {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+}
+
+.sm-newt35--player-banner {
+  min-height: 230px;
+  border-radius: 24px;
+  border: 1px solid rgba(216, 255, 62, 0.22);
+  box-shadow: 0 24px 60px -22px rgba(0, 0, 0, 0.75);
+}
+
+.sm-newt35--player-idle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sm-newt35--cta {
+  width: 100%;
+  min-height: 215px;
+  background: transparent;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 639px) {
+  .sm-newt35 {
+    --n35-blur: 5px;
+  }
+  .sm-newt35--player-banner {
+    min-height: 176px;
+    border-radius: 20px;
+  }
+  .sm-newt35--cta {
+    min-height: 158px;
+    margin-bottom: 4px;
+  }
+}
+
+/* توهج خلفي متنفس + حبيبات فيلم + غبار ضوئي عائم */
+.sm-newt35__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(40rem, 130%);
+  height: min(28rem, 130%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(63, 126, 44, 0.30) 0%,
+    rgba(216, 255, 62, 0.09) 35%,
+    transparent 68%
+  );
+  transform: translate(-50%, -50%);
+  animation: smNewtGlow 6s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sm-newt35__noise {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(216, 255, 62, 0.13) 1px, transparent 1px),
+    radial-gradient(rgba(63, 126, 44, 0.09) 1px, transparent 1px);
+  background-size: 20px 20px, 15px 15px;
+  background-position: 0 0, 7.5px 7.5px;
+  opacity: 0.32;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sm-newt35--splash::after,
+.sm-newt35--player-banner::after,
+.sm-newt35--player-idle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 36%, #020502 100%);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.sm-newt35__dust {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.sm-newt35__dust::before {
+  content: "";
+  position: absolute;
+  top: 75%;
+  left: 10%;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow:
+    3rem -2rem 2px rgba(216, 255, 62, 0.65),
+    10rem -9rem 2px rgba(74, 222, 128, 0.48),
+    18rem -3rem 2px rgba(216, 255, 62, 0.78),
+    26rem -11rem 2px rgba(63, 126, 44, 0.65),
+    34rem -4rem 2px rgba(216, 255, 62, 0.55),
+    42rem -8rem 2px rgba(74, 222, 128, 0.48);
+  animation: smNewtDust 16s linear infinite;
+}
+
+/* الشرارات الكهربائية المحيطة */
+.sm-newt35__doodles {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.sm-newt35__doodle {
+  position: absolute;
+  opacity: 0;
+  animation: smNewtDoodleBlink 5s infinite;
+}
+
+.sm-newt35__doodle--spark {
+  width: 12px;
+  height: 12px;
+}
+
+.sm-newt35__doodle--spark::before,
+.sm-newt35__doodle--spark::after {
+  content: "";
+  position: absolute;
+  background: var(--n35-core);
+  box-shadow: 0 0 9px var(--n35-core);
+  border-radius: 50%;
+}
+
+.sm-newt35__doodle--spark::before {
+  width: 100%;
+  height: 2px;
+  top: 5px;
+  left: 0;
+}
+
+.sm-newt35__doodle--spark::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 5px;
+}
+
+.sm-newt35__doodle--scratch {
+  width: 20px;
+  height: 2px;
+  border-top: 2px solid var(--n35-core);
+  border-bottom: 1px solid var(--n35-emerald);
+  transform: rotate(-35deg);
+  box-shadow: 0 0 8px var(--n35-core);
+}
+
+.sm-newt35__doodle--dot {
+  width: 4.5px;
+  height: 4.5px;
+  background: var(--n35-core);
+  border-radius: 50%;
+  box-shadow: 0 0 11px var(--n35-core);
+}
+
+.sm-newt35__d1 { top: 18%; left: 16%; animation-delay: 1.1s; }
+.sm-newt35__d2 { top: 24%; right: 15%; animation-delay: 2.3s; }
+.sm-newt35__d3 { bottom: 20%; left: 20%; animation-delay: 1.7s; }
+.sm-newt35__d4 { bottom: 18%; right: 18%; animation-delay: 2.9s; }
+.sm-newt35__d5 { top: 48%; left: 9%; animation-delay: 2.1s; }
+.sm-newt35__d6 { top: 44%; right: 10%; animation-delay: 3.4s; }
+
+/* مسرح العنوان المتمركز مع تحجيم تلقائي للشاشات الصغيرة */
+.sm-newt35__stage {
+  --n35-scale: 0.88;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  transform: scale(var(--n35-scale));
+  transform-origin: center center;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sm-newt35--player-banner .sm-newt35__stage { --n35-scale: 0.72; }
+.sm-newt35--player-idle .sm-newt35__stage { --n35-scale: 0.62; }
+.sm-newt35--cta .sm-newt35__stage { --n35-scale: 0.76; }
+
+/* استجابة الحاوية لضمان عمل جميع الاقتراحات على شاشات الجوال حتى 320px */
+@container (max-width: 560px) {
+  .sm-newt35__stage { --n35-scale: 0.64 !important; }
+}
+@container (max-width: 420px) {
+  .sm-newt35__stage { --n35-scale: 0.52 !important; }
+}
+@container (max-width: 330px) {
+  .sm-newt35__stage { --n35-scale: 0.43 !important; }
+}
+@container (max-width: 270px) {
+  .sm-newt35__stage { --n35-scale: 0.36 !important; }
+}
+
+@media (max-width: 639px) {
+  .sm-newt35--splash .sm-newt35__stage { --n35-scale: 0.56; }
+  .sm-newt35--player-banner .sm-newt35__stage { --n35-scale: 0.48; }
+  .sm-newt35--player-idle .sm-newt35__stage { --n35-scale: 0.44; }
+  .sm-newt35--cta .sm-newt35__stage { --n35-scale: 0.50; }
+}
+
+@media (max-width: 375px) {
+  .sm-newt35--splash .sm-newt35__stage { --n35-scale: 0.46; }
+  .sm-newt35--player-banner .sm-newt35__stage { --n35-scale: 0.41; }
+  .sm-newt35--player-idle .sm-newt35__stage { --n35-scale: 0.38; }
+  .sm-newt35--cta .sm-newt35__stage { --n35-scale: 0.42; }
+}
+
+/* السطر العربي الأول: [ست⁴ᴷ]ريم [ما⁹⁹]ستر */
+.sm-newt35__ar-row {
+  display: flex;
+  direction: rtl;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 12px;
+  white-space: nowrap;
+}
+
+.sm-newt35__ar-word {
+  display: inline-flex;
+  direction: rtl;
+  align-items: center;
+  gap: 8px;
+}
+
+.sm-newt35__piece {
+  position: relative;
+  display: inline-flex;
+  opacity: 0;
+  filter: blur(11px);
+  transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.42);
+  animation:
+    smNewtPieceLoop var(--n35-cycle) cubic-bezier(0.2, 0.8, 0.2, 1) infinite,
+    smNewtFlicker var(--n35-cycle) linear infinite;
+  animation-delay: var(--d), 0s;
+}
+
+.sm-newt35__tile {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(136deg, rgba(22, 43, 18, 0.96) 58%, rgba(63, 126, 44, 0.95) 94%);
+  border: 2.5px solid var(--n35-core);
+  border-radius: 8px;
+  box-shadow:
+    0 0 10px rgba(216, 255, 62, 0.52),
+    0 0 24px rgba(63, 126, 44, 0.52),
+    inset 0 0 10px rgba(216, 255, 62, 0.16);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.sm-newt35__tile::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  border: 1px dashed rgba(216, 255, 62, 0.42);
+  pointer-events: none;
+}
+
+.sm-newt35__sup {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--n35-core);
+  text-shadow: 0 0 8px rgba(216, 255, 62, 0.85);
+  direction: ltr;
+}
+
+.sm-newt35__sym {
+  font-family: "Tajawal", "Cairo", sans-serif;
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 1;
+  color: #fcfeff;
+  padding-top: 13px;
+  text-shadow: 0 0 12px rgba(216, 255, 62, 0.42);
+}
+
+.sm-newt35__rest {
+  font-family: "Tajawal", "Cairo", sans-serif;
+  font-weight: 900;
+  font-size: 56px;
+  line-height: 1;
+  padding-top: 7px;
+  color: rgba(252, 254, 255, 0.08);
+  -webkit-text-stroke: 2.1px var(--n35-core);
+  text-shadow:
+    0 0 8px rgba(216, 255, 62, 0.76),
+    0 0 18px rgba(63, 126, 44, 0.68),
+    0 0 34px rgba(34, 92, 22, 0.48);
+}
+
+.sm-newt35__rest::before,
+.sm-newt35__rest::after {
+  content: attr(data-word);
+  position: absolute;
+  top: 7px;
+  right: 0;
+  color: transparent;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.sm-newt35__rest::before {
+  -webkit-text-stroke: 1px rgba(216, 255, 62, 0.6);
+  transform: translate(2px, -2px) rotate(-1deg);
+  z-index: -1;
+}
+
+.sm-newt35__rest::after {
+  -webkit-text-stroke: 1px rgba(74, 222, 128, 0.4);
+  transform: translate(-2px, 1px) rotate(1deg);
+  z-index: -2;
+}
+
+/* السطر الثاني الإنجليزي: STREAM MASTER بأحرف طائرة منفردة */
+.sm-newt35__en-row {
+  display: flex;
+  direction: ltr;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.15em;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-weight: 900;
+  font-size: 36px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: transparent;
+  line-height: 0.95;
+  margin: 2px 0 6px;
+  white-space: nowrap;
+}
+
+.sm-newt35__en-gap {
+  width: 0.52em;
+  display: inline-block;
+}
+
+.sm-newt35__en-row .sm-newt35__letter:first-child,
+.sm-newt35__en-row .sm-newt35__letter:last-child {
+  font-size: 1.26em;
+}
+
+.sm-newt35__letter {
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  filter: blur(11px);
+  transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.48);
+  -webkit-text-stroke: 1.55px var(--n35-core);
+  text-shadow:
+    0 0 6px rgba(216, 255, 62, 0.8),
+    0 0 15px rgba(63, 126, 44, 0.65),
+    0 0 28px rgba(34, 92, 22, 0.45);
+  animation:
+    smNewtPieceLoop var(--n35-cycle) cubic-bezier(0.2, 0.8, 0.2, 1) infinite,
+    smNewtFlicker var(--n35-cycle) linear infinite;
+  animation-delay: var(--d), 0s;
+}
+
+.sm-newt35__letter::before,
+.sm-newt35__letter::after {
+  content: attr(data-char);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: transparent;
+  pointer-events: none;
+}
+
+.sm-newt35__letter::before {
+  -webkit-text-stroke: 0.85px rgba(216, 255, 62, 0.62);
+  transform: translate(1.6px, -1.6px) rotate(-1.4deg);
+  z-index: -1;
+}
+
+.sm-newt35__letter::after {
+  -webkit-text-stroke: 0.85px rgba(74, 222, 128, 0.42);
+  transform: translate(-1.6px, 1px) rotate(1.4deg);
+  z-index: -2;
+}
+
+/* خطوط النيون العلوية والسفلية */
+.sm-newt35__line {
+  position: relative;
+  width: 106%;
+  height: 2px;
+  margin: 0.4em 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scaleX(0);
+  transform-origin: center;
+  will-change: transform, opacity;
+  animation: smNewtLineLoop var(--n35-cycle) cubic-bezier(0.8, 0, 0.2, 1) infinite;
+}
+
+.sm-newt35__line--top { margin-bottom: 0.95em; }
+.sm-newt35__line--bottom { margin-top: 0.5em; }
+
+.sm-newt35__line-inner {
+  width: 100%;
+  height: 100%;
+  border-top: 1px solid var(--n35-core);
+  border-bottom: 1px solid var(--n35-core);
+  box-shadow:
+    0 0 6px var(--n35-core),
+    0 0 14px var(--n35-emerald),
+    0 0 24px var(--n35-emerald),
+    inset 0 0 2px var(--n35-core);
+}
+
+.sm-newt35__line-inner::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px dashed rgba(216, 255, 62, 0.48);
+  transform: rotate(0.2deg);
+}
+
+.sm-newt35__caption {
+  font-family: "Tajawal", "Space Grotesk", sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--n35-core);
+  letter-spacing: 0.2em;
+  margin-top: 1.1em;
+  opacity: 0;
+  text-shadow: 0 0 10px rgba(216, 255, 62, 0.7);
+  animation: smNewtCaptionLoop var(--n35-cycle) infinite;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* وضع التجمّع لمرة واحدة ثم الثبات المتوهج (للشاشة الترحيبية وبطاقة الدعوة الختامية) */
+.sm-newt35--hold .sm-newt35__piece,
+.sm-newt35--hold .sm-newt35__letter {
+  animation:
+    smNewtPieceHold 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) forwards,
+    smNewtSteadyPulse 3.2s ease-in-out 1.1s infinite alternate;
+  animation-delay: calc(var(--d) * 0.65), 1.1s;
+}
+
+.sm-newt35--hold .sm-newt35__line {
+  animation: smNewtLineHold 1.05s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+}
+
+.sm-newt35--hold .sm-newt35__caption {
+  animation: smNewtCaptionHold 1.2s ease forwards;
+}
+
+.sm-newt35--paused .sm-newt35__piece,
+.sm-newt35--paused .sm-newt35__letter,
+.sm-newt35--paused .sm-newt35__line,
+.sm-newt35--paused .sm-newt35__caption {
+  animation-play-state: paused;
+}
+
+/* شارة شعار ستريم ماستر المصغّرة داخل شريط نموذج التلفاز العلوي فقط */
+.sm-tv-crab-mini {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  direction: rtl;
+  line-height: 1;
+}
+
+.sm-tv-crab-mini__word {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5px;
+}
+
+.sm-tv-crab-mini__tile {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 3px 2.5px 1px;
+  border-radius: 2px;
+  background: linear-gradient(136deg, #162b12 58%, #3f7e2c 94%);
+  border: 1px solid #d8ff3e;
+  box-shadow: 0 0 6px rgba(216, 255, 62, 0.42);
+  color: #fcfeff;
+  font-size: 8.5px;
+  font-weight: 900;
+  line-height: 1;
+  animation: smNewtSteadyPulse 2.8s ease-in-out infinite alternate;
+}
+
+.sm-tv-crab-mini__tile::before {
+  content: attr(data-sup);
+  position: absolute;
+  top: 1px;
+  right: 1.5px;
+  font-family: "Space Grotesk", ui-sans-serif, sans-serif;
+  font-size: 4.5px;
+  font-weight: 700;
+  line-height: 1;
+  color: #d8ff3e;
+  direction: ltr;
+}
+
+.sm-tv-crab-mini__rest {
+  color: #fcfeff;
+  font-size: 10.5px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(216, 255, 62, 0.35);
+}
+
+@media (max-width: 767px) {
+  .sm-tv-crab-mini { gap: 2px; }
+  .sm-tv-crab-mini__tile {
+    min-width: 13px;
+    height: 13px;
+    padding: 2px 1.5px 0.5px;
+    font-size: 6.5px;
+  }
+  .sm-tv-crab-mini__tile::before { font-size: 3.6px; }
+  .sm-tv-crab-mini__rest { font-size: 8px; }
+}
+
+/* الشاشة الترحيبية السريعة (Welcome Splash) */
+.sm-welcome-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: #040904;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.45s ease;
+}
+
+.sm-welcome-splash--leaving {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sm-welcome-splash__skip {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top, 16px));
+  left: 16px;
+  z-index: 125;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 255, 62, 0.48);
+  background: rgba(11, 22, 9, 0.72);
+  backdrop-filter: blur(10px);
+  color: #fcfeff;
+  font-family: "Tajawal", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.sm-welcome-splash__skip:hover,
+.sm-welcome-splash__skip:focus-visible {
+  background: #d8ff3e;
+  color: #0a1708;
+  border-color: #d8ff3e;
+  outline: none;
+}
+
+@keyframes smNewtPieceLoop {
+  0% { opacity: 0; filter: blur(var(--n35-blur)); transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.42); }
+  22%, 78% { opacity: 1; filter: blur(0); transform: translate(0, 0) rotate(0deg) scale(1); }
+  93%, 100% { opacity: 0; filter: blur(var(--n35-blur)); transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.42); }
+}
+
+@keyframes smNewtPieceHold {
+  0% { opacity: 0; filter: blur(var(--n35-blur)); transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.42); }
+  100% { opacity: 1; filter: blur(0); transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+@keyframes smNewtSteadyPulse {
+  0% { filter: brightness(0.96); }
+  100% { filter: brightness(1.08); }
+}
+
+@keyframes smNewtLineLoop {
+  0%, 10% { transform: scaleX(0); opacity: 0; }
+  26%, 78% { transform: scaleX(1); opacity: 1; }
+  92%, 100% { transform: scaleX(0); opacity: 0; }
+}
+
+@keyframes smNewtLineHold {
+  0%, 12% { transform: scaleX(0); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes smNewtCaptionLoop {
+  0%, 26% { opacity: 0; }
+  38%, 78% { opacity: 0.88; }
+  92%, 100% { opacity: 0; }
+}
+
+@keyframes smNewtCaptionHold {
+  0%, 36% { opacity: 0; }
+  100% { opacity: 0.9; }
+}
+
+@keyframes smNewtTvBeam {
+  0%, 8% { transform: scaleX(0); opacity: 0; }
+  24%, 80% { transform: scaleX(1); opacity: 0.85; }
+  94%, 100% { transform: scaleX(0); opacity: 0; }
+}
+
+@keyframes smNewtGlow {
+  0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.72; }
+  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+}
+
+@keyframes smNewtFlicker {
+  0%, 24%, 64%, 100% { opacity: 1; }
+  16%, 66% { opacity: 0.45; }
+  93%, 100% { opacity: 0; }
+}
+
+@keyframes smNewtLineJitter {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(1px, -1px) rotate(0.25deg); }
+  100% { transform: translate(-1px, 1px) rotate(-0.25deg); }
+}
+
+@keyframes smNewtSketch1 {
+  0% { transform: translate(2px, -2px) rotate(-1deg); }
+  100% { transform: translate(2.8px, -1px) rotate(-0.6deg); }
+}
+
+@keyframes smNewtSketch2 {
+  0% { transform: translate(-2px, 1px) rotate(1deg); }
+  100% { transform: translate(-2.8px, 1.8px) rotate(0.6deg); }
+}
+
+@keyframes smNewtNoise {
+  0% { background-position: 0 0, 7.5px 7.5px; }
+  50% { background-position: 2px -2px, 5.5px 9.5px; }
+  100% { background-position: -2px 2px, 9.5px 5.5px; }
+}
+
+@keyframes smNewtDust {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(3.5rem, -8rem); }
+}
+
+@keyframes smNewtDoodleBlink {
+  0%, 12%, 100% { opacity: 0; transform: scale(0.5); }
+  6% { opacity: 1; transform: scale(1.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-newt35__piece,
+  .sm-newt35__letter {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  .sm-newt35__line {
+    animation: none !important;
+    transform: scaleX(1) !important;
+    opacity: 1 !important;
+  }
+  .sm-newt35__caption {
+    animation: none !important;
+    opacity: 0.9 !important;
+  }
+  .sm-newt35__glow,
+  .sm-newt35__noise,
+  .sm-newt35__dust::before,
+  .sm-newt35__doodle,
+  .sm-newt35__tile::after,
+  .sm-newt35__rest::before,
+  .sm-newt35__rest::after,
+  .sm-newt35__letter::before,
+  .sm-newt35__letter::after,
+  .sm-newt35__line-inner::before,
+  .sm-tv-crab-mini__tile {
+    animation: none !important;
+  }
+}

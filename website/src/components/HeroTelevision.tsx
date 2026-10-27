@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { IconPlay } from './Icons';
 import { ServerIcon } from './ServerIcon';
 import './hero-television.css';
+import './brand-newt35.css';
 import { to } from '../config';
 
 const TV_SERVERS = [
@@ -32,7 +33,21 @@ export function HeroTelevision({ onActivate, headline }: { onActivate?: () => vo
           <span className="hero-tv-aurora" />
           <span className="hero-tv-orbit hero-tv-orbit--one" />
           <span className="hero-tv-orbit hero-tv-orbit--two" />
-          <span className="hero-tv-topbar"><span className="hero-tv-wordmark"><IconPlay /> ستريم ماستر</span><span className="hero-tv-demo">واجهة توضيحية</span></span>
+          <span className="hero-tv-topbar">
+            <span className="hero-tv-wordmark">
+              <span className="sm-tv-crab-mini">
+                <span className="sm-tv-crab-mini__word">
+                  <span className="sm-tv-crab-mini__tile" data-sup="4K">ست</span>
+                  <span className="sm-tv-crab-mini__rest">ريم</span>
+                </span>{" "}
+                <span className="sm-tv-crab-mini__word">
+                  <span className="sm-tv-crab-mini__tile" data-sup="99">ما</span>
+                  <span className="sm-tv-crab-mini__rest">ستر</span>
+                </span>
+              </span>
+            </span>
+            <span className="hero-tv-demo">واجهة توضيحية</span>
+          </span>
           <span className="hero-tv-welcome">
             <span className="hero-tv-welcome-gallery">
               <span className="hero-tv-football-art">

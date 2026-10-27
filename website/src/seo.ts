@@ -17,7 +17,7 @@ import { absolute, BRAND_EN, BRAND_NAME, SITE_URL, WHATSAPP_DISPLAY } from "./co
 import { AVAILABLE_DURATIONS, EN_HOME_FAQS, EN_PLAN_FAQS, FAQ_SECTIONS, FAQ_SECTIONS_EN, FAQS, PRICING_PLANS, TRIAL_FAQS } from "./data";
 import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
-import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
+import { CLUB_LANDINGS, LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { matchByRoute } from "./content/match-center.mjs";
 import { isVerified, dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
@@ -760,6 +760,39 @@ export function getSeo(path: string): SeoMeta {
         ),
         /* الأسئلة ظاهرة فعلاً في الصفحة (عناصر details) */
         faqLd(canonical, teamLanding.faq),
+      ],
+    };
+  }
+
+  /* ===== صفحات الأندية — /teams/{النادي} ===== */
+  const clubLanding = CLUB_LANDINGS.find((c) => clean === `/teams/${c.slug}`);
+  if (clubLanding) {
+    const canonical = absolute(`teams/${clubLanding.slug}`);
+    return {
+      ...base,
+      title: clubLanding.title,
+      description: clubLanding.description,
+      canonical,
+      ogImageAlt: `${clubLanding.h1} — ${BRAND_NAME}`,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: clubLanding.title,
+          description: clubLanding.description,
+          published: LANDING_DATE,
+          modified: LANDING_DATE,
+          mainEntityId: `${canonical}#faq`,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "" },
+            { name: "مواعيد المباريات", path: "matches" },
+            { name: clubLanding.h1, path: `teams/${clubLanding.slug}` },
+          ],
+          canonical
+        ),
+        /* الأسئلة ظاهرة فعلاً في الصفحة (عناصر details) */
+        faqLd(canonical, clubLanding.faq),
       ],
     };
   }

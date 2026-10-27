@@ -29,8 +29,12 @@ function desktopPanel(group) {
   if (group.key === 'matches') {
     const scheduleLink = group.links.slice(0, 1);
     const extraLinks = group.links.slice(1, 6);
-    const leagueLinks = group.links.slice(6, 14);
-    const teamLinks = group.links.slice(14);
+    /* نفس قاعدة التقطيع بالوسم المطبَّقة في Header.tsx: البطولات بـ league،
+       والأندية بـ club، والباقي بعد الستة العامة منتخبات. بغير ذلك يظهر أي
+       رابط جديد تحت عنوان «المنتخبات» ويُزيح آخرها. */
+    const leagueLinks = group.links.filter((l) => l.league);
+    const clubLinks = group.links.filter((l) => l.club);
+    const teamLinks = group.links.filter((l) => !l.league && !l.club).slice(6);
     return `<div class="sm-dd-grid sm-dd-grid-3">${scheduleLink.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
       + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">القنوات والبث</p>`
       + `<div class="sm-dd-grid sm-dd-grid-3">${extraLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
@@ -38,6 +42,12 @@ function desktopPanel(group) {
       + `<div class="sm-dd-grid sm-dd-grid-3">${leagueLinks.map(l => item(page(l.href), l.label, l.desc, l.icon, l.league)).join('')}</div>`
       + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">المنتخبات</p>`
       + `<div class="sm-dd-grid sm-dd-grid-4">${teamLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
+      /* الأندية قسم مستقل بعنوانه — النادي ليس منتخباً، وحاويته ليست
+         sm-dd-grid-4 حتى لا تُحسب أيقوناته ضمن أيقونات المنتخبات. */
+      + (clubLinks.length
+        ? `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">الأندية</p>`
+          + `<div class="sm-dd-grid sm-dd-grid-3">${clubLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
+        : '')
       + `<div class="sm-dd-foot"><a href="/matches/">كل مواعيد المباريات — التقويم الكامل</a><a class="sm-dd-pill" href="/world-cup-2026/">كأس العالم 2026 ↗</a></div>`;
   }
   if (group.key === 'home') {

@@ -550,8 +550,14 @@ function DesktopPanel({
     /* لوحة المباريات: مواعيد المباريات + القنوات + البطولات + المنتخبات */
     const scheduleLink = group.links.slice(0, 1);
     const extraLinks = group.links.slice(1, 6); /* القنوات والبث */
-    const leagueLinks = group.links.slice(6, 14); /* أبطال أوروبا + 7 دوريات */
-    const teamLinks = group.links.slice(14); /* 8 منتخبات */
+    /* التقطيع بالوسم لا بالموضع: البطولات بـ league والأندية بـ club، وما
+       تبقّى بعد الستة العامة فهو المنتخبات. التقطيع بالموضع كان يضع أي رابط
+       جديد في قسم «المنتخبات» ويُزيح آخرها — وهو ما وقع عند إضافة نادٍ. */
+    const leagueLinks = group.links.filter((l) => l.league); /* أبطال أوروبا + 7 دوريات */
+    const clubLinks = group.links.filter((l) => l.club); /* صفحات الأندية */
+    const teamLinks = group.links
+      .filter((l) => !l.league && !l.club)
+      .slice(6); /* 8 منتخبات — بعد الستة العامة */
     return (
       <div className="w-[640px]">
         {/* مواعيد المباريات */}
@@ -581,6 +587,17 @@ function DesktopPanel({
             <PanelLink key={l.href} href={pageHref(l)} label={l.label} icon={l.icon} onNavigate={onNavigate} />
           ))}
         </div>
+        {/* الأندية — قسم مستقل بعنوانه: النادي ليس منتخباً ولا يندرج تحته */}
+        {clubLinks.length > 0 && (
+          <>
+            <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1 mt-2 px-3">الأندية</p>
+            <div className="grid grid-cols-3 gap-1">
+              {clubLinks.map((l) => (
+                <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />
+              ))}
+            </div>
+          </>
+        )}
         <PanelFooter>
           <a href={to("matches/")} onClick={onNavigate} className="text-[13px] font-bold hover:text-[#d8ff3e] transition">
             كل مواعيد المباريات — التقويم الكامل

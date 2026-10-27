@@ -338,3 +338,20 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
   assert.ok(at('afc.champions') < at('fifa.worldq.caf'), 'القارية تسبق المسابقات الدولية');
   assert.equal(new Set(ids).size, ids.length, 'لا معرّف مكرر في قائمة البطولات');
 });
+
+/* صفحات الأندية (/teams/{النادي}) تجلب مسابقاتها من scoreboard.php بأسمائها،
+   فأي معرّف غير مسموح في ALLOWED_LEAGUES يُرجع INVALID_LEAGUE وتظهر اللوحة
+   فارغة بلا سبب يفهمه الزائر: البطولة تبدو «بلا مباريات» وهي في الحقيقة
+   مرفوضة من الخادم. هذا الحارس يمنع إضافة نادٍ بمسابقة غير مسموحة، ويقرأ
+   ملف المحتوى نصّاً لأنه TypeScript لا يُستورد من اختبار node مباشرة. */
+test('صفحات الأندية: كل مسابقاتها مسموحة في وسيط الخادم', async () => {
+  const src = await fs.readFile(new URL('../src/content/competitions.ts', import.meta.url), 'utf8');
+  const block = src.match(/export const CLUB_LANDINGS[\s\S]*?\n\];/);
+  assert.ok(block, 'CLUB_LANDINGS must be defined in src/content/competitions.ts');
+  const ids = Array.from(block[0].matchAll(/id:\s*"([^"]+)"/g), (m) => m[1]);
+  assert.ok(ids.length > 0, 'صفحة النادي يجب أن تطلب مسابقة واحدة على الأقل');
+  const allowed = LEAGUES.map((l) => l.id);
+  for (const id of ids) {
+    assert.ok(allowed.includes(id), `مسابقة النادي «${id}» ليست مسموحة في scoreboard.php`);
+  }
+});

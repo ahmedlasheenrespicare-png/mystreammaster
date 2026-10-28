@@ -1,3 +1,4 @@
+import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { useTicketSwipe } from "./useTicketSwipe";
 import { TicketImage } from "./TicketImage";
 import { useEffect, useRef, useState, type ReactElement } from "react";
@@ -860,43 +861,43 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
 /* اللاعبون لبقية البطولات — مواضعهم الفيزيائية كما وُثّقت أول مرة */
 const PLAYER_MAP: Record<string, ReactElement | ReactElement[]> = {
   "eng.1": [
-    <TicketImage key="a" className="league-ticket-player" src="/images/players/epl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/eng-szoboszlai.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player" src={LEAGUE_TICKET_PLAYERS["eng.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["eng.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "esp.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--right" src="/images/players/esp-mbappe.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--left" src="/images/players/esp-yamal.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["esp.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["esp.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "fra.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/fra-gouiri.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["fra.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["fra.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "ger.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/ger-olise.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["ger.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["ger.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "ita.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/ita-dybala.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["ita.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["ita.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "egy.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/egy-elsaid.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["egy.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["egy.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "sau.1": [
     /* فيليكس يساراً + الدوسري يميناً — الثنائي الثامن الذي يُكمل خريطة
        نجوم البطولات الثماني كاملة، بنفس الصفة الزخرفية والمواضع
        الفيزيائية الصريحة */
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/sau-felix.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/sau-dawsari.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["sau.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["sau.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
 };
 
 /* أبطال أوروبا: ميسي في خلفية التكوين خلف رونالدو أعلى يسار التذكرة — يُرسَم
    قبل رونالدو فيتراكب الثاني فوقه (نفس ز-index والأحدث ضمن DOM يعلو) */
 const UCL_BASE_PLAYERS = [
-  <TicketImage key="back" className="league-ticket-player league-ticket-player--back" src="/images/players/ucl-messi.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-  <TicketImage key="star" className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  <TicketImage key="back" className="league-ticket-player league-ticket-player--back" src={LEAGUE_TICKET_PLAYERS["uefa.champions"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  <TicketImage key="star" className="league-ticket-player" src={LEAGUE_TICKET_PLAYERS["uefa.champions"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
 ];
 
 /* ── بطولات أُخفيت شرائح قممها بطلب المالك (2026-10-28) ─────────────────

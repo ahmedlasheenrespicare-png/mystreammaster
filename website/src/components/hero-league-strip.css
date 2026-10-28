@@ -1,0 +1,726 @@
+/* ==========================================================================
+   1) التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو (/)
+   2) شريط إحصائيات البطولة الحية — أسفل التذكرة الرئيسية مباشرةً
+========================================================================== */
+
+.hero-crown-strip {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: 12px;
+  text-align: start;
+}
+
+.hs-crown-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px 9px;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 46% 68% at 50% 42%, rgba(216, 255, 62, 0.16), transparent 72%),
+    radial-gradient(ellipse 68% 55% at 50% 88%, rgba(43, 78, 255, 0.08), transparent 76%),
+    linear-gradient(180deg, #faf8f2 0%, #f1eee4 100%);
+  border: 1.5px solid #dfd8c6;
+  box-shadow:
+    0 18px 36px -26px rgba(11, 11, 15, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.hs-crown-shell.is-dragging {
+  cursor: grabbing;
+}
+
+/* ── القلب المداري ثلاثي الأبعاد الواسع (3D Coverflow Arc) ─────────────── */
+.hs-crown-center {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 780px;
+  height: 112px;
+  perspective: 1020px;
+  cursor: grab;
+}
+
+.hs-crown-shell.is-dragging .hs-crown-center {
+  cursor: grabbing;
+}
+
+.hs-crown-card {
+  position: absolute;
+  width: 248px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1.5px solid #0b0b0f;
+  background: #fcfbf7;
+  text-decoration: none;
+  color: #0b0b0f;
+  box-shadow: 0 16px 30px -16px rgba(11, 11, 15, 0.48);
+  transition:
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.52s ease,
+    filter 0.52s ease,
+    box-shadow 0.52s ease;
+}
+
+.hs-crown-card[data-crown-offset="0"] {
+  z-index: 5;
+  opacity: 1;
+  transform: translate3d(var(--hs-drag-x, 0px), 0, 0) scale(1);
+  box-shadow:
+    0 20px 36px -16px rgba(11, 11, 15, 0.58),
+    0 0 0 1px rgba(216, 255, 62, 0.32);
+}
+
+.hs-crown-card[data-crown-offset="0"]:hover {
+  transform: translate3d(var(--hs-drag-x, 0px), -2px, 0) scale(1.015);
+}
+
+.hs-crown-card[data-crown-offset="1"] {
+  z-index: 3;
+  opacity: 0.84;
+  filter: brightness(0.92);
+  transform: translate3d(calc(-146px + var(--hs-drag-x, 0px) * 0.45), 3px, -64px) rotateY(21deg) scale(0.88);
+}
+
+.hs-crown-card[data-crown-offset="-1"] {
+  z-index: 3;
+  opacity: 0.84;
+  filter: brightness(0.92);
+  transform: translate3d(calc(146px + var(--hs-drag-x, 0px) * 0.45), 3px, -64px) rotateY(-21deg) scale(0.88);
+}
+
+.hs-crown-card[data-crown-offset="2"] {
+  z-index: 2;
+  opacity: 0.5;
+  filter: brightness(0.84);
+  transform: translate3d(-258px, 7px, -132px) rotateY(30deg) scale(0.76);
+}
+
+.hs-crown-card[data-crown-offset="-2"] {
+  z-index: 2;
+  opacity: 0.5;
+  filter: brightness(0.84);
+  transform: translate3d(258px, 7px, -132px) rotateY(-30deg) scale(0.76);
+}
+
+.hs-crown-card[data-crown-offset="hidden"] {
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, -210px) scale(0.6);
+}
+
+.hs-crown-card-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 11px 8px;
+  background:
+    radial-gradient(circle at 18% 35%, var(--hs-glow, rgba(216, 255, 62, 0.22)), transparent 65%),
+    linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec;
+}
+
+.hs-crown-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hs-crown-league-name {
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #f6f4ec;
+  line-height: 1.2;
+}
+
+.hs-crown-leader-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 5px;
+  border-radius: 999px;
+  background: rgba(252, 251, 247, 0.96);
+  color: #0b0b0f;
+  max-width: 174px;
+}
+
+.hs-crown-leader-name {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hs-crown-split {
+  display: block;
+  height: 2.5px;
+  width: 100%;
+  background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+}
+
+/* ── الكؤوس المخصّصة بشعار شفاف وشعارات الأندية المعتمدة ────────────────── */
+.hs-mini-trophy {
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  pointer-events: none;
+}
+
+.hs-mini-trophy .lc-trophy-wrap,
+.hs-stats-identity-trophy .lc-trophy-wrap {
+  position: relative;
+  top: auto;
+  inset-inline-end: auto;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform: none;
+}
+
+.hs-mini-trophy .lc-trophy-svg,
+.hs-stats-identity-trophy .lc-trophy-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.hs-mini-trophy .lc-trophy-emblem {
+  --league-badge-size: 17px;
+}
+
+.hs-stats-identity-trophy .lc-trophy-emblem {
+  --league-badge-size: 14px;
+}
+
+.hs-club-crest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #eef2f6);
+  border: 1px solid rgba(11, 11, 15, 0.12);
+  box-shadow: 0 1px 4px rgba(11, 11, 15, 0.12);
+  overflow: hidden;
+}
+
+.hs-club-crest--md {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.hs-club-initials {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.42rem;
+  font-weight: 900;
+  color: #244859;
+  line-height: 1;
+}
+
+.hs-club-crest--md .hs-club-initials {
+  font-size: 0.54rem;
+}
+
+.hs-club-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.hs-club-logo.is-loaded {
+  opacity: 1;
+}
+
+/* ── شريط أزرار التنقّل والنقاط الدلالية للبطولات الثماني ─────────────────── */
+.hs-crown-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hs-crown-arrow {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(11, 11, 15, 0.16);
+  background: #ffffff;
+  color: #0b0b0f;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.hs-crown-arrow:hover {
+  background: #0b0b0f;
+  border-color: #0b0b0f;
+  color: #d8ff3e;
+}
+
+.hs-crown-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hs-crown-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(11, 11, 15, 0.22);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.28s ease, background 0.28s ease;
+}
+
+.hs-crown-dot.is-active {
+  width: 24px;
+  background: #0b0b0f;
+}
+
+/* ==========================================================================
+   شريط الإحصائيات الحي أسفل التذكرة الرئيسية مباشرةً (.hero-crown-stats-bar)
+   يحاذي على سطح المكتب شبكة .hero-ticket-row (180px يميناً + 1fr تحت الرئيسية)
+========================================================================== */
+
+.hero-crown-stats-bar {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 12px;
+  text-align: start;
+}
+
+.hs-stats-bar-grid {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* بطاقة تعريف البطولة النشطة (180px يميناً تحت تذكرة المواعيد) */
+.hs-stats-identity {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 11px 12px;
+  border-radius: 18px;
+  border: 1.5px solid #0b0b0f;
+  background:
+    radial-gradient(circle at 20% 35%, var(--hs-glow, rgba(216, 255, 62, 0.2)), transparent 65%),
+    linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 12px 24px -18px rgba(11, 11, 15, 0.45);
+  animation: hs-wing-open-inline-start 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.hs-stats-identity:hover {
+  transform: translateY(-1px);
+  border-color: #2b4eff;
+}
+
+.hs-stats-identity-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hs-stats-identity-kicker {
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #d8ff3e;
+  line-height: 1.2;
+}
+
+.hs-stats-identity-title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 112px;
+}
+
+.hs-stats-identity-trophy {
+  position: relative;
+  display: block;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  pointer-events: none;
+}
+
+.hs-stats-identity-split {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2.5px;
+  background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+}
+
+/* زوج الإحصائيات المتناظر مباشرةً أسفل التذكرة الرئيسية (.home-matches-ticket) */
+.hs-stats-wings-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hs-crown-wing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 70px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fcfbf7 0%, #f3efe3 100%);
+  border: 1.5px solid #dfd8c6;
+  box-shadow: 0 12px 24px -18px rgba(11, 11, 15, 0.26);
+  min-width: 0;
+  color: #0b0b0f;
+  text-decoration: none;
+  transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+a.hs-crown-wing:hover {
+  border-color: rgba(43, 78, 255, 0.38);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -18px rgba(11, 11, 15, 0.34);
+}
+
+.hs-crown-wing--leader {
+  animation: hs-wing-open-inline-start 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hs-crown-wing--stats {
+  animation: hs-wing-open-inline-end 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hs-wing-open-inline-start {
+  from {
+    opacity: 0;
+    transform: translate3d(-10px, 3px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hs-wing-open-inline-end {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 3px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.hs-leader-wing-main {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.hs-leader-wing-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 0;
+}
+
+.hs-leader-wing-kicker {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #2b4eff;
+  line-height: 1.2;
+}
+
+.hs-leader-wing-club {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 210px;
+}
+
+.hs-leader-wing-numbers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.hs-leader-wing-pts {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1;
+}
+
+.hs-leader-wing-pts small {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.hs-leader-wing-meta {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #6b675e;
+  white-space: nowrap;
+}
+
+/* ── أوسمة الهجوم والدفاع وإجمالي الأهداف ───────────────────────────────── */
+.hs-stat-wing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hs-stat-wing-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+}
+
+.hs-stat-medal {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+
+.hs-stat-kicker {
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #5b5850;
+  white-space: nowrap;
+}
+
+.hs-stat-club {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  min-width: 0;
+  max-width: 145px;
+}
+
+.hs-stat-club-name {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hs-stat-rate {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: #0b0b0f;
+}
+
+.hs-stat-rate small {
+  font-family: var(--font-sans);
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #2b4eff;
+  margin-inline-start: 2px;
+}
+
+.hs-stat-divider {
+  width: 1px;
+  height: 38px;
+  background: #dfd8c6;
+  flex: 0 0 1px;
+}
+
+.hs-stat-goals-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5px 9px;
+  border-radius: 11px;
+  background: rgba(43, 78, 255, 0.08);
+  border: 1px solid rgba(43, 78, 255, 0.16);
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.hs-stat-goals-num {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.1;
+}
+
+.hs-stat-goals-lbl {
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #2b4eff;
+  white-space: nowrap;
+}
+
+/* ── التجاوب مع الشاشات المتوسطة والجوال وتقليل الحركة ──────────────────── */
+@media (max-width: 1023px) {
+  .hs-stats-bar-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .hs-stats-identity-title {
+    max-width: none;
+  }
+
+  .hs-crown-card[data-crown-offset="2"] {
+    transform: translate3d(-200px, 7px, -132px) rotateY(30deg) scale(0.74);
+  }
+
+  .hs-crown-card[data-crown-offset="-2"] {
+    transform: translate3d(200px, 7px, -132px) rotateY(-30deg) scale(0.74);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-crown-strip {
+    margin-bottom: 10px;
+  }
+
+  .hs-crown-shell {
+    padding: 9px 9px 8px;
+    border-radius: 20px;
+    gap: 6px;
+  }
+
+  .hs-crown-center {
+    height: 102px;
+    max-width: 100%;
+  }
+
+  .hs-crown-card {
+    width: 208px;
+  }
+
+  .hs-crown-card[data-crown-offset="1"] {
+    transform: translate3d(calc(-56px + var(--hs-drag-x, 0px) * 0.35), 4px, -70px) rotateY(22deg) scale(0.84);
+  }
+
+  .hs-crown-card[data-crown-offset="-1"] {
+    transform: translate3d(calc(56px + var(--hs-drag-x, 0px) * 0.35), 4px, -70px) rotateY(-22deg) scale(0.84);
+  }
+
+  .hs-crown-card[data-crown-offset="2"],
+  .hs-crown-card[data-crown-offset="-2"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-crown-stats-bar {
+    margin-top: 10px;
+  }
+
+  .hs-stats-identity {
+    padding: 8px 11px 10px;
+    border-radius: 15px;
+  }
+
+  .hs-stats-wings-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .hs-crown-wing {
+    min-height: 0;
+    padding: 9px 11px;
+    border-radius: 15px;
+  }
+
+  .hs-leader-wing-club {
+    max-width: 145px;
+  }
+
+  .hs-stat-club {
+    max-width: 92px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-crown-card,
+  .hs-crown-dot,
+  .hs-crown-wing,
+  .hs-stats-identity {
+    transition: none;
+  }
+
+  .hs-crown-wing--leader,
+  .hs-crown-wing--stats,
+  .hs-stats-identity {
+    animation: none;
+  }
+}

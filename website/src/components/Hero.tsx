@@ -8,6 +8,7 @@ import { MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket, { INDEX_CLASHES, LIVERPOOL_CHELSEA_CUP_CLASH } from "./AllLeaguesTicket";
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
+import HeroLeagueCrownStrip, { HeroLeagueStatsBar } from "./HeroLeagueCrownStrip";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -373,6 +374,10 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             على الكمبيوتر: المباريات يميناً بعرض 190px، والرئيسية تشغل
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
+        <Reveal variant="up" delay={90} className="w-full">
+          <HeroLeagueCrownStrip />
+        </Reveal>
+
         <Reveal variant="up" delay={140} className="w-full">
           <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
             <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
@@ -408,6 +413,10 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
                 الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
           </div>
+        </Reveal>
+
+        <Reveal variant="up" delay={180} className="w-full">
+          <HeroLeagueStatsBar />
         </Reveal>
 
         {/* Keep the semantic H1 accessible outside the illustrative button;

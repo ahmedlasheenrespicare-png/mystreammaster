@@ -291,13 +291,20 @@ function Chevron({ dir }: { dir: "start" | "end" }) {
   );
 }
 
-/* شعار النادي من المصدر نفسه (MatchTeam.logo كما تعرضه صفحة المواعيد)،
-   وبديل محايد (كرة) إن غاب الشعار أو تعذّر تحميله — بلا شعار مخترع */
-function ClubMark({ team }: { team: MatchTeam }) {
+/* شعار النادي داخل قاعدة دائرية بيضاء مجسّمة فوق شطري البطاقة القطرية */
+function DiagonalCrest({ team, small = false }: { team: MatchTeam; small?: boolean }) {
+  const cls = `hms-diag-crest${small ? " hms-diag-crest--sm" : ""}`;
   if (!team.logo) {
     return (
-      <span aria-hidden="true" className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-black/5 text-black/50 lg:h-6 lg:w-6">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-3 w-3">
+      <span aria-hidden="true" className={`${cls} text-black/55`}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          aria-hidden="true"
+          className={small ? "h-3 w-3" : "h-3.5 w-3.5"}
+        >
           <circle cx="12" cy="12" r="9" />
           <path d="m12 8 3.4 2.5-1.3 4h-4.2l-1.3-4L12 8Z" />
         </svg>
@@ -305,40 +312,28 @@ function ClubMark({ team }: { team: MatchTeam }) {
     );
   }
   return (
-    <img
-      data-club-logo=""
-      src={team.logo}
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-      width={18}
-      height={18}
-      className="h-[18px] w-[18px] shrink-0 object-contain lg:h-6 lg:w-6"
-      onError={event => {
-        event.currentTarget.style.visibility = "hidden";
-      }}
-    />
-  );
-}
-
-function TeamLine({ team }: { team: MatchTeam }) {
-  return (
-    <span className="flex items-center gap-1.5 text-[13px] font-black leading-tight lg:text-[13px]">
-      <ClubMark team={team} />
-      <span className="min-w-0 flex-1 truncate">{team.name}</span>
-      {team.score != null && (
-        <span dir="ltr" className="shrink-0 tabular-nums text-black/70">
-          {team.score}
-        </span>
-      )}
+    <span aria-hidden="true" className={cls}>
+      <img
+        data-club-logo=""
+        src={team.logo}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        width={small ? 15 : 18}
+        height={small ? 15 : 18}
+        className={small ? "h-[14px] w-[14px] shrink-0 object-contain" : "h-[17px] w-[17px] shrink-0 object-contain"}
+        onError={event => {
+          event.currentTarget.style.visibility = "hidden";
+        }}
+      />
     </span>
   );
 }
 
 /* --------------------------------------------------------------------------
    تذكرة يمين التذكرة الرئيسية — مباريات أمس واليوم وغد
-   (تبويبات + شرائح بسهمين، تقليب تلقائي كل 4.5 ثانية ويدوي بالأزرار)
+   التصميم المعتمد: الملصق القطري المزدوج + الشفرات المائلة (Diagonal Split Clash)
    -------------------------------------------------------------------------- */
 export function HeroMatchesTicket({ className = "" }: { className?: string }) {
   const days = useMemo<Record<DayKey, string>>(() => {
@@ -352,6 +347,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
   const day = states[activeDay];
   const slides = day.status === "ready" ? day.matches : [];
   const count = slides.length;
+  const hasLiveToday = states.today.matches.some(match => match.state === "live");
   const { index, step, reset, hold } = useSlideRotation(count);
   const swipe = useTicketSwipe(step);
   const current = count > 0 ? slides[index] : null;
@@ -360,6 +356,10 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
      والتصفيات والودّية) تبقى بلا شعار في الخلفية — لا يُخترع شعار */
   const leagueLogo = current ? leagueIcon(current.league) : undefined;
   const currentHref = current ? matchCenterLink(current) ?? to("matches/") : to("matches/");
+  const kickoffLabel = current ? kickoff(current.date, HOME_ZONE) : "";
+  const compTitle = current ? leagueName(current.league) : "";
+  const matchCountLabel =
+    day.status === "ready" && count > 0 ? `${count} ${count === 1 ? "مباراة" : "مباريات"}` : "";
 
   /* تبديل اليوم يبدأ من الشريحة الأولى ويؤجّل التقليب التلقائي */
   const selectDay = (key: DayKey) => {
@@ -369,11 +369,11 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
 
   return (
     <SideTicketShell ariaLabel="مباريات أمس واليوم وغد" side="matches" className={className} onPause={hold}>
-      <div className="flex items-center gap-1.5">
+      <div className="hdt-diag-bar" data-day-tabs-variant="diagonal">
         <div
           role="tablist"
           aria-label="يوم المباريات"
-          className="flex min-w-0 flex-1 items-center gap-0.5 rounded-full border border-black/10 bg-[#f7f8f2] p-0.5"
+          className="hdt-diag-tablist"
           onKeyDown={event => {
             if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
             event.preventDefault();
@@ -382,27 +382,41 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
             selectDay(DAY_TABS[next].key);
           }}
         >
-          {DAY_TABS.map(tab => (
-            <button
-              key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={activeDay === tab.key}
-              aria-controls="hero-matches-panel"
-              tabIndex={activeDay === tab.key ? 0 : -1}
-              onClick={() => selectDay(tab.key)}
-              className={`flex-1 rounded-full px-1 py-0.5 text-[11px] font-black transition-colors lg:text-[10px] ${
-                activeDay === tab.key ? "bg-[#d8ff3e] text-[#0b0b0f]" : "text-black/60 hover:text-black"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {DAY_TABS.map(tab => {
+            const isActive = activeDay === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls="hero-matches-panel"
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => selectDay(tab.key)}
+                className={`hdt-diag-tab${isActive ? " is-active" : ""}`}
+              >
+                <span className="hdt-diag-tab-txt">
+                  {tab.key === "today" && hasLiveToday && (
+                    <span aria-hidden="true" className="hms-diag-live-dot" />
+                  )}
+                  <span>{tab.label}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
-        <span className="min-w-0 shrink-0 truncate text-[9.5px] font-bold text-black/60 lg:text-[9px]">{dayLabel(days[activeDay])}</span>
+
+        <div className="hdt-diag-meta">
+          <span className="hdt-diag-date-pill">{dayLabel(days[activeDay])}</span>
+          {matchCountLabel && (
+            <span className="hdt-diag-count" aria-hidden="true">
+              {matchCountLabel}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div id="hero-matches-panel" role="tabpanel" aria-label={DAY_TABS.find(tab => tab.key === activeDay)?.label} className="hero-news-stage mt-1.5 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
+      <div id="hero-matches-panel" role="tabpanel" aria-label={DAY_TABS.find(tab => tab.key === activeDay)?.label} className="hero-news-stage mt-1 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
         {day.status === "loading" && (
           <p className="text-[12px] font-bold leading-relaxed text-black/60 lg:text-[10px]">جارٍ تحديث المواعيد…</p>
         )}
@@ -431,13 +445,14 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
             {...swipe}
             style={{ touchAction: "pan-y pinch-zoom" }}
             href={currentHref}
+            data-match-card-variant="diagonal"
             onClick={() => trackHomeEvent("hero_match_open", {
               match_id: current.id,
               league_id: current.league,
               match_state: current.state,
               target_path: currentHref,
             })}
-            className="hero-match-slide relative isolate overflow-hidden rounded-lg border border-black/10 bg-[#f7f8f2] px-2 py-1.5 text-start transition-colors hover:border-[#b3d21f] hover:bg-[#f5f9e6]"
+            className="hero-match-slide hms-diag-card"
           >
             {/* خلفية الشريحة: شعار بطولة المباراة نفسها (زخرفي، خافت، تحت
                 النص) — يظهر فقط لبطولة لها شعار موثّق */}
@@ -456,59 +471,118 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
                 }}
               />
             )}
-            <span className="flex items-center justify-between gap-1 text-[10px] font-bold text-black/60 lg:text-[9.5px]">
-              <span className="min-w-0 truncate">{leagueName(current.league)}</span>
-              {current.state === "live" ? (
-                <span className="inline-flex shrink-0 items-center gap-1 font-black text-[#bd291d]">
-                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#ff6b5c]" />
-                  مباشر
-                  {current.detail && current.detail !== "مباشر" && (
-                    <bdi className="tabular-nums">{current.detail}</bdi>
+
+            {/* الجوال (< 1024px): ملصق قطري أفقي يتّسع داخل ارتفاع 132px */}
+            <span className="hms-diag-mobile">
+              <span className="hms-diag-mob-head">
+                <span className="min-w-0 truncate">{compTitle}</span>
+                {current.state === "live" ? (
+                  <span className="hms-diag-mob-status is-live">
+                    <span aria-hidden="true" className="hms-diag-live-dot" />
+                    مباشر
+                    {current.detail && current.detail !== "مباشر" && (
+                      <bdi className="tabular-nums">{current.detail}</bdi>
+                    )}
+                  </span>
+                ) : current.state === "finished" ? (
+                  <span className="hms-diag-mob-status">انتهت</span>
+                ) : current.state === "other" ? (
+                  <span className="hms-diag-mob-status">تغيّر الموعد</span>
+                ) : (
+                  <span dir="ltr" className="hms-diag-mob-status">
+                    {kickoffLabel}
+                  </span>
+                )}
+              </span>
+
+              <span className="hms-diag-mob-duel">
+                <span className="hms-diag-mob-side hms-diag-mob-side--home">
+                  <DiagonalCrest team={current.home} small />
+                  <span className="hms-diag-mob-name">{current.home.name}</span>
+                </span>
+                {current.home.score != null && current.away.score != null ? (
+                  <span data-match-score="" dir="rtl" className="hms-diag-mob-score">
+                    <bdi data-score-home="" dir="ltr">{current.home.score}</bdi>
+                    <span aria-hidden="true">-</span>
+                    <bdi data-score-away="" dir="ltr">{current.away.score}</bdi>
+                  </span>
+                ) : (
+                  <span aria-hidden="true" className="hms-diag-mob-score">VS</span>
+                )}
+                <span className="hms-diag-mob-side hms-diag-mob-side--away">
+                  <span className="hms-diag-mob-name">{current.away.name}</span>
+                  <DiagonalCrest team={current.away} small />
+                </span>
+              </span>
+            </span>
+
+            {/* سطح المكتب (>= 1024px): ملصق قطري مزدوج بشطر علوي داكن وشقّ ليموني وشطر سفلي كريمي */}
+            <span className="hms-diag-desktop">
+              <span className="hms-diag-home-zone">
+                <span className="hms-diag-team-info">
+                  <DiagonalCrest team={current.home} />
+                  <span className="hms-diag-team-name">{current.home.name}</span>
+                </span>
+                {current.home.score != null && (
+                  <span dir="ltr" className="hms-diag-score-lime">
+                    {current.home.score}
+                  </span>
+                )}
+              </span>
+
+              <span className="hms-diag-slash-wrap">
+                <span className={`hms-diag-pivot-pill${current.state === "live" ? " is-live" : ""}`}>
+                  {current.state === "live" && (
+                    <span aria-hidden="true" className="hms-diag-live-dot" />
                   )}
+                  <span className="hms-diag-pivot-txt">
+                    {compTitle ? `${compTitle} · ` : ""}
+                    {current.state === "live" ? (
+                      <>
+                        مباشر
+                        {current.detail && current.detail !== "مباشر" ? (
+                          <>
+                            {" "}
+                            <bdi className="tabular-nums">{current.detail}</bdi>
+                          </>
+                        ) : null}
+                      </>
+                    ) : current.state === "finished" ? (
+                      "انتهت"
+                    ) : current.state === "other" ? (
+                      "تغيّر الموعد"
+                    ) : (
+                      <bdi dir="ltr">{kickoffLabel}</bdi>
+                    )}
+                  </span>
                 </span>
-              ) : current.state === "finished" ? (
-                <span className="shrink-0 font-black text-black/60">انتهت</span>
-              ) : current.state === "other" ? (
-                <span className="shrink-0 font-black text-black/60">تغيّر الموعد</span>
-              ) : (
-                <span dir="ltr" className="shrink-0 font-black tabular-nums text-black/70">
-                  {kickoff(current.date, HOME_ZONE)}
-                </span>
-              )}
-            </span>
-            {/* الجوال (التذكرة بنصف الطول): صفّ واحد أفقي — شعار الفريقين
-                على طرفَي السطر والنتيجة بينهما. سطح المكتب: صفّ لكل فريق. */}
-            <span className="mt-1 flex items-center justify-between gap-1 text-[12.5px] font-black leading-tight lg:hidden">
-              <span className="flex min-w-0 items-center gap-1">
-                <ClubMark team={current.home} />
-                <span className="min-w-0 truncate">{current.home.name}</span>
               </span>
-              {current.home.score != null && current.away.score != null && (
-                <span data-match-score="" dir="rtl" className="inline-flex shrink-0 items-center gap-1 tabular-nums text-black/75">
-                  <bdi data-score-home="" dir="ltr">{current.home.score}</bdi>
-                  <span aria-hidden="true">-</span>
-                  <bdi data-score-away="" dir="ltr">{current.away.score}</bdi>
+
+              <span className="hms-diag-away-zone">
+                <span className="hms-diag-team-info">
+                  <DiagonalCrest team={current.away} />
+                  <span className="hms-diag-team-name">{current.away.name}</span>
                 </span>
-              )}
-              <span className="flex min-w-0 items-center gap-1">
-                <span className="min-w-0 truncate">{current.away.name}</span>
-                <ClubMark team={current.away} />
+                {current.away.score != null ? (
+                  <span dir="ltr" className="hms-diag-score-dark">
+                    {current.away.score}
+                  </span>
+                ) : (
+                  <span dir="ltr" className="hms-diag-score-dark">
+                    {kickoffLabel}
+                  </span>
+                )}
               </span>
-            </span>
-            <span className="mt-1 hidden space-y-1 lg:block">
-              <TeamLine team={current.home} />
-              <TeamLine team={current.away} />
-            </span>
-            {/* سطر الملعب: يُحجز دائماً (مسافة عند غيابه) فلا يتغيّر ارتفاع
-                البطاقة بين شريحة وأخرى أثناء التقليب */}
-            <span className="mt-2 hidden truncate text-[10px] font-bold text-black/50 lg:block">
-              {current.venue || "\u00A0"}
+
+              <span className="hms-diag-venue">
+                {current.venue || "\u00A0"}
+              </span>
             </span>
           </a>
         )}
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-1 border-t border-black/10 pt-1.5 text-[10.5px] font-bold lg:text-[9.5px]">
+      <div className="hms-diag-footer">
         <a
           className="shrink-0 font-black text-[#0b0b0f]"
           href={to("matches/")}

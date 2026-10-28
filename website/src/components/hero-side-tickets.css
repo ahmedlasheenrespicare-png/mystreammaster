@@ -214,3 +214,444 @@
   text-decoration-color: #819a00;
   text-underline-offset: 3px;
 }
+
+/* ==========================================================================
+   التصميم المعتمد لتذكرة المواعيد:
+   المقترح (3) — الملصق القطري المزدوج + الشفرات المائلة (Diagonal Split Clash)
+   متناغم مع التاج المداري ثلاثي الأبعاد بالجناحين الكريميين أعلى الهيرو
+========================================================================== */
+
+.hdt-diag-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .hero-side-ticket--matches .hdt-diag-bar {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.hdt-diag-tablist {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1.5px 3px;
+}
+
+.hdt-diag-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 4px;
+  border: 1.5px solid #0b0b0f;
+  border-radius: 5px;
+  background: #fcfbf7;
+  color: #0b0b0f;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.15;
+  transform: skewX(12deg);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hdt-diag-tab:hover {
+  border-color: #2b4eff;
+  background: #f3f6ff;
+}
+
+.hdt-diag-tab.is-active {
+  background: #d8ff3e;
+  border-color: #0b0b0f;
+  color: #0b0b0f;
+  box-shadow: -2px 2px 0 #0b0b0f;
+  transform: skewX(12deg) translateY(-0.5px);
+}
+
+.hdt-diag-tab-txt {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transform: skewX(-12deg);
+}
+
+.hdt-diag-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding-inline: 2px;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .hero-side-ticket--matches .hdt-diag-meta {
+    flex: 0 0 auto;
+    padding-inline: 0;
+  }
+}
+
+.hdt-diag-date-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(43, 78, 255, 0.08);
+  border: 1px solid rgba(43, 78, 255, 0.18);
+  color: #2b4eff;
+  font-size: 8.5px;
+  font-weight: 800;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.hdt-diag-count {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #6b675e;
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .hero-side-ticket--matches .hdt-diag-count {
+    display: none;
+  }
+}
+
+/* ── بطاقة المباراة القطرية المزدوجة (hms-diag-card) ───────────────────── */
+.hero-side-ticket--matches .hms-diag-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 11px;
+  border: 1.5px solid #0b0b0f;
+  background: linear-gradient(180deg, #fcfbf7 0%, #f1ede1 100%);
+  color: #0b0b0f;
+  text-decoration: none;
+  text-align: start;
+  box-shadow: 0 10px 22px -14px rgba(11, 11, 15, 0.45);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-side-ticket--matches .hms-diag-card:hover {
+  transform: translateY(-1px);
+  border-color: #2b4eff;
+}
+
+/* بقاء الشعار المائي للبطولة متوسّطاً فوق الخلفيتين وتحت نصوص الفريقين */
+.hero-side-ticket--matches .hms-diag-card .hero-match-slide-logo {
+  z-index: 1;
+}
+
+.hms-diag-live-dot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border-radius: 999px;
+  background: #ff4d3d;
+  box-shadow: 0 0 0 2px rgba(255, 77, 61, 0.28);
+}
+
+.hms-diag-crest {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1.5px solid rgba(11, 11, 15, 0.14);
+  box-shadow: 0 3px 8px -4px rgba(11, 11, 15, 0.28);
+}
+
+.hms-diag-crest--sm {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+}
+
+/* ── عرض الجوال الأفقي القطري (< 1024px) ───────────────────────────────── */
+.hms-diag-mobile {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .hms-diag-mobile {
+    display: none;
+  }
+}
+
+.hms-diag-mob-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 2.5px 7px;
+  background: #0b0b0f;
+  color: rgba(246, 244, 236, 0.86);
+  border-bottom: 1.5px solid #d8ff3e;
+  font-size: 8.5px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.hms-diag-mob-status {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 3px;
+  color: #d8ff3e;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.hms-diag-mob-status.is-live {
+  color: #ff8f84;
+}
+
+.hms-diag-mob-duel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 4px 7px 4.5px;
+  min-width: 0;
+  background: linear-gradient(
+    108deg,
+    #fcfbf7 0%,
+    #f3efe3 48.8%,
+    #d8ff3e 48.8%,
+    #d8ff3e 51.2%,
+    #161a26 51.2%,
+    #0b0b0f 100%
+  );
+}
+
+.hms-diag-mob-side {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0%;
+  align-items: center;
+  gap: 4.5px;
+}
+
+.hms-diag-mob-side--home {
+  color: #f6f4ec;
+}
+
+.hms-diag-mob-side--away {
+  justify-content: flex-end;
+  color: #0b0b0f;
+}
+
+.hms-diag-mob-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.hms-diag-mob-score {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 3px;
+  padding: 1.5px 6.5px;
+  border-radius: 999px;
+  background: #0b0b0f;
+  border: 1.5px solid #d8ff3e;
+  color: #d8ff3e;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  box-shadow: 0 2px 6px rgba(11, 11, 15, 0.35);
+}
+
+/* ── عرض سطح المكتب الرأسي القطري (>= 1024px) ──────────────────────────── */
+.hms-diag-desktop {
+  position: relative;
+  z-index: 2;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .hms-diag-desktop {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.hms-diag-home-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 8px 13px;
+  background: linear-gradient(155deg, rgba(11, 11, 15, 0.94) 0%, rgba(23, 27, 39, 0.94) 100%);
+  color: #f6f4ec;
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 0 100%);
+}
+
+.hms-diag-slash-wrap {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block: -10px -7px;
+  padding-inline: 6px;
+}
+
+.hms-diag-slash-wrap::before {
+  content: "";
+  position: absolute;
+  inset-inline: -6px;
+  height: 3px;
+  background: linear-gradient(90deg, #d8ff3e 0%, #2b4eff 100%);
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+
+.hms-diag-pivot-pill {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  max-width: 96%;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #2b4eff;
+  border: 1.5px solid #ffffff;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.25;
+  box-shadow: 0 3px 8px rgba(11, 11, 15, 0.35);
+}
+
+.hms-diag-pivot-pill.is-live {
+  background: #bd291d;
+}
+
+.hms-diag-pivot-txt {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hms-diag-away-zone {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 11px 8px 6px;
+  color: #0b0b0f;
+}
+
+.hms-diag-team-info {
+  display: flex;
+  align-items: center;
+  gap: 5.5px;
+  min-width: 0;
+}
+
+.hms-diag-away-zone .hms-diag-team-info {
+  flex-direction: row-reverse;
+}
+
+.hms-diag-team-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.hms-diag-score-lime {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #d8ff3e;
+  color: #0b0b0f;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.hms-diag-score-dark {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #0b0b0f;
+  color: #ffffff;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.hms-diag-venue {
+  padding: 3px 8px 4.5px;
+  border-top: 1px solid rgba(223, 216, 198, 0.8);
+  text-align: center;
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #6b675e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hms-diag-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #e6dfd0;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hdt-diag-tab,
+  .hero-side-ticket--matches .hms-diag-card {
+    transition: none;
+  }
+}
+

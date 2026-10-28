@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import CarouselControls from "./CarouselControls";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { useCarousel } from "./useCarousel";
-import snapshot from "../content/standings-snapshot.json";
-import { standingsRates } from "../lib/fixtures-archive.mjs";
 import {
-  leagueStandingsByLeague,
-  standingsUrl,
-  validateStandings,
-} from "../lib/standings.mjs";
+  refreshLiveLeaguesStandings,
+  useLiveStandingsMap,
+  type LiveLeagueRecord,
+} from "../lib/live-standings";
 import "./league-carousel.css";
 import "./league-stats.css";
 
@@ -17,24 +15,17 @@ import "./league-stats.css";
    الروابط الذي يعلوه (نفس الآلية من useCarousel ونفس أدوات التنقّل).
    --------------------------------------------------------------------------
    قواعد البيانات هنا نفس قواعد قسم «جدول الترتيب» في صفحات البطولات:
-   • لا رقم يُحسب إلا من جدول ترتيب متحقق منه: validateStandings ترفض أي رد
-     غير مستوفٍ للشروط، وstandingsRates تحسب المعدلات من الأهداف ÷ الملعوب.
-   • المحتوى الأول من لقطة البناء المراجَعة (standings-snapshot.json) — نفس
-     اللقطة التي تبدأ بها صفحات البطولات — فتظهر الأرقام في HTML دون انتظار
-     JavaScript، ثم يتولاها التحديث الحيّ.
+   • يشترك مع شريط «صفحات البطولات» في مخزن الترتيب الحيّ الموحّد
+     (live-standings.ts): طلب واحد لكل بطولة من /standings.php يُحدّث
+     الشريطين معاً عبر validateStandings وstandingsRates (الجدول القابل للفرز).
    • الجلب **حيّ عند الظهور**: لا يُطلب /standings.php إلا حين يصل الزائر إلى
      القسم فعلاً (IntersectionObserver)، ويُعاد كل REFRESH_MS ما دام القسم
      ظاهراً والصفحة مفتوحة ومتصلة.
-   • لا تُستبدل قراءة أحدث بقراءة أقدم، والفشل يُبقي آخر أرقام مؤكَّدة؛
-     وحالة القراءة (قديمة/فاشلة) محمولة في خصائص `data-stat-*` على الكرت لا
-     في سطر نصي تحته — الكرت مختصر، والمقاييس نفسها تعرض «غير متاح» حين لا
-     تتوفّر قراءة صحيحة أصلاً.
+   • لا تُستبدل قراءة أحدث بقراءة أقدم، والفشل يُبقي آخر أرقام مؤكَّدة.
 ========================================================================== */
 
 /* تحديث الترتيب أبطأ من المباريات: خمس دقائق تكفي ولا تُنهِك الوسيط */
 const REFRESH_MS = 300_000;
-const ABORT_MS = 12_000;
-const CACHE_STALE_HEADER = "X-Standings-Cache";
 
 export interface LeagueStatsItem {
   /** رابط صفحة البطولة — عنوان الكرت */
@@ -47,34 +38,18 @@ export interface LeagueStatsItem {
   standingsLeagueId: string | null;
 }
 
-/** إحصائيات بطولة واحدة بعد التحقق والحساب — بلا أي رقم مخمَّن */
-interface LeagueStat {
-  status: "idle" | "loading" | "ready" | "failed";
+interface LeagueStatSummary {
+  status: LiveLeagueRecord["status"];
   stale: boolean;
   season: number | null;
-  fetchedAt: string | null;
-  code?: string;
-  /** أعلى معدل تسجيل — قد يتعادل فيه أكثر من فريق فيُعرض الأول بالترتيب */
   bestAttack: { name: string; value: number }[];
-  /** أقل معدل استقبال */
   bestDefence: { name: string; value: number }[];
   totalGoals: number | null;
 }
 
-const EMPTY: LeagueStat = {
-  status: "idle",
-  stale: false,
-  season: null,
-  fetchedAt: null,
-  bestAttack: [],
-  bestDefence: [],
-  totalGoals: null,
-};
-
-/* ملخّص كرت من جدول متحقق منه: اسم الفريق والمعدل وإجمالي الأهداف فقط —
-   بلا تصنيف تكتيكي ولا جدول فرق، فالكرت مختصر بحكم موضعه في الصفحة. */
-function summarize(table: ReturnType<typeof validateStandings>): LeagueStat {
-  const rates = standingsRates(table.entries);
+function summarizeRecord(record: LiveLeagueRecord | undefined): LeagueStatSummary | undefined {
+  if (!record) return undefined;
+  const rates = record.rates;
   const lead = (
     teams: { name?: string; attack: number | null; defence: number | null }[],
     field: "attack" | "defence",
@@ -83,31 +58,15 @@ function summarize(table: ReturnType<typeof validateStandings>): LeagueStat {
       .map((team) => ({ name: team.name ?? "", value: team[field] }))
       .filter((team): team is { name: string; value: number } => typeof team.value === "number")
       .slice(0, 2);
+
   return {
-    status: "ready",
-    stale: table.stale === true,
-    season: table.season,
-    fetchedAt: table.fetchedAt,
-    bestAttack: lead(rates.bestAttack, "attack"),
-    bestDefence: lead(rates.bestDefence, "defence"),
-    totalGoals: rates.league.totalGoals,
+    status: record.status,
+    stale: record.stale,
+    season: record.table?.season ?? null,
+    bestAttack: rates ? lead(rates.bestAttack, "attack") : [],
+    bestDefence: rates ? lead(rates.bestDefence, "defence") : [],
+    totalGoals: rates?.league.totalGoals ?? null,
   };
-}
-
-/* اللقطة المراجَعة مصدر البداية: تُمرَّر في نفس التحقق (validateStandings)
-   الذي يمرّ به ردّ الوسيط، فلا فرق في الصرامة بين ما يُرسم وما يُجلب. */
-function fromSnapshot(league: string): LeagueStat | null {
-  try {
-    return summarize(leagueStandingsByLeague(snapshot, league));
-  } catch {
-    return null;
-  }
-}
-
-function readCode(body: unknown, status: number): string {
-  const code = (body as { code?: unknown } | null)?.code;
-  if (typeof code === "string" && /^[A-Z0-9_]{3,40}$/.test(code)) return code;
-  return `HTTP_${status}`;
 }
 
 interface Props {
@@ -124,15 +83,7 @@ export default function LeagueStatsCarousel({
   const sectionRef = useRef<HTMLElement | null>(null);
   const carousel = useCarousel({ count: items.length, label });
   const [visible, setVisible] = useState(false);
-  const [stats, setStats] = useState<Record<string, LeagueStat>>(() => {
-    const initial: Record<string, LeagueStat> = {};
-    for (const item of items) {
-      if (!item.standingsLeagueId) continue;
-      const stat = fromSnapshot(item.standingsLeagueId);
-      if (stat) initial[item.standingsLeagueId] = stat;
-    }
-    return initial;
-  });
+  const liveMap = useLiveStandingsMap();
 
   /* الجلب عند الظهور فقط: ثمانية طلبات في لحظة فتح الصفحة عبء بلا مقابل،
      والزائر الذي لا يصل إلى القسم لا يحتاج أرقامه أصلاً. */
@@ -167,63 +118,13 @@ export default function LeagueStatsCarousel({
     let working = false;
     let controller: AbortController | undefined;
 
-    const read = async (league: string) => {
-      const response = await fetch(standingsUrl(league), {
-        signal: controller?.signal,
-        cache: "no-store",
-        credentials: "omit",
-        headers: { Accept: "application/json" },
-      });
-      let body: unknown = null;
-      try {
-        body = await response.json();
-      } catch {
-        body = null;
-      }
-      if (!response.ok || (body as { ok?: unknown } | null)?.ok !== true) {
-        throw new Error(readCode(body, response.status));
-      }
-      const table = validateStandings(body, league);
-      const next = summarize(table);
-      if (table.stale || response.headers.get(CACHE_STALE_HEADER) === "STALE") next.stale = true;
-      return next;
-    };
-
     const refresh = async () => {
       if (disposed || working || document.hidden || !navigator.onLine) return;
       working = true;
       controller = new AbortController();
-      const timeout = window.setTimeout(() => controller?.abort(), ABORT_MS);
       try {
-        const results = await Promise.allSettled(leagues.map(read));
-        if (disposed) return;
-        setStats((current) => {
-          const next = { ...current };
-          results.forEach((result, index) => {
-            const league = leagues[index];
-            if (result.status === "fulfilled") {
-              const confirmed = next[league];
-              /* لا تُستبدل قراءة أحدث بقراءة أقدم — نفس حكم صفحات البطولات */
-              if (
-                confirmed?.fetchedAt &&
-                result.value.fetchedAt &&
-                Date.parse(result.value.fetchedAt) < Date.parse(confirmed.fetchedAt)
-              ) {
-                return;
-              }
-              next[league] = result.value;
-            } else {
-              const code =
-                result.reason instanceof Error ? result.reason.message : "UNAVAILABLE";
-              /* القراءة السابقة تبقى ظاهرة مع وسم «قديمة»: الأرقام القديمة
-                 المعلَنة خير من فراغ، والفشل لا يُخفى. */
-              next[league] = previous(next[league], code);
-            }
-          });
-          return next;
-        });
+        await refreshLiveLeaguesStandings(leagues, controller.signal);
       } finally {
-        window.clearTimeout(timeout);
         working = false;
       }
     };
@@ -265,15 +166,15 @@ export default function LeagueStatsCarousel({
       <div className="league-carousel-viewport" {...carousel.viewportProps}>
         <div className="league-carousel-track" {...carousel.trackProps}>
           {items.map((item, index) => {
-            const stat = item.standingsLeagueId ? stats[item.standingsLeagueId] : undefined;
+            const stat = item.standingsLeagueId
+              ? summarizeRecord(liveMap[item.standingsLeagueId])
+              : undefined;
             return (
               <article
                 key={item.href}
                 className="league-stats-card"
                 data-league={item.standingsLeagueId ?? ""}
                 data-stat-status={stat?.status ?? "idle"}
-                /* حالة القراءة تُحمل في خاصية لا في نص: الكرت مختصر بلا سطر
-                   قراءة، والقديم يُمَيَّز آلياً (اختبارات/تشخيص) بلا إطالة. */
                 data-stat-stale={stat?.stale ? "true" : "false"}
               >
                 <a
@@ -360,17 +261,6 @@ export default function LeagueStatsCarousel({
   );
 }
 
-/* القراءة الفاشلة تُبقي آخر أرقام مؤكَّدة (وسم «قديمة»)، أو تعلن «غير متاح»
-   إن لم يسبق أن وصلت قراءة صحيحة — ولا قيمة تُخترع في الحالتين. */
-function previous(current: LeagueStat | undefined, code: string): LeagueStat {
-  if (current && current.status === "ready") {
-    return { ...current, stale: true, code };
-  }
-  return { ...EMPTY, status: "failed", code };
-}
-
-/* رقم أو «غير متاح» — ولا فرق بين نقص البيانات وبطء الجلب في العرض: الحالة
-   تُحمل في `data-stat-status` ليقرأها الاختبار والأنماط، لا ليُخترع رقم. */
 function StatValue({
   value,
   unit,
@@ -378,7 +268,7 @@ function StatValue({
 }: {
   value: string | number | null;
   unit: string;
-  status: LeagueStat["status"];
+  status: LiveLeagueRecord["status"];
 }) {
   if (value === null || value === "") {
     return (

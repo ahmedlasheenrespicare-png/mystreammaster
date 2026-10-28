@@ -1,16 +1,12 @@
-import { test, expect, type Locator, type Page, type Route } from '@playwright/test';
+import { test, expect, type Page, type Route } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 
-// The league bar is a carousel (slider) over real landing-page links: it must
-// page without hiding links from crawlers, keyboard users, or no-JS visitors.
+// شريط البطولات حلقة دائرية ثلاثية الأبعاد (ilkhoeri/swift-panda-38) فوق روابط
+// صفحات الهبوط الحقيقية: تدور كل 5 ثوانٍ وتُحرَّك باللمس والفأرة ولوحة المفاتيح.
 const NOW = new Date('2026-10-13T12:00:00Z');
 
-/* المصدر المؤقت لشعارات المتصدّرين هو نفسه مصدر بطاقات المباريات الحيّة
-   (ESPN CDN). الاختبار لا يعتمد على الشبكة: يستجيب لطلبات ذلك المضيف وحده
-   ببكسل محلي، ويترك أي مضيف آخر مقطوعاً. */
 const LIVE_CREST = /^https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/[1-9]\d{0,11}\.png$/;
 const HIGHLIGHTLY_CREST = /^https:\/\/highlightly\.net\/soccer\/images\/teams\/[1-9]\d{0,11}\.png$/;
-/** مضيفا شعارات المزوّدين المعتمدان في البانر */
 const PROVIDER_CREST = [LIVE_CREST, HIGHLIGHTLY_CREST];
 const CREST_PIXEL = fileURLToPath(new URL('../public/images/teams/paris-saint-germain-club-badge.webp', import.meta.url));
 
@@ -20,7 +16,6 @@ async function openHub(
   override?: (url: URL, route: Route) => boolean,
 ) {
   await page.clock.install({ time: NOW });
-  // Upstream is unreachable in CI; the carousel must not depend on match data.
   await page.route('**/*', route => {
     const url = new URL(route.request().url());
     if (override?.(url, route)) return;
@@ -37,9 +32,6 @@ async function openHub(
   await page.goto('/matches/');
 }
 
-
-/* الصفحة تمرّر نفسها إلى التقويم بعد وصول البيانات، فتتحرّك العناصر تحت
-   الإحداثيات المحسوبة. تُنتظر هنا استقرار موضع التمرير قبل أي سحب بالفأرة. */
 async function settleScroll(page: Page) {
   let last = -1;
   for (let attempt = 0; attempt < 12; attempt++) {
@@ -50,30 +42,21 @@ async function settleScroll(page: Page) {
   }
 }
 
-const offset = (nav: Locator) =>
-  nav.locator('.league-carousel-track').evaluate(el => {
-    const matrix = new DOMMatrix(getComputedStyle(el).transform);
-    return Math.round(matrix.m41);
-  });
-
-test('league bar pages by arrows and dots, keeps every link in the DOM, and grows the active dot', async ({ page }) => {
+test('3D circular ring steps by arrows and dots, wraps continuously, and keeps all eight links in the DOM', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await openHub(page, { width: 1440, height: 1000 });
 
-  const nav = page.locator('.matches-league-links.league-carousel');
+  const nav = page.locator('.matches-league-links.league-carousel.lc-ring-carousel');
   await expect(nav).toHaveAttribute('data-ready', 'true');
-  // All eight landing links stay in the document: the carousel offsets them,
-  // it never swaps the list out.
   await expect(nav.locator('.league-carousel-item')).toHaveCount(8);
   for (const href of ['/matches/الدوري-الإنجليزي/', '/matches/دوري-أبطال-أوروبا/', '/matches/الدوري-السعودي/']) {
     await expect(nav.locator(`a[href="${href}"]`), href).toHaveCount(1);
   }
-  // Desktop: four cards per page → two pages.
-  await expect(nav.locator('.league-carousel-dot')).toHaveCount(2);
-  // At the first page only "previous" is disabled; the first button in the DOM
-  // is "next" (RTL: later pages sit to the left).
-  await expect(nav.getByLabel('البطولات السابقة')).toBeDisabled();
+
+  // ثماني بطولات حول الدائرة (360° / 8 = 45°) وسهمان يعملان بالالتفاف المستمر.
+  await expect(nav.locator('.league-carousel-dot')).toHaveCount(8);
+  await expect(nav.getByLabel('البطولات السابقة')).toBeEnabled();
   await expect(nav.getByLabel('البطولات التالية')).toBeEnabled();
 
   const first = nav.locator('.league-carousel-dot').first();
@@ -84,56 +67,86 @@ test('league bar pages by arrows and dots, keeps every link in the DOM, and grow
   const idleWidth = (await second.boundingBox())!.width;
   expect(activeWidth).toBeGreaterThan(idleWidth * 2);
 
-  const start = await offset(nav);
+  await expect(nav.locator('.league-carousel-item').first()).toHaveAttribute('data-ring-pos', 'front');
   await nav.getByLabel('البطولات التالية').click();
   await expect(second).toHaveClass(/is-active/);
-  await expect(first).not.toHaveAttribute('aria-current', 'true');
-  expect(Math.abs((await offset(nav)) - start)).toBeGreaterThan(100);
-  await expect(nav.locator('.league-carousel-viewport')).toHaveAttribute('aria-label', /صفحة 2 من 2/);
+  await expect(nav).toHaveAttribute('data-active-index', '1');
+  await expect(nav.locator('.league-carousel-item').nth(1)).toHaveAttribute('data-ring-pos', 'front');
+  await expect(nav.locator('.lc-ring-inner')).toHaveAttribute('style', /--ring-angle:\s*45deg/);
 
+  // الرجوع خطوتين يلتفّ بسلاسة حول الحلقة إلى البطاقة الثامنة (index 7).
   await nav.getByLabel('البطولات السابقة').click();
   await expect(first).toHaveClass(/is-active/);
-  expect(await offset(nav)).toBe(start);
+  await nav.getByLabel('البطولات السابقة').click();
+  await expect(nav).toHaveAttribute('data-active-index', '7');
+  await expect(nav.locator('.league-carousel-dot').nth(7)).toHaveClass(/is-active/);
 
   await second.click();
   await expect(second).toHaveClass(/is-active/);
-  await expect(nav.getByLabel('البطولات التالية')).toBeDisabled();
-  await nav.getByLabel('البطولات السابقة').click();
-  await expect(first).toHaveClass(/is-active/);
   expect(errors).toEqual([]);
 });
 
-test('league bar re-measures on a narrow viewport: two cards per page and four pages', async ({ page }) => {
+test('3D ring auto-advances every 5 seconds and pauses while hovered or under reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await openHub(page, { width: 1440, height: 1000 });
+  const nav = page.locator('.matches-league-links.league-carousel');
+  await expect(nav).toHaveAttribute('data-ready', 'true');
+  await expect(nav).toHaveAttribute('data-active-index', '0');
+
+  await page.clock.runFor(5100);
+  await expect(nav).toHaveAttribute('data-active-index', '1');
+  await page.clock.runFor(5000);
+  await expect(nav).toHaveAttribute('data-active-index', '2');
+
+  // التحويم بالفأرة يوقف المؤقّت لقراءة بيانات المتصدّر بهدوء.
+  await page.evaluate(() =>
+    document.querySelector('.matches-league-links.league-carousel')!.scrollIntoView({ block: 'center' }),
+  );
+  await settleScroll(page);
+  await nav.locator('.league-carousel-item[data-ring-pos="front"]').hover();
+  await page.clock.runFor(6000);
+  await expect(nav).toHaveAttribute('data-active-index', '2');
+
+  // ومع تفضيل تقليل الحركة يتوقف الدوران التلقائي احتراماً لتفضيل الزائر.
+  await page.mouse.move(5, 5);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(async () => {
+    await page.clock.runFor(5200);
+    return nav.getAttribute('data-active-index');
+  }).toBe('2');
+});
+
+test('3D circular ring fits cleanly on a narrow mobile viewport without horizontal page overflow', async ({ page }) => {
   await openHub(page, { width: 390, height: 900 });
   const nav = page.locator('.matches-league-links.league-carousel');
   await expect(nav).toHaveAttribute('data-ready', 'true');
-  await expect(nav.locator('.league-carousel-dot')).toHaveCount(4);
-  const items = nav.locator('.league-carousel-item');
-  // Cards stay inside the viewport width: two fit side by side, none overflow.
-  const [first, second] = [(await items.nth(0).boundingBox())!, (await items.nth(1).boundingBox())!];
-  expect(Math.abs(first.y - second.y)).toBeLessThan(4);
-  expect(Math.min(first.x, second.x) + first.width + second.width).toBeLessThan(391);
+  await expect(nav.locator('.league-carousel-dot')).toHaveCount(8);
+
+  const front = nav.locator('.league-carousel-item[data-ring-pos="front"]');
+  const frontBox = (await front.boundingBox())!;
+  expect(frontBox.x).toBeGreaterThanOrEqual(0);
+  expect(frontBox.x + frontBox.width).toBeLessThanOrEqual(390);
+  const docWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(docWidth).toBeLessThanOrEqual(390);
 });
 
-test('keyboard focus reaches a league link and the bar follows it into view', async ({ page }) => {
+test('keyboard focus reaches any league link and rotates the 3D ring to bring it front and center', async ({ page }) => {
   await openHub(page, { width: 1440, height: 1000 });
   const nav = page.locator('.matches-league-links.league-carousel');
   const last = nav.locator('.league-carousel-item').last();
   await last.focus();
   await expect(last).toBeFocused();
-  // The card that received focus is brought into the visible window.
+  await expect(last).toHaveAttribute('data-ring-pos', 'front');
   await expect.poll(async () => {
     const box = await last.boundingBox();
     const view = (await nav.locator('.league-carousel-viewport').boundingBox())!;
-    return box ? box.x >= view.x - 4 && box.x + box.width <= view.x + view.width + 4 : false;
+    return box ? box.x >= view.x && box.x + box.width <= view.x + view.width : false;
   }, { timeout: 3000 }).toBe(true);
 });
 
-test('dragging the bar never opens a league page, and a swipe advances the page', async ({ page }) => {
+test('dragging the 3D ring never opens a league page, and a swipe rotates the ring', async ({ page }) => {
   await openHub(page, { width: 1440, height: 1000 });
   const nav = page.locator('.matches-league-links.league-carousel');
-  /* يُثبَّت الشريط في منتصف الشاشة قبل حساب إحداثيات السحب: الهيدر مثبَّت
-     أعلى الصفحة فيغطّي الشريط إن صار تحته، فلا تصل أحداث المؤشر أصلاً. */
   await page.evaluate(() =>
     document.querySelector('.matches-league-links.league-carousel')!.scrollIntoView({ block: 'center' }),
   );
@@ -143,14 +156,13 @@ test('dragging the bar never opens a league page, and a swipe advances the page'
   );
   await settleScroll(page);
   const box = (await nav.locator('.league-carousel-viewport').boundingBox())!;
-  const y = box.y + box.height / 2;
-  // RTL: dragging right reveals the cards waiting on the left.
-  await page.mouse.move(box.x + box.width * 0.6, y);
+  const y = box.y + box.height * 0.45;
+  await page.mouse.move(box.x + box.width * 0.35, y);
   await page.mouse.down();
-  await page.mouse.move(box.x + box.width * 0.9, y, { steps: 12 });
+  await page.mouse.move(box.x + box.width * 0.65, y, { steps: 12 });
   await page.mouse.up();
   await expect(page).toHaveURL(/\/matches\/$/);
-  await expect(nav.locator('.league-carousel-dot').nth(1)).toHaveClass(/is-active/);
+  await expect(nav).not.toHaveAttribute('data-active-index', '0');
 });
 
 test('all eight leader banners use the live match-card crest source, with no other third-party logo host', async ({ page }) => {
@@ -164,8 +176,6 @@ test('all eight leader banners use the live match-card crest source, with no oth
   await expect(nav).toHaveAttribute('data-ready', 'true');
   await expect(nav.locator('.league-carousel-banner')).toHaveCount(8);
 
-  // ترتيب الكروت يطابق ترتيب البطولات: UCL، إنجلترا، فرنسا، إسبانيا، ألمانيا، إيطاليا، السعودية، مصر.
-  // المصري من Highlightly (معرّفه ليس ESPN) فيبقى على الشعار المحلي المعتمد.
   const expected: [string, string, string, string, string][] = [
     ['Paris Saint-Germain', 'PS', 'espn', 'https://a.espncdn.com/i/teamlogos/soccer/500/160.png', '/images/teams/paris-saint-germain-club-badge.webp'],
     ['Manchester City', 'MC', 'espn', 'https://a.espncdn.com/i/teamlogos/soccer/500/382.png', '/images/teams/manchester-city-club-badge.webp'],
@@ -182,7 +192,6 @@ test('all eight leader banners use the live match-card crest source, with no oth
     const card = nav.locator('.league-carousel-item').nth(index);
     await expect(card.locator('.league-carousel-leader')).toContainText(name);
     const banner = card.locator('.league-carousel-banner');
-    // البديل الحرفي دائم أسفل الصورة، لا يزول بتوفّر المسار.
     await expect(banner.locator('.league-carousel-monogram')).toContainText(initials);
     const image = banner.locator('img');
     await expect(image).toHaveAttribute('src', src);
@@ -191,11 +200,9 @@ test('all eight leader banners use the live match-card crest source, with no oth
     await expect(image).toHaveAttribute('aria-hidden', 'true');
     await expect(image).toHaveAttribute('loading', 'lazy');
     await expect(image).toHaveAttribute('draggable', 'false');
-    // الشعار المحلي البديل معروف المسار (وجوده الفعلي يُفحَص أدناه).
     expect(localFallback).toMatch(/^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/);
   }
 
-  // كل صورة في البانر تُفكّ فعلاً (لا صفحة HTML من fallback التوجيه).
   const decoded = await page.evaluate(async list => {
     const out: [string, number, number][] = [];
     for (const src of list) {
@@ -214,7 +221,6 @@ test('all eight leader banners use the live match-card crest source, with no oth
     expect(width, src).toBeGreaterThan(0);
     expect(height, src).toBeGreaterThan(0);
   }
-  // كل شعار محلي بديل يُخدَم WebP صالحاً (المصدر الخارجي مُحاكى في هذا الاختبار).
   for (const fallback of new Set(expected.map(([, , , , localFallback]) => localFallback))) {
     const local = await page.request.get(fallback);
     expect(local.status(), fallback).toBe(200);
@@ -222,7 +228,6 @@ test('all eight leader banners use the live match-card crest source, with no oth
     expect((await local.body()).subarray(0, 4).toString(), fallback).toBe('RIFF');
   }
 
-  // لا مضيف شعارات ثالث: المحلي + مصدر بطاقات المباريات الحيّة فقط.
   expect(crestRequests.length).toBeGreaterThanOrEqual(8);
   for (const request of crestRequests) {
     const url = new URL(request);
@@ -249,22 +254,23 @@ test('a failing live crest falls back to the local crest, then to the initials w
   });
   const nav = page.locator('.matches-league-links.league-carousel');
   await expect(nav).toHaveAttribute('data-ready', 'true');
+  // نلفّ الحلقة إلى البطاقة الثالثة (AS Monaco) لتكون في المقدمة.
+  await nav.locator('.league-carousel-dot').nth(2).click();
   const card = nav.locator('.league-carousel-item').nth(2);
+  await expect(card).toHaveAttribute('data-ring-pos', 'front');
   await card.scrollIntoViewIfNeeded();
   await expect(card.locator('.league-carousel-leader')).toContainText('AS Monaco');
   const banner = card.locator('.league-carousel-banner');
   const image = banner.locator('img');
   const before = (await banner.boundingBox())!;
-  expect(before.height).toBe(104);
-  /* انتظر انتقال الصورة فعلاً إلى الشعار المحلي بعد فشل المزوّد، ثم أرسل
-     حدث خطأ ثانياً للصورة نفسها؛ تغيير src قبل اكتمال الانتقال يختبر الطلب
-     الأول لا فشل البديل المحلي. */
+  expect(before.width).toBeGreaterThanOrEqual(30);
+  expect(before.height).toBeGreaterThanOrEqual(30);
   await expect(image).toHaveAttribute('data-crest-source', 'local');
   await image.evaluate(element => element.dispatchEvent(new Event('error')));
   await expect(image).toHaveCSS('visibility', 'hidden');
   await expect(banner.locator('.league-carousel-monogram')).toBeVisible();
   await expect(banner.locator('.league-carousel-monogram')).toContainText('AM');
-  expect((await banner.boundingBox())!.height).toBe(before.height);
+  expect(Math.abs((await banner.boundingBox())!.height - before.height)).toBeLessThanOrEqual(1);
   expect(blocked.some(url => url.startsWith(live))).toBe(true);
 });
 
@@ -273,6 +279,7 @@ for (const width of [1440, 390]) {
     await openHub(page, { width, height: 1000 });
     const nav = page.locator('.matches-league-links.league-carousel');
     const card = nav.locator('.league-carousel-item').first();
+    const outline = card.locator('.lc-outline');
     const banner = card.locator('.league-carousel-banner');
     const image = banner.locator('img');
     await card.scrollIntoViewIfNeeded();
@@ -282,18 +289,64 @@ for (const width of [1440, 390]) {
     await expect(image).toHaveAttribute('draggable', 'false');
     await expect(image).toHaveCSS('object-fit', 'contain');
     const before = (await banner.boundingBox())!;
-    expect(before.height).toBe(104);
-    expect(Math.abs(before.width - (await card.boundingBox())!.width)).toBeLessThanOrEqual(2);
-    // خطأ صورة المصدر ينزل إلى الشعار المحلي بدل إظهار صورة مكسورة.
+    const expectedAvatar = width === 390 ? 26 : 32;
+    expect(before.width).toBeGreaterThanOrEqual(expectedAvatar - 2);
+    expect(before.height).toBeGreaterThanOrEqual(expectedAvatar - 2);
+    expect(Math.abs((await outline.boundingBox())!.width - (await card.boundingBox())!.width)).toBeLessThanOrEqual(6);
     await image.evaluate(element => element.dispatchEvent(new Event('error')));
     await expect(image).toHaveAttribute('data-crest-source', 'local');
     await expect(image).toHaveAttribute('src', '/images/teams/paris-saint-germain-club-badge.webp');
     await expect(image).toBeVisible();
-    // وفشل البديل المحلي أيضاً يُخفي الصورة وحدها ويُبقي الأحرف.
     await image.evaluate(element => element.dispatchEvent(new Event('error')));
     await expect(image).toHaveCSS('visibility', 'hidden');
     await expect(banner.locator('.league-carousel-monogram')).toBeVisible();
     await expect(banner.locator('.league-carousel-monogram')).toContainText('PS');
-    expect((await banner.boundingBox())!.height).toBe(before.height);
+    expect(Math.abs((await banner.boundingBox())!.height - before.height)).toBeLessThanOrEqual(1);
   });
 }
+
+test('transparent trophy emblem sits over the cup and both dropdowns unfold automatically as each card rotates to the front', async ({ page }) => {
+  await openHub(page, { width: 1440, height: 1000 });
+  const nav = page.locator('.matches-league-links.league-carousel');
+  await expect(nav).toHaveAttribute('data-ready', 'true');
+  await page.evaluate(() =>
+    document.querySelector('.matches-league-links.league-carousel')!.scrollIntoView({ block: 'center' }),
+  );
+  await settleScroll(page);
+  const firstCard = nav.locator('.league-carousel-item').first();
+  const secondCard = nav.locator('.league-carousel-item').nth(1);
+  await expect(firstCard).toHaveAttribute('data-ring-pos', 'front');
+  await expect(secondCard).toHaveAttribute('data-ring-pos', 'near');
+
+  const trophyBox = (await firstCard.locator('.lc-trophy-wrap').boundingBox())!;
+  const emblemBox = (await firstCard.locator('.lc-trophy-emblem .league-carousel-badge').boundingBox())!;
+  expect(Math.abs((emblemBox.x + emblemBox.width / 2) - (trophyBox.x + trophyBox.width / 2))).toBeLessThanOrEqual(3);
+  expect(emblemBox.y).toBeGreaterThan(trophyBox.y);
+  expect(emblemBox.y + emblemBox.height).toBeLessThan(trophyBox.y + trophyBox.height * 0.72);
+
+  // التحقّق من عدم وجود خلفية بيضاء خلف أيقونة البطولة فوق الكأس.
+  await expect(firstCard.locator('.lc-trophy-emblem .league-carousel-badge')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+
+  // البطاقة التي عليها الدور في المقدمة تفتح قائمتيها العلوية والسفلية تلقائياً، بينما البطاقات الجانبية مطوية.
+  const firstTop = firstCard.locator('.lc-top-drawer');
+  const firstDetail = firstCard.locator('.lc-detail');
+  await expect(firstTop).toHaveCSS('opacity', '1');
+  await expect(firstDetail).toHaveCSS('opacity', '1');
+  expect((await firstDetail.boundingBox())!.height).toBeGreaterThan(60);
+  await expect(firstDetail.locator('[data-leader-points]')).toContainText('6');
+  await expect(firstDetail.locator('[data-leader-meta]')).toContainText('لعب 2');
+  await expect(firstDetail.locator('[data-leader-rates]')).toContainText('نقاط/م 3.00');
+  await expect(firstDetail.locator('[data-leader-rates]')).toContainText('هجوم/م 5.00');
+
+  await expect(secondCard.locator('.lc-top-drawer')).toHaveCSS('opacity', '0');
+  await expect(secondCard.locator('.lc-detail')).toHaveCSS('opacity', '0');
+
+  // عند دوران الحلقة إلى البطاقة الثانية تنطوي قائمتا الأولى وتنفتح قائمتا الثانية تلقائياً.
+  await nav.getByLabel('البطولات التالية').click();
+  await expect(secondCard).toHaveAttribute('data-ring-pos', 'front');
+  await expect(firstTop).toHaveCSS('opacity', '0');
+  await expect(firstDetail).toHaveCSS('opacity', '0');
+  await expect(secondCard.locator('.lc-top-drawer')).toHaveCSS('opacity', '1');
+  await expect(secondCard.locator('.lc-detail')).toHaveCSS('opacity', '1');
+  await expect(secondCard.locator('.lc-detail [data-leader-points]')).toContainText('18');
+});

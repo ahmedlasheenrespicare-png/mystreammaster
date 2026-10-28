@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { IconPlay } from "./Icons";
 import { trackHomeEvent } from "../lib/analytics";
+import { FEATURED_NEWS } from "../content/featured-news";
+import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import {
   dayInZone,
   hasCompleteScore,
@@ -705,12 +707,17 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false, extraSlides = [] }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
   basePlayers: ReactElement[];
   base?: ReactElement;
+  /* شرائح إضافية تُركَّب بعد الأساسية وبعد شرائح القمم — تستقبل صفحة
+     البطولة بطاقات الأخبار التي تخصّها من تذكرة الصفحة الرئيسية، لكل
+     شريحة مفتاحها ونصّها المقروء في نقطة التنقّل وعقدة العرض نفسها.
+     الترتيب المطلوب: الأساسية أولاً ثم هذه (بطلب المالك 2026-10-28). */
+  extraSlides?: { key: string; label: string; node: ReactElement }[];
   /* محتوى بديل لشريحة قمة بفهرسها (0 = أول قمة بعد الأساس) — يبقى داخل
      المنزلقة نفسها بالحركة والنقاط والإيقاف دون تغيير شيء آخر */
   slideOverrides?: Partial<Record<number, ReactElement>>;
@@ -724,7 +731,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(false);
   const pauseUntil = useRef(0);
-  const count = 1 + clashes.length;
+  const count = 1 + clashes.length + extraSlides.length;
 
   /* التبديل التلقائي كل 5 ثوانٍ — يعمل دائماً (جوالاً وسطح مكتب) ولا
      يُوقفه تفضيل تقليل الحركة: ذلك التفضيل يُسقط حركة الانزلاق وحدها
@@ -750,7 +757,11 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   const go = (index: number) => {
     trackHomeEvent("hero_ticket_slide_select", {
       slide_index: index,
-      slide_kind: index === 0 ? "overview" : slideOverrides?.[index - 1] ? "news" : "match",
+      slide_kind: index === 0
+        ? "overview"
+        : index > clashes.length
+          ? "news"
+          : slideOverrides?.[index - 1] ? "news" : "match",
     });
     pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
     setActive(index);
@@ -767,11 +778,17 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
       key: clashKey(clash, i),
       label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}`,
     })),
+    /* الشرائح المأخوذة من تذكرة الرئيسية: نصّ النقطة يصف الخبر نفسه */
+    ...extraSlides.map(slide => ({ key: slide.key, label: slide.label })),
   ];
 
   return (
+    /* data-slide-count: عدد الشرائح الفعلي — تقرؤه الأنماط لإخفاء نقاط
+       التنقّل حين تكون الشريحة واحدة (لا تنقّل لتدلّ عليه)، مع إبقاء
+       النقاط في DOM لقارئ الشاشة وحرّاس الواجهة */
     <div
       className="league-ticket-carousel"
+      data-slide-count={count}
       onPointerEnter={event => {
         /* الإيقاف بالتحويم للمؤشر فقط — لمسة الجوال لا توقف الدورة */
         if (event.pointerType === "mouse") pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
@@ -813,6 +830,14 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
               <ClashSlide match={matches[i] ?? null} clash={clash} leagueId={clash.source ?? leagueId} showWordmark={ticketWordmark(leagueId, "clash")} underBrands={ticketWordmark(leagueId, "clash") && hasTicketBrands(leagueId, "clash", showNovaBrand)} ribbon={clashRibbon} />
             </div>
             )}
+          </div>
+        ))}
+        {extraSlides.map((slide, i) => (
+          <div
+            key={slide.key}
+            className={`league-ticket-slide${active === 1 + clashes.length + i ? " is-active" : ""}`}
+          >
+            {slide.node}
           </div>
         ))}
       </div>
@@ -874,17 +899,83 @@ const UCL_BASE_PLAYERS = [
   <TicketImage key="star" className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
 ];
 
+/* ── بطولات أُخفيت شرائح قممها بطلب المالك (2026-10-28) ─────────────────
+   تبقى الشريحة الأولى (تذكرة البطولة) وحدها، وتُسقَط شرائح «قمة الجولة»
+   عند الرسم — بلا حذف: المواجهات وتصاميمها ومنطقها الحيّ في
+   FEATURED_CLASHES باقٍ كما هو، والتذكرة الجامعة في هيرو الرئيسية تقرأ
+   قممها من INDEX_CLASHES فلا تتأثر. ولإرجاع شرائح بطولةٍ يكفي حذف
+   معرّفها من هذه القائمة. */
+export const HIDDEN_CLASH_LEAGUES = new Set<string>(["eng.1", "esp.1", "uefa.champions"]);
+
+/* ── بطاقات أخبار تذكرة الصفحة الرئيسية موزَّعةً على صفحات بطولاتها ──────
+   بطلب المالك (2026-10-28): «خُذ من تذكرة الرئيسية الشرائح التي تناسب كل
+   صفحة بطولة». المصدر الواحد هو FEATURED_NEWS في content/featured-news.ts
+   (لا نسخة ثانية من النصوص)، والتصنيف هو ما يحدّد البطولة. الترتيب هنا
+   هو ترتيب ظهورها في تذكرة الرئيسية نفسه فلا يتبدّل ترتيب الصفحة عن
+   الرئيسية. الشرائح التي لا صفحة بطولة لها (كأس الرابطة، التركي، الكرة
+   الذهبية، دوري أبطال آسيا) تبقى في الرئيسية وحدها. */
+const LEAGUE_NEWS_HREFS: Record<string, string[]> = {
+  /* الدوري الإنجليزي — 4 بطاقات */
+  "eng.1": [
+    "news/liverpool-brighton-live/",
+    "news/man-utd-bournemouth-live/",
+    "news/tottenham-chelsea-2-0/",
+    "news/man-city-aston-villa/",
+  ],
+  /* الدوري الإسباني — 3 بطاقات */
+  "esp.1": [
+    "news/clasico-post-match-reactions-2026/",
+    "news/clasico-first-half-2026/",
+    "news/clasico-preview-absences-predictions/",
+  ],
+  /* الدوري الألماني — 3 بطاقات */
+  "ger.1": [
+    "news/bundesliga-bayern-freiburg-2026/",
+    "news/bundesliga-dortmund-frankfurt-2026/",
+    "news/bundesliga-kompany-hospitalized-2026/",
+  ],
+  /* الدوري الفرنسي — بطاقتان */
+  "fra.1": ["news/psg-lyon-2-0/", "news/psg-lyon-tonight/"],
+  /* دوري أبطال أوروبا — بطاقتان */
+  "uefa.champions": ["news/bayern-arsenal-2-2/", "news/psg-barcelona-4-2/"],
+  /* الدوري الإيطالي — بطاقة واحدة */
+  "ita.1": ["news/inter-fiorentina-2-1/"],
+};
+
+/* شرائح الأخبار لعقدة المنزلقة: مفتاح ثابت لكل شريحة، ونصّ النقطة من
+   تصنيف الخبر وعنوانه — يُقرأ في قارئ الشاشة بلا اسم فريق مُخترع */
+function leagueNewsSlides(leagueId: string): { key: string; label: string; node: ReactElement }[] {
+  const hrefs = LEAGUE_NEWS_HREFS[leagueId] ?? [];
+  return hrefs.flatMap(href => {
+    const item = FEATURED_NEWS.find(news => news.href === href);
+    if (!item) return [];
+    return [{
+      key: `news-${href}`,
+      label: `${item.category} — ${item.title}`,
+      node: <FeaturedNewsTicketSlide href={href} />,
+    }];
+  });
+}
+
 export default function LeagueTicketCard({ leagueId, name }: { leagueId: string; name: string }) {
-  const clashes = FEATURED_CLASHES[leagueId];
-  if (clashes && clashes.length > 0) {
-    const basePlayers = leagueId === "uefa.champions"
-      ? UCL_BASE_PLAYERS
-      : (PLAYER_MAP[leagueId] ?? []);
+  const clashes = FEATURED_CLASHES[leagueId] ?? [];
+  /* القمم المخفية تبقى في FEATURED_CLASHES ولا تُرسَم، والأخبار تُضاف
+     بعدها — فصفحة البطولة تحمل: الأساسية أولاً ثم بطاقات أخبارها */
+  const visibleClashes = HIDDEN_CLASH_LEAGUES.has(leagueId) ? [] : clashes;
+  const newsSlides = leagueNewsSlides(leagueId);
+  const basePlayers = leagueId === "uefa.champions"
+    ? UCL_BASE_PLAYERS
+    : (PLAYER_MAP[leagueId] ?? []);
+  /* منزلقة متى وُجد ما يتنقّل إليه: قمم ظاهرة أو شرائح أخبار. البطولة
+     التي لا أخبار لها ولا قمم (السعودي والمصري اليوم) تبقى تذكرتها
+     الساكنة كما هي بلا تغيير. */
+  if (visibleClashes.length > 0 || newsSlides.length > 0) {
     return (
       <LeagueTicketCarousel
         leagueId={leagueId}
         name={name}
-        clashes={clashes}
+        clashes={visibleClashes}
+        extraSlides={newsSlides}
         basePlayers={Array.isArray(basePlayers) ? basePlayers : [basePlayers]}
       />
     );

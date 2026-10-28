@@ -780,6 +780,11 @@
   justify-content: center;
   z-index: 6;
 }
+/* شريحة واحدة = لا تنقّل: تُخفى النقاط وحدها فلا تبقى نقطة يتيمة تحت
+   التذكرة (الحالة الحالية لتذكرة صفحة «مواعيد المباريات» بعد إخفاء شرائح
+   القمم بطلب المالك). النقاط تبقى في DOM — الإخفاء بصري فقط، وتعود تلقائياً
+   متى زاد عدد الشرائح عن واحدة. */
+.league-ticket-carousel[data-slide-count="1"] .league-ticket-dots { display: none; }
 .league-ticket-dot {
   width: 9px;
   height: 9px;

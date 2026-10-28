@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "مواجهة الليلة: ليفربول ضد تشيلسي في كأس الرابطة الإنجليزية",
     description: "تبدأ المباراة الساعة 8 مساءً بتوقيت غرينتش في أنفيلد ضمن الدور الرابع.",
     href: "news/liverpool-chelsea-carabao-cup-preview-2026/",
+    fullImage: true,
+    images: [
+      { src: "images/players/eng-iraola-alonso-duel.webp", alt: "إيرولا وألونسو في مواجهة المدربين قبل قمة ليفربول وتشيلسي في الدور الرابع من كأس الرابطة على أنفيلد" },
+    ],
   },
   {
     category: "الدوري التركي",

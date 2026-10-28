@@ -1038,3 +1038,46 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
     await expect(strip.locator('[data-crown-offset="0"]')).not.toHaveAttribute('data-crown-card', selected!);
   });
 });
+
+test.describe('site-wide animation preferences', () => {
+  test.use({ viewport: { width: 390, height: 900 }, hasTouch: true, isMobile: true });
+  test('explicit on overrides device reduction, persists and supports strip pause', async ({ page }) => {
+    await page.goto('/');
+    const settings = page.getByRole('combobox', { name: 'حركات الموقع' });
+    await expect(settings).toHaveValue('auto');
+    await settings.selectOption('on');
+    await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
+    const strip = page.locator('[data-hero-league-strip]');
+    await strip.scrollIntoViewIfNeeded();
+    const front = strip.locator('[data-crown-offset="0"]');
+    let league = await front.getAttribute('data-crown-card');
+    await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(league);
+    // A CSS effect is really enabled, not only the JS carousel.
+    expect(await page.locator('.hero-title-holo__stack').first().evaluate(el => getComputedStyle(el).animationName)).not.toBe('none');
+    await strip.getByRole('button', { name: 'إيقاف الشريط', exact: true }).tap();
+    league = await front.getAttribute('data-crown-card');
+    await page.waitForTimeout(5500);
+    await expect(front).toHaveAttribute('data-crown-card', league!);
+    await strip.getByRole('button', { name: 'تشغيل الشريط', exact: true }).tap();
+    await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(league);
+    await page.reload();
+    await expect(settings).toHaveValue('on');
+    await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
+  });
+
+  test('off stops CSS and carousel motion, auto returns to system preference', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const settings = page.getByRole('combobox', { name: 'حركات الموقع' });
+    await settings.selectOption('off');
+    const strip = page.locator('[data-hero-league-strip]');
+    await strip.scrollIntoViewIfNeeded();
+    const front = strip.locator('[data-crown-offset="0"]');
+    const league = await front.getAttribute('data-crown-card');
+    await page.waitForTimeout(5500);
+    await expect(front).toHaveAttribute('data-crown-card', league!);
+    expect(await page.locator('.hero-title-holo__stack').first().evaluate(el => getComputedStyle(el).animationName)).toBe('none');
+    await settings.selectOption('auto');
+    await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(league);
+  });
+});

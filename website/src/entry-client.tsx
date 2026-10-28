@@ -1,3 +1,4 @@
+import { initializeMotionPreference } from "./lib/motion-preference";
 import React from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import App from "./App";
@@ -6,6 +7,7 @@ import "./index.css";
 
 /* HTML الصفحات جاء مُرسمًا مسبقًا وقت البناء → نُكمل عليه (hydrate)
    أما في وضع التطوير فلا يوجد رسم مسبق → نبني من الصفر (createRoot) */
+initializeMotionPreference();
 const container = document.getElementById("root")!;
 const tree = (
   <React.StrictMode>

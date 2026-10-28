@@ -1,3 +1,4 @@
+import { useMotionReduced } from "./useMotionReduced";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 /* =========================================================================
@@ -9,11 +10,12 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 export function useInViewOnce<T extends HTMLElement>(threshold = 0.2) {
   const ref = useRef<T | null>(null);
   const [inView, setInView] = useState(false);
+  const reducedMotion = useMotionReduced();
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (reducedMotion) {
       setInView(true);
       return;
     }
@@ -28,7 +30,7 @@ export function useInViewOnce<T extends HTMLElement>(threshold = 0.2) {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold]);
+  }, [threshold, reducedMotion]);
 
   return { ref, inView };
 }
@@ -142,11 +144,12 @@ export function Parallax({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const reducedMotion = useMotionReduced();
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) return;
     if (window.innerWidth < 768) return;
 
     let raf = 0;
@@ -166,8 +169,9 @@ export function Parallax({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
+      el.style.transform = "";
     };
-  }, [speed]);
+  }, [speed, reducedMotion]);
 
   return <div ref={ref} className={className}>{children}</div>;
 }
@@ -183,11 +187,12 @@ export function MouseParallax({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const reducedMotion = useMotionReduced();
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) return;
     if (window.innerWidth < 768) return;
 
     let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
@@ -207,8 +212,9 @@ export function MouseParallax({
     return () => {
       window.removeEventListener("mousemove", onMove);
       if (raf) cancelAnimationFrame(raf);
+      el.style.transform = "";
     };
-  }, [factor]);
+  }, [factor, reducedMotion]);
 
   return <div ref={ref} className={className}>{children}</div>;
 }
@@ -263,8 +269,9 @@ export function ScrollProgress() {
    جهازاً بمؤشر دقيق)، ويسبب جِدْلاً مع تمرير اللمس. لتفعيله أضف ?smooth=1 للرابط
    أو نفّذ: localStorage.setItem("smp-smooth", "1") — ويبقى محترماً لتفضيل تقليل الحركة. */
 export function SmoothScroll() {
+  const reducedMotion = useMotionReduced();
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = reducedMotion;
     const coarse = window.matchMedia("(pointer: coarse)").matches;
     if (reduced || coarse || window.innerWidth < 768) return;
 
@@ -350,7 +357,7 @@ export function SmoothScroll() {
       window.removeEventListener("scroll", onNativeScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [reducedMotion]);
 
   return null;
 }

@@ -1,3 +1,4 @@
+import MotionSettings from "./components/MotionSettings";
 import { useCallback, useEffect, useState } from "react";
 import { readCart, saveCart } from "./cart-storage";
 import Pricing from "./components/Pricing";
@@ -229,6 +230,7 @@ export default function App() {
       className="min-h-screen bg-[#faf9f6] text-[#0b0b0f] flex flex-col font-sans selection:bg-[#0b0b0f] selection:text-[#d8ff3e]"
       dir={isEnPath(path) ? "ltr" : "rtl"}
     >
+      <MotionSettings english={isEnPath(path)} />
       <ScrollProgress />
       <SmoothScroll />
       {!isEnPath(path) && <WelcomeSplash activeRoute={path} />}

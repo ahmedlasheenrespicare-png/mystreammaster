@@ -1,3 +1,5 @@
+import { useMotionReduced } from "./useMotionReduced";
+import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { useTicketSwipe } from "./useTicketSwipe";
 import { TicketImage } from "./TicketImage";
@@ -104,11 +106,12 @@ const celebrationClass = (src: string): string =>
 const TicketSeqPlayer = ({ cssClass, frames, video }: { cssClass: string; frames: string[]; video?: string }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoOn, setVideoOn] = useState(false);
+  const reducedMotion = useMotionReduced();
   useEffect(() => {
     if (!video) return;
     const v = videoRef.current;
     if (!v) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) { v.pause(); setVideoOn(false); return; }
     const ua = navigator.userAgent;
     if (/iPad|iPhone|iPod/.test(ua)) return;
     if (/safari/i.test(ua) && !/chrome|chromium|edg|opr/i.test(ua)) return;
@@ -124,8 +127,8 @@ const TicketSeqPlayer = ({ cssClass, frames, video }: { cssClass: string; frames
     };
     if (v.readyState >= 3) show();
     else v.addEventListener("canplay", show, { once: true });
-    return () => v.removeEventListener("canplay", show);
-  }, [video]);
+    return () => { v.removeEventListener("canplay", show); v.pause(); };
+  }, [video, reducedMotion]);
   return (
     <span className={`${cssClass}${videoOn ? " league-ticket-player--video-on" : ""}`} data-player-src={frames[frames.length - 1]} aria-hidden="true">
       {frames.map((src, i) => (
@@ -741,7 +744,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
      متاح دوماً بالمؤشر والتركيز والنقاط، وأي إيقاف يتراجع بعد 15 ثانية */
   useEffect(() => {
     const timer = window.setInterval(() => {
-      if (document.hidden) return;
+      if (document.hidden || motionReduced()) return;
       if (Date.now() < pauseUntil.current) return;
       if (!auto) return;
       setActive(prev => (prev + 1) % count);

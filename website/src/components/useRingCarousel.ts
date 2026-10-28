@@ -1,3 +1,4 @@
+import { motionReduced, motionMedia } from "../lib/motion-preference";
 import {
   useCallback,
   useEffect,
@@ -97,7 +98,7 @@ export function useRingCarousel({
   useEffect(() => {
     setReady(true);
     if (typeof window === "undefined" || !window.matchMedia) return;
-    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mql = motionMedia();
     const sync = () => setReducedMotion(mql.matches);
     sync();
     mql.addEventListener?.("change", sync);
@@ -139,7 +140,7 @@ export function useRingCarousel({
 
     const id = window.setInterval(() => {
       if (document.hidden) return;
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      if (motionReduced()) return;
       setStep((s) => s + 1);
     }, AUTO_STEP_MS);
 

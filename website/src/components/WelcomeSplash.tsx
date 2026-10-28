@@ -1,3 +1,4 @@
+import { motionReduced } from "../lib/motion-preference";
 import { useCallback, useEffect, useState } from "react";
 import { BrandNewtStage } from "./BrandNewtStage";
 
@@ -29,7 +30,7 @@ export default function WelcomeSplash({ activeRoute }: { activeRoute: string }) 
       if (params.has("nosplash") || params.has("trial") || window.location.hash) return;
       if (navigator.webdriver) return;
       if (/bot|crawl|spider|slurp|lighthouse|pagespeed|gtmetrix/i.test(navigator.userAgent)) return;
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      if (motionReduced()) return;
       try {
         if (sessionStorage.getItem(SESSION_KEY) === "1") return;
       } catch {

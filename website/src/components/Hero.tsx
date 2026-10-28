@@ -1,3 +1,4 @@
+import { motionReduced } from "../lib/motion-preference";
 import { HeroLaptop } from "./HeroLaptop";
 import "./hero-title-holo.css";
 import { HeroPhone } from "./HeroPhone";
@@ -351,6 +352,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   /* تدوير كلمة العنوان الرئيسي */
   useEffect(() => {
     const t = window.setInterval(() => {
+      if (motionReduced() || document.hidden) return;
       setHeroWord((w) => (w + 1) % HERO_TITLE_WORDS.length);
     }, HERO_TITLE_MS);
     return () => window.clearInterval(t);

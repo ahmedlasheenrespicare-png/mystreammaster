@@ -1,3 +1,4 @@
+import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { TicketImage } from "./TicketImage";
 import {
@@ -306,6 +307,7 @@ export default function HeroLeagueCrownStrip() {
   const items = useHeroLeagueItems();
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
+  const [autoplayStopped, setAutoplayStopped] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const rootRef = useRef<HTMLElement | null>(null);
@@ -361,13 +363,13 @@ export default function HeroLeagueCrownStrip() {
   }, []);
 
   useEffect(() => {
-    if (paused || dragging || items.length < 2) return;
+    if (autoplayStopped || paused || dragging || items.length < 2) return;
     const id = window.setInterval(() => {
-      if (document.hidden || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      if (document.hidden || motionReduced()) return;
       stepSharedActiveIndex(1, items.length);
     }, STEP_INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [paused, dragging, items.length]);
+  }, [autoplayStopped, paused, dragging, items.length]);
 
   const step = (delta: number) => {
     stepSharedActiveIndex(delta, items.length);
@@ -501,6 +503,9 @@ export default function HeroLeagueCrownStrip() {
         </div>
 
         <div className="hs-crown-controls">
+          <button type="button" className="hs-crown-autoplay" aria-pressed={autoplayStopped} onClick={() => setAutoplayStopped(value => !value)}>
+            {autoplayStopped ? "تشغيل الشريط" : "إيقاف الشريط"}
+          </button>
           <button
             type="button"
             className="hs-crown-arrow"

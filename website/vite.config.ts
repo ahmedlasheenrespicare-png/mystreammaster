@@ -1,3 +1,4 @@
+import motionPreferenceCss from './scripts/motion-css.mjs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -5,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 const isSsr = process.argv.includes('--ssr');
 export default defineConfig({
   base: '/',
+  css: { postcss: { plugins: [motionPreferenceCss()] } },
   publicDir: isSsr ? false : 'public',
   plugins: [react(), tailwindcss()],
   server: { host: '0.0.0.0', allowedHosts: true },

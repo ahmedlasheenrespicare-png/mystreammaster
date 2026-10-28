@@ -1,3 +1,4 @@
+import { motionReduced, motionMedia } from "../lib/motion-preference";
 import { useEffect, useRef, useState } from 'react';
 import { matchByFixtureId } from '../lib/match-center.mjs';
 import { matchCenterPath, MATCH_CENTER_ALL_MATCHES } from '../content/match-center.mjs';
@@ -183,7 +184,7 @@ function useRaceAutoScroll(enabled: boolean) {
       const card = node.querySelector('.match-card');
       const step = (card ? card.getBoundingClientRect().width : 400) + 14;
       const sign = towardEnd ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduced = motionReduced();
       node.scrollBy({ left: sign * step, behavior: reduced ? 'auto' : 'smooth' });
     }
     resumeSoon(4000);
@@ -193,7 +194,7 @@ function useRaceAutoScroll(enabled: boolean) {
 
   useEffect(() => {
     if (!el || !enabled) return;
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const media = motionMedia();
     const observer = new IntersectionObserver(entries => { visible.current = entries[0]?.isIntersecting ?? true; }, { threshold: 0.15 });
     observer.observe(el);
     let raf = 0;

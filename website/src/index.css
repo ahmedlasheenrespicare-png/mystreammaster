@@ -336,3 +336,19 @@ html,body,#root{max-width:100%;overflow-x:clip}
   .storefront-header nav>div:last-child>button,.storefront-header nav>div:last-child>a{width:30px;height:30px;padding-inline:0;font-size:10px}
   .storefront-header nav>a>span:last-child:not(.sm-crab39){display:none}
 }
+
+/* Explicit off also stops motion on devices that normally allow it. */
+html[data-motion="off"] { scroll-behavior: auto !important; }
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after {
+  animation: none !important; transition: none !important; scroll-behavior: auto !important;
+}
+.motion-settings {
+  position: fixed; bottom: 12px; left: 12px; z-index: 60;
+  display: flex; align-items: center; gap: 7px;
+  max-width: calc(100vw - 24px); padding: 7px 10px;
+  border: 1px solid #a8b575; border-radius: 12px; background: #faf9f6;
+  color: #171c0e; font-size: 12px; box-shadow: 0 3px 12px #0002;
+}
+.motion-settings select { max-width: 150px; padding: 4px; background: transparent; font: inherit; }
+.motion-settings select:focus-visible { outline: 2px solid #819a00; }
+.hs-crown-autoplay { border: 1px solid #9ba76d; border-radius: 20px; padding: 4px 8px; font-size: 11px; background: #faf9f6; color: #171c0e; cursor: pointer; }

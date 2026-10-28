@@ -1,3 +1,4 @@
+import { motionMedia } from "../lib/motion-preference";
 import {
   useEffect,
   useMemo,
@@ -312,7 +313,7 @@ function FanDeck({
   const reduced = useRef(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mq = motionMedia();
     reduced.current = mq.matches;
     const onChange = () => {
       reduced.current = mq.matches;

@@ -1,5 +1,6 @@
 import { cleanTeamName } from '../lib/fixtures-archive.mjs';
 import { providerTeamLogo } from '../lib/leader-logo.mjs';
+import { publishValidatedStandings } from '../lib/live-standings';
 import { useEffect, useRef, useState } from 'react';
 import snapshot from '../content/standings-snapshot.json';
 import StandingsRatesCard, { resolveApprovedTeamLogo } from './StandingsRatesCard';
@@ -152,9 +153,11 @@ export default function LeagueStandings({ league, title }: { league: string; tit
           throw new Error('OLDER_READING');
         }
         latest.current = next;
+        const staleHeader = next.stale || response.headers.get(CACHE_STALE_HEADER) === 'STALE';
+        publishValidatedStandings(league, next, staleHeader);
         if (disposed) return;
         setData(next);
-        if (next.stale || response.headers.get(CACHE_STALE_HEADER) === 'STALE') {
+        if (staleHeader) {
           setState('stale');
           setReason('STALE');
         } else {

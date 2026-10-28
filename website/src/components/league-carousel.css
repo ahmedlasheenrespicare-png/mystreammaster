@@ -1,42 +1,77 @@
 /* ==========================================================================
-   شريط روابط صفحات البطولات — دوّارة (Carousel / Slider)
+   شريط روابط صفحات البطولات — حلقة دائرية ثلاثية الأبعاد (3D Circular Ring)
    --------------------------------------------------------------------------
-   • الإطار العام: نمط بطاقة بيضاء بحدود فاتحة كما كان الشريط السابق
-     (`.matches-league-links` في matches.css) مع إلغاء التخطيط المرن القديم.
-   • المنطقة القابلة للعرض قابلة للتمرير أفقياً قبل التشغيل وبعده: فإن لم
-     يعمل JavaScript تمرّرها يدوياً باللمس أو الفأرة بدل أن تُخفى الروابط.
-     بعد القياس (`[data-ready="true"]`) تُدار بالإزاحة ويُمنع التمرير الأصلي
-     لأن الموضع يُحسب بالإزاحة لا بـ `scrollLeft`.
-   • المؤشرات النقطية وأسهم التنقّل بنمط دوّارة «آراء المستخدمين»: النقطة
-     النشطة تتمدّد، والأسهم دوائر بحدود فاتحة تسودّ عند المرور.
+   • هندسة الحلقة الدائرية مقتبسة من قالب Uiverse المفتوح:
+     https://uiverse.io/ilkhoeri/swift-panda-38 — المؤلف ilkhoeri — رخصة MIT
+     مع دوران خطوي تلقائي كل 5 ثوانٍ (5000ms) وسحب تفاعلي باللمس والفأرة.
+   • بطاقات البطولات مقتبسة من قالب Uiverse المفتوح:
+     https://uiverse.io/sohoning/ugly-horse-87 — المؤلف sohoning — رخصة MIT
+   • قواعد الرأس والنافذة والمسار والشارات والأزرار الأساسية تبقى مشتركة دون
+     مساس مع شريط «إحصائيات البطولات» (LeagueStatsCarousel).
 ========================================================================== */
 
 .matches-league-links.league-carousel {
   display: block;
-  padding: 14px 16px 16px;
+  padding: 16px 16px 18px;
 }
 
-/* الروابط داخل الدوّارة بطاقات، لا نصاً مسطّراً كما كان الشريط القديم */
-.league-carousel a {
+/* الروابط داخل الدوّارة ولوحة المعاينة بطاقات، لا نصاً مسطّراً */
+.league-carousel a,
+.matches-league-links.league-carousel a,
+.lc-preview-grid a {
   color: #0b0b0f;
   font-weight: 800;
   text-decoration: none;
   min-height: 0;
 }
 
+.lc-preview-grid .league-carousel-item {
+  width: 100%;
+}
+
 .league-carousel-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
 .league-carousel-head strong {
   font-weight: 800;
 }
 
+.lc-ring-head-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lc-ring-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(11, 11, 15, 0.06);
+  color: #5b5850;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.lc-ring-hint::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #2b4eff;
+  box-shadow: 0 0 0 2px rgba(43, 78, 255, 0.18);
+}
+
 .league-carousel-count {
+  flex-shrink: 0;
   color: #8a8578;
   font-size: 0.72rem;
   font-weight: 700;
@@ -48,6 +83,11 @@
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+/* فسحة رأسية خفيفة قبل التشغيل (No-JS) حتى لا تُقصّ ظلال الكرت */
+.matches-league-links .league-carousel-viewport {
+  padding: 4px 2px 10px;
 }
 
 .league-carousel-viewport::-webkit-scrollbar {
@@ -63,11 +103,14 @@
 .league-carousel-track {
   display: flex;
   align-items: stretch;
-  gap: 10px;
+  gap: 12px;
   width: max-content;
-  /*pan-y: التمرير الرأسي للصفحة يبقى طبيعياً، والأفقي تُديره الدوّارة */
   touch-action: pan-y;
   transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.matches-league-links .league-carousel-track {
+  align-items: flex-start;
 }
 
 /* أثناء السحب لا انتقال: الشريط يتبع الإصبع لحظة بلحظة */
@@ -75,37 +118,213 @@
   transition: none;
 }
 
-.league-carousel-item {
-  flex: 0 0 auto;
+/* ==========================================================================
+   مسرح الحلقة الدائرية ثلاثية الأبعاد (ilkhoeri/swift-panda-38)
+========================================================================== */
+
+.lc-ring-orbit {
+  display: none;
+}
+
+.lc-card-back {
+  display: none;
+}
+
+.lc-card-front {
+  position: relative;
   display: flex;
   flex-direction: column;
-  width: 268px;
+  width: 100%;
+}
+
+.lc-ring-carousel[data-ready="true"] .lc-ring-scene {
+  --w: 256px;
+  --h: 162px;
+  --translateZ: 356px;
+  --rotateX: -11deg;
+  --perspective: 1160px;
+  position: relative;
+  width: 100%;
+  height: 414px;
+  margin-top: 8px;
   padding: 0;
+  overflow-x: clip;
+  overflow-y: visible;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 56% 42% at 50% 50%, rgba(216, 255, 62, 0.1), transparent 72%),
+    radial-gradient(ellipse 64% 34% at 50% 62%, rgba(43, 78, 255, 0.06), transparent 76%);
+}
+
+.lc-ring-carousel[data-ready="true"][data-dragging="true"] .lc-ring-scene {
+  cursor: grabbing;
+}
+
+/* الهالة المدارية الأرضية تحت الحلقة لإبراز العمق الدائري ثلاثي الأبعاد */
+.lc-ring-carousel[data-ready="true"] .lc-ring-orbit {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 138px;
+  width: min(740px, 92%);
+  height: 124px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px dashed rgba(11, 11, 15, 0.12);
+  box-shadow:
+    inset 0 0 36px rgba(11, 11, 15, 0.04),
+    0 20px 36px -28px rgba(11, 11, 15, 0.32);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* الأسطوانة الدوّارة الداخلية (.inner في swift-panda-38):
+   تُعوَّض إزاحة translateZ(-R) حتى تستقرّ البطاقة المواجهة عند z = 0 بدقّة 1:1 */
+.lc-ring-carousel[data-ready="true"] .lc-ring-inner {
+  position: absolute;
+  top: 78px;
+  left: calc(50% - (var(--w) / 2));
+  width: var(--w);
+  height: var(--h);
+  z-index: 2;
+  display: block;
+  transform-style: preserve-3d;
+  transform:
+    perspective(var(--perspective))
+    translateZ(calc(var(--translateZ) * -1))
+    rotateX(var(--rotateX))
+    rotateY(var(--ring-angle, 0deg));
+  transition: transform 0.78s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.lc-ring-carousel[data-ready="true"][data-dragging="true"] .lc-ring-inner {
+  transition: none;
+}
+
+/* تموضع كل بطاقة على محيط الدائرة بزاوية 360deg / --quantity */
+.lc-ring-carousel[data-ready="true"] .league-carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w);
+  transform-style: preserve-3d;
+  transform:
+    rotateY(calc(-1 * (360deg / var(--quantity, 8)) * var(--index, 0)))
+    translateZ(var(--translateZ));
+  transition: none;
+}
+
+/* منع تجاوز transform ثلاثي الأبعاد عند التحويم؛ الرفع الطفيف يتم على الوجه الأمامي */
+.lc-ring-carousel[data-ready="true"] .league-carousel-item:hover,
+.lc-ring-carousel[data-ready="true"] .league-carousel-item:focus-visible {
+  transform:
+    rotateY(calc(-1 * (360deg / var(--quantity, 8)) * var(--index, 0)))
+    translateZ(var(--translateZ));
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="back"] {
+  pointer-events: none;
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="near"],
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="side"] {
+  cursor: pointer;
+}
+
+/* الوجه الأمامي للبطاقة مع إخفاء الظهر وتدرّج الإضاءة حسب العمق */
+.lc-ring-carousel[data-ready="true"] .lc-card-front {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 0.45s ease;
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:hover .lc-card-front,
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:focus-visible .lc-card-front {
+  transform: translateY(-3px);
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-outline {
+  border-color: color-mix(in srgb, var(--lc-ring-accent, #d8ff3e) 58%, #0b0b0f);
+  box-shadow:
+    0 18px 34px -14px rgba(11, 11, 15, 0.48),
+    0 0 0 1px color-mix(in srgb, var(--lc-ring-accent, #d8ff3e) 28%, transparent);
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="near"] .lc-card-front {
+  filter: brightness(0.94);
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="side"] .lc-card-front {
+  filter: brightness(0.84);
+}
+
+/* الظهر المعدني الفاخر للبطاقات على القوس الخلفي للحلقة (يظهر معتدلاً بلا انعكاس) */
+.lc-ring-carousel[data-ready="true"] .lc-card-back {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--h);
+  padding: 14px 16px;
+  border-radius: 22px;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background:
+    radial-gradient(circle 125px at 50% 25%, var(--lc-stage-glow, rgba(216, 255, 62, 0.22)), transparent 74%),
+    linear-gradient(145deg, #0b0b0f 0%, #171c29 100%);
+  border: 1.5px solid color-mix(in srgb, var(--lc-ring-accent, #d8ff3e) 62%, rgba(255, 255, 255, 0.22));
+  box-shadow: 0 10px 24px -14px rgba(11, 11, 15, 0.5);
   overflow: hidden;
-  border: 1px solid #e4e1d8;
-  border-radius: 14px;
-  background: #fff;
-  font-size: 0.78rem;
-  line-height: 1.4;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  text-align: center;
+  filter: brightness(0.86);
 }
 
-.league-carousel-item:hover {
-  transform: translateY(-2px);
-  border-color: #0b0b0f;
-  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.45);
+.lc-card-back-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.1) 0%, transparent 45%);
+  pointer-events: none;
 }
 
-.league-carousel-label {
-  min-width: 0;
-  overflow-wrap: anywhere;
+.lc-back-ornament {
+  width: 44px;
+  height: 44px;
+  color: var(--lc-ring-accent, #d8ff3e);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
 }
 
-/* شارة الأيقونة: البديل المحايد (أيقونة كرة/كأس) يظهر دائماً، وصورة الشعار
-   تُركّب فوقه — فإن تعذّر تحميلها بقي البديل ظاهراً بلا صورة مكسورة.
-   المقاس يُقرأ من خاصية `--league-badge-size` (مكوّن LeagueIconBadge يمرّرها
-   لرأس صفحة البطولة) والافتراضي 36px للشريط — القيم المحسوبة للشريط لا
-   تتغيّر، والبديل والزوايا يتناسبان مع المقاس حتى يبقى النمط واحداً. */
+.lc-back-label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #f6f4ec;
+  line-height: 1.25;
+}
+
+.lc-back-sub {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #a9b1c2;
+  line-height: 1.2;
+}
+
+/* ==========================================================================
+   شارة الأيقونة الموحّدة (مشتركة عبر الموقع — لا تُحذف ولا يتغيّر سلوكها)
+========================================================================== */
+
 .league-carousel-badge {
   position: relative;
   flex: 0 0 auto;
@@ -134,14 +353,715 @@
   background: #f6f4ec;
 }
 
-/* ===== أدوات التنقّل: سهمان + مؤشرات نقطية (نمط دوّارة التقييمات) ===== */
+/* ==========================================================================
+   بطاقة البطولة — الهجين المزدوج (قالب sohoning/ugly-horse-87 بهوية الموقع)
+========================================================================== */
+
+.league-carousel-item {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 266px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.league-carousel-item:hover,
+.league-carousel-item:focus-visible {
+  transform: translateY(-3px);
+}
+
+/* الوجه العلوي (.outlinePage في القالب): صدر حبري داكن + قاعدة متصدّر كريمية */
+.lc-outline {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 162px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle 135px at 85% 18%, var(--lc-stage-glow, rgba(216, 255, 62, 0.15)), transparent 72%),
+    linear-gradient(135deg, #0b0b0f 0%, #181c28 100%);
+  border: 1px solid #d8d2c3;
+  box-shadow: 0 10px 24px -16px rgba(11, 11, 15, 0.42);
+  overflow: hidden;
+  transition: box-shadow 0.35s ease, border-color 0.28s ease;
+}
+
+.league-carousel-item:hover .lc-outline,
+.league-carousel-item:focus-visible .lc-outline {
+  border-color: #0b0b0f;
+  box-shadow: 0 14px 28px -12px rgba(11, 11, 15, 0.45);
+}
+
+/* المسرح العلوي: اسم البطولة يميناً (RTL) والكأس بشعار البطولة يساراً */
+.lc-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 110px;
+  padding: 14px 16px 12px;
+  padding-inline-end: 114px;
+}
+
+.lc-heading {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.league-carousel-label {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.08rem;
+  line-height: 1.32;
+  color: #f6f4ec;
+  overflow-wrap: break-word;
+}
+
+/* ── الكأس الذهبية + شعار البطولة مكان النجمة ── */
+.lc-trophy-wrap {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+  width: 106px;
+  height: 106px;
+  z-index: 2;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.league-carousel-item:hover .lc-trophy-wrap,
+.league-carousel-item:focus-visible .lc-trophy-wrap {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.lc-trophy-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.22));
+}
+
+.lc-trophy-stem {
+  fill: #e08e14;
+}
+
+.lc-trophy-base {
+  fill: #68452d;
+}
+
+.lc-trophy-handles {
+  fill: #f6e04d;
+}
+
+.lc-trophy-cup {
+  fill: #f2be45;
+}
+
+.lc-trophy-sheen {
+  fill: rgba(255, 252, 230, 0.28);
+}
+
+/* شعار البطولة الشفاف مباشرةً على معدن الكأس/الدرع (بلا أي خلفية بيضاء) */
+.lc-trophy-emblem {
+  position: absolute;
+  left: 50%;
+  top: var(--lc-emblem-top, 36.5%);
+  transform: translate(-50%, -50%);
+  --league-badge-size: 36px;
+  display: grid;
+  place-items: center;
+}
+
+.lc-trophy-emblem .league-carousel-badge {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.lc-trophy-emblem[data-emblem-style="engraved"] .league-carousel-badge {
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.28);
+  background: radial-gradient(circle, rgba(11, 11, 15, 0.18) 0%, rgba(11, 11, 15, 0.08) 100%);
+  box-shadow:
+    inset 0 1.5px 3px rgba(0, 0, 0, 0.34),
+    0 1px 0 rgba(255, 255, 255, 0.36);
+}
+
+.lc-trophy-emblem .league-carousel-logo {
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  border-radius: 0;
+  background: transparent;
+  filter:
+    drop-shadow(0 2px 3px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.28));
+}
+
+.lc-trophy-emblem[data-emblem-style="engraved"] .league-carousel-logo {
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+}
+
+/* إخفاء أيقونة البديل المحايدة فور تحقّق تحميل الشعار الشفاف كي لا تشفّ خلفه */
+.lc-trophy-emblem .league-carousel-badge:has(> img.league-carousel-logo[data-loaded="true"]) .league-carousel-fallback {
+  opacity: 0;
+}
+
+.lc-trophy-emblem .league-carousel-fallback {
+  width: calc(var(--league-badge-size, 36px) * 21 / 36);
+  height: calc(var(--league-badge-size, 36px) * 21 / 36);
+  color: #451a03;
+  filter: drop-shadow(0 1px 0 rgba(255, 250, 220, 0.55));
+  transition: opacity 0.15s ease;
+}
+
+.lc-trophy-wrap[data-trophy-metal="silver"] .lc-trophy-emblem .league-carousel-fallback {
+  color: #1e293b;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.65));
+}
+
+/* ── الخط الفاصل المضيء (.splitLine في القالب) ── */
+.lc-split-line {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--lc-split-gradient, linear-gradient(90deg, #d8ff3e 0%, #f2be45 55%, #7c5cff 100%));
+  z-index: 2;
+}
+
+/* ── شريط المتصدّر الكريمي (شعار الفريق المتصدّر بجانب اسمه) ── */
+.lc-leader-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  padding: 7px 14px 9px;
+  margin-top: auto;
+  background: linear-gradient(90deg, #fcfbf7 0%, #f4ecda 100%);
+}
+
+/* قرص شعار المتصدّر بجانب اسمه (مع بقاء البديل الحرفي تحته دائماً) */
+.league-carousel-banner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #e9eef2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.league-carousel-monogram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #244859;
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.league-carousel-monogram small {
+  font-size: 0.44rem;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+.league-carousel-leader-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.league-carousel-leader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.24;
+}
+
+.lc-leader-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #2b4eff;
+}
+
+.lc-leader-name {
+  display: block;
+  max-width: 100%;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   القائمة المنسدلة العلوية (.lc-top-drawer) — المقترح (د) المعتمد:
+   التوأم المتناظر بالأوسمة وأيقونات الفرق، تنزلق بسلاسة للأعلى من خلف البطاقة
+   تلقائياً عندما يأتي الدور على البطاقة في مقدمة الدوران (data-ring-pos="front")
+========================================================================== */
+
+.lc-top-drawer {
+  position: absolute;
+  top: 18px;
+  inset-inline: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  padding: 10px 9px 25px;
+  border-radius: 22px 22px 0 0;
+  background: linear-gradient(180deg, #f3efe3 0%, #fcfbf7 100%);
+  border: 1px solid #dfd8c6;
+  border-bottom: 0;
+  box-shadow: 0 -12px 24px -14px rgba(11, 11, 15, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-20%) scale(0.96);
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+  transition:
+    opacity 0.28s ease 0s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
+    visibility 0s linear 0.4s;
+}
+
+/* خيط تاجي ناعم بلون البطولة أعلى الدرج الكريمي */
+.lc-top-drawer-crown {
+  position: absolute;
+  top: 0;
+  inset-inline: 18px;
+  height: 2.5px;
+  border-radius: 0 0 999px 999px;
+  background: var(--lc-split-gradient, linear-gradient(90deg, #2b4eff 0%, #f59e0b 100%));
+  opacity: 0.85;
+}
+
+/* تنفتح تلقائياً بسلاسة فور وصول البطاقة إلى مقدمة الدوران (أو عند التحويم خارج الحلقة) */
+.league-carousel-item:not([data-ring-pos]):hover .lc-top-drawer,
+.league-carousel-item:not([data-ring-pos]):focus-visible .lc-top-drawer,
+.league-carousel-item[data-ring-pos="front"] .lc-top-drawer,
+.lc-preview-open-drawers .league-carousel-item .lc-top-drawer {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-100%) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    visibility 0s linear 0s;
+}
+
+.lc-top-twin {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.lc-top-twin-duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+  align-items: start;
+  gap: 4px;
+  width: 100%;
+}
+
+.lc-top-twin-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lc-top-twin-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.lc-top-medal-icon {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+}
+
+.lc-top-metric-label {
+  color: #5b5850;
+  font-size: 0.57rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.lc-top-twin-val-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding-inline-start: 2px;
+}
+
+.lc-top-metric-val {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.12;
+}
+
+.lc-top-metric-unit {
+  font-family: var(--font-sans);
+  color: #2b4eff;
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.lc-top-metric-unit.is-coral {
+  color: #c2410c;
+}
+
+.lc-top-metric-unit.is-emerald {
+  color: #047857;
+}
+
+/* صف أيقونة النادي + اسم النادي في كل جناح */
+.lc-top-club-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 1px;
+}
+
+.lc-top-club-crest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #eef2f6);
+  border: 1px solid rgba(11, 11, 15, 0.12);
+  box-shadow: 0 1px 4px rgba(11, 11, 15, 0.1);
+  overflow: hidden;
+}
+
+.lc-top-club-initials {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.45rem;
+  font-weight: 900;
+  color: #244859;
+  line-height: 1;
+}
+
+.lc-top-club-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.lc-top-metric-team {
+  display: block;
+  min-width: 0;
+  flex: 1;
+  color: #1f2430;
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: start;
+  overflow-wrap: break-word;
+}
+
+.lc-duel-diamond {
+  width: 14px;
+  height: 44px;
+  align-self: center;
+}
+
+.lc-top-twin-goals {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 3.5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid #e5dfd0;
+  line-height: 1.2;
+}
+
+.lc-top-twin-net {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.lc-top-twin-goals-label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: #5b5850;
+}
+
+.lc-top-twin-goals-val {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.79rem;
+  font-weight: 900;
+  color: #0b0b0f;
+}
+
+.lc-top-twin-goals-unit {
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.lc-top-twin-goals-sep {
+  color: #b5ae9e;
+  font-weight: 900;
+}
+
+.lc-top-twin-goals-season {
+  font-size: 0.53rem;
+  font-weight: 700;
+  color: #6b675e;
+}
+
+/* ==========================================================================
+   الدرج السفلي المنزلق (.lc-detail): ينفتح بسلاسة بالتزامن مع العلوية
+   عندما يأتي الدور على البطاقة في مقدمة الدوران (data-ring-pos="front")
+========================================================================== */
+
+.lc-detail {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 0 14px;
+  margin-top: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  border-radius: 0 0 22px 22px;
+  background: #fcfbf7;
+  border: 1px solid #dfd8c6;
+  border-top: 0;
+  box-shadow: 0 12px 24px -14px rgba(11, 11, 15, 0.25);
+  transform: translateY(-10px);
+  transition:
+    max-height 0.42s cubic-bezier(0.22, 0.61, 0.36, 1),
+    padding 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    margin-top 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.28s ease,
+    transform 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.league-carousel-item:not([data-ring-pos]):hover .lc-detail,
+.league-carousel-item:not([data-ring-pos]):focus-visible .lc-detail,
+.lc-preview-open-drawers .league-carousel-item .lc-detail {
+  margin-top: -18px;
+  padding: 26px 14px 12px;
+  max-height: 146px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* داخل الحلقة ثلاثية الأبعاد يتحرّك الدرج السفلي بـ transform + opacity الخالصة (60fps)
+   بالتزامن السلس مع الدرج العلوي كلما وصلت البطاقة إلى المقدمة */
+.lc-ring-carousel[data-ready="true"] .lc-detail {
+  position: absolute;
+  top: calc(100% - 18px);
+  inset-inline: 0;
+  margin-top: 0;
+  padding: 26px 14px 12px;
+  max-height: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-58%) scale(0.96);
+  transform-origin: center top;
+  will-change: transform, opacity;
+  transition:
+    opacity 0.28s ease 0s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
+    visibility 0s linear 0.4s;
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-detail {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    visibility 0s linear 0s;
+}
+
+.lc-grades-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+
+.lc-grades-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+}
+
+.lc-bar-peak {
+  fill: #2b4eff;
+}
+
+.lc-bar-side {
+  fill: #f2be45;
+}
+
+.lc-grades-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  min-width: 0;
+  line-height: 1.22;
+}
+
+.lc-grades-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #5b5850;
+}
+
+.lc-grades-num {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 1.28rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  margin-top: 1px;
+}
+
+.lc-grades-num small {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.lc-grades-meta {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #6b675e;
+  margin-top: 2px;
+}
+
+.lc-grades-rates {
+  font-size: 0.59rem;
+  font-weight: 800;
+  color: #2b4eff;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* الميدالية المنزلقة من الأعلى (.medals.slide-in-top في القالب) */
+.lc-medals {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  transform: translateY(-24px);
+  opacity: 0;
+  transition: transform 0.3s ease 0s, opacity 0.22s ease 0s;
+}
+
+.league-carousel-item:not([data-ring-pos]):hover .lc-medals,
+.league-carousel-item:not([data-ring-pos]):focus-visible .lc-medals,
+.league-carousel-item[data-ring-pos="front"] .lc-medals,
+.lc-preview-open-drawers .league-carousel-item .lc-medals {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s, opacity 0.42s ease 0.28s;
+}
+
+.lc-ribbon-a {
+  fill: var(--lc-ribbon-a, #2b4eff);
+}
+
+.lc-ribbon-b {
+  fill: var(--lc-ribbon-b, #7c5cff);
+}
+
+.lc-ribbon-c {
+  fill: var(--lc-ribbon-c, #d8ff3e);
+}
+
+/* ===== أدوات التنقّل: سهمان + مؤشرات نقطية ===== */
 
 .league-carousel-controls {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .league-carousel-nav {
@@ -173,11 +1093,13 @@
 }
 
 .league-carousel-dot {
+  position: relative;
   height: 8px;
   width: 8px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  overflow: hidden;
   transition: width 0.3s ease, background 0.3s ease;
 }
 
@@ -185,88 +1107,288 @@
   background: rgba(0, 0, 0, 0.4);
 }
 
-/* النقطة النشطة (Active indicator) تتمدّد كما في دوّارة التقييمات */
 .league-carousel-dot.is-active {
   width: 32px;
   background: #0b0b0f;
 }
 
+/* مؤشر زمني أنيق (5 ثوانٍ) داخل النقطة النشطة للحلقة الدائرية */
+@keyframes lc-ring-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active {
+  background: #0b0b0f;
+}
+
+.lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #d8ff3e;
+  transform-origin: right center;
+  animation: lc-ring-progress 5s linear forwards;
+}
+
+.lc-ring-carousel[data-ready="true"]:hover .league-carousel-dot.is-active::after,
+.lc-ring-carousel[data-ready="true"]:focus-within .league-carousel-dot.is-active::after,
+.lc-ring-carousel[data-ready="true"][data-dragging="true"] .league-carousel-dot.is-active::after {
+  animation-play-state: paused;
+}
+
 .league-carousel :is(a, button, [tabindex]):focus-visible {
   outline: 3px solid #2b4eff;
   outline-offset: 3px;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
-/* شاشة ضيقة: بطاقتان في الصفحة تقريباً */
+/* ==========================================================================
+   تجاوب الشاشات الضيقة وتقليل الحركة
+========================================================================== */
+
 @media (max-width: 640px) {
   .league-carousel-item {
     width: calc(50vw - 40px);
+  }
+
+  .lc-ring-hint {
+    font-size: 0.62rem;
+    padding: 2px 7px;
+  }
+
+  .lc-ring-carousel[data-ready="true"] .lc-ring-scene {
+    --w: 210px;
+    --h: 146px;
+    --translateZ: 252px;
+    --rotateX: -11deg;
+    --perspective: 860px;
+    height: 386px;
+  }
+
+  .lc-ring-carousel[data-ready="true"] .lc-ring-orbit {
+    top: 134px;
+    height: 98px;
+  }
+
+  .lc-ring-carousel[data-ready="true"] .lc-ring-inner {
+    top: 82px;
+  }
+
+  .lc-top-drawer {
+    top: 16px;
+    width: 100%;
+    padding: 8px 6px 21px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .lc-top-twin {
+    gap: 5px;
+  }
+
+  .lc-top-twin-duel {
+    grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .lc-top-medal-icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .lc-top-metric-label {
+    font-size: 0.49rem;
+  }
+
+  .lc-top-metric-val {
+    font-size: 0.8rem;
+  }
+
+  .lc-top-metric-unit {
+    font-size: 0.45rem;
+  }
+
+  .lc-top-club-row {
+    gap: 4px;
+  }
+
+  .lc-top-club-crest {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .lc-top-club-initials {
+    font-size: 0.39rem;
+  }
+
+  .lc-top-metric-team {
+    font-size: 0.49rem;
+  }
+
+  .lc-duel-diamond {
+    width: 12px;
+    height: 36px;
+  }
+
+  .lc-top-twin-goals {
+    padding: 2.5px 6px;
+    gap: 3px;
+  }
+
+  .lc-top-twin-net {
+    width: 14px;
+    height: 14px;
+    flex-basis: 14px;
+  }
+
+  .lc-top-twin-goals-label,
+  .lc-top-twin-goals-season {
+    font-size: 0.48rem;
+  }
+
+  .lc-top-twin-goals-val {
+    font-size: 0.7rem;
+  }
+
+  .lc-top-twin-goals-unit {
+    font-size: 0.46rem;
+  }
+
+  .lc-ring-carousel[data-ready="true"] .lc-card-back {
+    border-radius: 18px;
+    padding: 10px 12px;
+  }
+
+  .lc-back-ornament {
+    width: 34px;
+    height: 34px;
+  }
+
+  .lc-back-label {
+    font-size: 0.72rem;
+  }
+
+  .lc-back-sub {
+    font-size: 0.56rem;
+  }
+
+  .lc-outline {
+    min-height: 146px;
+    border-radius: 18px;
+  }
+
+  .lc-stage {
+    min-height: 96px;
+    padding: 11px 10px 8px;
+    padding-inline-end: 66px;
+  }
+
+  .lc-trophy-wrap {
+    width: 68px;
+    height: 68px;
+    top: 8px;
+    inset-inline-end: 1px;
+  }
+
+  .lc-trophy-emblem {
+    --league-badge-size: 24px;
+  }
+
+  .league-carousel-label {
+    font-size: 0.88rem;
+    line-height: 1.28;
+  }
+
+  .lc-leader-row {
+    gap: 6px;
+    min-height: 44px;
+    padding: 6px 10px 8px;
+  }
+
+  .league-carousel-banner {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .lc-leader-name {
+    font-size: 0.68rem;
+  }
+
+  .lc-detail {
+    border-radius: 0 0 18px 18px;
+  }
+
+  .league-carousel-item:not([data-ring-pos]):hover .lc-detail,
+  .league-carousel-item:not([data-ring-pos]):focus-visible .lc-detail,
+  .lc-ring-carousel[data-ready="true"] .lc-detail {
+    padding: 21px 10px 10px;
+  }
+
+  .lc-ring-carousel[data-ready="true"] .lc-detail {
+    top: calc(100% - 16px);
+  }
+
+  .lc-grades-icon {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .lc-grades-num {
+    font-size: 1.02rem;
+  }
+
+  .lc-grades-rates {
+    font-size: 0.54rem;
+    white-space: normal;
+  }
+
+  .lc-medals {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .league-carousel-track,
+  .lc-ring-carousel[data-ready="true"] .lc-ring-inner,
+  .lc-ring-carousel[data-ready="true"] .lc-ring-scene,
   .league-carousel-dot,
-  .league-carousel-item {
+  .league-carousel-item,
+  .lc-card-front,
+  .lc-top-drawer,
+  .league-carousel-item[data-ring-pos="front"] .lc-top-drawer,
+  .lc-outline,
+  .lc-trophy-wrap,
+  .lc-detail,
+  .lc-ring-carousel[data-ready="true"] .lc-detail,
+  .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-detail,
+  .lc-medals,
+  .league-carousel-item[data-ring-pos="front"] .lc-medals {
     transition: none;
+    transition-delay: 0s;
   }
-}
 
-/* لوحة المتصدّر: البديل موجود دائماً، والشعار المحلي يغطيه عند نجاح التحميل. */
-.league-carousel-banner {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 104px;
-  flex: 0 0 auto;
-  background: linear-gradient(125deg, #edf5f3, #e3ebf8);
-  border-bottom: 1px solid #dce5ec;
-}
+  .lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active::after {
+    animation: none;
+    transform: scaleX(1);
+  }
 
-.league-carousel-monogram {
-  display: grid;
-  place-items: center;
-  width: 66px;
-  height: 80px;
-  border: 1px solid #b7c9cf;
-  border-radius: 18px 18px 26px 26px;
-  background: linear-gradient(145deg, #fff, #d8e7eb);
-  color: #244859;
-  box-shadow: 0 5px 14px #24485912;
-  font-size: 1.55rem;
-  line-height: 1;
-}
-
-.league-carousel-monogram small {
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
-}
-
-.league-carousel-leader-logo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  padding: 8px;
-  object-fit: contain;
-  background: linear-gradient(125deg, #edf5f3, #e3ebf8);
-}
-
-.league-carousel-leader {
-  width: 100%;
-  padding: 9px 12px 0;
-  color: #526571;
-  font-size: 0.66rem;
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-
-.league-carousel-caption {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 9px 12px 12px;
-  margin-top: auto;
+  .league-carousel-item:not([data-ring-pos]):hover,
+  .league-carousel-item:not([data-ring-pos]):focus-visible,
+  .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:hover .lc-card-front,
+  .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:focus-visible .lc-card-front,
+  .league-carousel-item:hover .lc-trophy-wrap,
+  .league-carousel-item:focus-visible .lc-trophy-wrap {
+    transform: none;
+  }
 }

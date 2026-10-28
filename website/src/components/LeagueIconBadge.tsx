@@ -47,6 +47,11 @@ export default function LeagueIconBadge({
       <IconTrophy className="league-carousel-fallback" />
       {icon ? (
         <img
+          ref={(img) => {
+            if (img && img.complete && img.naturalWidth > 0) {
+              img.dataset.loaded = "true";
+            }
+          }}
           className="league-carousel-logo"
           src={icon}
           alt=""
@@ -55,8 +60,12 @@ export default function LeagueIconBadge({
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           draggable={false}
+          onLoad={(event) => {
+            event.currentTarget.dataset.loaded = "true";
+          }}
           onError={(event) => {
             /* الشعار إن غاب أو تعذّر تحميله يبقى البديل المحايد ظاهراً تحته */
+            delete event.currentTarget.dataset.loaded;
             event.currentTarget.style.visibility = "hidden";
           }}
         />

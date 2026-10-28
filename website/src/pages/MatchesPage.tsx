@@ -4,7 +4,6 @@ import { matchCenterLink } from '../lib/match-center-link';
 import { leagueLandingsInPageOrder } from '../content/competitions';
 import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
 import AllLeaguesTicket from '../components/AllLeaguesTicket';
-import LeagueStatsCarousel from '../components/LeagueStatsCarousel';
 import './matches.css';
 
 /* البند 3: «إضافة رابط مركز المباراة إلى البطاقة في صفحة المواعيد القائمة —
@@ -156,24 +155,13 @@ export default function MatchesPage() {
       </div>
 
       {/* القائمة تُبنى من مصدر واحد (LEAGUE_PAGE_ORDER) فلا تنشأ قائمة ثانية
-          تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا. */}
+          تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا.
+          وتتضمّن كل بطاقة قائمتها المنسدلة العلوية لإحصائيات البطولة (أقوى هجوم،
+          أقوى دفاع، إجمالي الأهداف) والمنسدلة السفلية لبيانات المتصدّر. */}
       <LeagueLinksCarousel
-        title="صفحات البطولات"
         items={leagueLandingsInPageOrder().map((landing) => ({
           href: `/matches/${landing.slug}/`,
           label: landing.shortName,
-          leagueId: landing.leagueId,
-          standingsLeagueId: landing.standings?.leagueId ?? null,
-        }))}
-      />
-
-      {/* كروت الإحصائيات بنفس نمط الشريط الذي يعلوها: كرت مختصر لكل بطولة
-          (أقوى هجوم، أقوى دفاع، إجمالي الأهداف) من جدول الترتيب المتحقق منه
-          نفسه الذي تقرأه صفحة البطولة — لا أرقام محسوبة محلياً بلا مصدر. */}
-      <LeagueStatsCarousel
-        items={leagueLandingsInPageOrder().map((landing) => ({
-          href: `/matches/${landing.slug}/`,
-          name: landing.shortName,
           leagueId: landing.leagueId,
           standingsLeagueId: landing.standings?.leagueId ?? null,
         }))}

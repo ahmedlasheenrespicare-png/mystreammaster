@@ -964,3 +964,18 @@ test('laptop stays left of the phone without preview controls or horizontal over
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('mobile laptop aligns beside the phone rather than dropping underneath', async ({ page }) => {
+  for (const width of [320, 390, 600, 767]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const stage = page.locator('.hero-phone-stage--laptop');
+    await stage.scrollIntoViewIfNeeded();
+    const laptop = await stage.locator('[data-hero-laptop]').boundingBox();
+    const phone = await stage.locator('[data-hero-phone]').boundingBox();
+    expect(laptop!.x).toBeLessThan(phone!.x);
+    expect(Math.abs(laptop!.y + laptop!.height / 2 - phone!.y - phone!.height / 2)).toBeLessThan(16);
+    expect(laptop!.y + laptop!.height).toBeLessThan(phone!.y + phone!.height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});

@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "كأس الرابطة الإنجليزية",
+    dateLabel: "28 أكتوبر 2026",
+    title: "مواجهة الليلة: ليفربول ضد تشيلسي في كأس الرابطة الإنجليزية",
+    description: "تبدأ المباراة الساعة 8 مساءً بتوقيت غرينتش في أنفيلد ضمن الدور الرابع.",
+    href: "news/liverpool-chelsea-carabao-cup-preview-2026/",
+  },
+  {
     category: "الدوري التركي",
     dateLabel: "27 أكتوبر 2026",
     title: "استقالة مدرب فنربخشة إسماعيل كارتال بعد الخسارة أمام غلطة سراي",

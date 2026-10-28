@@ -40,6 +40,26 @@ export const INDEX_CLASHES: FeaturedClash[] = [
   { ...FEATURED_CLASHES["eng.1"][1], source: "eng.1" },
 ];
 
+/* بطاقة مواجهة كأس الرابطة (ليفربول × تشيلسي) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES
+   المشترك مع صفحة المواعيد */
+export const LIVERPOOL_CHELSEA_CUP_CLASH: FeaturedClash = {
+  eyebrow: "كأس الرابطة",
+  home: {
+    name: "ليفربول",
+    crest: "/images/teams/liverpool-badge.webp",
+    mono: "ليفربول",
+    tokens: ["liverpool", "ليفربول"],
+  },
+  away: {
+    name: "تشيلسي",
+    crest: "/images/teams/chelsea-badge.webp",
+    mono: "تشيلسي",
+    tokens: ["chelsea", "تشيلسي"],
+  },
+  source: "eng.league_cup",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

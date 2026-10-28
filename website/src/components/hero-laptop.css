@@ -1,0 +1,48 @@
+/* Ashon-G / kind-bat-54 (MIT), https://uiverse.io/Ashon-G/kind-bat-54.
+   Reference geometry and assembly, scoped to avoid affecting other devices. */
+.hero-laptop { position: absolute; z-index: 5; left: 0; bottom: 0; width: 228px; height: 260px; padding: 0; border: 0; background: transparent; cursor: pointer; transform-origin: bottom left; }
+.hero-laptop-model { position: relative; display: block; width: 228px; height: 260px; pointer-events: none; }
+.hero-laptop-lid { position: absolute; z-index: 0; top: 34px; left: 0; width: 128px; height: 116px; border-radius: 6px; background: linear-gradient(-135deg,#c8c9c9 52%,#8c8c8c 56%); transform: scale(0) skewY(-30deg); animation: hero-laptop-lid-in .4s 1.7s ease-out forwards; }
+.hero-laptop-lid::before { content: ''; position: absolute; z-index: 2; top: 8px; left: 6px; width: 100%; height: 100%; border-radius: 6px; background: #000; }
+.hero-laptop-lid::after { content: ''; position: absolute; z-index: 1; bottom: -7px; left: 8px; width: 168px; height: 12px; transform-origin: left bottom; transform: rotate(-42deg) skew(-4deg); background: linear-gradient(-135deg,#c8c9c9 52%,#8c8c8c 56%); }
+.hero-laptop-display { position: absolute; z-index: 3; top: 17px; left: 12px; width: calc(100% - 12px); height: calc(100% - 18px); background: linear-gradient(45deg,#17220b,#769721,#d8ff3e); }
+.hero-laptop-display::before { content: ''; position: absolute; z-index: 5; top: -9px; left: -6px; width: calc(100% + 12px); height: calc(100% + 18px); border-radius: 6px; background: linear-gradient(60deg,transparent 60%,#ffffff4d 60%); }
+.hero-laptop-brand { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #f6f4ec; font-size: 8px; letter-spacing: .18em; line-height: 1.5; text-shadow: 0 1px 6px #0008; }
+.hero-laptop-brand strong { font-size: 12px; }
+.hero-laptop-brand i { width: 20px; height: 2px; background: #d8ff3e; margin-top: 8px; }
+.hero-laptop-loading { position: relative; display: block; width: 100%; height: 100%; background: #222; animation: hero-laptop-display-in .4s 4.3s ease forwards; }
+.hero-laptop-loading::before { content: ''; position: absolute; inset: 0; margin: auto; width: 80px; height: 6px; border-radius: 3px; box-sizing: border-box; border: 1px solid white; }
+.hero-laptop-loading::after { content: ''; position: absolute; top: 0; left: 18px; bottom: 0; margin: auto; width: 0; height: 6px; border-radius: 3px; background: #d8ff3e; animation: hero-laptop-progress 2s 2s ease-out forwards; }
+.hero-laptop-base { position: absolute; left: 42px; top: 145px; width: 150px; height: 90px; border-radius: 6px; transform: rotate(-30deg) skew(30deg); background: linear-gradient(-45deg,#c8c9c9 61%,#8c8c8c 66%); animation: hero-laptop-base-in .5s 1s ease-out forwards; opacity: 0; }
+.hero-laptop-base::before { content: ''; position: absolute; z-index: 3; top: -8px; left: 8px; width: 100%; height: 100%; border-radius: 6px; background: #dcdede; }
+.hero-laptop-base::after { content: ''; position: absolute; z-index: 2; top: -8px; left: 12px; width: 170px; height: 15px; transform-origin: top left; background: linear-gradient(-45deg,#c8c9c9 61%,#8c8c8c 66%); transform: rotate(31deg) skew(-16deg); }
+.hero-laptop-keyboard { position: relative; display: block; top: 0; left: 16px; z-index: 3; border-radius: 3px; width: calc(100% - 16px); height: 45px; background: #c8c9c9; }
+.hero-laptop-keyboard::before { content: ''; position: absolute; bottom: -30px; left: 0; right: 0; margin: auto; width: 40px; height: 25px; border-radius: 3px; background: #c8c9c9; }
+.hero-laptop-keys { position: relative; display: flex; flex-direction: column; top: 2px; left: 2px; width: calc(100% - 3px); height: calc(100% - 4px); }
+.hero-laptop-touchbar { width: 100%; height: 6px; border-radius: 3px; background: #000; }
+.hero-laptop-keyrow { display: flex; justify-content: space-between; height: 24px; margin-top: 1px; }
+.hero-laptop-keyrow i { position: relative; display: block; width: 8px; height: 7px; margin: 1px; background: #000; opacity: 0; transform: translate(60px,-60px); animation: hero-laptop-key-in .2s 1.4s ease-out forwards; }
+.hero-laptop-keyrow i::before, .hero-laptop-keyrow i::after { content: ''; position: absolute; left: 0; width: 100%; height: 100%; background: #000; }
+.hero-laptop-keyrow i::before { top: 8px; }
+.hero-laptop-keyrow i::after { top: 16px; }
+.hero-laptop-bottomrow { display: flex; justify-content: space-between; }
+.hero-laptop-bottomrow i { display: block; width: 8px; height: 7px; margin: 1px; background: #000; opacity: 0; transform: translate(80px,-80px); animation: hero-laptop-key-in .3s 1.6s linear forwards; }
+.hero-laptop-bottomrow i:nth-child(4) { width: 38px; }
+@keyframes hero-laptop-lid-in { 0% { transform: scale(0) skewY(-30deg); } 40% { transform: scale(1.08) skewY(-30deg); } 100% { transform: scale(1) skewY(-30deg); } }
+@keyframes hero-laptop-base-in { 0% { transform: scale(0) rotate(-30deg) skew(30deg); opacity: 0; } 40% { transform: scale(1.08) rotate(-30deg) skew(30deg); opacity: 1; } 100% { transform: scale(1) rotate(-30deg) skew(30deg); opacity: 1; } }
+@keyframes hero-laptop-key-in { to { transform: translate(0,0); opacity: 1; } }
+@keyframes hero-laptop-progress { 20%,30% { width: 40px; } 60%,90% { width: 60px; } 100% { width: 80px; } }
+@keyframes hero-laptop-display-in { to { opacity: 0; } }
+/* Approved placement: laptop on the left of the existing devices. */
+.hero-phone-stage.hero-phone-stage--laptop { min-height: 500px; }
+@media (max-width: 767px) {
+  .hero-phone-stage.hero-phone-stage--laptop { min-height: 510px; }
+  .hero-laptop { transform: scale(.7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-laptop *, .hero-laptop *::before, .hero-laptop *::after { animation-duration: .01ms !important; animation-delay: 0s !important; }
+}
+/* Reserve space for the extra model without pushing the existing phone down. */
+.hero-phone-stage--laptop > .hero-phone { align-self: flex-start; }
+
+.hero-laptop:focus-visible { outline: 2px solid #819a00; outline-offset: 4px; }

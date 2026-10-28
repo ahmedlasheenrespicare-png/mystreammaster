@@ -1,3 +1,4 @@
+import { HeroLaptop } from "./HeroLaptop";
 import "./hero-title-holo.css";
 import { HeroPhone } from "./HeroPhone";
 import { HeroTelevision } from "./HeroTelevision";
@@ -413,7 +414,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
 
         <Reveal variant="up" delay={320} className="mt-6">
-          <div className="hero-phone-stage" data-front-device={frontDevice}>
+          <div className="hero-phone-stage hero-phone-stage--laptop" data-front-device={frontDevice} data-laptop-placement="left">
             <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
                   <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
                   <span className="hero-title-holo__stack">
@@ -434,6 +435,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                   <span className="hero-tv-headline-tagline">وبلا تقطيع</span>
                 </span>} />
             <HeroPhone onActivate={() => setFrontDevice("phone")} />
+            <HeroLaptop />
             <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : "الجوال في المقدمة"}</span>
           </div>
         </Reveal>

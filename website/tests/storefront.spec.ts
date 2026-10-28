@@ -947,3 +947,20 @@ test('Google Search favicon and PWA brand icons are crawlable URLs at 48px multi
     expect((await res.body()).byteLength).toBeGreaterThan(1000);
   }
 });
+
+test('laptop stays left of the phone without preview controls or horizontal overflow', async ({ page }) => {
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const stage = page.locator('.hero-phone-stage--laptop');
+    await stage.scrollIntoViewIfNeeded();
+    await expect(stage).toHaveAttribute('data-laptop-placement', 'left');
+    await expect(page.getByRole('group', { name: 'موضع اللابتوب في المعاينة' })).toHaveCount(0);
+    const laptop = stage.locator('[data-hero-laptop]');
+    await expect(laptop).toBeVisible();
+    const laptopBox = await laptop.boundingBox();
+    const phoneBox = await stage.locator('[data-hero-phone]').boundingBox();
+    expect(laptopBox!.x).toBeLessThan(phoneBox!.x);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});

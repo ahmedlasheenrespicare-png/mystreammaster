@@ -8,6 +8,41 @@ import { test, expect, type Page, type Locator } from '@playwright/test';
 
 test.use({ serviceWorkers: 'block' });
 
+/* بطلب المالك (2026-10-28): شرائح القمم مخفية على تذاكر هذه البطولات فتبقى
+   الشريحة الأولى وحدها — مصدر الحقيقة الواحد لحرّاس التذاكر في هذا الملف،
+   مطابقٌ لـ HIDDEN_CLASH_LEAGUES في LeagueTicketCard.tsx. */
+const CLASH_SLIDES_HIDDEN = new Set<string>(['eng.1', 'esp.1', 'uefa.champions']);
+
+/* سلاج صفحات البطولات ← معرّف المصدر: به تعرف الحرّاس أي تذكرة أُخفيت
+   قممها دون تكرار المعرّف في كل حلقة */
+const SLUG_LEAGUE_ID: Record<string, string> = {
+  'الدوري-الإنجليزي': 'eng.1',
+  'الدوري-الإسباني': 'esp.1',
+  'دوري-أبطال-أوروبا': 'uefa.champions',
+  'الدوري-الفرنسي': 'fra.1',
+  'الدوري-الألماني': 'ger.1',
+  'الدوري-الإيطالي': 'ita.1',
+  'الدوري-السعودي': 'sau.1',
+  'الدوري-المصري': 'egy.1',
+};
+const clashSlidesHiddenFor = (slug: string) => CLASH_SLIDES_HIDDEN.has(SLUG_LEAGUE_ID[slug] ?? '');
+
+/* شرائح تذكرة كل صفحة بطولة بعد توزيع بطاقات تذكرة الرئيسية على بطولاتها
+   (بطلب المالك 2026-10-28): الشريحة الأساسية أولاً ثم بطاقات أخبار البطولة.
+   السعودي والمصري بلا بطاقات في الرئيسية فتبقى تذكرتهما الساكنة (شريحة 1). */
+const LEAGUE_PAGE_SLIDES: Record<string, number> = {
+  'الدوري-الإنجليزي': 5,      // الأساسية + 4 بطاقات
+  'الدوري-الإسباني': 4,       // الأساسية + 3
+  'دوري-أبطال-أوروبا': 3,     // الأساسية + 2
+  'الدوري-الألماني': 4,       // الأساسية + 3
+  'الدوري-الفرنسي': 3,        // الأساسية + 2
+  'الدوري-الإيطالي': 2,       // الأساسية + 1
+  'الدوري-السعودي': 1,
+  'الدوري-المصري': 1,
+};
+const slugOfUrl = (url: string) => url.split('/').filter(Boolean)[1] ?? '';
+const leagueSlidesFor = (url: string) => LEAGUE_PAGE_SLIDES[slugOfUrl(url)] ?? 1;
+
 const NOW = new Date('2026-10-13T12:00:00Z');
 
 function event(id: string, date: string, homeName: string, awayName: string, state = 'pre', score = '0') {
@@ -380,6 +415,18 @@ for (const c of clashScoreCases) {
       }],
     });
     await page.goto(c.url);
+    /* بطولة أُخفيت شرائح قممها بطلب المالك وحلّت محلها بطاقات أخبارها
+       المأخوذة من تذكرة الرئيسية: الأساسية أولاً ثم بطاقاتها */
+    if (CLASH_SLIDES_HIDDEN.has(c.league)) {
+      const expected = leagueSlidesFor(c.url);
+      await expect(page.locator('.league-ticket-dot'), `${c.league} dots (clash slides hidden)`).toHaveCount(expected);
+      await expect(page.locator('.league-ticket-slide'), `${c.league} slides`).toHaveCount(expected);
+      await expect(
+        page.locator('.league-ticket-slide').first().locator('.league-ticket-body em'),
+        `${c.league}: base slide first`,
+      ).toBeVisible();
+      return;
+    }
     /* عدد النقاط = شرائح التذكرة (أساسية + كل المواجهات المعروفة للبطولة) */
     await expect(page.locator('.league-ticket-dot'), `${c.league} dots`).toHaveCount(c.dots);
     const slide = page.locator('.league-ticket-slide').nth(c.slideIndex);
@@ -455,6 +502,15 @@ test('matches index ticket hosts the five clash slides with their league feature
     ],
   });
   await page.goto('/matches/');
+  /* بطلب المالك (2026-10-28) أُخفيت شرائح القمم من صفحة المواعيد فبقيت
+     الشريحة الأولى وحدها. هذا الحارس لا يُحذف: ينتظر عودة القمم (بحذف
+     clashes={[]} من MatchesPage) ويعمل بكامل فحوصه حينها. */
+  if ((await page.locator('.league-ticket-slide').count()) === 1) {
+    test.info().annotations.push({ type: 'note', description: 'clash slides hidden on /matches/ by owner request (2026-10-28)' });
+    await expect(page.locator('.league-ticket-slide'), 'single base slide').toHaveCount(1);
+    await expect(page.locator('.league-ticket-slide').first().locator('.all-leagues-ticket-name'), 'base name').toHaveText('كل البطولات الكبرى');
+    return;
+  }
   /* ست نقاط: الأساسية + القمم الخمس */
   await expect(page.locator('.league-ticket-dot'), 'index dots').toHaveCount(6);
   const indexSlides: ReadonlyArray<{
@@ -541,10 +597,17 @@ test('home hero hosts the matches index ticket with all six live slides', async 
   /* الأساسية: عنوان «كل البطولات الكبرى» كما في صفحة المواعيد */
   const baseSlide = homeTicket.locator('.league-ticket-slide').first();
   await expect(baseSlide.locator('.league-ticket-body em')).toHaveText('كل البطولات الكبرى');
-  /* الشريحتان الأولى والثانية مستبدلتان ببطاقتي خبر؛ أول مواجهة حيّة
-     غير مستبدلة هي الكلاسيكو في الشريحة الرابعة، ونتيجته من بيانات الاختبار. */
-  const firstClash = homeTicket.locator('.league-ticket-slide').nth(3);
-  await expect(firstClash.locator('.league-ticket-eyebrow')).toHaveText('مواجهة الكلاسيكو');
+  /* معظم الشرائح صارت بطاقات أخبار (تُستبدل ببطاقة خبر عبر slideOverrides)،
+     والقمم الحيّة تبقى بينها. فلا يُثبَّت فهرس — يتغيّر مع ترتيب بطاقات
+     الأخبار — بل تُكتشف شريحة الكلاسيكو الحيّة بمحتواها: صندوق نتيجة
+     حقيقي (3:1 من بيانات الاختبار) مع ريال مدريد بين فريقيها */
+  const goalSlides = homeTicket
+    .locator('.league-ticket-slide')
+    .filter({ has: page.locator('.league-ticket-goals', { hasText: /3\s*:\s*1/ }) });
+  await expect.poll(() => goalSlides.count(), { timeout: 20000 }).toBeGreaterThan(0);
+  const firstClash = goalSlides
+    .filter({ has: page.locator('.league-ticket-clash-team strong', { hasText: 'ريال مدريد' }) })
+    .first();
   const goals = firstClash.locator('.league-ticket-goals');
   await expect(goals).toBeVisible();
   await expect(goals).toHaveText(/3\s*:\s*1/);
@@ -564,11 +627,28 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
       { homeAway: 'away', score: '', team: { displayName: away } },
     ], status: { displayClock: '', type: { state: 'pre', completed: false, name: 'STATUS_SCHEDULED' } } }],
   });
+  /* بطلب المالك (2026-10-28) أُخفيت شرائح القمم من تذاكر كل صفحات البطولات
+     (الإنجليزي والإسباني وأبطال أوروبا)، فالتذكرة الوحيدة الباقية حاملةً
+     عدّاد الفليب هي تذكرة هيرو الرئيسية — تقرأ قممها من INDEX_CLASHES لا من
+     FEATURED_CLASHES. نُفعّل شريحة الكلاسيكو بنقطتها ثم نقيس البنية نفسها
+     بلا تغيير في الفحوص. */
   await mockSource(page, {
-    'eng.1': [preEvent('flip-ars-eve', '2026-10-15T17:03:07Z', 'Arsenal', 'Everton')],
+    'esp.1': [preEvent('flip-real-bar', '2026-10-15T17:03:07Z', 'Real Madrid', 'Barcelona')],
   });
-  await page.goto('/matches/الدوري-الإنجليزي/');
-  const strip = page.locator('.league-ticket-slide').nth(2).locator('.league-ticket-countdown.ticket-flip');
+  await page.goto('/');
+  const homeCarousel = page.locator('#hero .league-ticket-carousel');
+  await expect(homeCarousel).toHaveCount(1);
+  const flipSelector = '.league-ticket-countdown.ticket-flip';
+  await expect.poll(() => homeCarousel.locator(flipSelector).count(), { timeout: 20000 }).toBeGreaterThan(0);
+  /* الشريحة الحاملة للعدّاد تُكتشف بالفحص لا بفهرس ثابت (ترتيب قمم
+     الرئيسية يتغيّر مع بطاقات الأخبار المبطّطة)، ونقطتها تفعّلها */
+  const flipSlideIndex = await homeCarousel.locator('.league-ticket-slide').evaluateAll(
+    (slides, selector) => slides.findIndex(slide => slide.querySelector(selector)),
+    flipSelector,
+  );
+  expect(flipSlideIndex).toBeGreaterThan(0);
+  await homeCarousel.locator('button.league-ticket-dot').nth(flipSlideIndex).click();
+  const strip = homeCarousel.locator('.league-ticket-slide').nth(flipSlideIndex).locator(flipSelector);
   await expect(strip).toBeVisible();
   /* أربع خلايا بترتيب عربي وبصيغة جمع المالك: أيام ← ساعات ← دقائق ← ثوانٍ */
   const labels = await strip.locator('.ticket-flip__label').allTextContents();
@@ -601,9 +681,10 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
 test('french league ticket stacks its four server brands centered above the centered wordmark trio', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-الفرنسي/');
-  /* تذكرة الفرنسي اليوم يقف وحدة قممها فارغة فتُرسَم بالمسار الساكن
-     (تذكرة واحدة في الهيرو بلا منزلقة) — الحقنات الثلاث تغطي المسارين */
-  const ticket = page.locator('.matches-hero-title .league-ticket');
+  /* تذكرة الفرنسي صارت منزلقة ببطاقتَي أخبارها المأخوذتين من تذكرة
+     الرئيسية (بطلب المالك 2026-10-28): تُقاس هندسة الشريحة الأساسية
+     وحدها — وهي حاملة صفّ الأعلام والثلاثية */
+  const ticket = page.locator('.matches-hero-title .league-ticket-slide').first().locator('.league-ticket');
   await expect(ticket).toHaveCount(1);
   const brand = ticket.locator('img.league-ticket-brand-nova');
   await expect(brand).toHaveCount(1);
@@ -737,21 +818,31 @@ test('server brands row stacks centered above the trio on every branded ticket (
   await expect(indexCarousel).toHaveCount(1);
   const indexDots = indexCarousel.locator('button.league-ticket-dot');
   const indexDotCount = await indexDots.count();
-  expect(indexDotCount).toBeGreaterThanOrEqual(6);
+  /* عدد النقاط = عدد الشرائح: 1 اليوم بعد إخفاء القمم بطلب المالك
+     (2026-10-28)، و6 عند إرجاعها */
+  expect(indexDotCount).toBeGreaterThanOrEqual(1);
   const indexSlides = indexCarousel.locator('.league-ticket-slide');
   /* الأساس قبل أي نقرة: الشريحة الأولى فعّالة افتراضياً */
   await expectCenteredStack(indexSlides.first().locator('.league-ticket'), 'index base');
   /* وقمّة واردة بعد النقر على نقطتها — السكون المفروض بالإعداد يجعل
-     التبديل فورياً بلا انتقال فيُثبَت الفعّال الجديد مباشرة */
-  await indexDots.nth(1).click();
-  await expect(indexSlides.nth(1)).toHaveClass(/is-active/);
-  await expectCenteredStack(indexSlides.nth(1).locator('.league-ticket'), 'index clash slide 2');
+     التبديل فورياً بلا انتقال فيُثبَت الفعّال الجديد مباشرة. لا نقرة
+     وقمة اليوم: شرائح القمم مخفية، والفحص يعود مع إرجاعها. */
+  if (indexDotCount > 1) {
+    await indexDots.nth(1).click();
+    await expect(indexSlides.nth(1)).toHaveClass(/is-active/);
+    await expectCenteredStack(indexSlides.nth(1).locator('.league-ticket'), 'index clash slide 2');
+  }
 
-  /* 2) الخمسة الساكنة الباقية بعد الفرنسية (المثبتة أعلاه): ألمانيا
-     وإيطاليا ومصر والسعودية — تذكرة واحدة بلا منزلقة في الهيرو */
+  /* 2) الباقي بعد الفرنسية: ألمانيا وإيطاليا (منزلقتان ببطاقات أخبارهما)
+     ومصر والسعودية (ساكنتان) — تُقاس الشريحة الأساسية في الحالتين */
   for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
-    await expectCenteredStack(page.locator('.matches-hero-title .league-ticket'), slug);
+    const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
+    const base = slideCount > 0
+      ? page.locator('.matches-hero-title .league-ticket-slide').first().locator('.league-ticket')
+      : page.locator('.matches-hero-title .league-ticket');
+    await expect(base).toHaveCount(1);
+    await expectCenteredStack(base, slug);
   }
 
   /* 3) أول شريحة فقط من المنزلقات الثلاث — هندسة القاعدة دون القمم */
@@ -904,46 +995,48 @@ test('the four server brands are distributed by the owner rollout rule across ev
   const indexCarousel = page.locator('.league-ticket-carousel');
   await expect(indexCarousel).toHaveCount(1);
   const dots = await indexCarousel.locator('button.league-ticket-dot').count();
-  expect(dots).toBeGreaterThanOrEqual(6);
+  /* 1 اليوم (القمم مخفية بطلب المالك 2026-10-28) و6 عند إرجاعها — والعدد
+     يبقى مساوياً لعدد الشرائح فتظل مطابقة عدد الأعلام لكل شريحة صحيحة */
+  expect(dots).toBeGreaterThanOrEqual(1);
   for (const sel of BRANDS) {
     await expect(indexCarousel.locator(sel), `index: ${sel} on every slide`).toHaveCount(dots);
     await expect.poll(async () => indexCarousel.locator(sel).first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), `index: ${sel} served`).toBeTruthy();
   }
 
-  /* 2) الإنجليزي والإسباني وأبطال أوروبا: الشريحة الأولى (القاعدة)
-     فقط — شرائح القمم بلا لوجو حتى لا تزاحم محتواها الغني */
+  /* 2) الإنجليزي والإسباني وأبطال أوروبا: الأعلام الأربعة على الشريحة
+     الأساسية وحدها — بطاقات الأخبار المأخوذة من تذكرة الرئيسية
+     (بطلب المالك 2026-10-28) تحمل الثلاثية وأيقونات الخدمة لا صفّ الأعلام */
   for (const slug of ['الدوري-الإنجليزي', 'الدوري-الإسباني', 'دوري-أبطال-أوروبا']) {
     await page.goto(`/matches/${slug}/`);
     const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
     await expect(carousel).toHaveCount(1);
     const slideCount = await carousel.locator('.league-ticket-slide').count();
-    expect(slideCount).toBeGreaterThanOrEqual(2);
+    expect(slideCount).toBe(LEAGUE_PAGE_SLIDES[slug]);
     for (const sel of BRANDS) {
       await expect(carousel.locator(sel), `${slug}: ${sel} only on base`).toHaveCount(1);
       await expect(carousel.locator('.league-ticket-slide').first().locator(sel), `${slug}: ${sel} on base slide`).toHaveCount(1);
       for (let i = 1; i < slideCount; i++) {
-        await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: clash slide ${i} ${sel}-free`).toHaveCount(0);
+        await expect(carousel.locator('.league-ticket-slide').nth(i).locator(sel), `${slug}: slide ${i} ${sel}-free`).toHaveCount(0);
       }
     }
     /* (علامة ستريم ماستر صارت معمّمة بقاعدة التوزيع نفسها — حراستها
        كلها في الاختبار التالي المخصّص لها) */
   }
 
-  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي: الأعلام الأربعة
-     على كامل التذكرة — ساكنة اليوم (شريحة واحدة) فيُثبت عدد 1،
-     مستقبل-احتمائي لو أُثرقت بالقمم */
+  /* 3) الفرنسي والألماني والإيطالي (منزلقات ببطاقات أخبارها) والمصري
+     والسعودي (تذكرتان ساكنتان): الأعلام الأربعة على الشريحة الأساسية
+     وحدها في الحالتين — بطاقات الأخبار بلا صفّ أعلام */
   for (const slug of ['الدوري-الفرنسي', 'الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
+    const base = slideCount > 0
+      ? page.locator('.matches-hero-title .league-ticket-slide').first()
+      : page.locator('.matches-hero-title');
     for (const sel of BRANDS) {
-      const brand = page.locator(`.matches-hero-title ${sel}`);
-      if (slideCount > 0) {
-        await expect(brand, `${slug}: ${sel} on all slides`).toHaveCount(slideCount);
-      } else {
-        await expect(page.locator('.matches-hero-title .league-ticket')).toHaveCount(1);
-        await expect(brand, `${slug}: single ${sel}`).toHaveCount(1);
-      }
-      await expect(brand.first(), `${slug}: ${sel} visible`).toBeVisible();
+      await expect(page.locator(`.matches-hero-title ${sel}`), `${slug}: single ${sel}`).toHaveCount(1);
+      await expect(base.locator(sel), `${slug}: ${sel} on the base ticket`).toHaveCount(1);
+      await expect(base.locator(sel).first(), `${slug}: ${sel} visible`).toBeVisible();
+      await expect.poll(async () => base.locator(sel).first().evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), `${slug}: ${sel} served`).toBeTruthy();
     }
   }
 });
@@ -961,19 +1054,27 @@ test('stream-master wordmark trio is distributed by the owner rollout rule acros
   const indexCarousel = page.locator('.league-ticket-carousel');
   await expect(indexCarousel).toHaveCount(1);
   const dots = await indexCarousel.locator('button.league-ticket-dot').count();
-  expect(dots).toBeGreaterThanOrEqual(6);
+  /* 1 اليوم (القمم مخفية بطلب المالك 2026-10-28) و6 عند إرجاعها */
+  expect(dots).toBeGreaterThanOrEqual(1);
   await expect(indexCarousel.locator('.league-ticket-wordmark'), 'index: trio on every slide').toHaveCount(dots);
   await expect(indexCarousel.locator('.league-ticket-wordmark-text').first()).toHaveText('ستريم ماستر');
   await expect(indexCarousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark-line'), 'index base: divider').toHaveCount(1);
   await expect(indexCarousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark-badge'), 'index base: tumbling badge').toHaveCount(1);
-  /* وقمتها الأولى (شريحة رقم 2) تحملها أيضاً بجوار أيقونة بطولتها */
-  await expect(indexCarousel.locator('.league-ticket-slide').nth(1).locator('.league-ticket-wordmark'), 'index clash 1: trio').toHaveCount(1);
+  /* وقمتها الأولى (شريحة رقم 2) تحملها أيضاً بجوار أيقونة بطولتها —
+     تُفحص فقط وشرائح القمم موجودة (مخفية هي الخمس بطلب المالك 2026-10-28) */
+  if (dots > 1) {
+    await expect(indexCarousel.locator('.league-ticket-slide').nth(1).locator('.league-ticket-wordmark'), 'index clash 1: trio').toHaveCount(1);
+  }
 
-  /* 2) الألماني والإيطالي والمصري والسعودي: تذاكر ثابتة وحيدة بثلاثية */
+  /* 2) الألماني والإيطالي (منزلقتان ببطاقات أخبارهما) والمصري والسعودي
+     (تذكرتان ساكنتان): الثلاثية على الشريحة الأساسية في الحالتين */
   for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
-    const ticket = page.locator('.matches-hero-title .league-ticket');
-    await expect(ticket, `${slug}: single static ticket`).toHaveCount(1);
+    const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
+    const ticket = slideCount > 0
+      ? page.locator('.matches-hero-title .league-ticket-slide').first().locator('.league-ticket')
+      : page.locator('.matches-hero-title .league-ticket');
+    await expect(ticket, `${slug}: base ticket`).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-wordmark'), `${slug}: trio`).toHaveCount(1);
     await expect(ticket.locator('.league-ticket-wordmark-text'), `${slug}: exact text`).toHaveText('ستريم ماستر');
     await expect(ticket.locator('.league-ticket-wordmark-line'), `${slug}: divider`).toHaveCount(1);
@@ -986,18 +1087,18 @@ test('stream-master wordmark trio is distributed by the owner rollout rule acros
     const carousel = page.locator('.matches-hero-title .league-ticket-carousel');
     await expect(carousel, `${slug}: carousel`).toHaveCount(1);
     const slideCount = await carousel.locator('.league-ticket-slide').count();
-    expect(slideCount).toBeGreaterThanOrEqual(2);
-    await expect(carousel.locator('.league-ticket-wordmark'), `${slug}: trio on base only`).toHaveCount(1);
+    expect(slideCount).toBe(LEAGUE_PAGE_SLIDES[slug]);
+    /* الثلاثية على كل الشرائح — الأساسية وبطاقات الأخبار معاً */
+    await expect(carousel.locator('.league-ticket-wordmark'), `${slug}: trio on every slide`).toHaveCount(slideCount);
     await expect(carousel.locator('.league-ticket-slide').first().locator('.league-ticket-wordmark'), `${slug}: base slide trio`).toHaveCount(1);
-    for (let i = 1; i < slideCount; i++) {
-      await expect(carousel.locator('.league-ticket-slide').nth(i).locator('.league-ticket-wordmark'), `${slug}: clash ${i} trio-free`).toHaveCount(0);
-    }
+    await expect(carousel.locator('.league-ticket-wordmark-text').first()).toHaveText('ستريم ماستر');
   }
 
   /* 4) هندسة التوسيط تُقاس على الألماني الثابتة أيضاً: مركز المجموعة
      الأفقي = مركز التذكرة (±30px) كما فُرض على الفرنسية */
   await page.goto('/matches/الدوري-الألماني/');
-  const gerTicket = page.locator('.matches-hero-title .league-ticket');
+  /* الألماني صار منزلقة ببطاقات أخباره: تُقاس الشريحة الأساسية وحدها */
+  const gerTicket = page.locator('.matches-hero-title .league-ticket-slide').first().locator('.league-ticket');
   const gerBox = await gerTicket.boundingBox();
   const gerIconBox = await gerTicket.locator('.league-ticket-header .league-carousel-badge').boundingBox();
   const gerTextBox = await gerTicket.locator('.league-ticket-wordmark-text').boundingBox();

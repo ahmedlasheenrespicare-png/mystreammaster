@@ -35,7 +35,7 @@ interface HeaderProps {
 }
 
 /* =========================================================================
-   الهيدر: شريط إعلان علوي + كبسولة عائمة بخمس قوائم منسدلة
+   الهيدر: كبسولة عائمة من أعلى الصفحة بقوائم منسدلة
    --------------------------------------------------------------------------
    الروابط كلها من src/navigation.mjs — نفس المصدر الذي يبني هيدر الصفحات
    القديمة، فتظهر كل صفحات الموقع في الهيدر أينما كان الزائر.
@@ -137,28 +137,9 @@ export default function Header({
 
   return (
     <>
-      {/* الشريط الإعلاني العلوي */}
-      <div className="fixed top-0 inset-x-0 z-[60] bg-[#0b0b0f] text-white text-[12.5px] font-medium">
-        <div className="max-w-[1400px] mx-auto px-5 h-9 flex items-center justify-center gap-2">
-          <span className="hidden sm:inline-flex items-center gap-1 bg-[#d8ff3e] text-black text-[11px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide">
-            <IconZap className="w-3 h-3" /> عرض 2026
-          </span>
-          <p className="tracking-tight opacity-90 truncate">
-            تغطية كأس العالم 2026 والدوريات الكبرى —{" "}
-            <span className="text-[#d8ff3e] font-bold">خصومات على باقات التفعيل التقني</span> + فحص تجريبي مجاني
-          </p>
-          <button
-            onClick={onOpenTrial}
-            className="hidden md:inline-flex items-center gap-1 underline underline-offset-4 decoration-[#d8ff3e] hover:text-[#d8ff3e] transition cursor-pointer"
-          >
-            طلب كود تجريبي <IconArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* شريط التنقل الرئيسي — كبسولة عائمة */}
+      {/* شريط التنقل الرئيسي — كبسولة عائمة من أعلى الصفحة */}
       <header
-        className={`storefront-header fixed top-9 inset-x-0 z-[55] transition-all duration-500 ${
+        className={`storefront-header fixed top-0 inset-x-0 z-[55] transition-all duration-500 ${
           scrolled ? "py-2" : "py-4"
         }`}
       >
@@ -339,7 +320,7 @@ export default function Header({
         >
           <div
             id="storefront-mobile-nav"
-            className="absolute right-3 top-[125px] bottom-3 w-[88%] max-w-sm bg-[#faf9f6] rounded-3xl p-5 flex flex-col overflow-y-auto overscroll-contain animate-scale-in"
+            className="absolute right-3 top-[89px] bottom-3 w-[88%] max-w-sm bg-[#faf9f6] rounded-3xl p-5 flex flex-col overflow-y-auto overscroll-contain animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-[11px] font-black tracking-[0.2em] uppercase text-black/40 mb-2 px-1">

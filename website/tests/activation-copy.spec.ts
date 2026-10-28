@@ -42,7 +42,6 @@ test('homepage activation and trial CTAs use technical-service wording', async (
   const activation = page.getByRole('link', { name: 'اطلب التفعيل — من $20', exact: true });
   await expect(activation).toBeVisible();
   expect(messageFrom((await activation.getAttribute('href'))!)).toBe('مرحبًا ستريم ماستر، أود الاستفسار عن باقات التفعيل التقني لدى المزود');
-  await expect(page.getByText('خصومات على باقات التفعيل التقني', { exact: true })).toBeVisible();
   await expect(page.getByText('فحص تجريبي مجاني', { exact: true })).toBeVisible();
   await expect(page.locator('footer').getByRole('button', { name: 'انضم الآن', exact: true })).toBeVisible();
   await page.locator('footer').getByRole('button', { name: 'طلب كود فحص تجريبي (6 ساعات)', exact: true }).click();
@@ -83,7 +82,7 @@ for (const custom of [false, true]) {
   test(`trial sends technical compatibility wording with ${custom ? 'custom' : 'default'} selections`, async ({ page }) => {
     await page.goto('/');
     await captureWhatsApp(page);
-    await page.getByRole('button', { name: 'طلب كود تجريبي', exact: true }).first().click();
+    await page.locator('footer').getByRole('button', { name: 'طلب كود فحص تجريبي (6 ساعات)', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية', exact: true });
     await expect(dialog.getByRole('heading')).toHaveText('طلب كود فحص وتجربة من المزود (6 ساعات)');
     await expect(dialog).toContainText('اختبر توافق التطبيق على جهازك واستقرار اتصال سيرفر المزود قبل طلب التفعيل.');

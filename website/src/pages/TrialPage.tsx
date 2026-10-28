@@ -86,7 +86,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
   const waTrialText = encodeURIComponent("مرحباً، أود طلب كود تجربة مجانية 6 ساعات لفحص التوافق على جهازي");
 
   return (
-    <div className="pt-[140px]">
+    <div className="pt-[104px]">
       <nav
         className="max-w-[860px] mx-auto px-5 text-[12.5px] font-bold text-black/40 pt-6"
         aria-label="مسار التصفح"
@@ -200,7 +200,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
       </section>
 
       {/* ===== الشروط ===== */}
-      <section id="trial-conditions" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[150px]">
+      <section id="trial-conditions" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[114px]">
         <div className="max-w-[860px] mx-auto px-5">
           <h2 className="font-display font-black tracking-tight text-[26px] md:text-[34px] leading-snug">
             شروط التجربة باختصار
@@ -262,7 +262,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
       </section>
 
       {/* ===== أسئلة التجربة ===== */}
-      <section id="trial-faq" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[150px]">
+      <section id="trial-faq" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[114px]">
         <div className="max-w-[860px] mx-auto px-5">
           <h2 className="font-display font-black tracking-tight text-[26px] md:text-[34px] leading-snug text-center">
             أسئلة شائعة عن التجربة المجانية

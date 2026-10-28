@@ -80,7 +80,6 @@ const mobileNav = NAV_GROUPS.map(g => `<details class="sm-acc" data-group="${g.k
 const headerBrand = `<a class="sm-brand" href="/" aria-label="ستريم ماستر — الصفحة الرئيسية"><span class="sm-sr-only">ستريم ماستر — Stream Master Pro</span><span class="sm-crab39" dir="rtl" aria-hidden="true"><span class="sm-crab39__row"><span class="sm-crab39__word"><span class="sm-crab39__tile"><sup class="sm-crab39__sup">4K</sup><span class="sm-crab39__sym">ست</span></span><span class="sm-crab39__rest">ريم</span></span><span class="sm-crab39__word"><span class="sm-crab39__tile"><sup class="sm-crab39__sup">99</sup><span class="sm-crab39__sym">ما</span></span><span class="sm-crab39__rest">ستر</span></span></span><span class="sm-crab39__sub" dir="ltr">Stream Master Pro</span></span></a>`;
 
 export const header = `<a class="sm-skip" href="#main-content">تخطي إلى المحتوى</a>
-<div class="sm-announcement">ستريم ماستر برو — <strong>اشتراك واحد، ترفيه بلا حدود</strong><a href="/?trial=1">اطلب تجربتك المجانية ←</a></div>
 <header class="sm-header"><nav aria-label="القائمة الرئيسية" class="sm-nav">
 ${headerBrand}
 <div class="sm-desktop">${desktopNav}</div>

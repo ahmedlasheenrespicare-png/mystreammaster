@@ -359,7 +359,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   }, []);
 
   return (
-    <div id="hero" className="relative pt-[150px] md:pt-[168px] pb-16 md:pb-20 overflow-hidden bg-[#faf9f6]">
+    <div id="hero" className="relative pt-[114px] md:pt-[132px] pb-16 md:pb-20 overflow-hidden bg-[#faf9f6]">
       {/* فقاعات الخلفية الملونة — ببارالاكس بطيء */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <Parallax speed={0.06} className="absolute inset-0">

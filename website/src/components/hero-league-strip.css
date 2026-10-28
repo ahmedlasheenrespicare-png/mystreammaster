@@ -724,3 +724,22 @@ a.hs-crown-wing:hover {
     animation: none;
   }
 }
+
+/* Same league-ticket stars, behind the readable title and authentic trophy. */
+.hs-crown-card-top { isolation: isolate; min-height: 104px; overflow: hidden; }
+.hs-crown-players { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.hs-crown-player {
+  position: absolute; bottom: -8px; height: 112px; width: 110px;
+  object-fit: contain; object-position: center bottom;
+  opacity: .7;
+  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+}
+.hs-crown-player--1 { left: 36px; transform: rotate(-5deg); }
+.hs-crown-player--2 { right: 17px; transform: rotate(5deg); }
+.hs-crown-players::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #0b0b0f33, transparent 45%, #0b0b0fc9 100%), linear-gradient(0deg, #0b0b0f70, transparent 75%);
+}
+.hs-crown-card-meta, .hs-mini-trophy { position: relative; z-index: 1; }
+.hs-crown-league-name { text-shadow: 0 1px 5px #000, 0 0 10px #000b; }
+.hs-crown-players picture { display: contents; }

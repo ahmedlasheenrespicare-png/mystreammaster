@@ -999,3 +999,42 @@ test('classic lime television keeps content and interactions without preview con
     await expect(button).toHaveAttribute('aria-pressed', 'true');
   }
 });
+
+test.describe('league strip player backgrounds and mobile rotation', () => {
+  test.use({ viewport: { width: 390, height: 900 }, hasTouch: true, isMobile: true });
+
+  test('uses the ticket artwork for all leagues and auto-rotates after touch', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    await strip.scrollIntoViewIfNeeded();
+    const { LEAGUE_TICKET_PLAYERS } = await import('../src/content/league-ticket-players');
+    await expect(strip.locator('[data-crown-card]')).toHaveCount(8);
+    for (const [league, players] of Object.entries(LEAGUE_TICKET_PLAYERS)) {
+      const card = strip.locator(`[data-crown-card="${league}"]`);
+      expect(await card.locator('.hs-crown-player').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')))).toEqual(players);
+    }
+    // Touch a navigation dot: synthetic hover/focus must not leave autoplay paused.
+    await strip.locator('.hs-crown-dot').nth(2).tap();
+    const front = strip.locator('[data-crown-offset="0"]');
+    const selected = await front.getAttribute('data-crown-card');
+    await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(selected);
+    const active = await front.getAttribute('data-crown-card');
+    await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', active!);
+    await expect.poll(() => front.locator('.hs-crown-player').evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await strip.screenshot({ path: '/home/user/league-strip-mobile.png' });
+  });
+
+  test('respects reduced motion while keeping manual league selection', async ({ page }) => {
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    await strip.scrollIntoViewIfNeeded();
+    await strip.locator('.hs-crown-dot').nth(3).tap();
+    const selected = await strip.locator('[data-crown-offset="0"]').getAttribute('data-crown-card');
+    await page.waitForTimeout(5500);
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', selected!);
+    await strip.locator('.hs-crown-arrow').first().tap();
+    await expect(strip.locator('[data-crown-offset="0"]')).not.toHaveAttribute('data-crown-card', selected!);
+  });
+});

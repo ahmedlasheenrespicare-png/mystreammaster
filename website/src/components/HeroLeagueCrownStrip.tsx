@@ -1,3 +1,5 @@
+import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
+import { TicketImage } from "./TicketImage";
 import {
   useEffect,
   useMemo,
@@ -54,6 +56,38 @@ function adjustSharedPause(delta: number) {
   if ((sharedPauseCount > 0) !== prevPaused) {
     emitCrownChange();
   }
+}
+
+/** Real mouse hover and keyboard focus pause rotation, never emulated touch hover. */
+function useCrownInteractionPause() {
+  const hover = useRef(false);
+  const focus = useRef(false);
+  const update = (ref: { current: boolean }, next: boolean) => {
+    if (ref.current === next) return;
+    ref.current = next;
+    adjustSharedPause(next ? 1 : -1);
+  };
+  useEffect(() => () => {
+    if (hover.current) { hover.current = false; adjustSharedPause(-1); }
+    if (focus.current) { focus.current = false; adjustSharedPause(-1); }
+  }, []);
+  return {
+    onPointerEnter: (e: React.PointerEvent<HTMLElement>) => {
+      if (e.pointerType === "mouse") update(hover, true);
+    },
+    onPointerLeave: (e: React.PointerEvent<HTMLElement>) => {
+      if (e.pointerType === "mouse") update(hover, false);
+    },
+    onPointerDownCapture: (e: React.PointerEvent<HTMLElement>) => {
+      if (e.pointerType !== "mouse") update(focus, false);
+    },
+    onFocusCapture: (e: React.FocusEvent<HTMLElement>) => {
+      update(focus, e.target.matches(":focus-visible"));
+    },
+    onBlurCapture: (e: React.FocusEvent<HTMLElement>) => {
+      if (!e.currentTarget.contains(e.relatedTarget)) update(focus, false);
+    },
+  };
 }
 
 function useSharedCrownState() {
@@ -270,6 +304,7 @@ function HeroClubCrest({
 ========================================================================== */
 export default function HeroLeagueCrownStrip() {
   const items = useHeroLeagueItems();
+  const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
@@ -328,7 +363,7 @@ export default function HeroLeagueCrownStrip() {
   useEffect(() => {
     if (paused || dragging || items.length < 2) return;
     const id = window.setInterval(() => {
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      if (document.hidden || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       stepSharedActiveIndex(1, items.length);
     }, STEP_INTERVAL_MS);
     return () => window.clearInterval(id);
@@ -373,10 +408,7 @@ export default function HeroLeagueCrownStrip() {
       <div
         className={`hs-crown-shell${dragging ? " is-dragging" : ""}`}
         style={dragX !== 0 ? ({ "--hs-drag-x": `${dragX}px` } as CSSProperties) : undefined}
-        onMouseEnter={() => adjustSharedPause(1)}
-        onMouseLeave={() => adjustSharedPause(-1)}
-        onFocus={() => adjustSharedPause(1)}
-        onBlur={() => adjustSharedPause(-1)}
+        {...interactionPause}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft") {
             e.preventDefault();
@@ -442,6 +474,11 @@ export default function HeroLeagueCrownStrip() {
                 }}
               >
                 <span className="hs-crown-card-top">
+                  <span className="hs-crown-players" aria-hidden="true">
+                    {(LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map((src, index) => (
+                      <TicketImage key={src} className={`hs-crown-player hs-crown-player--${index + 1}`} src={src} alt="" loading="lazy" decoding="async" />
+                    ))}
+                  </span>
                   <span className="hs-crown-card-meta">
                     <span className="hs-crown-league-name">{item.shortName}</span>
                     {item.leader && (
@@ -504,6 +541,7 @@ export default function HeroLeagueCrownStrip() {
 ========================================================================== */
 export function HeroLeagueStatsBar() {
   const items = useHeroLeagueItems();
+  const interactionPause = useCrownInteractionPause();
   const { active } = useSharedCrownState();
   const current = items[active] ?? items[0];
 
@@ -514,10 +552,7 @@ export function HeroLeagueStatsBar() {
       className="hero-crown-stats-bar"
       aria-label="إحصائيات وترتيب البطولة النشطة"
       data-hero-league-stats="crown3d"
-      onMouseEnter={() => adjustSharedPause(1)}
-      onMouseLeave={() => adjustSharedPause(-1)}
-      onFocus={() => adjustSharedPause(1)}
-      onBlur={() => adjustSharedPause(-1)}
+      {...interactionPause}
     >
       <div className="hs-stats-bar-grid">
         {/* بطاقة تعريف البطولة النشطة (يميناً تحت تذكرة المواعيد، وعلى الجوال شريط علوي أنيق) */}

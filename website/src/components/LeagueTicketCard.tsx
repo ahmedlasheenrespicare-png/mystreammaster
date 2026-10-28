@@ -52,8 +52,9 @@ export interface FeaturedClash {
   eyebrow: string;
   home: ClashTeamSide;
   away: ClashTeamSide;
-  homePlayer: string;
-  awayPlayer: string;
+  /* صور اللاعبين اختيارية: بطاقة المواجهة بلا صور تُعرض بالشعارين فقط */
+  homePlayer?: string;
+  awayPlayer?: string;
   /* تسلسل احتفال متحرك (فليب-بوك 8 إطارات ثابتة بلا خلفية، محاذاة
      موحّدة 1280×1600): إن حُدِّد لجهةٍ عُرض بدل الصورة الساكنة كطبقات
      تتبدّل بشفافية CSS — تشبه الفيديو بثماني صور، وتتجمد على إطار
@@ -625,12 +626,12 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
       {leftSequence ? (
         <TicketSeqPlayer cssClass="league-ticket-player league-ticket-player--left league-ticket-player--celebrate league-ticket-player--seq" frames={leftSequence} video={leftSequenceVideo} />
       ) : (
-        <TicketImage className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+        leftPlayer ? <TicketImage className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" /> : null
       )}
       {rightSequence ? (
         <TicketSeqPlayer cssClass="league-ticket-player league-ticket-player--right league-ticket-player--celebrate league-ticket-player--seq" frames={rightSequence} video={rightSequenceVideo} />
       ) : (
-        <TicketImage className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+        rightPlayer ? <TicketImage className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" /> : null
       )}
       {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
           بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي

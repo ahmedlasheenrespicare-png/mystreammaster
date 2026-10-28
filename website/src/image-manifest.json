@@ -723,6 +723,14 @@
     900,
     859
   ],
+  "/images/players/eng-arteta-fleetwood-exit.png": [
+    553,
+    1101
+  ],
+  "/images/players/eng-arteta-fleetwood-exit.webp": [
+    553,
+    1101
+  ],
   "/images/players/eng-bou-duo-celebration.avif": [
     566,
     900
@@ -734,6 +742,14 @@
   "/images/players/eng-bou-duo-celebration.webp": [
     742,
     1180
+  ],
+  "/images/players/eng-bruno-bench-snub.png": [
+    826,
+    1084
+  ],
+  "/images/players/eng-bruno-bench-snub.webp": [
+    826,
+    1084
   ],
   "/images/players/eng-grealish.avif": [
     624,
@@ -815,18 +831,6 @@
     506,
     700
   ],
-  "/images/players/eng-saka.avif": [
-    850,
-    900
-  ],
-  "/images/players/eng-saka.png": [
-    1477,
-    1564
-  ],
-  "/images/players/eng-saka.webp": [
-    850,
-    900
-  ],
   "/images/players/eng-szoboszlai.avif": [
     600,
     900
@@ -859,6 +863,14 @@
     600,
     900
   ],
+  "/images/players/esp-alvarez-regret.png": [
+    630,
+    732
+  ],
+  "/images/players/esp-alvarez-regret.webp": [
+    630,
+    732
+  ],
   "/images/players/esp-clasico-duel.avif": [
     772,
     627
@@ -882,6 +894,14 @@
   "/images/players/esp-flick-angry.webp": [
     900,
     1175
+  ],
+  "/images/players/esp-mbappe-china-apology.png": [
+    1410,
+    1603
+  ],
+  "/images/players/esp-mbappe-china-apology.webp": [
+    1410,
+    1603
   ],
   "/images/players/esp-mbappe-goal.avif": [
     636,
@@ -950,102 +970,6 @@
   "/images/players/fra-dembele-celebration.webp": [
     700,
     591
-  ],
-  "/images/players/fra-dembele-phone-seq-landing.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-landing.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-seq-landing.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-peak.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-peak.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-seq-peak.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-press.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-press.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-seq-press.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-rising.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-seq-rising.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-seq-rising.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-1.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-1.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-stage-1.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-2.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-2.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-stage-2.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-3.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-3.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-stage-3.webp": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-4.avif": [
-    720,
-    900
-  ],
-  "/images/players/fra-dembele-phone-stage-4.png": [
-    1280,
-    1600
-  ],
-  "/images/players/fra-dembele-phone-stage-4.webp": [
-    720,
-    900
   ],
   "/images/players/fra-dembele.avif": [
     600,

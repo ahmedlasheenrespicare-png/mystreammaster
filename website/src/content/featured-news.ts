@@ -38,7 +38,11 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "كاريك وبرونو فرنانديز يجريان جلسة مصارحة بعد الاستبعاد",
     description: "لقاء في كارينغتون لتصفية الأجواء بعد إبقاء فرنانديز على مقاعد البدلاء أمام بورنموث.",
     href: "news/carrick-fernandes-talks-2026/",
-  },
+    fullImage: true,
+    images: [
+      { src: "images/players/eng-bruno-bench-snub.webp", alt: "برونو فرنانديز بيده على رأسه بنظرة مطفأة بعد إبقاؤه على مقاعد البدلاء في مواجهة بورنموث" },
+    ],
+    },
   {
     category: "كأس الرابطة الإنجليزية",
     dateLabel: "28 أكتوبر 2026",
@@ -56,21 +60,33 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "صدمة: أرسنال يودّع كأس الرابطة أمام فليتوود تاون بركلات الترجيح",
     description: "فليتوود من الدرجة الرابعة يفوز 5-3 بركلات الترجيح بعد التعادل 1-1، وطرد داومان في الدقيقة 85.",
     href: "news/arsenal-fleetwood-carabao-cup-2026/",
-  },
+    fullImage: true,
+    images: [
+      { src: "images/players/eng-arteta-fleetwood-exit.webp", alt: "ميكيل أرتيتا بأكتاف متقاطعة ونظرة فارغة بعد خروج أرسنال من كأس الرابطة أمام فليتوود تاون بركلات الترجيح" },
+    ],
+    },
   {
     category: "الدوري الإسباني",
     dateLabel: "27 أكتوبر 2026",
     title: "أزمة مبابي في الصين: شركات تنهي تعاقداتها وبث الليغا يتوقف",
     description: "شركات صينية تنهي تعاقداتها مع مبابي بعد تعليق ساخر عن ماو، والتلفزيون الصيني يوقف بث الليغا.",
     href: "news/mbappe-china-sponsors-2026/",
-  },
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-mbappe-china-apology.webp", alt: "كيليان مبابي برأس منخفض وكفّين متضامتين في لحظة الاعتذار بعد انسحاب الرعاة الصينيين" },
+    ],
+    },
   {
     category: "الدوري الإسباني",
     dateLabel: "27 أكتوبر 2026",
     title: "برشلونة يُغرَّم 602 يورو في قضية خوليان ألفاريز",
     description: "الاتحاد الإسباني يغرّم برشلونة بعد شكوى أتلتيكو مدريد بشأن التواصل مع خوليان ألفاريز دون إخطار.",
     href: "news/barcelona-alvarez-fine-2026/",
-  },
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-alvarez-regret.webp", alt: "خوليان ألفاريز بيديه على رأسه نادما بعد قضية التواصل مع برشلونة وغرامة الاتحاد الإسباني" },
+    ],
+    },
   {
     category: "الدوري التركي",
     dateLabel: "27 أكتوبر 2026",

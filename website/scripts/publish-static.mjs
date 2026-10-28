@@ -220,7 +220,7 @@ for (const file of await files(path.join(website, 'legacy'))) {
   // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.
   if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#faf9f6');
   applyBrandIcons($);
-  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261013b"><script src="/_assets/storefront.js?v=20261013b" defer></script>');
+  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261028a"><script src="/_assets/storefront.js?v=20261028a" defer></script>');
 
   /* فحص SEO للصفحة القديمة بصيغتها النهائية: نحوّل مسار الملف إلى مسار تطبيع
      (about/index.html → /about، watch-legal.html → /watch-legal.html) ثم

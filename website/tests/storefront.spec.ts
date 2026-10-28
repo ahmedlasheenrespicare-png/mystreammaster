@@ -156,7 +156,7 @@ test('English catalog includes X at $20/year without exposing its device count o
 
 test('trial modal is above navigation, supports keyboard dismissal, and uses existing contact', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'طلب كود تجريبي', exact: true }).first().click();
+  await page.locator('footer').getByRole('button', { name: 'طلب كود فحص تجريبي (6 ساعات)', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByLabel('نوع جهازك:')).toBeVisible();

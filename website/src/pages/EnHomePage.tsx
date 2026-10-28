@@ -13,7 +13,7 @@ export default function EnHomePage() {
   const [openKey, setOpenKey] = useState<number | null>(0);
 
   return (
-    <div className="pt-[140px]">
+    <div className="pt-[120px]">
       <nav
         className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6"
         aria-label="Breadcrumb"
@@ -85,7 +85,7 @@ export default function EnHomePage() {
       </section>
 
       {/* السيرفرات */}
-      <section id="servers" className="py-14 md:py-20 scroll-mt-[120px]">
+      <section id="servers" className="py-14 md:py-20 scroll-mt-[100px]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <h2 className="font-display font-black tracking-tight text-[30px] md:text-[44px]">

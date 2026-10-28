@@ -11,7 +11,7 @@
   --mc-red: #ef3340;
   --mc-radius: 18px;
   box-sizing: border-box;
-  padding: 128px 16px 96px;
+  padding: 92px 16px 96px;
   color: var(--mc-text);
   background:
     radial-gradient(ellipse at 88% -6%, rgba(124, 92, 255, .20), transparent 52%),
@@ -496,7 +496,7 @@
 }
 
 @media (max-width: 720px) {
-  .mc-page { padding: 112px 12px 104px; }
+  .mc-page { padding: 76px 12px 104px; }
   .mc-pitch-frame { gap: 8px; padding: 13px 9px; }
   /* تحت 720px لا يتّسع صفٌّ واحد لثلاثة: بطاقتا الفريقين كانتا تُسحقان إلى
      شرائح ضيقة بينما يحتفظ مركز النتيجة بعرضه (flex-basis: auto مقابل 0)،

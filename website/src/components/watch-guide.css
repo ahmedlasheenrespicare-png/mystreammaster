@@ -1,5 +1,5 @@
 /* Scoped styles for the approved official-destination guide; no global player styles. */
-.wg-section{--ink:#0b0b0f;--blue:#2b4eff;--lime:#d8ff3e;--paper:#faf9f6;--line:rgba(11,11,15,.1);scroll-margin-top:130px}
+.wg-section{--ink:#0b0b0f;--blue:#2b4eff;--lime:#d8ff3e;--paper:#faf9f6;--line:rgba(11,11,15,.1);scroll-margin-top:94px}
 .wg-section button{cursor:pointer}
 .wg-section button:focus-visible,.wg-section a:focus-visible,.wg-section input:focus-visible,.wg-dialog button:focus-visible{outline:3px solid #748bff;outline-offset:3px}
 

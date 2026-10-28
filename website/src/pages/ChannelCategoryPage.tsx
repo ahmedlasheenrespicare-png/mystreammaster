@@ -4,7 +4,7 @@ import { CHANNEL_CATEGORY_PAGES, type ChannelCategoryPage as Category } from "..
 
 export default function ChannelCategoryPage({ category }: { category: Category }) {
   return (
-    <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
+    <div className="bg-[#faf9f6] pt-[114px] md:pt-[132px] pb-20">
       <div className="max-w-[1370px] mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="text-[12.5px] font-bold text-black/40 mb-5" aria-label="مسار التصفح">
           <a href={to("")} className="hover:text-black transition">الرئيسية</a>

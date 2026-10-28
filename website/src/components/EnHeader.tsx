@@ -10,7 +10,7 @@ export default function EnHeader() {
   const { path } = useRouter();
 
   return (
-    <header className="fixed top-9 inset-x-0 z-[55]">
+    <header className="fixed top-0 inset-x-0 z-[55] pt-4">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
         <nav
           aria-label="Main menu"

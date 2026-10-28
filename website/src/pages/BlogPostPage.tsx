@@ -89,7 +89,7 @@ export default function BlogPostPage({
     : undefined;
 
   return (
-    <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
+    <div className="bg-[#faf9f6] pt-[114px] md:pt-[132px] pb-20">
       <div className="max-w-[820px] mx-auto px-5">
         <nav className="text-[12.5px] font-bold text-black/40 mb-5" aria-label="مسار التصفح">
           <a href={to("")} className="hover:text-black transition">الرئيسية</a>
@@ -198,7 +198,7 @@ export default function BlogPostPage({
                 {s.heading && (
                   <h2
                     id={s.anchor ?? `s-${i}`}
-                    className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug scroll-mt-32"
+                    className="font-display font-black text-[22px] md:text-[26px] tracking-tight leading-snug scroll-mt-[92px]"
                   >
                     {s.heading}
                   </h2>

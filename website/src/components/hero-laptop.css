@@ -36,8 +36,13 @@
 /* Approved placement: laptop on the left of the existing devices. */
 .hero-phone-stage.hero-phone-stage--laptop { min-height: 500px; }
 @media (max-width: 767px) {
-  .hero-phone-stage.hero-phone-stage--laptop { min-height: 510px; }
-  .hero-laptop { transform: scale(.7); }
+  .hero-phone-stage.hero-phone-stage--laptop { min-height: 382px; }
+  .hero-laptop {
+    top: 96px;
+    bottom: auto;
+    transform-origin: top left;
+    transform: scale(.7);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-laptop *, .hero-laptop *::before, .hero-laptop *::after { animation-duration: .01ms !important; animation-delay: 0s !important; }

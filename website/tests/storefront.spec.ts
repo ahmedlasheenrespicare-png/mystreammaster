@@ -978,3 +978,24 @@ test('mobile laptop base aligns with the phone base', async ({ page }) => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('classic lime television keeps content and interactions without preview controls', async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const tv = page.locator('[data-hero-tv]');
+    await tv.scrollIntoViewIfNeeded();
+    await expect(page.getByRole('group', { name: 'اقتراحات تصميم التلفاز في المعاينة' })).toHaveCount(0);
+    await expect(tv).toHaveAttribute('data-tv-design', 'lime');
+    await expect(tv.locator('.hero-tv-retro-dial')).toHaveCount(2);
+    await expect(tv.locator('.hero-tv-headline')).toContainText('كل ما تحب');
+    await expect(tv.locator('.hero-tv-welcome-gallery img')).toHaveCount(6);
+    await expect(tv.locator('[data-tv-server]')).toHaveCount(4);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const button = tv.getByRole('button');
+    await button.focus();
+    await button.press('Enter');
+    await expect(page.locator('.hero-phone-stage')).toHaveAttribute('data-front-device', 'tv');
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+  }
+});

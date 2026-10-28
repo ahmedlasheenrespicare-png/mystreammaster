@@ -415,7 +415,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
 
         <Reveal variant="up" delay={320} className="mt-6">
-          <div className="hero-phone-stage hero-phone-stage--laptop" data-front-device={frontDevice} data-laptop-placement="left">
+          <div className="hero-phone-stage hero-phone-stage--laptop hero-phone-stage--retro" data-front-device={frontDevice} data-laptop-placement="left">
             <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
                   <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
                   <span className="hero-title-holo__stack">

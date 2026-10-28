@@ -3,6 +3,7 @@ import { IconPlay } from './Icons';
 import { ServerIcon } from './ServerIcon';
 import './hero-television.css';
 import './brand-newt35.css';
+import './hero-tv-retro.css';
 import { to } from '../config';
 
 const TV_SERVERS = [
@@ -16,7 +17,8 @@ const TV_SERVERS = [
 export function HeroTelevision({ onActivate, headline }: { onActivate?: () => void; headline?: ReactNode }) {
   const [apps, setApps] = useState(false);
   return (
-    <div className="hero-tv" data-hero-tv="">
+    <div className="hero-tv hero-tv--retro" data-hero-tv="" data-tv-design="lime">
+      <span className="hero-tv-retro-antenna" aria-hidden="true"><i /><i /></span>
       <button
         type="button"
         className="hero-tv-frame"
@@ -81,8 +83,13 @@ export function HeroTelevision({ onActivate, headline }: { onActivate?: () => vo
           <span className="hero-tv-bottom"><span>STREAM MASTER PRO</span><span className="hero-tv-pagination"><i className={!apps ? 'is-active' : ''} /><i className={apps ? 'is-active' : ''} /></span></span>
           <span className="hero-tv-reflection" />
         </span>
+        <span className="hero-tv-retro-controls" aria-hidden="true">
+          <span className="hero-tv-retro-dial" /><span className="hero-tv-retro-dial hero-tv-retro-dial--small" />
+          <span className="hero-tv-retro-speaker" /><span className="hero-tv-retro-power" />
+        </span>
         <span className="hero-tv-chin" aria-hidden="true"><span>STREAM MASTER</span><i /></span>
       </button>
+      <span className="hero-tv-retro-feet" aria-hidden="true" />
       <span className="hero-tv-neck" aria-hidden="true" />
       <span className="hero-tv-base" aria-hidden="true" />
       <span className="hero-tv-floor-shadow" aria-hidden="true" />

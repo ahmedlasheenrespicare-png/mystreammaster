@@ -38,9 +38,10 @@
 @media (max-width: 767px) {
   .hero-phone-stage.hero-phone-stage--laptop { min-height: 382px; }
   .hero-laptop {
-    top: 96px;
-    bottom: auto;
-    transform-origin: top left;
+    /* Match the phone bottom: stage padding-bottom is 20px. */
+    top: auto;
+    bottom: 20px;
+    transform-origin: bottom left;
     transform: scale(.7);
   }
 }

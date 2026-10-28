@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإنجليزي",
+    dateLabel: "28 أكتوبر 2026",
+    title: "كاريك وبرونو فرنانديز يجريان جلسة مصارحة بعد الاستبعاد",
+    description: "لقاء في كارينغتون لتصفية الأجواء بعد إبقاء فرنانديز على مقاعد البدلاء أمام بورنموث.",
+    href: "news/carrick-fernandes-talks-2026/",
+  },
+  {
     category: "كأس الرابطة الإنجليزية",
     dateLabel: "28 أكتوبر 2026",
     title: "مواجهة الليلة: ليفربول ضد تشيلسي في كأس الرابطة الإنجليزية",
@@ -42,6 +49,13 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     images: [
       { src: "images/players/eng-iraola-alonso-duel.webp", alt: "إيرولا وألونسو في مواجهة المدربين قبل قمة ليفربول وتشيلسي في الدور الرابع من كأس الرابطة على أنفيلد" },
     ],
+  },
+  {
+    category: "كأس الرابطة الإنجليزية",
+    dateLabel: "27 أكتوبر 2026",
+    title: "صدمة: أرسنال يودّع كأس الرابطة أمام فليتوود تاون بركلات الترجيح",
+    description: "فليتوود من الدرجة الرابعة يفوز 5-3 بركلات الترجيح بعد التعادل 1-1، وطرد داومان في الدقيقة 85.",
+    href: "news/arsenal-fleetwood-carabao-cup-2026/",
   },
   {
     category: "الدوري التركي",

@@ -904,6 +904,31 @@
       "fetchedAt": "2026-10-23T08:34:10.994Z"
     },
     {
+      "id": "401915551",
+      "date": "2026-11-04T15:30:00.000Z",
+      "home": {
+        "id": "169",
+        "name": "Stade Rennais"
+      },
+      "away": {
+        "id": "435",
+        "name": "Olympiacos"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.europa",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261104&limit=500"
+      },
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
+    },
+    {
       "id": "401915526",
       "date": "2026-11-05T17:45:00.000Z",
       "home": {
@@ -1088,31 +1113,6 @@
       "away": {
         "id": "2790",
         "name": "RB Salzburg"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "uefa.europa",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
-      },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
-    },
-    {
-      "id": "401915551",
-      "date": "2026-11-05T17:45:00.000Z",
-      "home": {
-        "id": "169",
-        "name": "Stade Rennais"
-      },
-      "away": {
-        "id": "435",
-        "name": "Olympiacos"
       },
       "score": {
         "home": null,

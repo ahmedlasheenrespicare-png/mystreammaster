@@ -515,10 +515,10 @@
         "name": "Al-Masry SC"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -526,7 +526,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-28&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "1372042554",
@@ -540,10 +540,10 @@
         "name": "El Mokawloon"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -551,7 +551,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-28&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "1372043405",

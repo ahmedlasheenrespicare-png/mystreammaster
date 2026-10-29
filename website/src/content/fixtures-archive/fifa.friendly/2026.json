@@ -1977,6 +1977,81 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261111&limit=500"
       },
       "fetchedAt": "2026-10-28T09:41:45.061Z"
+    },
+    {
+      "id": "401906458",
+      "date": "2026-11-12T06:00:00.000Z",
+      "home": {
+        "id": "2666",
+        "name": "New Zealand"
+      },
+      "away": {
+        "id": "4385",
+        "name": "India"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261112&limit=500"
+      },
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
+    },
+    {
+      "id": "401931296",
+      "date": "2026-11-12T17:30:00.000Z",
+      "home": {
+        "id": "453",
+        "name": "Malta"
+      },
+      "away": {
+        "id": "6686",
+        "name": "Eswatini"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261112&limit=500"
+      },
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
+    },
+    {
+      "id": "401930962",
+      "date": "2026-11-12T20:00:00.000Z",
+      "home": {
+        "id": "2570",
+        "name": "Uzbekistan"
+      },
+      "away": {
+        "id": "454",
+        "name": "Russia"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261112&limit=500"
+      },
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     }
   ]
 }

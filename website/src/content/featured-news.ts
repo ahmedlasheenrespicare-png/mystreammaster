@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الجولة 12 من دوري روشن: رونالدو يقود النصر لفوز خماسي والقادسية يكتسح الرياض",
     description: "رونالدو يسجل هاتريك في فوز النصر 5-3 على الخلود، والقادسية يكتسح الرياض 6-0 ويعتلي الصدارة.",
     href: "news/saudi-league-round-12-2026/",
+  fullImage: true,
+  images: [
+    { src: "images/players/ksa-ronaldo-hattrick.webp", alt: "كريستيانو رونالدو بكبضة الانتصار بعد هاتريك قاده للفوز على الخلود 5-3 في الجولة 12 من دوري روشن" },
+  ],
   },
   {
     category: "الدوري المصري",
@@ -45,6 +49,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "ملخص الجولة الثامنة من الدوري المصري: بيراميدز يواصل الصدارة والأهلي يعود للفوز",
     description: "بيراميدز يحقق الفوز الثامن توالياً، والأهلي يعود للانتصار، والزمالك يفوز على المقاولون في لقاءات الأربعاء والخميس.",
     href: "news/egyptian-league-matchday-8-2026/",
+  fullImage: true,
+  images: [
+    { src: "images/players/egy-ahly-round8-celebration.webp", alt: "لاعبو الأهلي يحتفلون بهدف عمر الساعي في فوز الجولة الثامنة على مودرن سبورت" },
+  ],
   },
   {
     category: "الدوري الإنجليزي",

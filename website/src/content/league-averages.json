@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-29T10:09:24.744Z",
+  "generatedAt": "2026-10-30T10:13:25.549Z",
   "source": "content/fixtures-archive (verified provider records only)",
   "definition": "متوسط لكل فريق في المباراة الواحدة، من مباريات منتهية حملت أرقام الطرفين معاً؛ عينة أدنى من 10 مباريات تُسقط البطولة.",
   "leagues": {
@@ -34,10 +34,10 @@
     },
     "ita.1": {
       "season": "2026",
-      "matches": 88,
+      "matches": 90,
       "possession": 50,
-      "shots": 14.6,
-      "passAccuracy": 83.8
+      "shots": 14.7,
+      "passAccuracy": 83.7
     }
   }
 }

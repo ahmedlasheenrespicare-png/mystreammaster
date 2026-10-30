@@ -3183,18 +3183,29 @@
         "name": "Lecce"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 5,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 59.6,
+          "shots": 26,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 40.4,
+          "shots": 15,
+          "passAccuracy": 0.6
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261029&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "401874969",
@@ -3208,18 +3219,29 @@
         "name": "Atalanta"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 20351,
+      "statistics": {
+        "home": {
+          "possession": 50.2,
+          "shots": 26,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 49.8,
+          "shots": 10,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261029&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "401874798",

@@ -565,10 +565,10 @@
         "name": "Al Ahly"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -576,7 +576,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-29&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-28T09:41:45.061Z"
+      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "1372044256",
@@ -590,10 +590,10 @@
         "name": "Wadi Degla"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -601,7 +601,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-29&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "1372045107",

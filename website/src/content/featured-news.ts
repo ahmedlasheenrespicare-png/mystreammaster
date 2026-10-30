@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "دوري روشن",
+    dateLabel: "29 أكتوبر 2026",
+    title: "الجولة 12 من دوري روشن: رونالدو يقود النصر لفوز خماسي والقادسية يكتسح الرياض",
+    description: "رونالدو يسجل هاتريك في فوز النصر 5-3 على الخلود، والقادسية يكتسح الرياض 6-0 ويعتلي الصدارة.",
+    href: "news/saudi-league-round-12-2026/",
+  },
+  {
     category: "الدوري المصري",
     dateLabel: "29 أكتوبر 2026",
     title: "ملخص الجولة الثامنة من الدوري المصري: بيراميدز يواصل الصدارة والأهلي يعود للفوز",

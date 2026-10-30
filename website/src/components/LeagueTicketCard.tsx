@@ -916,18 +916,31 @@ export const HIDDEN_CLASH_LEAGUES = new Set<string>(["eng.1", "esp.1", "uefa.cha
    صفحة بطولة». المصدر الواحد هو FEATURED_NEWS في content/featured-news.ts
    (لا نسخة ثانية من النصوص)، والتصنيف هو ما يحدّد البطولة. الترتيب هنا
    هو ترتيب ظهورها في تذكرة الرئيسية نفسه فلا يتبدّل ترتيب الصفحة عن
-   الرئيسية. الشرائح التي لا صفحة بطولة لها (كأس الرابطة، التركي، الكرة
-   الذهبية، دوري أبطال آسيا) تبقى في الرئيسية وحدها. */
+   الرئيسية. واستكمالاً بنطلب المالك (2026-10-30): نسخ الشرائح الباقية
+   ذات التصنيف القابل للتوزيع فأصبحت روشن والمصري منزلقتين ببطاقتهما.
+   الشرائح التي لا صفحة بطولة لها (كأس الرابطة، التركي، الكرة الذهبية،
+   دوري أبطال آسيا) تبقى في الرئيسية وحدها. */
 const LEAGUE_NEWS_HREFS: Record<string, string[]> = {
-  /* الدوري الإنجليزي — 4 بطاقات */
+  /* دوري روشن — بطاقة واحدة (السعودي: أيقونة المباريات sau.1 لا الترتيب ksa.1) */
+  "sau.1": [
+    "news/saudi-league-round-12-2026/",
+  ],
+  /* الدوري المصري — بطاقة واحدة */
+  "egy.1": [
+    "news/egyptian-league-matchday-8-2026/",
+  ],
+  /* الدوري الإنجليزي — 5 بطاقات */
   "eng.1": [
+    "news/carrick-fernandes-talks-2026/",
     "news/liverpool-brighton-live/",
     "news/man-utd-bournemouth-live/",
     "news/tottenham-chelsea-2-0/",
     "news/man-city-aston-villa/",
   ],
-  /* الدوري الإسباني — 3 بطاقات */
+  /* الدوري الإسباني — 5 بطاقات */
   "esp.1": [
+    "news/mbappe-china-sponsors-2026/",
+    "news/barcelona-alvarez-fine-2026/",
     "news/clasico-post-match-reactions-2026/",
     "news/clasico-first-half-2026/",
     "news/clasico-preview-absences-predictions/",

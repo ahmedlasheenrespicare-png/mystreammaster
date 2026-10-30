@@ -28,17 +28,18 @@ const SLUG_LEAGUE_ID: Record<string, string> = {
 const clashSlidesHiddenFor = (slug: string) => CLASH_SLIDES_HIDDEN.has(SLUG_LEAGUE_ID[slug] ?? '');
 
 /* شرائح تذكرة كل صفحة بطولة بعد توزيع بطاقات تذكرة الرئيسية على بطولاتها
-   (بطلب المالك 2026-10-28): الشريحة الأساسية أولاً ثم بطاقات أخبار البطولة.
-   السعودي والمصري بلا بطاقات في الرئيسية فتبقى تذكرتهما الساكنة (شريحة 1). */
+   (بطلب المالك 2026-10-28، واستكمال النسخ 2026-10-30): الشريحة الأساسية
+   أولاً ثم بطاقات أخبار البطولة. السعودي والمصري صارتا منزلقتين ببطاقة
+   أخبار واحدة لكلٍّ منهما بعد أن كانتا ساكنتين. */
 const LEAGUE_PAGE_SLIDES: Record<string, number> = {
-  'الدوري-الإنجليزي': 5,      // الأساسية + 4 بطاقات
-  'الدوري-الإسباني': 4,       // الأساسية + 3
+  'الدوري-الإنجليزي': 6,      // الأساسية + 5 بطاقات
+  'الدوري-الإسباني': 6,       // الأساسية + 5
   'دوري-أبطال-أوروبا': 3,     // الأساسية + 2
   'الدوري-الألماني': 4,       // الأساسية + 3
   'الدوري-الفرنسي': 3,        // الأساسية + 2
   'الدوري-الإيطالي': 2,       // الأساسية + 1
-  'الدوري-السعودي': 1,
-  'الدوري-المصري': 1,
+  'الدوري-السعودي': 2,        // الأساسية + بطاقة روشن
+  'الدوري-المصري': 2,         // الأساسية + بطاقة الدوري المصري
 };
 const slugOfUrl = (url: string) => url.split('/').filter(Boolean)[1] ?? '';
 const leagueSlidesFor = (url: string) => LEAGUE_PAGE_SLIDES[slugOfUrl(url)] ?? 1;
@@ -833,8 +834,8 @@ test('server brands row stacks centered above the trio on every branded ticket (
     await expectCenteredStack(indexSlides.nth(1).locator('.league-ticket'), 'index clash slide 2');
   }
 
-  /* 2) الباقي بعد الفرنسية: ألمانيا وإيطاليا (منزلقتان ببطاقات أخبارهما)
-     ومصر والسعودية (ساكنتان) — تُقاس الشريحة الأساسية في الحالتين */
+  /* 2) الباقي بعد الفرنسية: ألمانيا وإيطاليا ومصر والسعودية (منزلقات
+     ببطاقات أخبارها بعد استكمال النسخ 2026-10-30) — تُقاس الشريحة الأساسية */
   for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
@@ -1023,9 +1024,9 @@ test('the four server brands are distributed by the owner rollout rule across ev
        كلها في الاختبار التالي المخصّص لها) */
   }
 
-  /* 3) الفرنسي والألماني والإيطالي (منزلقات ببطاقات أخبارها) والمصري
-     والسعودي (تذكرتان ساكنتان): الأعلام الأربعة على الشريحة الأساسية
-     وحدها في الحالتين — بطاقات الأخبار بلا صفّ أعلام */
+  /* 3) الفرنسي والألماني والإيطالي والمصري والسعودي (منزلقات ببطاقات
+     أخبارها): الأعلام الأربعة على الشريحة الأساسية وحدها — بطاقات
+     الأخبار بلا صفّ أعلام */
   for (const slug of ['الدوري-الفرنسي', 'الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
@@ -1066,8 +1067,8 @@ test('stream-master wordmark trio is distributed by the owner rollout rule acros
     await expect(indexCarousel.locator('.league-ticket-slide').nth(1).locator('.league-ticket-wordmark'), 'index clash 1: trio').toHaveCount(1);
   }
 
-  /* 2) الألماني والإيطالي (منزلقتان ببطاقات أخبارهما) والمصري والسعودي
-     (تذكرتان ساكنتان): الثلاثية على الشريحة الأساسية في الحالتين */
+  /* 2) الألماني والإيطالي والمصري والسعودي (منزلقات ببطاقات أخبارهما):
+     الثلاثية على الشريحة الأساسية في الحالتين */
   for (const slug of ['الدوري-الألماني', 'الدوري-الإيطالي', 'الدوري-المصري', 'الدوري-السعودي']) {
     await page.goto(`/matches/${slug}/`);
     const slideCount = await page.locator('.matches-hero-title .league-ticket-slide').count();
@@ -1113,7 +1114,8 @@ test('stream-master wordmark trio is distributed by the owner rollout rule acros
 test('Egyptian league hero shows the neutral trophy fallback with no image', async ({ page }) => {
   await mockSource(page, {});
   await page.goto('/matches/الدوري-المصري/');
-  const ticket = page.locator('.matches-hero-title .league-ticket');
+  /* تذكرة الصفحة منزلقة الآن ببطاقة أخبارها — الشارة للشريحة الأساسية */
+  const ticket = page.locator('.matches-hero-title .league-ticket:not(.league-ticket--match)');
   await expect(ticket).toHaveCount(1);
   const badge = ticket.locator('.league-ticket-header .league-carousel-badge');
   await expect(badge).toHaveCount(1);

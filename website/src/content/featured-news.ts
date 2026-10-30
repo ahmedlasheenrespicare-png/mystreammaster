@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري المصري",
+    dateLabel: "29 أكتوبر 2026",
+    title: "ملخص الجولة الثامنة من الدوري المصري: بيراميدز يواصل الصدارة والأهلي يعود للفوز",
+    description: "بيراميدز يحقق الفوز الثامن توالياً، والأهلي يعود للانتصار، والزمالك يفوز على المقاولون في لقاءات الأربعاء والخميس.",
+    href: "news/egyptian-league-matchday-8-2026/",
+  },
+  {
     category: "الدوري الإنجليزي",
     dateLabel: "28 أكتوبر 2026",
     title: "كاريك وبرونو فرنانديز يجريان جلسة مصارحة بعد الاستبعاد",

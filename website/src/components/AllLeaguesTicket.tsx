@@ -60,6 +60,25 @@ export const LIVERPOOL_CHELSEA_CUP_CLASH: FeaturedClash = {
   source: "eng.league_cup",
 };
 
+/* بطاقة مواجهة الدوري الألماني (بايرن × دورتموند) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const BAYERN_DORTMUND_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الألماني",
+  home: {
+    name: "بايرن ميونخ",
+    crest: "/images/teams/bayern-munich-badge.webp",
+    mono: "بايرن",
+    tokens: ["bayern", "بايرن"],
+  },
+  away: {
+    name: "بوروسيا دورتموند",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/124.png",
+    mono: "دورتموند",
+    tokens: ["dortmund", "دورتموند"],
+  },
+  source: "ger.1",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

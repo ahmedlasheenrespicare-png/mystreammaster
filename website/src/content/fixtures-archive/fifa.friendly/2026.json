@@ -2204,31 +2204,6 @@
       "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
-      "id": "401930878",
-      "date": "2026-11-13T20:00:00.000Z",
-      "home": {
-        "id": "211",
-        "name": "Peru"
-      },
-      "away": {
-        "id": "204",
-        "name": "Bolivia"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fifa.friendly",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
-      },
-      "fetchedAt": "2026-10-30T10:02:53.684Z"
-    },
-    {
       "id": "401931957",
       "date": "2026-11-13T20:00:00.000Z",
       "home": {
@@ -2302,6 +2277,181 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
       },
       "fetchedAt": "2026-10-30T10:02:53.684Z"
+    },
+    {
+      "id": "401930878",
+      "date": "2026-11-14T01:00:00.000Z",
+      "home": {
+        "id": "211",
+        "name": "Peru"
+      },
+      "away": {
+        "id": "204",
+        "name": "Bolivia"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401930879",
+      "date": "2026-11-14T06:00:00.000Z",
+      "home": {
+        "id": "4381",
+        "name": "Bahrain"
+      },
+      "away": {
+        "id": "6014",
+        "name": "Yemen"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401916337",
+      "date": "2026-11-14T10:15:00.000Z",
+      "home": {
+        "id": "627",
+        "name": "Japan"
+      },
+      "away": {
+        "id": "205",
+        "name": "Brazil"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401930236",
+      "date": "2026-11-14T12:00:00.000Z",
+      "home": {
+        "id": "658",
+        "name": "China"
+      },
+      "away": {
+        "id": "2405",
+        "name": "Malaysia"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401930243",
+      "date": "2026-11-14T12:00:00.000Z",
+      "home": {
+        "id": "14561",
+        "name": "Chinese Taipei"
+      },
+      "away": {
+        "id": "6724",
+        "name": "Kyrgyz Republic"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401932237",
+      "date": "2026-11-14T20:00:00.000Z",
+      "home": {
+        "id": "6167",
+        "name": "Palestine"
+      },
+      "away": {
+        "id": "469",
+        "name": "Iran"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401906463",
+      "date": "2026-11-15T03:00:00.000Z",
+      "home": {
+        "id": "2666",
+        "name": "New Zealand"
+      },
+      "away": {
+        "id": "4385",
+        "name": "India"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
     }
   ]
 }

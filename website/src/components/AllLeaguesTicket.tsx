@@ -79,6 +79,25 @@ export const BAYERN_DORTMUND_CLASH: FeaturedClash = {
   source: "ger.1",
 };
 
+/* بطاقة مواجهة الدوري الإنجليزي (تشيلسي × مانشستر يونايتد) — بلا صور لاعبين،
+   بالشعارين فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const CHELSEA_UNITED_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإنجليزي",
+  home: {
+    name: "تشيلسي",
+    crest: "/images/teams/chelsea-badge.webp",
+    mono: "تشيلسي",
+    tokens: ["chelsea", "تشيلسي"],
+  },
+  away: {
+    name: "مانشستر يونايتد",
+    crest: "/images/teams/manchester-united-badge.webp",
+    mono: "يونايتد",
+    tokens: ["manchester united", "man utd", "مانشستر يونايتد"],
+  },
+  source: "eng.1",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

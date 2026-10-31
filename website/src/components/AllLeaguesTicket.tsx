@@ -98,6 +98,25 @@ export const CHELSEA_UNITED_CLASH: FeaturedClash = {
   source: "eng.1",
 };
 
+/* بطاقة مواجهة الدوري الإيطالي (ميلان × إنتر) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const MILAN_INTER_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإيطالي",
+  home: {
+    name: "ميلان",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/103.png",
+    mono: "ميلان",
+    tokens: ["milan", "ac milan", "ميلان"],
+  },
+  away: {
+    name: "إنتر",
+    crest: "/images/teams/internazionale-club-badge.webp",
+    mono: "إنتر",
+    tokens: ["inter", "internazionale", "إنتر"],
+  },
+  source: "ita.1",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

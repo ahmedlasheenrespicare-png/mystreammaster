@@ -6,7 +6,7 @@ import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState, type ReactElement } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
-import AllLeaguesTicket, { BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
+import AllLeaguesTicket, { BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
 import type { FeaturedClash } from "./LeagueTicketCard";
 import { FEATURED_NEWS } from "../content/featured-news";
 import { isWithinTicketWindow } from "../lib/ticket-recency";
@@ -354,6 +354,7 @@ interface HeroProps {
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 15 يوماً أو أقل، ثم تُخفى
    تلقائياً (انظر lib/ticket-recency) */
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: LIVERPOOL_ARSENAL_CLASH },
   { clash: MILAN_INTER_CLASH },
   { clash: CHELSEA_UNITED_CLASH },
   { clash: BAYERN_DORTMUND_CLASH },

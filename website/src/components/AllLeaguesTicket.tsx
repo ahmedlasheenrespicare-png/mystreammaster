@@ -121,6 +121,26 @@ export const MILAN_INTER_CLASH: FeaturedClash = {
   date: "2026-10-31",
 };
 
+/* بطاقة مواجهة الدوري الإنجليزي (ليفربول × أرسنال) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const LIVERPOOL_ARSENAL_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإنجليزي",
+  home: {
+    name: "ليفربول",
+    crest: "/images/teams/liverpool-badge.webp",
+    mono: "ليفربول",
+    tokens: ["liverpool", "ليفربول"],
+  },
+  away: {
+    name: "أرسنال",
+    crest: "/images/teams/arsenal-badge.webp",
+    mono: "أرسنال",
+    tokens: ["arsenal", "أرسنال", "ارسنال"],
+  },
+  source: "eng.1",
+  date: "2026-11-01",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

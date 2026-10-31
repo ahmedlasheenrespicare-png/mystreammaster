@@ -2,10 +2,21 @@ import { IconTrophy } from "./Icons";
 import { ServerLink } from "./ServerIcon";
 import { Reveal, useInViewOnce } from "./motion";
 
+/* صفوف جدول المقارنة — كل صفّ بأربع قيم، وعلامة hidden تُخفي الصفّ من
+   العرض مع إبقاء بياناته في المصدر (لا حذف: يكفي رفع العلامة لإعادته) */
+type ComparisonRow = {
+  feature: string;
+  nova: string;
+  istar: string;
+  moka: string;
+  x: string;
+  hidden?: boolean;
+};
+
 export default function ServersComparison() {
   /* تتابع ظهور الصفوف — مثل جداول Salient */
   const { ref: tableRef, inView: tableIn } = useInViewOnce<HTMLDivElement>(0.1);
-  const comparisonData = [
+  const comparisonData: ComparisonRow[] = [
     {
       feature: "ثبات البث أثناء المباريات الكبرى",
       nova: "99.9% (الأعلى)",
@@ -28,6 +39,10 @@ export default function ServersComparison() {
       x: "✓ متوفرة كاملة",
     },
     {
+      /* بطلب المالك: إخفاء عدد الأجهزة/الشاشات من الجدول — كما أُخفي
+         عدد الأجهزة من بطاقات السيرفرات في Pricing.tsx، والبيانات تبقى
+         هنا في المصدر. للإرجاع: احذف hidden: true من هذا الصفّ. */
+      hidden: true,
       feature: "عدد الشاشات في نفس الوقت",
       nova: "حتى 3 أجهزة",
       istar: "حتى جهازين",
@@ -108,7 +123,7 @@ export default function ServersComparison() {
               </tr>
             </thead>
             <tbody className="divide-y divide-black/[0.07] text-[13px]">
-              {comparisonData.map((row, idx) => (
+              {comparisonData.filter((row) => !row.hidden).map((row, idx) => (
                 <tr
                   key={idx}
                   style={{ transitionDelay: `${idx * 70}ms` }}

@@ -58,6 +58,7 @@ export const LIVERPOOL_CHELSEA_CUP_CLASH: FeaturedClash = {
     tokens: ["chelsea", "تشيلسي"],
   },
   source: "eng.league_cup",
+  date: "2026-10-28",
 };
 
 /* بطاقة مواجهة الدوري الألماني (بايرن × دورتموند) — بلا صور لاعبين، بالشعارين
@@ -77,6 +78,7 @@ export const BAYERN_DORTMUND_CLASH: FeaturedClash = {
     tokens: ["dortmund", "دورتموند"],
   },
   source: "ger.1",
+  date: "2026-10-31",
 };
 
 /* بطاقة مواجهة الدوري الإنجليزي (تشيلسي × مانشستر يونايتد) — بلا صور لاعبين،
@@ -96,6 +98,7 @@ export const CHELSEA_UNITED_CLASH: FeaturedClash = {
     tokens: ["manchester united", "man utd", "مانشستر يونايتد"],
   },
   source: "eng.1",
+  date: "2026-10-31",
 };
 
 /* بطاقة مواجهة الدوري الإيطالي (ميلان × إنتر) — بلا صور لاعبين، بالشعارين
@@ -115,6 +118,7 @@ export const MILAN_INTER_CLASH: FeaturedClash = {
     tokens: ["inter", "internazionale", "إنتر"],
   },
   source: "ita.1",
+  date: "2026-10-31",
 };
 
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:

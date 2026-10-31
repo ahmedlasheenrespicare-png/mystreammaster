@@ -3,10 +3,15 @@ import { HeroLaptop } from "./HeroLaptop";
 import "./hero-title-holo.css";
 import { HeroPhone } from "./HeroPhone";
 import { HeroTelevision } from "./HeroTelevision";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket, { BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
+import type { FeaturedClash } from "./LeagueTicketCard";
+import { FEATURED_NEWS } from "../content/featured-news";
+import { isWithinTicketWindow } from "../lib/ticket-recency";
+
+type HomeTicketSlot = { clash: FeaturedClash; news?: string };
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
 import HeroLeagueCrownStrip, { HeroLeagueStatsBar } from "./HeroLeagueCrownStrip";
@@ -345,6 +350,54 @@ interface HeroProps {
   onOpenTrial: () => void;
 }
 
+/* شرائح تذكرة الصفحة الرئيسية بالترتيب: كل شريحة مواجهة، وإن وُجد news فهي
+   شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 15 يوماً أو أقل، ثم تُخفى
+   تلقائياً (انظر lib/ticket-recency) */
+const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: MILAN_INTER_CLASH },
+  { clash: CHELSEA_UNITED_CLASH },
+  { clash: BAYERN_DORTMUND_CLASH },
+  { clash: INDEX_CLASHES[2], news: "news/saudi-league-round-12-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/egyptian-league-matchday-8-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/carrick-fernandes-talks-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/liverpool-chelsea-carabao-cup-preview-2026/" },
+  { clash: LIVERPOOL_CHELSEA_CUP_CLASH },
+  { clash: INDEX_CLASHES[2], news: "news/arsenal-fleetwood-carabao-cup-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/mbappe-china-sponsors-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/barcelona-alvarez-fine-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/fenerbahce-kartal-resignation-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/hilal-shamal-first-half-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-lyon-2-0/" },
+  { clash: INDEX_CLASHES[2], news: "news/trabzonspor-rizespor-4-3-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ballon-dor-2026-winners/" },
+  { clash: INDEX_CLASHES[2], news: "news/ballon-dor-2026-ceremony-preview/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-lyon-tonight/" },
+  { clash: INDEX_CLASHES[2], news: "news/clasico-post-match-reactions-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/clasico-first-half-2026/" },
+  { clash: INDEX_CLASHES[2] },
+  { clash: INDEX_CLASHES[2], news: "news/clasico-preview-absences-predictions/" },
+  { clash: INDEX_CLASHES[2], news: "news/liverpool-brighton-live/" },
+  { clash: INDEX_CLASHES[2], news: "news/man-utd-bournemouth-live/" },
+  { clash: INDEX_CLASHES[2], news: "news/bundesliga-bayern-freiburg-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/inter-fiorentina-2-1/" },
+  { clash: INDEX_CLASHES[2], news: "news/bundesliga-dortmund-frankfurt-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/tottenham-chelsea-2-0/" },
+  { clash: INDEX_CLASHES[3] },
+  { clash: INDEX_CLASHES[4] },
+  { clash: INDEX_CLASHES[2], news: "news/man-city-aston-villa/" },
+  { clash: INDEX_CLASHES[2], news: "news/bundesliga-kompany-hospitalized-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-arsenal-2-2/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-barcelona-4-2/" },
+];
+
+function isHomeSlotVisible(slot: HomeTicketSlot, nowMs: number): boolean {
+  if (slot.news) {
+    const item = FEATURED_NEWS.find(news => news.href === slot.news);
+    return isWithinTicketWindow(item?.dateLabel, nowMs);
+  }
+  return isWithinTicketWindow(slot.clash.date, nowMs);
+}
+
 export default function Hero({ onOpenTrial }: HeroProps) {
   const [heroWord, setHeroWord] = useState(0);
   const [frontDevice, setFrontDevice] = useState<"phone" | "tv">("phone");
@@ -358,6 +411,21 @@ export default function Hero({ onOpenTrial }: HeroProps) {
     return () => window.clearInterval(t);
   }, []);
 
+
+  /* إظهار شرائح التذكرة حسب عمرها (≤ 15 يوماً): قبل التحميل تُعرض الكل كما في
+     المطبوع مسبقاً، ثم تُحسب بعد التحميل وتُحدَّث كل ساعة */
+  const [ticketNow, setTicketNow] = useState<number | null>(null);
+  useEffect(() => {
+    setTicketNow(Date.now());
+    const timer = window.setInterval(() => setTicketNow(Date.now()), 60 * 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const visibleSlots = HOME_TICKET_SLOTS.filter(slot => ticketNow === null || isHomeSlotVisible(slot, ticketNow));
+  const visibleClashes = visibleSlots.map(slot => slot.clash);
+  const visibleOverrides: Partial<Record<number, ReactElement>> = {};
+  visibleSlots.forEach((slot, index) => {
+    if (slot.news) visibleOverrides[index] = <FeaturedNewsTicketSlide href={slot.news} />;
+  });
   return (
     <div id="hero" className="relative pt-[114px] md:pt-[132px] pb-16 md:pb-20 overflow-hidden bg-[#faf9f6]">
       {/* فقاعات الخلفية الملونة — ببارالاكس بطيء */}
@@ -386,36 +454,9 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
               {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
               <AllLeaguesTicket
-                clashes={[MILAN_INTER_CLASH, CHELSEA_UNITED_CLASH, BAYERN_DORTMUND_CLASH, INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], LIVERPOOL_CHELSEA_CUP_CLASH, INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[3], INDEX_CLASHES[4], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
-                slideOverrides={{
-                  3: <FeaturedNewsTicketSlide href="news/saudi-league-round-12-2026/" />,
-                  4: <FeaturedNewsTicketSlide href="news/egyptian-league-matchday-8-2026/" />,
-                  10: <FeaturedNewsTicketSlide href="news/barcelona-alvarez-fine-2026/" />,
-                  9: <FeaturedNewsTicketSlide href="news/mbappe-china-sponsors-2026/" />,
-                  8: <FeaturedNewsTicketSlide href="news/arsenal-fleetwood-carabao-cup-2026/" />,
-                  5: <FeaturedNewsTicketSlide href="news/carrick-fernandes-talks-2026/" />,
-                  6: <FeaturedNewsTicketSlide href="news/liverpool-chelsea-carabao-cup-preview-2026/" />,
-                  11: <FeaturedNewsTicketSlide href="news/fenerbahce-kartal-resignation-2026/" />,
-                  14: <FeaturedNewsTicketSlide href="news/trabzonspor-rizespor-4-3-2026/" />,
-                  12: <FeaturedNewsTicketSlide href="news/hilal-shamal-first-half-2026/" />,
-                  13: <FeaturedNewsTicketSlide href="news/psg-lyon-2-0/" />,
-                  15: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-winners/" />,
-                  16: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-ceremony-preview/" />,
-                  17: <FeaturedNewsTicketSlide href="news/psg-lyon-tonight/" />,
-                  18: <FeaturedNewsTicketSlide href="news/clasico-post-match-reactions-2026/" />,
-                  19: <FeaturedNewsTicketSlide href="news/clasico-first-half-2026/" />,
-                  21: <FeaturedNewsTicketSlide href="news/clasico-preview-absences-predictions/" />,
-                  22: <FeaturedNewsTicketSlide href="news/liverpool-brighton-live/" />,
-                  23: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
-                  24: <FeaturedNewsTicketSlide href="news/bundesliga-bayern-freiburg-2026/" />,
-                  25: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
-                  26: <FeaturedNewsTicketSlide href="news/bundesliga-dortmund-frankfurt-2026/" />,
-                  27: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
-                  30: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
-                  31: <FeaturedNewsTicketSlide href="news/bundesliga-kompany-hospitalized-2026/" />,
-                  32: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
-                  33: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
-                }}
+                key={visibleSlots.length}
+                clashes={visibleClashes}
+                slideOverrides={visibleOverrides}
               />
             </div>
             {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.

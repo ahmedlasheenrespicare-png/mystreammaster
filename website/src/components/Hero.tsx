@@ -6,7 +6,7 @@ import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState, type ReactElement } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
-import AllLeaguesTicket, { BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
+import AllLeaguesTicket, { AL_SADD_AL_AHLI_CLASH, NEWCASTLE_EVERTON_CLASH, ATLETICO_BAYERN_UCL_CLASH, BARCELONA_VILLA_UCL_CLASH, MAN_UTD_ROMA_UCL_CLASH, BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
 import type { FeaturedClash } from "./LeagueTicketCard";
 import { FEATURED_NEWS } from "../content/featured-news";
 import { isWithinTicketWindow } from "../lib/ticket-recency";
@@ -354,10 +354,29 @@ interface HeroProps {
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 15 يوماً أو أقل، ثم تُخفى
    تلقائياً (انظر lib/ticket-recency) */
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/hilal-top-qadsiah-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ivan-toney-tops-roshn-scorers-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ronaldo-985-goals-hat-trick-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/al-ahly-al-sadd-acl-elite-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ahly-umotah-pressure-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/zamalek-gamal-form-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/barcelona-alaves-6-1-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/lazio-best-start-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/milan-beats-inter-derby-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/juventus-beats-napoli-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-saibari-surgery-gnabry-injury-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-munich-top-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/real-madrid-racing-santander-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/arsenal-liverpool-1-0-2026/" },
   { clash: LIVERPOOL_ARSENAL_CLASH },
   { clash: MILAN_INTER_CLASH },
   { clash: CHELSEA_UNITED_CLASH },
   { clash: BAYERN_DORTMUND_CLASH },
+  { clash: ATLETICO_BAYERN_UCL_CLASH },
+  { clash: BARCELONA_VILLA_UCL_CLASH },
+  { clash: MAN_UTD_ROMA_UCL_CLASH },
+  { clash: NEWCASTLE_EVERTON_CLASH },
+  { clash: AL_SADD_AL_AHLI_CLASH },
   { clash: INDEX_CLASHES[2], news: "news/saudi-league-round-12-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/egyptian-league-matchday-8-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/carrick-fernandes-talks-2026/" },

@@ -33,6 +33,20 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري المصري",
+    dateLabel: "1 نوفمبر 2026",
+    title: "عموتة تحت الضغط بعد التعادل مع القناة",
+    description: "انتقادات لعموتة وسيد معوض لطريقة لعب الأهلي بعد التعادل 3-3 مع القناة، مع تجميد مستحقات اللاعبين.",
+    href: "news/ahly-umotah-pressure-2026/",
+  },
+  {
+    category: "الدوري المصري",
+    dateLabel: "1 نوفمبر 2026",
+    title: "الزمالك بقيادة معتمد جمال: 6 انتصارات في 8 مباريات",
+    description: "الزمالك يحقق 6 انتصارات في أول 8 مباريات بقيادة معتمد جمال، ويحتل المركز الثاني برصيد 19 نقطة.",
+    href: "news/zamalek-gamal-form-2026/",
+  },
+  {
     category: "الدوري الإسباني",
     dateLabel: "31 أكتوبر 2026",
     title: "برشلونة يعود للانتصارات بسداسية أمام ألافيس",

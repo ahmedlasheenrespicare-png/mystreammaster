@@ -33,6 +33,15 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الألماني",
+    dateLabel: "31 أكتوبر 2026",
+    title: "بايرن ميونخ يتصدر الدوري الألماني بـ18 نقطة مساوياً دورتموند",
+    description: "تعادل 2-2 في الكلاسيكو يبقي بايرن في الصدارة بفارق الأهداف، ودورتموند ثانياً بالرصيد نفسه.",
+    href: "news/bayern-munich-top-2026/",
+    teamBadges: ["images/teams/bayern-munich-badge.webp"],
+    score: "2 - 2",
+  },
+  {
     category: "الدوري الإسباني",
     dateLabel: "1 نوفمبر 2026",
     title: "ريال مدريد يفوز 3-0 على سانتاندير ويواصل انتصاراته",

@@ -34,6 +34,14 @@ export interface FeaturedNewsItem {
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "الدوري الألماني",
+    dateLabel: "1 نوفمبر 2026",
+    title: "صيباري يخضع لجراحة ناجحة وغنابري مصاب",
+    description: "صيباري يخضع لجراحة ناجحة في الكاحل، وغنابري يغيب بإصابة في الفخذ الخلفي بعد كلاسيكو دورتموند.",
+    href: "news/bayern-saibari-surgery-gnabry-injury-2026/",
+    teamBadges: ["images/teams/bayern-munich-badge.webp"],
+  },
+  {
+    category: "الدوري الألماني",
     dateLabel: "31 أكتوبر 2026",
     title: "بايرن ميونخ يتصدر الدوري الألماني بـ18 نقطة مساوياً دورتموند",
     description: "تعادل 2-2 في الكلاسيكو يبقي بايرن في الصدارة بفارق الأهداف، ودورتموند ثانياً بالرصيد نفسه.",

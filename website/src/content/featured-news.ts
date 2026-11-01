@@ -33,6 +33,28 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإيطالي",
+    dateLabel: "1 نوفمبر 2026",
+    title: "لاتسيو يحقق أفضل بداية في تاريخه برصيد 28 نقطة",
+    description: "لاتسيو يفوز 2-1 على كالياري برصيد 28 نقطة بعد 10 جولات، وهي أفضل بداية في تاريخ النادي، بهدفي إيساكسن وبينامونتي.",
+    href: "news/lazio-best-start-2026/",
+  },
+  {
+    category: "الدوري الإيطالي",
+    dateLabel: "1 نوفمبر 2026",
+    title: "ميلان يهزم إنتر 3-1 في ديربي ميلانو",
+    description: "ميلان يفوز 3-1 على إنتر في ديربي ميلانو على سان سيرو، بأهداف بوليسيتش ورابيو ومورييرا، ويرفع رصيده إلى 21 نقطة.",
+    href: "news/milan-beats-inter-derby-2026/",
+    teamBadges: ["images/teams/internazionale-club-badge.webp"],
+  },
+  {
+    category: "الدوري الإيطالي",
+    dateLabel: "1 نوفمبر 2026",
+    title: "يوفنتوس يفوز 2-0 على نابولي ويستعيد توازنه",
+    description: "يوفنتوس يفوز 2-0 على نابولي في الجولة العاشرة بأهداف ألاجبوفيتش وبوغا، ويرفع رصيده إلى 17 نقطة.",
+    href: "news/juventus-beats-napoli-2026/",
+  },
+  {
     category: "الدوري الألماني",
     dateLabel: "1 نوفمبر 2026",
     title: "صيباري يخضع لجراحة ناجحة وغنابري مصاب",

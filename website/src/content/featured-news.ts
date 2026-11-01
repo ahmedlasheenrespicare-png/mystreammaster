@@ -33,6 +33,36 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "دوري روشن",
+    dateLabel: "23 أكتوبر 2026",
+    title: "الهلال يستعيد صدارة دوري روشن بفوز 3-2 على القادسية",
+    description: "الهلال يفوز 3-2 على القادسية في الدمام ضمن الجولة الحادية عشرة من دوري روشن، ويستعيد الصدارة برصيد 27 نقطة.",
+    href: "news/hilal-top-qadsiah-3-2-2026/",
+    teamBadges: ["images/teams/al-qadsiah-club-badge.webp"],
+    score: "3 - 2",
+  },
+  {
+    category: "دوري روشن",
+    dateLabel: "1 نوفمبر 2026",
+    title: "إيفان توني يتصدر هدافي دوري روشن برصيد 12 هدفاً",
+    description: "إيفان توني يتصدر هدافي دوري روشن برصيد 12 هدفاً بعد 9 مباريات، متقدماً بأربعة أهداف على أقرب ملاحقيه.",
+    href: "news/ivan-toney-tops-roshn-scorers-2026/",
+  },
+  {
+    category: "دوري روشن",
+    dateLabel: "1 نوفمبر 2026",
+    title: "رونالدو يقترب من 1000 هدف بعد هاتريك أمام الخلود",
+    description: "رونالدو يسجل هاتريك في فوز النصر 5-3 على الخلود ويصل إلى 985 هدفاً في مسيرته، على بعد 15 هدفاً من الألف.",
+    href: "news/ronaldo-985-goals-hat-trick-2026/",
+  },
+  {
+    category: "دوري أبطال آسيا للنخبة",
+    dateLabel: "2 نوفمبر 2026",
+    title: "الأهلي يواجه السد القطري في دوري أبطال آسيا للنخبة",
+    description: "الأهلي يلتقي السد القطري الاثنين 2 نوفمبر في الدوحة ضمن الجولة الرابعة من دوري أبطال آسيا للنخبة.",
+    href: "news/al-ahly-al-sadd-acl-elite-2026/",
+  },
+  {
     category: "الدوري المصري",
     dateLabel: "1 نوفمبر 2026",
     title: "عموتة تحت الضغط بعد التعادل مع القناة",

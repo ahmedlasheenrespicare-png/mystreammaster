@@ -354,6 +354,10 @@ interface HeroProps {
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 15 يوماً أو أقل، ثم تُخفى
    تلقائياً (انظر lib/ticket-recency) */
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/hilal-top-qadsiah-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ivan-toney-tops-roshn-scorers-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ronaldo-985-goals-hat-trick-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/al-ahly-al-sadd-acl-elite-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/ahly-umotah-pressure-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/zamalek-gamal-form-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/barcelona-alaves-6-1-2026/" },

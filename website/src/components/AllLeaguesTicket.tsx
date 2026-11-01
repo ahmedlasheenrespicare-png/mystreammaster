@@ -141,6 +141,62 @@ export const LIVERPOOL_ARSENAL_CLASH: FeaturedClash = {
   date: "2026-11-01",
 };
 
+/* بطاقات مواجهات دوري أبطال أوروبا (الجولة الرابعة — 3 نوفمبر 2026) — بلا صور
+   لاعبين، بالشعارين فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها ولا تغيّر INDEX_CLASHES */
+export const ATLETICO_BAYERN_UCL_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال أوروبا",
+  home: {
+    name: "أتلتيكو مدريد",
+    crest: "/images/teams/atletico-madrid-club-badge.webp",
+    mono: "أتلتيكو",
+    tokens: ["atletico", "atlético", "أتلتيكو", "اتلتيكو"],
+  },
+  away: {
+    name: "بايرن ميونخ",
+    crest: "/images/teams/bayern-munich-badge.webp",
+    mono: "بايرن",
+    tokens: ["bayern", "بايرن"],
+  },
+  source: "uefa.champions",
+  date: "2026-11-03",
+};
+
+export const BARCELONA_VILLA_UCL_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال أوروبا",
+  home: {
+    name: "برشلونة",
+    crest: "/images/teams/barcelona-club-badge.webp",
+    mono: "برشلونة",
+    tokens: ["barcelona", "برشلونة"],
+  },
+  away: {
+    name: "أستون فيلا",
+    crest: "/images/teams/aston-villa-badge.webp",
+    mono: "فيلا",
+    tokens: ["aston villa", "أستون فيلا", "استون فيلا"],
+  },
+  source: "uefa.champions",
+  date: "2026-11-03",
+};
+
+export const MAN_UTD_ROMA_UCL_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال أوروبا",
+  home: {
+    name: "مانشستر يونايتد",
+    crest: "/images/teams/manchester-united-club-badge.webp",
+    mono: "يونايتد",
+    tokens: ["manchester united", "man utd", "مانشستر يونايتد"],
+  },
+  away: {
+    name: "روما",
+    crest: "/images/teams/as-roma-club-badge.webp",
+    mono: "روما",
+    tokens: ["roma", "روما"],
+  },
+  source: "uefa.champions",
+  date: "2026-11-03",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

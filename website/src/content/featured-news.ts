@@ -33,6 +33,15 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإنجليزي",
+    dateLabel: "1 نوفمبر 2026",
+    title: "أرسنال يفوز 1-0 على ليفربول في أنفيلد وينفرد بصدارة الدوري",
+    description: "هدف كاي هافيرتز في الدقيقة 16 يمنح أرسنال فوزاً ثميناً في أنفيلد، ويرفعه إلى صدارة الدوري برصيد 24 نقطة.",
+    href: "news/arsenal-liverpool-1-0-2026/",
+    teamBadges: ["images/teams/liverpool-badge.webp", "images/teams/arsenal-badge.webp"],
+    score: "0 - 1",
+  },
+  {
     category: "دوري روشن",
     dateLabel: "29 أكتوبر 2026",
     title: "الجولة 12 من دوري روشن: رونالدو يقود النصر لفوز خماسي والقادسية يكتسح الرياض",

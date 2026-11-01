@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الهلال يستعيد صدارة دوري روشن بفوز 3-2 على القادسية",
     description: "الهلال يفوز 3-2 على القادسية في الدمام ضمن الجولة الحادية عشرة من دوري روشن، ويستعيد الصدارة برصيد 27 نقطة.",
     href: "news/hilal-top-qadsiah-3-2-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ksa-hilal-neves-qadsiah.webp", alt: "روبن نيفيز يحتفل بهدفه في فوز الهلال 3-2 على القادسية في الجولة الحادية عشرة من دوري روشن" },
+],
     teamBadges: ["images/teams/al-qadsiah-club-badge.webp"],
     score: "3 - 2",
   },
@@ -47,6 +51,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "إيفان توني يتصدر هدافي دوري روشن برصيد 12 هدفاً",
     description: "إيفان توني يتصدر هدافي دوري روشن برصيد 12 هدفاً بعد 9 مباريات، متقدماً بأربعة أهداف على أقرب ملاحقيه.",
     href: "news/ivan-toney-tops-roshn-scorers-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ksa-toney-roshn-topscorer.webp", alt: "إيفان توني مهاجم الأهلي مديد الذراعين يحتفل بأهدافه وهو يتصدّر هدافي دوري روشن برصيد 12 هدفاً" },
+],
   },
   {
     category: "دوري روشن",
@@ -54,6 +62,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "رونالدو يقترب من 1000 هدف بعد هاتريك أمام الخلود",
     description: "رونالدو يسجل هاتريك في فوز النصر 5-3 على الخلود ويصل إلى 985 هدفاً في مسيرته، على بعد 15 هدفاً من الألف.",
     href: "news/ronaldo-985-goals-hat-trick-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ksa-ronaldo-985-goals.webp", alt: "كريستيانو رونالدو يشير للأعلى بعد هاتريك الخلود ليصل إلى الهدف 985 في مسيرته مع بطقم النصر الأصفر" },
+],
   },
   {
     category: "دوري أبطال آسيا للنخبة",

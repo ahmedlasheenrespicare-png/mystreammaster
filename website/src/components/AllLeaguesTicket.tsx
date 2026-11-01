@@ -197,6 +197,45 @@ export const MAN_UTD_ROMA_UCL_CLASH: FeaturedClash = {
   date: "2026-11-03",
 };
 
+/* بطاقة مواجهة الدوري الإنجليزي (نيوكاسل × إيفرتون، الجولة 9) — بلا صور لاعبين،
+   بالشعارين فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها ولا تغيّر INDEX_CLASHES */
+export const NEWCASTLE_EVERTON_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإنجليزي",
+  home: {
+    name: "نيوكاسل يونايتد",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/361.png",
+    mono: "نيوكاسل",
+    tokens: ["newcastle", "نيوكاسل"],
+  },
+  away: {
+    name: "إيفرتون",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/368.png",
+    mono: "إيفرتون",
+    tokens: ["everton", "إيفرتون", "ايفرتون"],
+  },
+  source: "eng.1",
+  date: "2026-11-02",
+};
+
+/* بطاقة مواجهة دوري أبطال آسيا للنخبة (السد × الأهلي السعودي) — بالشعارين فقط */
+export const AL_SADD_AL_AHLI_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال آسيا للنخبة",
+  home: {
+    name: "السد القطري",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/7135.png",
+    mono: "السد",
+    tokens: ["al sadd", "al-sadd", "السد"],
+  },
+  away: {
+    name: "الأهلي السعودي",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/8346.png",
+    mono: "الأهلي",
+    tokens: ["al ahli", "al-ahli", "الأهلي السعودي"],
+  },
+  source: "afc.champions",
+  date: "2026-11-02",
+};
+
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
 const TICKET_LEAGUES = [

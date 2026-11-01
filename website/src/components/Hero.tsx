@@ -6,7 +6,7 @@ import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState, type ReactElement } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
-import AllLeaguesTicket, { ATLETICO_BAYERN_UCL_CLASH, BARCELONA_VILLA_UCL_CLASH, MAN_UTD_ROMA_UCL_CLASH, BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
+import AllLeaguesTicket, { AL_SADD_AL_AHLI_CLASH, NEWCASTLE_EVERTON_CLASH, ATLETICO_BAYERN_UCL_CLASH, BARCELONA_VILLA_UCL_CLASH, MAN_UTD_ROMA_UCL_CLASH, BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
 import type { FeaturedClash } from "./LeagueTicketCard";
 import { FEATURED_NEWS } from "../content/featured-news";
 import { isWithinTicketWindow } from "../lib/ticket-recency";
@@ -375,6 +375,8 @@ const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
   { clash: ATLETICO_BAYERN_UCL_CLASH },
   { clash: BARCELONA_VILLA_UCL_CLASH },
   { clash: MAN_UTD_ROMA_UCL_CLASH },
+  { clash: NEWCASTLE_EVERTON_CLASH },
+  { clash: AL_SADD_AL_AHLI_CLASH },
   { clash: INDEX_CLASHES[2], news: "news/saudi-league-round-12-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/egyptian-league-matchday-8-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/carrick-fernandes-talks-2026/" },

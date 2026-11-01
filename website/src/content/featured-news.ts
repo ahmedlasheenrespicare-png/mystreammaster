@@ -33,6 +33,15 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإسباني",
+    dateLabel: "31 أكتوبر 2026",
+    title: "برشلونة يعود للانتصارات بسداسية أمام ألافيس",
+    description: "برشلونة يكتسح ألافيس 6-1 في الجولة 11 من الدوري الإسباني، ويرتقي إلى صدارة الترتيب برصيد 30 نقطة.",
+    href: "news/barcelona-alaves-6-1-2026/",
+    teamBadges: ["images/teams/barcelona-club-badge.webp"],
+    score: "6 - 1",
+  },
+  {
     category: "الدوري الإيطالي",
     dateLabel: "1 نوفمبر 2026",
     title: "لاتسيو يحقق أفضل بداية في تاريخه برصيد 28 نقطة",

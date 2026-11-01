@@ -33,6 +33,15 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإسباني",
+    dateLabel: "1 نوفمبر 2026",
+    title: "ريال مدريد يفوز 3-0 على سانتاندير ويواصل انتصاراته",
+    description: "مبابي يفتتح بركلة جزاء، وبيلينغهام يسجل هدفه الخمسين مع ريال مدريد في فوز الجولة الحادية عشرة.",
+    href: "news/real-madrid-racing-santander-2026/",
+    teamBadges: ["images/teams/real-madrid-club-badge.webp"],
+    score: "0 - 3",
+  },
+  {
     category: "الدوري الإنجليزي",
     dateLabel: "1 نوفمبر 2026",
     title: "أرسنال يفوز 1-0 على ليفربول في أنفيلد وينفرد بصدارة الدوري",

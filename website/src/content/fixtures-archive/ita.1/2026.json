@@ -3255,18 +3255,29 @@
         "name": "Monza"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 59.4,
+          "shots": 10,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 40.6,
+          "shots": 6,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401874990",
@@ -3280,18 +3291,29 @@
         "name": "AS Roma"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 5
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 45.9,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 54.1,
+          "shots": 14,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401874795",
@@ -3305,18 +3327,29 @@
         "name": "Internazionale"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 43.1,
+          "shots": 7,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 56.9,
+          "shots": 19,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401875002",

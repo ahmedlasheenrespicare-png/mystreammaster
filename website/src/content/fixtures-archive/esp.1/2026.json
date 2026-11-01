@@ -1516,18 +1516,29 @@
         "name": "Atlético Madrid"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 20513,
+      "statistics": {
+        "home": {
+          "possession": 46,
+          "shots": 20,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 54,
+          "shots": 11,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401882818",
@@ -1541,18 +1552,29 @@
         "name": "Celta Vigo"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 11714,
+      "statistics": {
+        "home": {
+          "possession": 52.6,
+          "shots": 14,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 47.4,
+          "shots": 11,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401882825",
@@ -1566,18 +1588,29 @@
         "name": "Málaga"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 58.7,
+          "shots": 23,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 41.3,
+          "shots": 10,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401882822",
@@ -1591,18 +1624,29 @@
         "name": "Alavés"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 6,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 53523,
+      "statistics": {
+        "home": {
+          "possession": 77.1,
+          "shots": 13,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 22.9,
+          "shots": 7,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401882821",

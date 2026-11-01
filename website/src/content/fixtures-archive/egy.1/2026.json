@@ -690,10 +690,10 @@
         "name": "Ghazl El Mehalla"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -701,7 +701,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-31&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "1372048511",
@@ -715,10 +715,10 @@
         "name": "ZED FC"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -726,7 +726,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-31&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "1372049362",
@@ -740,10 +740,10 @@
         "name": "Smouha SC"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": null,
       "statistics": null,
       "source": {
@@ -751,7 +751,7 @@
         "leagueId": "199067",
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-31&limit=100&offset=0"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     }
   ]
 }

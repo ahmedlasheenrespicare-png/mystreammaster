@@ -1419,18 +1419,29 @@
         "name": "Le Mans"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 39.1,
+          "shots": 14,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 60.9,
+          "shots": 3,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401876414",

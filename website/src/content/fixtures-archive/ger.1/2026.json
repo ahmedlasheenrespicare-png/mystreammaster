@@ -1347,18 +1347,29 @@
         "name": "RB Leipzig"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 39.7,
+          "shots": 6,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 60.3,
+          "shots": 18,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401884748",
@@ -1372,18 +1383,29 @@
         "name": "TSG Hoffenheim"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 41.4,
+          "shots": 18,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 58.6,
+          "shots": 16,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401884749",
@@ -1397,18 +1419,29 @@
         "name": "SC Paderborn 07"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 43,
+          "shots": 12,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 57,
+          "shots": 13,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401884751",
@@ -1422,18 +1455,29 @@
         "name": "SC Freiburg"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 51.5,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 48.5,
+          "shots": 10,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401884753",
@@ -1447,18 +1491,29 @@
         "name": "VfB Stuttgart"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 4
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 63.2,
+          "shots": 24,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 36.8,
+          "shots": 15,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401884754",
@@ -1472,18 +1527,29 @@
         "name": "Borussia Dortmund"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 55.5,
+          "shots": 23,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 44.5,
+          "shots": 12,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
     },
     {
       "id": "401884750",

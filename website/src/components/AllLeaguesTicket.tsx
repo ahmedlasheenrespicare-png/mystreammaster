@@ -337,13 +337,14 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[] } = {}) {
+export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES, hideBase = false }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[]; hideBase?: boolean } = {}) {
   return (
     <LeagueTicketCarousel
       leagueId="matches"
       name="كل البطولات الكبرى"
       clashes={clashes}
       slideOverrides={slideOverrides}
+      hideBase={hideBase}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand

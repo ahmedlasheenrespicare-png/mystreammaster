@@ -713,7 +713,7 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false, extraSlides = [] }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false, extraSlides = [], hideBase = false }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
@@ -732,12 +732,19 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   showNovaBrand?: boolean;
   /* شريط الزاوية باسم المواجهة بدل السطر التوضيحي (تذكرة الصفحة الرئيسية) */
   clashRibbon?: boolean;
+  /* إخفاء شريحة الأساس (النظرة العامة) من الدورة: تبدأ الدورة من أول شريحة
+     مواجهة أو خبر. لا يُخفى الأساس إن لم توجد أي شريحة أخرى */
+  hideBase?: boolean;
 }) {
   const matches = useClashes(leagueId, clashes);
-  const [active, setActive] = useState(0);
+  const baseHidden = hideBase && clashes.length + extraSlides.length > 0;
+  const first = baseHidden ? 1 : 0;
+  const [active, setActive] = useState(first);
   const [auto, setAuto] = useState(false);
   const pauseUntil = useRef(0);
-  const count = 1 + clashes.length + extraSlides.length;
+  const count = (baseHidden ? 0 : 1) + clashes.length + extraSlides.length;
+  /* تلتف الدورة داخل الشرائح الظاهرة فقط (تتخطى الأساس عند إخفائه) */
+  const wrap = (n: number) => first + ((((n - first) % count) + count) % count);
 
   /* التبديل التلقائي كل 5 ثوانٍ — يعمل دائماً (جوالاً وسطح مكتب) ولا
      يُوقفه تفضيل تقليل الحركة: ذلك التفضيل يُسقط حركة الانزلاق وحدها
@@ -749,10 +756,10 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
       if (document.hidden || motionReduced()) return;
       if (Date.now() < pauseUntil.current) return;
       if (!auto) return;
-      setActive(prev => (prev + 1) % count);
+      setActive(prev => wrap(prev + 1));
     }, ROTATE_MS);
     return () => window.clearInterval(timer);
-  }, [auto, count]);
+  }, [auto, count, first]);
 
   /* بدء الحركة بعد أول إطار كامل (تهيئة ضوء القالب والشريط) */
   useEffect(() => {
@@ -773,7 +780,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
     setActive(index);
   };
 
-  const swipe = useTicketSwipe(delta => go((active + delta + count) % count));
+  const swipe = useTicketSwipe(delta => go(wrap(active + delta)));
 
   /* مفتاح الشريحة يجمع الحاجب بأسماء الفريقين — قد تتقاسم قمّتان
      الحاجب نفسه («قمة الجولة») في البطولة الواحدة */
@@ -805,6 +812,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         <p key={clashKey(clash, i)} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
       ))}
       <div className="league-ticket-track" aria-hidden="true" {...swipe} style={{ touchAction: "pan-y pinch-zoom" }}>
+        {!baseHidden && (
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
           {base ?? (
             <div className="league-ticket league-ticket--in-track">
@@ -828,6 +836,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
             </div>
           )}
         </div>
+        )}
         {clashes.map((clash, i) => (
           <div key={clashKey(clash, i)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             {slideOverrides?.[i] ?? (
@@ -848,7 +857,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         ))}
       </div>
       <div className="league-ticket-dots">
-        {slides.map((slide, i) => (
+        {slides.map((slide, i) => baseHidden && i === 0 ? null : (
           <button
             key={slide.key}
             type="button"

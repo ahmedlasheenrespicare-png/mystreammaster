@@ -1,3 +1,4 @@
+import "./mobile-rendering.css";
 import MotionSettings from "./components/MotionSettings";
 import { useCallback, useEffect, useState } from "react";
 import { readCart, saveCart } from "./cart-storage";

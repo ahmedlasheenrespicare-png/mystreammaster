@@ -354,6 +354,11 @@ interface HeroProps {
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 7 أيام أو أقل، ولا تُعرض
    الشريحة بلا تاريخ، ثم تُخفى تلقائياً (انظر lib/ticket-recency) */
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: AL_SADD_AL_AHLI_CLASH },
+  { clash: NEWCASTLE_EVERTON_CLASH },
+  { clash: ATLETICO_BAYERN_UCL_CLASH },
+  { clash: BARCELONA_VILLA_UCL_CLASH },
+  { clash: MAN_UTD_ROMA_UCL_CLASH },
   { clash: INDEX_CLASHES[2], news: "news/hilal-top-qadsiah-3-2-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/ivan-toney-tops-roshn-scorers-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/ronaldo-985-goals-hat-trick-2026/" },
@@ -372,11 +377,6 @@ const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
   { clash: MILAN_INTER_CLASH },
   { clash: CHELSEA_UNITED_CLASH },
   { clash: BAYERN_DORTMUND_CLASH },
-  { clash: ATLETICO_BAYERN_UCL_CLASH },
-  { clash: BARCELONA_VILLA_UCL_CLASH },
-  { clash: MAN_UTD_ROMA_UCL_CLASH },
-  { clash: NEWCASTLE_EVERTON_CLASH },
-  { clash: AL_SADD_AL_AHLI_CLASH },
   { clash: INDEX_CLASHES[2], news: "news/saudi-league-round-12-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/egyptian-league-matchday-8-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/carrick-fernandes-talks-2026/" },

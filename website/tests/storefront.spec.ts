@@ -1035,7 +1035,7 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
     await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(selected);
     const active = await front.getAttribute('data-crown-league');
     await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', active!);
-    await expect.poll(() => front.locator('.hs-crown-player, .hs-crown-match-player').evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
+    await expect.poll(() => front.locator('.hs-crown-player').evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await strip.screenshot({ path: '/home/user/league-strip-mobile.png' });
   });
@@ -1185,10 +1185,10 @@ test('background crown and ticket slides pause decorative animations without hid
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   await strip.scrollIntoViewIfNeeded();
-  const hiddenBadge = strip.locator('[data-crown-kind="match"]:not([data-crown-offset="0"]) .league-ticket-wordmark-badge').first();
+  const hiddenBadge = strip.locator('[data-crown-kind="match"]:not([data-crown-offset="0"]) .hs-crown-match-heading').first();
   await expect(hiddenBadge).toHaveCSS('animation-play-state', 'paused');
   await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
-  await expect(strip.locator('[data-crown-offset="0"] .league-ticket-wordmark-badge')).toHaveCSS('animation-play-state', 'running');
+  await expect(strip.locator('[data-crown-offset="0"] .hs-crown-match-heading')).toHaveCSS('animation-play-state', 'running');
   await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(10);
   await expect(page.locator('.home-matches-ticket .league-ticket-slide:not(.is-active) .league-ticket-wordmark-badge').first()).toHaveCSS('animation-play-state', 'paused');
 });
@@ -1254,5 +1254,32 @@ test('first visit defaults animations on while preserving a saved visitor prefer
     await page.reload();
     await expect(settings).toHaveValue(value);
     await expect(page.locator('html')).toHaveAttribute('data-motion', value);
+  }
+});
+
+
+test('crown match cards use their league emblem as background without site branding', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const cards = strip.locator('[data-crown-kind="match"]');
+  await expect(cards).toHaveCount(10);
+  await expect(cards.locator('.league-ticket-wordmark')).toHaveCount(0);
+  await expect(cards).not.toContainText(['ستريم ماستر']);
+  for (const card of await cards.all()) {
+    const league = await card.getAttribute('data-crown-league');
+    await expect(card.locator('[data-match-league-background]')).toHaveAttribute('data-match-league-background', league!);
+    await expect(card.locator('.hs-crown-match-art .league-carousel-badge')).toHaveCount(1);
+    await expect(card.locator('.hs-crown-match-team')).toHaveCount(2);
+    await expect(card.locator('.hs-crown-match-brands img')).toHaveCount(4);
+  }
+  // Original ticket-row branding and league-card artwork remain untouched.
+  await expect(page.locator('.home-matches-ticket .league-ticket-wordmark').first()).toBeAttached();
+  await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
+    await expect(strip.locator('[data-crown-offset="0"] .hs-crown-match-status')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });

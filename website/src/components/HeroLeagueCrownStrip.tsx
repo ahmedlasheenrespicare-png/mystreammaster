@@ -1,3 +1,5 @@
+import LeagueIconBadge from "./LeagueIconBadge";
+import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
 import { CrownClashSlide, clashSummary, useClashes, type FeaturedClash } from "./LeagueTicketCard";
 import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
@@ -19,7 +21,8 @@ import {
   type LiveLeagueRecord,
 } from "../lib/live-standings";
 import { resolveApprovedTeamLogo, teamInitials } from "./StandingsRatesCard";
-import LeagueTrophyWithEmblem, { getLeagueTrophyTheme } from "./LeagueTrophySvg";
+import { getLeagueTrophyTheme } from "./LeagueTrophySvg";
+import CrownLeagueTrophy from "./CrownLeagueTrophy";
 import {
   GoldenBootMedalIcon,
   GuardianShieldMedalIcon,
@@ -311,7 +314,7 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[]): He
     const id = clash.source;
     if (!id || result.some(item => item.leagueId === id)) continue;
     const theme = getLeagueTrophyTheme(id);
-    result.push({ leagueId: id, standingsKey: id, shortName: clash.eyebrow, href: "/matches/", stageGlow: theme.stageGlow, splitGradient: theme.splitGradient, leader: null, bestAttack: null, bestDefence: null, totalGoals: null });
+    result.push({ leagueId: id, standingsKey: id, shortName: crownLeagueName(id, clash.eyebrow), href: "/matches/", stageGlow: theme.stageGlow, splitGradient: theme.splitGradient, leader: null, bestAttack: null, bestDefence: null, totalGoals: null });
   }
   return result;
 }
@@ -506,6 +509,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
                   <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
                   <CrownClashSlide active={isFront} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
+                  {CROWN_CUP_LOGOS[item.leagueId] && (
+                    <span className="hs-crown-match-art hs-crown-cup-background" data-league-card-background={item.leagueId} aria-hidden="true">
+                      <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={132} eager={isFront} />
+                    </span>
+                  )}
                   <span className="hs-crown-players" aria-hidden="true">
                     {(LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map((src, index) => (
                       <TicketImage key={src} className={`hs-crown-player hs-crown-player--${index + 1}`} src={src} alt="" loading="lazy" decoding="async" />
@@ -523,7 +531,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
                     )}
                   </span>
                   <span className="hs-mini-trophy">
-                    <LeagueTrophyWithEmblem leagueId={item.leagueId} variant="authentic" />
+                    <CrownLeagueTrophy leagueId={item.leagueId} />
                   </span>
                 </span>
                 }
@@ -600,7 +608,7 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
             <span className="hs-stats-identity-title">{current.shortName}</span>
           </span>
           <span className="hs-stats-identity-trophy">
-            <LeagueTrophyWithEmblem leagueId={current.leagueId} variant="authentic" />
+            <CrownLeagueTrophy leagueId={current.leagueId} />
           </span>
           <span className="hs-stats-identity-split" aria-hidden="true" />
         </a>

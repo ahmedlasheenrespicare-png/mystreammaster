@@ -2,11 +2,11 @@ export type MotionPreference = 'auto' | 'on' | 'off';
 const KEY = 'sm-motion-preference';
 const EVENT = 'sm-motion-change';
 export function getMotionPreference(): MotionPreference {
-  if (typeof window === 'undefined') return 'auto';
+  if (typeof window === 'undefined') return 'on';
   try {
     const value = localStorage.getItem(KEY);
-    return value === 'on' || value === 'off' ? value : 'auto';
-  } catch { return 'auto'; }
+    return value === 'auto' || value === 'on' || value === 'off' ? value : 'on';
+  } catch { return 'on'; }
 }
 export function motionReduced(): boolean {
   if (typeof window === 'undefined') return false;

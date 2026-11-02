@@ -1041,6 +1041,7 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
   });
 
   test('respects reduced motion while keeping manual league selection', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'auto'));
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
     await strip.scrollIntoViewIfNeeded();
@@ -1058,7 +1059,7 @@ test.describe('site-wide animation preferences', () => {
   test('explicit on overrides device reduction, persists and supports strip pause', async ({ page }) => {
     await page.goto('/');
     const settings = page.getByRole('combobox', { name: 'حركات الموقع' });
-    await expect(settings).toHaveValue('auto');
+    await expect(settings).toHaveValue('on');
     await settings.selectOption('on');
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
     const strip = page.locator('[data-hero-league-strip]');
@@ -1235,4 +1236,23 @@ test('mobile paint reductions remain active with animations off and preserve des
   await page.setViewportSize({ width: 1440, height: 1000 });
   await expect(headerGlass).not.toHaveCSS('backdrop-filter', 'none');
   expect(errors).toEqual([]);
+});
+
+
+test('first visit defaults animations on while preserving a saved visitor preference', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const settings = page.getByRole('combobox', { name: 'حركات الموقع' });
+  await expect(settings).toHaveValue('on');
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
+  expect(await page.locator('.hero-title-holo__stack').first().evaluate(el => getComputedStyle(el).animationName)).not.toBe('none');
+  // Paint-cost savings remain active even when motion is enabled by default.
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect(page.locator('.hero-phone-dock')).toHaveCSS('backdrop-filter', 'none');
+  for (const value of ['off', 'auto', 'on']) {
+    await settings.selectOption(value);
+    await page.reload();
+    await expect(settings).toHaveValue(value);
+    await expect(page.locator('html')).toHaveAttribute('data-motion', value);
+  }
 });

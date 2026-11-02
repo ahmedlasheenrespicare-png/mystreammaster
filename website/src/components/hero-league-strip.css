@@ -804,3 +804,20 @@ a.hs-crown-wing:hover {
   min-width: 42px; text-align: center; font-size: 11px; font-weight: 700;
   font-variant-numeric: tabular-nums; color: #53594a; white-space: nowrap;
 }
+
+/* These source emblems are dark artwork. Render just the decorative watermark
+   in white so it remains visible on the dark match card; do not recolour the
+   original league cards, trophy emblems or team crests. */
+.hs-crown-match-art[data-match-league-background="eng.1"],
+.hs-crown-match-art[data-match-league-background="uefa.champions"] { opacity: .22; }
+.hs-crown-match-art[data-match-league-background="eng.1"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="uefa.champions"] .league-carousel-logo {
+  filter: brightness(0) invert(1);
+}
+
+/* Cup competition watermarks keep their source colours and transparency. */
+.hs-crown-match-art[data-match-league-background="eng.league_cup"],
+.hs-crown-match-art[data-match-league-background="afc.champions"] { opacity: .24; }
+
+/* Only the two cup identity cards also carry their competition watermark. */
+.hs-crown-card-top > .hs-crown-cup-background { opacity: .24; }

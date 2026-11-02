@@ -1283,3 +1283,104 @@ test('crown match cards use their league emblem as background without site brand
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('English and Champions League background emblems have light contrast and eager active loading', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  // Controlled dark transparent artwork isolates CSS contrast and load state.
+  await page.route('https://a.espncdn.com/i/leaguelogos/soccer/500/*', route => route.fulfill({
+    contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="#000" d="M20 10h60v55L50 95 20 65z"/></svg>',
+  }));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  for (const [league, pairing] of [['eng.1', /نيوكاسل.*إيفرتون/s], ['uefa.champions', /أتلتيكو.*بايرن/s]] as const) {
+    await selectCrownSlide(page, pairing);
+    const background = strip.locator(`[data-crown-offset="0"] [data-match-league-background="${league}"]`);
+    const image = background.locator('img');
+    await expect(image).toHaveAttribute('data-loaded', 'true');
+    await expect(image).toHaveAttribute('loading', 'eager');
+    await expect(image).toHaveCSS('filter', 'brightness(0) invert(1)');
+    await expect(background).toHaveCSS('opacity', '0.22');
+    await expect(background.locator('.league-carousel-fallback')).toHaveCSS('visibility', 'hidden');
+  }
+  const originalLogo = strip.locator('[data-crown-card="eng.1"] .league-carousel-logo').first();
+  await expect(originalLogo).not.toHaveCSS('filter', 'brightness(0) invert(1)');
+});
+
+test('crown previews distinctive silver League Cup and Asian Elite trophies only in the strip', async ({ page }) => {
+  test.setTimeout(180000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const [league, cup] of [['eng.league_cup', 'league-cup'], ['afc.champions', 'elite-cup']]) {
+      const keys = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => card.getAttribute('data-crown-card')));
+      const index = keys.indexOf(league);
+      await selectCrownSlide(page, index);
+      const trophy = strip.locator(`[data-crown-offset="0"] [data-crown-cup="${cup}"]`);
+      await expect(trophy).toBeVisible();
+      await expect(trophy).toHaveAttribute('data-trophy-metal', 'silver');
+      await expect(page.locator(`[data-hero-league-stats] [data-crown-cup="${cup}"]`)).toBeVisible();
+      const defs = await page.locator('[data-crown-cup] svg defs [id]').evaluateAll(els => els.map(el => el.id));
+      expect(new Set(defs).size).toBe(defs.length);
+      await strip.screenshot({ path: `/home/user/${cup}-${width}.png` });
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await expect(strip.locator('[data-crown-card="eng.1"] [data-trophy-variant="authentic"]')).toHaveCount(1);
+});
+
+test('crown uses the full English League Cup name and verified cup background logos', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  // External assets are isolated in UI tests; verify the production URL and
+  // loaded/fallback behaviour separately rather than claiming an external fetch.
+  await page.route('https://a.espncdn.com/i/leaguelogos/soccer/500/*', route => route.fulfill({
+    contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#f6f4ec"/></svg>',
+  }));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const cupCard = strip.locator('[data-crown-card="eng.league_cup"]');
+  await expect(cupCard.locator('.hs-crown-league-name')).toHaveText('كأس الرابطة الإنجليزي');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const [league, logo] of [['eng.league_cup', '41'], ['afc.champions', '2200']]) {
+      const cards = strip.locator('[data-crown-card]');
+      const index = await cards.evaluateAll((els, leagueId) => els.findIndex(el => el.getAttribute('data-crown-kind') === 'match' && el.getAttribute('data-crown-league') === leagueId), league);
+      await selectCrownSlide(page, index);
+      const front = strip.locator('[data-crown-offset="0"]');
+      const background = front.locator(`[data-match-league-background="${league}"]`);
+      const image = background.locator('img');
+      await expect(image).toHaveAttribute('src', `https://a.espncdn.com/i/leaguelogos/soccer/500/${logo}.png`);
+      await expect(image).toHaveAttribute('data-loaded', 'true');
+      await expect(background.locator('.league-carousel-fallback')).toHaveCSS('visibility', 'hidden');
+      await expect(image).toHaveCSS('filter', 'none');
+      if (league === 'eng.league_cup') {
+        await expect(front.locator('.hs-crown-match-heading')).toHaveText('كأس الرابطة الإنجليزي');
+        await expect(page.locator('.hs-stats-identity-title')).toHaveText('كأس الرابطة الإنجليزي');
+      }
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await expect(page.locator('.home-matches-ticket')).toContainText('كأس الرابطة');
+});
+
+
+test('cup league identity cards also show faint competition logos without replacing their trophies', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await expect(strip.locator('[data-league-card-background]')).toHaveCount(2);
+  for (const [league, logo] of [['eng.league_cup', '41'], ['afc.champions', '2200']]) {
+    const card = strip.locator(`[data-crown-card="${league}"]`);
+    const background = card.locator(`[data-league-card-background="${league}"]`);
+    await expect(background.locator('img')).toHaveAttribute('src', `https://a.espncdn.com/i/leaguelogos/soccer/500/${logo}.png`);
+    await expect(background).toHaveCSS('opacity', '0.24');
+    await expect(card.locator('[data-crown-cup]')).toHaveCount(1);
+    await expect(card.locator('.hs-crown-league-name')).not.toBeEmpty();
+  }
+  await expect(strip.locator('[data-crown-card="eng.1"] [data-league-card-background]')).toHaveCount(0);
+});

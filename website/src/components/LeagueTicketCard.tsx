@@ -1,3 +1,4 @@
+import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
 import { useMotionReduced } from "./useMotionReduced";
 import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
@@ -700,9 +701,9 @@ export function CrownClashSlide({ clash, match, active = true }: { clash: Featur
   const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
   return <div className="hs-crown-match" dir="rtl">
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
-      <LeagueIconBadge leagueId={clash.source ?? "matches"} size={132} />
+      <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
     </span>
-    <div className="hs-crown-match-heading"><span>{clash.eyebrow}</span></div>
+    <div className="hs-crown-match-heading"><span>{crownLeagueName(clash.source, clash.eyebrow)}</span></div>
     <div className="hs-crown-match-teams">
       <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong></span>
       <span className="hs-crown-match-result">

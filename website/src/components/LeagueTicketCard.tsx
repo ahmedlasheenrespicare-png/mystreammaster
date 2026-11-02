@@ -697,11 +697,12 @@ export function CrownClashSlide({ clash, match, active = true }: { clash: Featur
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
   const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
   const sides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];
-  const players = homeFirst ? [clash.homePlayer, clash.awayPlayer] : [clash.awayPlayer, clash.homePlayer];
   const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
   return <div className="hs-crown-match" dir="rtl">
-    <span className="hs-crown-match-art" aria-hidden="true">{players.map((src, i) => src && <TicketImage key={src} src={src} className={`hs-crown-match-player hs-crown-match-player--${i}`} alt="" loading="lazy" />)}</span>
-    <div className="hs-crown-match-heading"><LeagueIconBadge leagueId={clash.source ?? "matches"} size={20} /><span>{clash.eyebrow}</span><StreamMasterTicketWordmark /></div>
+    <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
+      <LeagueIconBadge leagueId={clash.source ?? "matches"} size={132} />
+    </span>
+    <div className="hs-crown-match-heading"><span>{clash.eyebrow}</span></div>
     <div className="hs-crown-match-teams">
       <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong></span>
       <span className="hs-crown-match-result">

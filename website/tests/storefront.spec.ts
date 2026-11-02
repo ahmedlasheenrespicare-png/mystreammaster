@@ -1,4 +1,18 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+async function selectCrownSlide(page: Page, target: number | RegExp) {
+  const strip = page.locator('[data-hero-league-strip]');
+  const cards = strip.locator('[data-crown-card]');
+  const index = typeof target === 'number' ? target : (await cards.allTextContents()).findIndex(text => target.test(text));
+  expect(index).toBeGreaterThanOrEqual(0);
+  const key = await cards.nth(index).getAttribute('data-crown-card');
+  for (let i = 0; i < await cards.count(); i++) {
+    if (await strip.locator('[data-crown-offset="0"]').getAttribute('data-crown-card') === key) break;
+    await strip.locator('.hs-crown-arrow').first().click();
+  }
+  await page.mouse.move(0, 0);
+  await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', key!);
+}
 
 // UI checks do not claim to validate live channels or WhatsApp delivery.
 test.beforeEach(async ({ page }) => {
@@ -1015,7 +1029,7 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
       expect(await card.locator('.hs-crown-player').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')))).toEqual(players);
     }
     // Touch a navigation dot: synthetic hover/focus must not leave autoplay paused.
-    await strip.locator('.hs-crown-dot').nth(2).tap();
+    await selectCrownSlide(page, 2);
     const front = strip.locator('[data-crown-offset="0"]');
     const selected = await front.getAttribute('data-crown-card');
     await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(selected);
@@ -1030,7 +1044,7 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
     await strip.scrollIntoViewIfNeeded();
-    await strip.locator('.hs-crown-dot').nth(3).tap();
+    await selectCrownSlide(page, 3);
     const selected = await strip.locator('[data-crown-offset="0"]').getAttribute('data-crown-card');
     await page.waitForTimeout(5500);
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', selected!);
@@ -1101,7 +1115,7 @@ test('crown groups home-ticket match slides after their own league without remov
     await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
     await expect(page.locator('.home-matches-ticket')).toContainText('نيوكاسل');
     await expect(page.locator('.home-matches-ticket')).toContainText('إيفرتون');
-    await strip.getByRole('button', { name: /نيوكاسل.*إيفرتون/ }).click();
+    await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
     const front = strip.locator('[data-crown-offset="0"]');
     await expect(front).toHaveAttribute('data-crown-kind', 'match');
     await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', 'eng.1');
@@ -1127,7 +1141,7 @@ test('crown match content preserves live RTL scores and scheduled countdown from
   }] : [] }) }));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
-  await strip.getByRole('button', { name: /نيوكاسل.*إيفرتون/ }).click();
+  await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
   const front = strip.locator('[data-crown-offset="0"]');
   await expect(front.locator('.hs-crown-match-status')).toContainText('67');
   await expect(front.locator('.hs-crown-match-team').first()).toContainText('إيفرتون');
@@ -1136,8 +1150,63 @@ test('crown match content preserves live RTL scores and scheduled countdown from
   await expect(page.locator('.home-matches-ticket .league-ticket-goals').filter({ hasText: '3' }).first()).toBeAttached();
   scheduled = true;
   await page.reload();
-  await strip.getByRole('button', { name: /نيوكاسل.*إيفرتون/ }).click();
+  await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
   await expect(front.locator('.league-ticket-countdown')).toBeVisible();
   await expect(front.locator('.hs-crown-match-score')).toHaveCount(0);
+  for (const width of [320, 390, 767, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await strip.scrollIntoViewIfNeeded();
+    const rows = await front.locator('.hs-crown-match').evaluate(el => {
+      const box = el.getBoundingClientRect();
+      const children = Array.from(el.children).filter(child => !child.classList.contains('hs-crown-match-art')).map(child => {
+        const rect = child.getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right };
+      });
+      return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, height: box.height, children };
+    });
+    expect(rows.height).toBeLessThanOrEqual(168);
+    for (let i = 0; i < rows.children.length; i++) {
+      const row = rows.children[i];
+      expect(row.top).toBeGreaterThanOrEqual(rows.top);
+      expect(row.bottom).toBeLessThanOrEqual(rows.bottom);
+      expect(row.left).toBeGreaterThanOrEqual(rows.left);
+      expect(row.right).toBeLessThanOrEqual(rows.right);
+      if (i) expect(row.top).toBeGreaterThanOrEqual(rows.children[i - 1].bottom - 1);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
   await strip.screenshot({ path: '/home/user/crown-countdown.png' });
+});
+
+test('background crown and ticket slides pause decorative animations without hiding content', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.scrollIntoViewIfNeeded();
+  const hiddenBadge = strip.locator('[data-crown-kind="match"]:not([data-crown-offset="0"]) .league-ticket-wordmark-badge').first();
+  await expect(hiddenBadge).toHaveCSS('animation-play-state', 'paused');
+  await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
+  await expect(strip.locator('[data-crown-offset="0"] .league-ticket-wordmark-badge')).toHaveCSS('animation-play-state', 'running');
+  await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(10);
+  await expect(page.locator('.home-matches-ticket .league-ticket-slide:not(.is-active) .league-ticket-wordmark-badge').first()).toHaveCSS('animation-play-state', 'paused');
+});
+
+
+test('crown numeric counter replaces pagination dots and follows arrows', async ({ page }) => {
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.scrollIntoViewIfNeeded();
+  await expect(strip.locator('.hs-crown-dot')).toHaveCount(0);
+  const total = await strip.locator('[data-crown-card]').count();
+  await expect(strip.locator('.hs-crown-counter')).toHaveText(`1/${total}`);
+  await strip.locator('.hs-crown-arrow').first().click();
+  await expect(strip.locator('.hs-crown-counter')).toHaveText(`2/${total}`);
+  await strip.locator('.hs-crown-arrow').last().click();
+  await expect(strip.locator('.hs-crown-counter')).toHaveText(`1/${total}`);
+  await strip.locator('.hs-crown-arrow').last().click();
+  await expect(strip.locator('.hs-crown-counter')).toHaveText(`${total}/${total}`);
+  await page.setViewportSize({ width: 320, height: 900 });
+  await expect(strip.locator('.hs-crown-counter')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

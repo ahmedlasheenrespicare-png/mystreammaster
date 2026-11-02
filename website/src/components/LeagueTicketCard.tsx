@@ -365,6 +365,7 @@ function useNow(active: boolean) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!active) return;
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, [active]);
@@ -690,9 +691,9 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
 }
 
 /** Compact strip layout; same match selection, status, score direction and countdown as the ticket. */
-export function CrownClashSlide({ clash, match }: { clash: FeaturedClash; match: Match | null }) {
+export function CrownClashSlide({ clash, match, active = true }: { clash: FeaturedClash; match: Match | null; active?: boolean }) {
   const pre = match?.state === "scheduled";
-  const now = useNow(pre);
+  const now = useNow(pre && active);
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
   const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
   const sides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];

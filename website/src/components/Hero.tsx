@@ -475,6 +475,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
               <AllLeaguesTicket
                 key={visibleSlots.length}
+                hideBase
                 clashes={visibleClashes}
                 slideOverrides={visibleOverrides}
               />

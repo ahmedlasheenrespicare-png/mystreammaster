@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getMotionPreference, initializeMotionPreference, setMotionPreference, type MotionPreference } from '../lib/motion-preference';
 
 export default function MotionSettings({ english = false }: { english?: boolean }) {
-  const [value, setValue] = useState<MotionPreference>('auto');
+  const [value, setValue] = useState<MotionPreference>('on');
   useEffect(() => {
     const sync = () => { initializeMotionPreference(); setValue(getMotionPreference()); };
     sync();

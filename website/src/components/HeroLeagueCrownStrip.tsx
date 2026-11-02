@@ -1,3 +1,4 @@
+import { CrownClashSlide, clashSummary, useClashes, type FeaturedClash } from "./LeagueTicketCard";
 import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { TicketImage } from "./TicketImage";
@@ -32,6 +33,8 @@ const STEP_INTERVAL_MS = 5000;
 
 /* ── مخزن تزامن مشترك بين التاج المداري (أعلى التذكرة) وشريط الإحصائيات (أسفل التذكرة الرئيسية) ── */
 let sharedActiveIndex = 0;
+let sharedSlideLeagues: string[] = [];
+let sharedLeagueId = "";
 let sharedPauseCount = 0;
 const crownListeners = new Set<() => void>();
 
@@ -42,13 +45,13 @@ function emitCrownChange() {
 function setSharedActiveIndex(next: number) {
   if (sharedActiveIndex === next) return;
   sharedActiveIndex = next;
+  sharedLeagueId = sharedSlideLeagues[next] ?? "";
   emitCrownChange();
 }
 
 function stepSharedActiveIndex(delta: number, total: number) {
   if (total < 1) return;
-  sharedActiveIndex = ((sharedActiveIndex + delta) % total + total) % total;
-  emitCrownChange();
+  setSharedActiveIndex(((sharedActiveIndex + delta) % total + total) % total);
 }
 
 function adjustSharedPause(delta: number) {
@@ -97,12 +100,13 @@ function useSharedCrownState() {
       crownListeners.add(cb);
       return () => crownListeners.delete(cb);
     },
-    () => `${sharedActiveIndex}:${sharedPauseCount > 0 ? 1 : 0}`,
+    () => `${sharedActiveIndex}:${sharedPauseCount > 0 ? 1 : 0}:${sharedLeagueId}`,
     () => "0:0",
   );
-  const [idxStr, pausedStr] = snapshot.split(":");
+  const [idxStr, pausedStr, leagueId] = snapshot.split(":");
   return {
     active: Number(idxStr) || 0,
+    leagueId,
     paused: pausedStr === "1",
   };
 }
@@ -300,11 +304,29 @@ function HeroClubCrest({
   );
 }
 
+const NO_CLASHES: FeaturedClash[] = [];
+function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[]): HeroLeagueData[] {
+  const result = [...items];
+  for (const clash of clashes) {
+    const id = clash.source;
+    if (!id || result.some(item => item.leagueId === id)) continue;
+    const theme = getLeagueTrophyTheme(id);
+    result.push({ leagueId: id, standingsKey: id, shortName: clash.eyebrow, href: "/matches/", stageGlow: theme.stageGlow, splitGradient: theme.splitGradient, leader: null, bestAttack: null, bestDefence: null, totalGoals: null });
+  }
+  return result;
+}
+
 /* ==========================================================================
    1) شريط التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو
 ========================================================================== */
-export default function HeroLeagueCrownStrip() {
-  const items = useHeroLeagueItems();
+export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes?: FeaturedClash[] }) {
+  const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes);
+  const matches = useClashes("matches", clashes);
+  const items = leagueItems.flatMap(league => [
+    { ...league, key: league.leagueId, clashIndex: -1 },
+    ...clashes.flatMap((clash, index) => clash.source === league.leagueId ? [{ ...league, key: `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : []),
+  ]);
+  const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
   const [autoplayStopped, setAutoplayStopped] = useState(false);
@@ -314,11 +336,13 @@ export default function HeroLeagueCrownStrip() {
   const dragStartRef = useRef<{ x: number; pointerId: number } | null>(null);
   const didDragRef = useRef(false);
 
-  // إعادة التعيين إلى البطولة الأولى عند تركيب المكوّن
+  // Register slide → league identity; statistics follow the parent even on a match slide.
   useEffect(() => {
+    sharedSlideLeagues = items.map(item => item.leagueId);
     sharedActiveIndex = 0;
-    sharedPauseCount = 0;
-  }, []);
+    sharedLeagueId = sharedSlideLeagues[0] ?? "";
+    emitCrownChange();
+  }, [slideKey]);
 
   // تحديث بيانات الترتيب الحي (/standings.php) عند ظهور الشريط في نطاق الرؤية
   useEffect(() => {
@@ -406,6 +430,7 @@ export default function HeroLeagueCrownStrip() {
       className="hero-crown-strip"
       aria-label="أبرز البطولات"
       data-hero-league-strip="crown3d"
+      data-has-matches={clashes.length > 0}
     >
       <div
         className={`hs-crown-shell${dragging ? " is-dragging" : ""}`}
@@ -450,10 +475,12 @@ export default function HeroLeagueCrownStrip() {
             const isFront = offset === "0";
             return (
               <a
-                key={item.leagueId}
+                key={item.key}
                 href={item.href}
-                className="hs-crown-card"
-                data-crown-card={item.leagueId}
+                className={`hs-crown-card${item.clashIndex >= 0 ? " hs-crown-card--match" : ""}`}
+                data-crown-card={item.key}
+                data-crown-league={item.leagueId}
+                data-crown-kind={item.clashIndex >= 0 ? "match" : "league"}
                 data-crown-offset={offset}
                 tabIndex={isFront ? 0 : -1}
                 aria-hidden={!isFront ? "true" : undefined}
@@ -475,7 +502,10 @@ export default function HeroLeagueCrownStrip() {
                   }
                 }}
               >
-                <span className="hs-crown-card-top">
+                {item.clashIndex >= 0 ? <>
+                  <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
+                  <CrownClashSlide clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
+                </> : <span className="hs-crown-card-top">
                   <span className="hs-crown-players" aria-hidden="true">
                     {(LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map((src, index) => (
                       <TicketImage key={src} className={`hs-crown-player hs-crown-player--${index + 1}`} src={src} alt="" loading="lazy" decoding="async" />
@@ -496,6 +526,7 @@ export default function HeroLeagueCrownStrip() {
                     <LeagueTrophyWithEmblem leagueId={item.leagueId} variant="authentic" />
                   </span>
                 </span>
+                }
                 <span className="hs-crown-split" aria-hidden="true" />
               </a>
             );
@@ -517,11 +548,11 @@ export default function HeroLeagueCrownStrip() {
           <div className="hs-crown-dots">
             {items.map((item, idx) => (
               <button
-                key={item.leagueId}
+                key={item.key}
                 type="button"
                 className={`hs-crown-dot${idx === active ? " is-active" : ""}`}
                 onClick={() => setSharedActiveIndex(idx)}
-                aria-label={item.shortName}
+                aria-label={item.clashIndex >= 0 ? `${clashes[item.clashIndex].home.name} × ${clashes[item.clashIndex].away.name} — ${item.shortName}` : item.shortName}
                 aria-current={idx === active ? "true" : undefined}
               />
             ))}
@@ -544,11 +575,11 @@ export default function HeroLeagueCrownStrip() {
    2) شريط إحصائيات البطولة الحية — أسفل التذكرة الرئيسية مباشرةً
       يتزامن لحظياً مع البطولة النشطة في التاج المداري ثلاثي الأبعاد أعلاه
 ========================================================================== */
-export function HeroLeagueStatsBar() {
-  const items = useHeroLeagueItems();
+export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: FeaturedClash[] }) {
+  const items = withClashLeagues(useHeroLeagueItems(), clashes);
   const interactionPause = useCrownInteractionPause();
-  const { active } = useSharedCrownState();
-  const current = items[active] ?? items[0];
+  const { leagueId } = useSharedCrownState();
+  const current = items.find(item => item.leagueId === leagueId) ?? items[0];
 
   if (!current) return null;
 

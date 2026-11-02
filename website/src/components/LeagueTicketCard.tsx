@@ -308,9 +308,9 @@ function selectClash(list: Match[], clash: FeaturedClash): Match | null {
    مغذِّية (نافذتان: أسبوع للوراء + أسبوع للأمام)، ولكل مواجهة
    اختيارها الخاص من قائمة بطولتها هي دون سواها: تغذية واحدة كما كان
    في تذاكر البطولات، وعدّة تغذيات في التذكرة الجامعة بصفحة المواعيد */
-function useClashes(leagueId: string, clashes: FeaturedClash[]) {
-  const [matches, setMatches] = useState<(Match | null)[]>(() => clashes.map(() => null));
-  const clashesKey = clashes.map(c => `${c.source ?? leagueId}:${c.eyebrow}:${c.home.name}:${c.away.name}`).join("|");
+export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
+  const clashesKey = clashes.map(c => `${c.source ?? leagueId}:${c.eyebrow}:${c.home.name}:${c.away.name}:${c.date ?? ""}`).join("|");
+  const [resolved, setResolved] = useState<{ key: string; matches: (Match | null)[] }>({ key: "", matches: [] });
   useEffect(() => {
     let alive = true;
     const controller = new AbortController();
@@ -343,7 +343,7 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
         }));
         if (!alive) return;
         const bySource = new Map(sources.map((source, i) => [source, feeds[i]]));
-        setMatches(clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)));
+        setResolved({ key: clashesKey, matches: clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)) });
       } catch {
         /* الصمت مقصود: بطاقة الانتظار هي حالة الفشل المصمّمة */
       }
@@ -357,7 +357,7 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagueId, clashesKey]);
-  return matches;
+  return resolved.key === clashesKey ? resolved.matches : clashes.map(() => null);
 }
 
 /* ── نبضة ثانية واحدة لعداد البداية فقط (لا تكلفة عند عدم الحاجة) ── */
@@ -689,8 +689,34 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
   );
 }
 
+/** Compact strip layout; same match selection, status, score direction and countdown as the ticket. */
+export function CrownClashSlide({ clash, match }: { clash: FeaturedClash; match: Match | null }) {
+  const pre = match?.state === "scheduled";
+  const now = useNow(pre);
+  const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
+  const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
+  const sides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];
+  const players = homeFirst ? [clash.homePlayer, clash.awayPlayer] : [clash.awayPlayer, clash.homePlayer];
+  const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
+  return <div className="hs-crown-match" dir="rtl">
+    <span className="hs-crown-match-art" aria-hidden="true">{players.map((src, i) => src && <TicketImage key={src} src={src} className={`hs-crown-match-player hs-crown-match-player--${i}`} alt="" loading="lazy" />)}</span>
+    <div className="hs-crown-match-heading"><LeagueIconBadge leagueId={clash.source ?? "matches"} size={20} /><span>{clash.eyebrow}</span><StreamMasterTicketWordmark /></div>
+    <div className="hs-crown-match-teams">
+      <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong></span>
+      <span className="hs-crown-match-result">
+        <strong>{score ? <span className="hs-crown-match-score"><b>{match.home.score}</b><span>:</span><b>{match.away.score}</b></span> : match ? kickoff(match.date, CLASH_ZONE) : "قريباً"}</strong>
+        <small>{match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date}</small>
+      </span>
+      <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong></span>
+    </div>
+    <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{match?.detail ?? "نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً"}</small>
+    {countdown ? <FlipCountdown countdown={countdown} /> : null}
+    <span className="hs-crown-match-brands" aria-hidden="true">{["nova-ticket.png", "xtv-ticket.png", "istar-ticket.png", "moka-ticket.png"].map(src => <img key={src} src={`/images/brand/${src}`} alt="" loading="lazy" />)}</span>
+  </div>;
+}
+
 /* نص مقروء لقارئ الشاشة يلخّص حالة المواجهة — التذكرة نفسها زخرفية */
-function clashSummary(match: Match | null, clash: FeaturedClash): string {
+export function clashSummary(match: Match | null, clash: FeaturedClash): string {
   const pairing = `${clash.home.name} و${clash.away.name}`;
   if (!match) return `بطاقة ${clash.eyebrow} بين ${pairing}: تُعرض نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم من لوحة المواعيد نفسها بمجرد توفّرها.`;
   if (match.state === "scheduled") {

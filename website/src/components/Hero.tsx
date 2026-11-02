@@ -465,7 +465,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
         <Reveal variant="up" delay={90} className="w-full">
-          <HeroLeagueCrownStrip />
+          <HeroLeagueCrownStrip clashes={visibleSlots.filter(slot => !slot.news).map(slot => slot.clash)} />
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full">
@@ -486,7 +486,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </Reveal>
 
         <Reveal variant="up" delay={180} className="w-full">
-          <HeroLeagueStatsBar />
+          <HeroLeagueStatsBar clashes={visibleSlots.filter(slot => !slot.news).map(slot => slot.clash)} />
         </Reveal>
 
         {/* Keep the semantic H1 accessible outside the illustrative button;

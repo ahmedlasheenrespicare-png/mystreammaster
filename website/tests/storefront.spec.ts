@@ -1009,7 +1009,7 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
     const strip = page.locator('[data-hero-league-strip]');
     await strip.scrollIntoViewIfNeeded();
     const { LEAGUE_TICKET_PLAYERS } = await import('../src/content/league-ticket-players');
-    await expect(strip.locator('[data-crown-card]')).toHaveCount(8);
+    expect(await strip.locator('[data-crown-kind="league"]').count()).toBeGreaterThanOrEqual(8);
     for (const [league, players] of Object.entries(LEAGUE_TICKET_PLAYERS)) {
       const card = strip.locator(`[data-crown-card="${league}"]`);
       expect(await card.locator('.hs-crown-player').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')))).toEqual(players);
@@ -1019,9 +1019,9 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
     const front = strip.locator('[data-crown-offset="0"]');
     const selected = await front.getAttribute('data-crown-card');
     await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(selected);
-    const active = await front.getAttribute('data-crown-card');
+    const active = await front.getAttribute('data-crown-league');
     await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', active!);
-    await expect.poll(() => front.locator('.hs-crown-player').evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
+    await expect.poll(() => front.locator('.hs-crown-player, .hs-crown-match-player').evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await strip.screenshot({ path: '/home/user/league-strip-mobile.png' });
   });
@@ -1080,4 +1080,64 @@ test.describe('site-wide animation preferences', () => {
     await settings.selectOption('auto');
     await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(league);
   });
+});
+
+test('crown groups home-ticket match slides after their own league without removing either source', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    await strip.scrollIntoViewIfNeeded();
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(10);
+    await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(10);
+    const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
+    let parent = '';
+    for (const slide of sequence) {
+      if (slide.kind === 'league') parent = slide.league!;
+      else expect(slide.league).toBe(parent);
+    }
+    await expect(strip.locator('[data-crown-kind="league"] .hs-mini-trophy')).toHaveCount(10);
+    await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
+    await expect(page.locator('.home-matches-ticket')).toContainText('نيوكاسل');
+    await expect(page.locator('.home-matches-ticket')).toContainText('إيفرتون');
+    await strip.getByRole('button', { name: /نيوكاسل.*إيفرتون/ }).click();
+    const front = strip.locator('[data-crown-offset="0"]');
+    await expect(front).toHaveAttribute('data-crown-kind', 'match');
+    await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', 'eng.1');
+    await expect(front.locator('.hs-crown-match-team')).toHaveCount(2);
+    await expect(front.locator('.hs-crown-match-status')).toBeVisible();
+    await expect(front.locator('.hs-crown-match-brands img')).toHaveCount(4);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await strip.screenshot({ path: `/home/user/crown-matches-${width}.png` });
+  }
+});
+
+test('crown match content preserves live RTL scores and scheduled countdown from the same ticket feed', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  let scheduled = false;
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'eng.1' ? [{
+    id: 'crown-test-newcastle', date: '2026-11-02T20:00:00Z', competitions: [{
+      status: { displayClock: '67′', type: { state: scheduled ? 'pre' : 'in', name: scheduled ? 'STATUS_SCHEDULED' : 'STATUS_IN_PROGRESS', completed: false } },
+      competitors: [
+        { homeAway: 'home', score: scheduled ? undefined : '3', team: { displayName: 'Everton' } },
+        { homeAway: 'away', score: scheduled ? undefined : '1', team: { displayName: 'Newcastle United' } },
+      ],
+    }],
+  }] : [] }) }));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.getByRole('button', { name: /نيوكاسل.*إيفرتون/ }).click();
+  const front = strip.locator('[data-crown-offset="0"]');
+  await expect(front.locator('.hs-crown-match-status')).toContainText('67');
+  await expect(front.locator('.hs-crown-match-team').first()).toContainText('إيفرتون');
+  await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
+  await expect(front.locator('.hs-crown-match-score b').last()).toHaveText('1');
+  await expect(page.locator('.home-matches-ticket .league-ticket-goals').filter({ hasText: '3' }).first()).toBeAttached();
+  scheduled = true;
+  await page.reload();
+  await strip.getByRole('button', { name: /نيوكاسل.*إيفرتون/ }).click();
+  await expect(front.locator('.league-ticket-countdown')).toBeVisible();
+  await expect(front.locator('.hs-crown-match-score')).toHaveCount(0);
+  await strip.screenshot({ path: '/home/user/crown-countdown.png' });
 });

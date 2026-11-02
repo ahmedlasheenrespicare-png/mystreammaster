@@ -1,3 +1,4 @@
+import CrownMatchFullscreen, { CrownFullscreen } from "./CrownMatchFullscreen";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
 import { CrownClashSlide, clashSummary, useClashes, type FeaturedClash } from "./LeagueTicketCard";
@@ -307,6 +308,17 @@ function HeroClubCrest({
   );
 }
 
+function CrownLeagueDetails({ item }: { item: HeroLeagueData }) {
+  return <article className="crown-league-details" dir="rtl" data-fullscreen-league={item.leagueId}>
+    <div className="crown-league-art" aria-hidden="true">
+      {CROWN_CUP_LOGOS[item.leagueId] ? <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={240} eager /> :
+        (LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map(src => <TicketImage key={src} src={src} alt="" loading="eager" />)}
+    </div>
+    <h2 className="crown-league-fullscreen-heading">{item.shortName}</h2>
+    <CrownStatsPanels current={item} fullscreen />
+  </article>;
+}
+
 const NO_CLASHES: FeaturedClash[] = [];
 function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[]): HeroLeagueData[] {
   const result = [...items];
@@ -332,6 +344,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const expandedItem = items.find(item => item.key === expandedKey);
   const [autoplayStopped, setAutoplayStopped] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
@@ -390,13 +404,13 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
   }, []);
 
   useEffect(() => {
-    if (autoplayStopped || paused || dragging || items.length < 2) return;
+    if (expandedKey || autoplayStopped || paused || dragging || items.length < 2) return;
     const id = window.setInterval(() => {
       if (document.hidden || motionReduced()) return;
       stepSharedActiveIndex(1, items.length);
     }, STEP_INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [autoplayStopped, paused, dragging, items.length]);
+  }, [expandedKey, autoplayStopped, paused, dragging, items.length]);
 
   const step = (delta: number) => {
     stepSharedActiveIndex(delta, items.length);
@@ -485,6 +499,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
                 data-crown-league={item.leagueId}
                 data-crown-kind={item.clashIndex >= 0 ? "match" : "league"}
                 data-crown-offset={offset}
+                role="button"
+                aria-haspopup="dialog"
+                onKeyDown={event => {
+                  if (event.key === " ") { event.preventDefault(); event.currentTarget.click(); }
+                }}
                 tabIndex={isFront ? 0 : -1}
                 aria-hidden={!isFront ? "true" : undefined}
                 style={
@@ -499,15 +518,15 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
                     didDragRef.current = false;
                     return;
                   }
-                  if (!isFront) {
-                    e.preventDefault();
-                    setSharedActiveIndex(idx);
-                  }
+                  e.preventDefault();
+                  e.currentTarget.focus({ preventScroll: true });
+                  setSharedActiveIndex(idx);
+                  setExpandedKey(item.key);
                 }}
               >
                 {item.clashIndex >= 0 ? <>
                   <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
-                  <CrownClashSlide active={isFront} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
+                  <CrownClashSlide active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
                   {CROWN_CUP_LOGOS[item.leagueId] && (
                     <span className="hs-crown-match-art hs-crown-cup-background" data-league-card-background={item.leagueId} aria-hidden="true">
@@ -566,6 +585,14 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
           </button>
         </div>
       </div>
+      {expandedItem && expandedItem.clashIndex < 0 && (
+        <CrownFullscreen label={`إحصائيات بطولة ${expandedItem.shortName}`} closeLabel="إغلاق إحصائيات البطولة" glow={expandedItem.stageGlow} onClose={() => setExpandedKey(null)}>
+          <CrownLeagueDetails item={expandedItem} />
+        </CrownFullscreen>
+      )}
+      {expandedItem && expandedItem.clashIndex >= 0 && (
+        <CrownMatchFullscreen glow={expandedItem.stageGlow} clash={clashes[expandedItem.clashIndex]} match={matches[expandedItem.clashIndex] ?? null} onClose={() => setExpandedKey(null)} />
+      )}
     </section>
   );
 }
@@ -581,21 +608,28 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
   const current = items.find(item => item.leagueId === leagueId) ?? items[0];
 
   if (!current) return null;
+  return <CrownStatsPanels current={current} interactionPause={interactionPause} />;
+}
 
+/** The exact same panels serve the ticket row and the fullscreen league card. */
+function CrownStatsPanels({ current, fullscreen = false, interactionPause }: {
+  current: HeroLeagueData; fullscreen?: boolean; interactionPause?: ReturnType<typeof useCrownInteractionPause>;
+}) {
   return (
     <section
       className="hero-crown-stats-bar"
       aria-label="إحصائيات وترتيب البطولة النشطة"
-      data-hero-league-stats="crown3d"
+      data-hero-league-stats={fullscreen ? undefined : "crown3d"}
+      data-fullscreen-stats={fullscreen ? current.leagueId : undefined}
       {...interactionPause}
     >
       <div className="hs-stats-bar-grid">
         {/* بطاقة تعريف البطولة النشطة (يميناً تحت تذكرة المواعيد، وعلى الجوال شريط علوي أنيق) */}
         <a
           key={`stats-id-${current.leagueId}`}
-          href={current.href}
+          href={fullscreen ? undefined : current.href}
           className="hs-stats-identity"
-          data-crown-stats-league={current.leagueId}
+          data-crown-stats-league={fullscreen ? undefined : current.leagueId}
           style={
             {
               "--hs-glow": current.stageGlow,
@@ -618,7 +652,7 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
           {/* اللوح الأيمن: متصدّر البطولة ونقاطه ومعدّله */}
           <a
             key={`wing-leader-${current.leagueId}`}
-            href={current.href}
+            href={fullscreen ? undefined : current.href}
             className="hs-crown-wing hs-crown-wing--leader"
             data-crown-wing="leader"
           >
@@ -650,13 +684,13 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
                   </span>
                 </span>
               </>
-            ) : null}
+            ) : fullscreen ? <p>بيانات المتصدّر غير متاحة حاليًا لهذه البطولة.</p> : null}
           </a>
 
           {/* اللوح الأيسر: وساما أقوى هجوم وأقوى دفاع بأيقونات الأندية وإجمالي الأهداف */}
           <a
             key={`wing-stats-${current.leagueId}`}
-            href={current.href}
+            href={fullscreen ? undefined : current.href}
             className="hs-crown-wing hs-crown-wing--stats"
             data-crown-wing="stats"
           >
@@ -665,7 +699,7 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
                 <span className="hs-stat-wing-head">
                   <GoldenBootMedalIcon
                     className="hs-stat-medal"
-                    idSuffix={`hero-att-${current.leagueId}`}
+                    idSuffix={`${fullscreen ? "fullscreen" : "hero"}-att-${current.leagueId}`}
                   />
                   <span className="hs-stat-kicker">أقوى هجوم</span>
                 </span>
@@ -681,13 +715,14 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
                 </span>
               </span>
             )}
+            {fullscreen && !current.bestAttack && <p>إحصائيات الهجوم غير متاحة حاليًا.</p>}
             <span className="hs-stat-divider" aria-hidden="true" />
             {current.bestDefence && (
               <span className="hs-stat-wing" data-crown-metric="best-defence">
                 <span className="hs-stat-wing-head">
                   <GuardianShieldMedalIcon
                     className="hs-stat-medal"
-                    idSuffix={`hero-def-${current.leagueId}`}
+                    idSuffix={`${fullscreen ? "fullscreen" : "hero"}-def-${current.leagueId}`}
                   />
                   <span className="hs-stat-kicker">أقوى دفاع</span>
                 </span>
@@ -703,6 +738,8 @@ export function HeroLeagueStatsBar({ clashes = NO_CLASHES }: { clashes?: Feature
                 </span>
               </span>
             )}
+            {fullscreen && !current.bestDefence && <p>إحصائيات الدفاع غير متاحة حاليًا.</p>}
+            {fullscreen && current.totalGoals === null && <p>إجمالي الأهداف غير متاح حاليًا.</p>}
             {current.totalGoals !== null && (
               <span className="hs-stat-goals-pill" data-crown-metric="total-goals">
                 <span className="hs-stat-goals-num">

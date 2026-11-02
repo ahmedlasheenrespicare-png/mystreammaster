@@ -14,7 +14,7 @@ import { isWithinTicketWindow } from "../lib/ticket-recency";
 type HomeTicketSlot = { clash: FeaturedClash; news?: string };
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
-import HeroLeagueCrownStrip, { HeroLeagueStatsBar } from "./HeroLeagueCrownStrip";
+import HeroLeagueCrownStrip from "./HeroLeagueCrownStrip";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -494,9 +494,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        <Reveal variant="up" delay={180} className="w-full">
-          <HeroLeagueStatsBar clashes={crownClashes} />
-        </Reveal>
+        {/* Inline league statistics are hidden; available through crown-card fullscreen. */}
 
         {/* Keep the semantic H1 accessible outside the illustrative button;
             its visual version now lives inside the television's welcome screen. */}

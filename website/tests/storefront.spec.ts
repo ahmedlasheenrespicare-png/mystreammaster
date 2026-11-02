@@ -1195,6 +1195,7 @@ test('background crown and ticket slides pause decorative animations without hid
 
 
 test('crown numeric counter replaces pagination dots and follows arrows', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   await strip.scrollIntoViewIfNeeded();
@@ -1406,5 +1407,135 @@ test('home match slides remain exclusive to crown when ticket-row matches are hi
     await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', 'eng.1');
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-kind', 'match');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('crown match opens as an edge-to-edge modal above the header and restores focus on close', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
+    const card = page.locator('[data-hero-league-strip] [data-crown-offset="0"]');
+    const originalUrl = page.url();
+    await card.focus();
+    const originalScroll = await page.evaluate(() => scrollY);
+    await card.press('Enter');
+    const dialog = page.getByRole('dialog', { name: /عرض المواجهة/ });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.hs-crown-match-team')).toHaveCount(2);
+    await expect(dialog.locator('.hs-crown-match-status')).toBeVisible();
+    await dialog.screenshot({ path: `/home/user/crown-fullscreen-${width}.png` });
+    const bounds = await dialog.boundingBox();
+    expect(bounds!.x).toBe(0); expect(bounds!.y).toBe(0);
+    expect(bounds!.width).toBe(width); expect(bounds!.height).toBe(900);
+    expect(await page.evaluate(() => document.elementFromPoint(10, 20)?.closest('dialog') !== null)).toBe(true);
+    expect(await page.evaluate(() => document.body.style.position)).toBe('fixed');
+    await page.keyboard.press('Tab');
+    expect(await dialog.evaluate(el => el.contains(document.activeElement))).toBe(true);
+    expect(page.url()).toBe(originalUrl);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(card).toBeFocused();
+    expect(Math.abs(await page.evaluate(() => scrollY) - originalScroll)).toBeLessThanOrEqual(2);
+    await card.click();
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('button', { name: 'إغلاق عرض المواجهة' }).click();
+    await expect(dialog).toHaveCount(0);
+    expect(await page.evaluate(() => document.body.style.position)).not.toBe('fixed');
+  }
+});
+
+test('league cards open their own statistics fullscreen without navigation or fabricated cup data', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    for (const league of ['eng.1', 'eng.league_cup']) {
+      const keys = await strip.locator('[data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
+      await selectCrownSlide(page, keys.indexOf(league));
+      const card = strip.locator('[data-crown-offset="0"]');
+      const title = await card.locator('.hs-crown-league-name').innerText();
+      const leader = await card.locator('.hs-crown-leader-name').allTextContents();
+      const beforeUrl = page.url();
+      await card.focus();
+      await card.press('Enter');
+      const dialog = page.getByRole('dialog', { name: `إحصائيات بطولة ${title}` });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('[data-fullscreen-league]')).toHaveAttribute('data-fullscreen-league', league);
+      await expect(dialog.getByRole('heading', { name: title, exact: true })).toBeVisible();
+      await expect(dialog.locator('.hs-stats-identity')).toBeVisible();
+      await expect(dialog.locator('[data-crown-wing="leader"]')).toBeVisible();
+      await expect(dialog.locator('[data-crown-wing="stats"]')).toBeVisible();
+      if (leader.length) {
+        await expect(dialog.locator('[data-crown-wing="leader"]')).toContainText(leader[0]);
+        const sourceStats = page.locator('[data-hero-league-stats]');
+        for (const metric of ['best-attack', 'best-defence', 'total-goals']) {
+          const source = sourceStats.locator(`[data-crown-metric="${metric}"]`);
+          if (await source.count()) await expect(dialog.locator(`[data-crown-metric="${metric}"]`)).toHaveText((await source.textContent())!);
+        }
+      }
+      if (league === 'eng.league_cup') {
+        await expect(dialog.locator('[data-crown-wing="leader"]')).toContainText('غير متاحة');
+        await expect(dialog.locator('dd')).toHaveCount(0);
+      }
+      const box = await dialog.boundingBox();
+      expect(box!.x).toBe(0); expect(box!.y).toBe(0); expect(box!.width).toBe(width); expect(box!.height).toBe(900);
+      expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+      expect(page.url()).toBe(beforeUrl);
+      await dialog.screenshot({ path: `/home/user/crown-league-${league}-${width}.png` });
+      await page.keyboard.press('Escape');
+      await expect(dialog).toHaveCount(0);
+      await expect(card).toBeFocused();
+    }
+  }
+});
+
+
+test('inline league statistics are hidden while crown fullscreen statistics remain available', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  await expect(page.locator('[data-hero-league-stats]')).toHaveCount(0);
+  const card = page.locator('[data-crown-card="eng.1"]');
+  const keys = await page.locator('[data-hero-league-strip] [data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
+  await selectCrownSlide(page, keys.indexOf('eng.1'));
+  await card.press('Enter');
+  const dialog = page.getByRole('dialog', { name: /إحصائيات بطولة/ });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('[data-fullscreen-stats="eng.1"]')).toBeVisible();
+  await expect(dialog.locator('.hs-stats-identity')).toBeVisible();
+  await expect(dialog.locator('[data-crown-wing="leader"]')).toBeVisible();
+  await expect(dialog.locator('[data-crown-wing="stats"]')).toBeVisible();
+  await dialog.getByRole('button', { name: 'إغلاق إحصائيات البطولة' }).click();
+  await expect(dialog).toHaveCount(0);
+});
+
+test('fullscreen league identity is transparent while both statistics wings retain their backgrounds', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    const keys = await strip.locator('[data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
+    await selectCrownSlide(page, keys.indexOf('eng.1'));
+    await strip.locator('[data-crown-offset="0"]').press('Enter');
+    const dialog = page.getByRole('dialog', { name: /إحصائيات بطولة/ });
+    const identity = dialog.locator('.hs-stats-identity');
+    await expect(identity).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(identity).toHaveCSS('background-image', 'none');
+    await expect(identity).toHaveCSS('box-shadow', 'none');
+    await expect(identity.locator('.hs-stats-identity-title')).toBeVisible();
+    await expect(identity.locator('.hs-stats-identity-trophy')).toBeVisible();
+    for (const kind of ['leader', 'stats']) {
+      const wing = dialog.locator(`[data-crown-wing="${kind}"]`);
+      await expect(wing).toBeVisible();
+      await expect(wing).toHaveCSS('background-image', 'linear-gradient(rgb(252, 251, 247) 0%, rgb(243, 239, 227) 100%)');
+    }
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
   }
 });

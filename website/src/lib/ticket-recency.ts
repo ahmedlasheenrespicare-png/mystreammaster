@@ -1,8 +1,8 @@
 /* عرض شرائح التذكرة الرئيسية حسب تاريخها: تبقى الشريحة ظاهرة ما دام عمرها
-   15 يوماً أو أقل (بتوقيت القاهرة)، ثم تُخفى تلقائياً دون تعديل الكود.
-   الشرائح التي لا تاريخ قابل للقراءة لها تبقى ظاهرة (لا تُخفى بالخطأ). */
+   7 أيام أو أقل (بتوقيت القاهرة)، ثم تُخفى تلقائياً دون تعديل الكود.
+   الشرائح التي لا تاريخ قابل للقراءة لها تُخفى أيضاً (لا يمكن إثبات أنها حديثة). */
 
-export const TICKET_MAX_AGE_DAYS = 15;
+export const TICKET_MAX_AGE_DAYS = 7;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -50,7 +50,7 @@ export function cairoTodayDay(nowMs: number): number {
 
 export function isWithinTicketWindow(value: string | undefined, nowMs: number): boolean {
   const day = parseTicketDay(value);
-  if (day === null) return true;
+  if (day === null) return false;
   const ageDays = (cairoTodayDay(nowMs) - day) / DAY_MS;
   return ageDays <= TICKET_MAX_AGE_DAYS;
 }

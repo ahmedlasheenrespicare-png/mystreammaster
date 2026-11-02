@@ -73,6 +73,10 @@ images: [
     title: "الأهلي يواجه السد القطري في دوري أبطال آسيا للنخبة",
     description: "الأهلي يلتقي السد القطري الاثنين 2 نوفمبر في الدوحة ضمن الجولة الرابعة من دوري أبطال آسيا للنخبة.",
     href: "news/al-ahly-al-sadd-acl-elite-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ksa-ahli-sadd-mahrez.webp", alt: "رياض محرز مديد الذراعين يحتفل بقميص الأهلي السعودي الأسود قبيل مواجهة السد في الجولة الرابعة من دوري أبطال آسيا للنخبة" },
+],
   },
   {
     category: "الدوري المصري",
@@ -80,6 +84,10 @@ images: [
     title: "عموتة تحت الضغط بعد التعادل مع القناة",
     description: "انتقادات لعموتة وسيد معوض لطريقة لعب الأهلي بعد التعادل 3-3 مع القناة، مع تجميد مستحقات اللاعبين.",
     href: "news/ahly-umotah-pressure-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/egy-ahly-umotah-somersault.webp", alt: "لاعب الأهلي يؤدي شقلبة خلفية احتفالاً بالقميص الأحمر خلال مباراة القناة في الدوري المصري" },
+],
   },
   {
     category: "الدوري المصري",
@@ -87,6 +95,10 @@ images: [
     title: "الزمالك بقيادة معتمد جمال: 6 انتصارات في 8 مباريات",
     description: "الزمالك يحقق 6 انتصارات في أول 8 مباريات بقيادة معتمد جمال، ويحتل المركز الثاني برصيد 19 نقطة.",
     href: "news/zamalek-gamal-form-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/egy-zamalek-gamal-shout.webp", alt: "معتمد جمال المدير الفني للزمالك يكبّ كفّيه حول فمه احتفالاً بالقميص الأبيض" },
+],
   },
   {
     category: "الدوري الإسباني",
@@ -94,6 +106,10 @@ images: [
     title: "برشلونة يعود للانتصارات بسداسية أمام ألافيس",
     description: "برشلونة يكتسح ألافيس 6-1 في الجولة 11 من الدوري الإسباني، ويرتقي إلى صدارة الترتيب برصيد 30 نقطة.",
     href: "news/barcelona-alaves-6-1-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/esp-barca-yamal-fist.webp", alt: "لامين يامال يرفع قبضته احتفالاً بقميص برشلونة بعد السداسية أمام ألافيس" },
+],
     teamBadges: ["images/teams/barcelona-club-badge.webp"],
     score: "6 - 1",
   },
@@ -103,6 +119,10 @@ images: [
     title: "لاتسيو يحقق أفضل بداية في تاريخه برصيد 28 نقطة",
     description: "لاتسيو يفوز 2-1 على كالياري برصيد 28 نقطة بعد 10 جولات، وهي أفضل بداية في تاريخ النادي، بهدفي إيساكسن وبينامونتي.",
     href: "news/lazio-best-start-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ita-lazio-cataldi-start.webp", alt: "ماتيو كاتالدي لاعب لاتسيو بقميص رقم 32 يحتفل بذراعيه مفتوحتين بعد أفضل بداية في تاريخ النادي" },
+],
   },
   {
     category: "الدوري الإيطالي",
@@ -110,6 +130,10 @@ images: [
     title: "ميلان يهزم إنتر 3-1 في ديربي ميلانو",
     description: "ميلان يفوز 3-1 على إنتر في ديربي ميلانو على سان سيرو، بأهداف بوليسيتش ورابيو ومورييرا، ويرفع رصيده إلى 21 نقطة.",
     href: "news/milan-beats-inter-derby-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ita-milan-derby-moreira.webp", alt: "كريستيان مورييرا ينزلق احتفالاً بقميص ميلان المخطط بعد فوز الديربي 3-1 على إنتر" },
+],
     teamBadges: ["images/teams/internazionale-club-badge.webp"],
   },
   {
@@ -118,6 +142,10 @@ images: [
     title: "يوفنتوس يفوز 2-0 على نابولي ويستعيد توازنه",
     description: "يوفنتوس يفوز 2-0 على نابولي في الجولة العاشرة بأهداف ألاجبوفيتش وبوغا، ويرفع رصيده إلى 17 نقطة.",
     href: "news/juventus-beats-napoli-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ita-juventus-boga-fist.webp", alt: "جيريمي بوغا يقفز بقبضته مرفوعة احتفالاً بقميص يوفنتوس الأبيض بعد هدفه أمام نابولي" },
+],
   },
   {
     category: "الدوري الألماني",
@@ -125,6 +153,10 @@ images: [
     title: "صيباري يخضع لجراحة ناجحة وغنابري مصاب",
     description: "صيباري يخضع لجراحة ناجحة في الكاحل، وغنابري يغيب بإصابة في الفخذ الخلفي بعد كلاسيكو دورتموند.",
     href: "news/bayern-saibari-surgery-gnabry-injury-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ger-bayern-saibari-injury.webp", alt: "ألكسندر صيباري يصرخ وأثناء إصابته بقميص بايرن ميونخ الأحمر في كلاسيكو دورتموند" },
+],
     teamBadges: ["images/teams/bayern-munich-badge.webp"],
   },
   {
@@ -133,6 +165,10 @@ images: [
     title: "بايرن ميونخ يتصدر الدوري الألماني بـ18 نقطة مساوياً دورتموند",
     description: "تعادل 2-2 في الكلاسيكو يبقي بايرن في الصدارة بفارق الأهداف، ودورتموند ثانياً بالرصيد نفسه.",
     href: "news/bayern-munich-top-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ger-bayern-top-arms-open.webp", alt: "لاعب بايرن ميونخ مديد الذراعين يحتفل بالتصدر بقميص الفريق الأحمر بعد كلاسيكو دورتموند" },
+],
     teamBadges: ["images/teams/bayern-munich-badge.webp"],
     score: "2 - 2",
   },
@@ -142,6 +178,10 @@ images: [
     title: "ريال مدريد يفوز 3-0 على سانتاندير ويواصل انتصاراته",
     description: "مبابي يفتتح بركلة جزاء، وبيلينغهام يسجل هدفه الخمسين مع ريال مدريد في فوز الجولة الحادية عشرة.",
     href: "news/real-madrid-racing-santander-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/esp-real-mbappe-walk.webp", alt: "كيليان مبابي يمشي مبتسماً بقميص ريال مدريد الوردي بعد افتتاح التسجيل بركلة جزاء أمام راسينغ سانتاندير" },
+],
     teamBadges: ["images/teams/real-madrid-club-badge.webp"],
     score: "0 - 3",
   },
@@ -151,6 +191,10 @@ images: [
     title: "أرسنال يفوز 1-0 على ليفربول في أنفيلد وينفرد بصدارة الدوري",
     description: "هدف كاي هافيرتز في الدقيقة 16 يمنح أرسنال فوزاً ثميناً في أنفيلد، ويرفعه إلى صدارة الدوري برصيد 24 نقطة.",
     href: "news/arsenal-liverpool-1-0-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/eng-arsenal-havertz-anfield.webp", alt: "كاي هافيرتز يتحكم في الكرة بقميص أرسنال الأصفر في هدف الفوز التاريخي بأنفيلد" },
+],
     teamBadges: ["images/teams/liverpool-badge.webp", "images/teams/arsenal-badge.webp"],
     score: "0 - 1",
   },

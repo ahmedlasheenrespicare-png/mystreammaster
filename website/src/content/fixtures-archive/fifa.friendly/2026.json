@@ -2452,6 +2452,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
       },
       "fetchedAt": "2026-10-31T09:40:14.239Z"
+    },
+    {
+      "id": "401914292",
+      "date": "2026-11-16T18:00:00.000Z",
+      "home": {
+        "id": "587",
+        "name": "Andorra"
+      },
+      "away": {
+        "id": "581",
+        "name": "Azerbaijan"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261116&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     }
   ]
 }

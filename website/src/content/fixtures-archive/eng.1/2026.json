@@ -3183,18 +3183,29 @@
         "name": "Arsenal"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 56.4,
+          "shots": 17,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 43.6,
+          "shots": 10,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401878762",

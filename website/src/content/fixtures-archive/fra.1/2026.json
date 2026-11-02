@@ -1455,18 +1455,29 @@
         "name": "AJ Auxerre"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 5,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 64.3,
+          "shots": 19,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 35.7,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401876415",
@@ -1480,18 +1491,29 @@
         "name": "AS Monaco"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 44.4,
+          "shots": 19,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 55.6,
+          "shots": 9,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401876418",
@@ -1505,18 +1527,29 @@
         "name": "Angers"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 63.8,
+          "shots": 21,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 36.2,
+          "shots": 8,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-28T09:41:45.061Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401876417",
@@ -1530,18 +1563,29 @@
         "name": "Toulouse"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 43.6,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 56.4,
+          "shots": 14,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401876419",

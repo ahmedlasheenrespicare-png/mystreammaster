@@ -1563,18 +1563,29 @@
         "name": "FC Cologne"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 37.2,
+          "shots": 5,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 62.8,
+          "shots": 14,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401884752",
@@ -1588,18 +1599,29 @@
         "name": "Hamburg SV"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 51.9,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 48.1,
+          "shots": 12,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ger.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261101&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401884739",

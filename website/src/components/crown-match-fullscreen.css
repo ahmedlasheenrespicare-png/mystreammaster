@@ -1,0 +1,81 @@
+.crown-match-fullscreen {
+  position: fixed; inset: 0; margin: 0; padding: 0; border: 0;
+  width: 100%; max-width: none; height: 100dvh; max-height: none;
+  background: #0b0b0f; color: #f6f4ec; overflow: auto; overscroll-behavior: contain;
+}
+.crown-match-fullscreen::backdrop { background: #0b0b0f; }
+.crown-match-fullscreen-close {
+  position: fixed; top: max(12px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+  z-index: 2; display: grid; place-items: center; width: 44px; height: 44px;
+  border: 1px solid #d8ff3e66; border-radius: 50%; background: #171d10; color: #fff; cursor: pointer; font-size: 20px;
+}
+.crown-match-fullscreen-close:focus-visible { outline: 2px solid #d8ff3e; outline-offset: 3px; }
+.crown-match-fullscreen .hs-crown-match {
+  min-height: 100dvh; height: auto; width: 100%; overflow: visible;
+  padding: calc(76px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  gap: 20px; justify-content: space-around;
+}
+.crown-match-fullscreen .hs-crown-match-heading { font-size: clamp(18px, 3vw, 32px); }
+.crown-match-fullscreen .hs-crown-match-teams { grid-template-columns: minmax(0,1fr) minmax(70px,.6fr) minmax(0,1fr); gap: 12px; }
+.crown-match-fullscreen .hs-crown-match-team { font-size: clamp(15px, 2.5vw, 30px); gap: 16px; }
+.crown-match-fullscreen .hs-crown-match-team .league-ticket-crest { width: clamp(52px, 12vw, 116px); height: clamp(52px, 12vw, 116px); }
+.crown-match-fullscreen .hs-crown-match-result { font-size: clamp(24px, 4vw, 48px); gap: 10px; }
+.crown-match-fullscreen .hs-crown-match-result small { font-size: clamp(11px, 1.5vw, 18px); }
+.crown-match-fullscreen .hs-crown-match-status { font-size: clamp(12px, 1.8vw, 20px); }
+.crown-match-fullscreen .hs-crown-match-art .league-carousel-badge { width: min(65vw, 55vh); height: min(65vw, 55vh); }
+.crown-match-fullscreen .hs-crown-match .ticket-flip__digit { width: 24px; height: 36px; font-size: 23px; }
+.crown-match-fullscreen .hs-crown-match .ticket-flip__txt { font-size: 23px; line-height: 36px; }
+.crown-match-fullscreen .hs-crown-match .ticket-flip__label { font-size: 11px; }
+.crown-match-fullscreen .hs-crown-match-brands { height: 28px; gap: 20px; }
+.crown-match-fullscreen .hs-crown-match-brands img { width: 48px; max-height: 26px; }
+
+.crown-league-details {
+  position: relative; isolation: isolate; min-height: 100dvh; box-sizing: border-box;
+  padding: calc(72px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+  color: #f6f4ec; text-align: center;
+  background: radial-gradient(ellipse at 50% 0, var(--hs-glow), transparent 65%), #0b0b0f;
+}
+.crown-league-art { position: absolute; inset: 0; z-index: -1; display: flex; justify-content: center; align-items: flex-start; padding-top: 100px; opacity: .14; pointer-events: none; overflow: hidden; }
+.crown-league-art picture { display: contents; }
+.crown-league-art img { width: min(40vw, 320px); height: min(65vh, 500px); object-fit: contain; }
+.crown-league-art .league-carousel-badge, .crown-league-art .league-carousel-logo { background: transparent; border: 0; }
+.crown-league-art .league-carousel-logo { width: calc(100% - 8px); height: calc(100% - 8px); }
+.crown-league-art .league-carousel-badge:has([data-loaded="true"]) .league-carousel-fallback { visibility: hidden; }
+.crown-league-fullscreen-heading { font-size: clamp(24px, 4vw, 40px); font-weight: 900; margin: 12px 0 30px; }
+.crown-league-details .hero-crown-stats-bar { max-width: 1100px; margin: auto; }
+.crown-league-details .hs-stats-bar-grid { grid-template-columns: 1fr; gap: 20px; }
+.crown-league-details .hs-stats-identity { min-height: 140px; padding: 24px; }
+.crown-league-details .hs-stats-identity-title { font-size: clamp(22px, 3vw, 36px); }
+.crown-league-details .hs-stats-identity-kicker { font-size: 14px; }
+.crown-league-details .hs-stats-identity-trophy { width: 90px; height: 90px; flex-basis: 90px; }
+.crown-league-details .hs-stats-wings-pair { grid-template-columns: 1fr; gap: 20px; }
+.crown-league-details .hs-crown-wing { min-height: 130px; padding: 24px; }
+.crown-league-details .hs-leader-wing-club { font-size: clamp(18px, 2.5vw, 28px); max-width: none; }
+.crown-league-details .hs-leader-wing-pts { font-size: 32px; }
+.crown-league-details .hs-leader-wing-meta { font-size: 13px; }
+.crown-league-details .hs-stat-kicker { font-size: 14px; }
+.crown-league-details .hs-stat-club-name { font-size: 16px; max-width: none; white-space: normal; }
+.crown-league-details .hs-stat-rate { font-size: 24px; }
+.crown-league-details .hs-stat-goals-num { font-size: 30px; }
+.crown-league-details .hs-stat-medal { width: 40px; height: 40px; }
+.crown-league-details .hs-club-crest { width: 32px; height: 32px; flex-basis: 32px; }
+.crown-league-details .hs-club-logo { width: 100%; height: 100%; object-fit: contain; }
+@media (max-width: 600px) {
+  .crown-league-details .hs-crown-wing { padding: 18px 14px; }
+  .crown-league-details .hs-crown-wing--leader { flex-direction: column; align-items: stretch; }
+  .crown-league-details .hs-leader-wing-numbers { text-align: center; }
+  .crown-league-details .hs-crown-wing--stats { flex-wrap: wrap; justify-content: space-around; row-gap: 20px; }
+  .crown-league-details .hs-stat-wing { flex: 1 1 100px; }
+  .crown-league-details .hs-stat-goals-pill { flex-basis: 100%; }
+}
+/* Expanded panels can wrap long club names instead of inheriting strip ellipsis. */
+.crown-league-details .hs-stat-club { max-width: 100%; width: 100%; }
+.crown-league-details .hs-stat-club-name { min-width: 0; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.crown-league-details .hs-stat-medal { flex-basis: 40px; }
+
+/* Transparent league identity only; statistics wings keep their solid design. */
+.crown-league-details .hs-stats-identity {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}

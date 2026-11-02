@@ -353,6 +353,9 @@ interface HeroProps {
 /* شرائح تذكرة الصفحة الرئيسية بالترتيب: كل شريحة مواجهة، وإن وُجد news فهي
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 7 أيام أو أقل، ولا تُعرض
    الشريحة بلا تاريخ، ثم تُخفى تلقائياً (انظر lib/ticket-recency) */
+/* بطاقات المباريات في تذكرة الرئيسية — مخفية مؤقتاً (طلب المالك) */
+const HOME_MATCH_CARDS_VISIBLE = false;
+
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
   { clash: AL_SADD_AL_AHLI_CLASH },
   { clash: NEWCASTLE_EVERTON_CLASH },
@@ -440,7 +443,10 @@ export default function Hero({ onOpenTrial }: HeroProps) {
     const timer = window.setInterval(() => setTicketNow(Date.now()), 60 * 60 * 1000);
     return () => window.clearInterval(timer);
   }, []);
-  const visibleSlots = HOME_TICKET_SLOTS.filter(slot => ticketNow === null || isHomeSlotVisible(slot, ticketNow));
+  /* إخفاء بطاقات المباريات من تذكرة الصفحة الرئيسية مؤقتاً: تبقى الأخبار كما هي.
+     لإعادة البطاقات يكفي ضبط HOME_MATCH_CARDS_VISIBLE على true */
+  const visibleSlots = HOME_TICKET_SLOTS.filter(slot =>
+    (HOME_MATCH_CARDS_VISIBLE || slot.news) && (ticketNow === null || isHomeSlotVisible(slot, ticketNow)));
   const visibleClashes = visibleSlots.map(slot => slot.clash);
   const visibleOverrides: Partial<Record<number, ReactElement>> = {};
   visibleSlots.forEach((slot, index) => {

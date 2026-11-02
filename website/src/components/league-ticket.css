@@ -1068,3 +1068,10 @@
   text-align: center;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.23);
 }
+
+/* Keep the original slides mounted, but pause decorations while not selected. */
+.league-ticket-slide:not(.is-active) *,
+.league-ticket-slide:not(.is-active) *::before,
+.league-ticket-slide:not(.is-active) *::after {
+  animation-play-state: paused !important;
+}

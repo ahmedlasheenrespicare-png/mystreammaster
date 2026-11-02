@@ -504,7 +504,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
               >
                 {item.clashIndex >= 0 ? <>
                   <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
-                  <CrownClashSlide clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
+                  <CrownClashSlide active={isFront} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
                   <span className="hs-crown-players" aria-hidden="true">
                     {(LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map((src, index) => (
@@ -545,18 +545,9 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
           >
             ›
           </button>
-          <div className="hs-crown-dots">
-            {items.map((item, idx) => (
-              <button
-                key={item.key}
-                type="button"
-                className={`hs-crown-dot${idx === active ? " is-active" : ""}`}
-                onClick={() => setSharedActiveIndex(idx)}
-                aria-label={item.clashIndex >= 0 ? `${clashes[item.clashIndex].home.name} × ${clashes[item.clashIndex].away.name} — ${item.shortName}` : item.shortName}
-                aria-current={idx === active ? "true" : undefined}
-              />
-            ))}
-          </div>
+          <span className="hs-crown-counter" dir="ltr" role="status" aria-live="off" aria-label={`الشريحة ${items.length ? active + 1 : 0} من ${items.length}`}>
+            {items.length ? active + 1 : 0}/{items.length}
+          </span>
           <button
             type="button"
             className="hs-crown-arrow"

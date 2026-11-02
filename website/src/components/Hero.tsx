@@ -445,8 +445,11 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   }, []);
   /* إخفاء بطاقات المباريات من تذكرة الصفحة الرئيسية مؤقتاً: تبقى الأخبار كما هي.
      لإعادة البطاقات يكفي ضبط HOME_MATCH_CARDS_VISIBLE على true */
-  const visibleSlots = HOME_TICKET_SLOTS.filter(slot =>
-    (HOME_MATCH_CARDS_VISIBLE || slot.news) && (ticketNow === null || isHomeSlotVisible(slot, ticketNow)));
+  const eligibleSlots = HOME_TICKET_SLOTS.filter(slot =>
+    ticketNow === null || isHomeSlotVisible(slot, ticketNow));
+  // Crown matches are independent of the ticket-row visibility switch.
+  const crownClashes = eligibleSlots.filter(slot => !slot.news).map(slot => slot.clash);
+  const visibleSlots = eligibleSlots.filter(slot => HOME_MATCH_CARDS_VISIBLE || slot.news);
   const visibleClashes = visibleSlots.map(slot => slot.clash);
   const visibleOverrides: Partial<Record<number, ReactElement>> = {};
   visibleSlots.forEach((slot, index) => {
@@ -471,7 +474,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
         <Reveal variant="up" delay={90} className="w-full">
-          <HeroLeagueCrownStrip clashes={visibleSlots.filter(slot => !slot.news).map(slot => slot.clash)} />
+          <HeroLeagueCrownStrip clashes={crownClashes} />
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full">
@@ -492,7 +495,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </Reveal>
 
         <Reveal variant="up" delay={180} className="w-full">
-          <HeroLeagueStatsBar clashes={visibleSlots.filter(slot => !slot.news).map(slot => slot.clash)} />
+          <HeroLeagueStatsBar clashes={crownClashes} />
         </Reveal>
 
         {/* Keep the semantic H1 accessible outside the illustrative button;

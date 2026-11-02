@@ -195,7 +195,10 @@ function useRaceAutoScroll(enabled: boolean) {
   useEffect(() => {
     if (!el || !enabled) return;
     const media = motionMedia();
-    const observer = new IntersectionObserver(entries => { visible.current = entries[0]?.isIntersecting ?? true; }, { threshold: 0.15 });
+    const observer = new IntersectionObserver(entries => {
+      visible.current = entries[0]?.isIntersecting ?? true;
+      syncAnimation();
+    }, { threshold: 0.15 });
     observer.observe(el);
     let raf = 0;
     let holdUntil = 0;
@@ -209,10 +212,12 @@ function useRaceAutoScroll(enabled: boolean) {
     const onPointerUp = () => resumeSoon(4000);
     const onWheel = () => resumeSoon(4000);
     const onTouchMove = () => resumeSoon(4000);
-    const onVisibility = () => { if (document.hidden) stop(); };
+    const onVisibility = () => { if (document.hidden) stop(); syncAnimation(); };
     const tick = (now: number) => {
+      raf = 0;
+      if (media.matches || document.hidden || !visible.current) return;
       raf = requestAnimationFrame(tick);
-      if (paused.current || media.matches || document.hidden || !visible.current) return;
+      if (paused.current) return;
       const max = el.scrollWidth - el.clientWidth;
       if (max <= 1) return;
       /* RTL: التمرير يتقدّم نحو القيم السالبة */
@@ -234,6 +239,15 @@ function useRaceAutoScroll(enabled: boolean) {
         acc -= step;
       }
     };
+    function syncAnimation() {
+      if (media.matches || document.hidden || !visible.current) {
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0;
+      } else if (!raf) {
+        raf = requestAnimationFrame(tick);
+      }
+    }
+    media.addEventListener('change', syncAnimation);
     el.addEventListener('mouseenter', stopAuto);
     el.addEventListener('mouseleave', onMouseLeave);
     el.addEventListener('focusin', onFocusIn);
@@ -243,11 +257,12 @@ function useRaceAutoScroll(enabled: boolean) {
     el.addEventListener('wheel', onWheel, { passive: true });
     el.addEventListener('touchmove', onTouchMove, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
-    raf = requestAnimationFrame(tick);
+    syncAnimation();
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(resumeTimer.current);
       observer.disconnect();
+      media.removeEventListener('change', syncAnimation);
       el.removeEventListener('mouseenter', stopAuto);
       el.removeEventListener('mouseleave', onMouseLeave);
       el.removeEventListener('focusin', onFocusIn);

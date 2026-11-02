@@ -1210,3 +1210,29 @@ test('crown numeric counter replaces pagination dots and follows arrows', async 
   await expect(strip.locator('.hs-crown-counter')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('mobile paint reductions remain active with animations off and preserve desktop glass', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/');
+  await page.getByRole('combobox', { name: 'حركات الموقع' }).selectOption('off');
+  const headerGlass = page.locator('header [class*="backdrop-blur"]').first();
+  await expect(headerGlass).toHaveCSS('backdrop-filter', 'none');
+  for (const selector of ['.hero-phone-dock', '.hero-phone-notification']) {
+    await expect(page.locator(selector)).toHaveCSS('backdrop-filter', 'none');
+  }
+  await expect(page.locator('.hero-phone-orb').first()).toHaveCSS('filter', 'none');
+  const stage = page.locator('.hero-phone-stage');
+  await stage.scrollIntoViewIfNeeded();
+  await expect(page.locator('.hero-title-holo__stack').first()).toHaveCSS('will-change', 'auto');
+  await expect(page.locator('.hero-title-holo__stack').first()).toHaveCSS('transform-style', 'flat');
+  await expect(page.locator('.rv.rv-in').first()).toHaveCSS('will-change', 'auto');
+  const phone = page.getByRole('button', { name: 'عرض تطبيقات نموذج الهاتف', exact: true });
+  await phone.click();
+  await expect(phone).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(headerGlass).not.toHaveCSS('backdrop-filter', 'none');
+  expect(errors).toEqual([]);
+});

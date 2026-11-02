@@ -1,0 +1,39 @@
+/* Mobile paint-cost reductions, independent of the animation preference.
+   Keep content, colours and device interactions; avoid live backdrop sampling
+   and large blurred surfaces while the page scrolls underneath them. */
+@media (max-width: 767px) {
+  header [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: #faf9f6 !important;
+  }
+  .hero-phone .hero-phone-dock,
+  .hero-phone .hero-phone-notification,
+  .hero-phone .hero-phone-shortcuts > span {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: #3b4528e8;
+  }
+  .hero-phone .hero-phone-orb {
+    filter: none;
+    mix-blend-mode: normal;
+    background: radial-gradient(ellipse, #b6d52a24, transparent 70%);
+  }
+  #hero [class*="blur-"] {
+    filter: none !important;
+    background: radial-gradient(ellipse, #b9cc6920, transparent 70%);
+  }
+  .hero-tv .hero-tv-floor-shadow { filter: none; background: radial-gradient(ellipse, #11182724, transparent 70%); }
+  .hero-crown-strip .hs-mini-trophy .lc-trophy-svg { filter: none; }
+  .hs-crown-card[data-crown-offset="hidden"] { visibility: hidden; }
+  /* Completed entrance effects no longer need dedicated compositor layers. */
+  .rv.rv-in { will-change: auto; clip-path: none; }
+  /* Off really releases the static hologram's blur/3D layers too. */
+  html[data-motion="off"] .hero-title-holo__stack,
+  html[data-motion="off"] .hero-title-holo__layer {
+    will-change: auto; transform-style: flat; -webkit-transform-style: flat;
+    transform: none; filter: none;
+  }
+  html[data-motion="off"] .hero-title-holo__stack::before,
+  html[data-motion="off"] .hero-title-holo__stack::after { content: none; }
+}

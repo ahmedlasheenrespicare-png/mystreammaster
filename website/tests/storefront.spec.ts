@@ -1384,3 +1384,27 @@ test('cup league identity cards also show faint competition logos without replac
   }
   await expect(strip.locator('[data-crown-card="eng.1"] [data-league-card-background]')).toHaveCount(0);
 });
+
+
+test('home match slides remain exclusive to crown when ticket-row matches are hidden', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(10);
+    await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
+    await expect(page.locator('.home-matches-ticket .league-ticket-carousel')).toBeVisible();
+    const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
+    let parent = '';
+    for (const card of sequence) {
+      if (card.kind === 'league') parent = card.league!;
+      else expect(card.league).toBe(parent);
+    }
+    await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
+    await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', 'eng.1');
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-kind', 'match');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});

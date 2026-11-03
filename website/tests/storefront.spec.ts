@@ -1097,7 +1097,7 @@ test.describe('site-wide animation preferences', () => {
   });
 });
 
-test('crown groups home-ticket match slides after their own league without removing either source', async ({ page }) => {
+test('crown keeps all match and league cards with league identities after match slides', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -1107,19 +1107,15 @@ test('crown groups home-ticket match slides after their own league without remov
     await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(10);
     await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(10);
     const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
-    let parent = '';
-    for (const slide of sequence) {
-      if (slide.kind === 'league') parent = slide.league!;
-      else expect(slide.league).toBe(parent);
-    }
+    const firstLeague = sequence.findIndex(slide => slide.kind === 'league');
+    expect(sequence.slice(firstLeague).every(slide => slide.kind === 'league')).toBe(true);
     await expect(strip.locator('[data-crown-kind="league"] .hs-mini-trophy')).toHaveCount(10);
     await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
-    await expect(page.locator('.home-matches-ticket')).toContainText('نيوكاسل');
-    await expect(page.locator('.home-matches-ticket')).toContainText('إيفرتون');
+    await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
     await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
     const front = strip.locator('[data-crown-offset="0"]');
     await expect(front).toHaveAttribute('data-crown-kind', 'match');
-    await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', 'eng.1');
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-league', 'eng.1');
     await expect(front.locator('.hs-crown-match-team')).toHaveCount(2);
     await expect(front.locator('.hs-crown-match-status')).toBeVisible();
     await expect(front.locator('.hs-crown-match-brands img')).toHaveCount(4);
@@ -1398,13 +1394,10 @@ test('home match slides remain exclusive to crown when ticket-row matches are hi
     await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
     await expect(page.locator('.home-matches-ticket .league-ticket-carousel')).toBeVisible();
     const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
-    let parent = '';
-    for (const card of sequence) {
-      if (card.kind === 'league') parent = card.league!;
-      else expect(card.league).toBe(parent);
-    }
+    const firstLeague = sequence.findIndex(slide => slide.kind === 'league');
+    expect(sequence.slice(firstLeague).every(slide => slide.kind === 'league')).toBe(true);
     await selectCrownSlide(page, /نيوكاسل.*إيفرتون/s);
-    await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', 'eng.1');
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-league', 'eng.1');
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-kind', 'match');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
@@ -1537,5 +1530,58 @@ test('fullscreen league identity is transparent while both statistics wings reta
     }
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
+  }
+});
+
+test('crown order sorts confirmed live upcoming and finished matches stably', async () => {
+  const { orderCrownMatches } = await import('../src/components/crown-slide-order');
+  const rows = [
+    null,
+    { state: 'finished', date: '2026-11-01T12:00Z' },
+    { state: 'scheduled', date: '2026-11-04T12:00Z' },
+    { state: 'live', date: '2026-11-03T12:00Z' },
+    { state: 'finished', date: '2026-11-02T12:00Z' },
+    { state: 'scheduled', date: '2026-11-03T12:00Z' },
+    { state: 'other', date: '2020-01-01' },
+    { state: 'live', date: '2026-11-03T12:00Z' },
+  ];
+  expect(orderCrownMatches(rows)).toEqual([3, 7, 5, 2, 4, 1, 0, 6]);
+  expect(orderCrownMatches([null, null])).toEqual([0, 1]);
+  expect(orderCrownMatches([])).toEqual([]);
+  expect(orderCrownMatches([{ state: 'scheduled' }, { state: 'scheduled', date: 'invalid' }])).toEqual([0, 1]);
+});
+
+test('crown preview prioritises live then upcoming then finished before all league cards', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  const event = (id: string, home: string, away: string, state: string, date: string) => ({
+    id, date, competitions: [{ date, status: { displayClock: '67′', type: { state, completed: state === 'post', name: state === 'post' ? 'STATUS_FULL_TIME' : state === 'in' ? 'STATUS_IN_PROGRESS' : 'STATUS_SCHEDULED' } },
+      competitors: [{ homeAway: 'home', score: '2', team: { displayName: home } }, { homeAway: 'away', score: '1', team: { displayName: away } }],
+    }],
+  });
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'eng.1' ? [
+    event('crown-live', 'Newcastle United', 'Everton', 'in', '2026-11-02T10:00:00Z'),
+    event('crown-next', 'Liverpool', 'Arsenal', 'pre', '2026-11-03T16:00:00Z'),
+    event('crown-done', 'Chelsea', 'Manchester United', 'post', '2026-11-01T18:00:00Z'),
+  ] : [] }) }));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const strip = page.locator('[data-hero-league-strip]');
+    await strip.scrollIntoViewIfNeeded();
+    const cards = strip.locator('[data-crown-card]');
+    await expect(cards.first()).toHaveAttribute('data-crown-state', 'live');
+    await expect(cards.nth(1)).toHaveAttribute('data-crown-state', 'scheduled');
+    await expect(cards.nth(2)).toHaveAttribute('data-crown-state', 'finished');
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(10);
+    await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(10);
+    const kinds = await cards.evaluateAll(els => els.map(el => el.getAttribute('data-crown-kind')));
+    expect(kinds).toEqual([...Array(10).fill('match'), ...Array(10).fill('league')]);
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-state', 'live');
+    await strip.locator('[data-crown-offset="0"]').press('Enter');
+    const dialog = page.getByRole('dialog', { name: /عرض المواجهة/ });
+    await expect(dialog).toContainText('67');
+    await page.keyboard.press('Escape');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });

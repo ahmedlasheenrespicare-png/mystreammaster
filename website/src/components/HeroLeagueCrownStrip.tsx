@@ -1,3 +1,4 @@
+import { orderCrownMatches } from "./crown-slide-order";
 import CrownMatchFullscreen, { CrownFullscreen } from "./CrownMatchFullscreen";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
@@ -337,10 +338,13 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[]): He
 export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes?: FeaturedClash[] }) {
   const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes);
   const matches = useClashes("matches", clashes);
-  const items = leagueItems.flatMap(league => [
-    { ...league, key: league.leagueId, clashIndex: -1 },
-    ...clashes.flatMap((clash, index) => clash.source === league.leagueId ? [{ ...league, key: `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : []),
-  ]);
+  const matchItems = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
+    const clash = clashes[index];
+    const league = leagueItems.find(item => item.leagueId === clash.source);
+    return league ? [{ ...league, key: `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : [];
+  });
+  // Global priority: live → scheduled → finished → unconfirmed → league cards.
+  const items = [...matchItems, ...leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }))];
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
@@ -498,6 +502,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes
                 data-crown-card={item.key}
                 data-crown-league={item.leagueId}
                 data-crown-kind={item.clashIndex >= 0 ? "match" : "league"}
+                data-crown-state={item.clashIndex >= 0 ? matches[item.clashIndex]?.state ?? "unconfirmed" : undefined}
                 data-crown-offset={offset}
                 role="button"
                 aria-haspopup="dialog"

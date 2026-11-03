@@ -1585,3 +1585,42 @@ test('crown preview prioritises live then upcoming then finished before all leag
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+test('fullscreen match shows sourced goals and cards beside the correct teams only', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  let includeDetails = true;
+  const incident = (team: string, player: string, minute: string, flag: string) => ({ team: { id: team }, athletesInvolved: [{ displayName: player }], clock: { displayValue: minute }, [flag]: true });
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'eng.1' ? [{
+    id: 'crown-incidents', date: '2026-11-02T10:00:00Z', competitions: [{
+      status: { displayClock: '67′', type: { state: 'in', completed: false, name: 'STATUS_IN_PROGRESS' } },
+      competitors: [{ id: '368', homeAway: 'home', score: '1', team: { displayName: 'Everton' } }, { id: '361', homeAway: 'away', score: '0', team: { displayName: 'Newcastle United' } }],
+      ...(includeDetails ? { details: [incident('368', 'Source Scorer', "45'+2'", 'scoringPlay'), incident('368', 'Source Yellow', "53'", 'yellowCard'), incident('361', 'Source Red', "61'", 'redCard'), { scoringPlay: true, team: { id: '368' } }] } : {}),
+    }],
+  }] : [] }) }));
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await page.locator('[data-hero-league-strip]').scrollIntoViewIfNeeded();
+    const front = page.locator('[data-hero-league-strip] [data-crown-offset="0"]');
+    await expect(front).toHaveAttribute('data-crown-state', 'live', { timeout: 15000 });
+    await expect(front.locator('.crown-team-incidents')).toHaveCount(0);
+    await front.press('Enter');
+    const dialog = page.getByRole('dialog', { name: /عرض المواجهة/ });
+    const teams = dialog.locator('.hs-crown-match-team');
+    await expect(teams.first()).toContainText('إيفرتون');
+    await expect(teams.first().locator('[data-incident-kind="goal"]')).toContainText('Source Scorer');
+    await expect(teams.first().locator('[data-incident-kind="goal"]')).toContainText("45'+2'");
+    await expect(teams.first().locator('[data-incident-kind="yellow"]')).toContainText('Source Yellow');
+    await expect(teams.last().locator('[data-incident-kind="red"]')).toContainText('Source Red');
+    await expect(dialog.locator('.crown-team-incident')).toHaveCount(3);
+    expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.keyboard.press('Escape');
+  }
+  includeDetails = false;
+  await page.reload();
+  const front = page.locator('[data-hero-league-strip] [data-crown-offset="0"]');
+  await expect(front).toHaveAttribute('data-crown-state', 'live', { timeout: 15000 });
+  await front.press('Enter');
+  await expect(page.getByRole('dialog').locator('.crown-team-incidents')).toHaveCount(0);
+});

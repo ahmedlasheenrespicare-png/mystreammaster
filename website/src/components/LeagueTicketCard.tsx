@@ -710,7 +710,11 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
   const now = useNow(pre && active);
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
   const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
-  const sides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];
+  const orderedSides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];
+  // Prefer the live source badge when this newly selected team has no local art.
+  const sides = orderedSides.map((side, index) => ({ ...side,
+    crest: side.crest || (index === 0 ? match?.home.logo : match?.away.logo) || '',
+  }));
   const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
   return <div className="hs-crown-match" dir="rtl">
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">

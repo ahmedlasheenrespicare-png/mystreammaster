@@ -1,3 +1,4 @@
+import { novemberCrownClashes } from './crown-november-fixtures';
 import { motionReduced } from "../lib/motion-preference";
 import { HeroLaptop } from "./HeroLaptop";
 import "./hero-title-holo.css";
@@ -448,7 +449,8 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   const eligibleSlots = HOME_TICKET_SLOTS.filter(slot =>
     ticketNow === null || isHomeSlotVisible(slot, ticketNow));
   // Crown matches are independent of the ticket-row visibility switch.
-  const crownClashes = eligibleSlots.filter(slot => !slot.news).map(slot => slot.clash);
+  const crownClashes = novemberCrownClashes(eligibleSlots.filter(slot => !slot.news).map(slot => slot.clash))
+    .filter(clash => ticketNow === null || isWithinTicketWindow(clash.date, ticketNow));
   const visibleSlots = eligibleSlots.filter(slot => HOME_MATCH_CARDS_VISIBLE || slot.news);
   const visibleClashes = visibleSlots.map(slot => slot.clash);
   const visibleOverrides: Partial<Record<number, ReactElement>> = {};

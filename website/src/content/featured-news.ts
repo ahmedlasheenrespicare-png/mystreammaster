@@ -33,6 +33,19 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "دوري أبطال أوروبا",
+    dateLabel: "3 نوفمبر 2026",
+    title: "برشلونة يستعيد توازنه بثلاثية أمام أستون فيلا في دوري الأبطال",
+    description: "برشلونة يفوز 3-0 على أستون فيلا في كامب نو ضمن الجولة الرابعة من دوري أبطال أوروبا، بأهداف يامال ورافينيا (2)، ويرفع رصيده إلى 9 نقاط.",
+    href: "news/barcelona-villa-3-0-2026/",
+    teamBadges: ["images/teams/barcelona-club-badge.webp"],
+    score: "3 - 0",
+    fullImage: true,
+    images: [
+      { src: "images/players/esp-yamal.webp", alt: "لامين يامال يحتفل بهدف برشلونة أمام أستون فيلا" },
+    ],
+  },
+  {
     category: "دوري روشن",
     dateLabel: "23 أكتوبر 2026",
     title: "الهلال يستعيد صدارة دوري روشن بفوز 3-2 على القادسية",

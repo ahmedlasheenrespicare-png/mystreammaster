@@ -79,3 +79,14 @@
   border-color: transparent;
   box-shadow: none;
 }
+
+/* Source-provided events live beside their own team, never in strip cards. */
+.crown-match-fullscreen .hs-crown-match-teams { align-items: start; }
+.crown-team-incidents { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 8px; text-align: start; }
+.crown-team-incident { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; font-size: clamp(11px, 1.6vw, 17px); line-height: 1.5; font-weight: 500; }
+.crown-incident-player { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.crown-incident-minute { font-size: .9em; color: #d8ff3e; white-space: nowrap; }
+.crown-incident-icon { flex: 0 0 12px; width: 12px; height: 17px; border-radius: 2px; }
+.crown-incident-icon--goal { height: auto; font-size: 15px; }
+.crown-incident-icon--yellow { background: #facc15; border: 1px solid #dca70c; }
+.crown-incident-icon--red { background: #ef4444; border: 1px solid #cf2626; }

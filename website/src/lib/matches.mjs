@@ -1,3 +1,4 @@
+import { scoreboardIncidents } from "./scoreboard-incidents.mjs";
 // Public scoreboard via same-origin PHP proxy: no API secrets, fabricated fixtures, or inferred live scores.
 /* ترتيب القائمة هو ترتيب العرض نفسه: أقسام جدول المواعيد وخيارات التصفية
    تُبنى منه مباشرة بلا قائمة ثانية. ويجب أن يطابق `ALLOWED_LEAGUES` في
@@ -210,7 +211,7 @@ export function parseScoreboard(data, league) {
     const state = special ? 'other' : type?.completed === true ? 'finished' : type?.state === 'in' ? 'live' : 'scheduled';
     const specialLabels = { STATUS_POSTPONED: 'مؤجلة', STATUS_CANCELED: 'ملغاة', STATUS_CANCELLED: 'ملغاة', STATUS_SUSPENDED: 'متوقفة', STATUS_DELAYED: 'متأخرة', STATUS_ABANDONED: 'أُلغيت بعد بدايتها' };
     const detail = state === 'live' ? String(status?.displayClock || type?.shortDetail || 'مباشر') : state === 'other' ? specialLabels[type?.name] || 'تغيّر موعد المباراة' : state === 'finished' ? 'انتهت' : 'لم تبدأ';
-    return [{ id, league: league.id, date, home, away, state, detail, venue: String(competition?.venue?.fullName || '') }];
+    return [{ id, league: league.id, date, home, away, state, detail, venue: String(competition?.venue?.fullName || ''), incidents: scoreboardIncidents(competition) }];
   });
 }
 export function matchesForDay(matches, day, zone) {

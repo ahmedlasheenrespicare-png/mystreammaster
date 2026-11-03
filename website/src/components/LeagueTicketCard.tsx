@@ -692,7 +692,20 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
 }
 
 /** Compact strip layout; same match selection, status, score direction and countdown as the ticket. */
-export function CrownClashSlide({ clash, match, active = true }: { clash: FeaturedClash; match: Match | null; active?: boolean }) {
+function CrownTeamIncidents({ match, side }: { match: Match | null; side: 'home' | 'away' }) {
+  const events = match?.incidents?.filter(event => event.side === side) ?? [];
+  if (!events.length) return null;
+  const names = { goal: 'هدف', yellow: 'بطاقة صفراء', red: 'بطاقة حمراء' };
+  return <span className="crown-team-incidents" role="list" aria-label={side === 'home' ? 'أحداث الفريق المضيف المتاحة' : 'أحداث الفريق الضيف المتاحة'}>
+    {events.map(event => <span className="crown-team-incident" key={event.id} role="listitem" data-incident-kind={event.kind}>
+      <span className={`crown-incident-icon crown-incident-icon--${event.kind}`} aria-hidden="true">{event.kind === 'goal' ? '⚽' : ''}</span>
+      <span className="sr-only">{event.ownGoal && event.kind === 'goal' ? 'هدف عكسي' : names[event.kind]}</span>
+      <span className="crown-incident-player">{event.player}</span><bdi className="crown-incident-minute" dir="ltr">{event.minute}</bdi>
+    </span>)}
+  </span>;
+}
+
+export function CrownClashSlide({ clash, match, active = true, showEvents = false }: { clash: FeaturedClash; match: Match | null; active?: boolean; showEvents?: boolean }) {
   const pre = match?.state === "scheduled";
   const now = useNow(pre && active);
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
@@ -705,12 +718,12 @@ export function CrownClashSlide({ clash, match, active = true }: { clash: Featur
     </span>
     <div className="hs-crown-match-heading"><span>{crownLeagueName(clash.source, clash.eyebrow)}</span></div>
     <div className="hs-crown-match-teams">
-      <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong></span>
+      <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="home" />}</span>
       <span className="hs-crown-match-result">
         <strong>{score ? <span className="hs-crown-match-score"><b>{match.home.score}</b><span>:</span><b>{match.away.score}</b></span> : match ? kickoff(match.date, CLASH_ZONE) : "قريباً"}</strong>
         <small>{match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date}</small>
       </span>
-      <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong></span>
+      <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>
     </div>
     <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{match?.detail ?? "نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً"}</small>
     {countdown ? <FlipCountdown countdown={countdown} /> : null}

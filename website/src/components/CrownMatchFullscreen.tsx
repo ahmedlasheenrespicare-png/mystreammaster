@@ -44,6 +44,6 @@ export default function CrownMatchFullscreen({ clash, match, glow, onClose }: {
 }) {
   return <CrownFullscreen label={`عرض المواجهة: ${clash.home.name} و${clash.away.name}`} closeLabel="إغلاق عرض المواجهة" glow={glow} onClose={onClose}>
     <span className="sr-only">{clashSummary(match, clash)}</span>
-    <CrownClashSlide clash={clash} match={match} active />
+    <CrownClashSlide clash={clash} match={match} active showEvents />
   </CrownFullscreen>;
 }

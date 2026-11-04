@@ -7,17 +7,10 @@ process.env.FONTCONFIG_PATH = "/tmp/fonts";
 process.env.HOME = process.env.HOME || "/tmp";
 
 const SLIDES = [
-  ["al-ahly-al-sadd-acl-elite-2026", "s1-ahli-sadd"],
-  ["ahly-umotah-pressure-2026", "s2-ahly-umotah"],
-  ["zamalek-gamal-form-2026", "s3-zamalek-gamal"],
-  ["barcelona-alaves-6-1-2026", "s4-barca-alaves"],
-  ["lazio-best-start-2026", "s5-lazio-start"],
-  ["milan-beats-inter-derby-2026", "s6-milan-derby"],
-  ["juventus-beats-napoli-2026", "s7-juventus-napoli"],
-  ["bayern-saibari-surgery-gnabry-injury-2026", "s8-bayern-saibari"],
-  ["bayern-munich-top-2026", "s9-bayern-top"],
-  ["real-madrid-racing-santander-2026", "s10-real-racing"],
-  ["arsenal-liverpool-1-0-2026", "s11-arsenal-liverpool"],
+  ["psg-villarreal-6-0-2026", "s1-psg-villarreal"],
+  ["man-utd-roma-3-2-2026", "s2-utd-roma"],
+  ["bayern-atletico-2-0-2026", "s3-bayern-atletico"],
+  ["inter-feyenoord-3-0-2026", "s4-inter-feyenoord"],
 ];
 
 mkdirSync("/home/user/shots", { recursive: true });
@@ -52,8 +45,13 @@ for (const [slug, out] of SLIDES) {
     }, slug);
     if (!ok) { console.log("NOSLIDE", out); continue; }
     await page.waitForTimeout(900);
-    await page.screenshot({ path: `/home/user/shots/${out}.png`, clip: { x: 136, y: 307, width: 978, height: 273 } });
-    console.log("OK", out);
+    const clip2 = await page.evaluate(() => {
+      const t = document.querySelector('.league-ticket-slide.is-active [class*="league-ticket--match"], .league-ticket-slide.is-active [class*="league-ticket"]');
+      const r = (t || document.querySelector(".league-ticket-slide.is-active")).getBoundingClientRect();
+      return { x: Math.max(0, r.x - 6), y: Math.max(0, r.y - 6), width: Math.min(1440, r.width + 12), height: Math.min(1000, r.height + 12) };
+    });
+    await page.screenshot({ path: `/home/user/shots/${out}.png`, clip: clip2 });
+    console.log("OK", out, JSON.stringify(clip2));
   } catch (e) {
     console.log("FAIL", out, String(e).slice(0, 140));
   }

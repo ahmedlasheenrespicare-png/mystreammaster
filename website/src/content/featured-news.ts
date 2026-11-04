@@ -33,6 +33,14 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "انتقالات",
+    dateLabel: "4 نوفمبر 2026",
+    title: "ريال مدريد يتفق مع جي جي غابرييل نجم يونايتد",
+    description: "ريال مدريد يتوصل لاتفاق شفهي مع جي جي غابرييل، موهبة مانشستر يونايتد البالغة 16 عاماً، بعد منافسة مع برشلونة وتشيلسي وبايرن وباريس سان جيرمان، ولم يُوقَّع العقد بعد.",
+    href: "news/real-madrid-jj-gabriel-agreement-2026/",
+    teamBadges: ["images/teams/real-madrid-club-badge.webp", "images/teams/manchester-united-club-badge.webp"],
+  },
+  {
     category: "دوري أبطال أوروبا",
     dateLabel: "3 نوفمبر 2026",
     title: "باريس سان جيرمان يكتسح فياريال 6-0 ويسجل رباعية في 17 دقيقة",

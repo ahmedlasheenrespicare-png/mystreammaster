@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "تقارير: الهلال يعدّ عرضاً لبرونو فيرنانديز في يناير",
     description: "تقارير تفيد بأن الهلال يعدّ عرضاً بنحو 55 مليون يورو لضم برونو فيرنانديز في يناير، ونفى الصحفي بن جاكوبس وجود أي تحرك.",
     href: "news/bruno-fernandes-al-hilal-january-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/tr-bruno-fernandes-slide.webp", alt: "برونو فيرنانديز ينزلق احتفالاً بقميص مانشستر يونايتد الأحمر — الهلال يعدّ عرضاً لضمه في يناير" },
+],
     teamBadges: ["images/teams/manchester-united-club-badge.webp"],
   },
   {
@@ -46,6 +50,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "ريال مدريد يتفق مع جي جي غابرييل نجم يونايتد",
     description: "ريال مدريد يتوصل لاتفاق شفهي مع جي جي غابرييل، موهبة مانشستر يونايتد البالغة 16 عاماً، بعد منافسة مع برشلونة وتشيلسي وبايرن وباريس سان جيرمان، ولم يُوقَّع العقد بعد.",
     href: "news/real-madrid-jj-gabriel-agreement-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/tr-jj-gabriel-run.webp", alt: "جي جي غابرييل موهبة مانشستر يونايتد بالقميص الأحمر — ريال مدريد يتفق شفهياً معه" },
+],
     teamBadges: ["images/teams/real-madrid-club-badge.webp", "images/teams/manchester-united-club-badge.webp"],
   },
   {

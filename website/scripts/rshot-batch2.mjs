@@ -7,10 +7,8 @@ process.env.FONTCONFIG_PATH = "/tmp/fonts";
 process.env.HOME = process.env.HOME || "/tmp";
 
 const SLIDES = [
-  ["psg-villarreal-6-0-2026", "s1-psg-villarreal"],
-  ["man-utd-roma-3-2-2026", "s2-utd-roma"],
-  ["bayern-atletico-2-0-2026", "s3-bayern-atletico"],
-  ["inter-feyenoord-3-0-2026", "s4-inter-feyenoord"],
+  ["bruno-fernandes-al-hilal-january-2026", "s1-bruno-hilal"],
+  ["real-madrid-jj-gabriel-agreement-2026", "s2-jj-gabriel"],
 ];
 
 mkdirSync("/home/user/shots", { recursive: true });

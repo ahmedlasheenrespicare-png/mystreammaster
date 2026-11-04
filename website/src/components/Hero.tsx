@@ -357,6 +357,10 @@ interface HeroProps {
 const HOME_MATCH_CARDS_VISIBLE = false;
 
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/psg-villarreal-6-0-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/man-utd-roma-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-atletico-2-0-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/inter-feyenoord-3-0-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/barcelona-villa-3-0-2026/" },
   { clash: AL_SADD_AL_AHLI_CLASH },
   { clash: NEWCASTLE_EVERTON_CLASH },

@@ -356,6 +356,10 @@ interface HeroProps {
 /* بطاقات المباريات في تذكرة الرئيسية — مخفية مؤقتاً (طلب المالك) */
 const HOME_MATCH_CARDS_VISIBLE = false;
 
+/* الحد الأقصى لعدد شرائح التذكرة الظاهرة في الصفحة الرئيسية (طلب المالك).
+   تُعرض الأولى بحسب الترتيب في HOME_TICKET_SLOTS، والباقي يُخفى. */
+const HOME_TICKET_MAX_SLIDES = 18;
+
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
   { clash: INDEX_CLASHES[2], news: "news/psg-villarreal-6-0-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/man-utd-roma-3-2-2026/" },
@@ -440,7 +444,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   }, []);
 
 
-  /* إظهار شرائح التذكرة حسب عمرها (≤ 15 يوماً): قبل التحميل تُعرض الكل كما في
+  /* إظهار شرائح التذكرة حسب عمرها (≤ 7 أيام): قبل التحميل تُعرض الكل كما في
      المطبوع مسبقاً، ثم تُحسب بعد التحميل وتُحدَّث كل ساعة */
   const [ticketNow, setTicketNow] = useState<number | null>(null);
   useEffect(() => {
@@ -454,7 +458,9 @@ export default function Hero({ onOpenTrial }: HeroProps) {
     ticketNow === null || isHomeSlotVisible(slot, ticketNow));
   // Crown matches are independent of the ticket-row visibility switch.
   const crownClashes = eligibleSlots.filter(slot => !slot.news).map(slot => slot.clash);
-  const visibleSlots = eligibleSlots.filter(slot => HOME_MATCH_CARDS_VISIBLE || slot.news);
+  const visibleSlots = eligibleSlots
+    .filter(slot => HOME_MATCH_CARDS_VISIBLE || slot.news)
+    .slice(0, HOME_TICKET_MAX_SLIDES);
   const visibleClashes = visibleSlots.map(slot => slot.clash);
   const visibleOverrides: Partial<Record<number, ReactElement>> = {};
   visibleSlots.forEach((slot, index) => {

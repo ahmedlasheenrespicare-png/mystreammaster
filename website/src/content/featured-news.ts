@@ -35,6 +35,14 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
     category: "انتقالات",
     dateLabel: "4 نوفمبر 2026",
+    title: "تقارير: الهلال يعدّ عرضاً لبرونو فيرنانديز في يناير",
+    description: "تقارير تفيد بأن الهلال يعدّ عرضاً بنحو 55 مليون يورو لضم برونو فيرنانديز في يناير، ونفى الصحفي بن جاكوبس وجود أي تحرك.",
+    href: "news/bruno-fernandes-al-hilal-january-2026/",
+    teamBadges: ["images/teams/manchester-united-club-badge.webp"],
+  },
+  {
+    category: "انتقالات",
+    dateLabel: "4 نوفمبر 2026",
     title: "ريال مدريد يتفق مع جي جي غابرييل نجم يونايتد",
     description: "ريال مدريد يتوصل لاتفاق شفهي مع جي جي غابرييل، موهبة مانشستر يونايتد البالغة 16 عاماً، بعد منافسة مع برشلونة وتشيلسي وبايرن وباريس سان جيرمان، ولم يُوقَّع العقد بعد.",
     href: "news/real-madrid-jj-gabriel-agreement-2026/",

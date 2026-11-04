@@ -1,37 +1,25 @@
 # robots.txt for Stream Master Pro
 # https://streammasterstore.com
 
-# السماح لمحركات البحث الرئيسية
+# الصفحات العامة الوظيفية التي تحمل noindex يجب أن تبقى قابلة للزحف
+# حتى تتمكن محركات البحث من قراءة وسم الاستبعاد. الحجب هنا للمسارات الخاصة فقط.
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /admin-dashboard/
-Disallow: /live-free
-Disallow: /live-free.html
-Disallow: /player.html
-Disallow: /player/
-Disallow: /embed.php
-Disallow: /proxy.php
-Disallow: /search/
-Disallow: /cart/
 
+# Google لا يدمج قواعد المجموعة المحددة مع User-agent: *؛ كرر قواعد المسارات الخاصة.
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
+Disallow: /admin-dashboard/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /admin-dashboard/
 
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: WhatsApp
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
+# زواحف المشاركة ترث قواعد المجموعة العامة؛ لا حاجة لمجموعات Allow: / منفصلة.
 
 # AI Training Crawlers — محظورة
 User-agent: GPTBot

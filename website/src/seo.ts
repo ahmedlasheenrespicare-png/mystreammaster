@@ -369,6 +369,7 @@ export function getSeo(path: string): SeoMeta {
           name: `متجر الاشتراكات | ${BRAND_NAME}`,
           description:
             "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+          modified: "2026-11-04",
           mainEntityId: `${canonical}#plans`,
         }),
         crumbs,
@@ -1143,7 +1144,8 @@ export function getSeo(path: string): SeoMeta {
     ...base,
     title: `الصفحة غير موجودة | ${BRAND_NAME}`,
     description: "الصفحة التي تبحث عنها غير متوفرة — تصفّح الباقات أو القنوات من الصفحة الرئيسية.",
-    canonical: absolute(""),
+    /* لا canonical لصفحة 404: الصفحة الرئيسية ليست بديلاً عن أي مسار مفقود. */
+    canonical: "",
     robots: "noindex, follow",
     jsonLd: [],
   };
@@ -1177,7 +1179,13 @@ export function applySeoToDocument(path: string) {
   setMeta('meta[name="robots"]', "content", seo.robots);
   setMeta('meta[property="og:title"]', "content", seo.title);
   setMeta('meta[property="og:description"]', "content", seo.description);
-  setMeta('meta[property="og:url"]', "content", seo.canonical);
+  if (seo.canonical) {
+    setMeta('meta[property="og:url"]', "content", seo.canonical);
+    setMeta('meta[name="twitter:url"]', "content", seo.canonical);
+  } else {
+    document.head.querySelector('meta[property="og:url"]')?.remove();
+    document.head.querySelector('meta[name="twitter:url"]')?.remove();
+  }
   setMeta('meta[property="og:type"]', "content", seo.ogType);
   /* صورة المشاركة تتغيّر مع الصفحة مثل باقي الوسوم — وإلا بقيت صورة الصفحة
      الأولى ظاهرة عند التنقّل داخل الموقع */
@@ -1191,12 +1199,16 @@ export function applySeoToDocument(path: string) {
   setMeta('meta[name="twitter:image:alt"]', "content", seo.ogImageAlt);
 
   let link = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "canonical";
-    document.head.appendChild(link);
+  if (!seo.canonical) {
+    link?.remove();
+  } else {
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "canonical";
+      document.head.appendChild(link);
+    }
+    link.href = seo.canonical;
   }
-  link.href = seo.canonical;
 
   /* لغة المستند واتجاهه وروابط hreflang تتبع لغة الصفحة الحالية */
   document.documentElement.lang = seo.lang;

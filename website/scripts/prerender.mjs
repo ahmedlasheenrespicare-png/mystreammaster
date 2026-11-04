@@ -16,7 +16,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
 import { assertAdsAllowed } from "./ads-guard.mjs";
 import {
   assertKeywordInTitle,
@@ -67,7 +66,7 @@ function replaceTag(html, pattern, replacement) {
   return html.replace(pattern, () => replacement);
 }
 
-function applyHead(template, seo) {
+export function applyHead(template, seo) {
   let out = template;
 
   out = replaceTag(out, /<title>[\s\S]*?<\/title>/, `<title>${esc(seo.title)}</title>`);
@@ -81,18 +80,28 @@ function applyHead(template, seo) {
   if (!/<meta\s+name="description"/.test(out)) {
     out = out.replace("</head>", `    <meta name="description" content="${esc(seo.description)}" />\n  </head>`);
   }
-  /* canonical: نفس المعالجة (قد يكون على سطر واحد أو موزّعاً) */
+  /* canonical: المسارات المعروفة تعلن رابطها المطلق؛ صفحة 404 تتركه غائباً
+     كيلا توحّد كل المسارات غير الموجودة مع الصفحة الرئيسية. */
   const canonicalTag = `<link rel="canonical" href="${seo.canonical}" />`;
-  if (/<link\s+rel="canonical"/.test(out)) {
-    out = replaceTag(out, /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/, canonicalTag);
+  const canonicalLinkPattern = /<link\b(?=[^>]*\brel=["']canonical["'])[^>]*\/?>/gi;
+  if (!seo.canonical) {
+    out = out.replace(canonicalLinkPattern, "");
   } else {
-    out = out.replace("</head>", `    ${canonicalTag}\n  </head>`);
+    const hasCanonical = canonicalLinkPattern.test(out);
+    canonicalLinkPattern.lastIndex = 0;
+    if (hasCanonical) out = replaceTag(out, canonicalLinkPattern, canonicalTag);
+    else out = out.replace("</head>", `    ${canonicalTag}\n  </head>`);
   }
 
+  if (!seo.canonical) {
+    out = out.replace(/<meta\b(?=[^>]*(?:\bproperty=["']og:url["']|\bname=["']twitter:url["']))[^>]*\/?>/gi, "");
+  }
   const pairs = [
     ['property="og:title"', seo.title],
     ['property="og:description"', seo.description],
-    ['property="og:url"', seo.canonical],
+    ...(seo.canonical
+      ? [['property="og:url"', seo.canonical], ['name="twitter:url"', seo.canonical]]
+      : []),
     ['property="og:type"', seo.ogType],
     /* صورة المشاركة خاصة بالصفحة — الأبعاد ثابتة 1200×630 لكل صور /images/og/ */
     ['property="og:image"', seo.ogImage],
@@ -101,7 +110,6 @@ function applyHead(template, seo) {
     ['name="twitter:image"', seo.ogImage],
     ['name="twitter:title"', seo.title],
     ['name="twitter:description"', seo.description],
-    ['name="twitter:url"', seo.canonical],
     ['property="og:image:alt"', seo.ogImageAlt],
     ['name="twitter:image:alt"', seo.ogImageAlt],
     ['name="robots"', seo.robots],
@@ -190,44 +198,27 @@ function writeRouteHtml(template, route, body) {
   );
 }
 
-/* lastmod = تاريخ آخر تعديل فعلي للمصدر، لا تاريخ البناء.
-   كتابة «اليوم» في كل بناء تعلّم Google أن يتجاهل الوسم نهائياً (يوصي
-   صراحةً بأن يكون lastmod موثوقاً)، فيفقد الموقع أسرع إشارة تحديث لديه.
-   المصدر: تاريخ آخر commit لمس ملفات المحتوى/المكوّنات التي تُبنى منها
-   الصفحة. وإن تعذّر الوصول إلى git (بناء بلا تاريخ) يُحذف الوسم بدل
-   إرسال قيمة كاذبة: الغياب الصادق أفضل من الحضور الزائف. */
-const LASTMOD_SOURCES = {
-  home: ['src/App.tsx', 'src/components/Hero.tsx', 'src/seo.ts'],
-  blog: ['src/content/posts.ts', 'src/seo.ts'],
-  other: ['src/seo.ts'],
-};
-
-function gitTime(websiteDir, paths) {
-  try {
-    const out = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...paths], {
-      cwd: websiteDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
-    return out ? Number(out) * 1000 : 0;
-  } catch {
-    return 0;
-  }
+/* lastmod مأخوذ من dateModified المعلن في كيان WebPage الخاص بالمسار نفسه،
+   لا من تاريخ commit لملف SEO مشترك ولا من تاريخ البناء. إن غابت قيمة
+   صالحة أو جاءت في المستقبل، يُحذف الوسم بدلاً من إرسال تاريخ مضلل. */
+export function pageLastmod(seo) {
+  const webPage = (Array.isArray(seo?.jsonLd) ? seo.jsonLd : []).find((node) => {
+    const types = Array.isArray(node?.["@type"]) ? node["@type"] : [node?.["@type"]];
+    return types.includes("WebPage");
+  });
+  const value = webPage?.dateModified;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = value;
+  const parsed = new Date(`${date}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== date) return null;
+  if (date > new Date().toISOString().slice(0, 10)) return null;
+  return date;
 }
 
-function lastmodTable(websiteDir) {
-  const table = {};
-  for (const [key, paths] of Object.entries(LASTMOD_SOURCES)) {
-    const time = gitTime(websiteDir, paths);
-    if (time) table[key] = new Date(time).toISOString().slice(0, 10);
-  }
-  return table;
-}
-
-function sitemap(routes, lastmods = {}) {
+export function sitemap(routes, lastmods = {}) {
   const urls = routes
     .map((r) => {
-      const slug = decodeURIComponent(r.replace(/^\//, ''));
-      const key = r === '/' ? 'home' : slug === 'blog' || slug.startsWith('blog/') ? 'blog' : 'other';
-      const lastmod = lastmods[key];
+      const lastmod = lastmods[r];
       /* encodeURI يرمّز السلاجات العربية ويبقي بنية الرابط — نفس صيغة sitemap-0.xml */
       const loc = `    <loc>${encodeURI(`${SITE_URL}/${r === "/" ? "" : r.replace(/^\//, "") + "/"}`)}</loc>`;
       return [
@@ -260,6 +251,7 @@ async function main() {
   const { getAllRoutes, renderPage } = await import(path.resolve(SSR_ENTRY));
   const routes = getAllRoutes();
   const indexableRoutes = [];
+  const routeLastmods = Object.create(null);
 
   /* حرّاس SEO على الصفحات المفهرسة فقط: صفحات noindex (تفاصيل المباريات
      غير المؤكدة والصفحات الوظيفية) لا تظهر في نتائج البحث فلا تُفرض عليها قواعد العناوين.
@@ -283,6 +275,8 @@ async function main() {
       skippedNoindex++;
     } else {
       indexableGuarded++;
+      const lastmod = pageLastmod(seo);
+      if (lastmod) routeLastmods[route] = lastmod;
       entries.push({ route, primary: seo.primaryKeyword ?? null, intent: seo.intent });
       /* حارس التغطية: كل صفحة قابلة للفهرسة يجب أن يكون لها مدخل في الخريطة */
       if (!hasKeywordEntry(route)) {
@@ -351,13 +345,16 @@ async function main() {
     console.log("\n✅ حرّاس SEO: لا مخالفات مانعة في الصفحات المفهرسة المرسومة مسبقاً");
   }
 
-  /* خريطة الموقع */
-  await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(indexableRoutes, lastmodTable(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."))));
+  /* خريطة الموقع: تاريخ آخر تعديل موثوق لكل مسار، أو بلا lastmod عند غيابه. */
+  await fs.writeFile(path.join(DIST, "sitemap.xml"), sitemap(indexableRoutes, routeLastmods));
 
   console.log(`\n✅ تم الرسم المسبق ${count} مساراً + 404.html + sitemap.xml`);
 }
 
-main().catch((err) => {
-  console.error("❌ فشل البناء المسبق:", err);
-  process.exit(1);
-});
+const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : "";
+if (invokedPath === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error("❌ فشل البناء المسبق:", err);
+    process.exit(1);
+  });
+}

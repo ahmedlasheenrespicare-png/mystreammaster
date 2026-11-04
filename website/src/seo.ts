@@ -358,7 +358,7 @@ export function getSeo(path: string): SeoMeta {
     );
     return {
       ...base,
-      title: `متجر الاشتراكات | ${BRAND_NAME}`,
+      title: `اشتراك IPTV وباقات التفعيل | ${BRAND_NAME}`,
       description:
         "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
       canonical,

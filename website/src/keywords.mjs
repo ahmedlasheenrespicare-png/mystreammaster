@@ -103,7 +103,7 @@ const STATIC_KEYWORDS = {
   "/roma-real-madrid/watch": { primary: "متابعة روما", intent: "editorial" },
   "/servers": { primary: "مقارنة السيرفرات", intent: "comparison" },
   "/status": { primary: "حالة الخدمة", intent: "navigational" },
-  "/store": { primary: "سعر باقات التفعيل", intent: "transactional" },
+  "/store": { primary: "اشتراك IPTV", intent: "transactional" },
   "/trial": { primary: "تجربة IPTV مجانية", intent: "transactional" },
   "/watch-legal.html": { primary: "المشاهدة القانونية", intent: "informational" },
   "/world-cup-2026": { primary: "كأس العالم FIFA 2026", intent: "informational" },

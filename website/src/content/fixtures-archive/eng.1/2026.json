@@ -3219,18 +3219,29 @@
         "name": "Everton"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 52279,
+      "statistics": {
+        "home": {
+          "possession": 51.6,
+          "shots": 17,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 48.4,
+          "shots": 16,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "eng.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261102&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401879242",

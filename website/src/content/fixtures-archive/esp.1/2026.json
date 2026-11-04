@@ -1804,18 +1804,29 @@
         "name": "Osasuna"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 26831,
+      "statistics": {
+        "home": {
+          "possession": 61.9,
+          "shots": 18,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 38.1,
+          "shots": 11,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261102&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401882809",

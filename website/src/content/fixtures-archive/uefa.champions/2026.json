@@ -915,18 +915,18 @@
         "name": "Sporting CP"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 28260,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915311",
@@ -940,18 +940,18 @@
         "name": "VfB Stuttgart"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 45162,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915307",
@@ -965,18 +965,18 @@
         "name": "Internazionale"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 3
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 43649,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915308",
@@ -990,18 +990,18 @@
         "name": "AS Roma"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 73747,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915309",
@@ -1015,18 +1015,18 @@
         "name": "Paris Saint-Germain"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 6
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 20036,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915384",
@@ -1040,18 +1040,18 @@
         "name": "Lille"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 7737,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915385",
@@ -1065,18 +1065,18 @@
         "name": "Slovan Bratislava"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 17246,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915386",
@@ -1090,18 +1090,18 @@
         "name": "Bayern Munich"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 69821,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915387",
@@ -1115,18 +1115,18 @@
         "name": "Aston Villa"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 52662,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.champions",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261103&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401915382",

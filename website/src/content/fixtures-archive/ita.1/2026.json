@@ -3543,18 +3543,29 @@
         "name": "Fiorentina"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 4
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 58.2,
+          "shots": 7,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 41.8,
+          "shots": 15,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401874971",
@@ -3568,18 +3579,29 @@
         "name": "Parma"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 69.6,
+          "shots": 20,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 30.4,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
       },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401874815",

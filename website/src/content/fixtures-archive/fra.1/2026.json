@@ -1599,18 +1599,29 @@
         "name": "Brest"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 51.9,
+          "shots": 15,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 48.1,
+          "shots": 12,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261102&limit=500"
       },
-      "fetchedAt": "2026-10-28T09:41:45.061Z"
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
       "id": "401876405",

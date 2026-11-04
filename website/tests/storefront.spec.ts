@@ -1624,3 +1624,20 @@ test('fullscreen match shows sourced goals and cards beside the correct teams on
   await front.press('Enter');
   await expect(page.getByRole('dialog').locator('.crown-team-incidents')).toHaveCount(0);
 });
+
+test('November 4 crown slate includes all nine matches and retains only yesterday selections', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-04T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ events: [] }) }));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.scrollIntoViewIfNeeded();
+  const cards = strip.locator('[data-crown-card]');
+  const names = await cards.allTextContents();
+  for (const pair of [['أيك أثينا', 'ريال مدريد'], ['فنربخشة', 'ليفربول'], ['بوروسيا دورتموند', 'ريال بيتيس'], ['بورتو', 'نابولي'], ['آيندهوفن', 'كلوب بروج'], ['لايبزيغ', 'مانشستر سيتي'], ['لانس', 'كومو'], ['سلافيا براغ', 'أرسنال'], ['فايكينغ', 'صباح'], ['أتلتيكو مدريد', 'بايرن ميونخ'], ['برشلونة', 'أستون فيلا'], ['مانشستر يونايتد', 'روما']]) {
+    expect(names.some(text => pair.every(team => text.includes(team)))).toBe(true);
+  }
+  await expect(strip.locator('.hs-crown-match')).toHaveCount(12);
+  expect(names.join(' ')).not.toMatch(/نيوكاسل|إيفرتون|تشيلسي|ميلان|إنتر/);
+  await expect(page.locator('.hero-matches-ticket .league-ticket-clash')).toHaveCount(0);
+});

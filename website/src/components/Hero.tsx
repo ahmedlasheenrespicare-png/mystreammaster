@@ -362,6 +362,8 @@ const HOME_MATCH_CARDS_VISIBLE = false;
 const HOME_TICKET_MAX_SLIDES = 18;
 
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/bruno-fernandes-al-hilal-january-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/real-madrid-jj-gabriel-agreement-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/psg-villarreal-6-0-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/man-utd-roma-3-2-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/bayern-atletico-2-0-2026/" },

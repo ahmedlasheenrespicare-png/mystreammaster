@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "باريس سان جيرمان يكتسح فياريال 6-0 ويسجل رباعية في 17 دقيقة",
     description: "باريس سان جيرمان يفوز 6-0 على فياريال في الجولة الرابعة من دوري أبطال أوروبا، ويسجل أربعة أهداف في 17 دقيقة، وهو الأسرع في تاريخ البطولة.",
     href: "news/psg-villarreal-6-0-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-psg-ruiz-brace.webp", alt: "فابيان رويز يحتفل بأحد هدفيه بقميص باريس سان جيرمان الأبيض في السداسية التاريخية على فياريال" },
+],
     teamBadges: ["images/teams/paris-saint-germain-club-badge.webp"],
     score: "0 - 6",
   },
@@ -47,6 +51,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "يونايتد يقلب تأخره بهدفين أمام روما ويفوز 3-2 بثنائية كونيا",
     description: "مانشستر يونايتد يقلب تأخره بهدفين أمام روما ويفوز 3-2 في أولد ترافورد، بثنائية ماثيوس كونيا وهدف برونو فيرنانديز من ركلة جزاء.",
     href: "news/man-utd-roma-3-2-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-utd-cunha-shirt.webp", alt: "ماثيوس كونيا يحمل قميص يونايتد الأحمر بيده بعد قلب التأخر بهدفين أمام روما في أولد ترافورد" },
+],
     teamBadges: ["images/teams/manchester-united-club-badge.webp"],
     score: "3 - 2",
   },
@@ -56,6 +64,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "بايرن يهزم أتلتيكو 2-0 في مدريد ونوير يتجاوز ميسي وموللر",
     description: "بايرن ميونخ يفوز 2-0 على أتلتيكو مدريد في الجولة الرابعة من دوري أبطال أوروبا، ويصعد مانويل نوير إلى المركز الثالث في عدد مباريات البطولة.",
     href: "news/bayern-atletico-2-0-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-bayern-karl-hands.webp", alt: "لينارت كارل يرفع يديه احتفالاً بهدفه الأول في فوز بايرن 2-0 على أتلتيكو مدريد" },
+],
     teamBadges: ["images/teams/bayern-munich-badge.webp"],
     score: "0 - 2",
   },
@@ -65,6 +77,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "إنتر يهزم فينورد 3-0 في روتردام ويواصل انتصاراته",
     description: "إنتر ميلان يفوز 3-0 على فينورد في روتردام ضمن الجولة الرابعة من دوري أبطال أوروبا، بأهداف بيسيك وإسبوزيتو وزيلينسكي.",
     href: "news/inter-feyenoord-3-0-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-inter-bisseck-wave.webp", alt: "يان بيسك يلوّح لجماهير إنتر بعد هدفه الافتتاحي في فوز روتردام 3-0 على فينورد" },
+],
     teamBadges: ["images/teams/internazionale-club-badge.webp"],
     score: "0 - 3",
   },

@@ -33,6 +33,14 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "دوري أبطال أوروبا",
+    dateLabel: "4 نوفمبر 2026",
+    title: "كومو يكتسح لانس 9-1 ويعادل رقماً قياسياً في دوري الأبطال",
+    description: "كومو يفوز 9-1 على لانس في الجولة الرابعة من دوري أبطال أوروبا، ويعادل أكبر عدد أهداف في مباراة بالبطولة، وأكبر فارق فوز بثمانية أهداف.",
+    href: "news/como-lens-9-1-2026/",
+    score: "1 - 9",
+  },
+  {
     category: "منتخبات",
     dateLabel: "5 نوفمبر 2026",
     title: "رونالدو يعلن اعتزاله دولياً مع البرتغال بعد توقف نوفمبر",

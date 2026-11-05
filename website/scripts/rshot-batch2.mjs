@@ -7,8 +7,12 @@ process.env.FONTCONFIG_PATH = "/tmp/fonts";
 process.env.HOME = process.env.HOME || "/tmp";
 
 const SLIDES = [
-  ["bruno-fernandes-al-hilal-january-2026", "s1-bruno-hilal"],
-  ["real-madrid-jj-gabriel-agreement-2026", "s2-jj-gabriel"],
+  ["bayern-kane-contract-2029-2026", "s1-kane"],
+  ["manchester-city-leipzig-3-2-2026", "s2-haaland"],
+  ["real-madrid-aek-athens-3-2-2026", "s3-valverde"],
+  ["fenerbahce-liverpool-3-2-2026", "s4-muriqi"],
+  ["como-lens-9-1-2026", "s5-douvikas"],
+  ["ronaldo-international-retirement-2026", "s6-ronaldo"],
 ];
 
 mkdirSync("/home/user/shots", { recursive: true });

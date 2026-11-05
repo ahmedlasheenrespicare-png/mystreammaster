@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "بايرن ميونخ يمدد عقد هاري كين حتى 2029 رسمياً",
     description: "أعلن بايرن ميونخ رسمياً تمديد عقد هاري كين حتى 30 يونيو 2029، بعد أن سجل 156 هدفاً في 161 مباراة مع الفريق البافاري.",
     href: "news/bayern-kane-contract-2029-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-kane-thumbs.webp", alt: "هاري كين بقميص بايرن الأبيض رقم 9 بعد تمديد عقده رسمياً حتى 2029" },
+],
   },
   {
     category: "دوري أبطال أوروبا",
@@ -45,6 +49,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "هالاند يقود سيتي لفوز 3-2 على لايبزيغ في ألمانيا",
     description: "مانشستر سيتي يفوز 3-2 على لايبزيغ في الجولة الرابعة من دوري أبطال أوروبا، بهدف إيرلينغ هالاند في الدقيقة 78 بعد تعادلين متتاليين.",
     href: "news/manchester-city-leipzig-3-2-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-haaland-leipzig-slide.webp", alt: "إيرلينغ هالاند مديد الذراعين بعد هدفه القاتل في فوز السيتي 3-2 على لايبزيغ" },
+],
     score: "2 - 3",
   },
   {
@@ -53,6 +61,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "ريال مدريد يفلت من فخ أثينا بفوز 3-2 بهدف فالفيردي",
     description: "ريال مدريد يفوز 3-2 على آيك أثينا بعد أن تقدم اليونانيون مرتين، بهدف فيديريكو فالفيردي في الوقت بدل الضائع، ليحافظ على سجله المثالي.",
     href: "news/real-madrid-aek-athens-3-2-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-valverde-athens.webp", alt: "فيديريكو فالفيردي يحتفل بصاروخية الفوز في الوقت القاتل أمام أيك أثينا" },
+],
     score: "2 - 3",
   },
   {
@@ -61,6 +73,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "فنربخشة يقلب تأخره مرتين ويهزم ليفربول 3-2 في إسطنبول",
     description: "فنربخشة يقلب تأخره مرتين ويفوز 3-2 على ليفربول في دوري أبطال أوروبا، ليوقف سلسلة الريدز المثالية بقيادة المدرب المؤقت ديرك كويت.",
     href: "news/fenerbahce-liverpool-3-2-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-muriqi-fener.webp", alt: "فيدات مورقي يحتفل برأسية الفوز التي قلبت الطاولة على ليفربول في إسطنبول" },
+],
     score: "3 - 2",
   },
   {
@@ -69,6 +85,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "كومو يكتسح لانس 9-1 ويعادل رقماً قياسياً في دوري الأبطال",
     description: "كومو يفوز 9-1 على لانس في الجولة الرابعة من دوري أبطال أوروبا، ويعادل أكبر عدد أهداف في مباراة بالبطولة، وأكبر فارق فوز بثمانية أهداف.",
     href: "news/como-lens-9-1-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/ucl-douvikas-como-nine.webp", alt: "أناستاسيوس دوفيكاس بقميص كومو رقم 9 بعد هاتريك السباعية التاريخية على لانس" },
+],
     score: "1 - 9",
   },
   {
@@ -77,6 +97,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "رونالدو يعلن اعتزاله دولياً مع البرتغال بعد توقف نوفمبر",
     description: "أعلن كريستيانو رونالدو (41 عاماً) اعتزاله اللعب الدولي مع البرتغال بعد التوقف الدولي في نوفمبر، بعد 234 مباراة و146 هدفاً دولياً، وهو رقم قياسي عالمياً.",
     href: "news/ronaldo-international-retirement-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/por-ronaldo-farewell.webp", alt: "كريستيانو رونالدو بقميص البرتغال السابع الذي أعلن تسليمه بعد اعتزاله دولياً" },
+],
   },
   {
     category: "انتقالات",

@@ -1,4 +1,4 @@
-import { novemberCrownClashes } from './crown-november-fixtures';
+import { novemberCrownClashes, CROWN_LEAGUE_CARDS } from './crown-november-fixtures';
 import { motionReduced } from "../lib/motion-preference";
 import { HeroLaptop } from "./HeroLaptop";
 import "./hero-title-holo.css";
@@ -495,7 +495,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
         <Reveal variant="up" delay={90} className="w-full">
-          <HeroLeagueCrownStrip clashes={crownClashes} />
+          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} />
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full">

@@ -809,9 +809,11 @@ a.hs-crown-wing:hover {
    in white so it remains visible on the dark match card; do not recolour the
    original league cards, trophy emblems or team crests. */
 .hs-crown-match-art[data-match-league-background="eng.1"],
-.hs-crown-match-art[data-match-league-background="uefa.champions"] { opacity: .22; }
+.hs-crown-match-art[data-match-league-background="uefa.champions"],
+.hs-crown-match-art[data-match-league-background="uefa.europa"] { opacity: .22; }
 .hs-crown-match-art[data-match-league-background="eng.1"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="uefa.champions"] .league-carousel-logo {
+.hs-crown-match-art[data-match-league-background="uefa.champions"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="uefa.europa"] .league-carousel-logo {
   filter: brightness(0) invert(1);
 }
 

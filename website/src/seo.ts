@@ -48,8 +48,6 @@ export interface SeoMeta {
   intent?: "transactional" | "comparison" | "informational" | "editorial" | "legal" | "navigational";
 }
 
-const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
-
 /* ==========================================================================
    صورة المشاركة الخاصة بكل صفحة — 1200×630
    --------------------------------------------------------------------------
@@ -377,6 +375,9 @@ export function getSeo(path: string): SeoMeta {
           "@type": "ItemList",
           "@id": `${canonical}#plans`,
           name: "باقات التفعيل والربط التقني",
+          url: canonical,
+          numberOfItems: PRICING_PLANS.length,
+          itemListOrder: "https://schema.org/ItemListUnordered",
           itemListElement: PRICING_PLANS.map((p, i) => ({
             "@type": "ListItem",
             position: i + 1,
@@ -529,7 +530,7 @@ export function getSeo(path: string): SeoMeta {
             brand: { "@type": "Brand", name: BRAND_EN },
             category: "Technical setup and activation service",
             url: canonical,
-            image: OG_IMAGE,
+            image: ogImageFromCanonical(canonical),
             offers: AVAILABLE_DURATIONS.flatMap((months) => {
               const price = enPlan.prices[months];
               return price ? [{
@@ -539,6 +540,7 @@ export function getSeo(path: string): SeoMeta {
                 priceCurrency: "USD",
                 availability: "https://schema.org/InStock",
                 url: canonical,
+                seller: { "@id": ORG_ID },
               }] : [];
             }),
           },
@@ -834,9 +836,10 @@ export function getSeo(path: string): SeoMeta {
             ),
             offerCount: String(PRICING_PLANS.length),
             availability: "https://schema.org/InStock",
+            seller: { "@id": ORG_ID },
           },
           url: absolute(""),
-          image: OG_IMAGE,
+          image: ogImageFromCanonical(canonical),
         },
         /* الأسئلة الثمانية ظاهرة كلها في قسم الأسئلة بالرئيسية */
         faqLd(canonical, FAQS),
@@ -880,7 +883,7 @@ export function getSeo(path: string): SeoMeta {
           brand: { "@type": "Brand", name: BRAND_EN },
           category: "Technical setup and activation service",
           url: canonical,
-          image: OG_IMAGE,
+          image: ogImageFromCanonical(canonical),
           offers: AVAILABLE_DURATIONS.flatMap((months) => {
             const price = plan.prices[months];
             return price ? [{
@@ -890,6 +893,7 @@ export function getSeo(path: string): SeoMeta {
               priceCurrency: "USD",
               availability: "https://schema.org/InStock",
               url: canonical,
+              seller: { "@id": ORG_ID },
             }] : [];
           }),
         },

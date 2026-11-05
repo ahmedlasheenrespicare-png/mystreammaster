@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "منتخبات",
+    dateLabel: "5 نوفمبر 2026",
+    title: "رونالدو يعلن اعتزاله دولياً مع البرتغال بعد توقف نوفمبر",
+    description: "أعلن كريستيانو رونالدو (41 عاماً) اعتزاله اللعب الدولي مع البرتغال بعد التوقف الدولي في نوفمبر، بعد 234 مباراة و146 هدفاً دولياً، وهو رقم قياسي عالمياً.",
+    href: "news/ronaldo-international-retirement-2026/",
+  },
+  {
     category: "انتقالات",
     dateLabel: "4 نوفمبر 2026",
     title: "تقارير: الهلال يعدّ عرضاً لبرونو فيرنانديز في يناير",

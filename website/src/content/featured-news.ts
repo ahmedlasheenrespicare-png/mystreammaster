@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "انتقالات",
+    dateLabel: "5 نوفمبر 2026",
+    title: "بايرن ميونخ يمدد عقد هاري كين حتى 2029 رسمياً",
+    description: "أعلن بايرن ميونخ رسمياً تمديد عقد هاري كين حتى 30 يونيو 2029، بعد أن سجل 156 هدفاً في 161 مباراة مع الفريق البافاري.",
+    href: "news/bayern-kane-contract-2029-2026/",
+  },
+  {
     category: "دوري أبطال أوروبا",
     dateLabel: "4 نوفمبر 2026",
     title: "هالاند يقود سيتي لفوز 3-2 على لايبزيغ في ألمانيا",

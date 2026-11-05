@@ -362,6 +362,7 @@ const HOME_MATCH_CARDS_VISIBLE = false;
 const HOME_TICKET_MAX_SLIDES = 18;
 
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/bayern-kane-contract-2029-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/manchester-city-leipzig-3-2-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/real-madrid-aek-athens-3-2-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/fenerbahce-liverpool-3-2-2026/" },

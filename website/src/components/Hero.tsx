@@ -362,6 +362,7 @@ const HOME_MATCH_CARDS_VISIBLE = false;
 const HOME_TICKET_MAX_SLIDES = 18;
 
 const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/fenerbahce-liverpool-3-2-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/como-lens-9-1-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/ronaldo-international-retirement-2026/" },
   { clash: INDEX_CLASHES[2], news: "news/bruno-fernandes-al-hilal-january-2026/" },

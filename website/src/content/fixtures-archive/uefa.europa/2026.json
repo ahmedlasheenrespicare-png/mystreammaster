@@ -915,10 +915,10 @@
         "name": "Olympiacos"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -926,7 +926,7 @@
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261104&limit=500"
       },
-      "fetchedAt": "2026-10-29T09:59:31.298Z"
+      "fetchedAt": "2026-11-05T10:57:29.571Z"
     },
     {
       "id": "401915526",

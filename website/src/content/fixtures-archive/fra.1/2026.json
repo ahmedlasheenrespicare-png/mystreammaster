@@ -1650,7 +1650,7 @@
     },
     {
       "id": "401876411",
-      "date": "2026-11-07T16:15:00.000Z",
+      "date": "2026-11-07T18:00:00.000Z",
       "home": {
         "id": "172",
         "name": "AJ Auxerre"
@@ -1671,11 +1671,11 @@
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-05T10:57:29.571Z"
     },
     {
       "id": "401876407",
-      "date": "2026-11-07T19:45:00.000Z",
+      "date": "2026-11-07T20:05:00.000Z",
       "home": {
         "id": "160",
         "name": "Paris Saint-Germain"
@@ -1696,7 +1696,7 @@
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-05T10:57:29.571Z"
     },
     {
       "id": "401876406",

@@ -32,6 +32,7 @@ import {
 import "./league-carousel.css";
 import "./hero-league-strip.css";
 
+const NO_EXTRA_LEAGUES: readonly { id: string; name: string }[] = [];
 const STANDINGS_LEAGUE_IDS = STANDINGS_LEAGUES.map((entry) => entry.id);
 const REFRESH_MS = 5 * 60 * 1000;
 const STEP_INTERVAL_MS = 5000;
@@ -321,13 +322,16 @@ function CrownLeagueDetails({ item }: { item: HeroLeagueData }) {
 }
 
 const NO_CLASHES: FeaturedClash[] = [];
-function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[]): HeroLeagueData[] {
+function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[], extraLeagues: readonly { id: string; name: string }[] = []): HeroLeagueData[] {
   const result = [...items];
-  for (const clash of clashes) {
-    const id = clash.source;
+  /* بطاقات البطولات = بطولات الشرائح + البطولات المثبَّتة يدوياً (تبقى حتى لو
+     أُخفيت مواجهاتها بطلب المالك) — بدون تكرار لأي بطولة معروضة أصلاً */
+  const wanted = [...extraLeagues.map(entry => ({ id: entry.id, fallback: entry.name })),
+    ...clashes.map(clash => ({ id: clash.source, fallback: clash.eyebrow }))];
+  for (const { id, fallback } of wanted) {
     if (!id || result.some(item => item.leagueId === id)) continue;
     const theme = getLeagueTrophyTheme(id);
-    result.push({ leagueId: id, standingsKey: id, shortName: crownLeagueName(id, clash.eyebrow), href: "/matches/", stageGlow: theme.stageGlow, splitGradient: theme.splitGradient, leader: null, bestAttack: null, bestDefence: null, totalGoals: null });
+    result.push({ leagueId: id, standingsKey: id, shortName: crownLeagueName(id, fallback), href: "/matches/", stageGlow: theme.stageGlow, splitGradient: theme.splitGradient, leader: null, bestAttack: null, bestDefence: null, totalGoals: null });
   }
   return result;
 }
@@ -335,8 +339,8 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[]): He
 /* ==========================================================================
    1) شريط التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو
 ========================================================================== */
-export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES }: { clashes?: FeaturedClash[] }) {
-  const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes);
+export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[] } = {}) {
+  const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes, extraLeagues);
   const matches = useClashes("matches", clashes);
   const matchItems = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
     const clash = clashes[index];

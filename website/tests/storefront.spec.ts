@@ -1104,7 +1104,7 @@ test('crown keeps all match and league cards with league identities after match 
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
     await strip.scrollIntoViewIfNeeded();
-    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(17);
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
     await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(11);
     const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
     const firstLeague = sequence.findIndex(slide => slide.kind === 'league');
@@ -1112,10 +1112,10 @@ test('crown keeps all match and league cards with league identities after match 
     await expect(strip.locator('[data-crown-kind="league"] .hs-mini-trophy')).toHaveCount(11);
     await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
     await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
-    await selectCrownSlide(page, /كريستال بالاس.*هوفنهايم/s);
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
     const front = strip.locator('[data-crown-offset="0"]');
     await expect(front).toHaveAttribute('data-crown-kind', 'match');
-    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-league', 'uefa.europa');
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-league', 'esp.1');
     await expect(front.locator('.hs-crown-match-team')).toHaveCount(2);
     await expect(front.locator('.hs-crown-match-status')).toBeVisible();
     await expect(front.locator('.hs-crown-match-brands img')).toHaveCount(4);
@@ -1126,32 +1126,34 @@ test('crown keeps all match and league cards with league identities after match 
 
 test('crown match content preserves live RTL scores and scheduled countdown from the same ticket feed', async ({ page }) => {
   // يوم المباراة نفسه: الشريحة المباشرة في الدقيقة 67، ثم تُقلَّب إلى موعد قادم للعدّاد
-  await page.clock.setFixedTime(new Date('2026-11-05T10:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-07T10:00:00Z'));
+  // التدوير التلقائي يبدّل الشريحة الأمامية أثناء الفحوص: يُطفأ بتفضيل الزائر
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   let scheduled = false;
   // المصدر يعكس ترتيب الفريقين (أرضه في المصدر ≠ أرض الاختيار) للتأكد أن الشريحة
   // تعرض الأسماء والنتيجة بالاتجاه الصحيح من نفس تغذية التذكرة.
-  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'uefa.europa' ? [{
-    id: 'crown-test-milan', date: '2026-11-05T20:00:00Z', competitions: [{
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'esp.1' ? [{
+    id: 'crown-test-valencia', date: '2026-11-07T20:00:00Z', competitions: [{
       status: { displayClock: '67′', type: { state: scheduled ? 'pre' : 'in', name: scheduled ? 'STATUS_SCHEDULED' : 'STATUS_IN_PROGRESS', completed: false } },
       competitors: [
-        { homeAway: 'home', score: scheduled ? undefined : '3', team: { displayName: 'Ferencvárosi TC' } },
-        { homeAway: 'away', score: scheduled ? undefined : '1', team: { displayName: 'AC Milan' } },
+        { homeAway: 'home', score: scheduled ? undefined : '3', team: { displayName: 'Real Madrid' } },
+        { homeAway: 'away', score: scheduled ? undefined : '1', team: { displayName: 'Valencia' } },
       ],
     }],
   }] : [] }) }));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
-  await selectCrownSlide(page, /ميلان.*فرينسفاروش/s);
+  await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
   const front = strip.locator('[data-crown-offset="0"]');
   await expect(front.locator('.hs-crown-match-status')).toContainText('67');
-  await expect(front.locator('.hs-crown-match-team').first()).toContainText('فرينسفاروش');
-  await expect(front.locator('.hs-crown-match-team').last()).toContainText('ميلان');
+  await expect(front.locator('.hs-crown-match-team').first()).toContainText('ريال مدريد');
+  await expect(front.locator('.hs-crown-match-team').last()).toContainText('فالنسيا');
   await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
   await expect(front.locator('.hs-crown-match-score b').last()).toHaveText('1');
   // بطاقات صف التذكرة مخفية بطلب المالك، وتُغطى أحداث المواجهة في اختبار الملء الشاشة
   scheduled = true;
   await page.reload();
-  await selectCrownSlide(page, /ميلان.*فرينسفاروش/s);
+  await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
   await expect(front.locator('.league-ticket-countdown')).toBeVisible();
   await expect(front.locator('.hs-crown-match-score')).toHaveCount(0);
   for (const width of [320, 390, 767, 1440]) {
@@ -1187,9 +1189,9 @@ test('background crown and ticket slides pause decorative animations without hid
   await strip.scrollIntoViewIfNeeded();
   const hiddenBadge = strip.locator('[data-crown-kind="match"]:not([data-crown-offset="0"]) .hs-crown-match-heading').first();
   await expect(hiddenBadge).toHaveCSS('animation-play-state', 'paused');
-  await selectCrownSlide(page, /كريستال بالاس.*هوفنهايم/s);
+  await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
   await expect(strip.locator('[data-crown-offset="0"] .hs-crown-match-heading')).toHaveCSS('animation-play-state', 'running');
-  await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(17);
+  await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
   // بطاقات مواجهات صف التذكرة مخفية بطلب المالك: تبقى شرائح الأخبار ظاهرة بلا إخفاء للمحتوى
   await expect(page.locator('.home-matches-ticket .league-ticket-slide').first()).toBeVisible();
 });
@@ -1265,7 +1267,7 @@ test('crown match cards use their league emblem as background without site brand
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const cards = strip.locator('[data-crown-kind="match"]');
-  await expect(cards).toHaveCount(17);
+  await expect(cards).toHaveCount(8);
   await expect(cards.locator('.league-ticket-wordmark')).toHaveCount(0);
   await expect(cards).not.toContainText(['ستريم ماستر']);
   for (const card of await cards.all()) {
@@ -1280,21 +1282,23 @@ test('crown match cards use their league emblem as background without site brand
   await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
-    await selectCrownSlide(page, /كريستال بالاس.*هوفنهايم/s);
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
     await expect(strip.locator('[data-crown-offset="0"] .hs-crown-match-status')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
 
-test('English and Champions League background emblems have light contrast and eager active loading', async ({ page }) => {
+test('league background emblems on match slides keep light contrast and eager active loading', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  // بلا إطفاء التدوير تنزلق الشريحة الأمامية أثناء الفحص فتُقرأ بطاقة أخرى
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   // Controlled dark transparent artwork isolates CSS contrast and load state.
   await page.route('https://a.espncdn.com/i/leaguelogos/soccer/500/*', route => route.fulfill({
     contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="#000" d="M20 10h60v55L50 95 20 65z"/></svg>',
   }));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
-  for (const [league, pairing] of [['uefa.europa', /كريستال بالاس.*هوفنهايم/s], ['uefa.champions', /أيك أثينا.*ريال مدريد/s]] as const) {
+  for (const [league, pairing] of [['esp.1', /فالنسيا.*ريال مدريد/s], ['eng.1', /أرسنال.*هول سيتي/s]] as const) {
     await selectCrownSlide(page, pairing);
     const background = strip.locator(`[data-crown-offset="0"] [data-match-league-background="${league}"]`);
     const image = background.locator('img');
@@ -1393,14 +1397,14 @@ test('home match slides remain exclusive to crown when ticket-row matches are hi
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
-    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(17);
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
     await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
     await expect(page.locator('.home-matches-ticket .league-ticket-carousel')).toBeVisible();
     const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
     const firstLeague = sequence.findIndex(slide => slide.kind === 'league');
     expect(sequence.slice(firstLeague).every(slide => slide.kind === 'league')).toBe(true);
-    await selectCrownSlide(page, /كريستال بالاس.*هوفنهايم/s);
-    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-league', 'uefa.europa');
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-league', 'esp.1');
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-kind', 'match');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
@@ -1412,7 +1416,7 @@ test('crown match opens as an edge-to-edge modal above the header and restores f
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
-    await selectCrownSlide(page, /كريستال بالاس.*هوفنهايم/s);
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
     const card = page.locator('[data-hero-league-strip] [data-crown-offset="0"]');
     const originalUrl = page.url();
     await card.focus();
@@ -1562,10 +1566,10 @@ test('crown preview prioritises live then upcoming then finished before all leag
       competitors: [{ homeAway: 'home', score: '2', team: { displayName: home } }, { homeAway: 'away', score: '1', team: { displayName: away } }],
     }],
   });
-  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'uefa.europa' ? [
-    event('crown-live', 'Crystal Palace', 'Hoffenheim', 'in', '2026-11-05T17:45:00Z'),
-    event('crown-next', 'Celtic', 'Besiktas', 'pre', '2026-11-05T20:00:00Z'),
-    event('crown-done', 'Benfica', 'Lech Poznan', 'post', '2026-11-05T17:45:00Z'),
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'eng.1' ? [
+    event('crown-live', 'Nottingham Forest', 'Manchester City', 'in', '2026-11-07T17:30:00Z'),
+    event('crown-next', 'Arsenal', 'Hull City', 'pre', '2026-11-07T15:00:00Z'),
+    event('crown-done', 'Leeds United', 'Tottenham Hotspur', 'post', '2026-11-07T12:30:00Z'),
   ] : [] }) }));
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -1576,10 +1580,10 @@ test('crown preview prioritises live then upcoming then finished before all leag
     await expect(cards.first()).toHaveAttribute('data-crown-state', 'live');
     await expect(cards.nth(1)).toHaveAttribute('data-crown-state', 'scheduled');
     await expect(cards.nth(2)).toHaveAttribute('data-crown-state', 'finished');
-    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(17);
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
     await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(11);
     const kinds = await cards.evaluateAll(els => els.map(el => el.getAttribute('data-crown-kind')));
-    expect(kinds).toEqual([...Array(17).fill('match'), ...Array(11).fill('league')]);
+    expect(kinds).toEqual([...Array(8).fill('match'), ...Array(11).fill('league')]);
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-state', 'live');
     await strip.locator('[data-crown-offset="0"]').press('Enter');
     const dialog = page.getByRole('dialog', { name: /عرض المواجهة/ });
@@ -1594,11 +1598,11 @@ test('fullscreen match shows sourced goals and cards beside the correct teams on
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   let includeDetails = true;
   const incident = (team: string, player: string, minute: string, flag: string) => ({ team: { id: team }, athletesInvolved: [{ displayName: player }], clock: { displayValue: minute }, [flag]: true });
-  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'uefa.europa' ? [{
-    id: 'crown-incidents', date: '2026-11-05T17:45:00Z', competitions: [{
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: new URL(route.request().url()).searchParams.get('league') === 'esp.1' ? [{
+    id: 'crown-incidents', date: '2026-11-07T20:00:00Z', competitions: [{
       status: { displayClock: '67′', type: { state: 'in', completed: false, name: 'STATUS_IN_PROGRESS' } },
-      competitors: [{ id: '4325', homeAway: 'home', score: '1', team: { displayName: 'Ferencvárosi TC' } }, { id: '439', homeAway: 'away', score: '0', team: { displayName: 'AC Milan' } }],
-      ...(includeDetails ? { details: [incident('4325', 'Source Scorer', "45'+2'", 'scoringPlay'), incident('4325', 'Source Yellow', "53'", 'yellowCard'), incident('439', 'Source Red', "61'", 'redCard'), { scoringPlay: true, team: { id: '4325' } }] } : {}),
+      competitors: [{ id: '86', homeAway: 'home', score: '1', team: { displayName: 'Real Madrid' } }, { id: '82', homeAway: 'away', score: '0', team: { displayName: 'Valencia' } }],
+      ...(includeDetails ? { details: [incident('86', 'Source Scorer', "45'+2'", 'scoringPlay'), incident('86', 'Source Yellow', "53'", 'yellowCard'), incident('82', 'Source Red', "61'", 'redCard'), { scoringPlay: true, team: { id: '86' } }] } : {}),
     }],
   }] : [] }) }));
   for (const width of [390, 1440]) {
@@ -1611,8 +1615,8 @@ test('fullscreen match shows sourced goals and cards beside the correct teams on
     await front.press('Enter');
     const dialog = page.getByRole('dialog', { name: /عرض المواجهة/ });
     const teams = dialog.locator('.hs-crown-match-team');
-    await expect(teams.first()).toContainText('فرينسفاروش');
-    await expect(teams.last()).toContainText('ميلان');
+    await expect(teams.first()).toContainText('ريال مدريد');
+    await expect(teams.last()).toContainText('فالنسيا');
     await expect(teams.first().locator('[data-incident-kind="goal"]')).toContainText('Source Scorer');
     await expect(teams.first().locator('[data-incident-kind="goal"]')).toContainText("45'+2'");
     await expect(teams.first().locator('[data-incident-kind="yellow"]')).toContainText('Source Yellow');
@@ -1629,32 +1633,36 @@ test('fullscreen match shows sourced goals and cards beside the correct teams on
   await expect(page.getByRole('dialog').locator('.crown-team-incidents')).toHaveCount(0);
 });
 
-test('5 November crown slate adds Europa League marquee matches and keeps only yesterday Champions League', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-11-05T10:00:00Z'));
+test('7 November crown slate carries the Saturday marquee fixtures and hides the 4-5 November slides', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-06T12:00:00Z'));
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ events: [] }) }));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   await strip.scrollIntoViewIfNeeded();
   const names = await strip.locator('[data-crown-card]').allTextContents();
-  const pairs = [
-    ['ميلان', 'فرينسفاروش'], ['ريال سوسيداد', 'ليون'], ['آزد ألكمار', 'يوفنتوس'], ['باير ليفركوزن', 'مرسيليا'],
-    ['كريستال بالاس', 'هوفنهايم'], ['سلتيك', 'بيشتاش'], ['بنفيكا', 'ليخ بوزنان'], ['سندرلاند', 'دينامو زغرب'],
-    ['أيك أثينا', 'ريال مدريد'], ['فنربخشة', 'ليفربول'], ['بوروسيا دورتموند', 'ريال بيتيس'], ['بورتو', 'نابولي'],
-    ['آيندهوفن', 'كلوب بروج'], ['لايبزيغ', 'مانشستر سيتي'], ['لانس', 'كومو'], ['سلافيا براغ', 'أرسنال'], ['فايكينغ', 'صباح'],
-  ];
-  for (const [home, away] of pairs) {
-    expect(names.some(text => text.includes(home) && text.includes(away))).toBe(true);
-  }
   const matchNames = await strip.locator('.hs-crown-match').allTextContents();
-  await expect(strip.locator('.hs-crown-match')).toHaveCount(17);
-  // مواجهات 3 نوفمبر وما قبلها خرجت من الشريط، وصفّ التذكرة يبقى مخفياً
-  expect(names.join(' ')).not.toMatch(/نيوكاسل|إيفرتون|تشيلسي|إنتر|أتلتيكو مدريد|أستون فيلا|مانشستر يونايتد|روما/);
-  // كل شريحة تُسمّي بطولتها من مصدرها: ثماني شرائح لليوم + تسع لأمس
-  expect(matchNames.filter(text => text.includes('الدوري الأوروبي'))).toHaveLength(8);
-  expect(matchNames.filter(text => text.includes('دوري أبطال أوروبا'))).toHaveLength(9);
-  // بطاقة «الدوري الأوروبي» تدخل الشريط كمصدر شرائح جديد، وبطاقات البطولات الثماني كما هي
-  expect(names.filter(text => text.trim() === 'الدوري الأوروبي')).toHaveLength(1);
-  await expect(strip.locator('.hs-crown-card:not(.hs-crown-card--match)')).toHaveCount(11);
+  const pairs = [
+    ['فالنسيا', 'ريال مدريد', 'الدوري الإسباني'],
+    ['نوتنغهام فورست', 'مانشستر سيتي', 'الدوري الإنجليزي'],
+    ['أرسنال', 'هول سيتي', 'الدوري الإنجليزي'],
+    ['ليدز يونايتد', 'توتنهام هوتسبير', 'الدوري الإنجليزي'],
+    ['ماينز', 'بايرن ميونخ', 'الدوري الألماني'],
+    ['بوروسيا دورتموند', 'إلفرسبرج', 'الدوري الألماني'],
+    ['روما', 'ساسولو', 'الدوري الإيطالي'],
+    ['باريس سان جيرمان', 'تروا', 'الدوري الفرنسي'],
+  ];
+  for (const [home, away, league] of pairs) {
+    expect(matchNames.some(text => text.includes(home) && text.includes(away) && text.includes(league))).toBe(true);
+  }
+  await expect(strip.locator('.hs-crown-match')).toHaveCount(8);
+  // شرائح 4 و5 نوفمبر خرجت من الشريط بطلب المالك، وصفّ التذكرة يبقى مخفياً
+  expect(names.join(' ')).not.toMatch(/ميلان|فرينسفاروش|أيك أثينا|فنربخشة|كلوب بروج|أتلتيكو مدريد|نيوكاسل|أستون فيلا/);
+  expect(matchNames.filter(text => text.includes('الدوري الإنجليزي'))).toHaveLength(3);
+  expect(matchNames.filter(text => text.includes('الدوري الألماني'))).toHaveLength(2);
+  // إخفاء المواجهات لا يخفي بطاقات البطولات: الكأسان الفضيتان والدوري الأوروبي باقون
+  for (const league of ['eng.league_cup', 'afc.champions', 'uefa.europa']) {
+    await expect(strip.locator(`[data-crown-card="${league}"]`)).toBeAttached();
+  }
   await expect(page.locator('.hero-matches-ticket .league-ticket-clash')).toHaveCount(0);
 });

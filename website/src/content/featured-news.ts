@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "الدوري الإسباني",
+    dateLabel: "6 نوفمبر 2026",
+    title: "فليك أمام 3 أزمات في تشكيلة برشلونة قبل أتلتيكو مدريد",
+    description: "هانز فليك يواجه ثلاثة قرارات صعبة قبل مواجهة أتلتيكو مدريد الأحد، مع تأكد غياب جول كوندي بسبب إصابة الكاحل وعدم عودته قبل التوقف الدولي.",
+    href: "news/barcelona-atletico-flick-selection-2026/",
+  },
+  {
     category: "انتقالات",
     dateLabel: "5 نوفمبر 2026",
     title: "بايرن ميونخ يمدد عقد هاري كين حتى 2029 رسمياً",

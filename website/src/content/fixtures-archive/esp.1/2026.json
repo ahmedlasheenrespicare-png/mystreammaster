@@ -2077,6 +2077,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261108&limit=500"
       },
       "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401882805",
+      "date": "2026-11-20T20:00:00.000Z",
+      "home": {
+        "id": "93",
+        "name": "Athletic Club"
+      },
+      "away": {
+        "id": "88",
+        "name": "Espanyol"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261120&limit=500"
+      },
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     }
   ]
 }

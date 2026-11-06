@@ -2190,10 +2190,10 @@
         "name": "Indonesia"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "cancelled",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -2201,7 +2201,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
       },
-      "fetchedAt": "2026-10-30T10:02:53.684Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401931957",
@@ -2804,6 +2804,31 @@
       "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
+      "id": "401921304",
+      "date": "2026-11-17T23:00:00.000Z",
+      "home": {
+        "id": "207",
+        "name": "Chile"
+      },
+      "away": {
+        "id": "208",
+        "name": "Colombia"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
+      },
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
+    },
+    {
       "id": "401930899",
       "date": "2026-11-17T23:30:00.000Z",
       "home": {
@@ -2852,31 +2877,6 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
       },
       "fetchedAt": "2026-11-04T10:56:52.373Z"
-    },
-    {
-      "id": "401921304",
-      "date": "2026-11-19T20:00:00.000Z",
-      "home": {
-        "id": "207",
-        "name": "Chile"
-      },
-      "away": {
-        "id": "208",
-        "name": "Colombia"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fifa.friendly",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261119&limit=500"
-      },
-      "fetchedAt": "2026-11-05T10:57:29.571Z"
     }
   ]
 }

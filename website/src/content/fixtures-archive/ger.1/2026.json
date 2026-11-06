@@ -1847,6 +1847,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261108&limit=500"
       },
       "fetchedAt": "2026-10-25T08:26:33.492Z"
+    },
+    {
+      "id": "401884736",
+      "date": "2026-11-20T19:30:00.000Z",
+      "home": {
+        "id": "132",
+        "name": "Bayern Munich"
+      },
+      "away": {
+        "id": "122",
+        "name": "FC Cologne"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261120&limit=500"
+      },
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     }
   ]
 }

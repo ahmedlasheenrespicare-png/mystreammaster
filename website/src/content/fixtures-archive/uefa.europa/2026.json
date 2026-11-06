@@ -940,18 +940,18 @@
         "name": "TSG Hoffenheim"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 18741,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915527",
@@ -965,18 +965,18 @@
         "name": "Viktoria Plzen"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 6461,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915528",
@@ -990,18 +990,18 @@
         "name": "AFC Bournemouth"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 3
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 17377,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915534",
@@ -1015,18 +1015,18 @@
         "name": "Ferencvaros"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 49372,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915535",
@@ -1040,18 +1040,18 @@
         "name": "Omonia Nicosia"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 11442,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915536",
@@ -1065,10 +1065,10 @@
         "name": "Jagiellonia Bialystok"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -1076,7 +1076,7 @@
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915537",
@@ -1090,18 +1090,18 @@
         "name": "Lyon"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 30878,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915538",
@@ -1115,18 +1115,18 @@
         "name": "RB Salzburg"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 14690,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915522",
@@ -1140,18 +1140,18 @@
         "name": "Besiktas"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 44394,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915523",
@@ -1165,18 +1165,18 @@
         "name": "Dinamo Zagreb"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 44269,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915524",
@@ -1190,18 +1190,18 @@
         "name": "NK Celje"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 3
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 12977,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915525",
@@ -1215,18 +1215,18 @@
         "name": "Lech Poznan"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 53851,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915529",
@@ -1240,18 +1240,18 @@
         "name": "Juventus"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 18954,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915530",
@@ -1265,18 +1265,18 @@
         "name": "Ararat-Armenia"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 3,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 1679,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915531",
@@ -1290,18 +1290,18 @@
         "name": "Union St.-Gilloise"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 19661,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915532",
@@ -1315,18 +1315,18 @@
         "name": "OFI Crete"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 1371,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
       "id": "401915533",
@@ -1340,18 +1340,18 @@
         "name": "Marseille"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 1
       },
-      "status": "scheduled",
-      "attendance": 0,
+      "status": "finished",
+      "attendance": 28758,
       "statistics": null,
       "source": {
         "provider": "ESPN",
         "leagueId": "uefa.europa",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard?dates=20261105&limit=500"
       },
-      "fetchedAt": "2026-10-22T08:38:27.221Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     }
   ]
 }

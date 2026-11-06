@@ -18,6 +18,7 @@ const team = (name: string, tokens: string[], badge = '') => ({
 });
 
 /* ── أرشيف الجولات الأوروبية (3–5 نوفمبر) — محفوظة للتوثيق، غير مختارة حالياً ── */
+
 const pairs = [
   [team('أيك أثينا', ['aek', 'أيك', 'ايك']), team('ريال مدريد', ['real madrid', 'ريال مدريد'], 'real-madrid-badge')],
   [team('فنربخشة', ['fenerbah', 'فنربخشة']), team('ليفربول', ['liverpool', 'ليفربول'], 'liverpool-badge')],
@@ -67,6 +68,23 @@ export const NOVEMBER_7_CROWN_CLASHES: FeaturedClash[] = november7Pairs.map(([ho
   eyebrow, home, away, source, date: '2026-11-07',
 }));
 
+/* ── الأحد 8 نوفمبر 2026 — قمم الدوريات الأوروبية ────────────────────────────
+   الكلاسيكو الإسباني وقمم إيطاليا وإنجلترا وفرنسا؛ كلها من بطولات يغطّيها
+   مصدر الموقع، فتُجاء مواعيدها ونتائجها من نفس لوحة المواعيد. */
+const november8Pairs: Array<[ReturnType<typeof team>, ReturnType<typeof team>, string, string]> = [
+  [team('أتلتيكو مدريد', ['atletico', 'atlético', 'أتلتيكو', 'اتلتيكو'], 'atletico-madrid-badge'), team('برشلونة', ['barcelona', 'برشلونة'], 'barcelona-badge'), 'الدوري الإسباني', 'esp.1'],
+  [team('فيورنتينا', ['fiorentina', 'فيورنتينا'], 'fiorentina-badge'), team('يوفنتوس', ['juventus', 'يوفنتوس']), 'الدوري الإيطالي', 'ita.1'],
+  [team('إنتر ميلان', ['inter milan', 'internazionale', 'إنتر', 'انتر'], 'internazionale-club-badge'), team('كومو', ['como', 'كومو']), 'الدوري الإيطالي', 'ita.1'],
+  [team('نابولي', ['napoli', 'نابولي']), team('لاتسيو', ['lazio', 'لاتسيو']), 'الدوري الإيطالي', 'ita.1'],
+  [team('مانشستر يونايتد', ['manchester united', 'مانشستر يونايتد'], 'manchester-united-badge'), team('أستون فيلا', ['aston villa', 'أستون فيلا', 'استون فيلا'], 'aston-villa-badge'), 'الدوري الإنجليزي', 'eng.1'],
+  [team('كريستال بالاس', ['crystal palace', 'كريستال بالاس']), team('ليفربول', ['liverpool', 'ليفربول'], 'liverpool-badge'), 'الدوري الإنجليزي', 'eng.1'],
+  [team('سندرلاند', ['sunderland', 'سندرلاند']), team('تشيلسي', ['chelsea', 'تشيلسي'], 'chelsea-badge'), 'الدوري الإنجليزي', 'eng.1'],
+  [team('لانس', ['lens', 'لانس']), team('مرسيليا', ['marseille', 'olympique de marseille', 'مرسيليا', 'مارسيليا']), 'الدوري الفرنسي', 'fra.1'],
+];
+export const NOVEMBER_8_CROWN_CLASHES: FeaturedClash[] = november8Pairs.map(([home, away, eyebrow, source]) => ({
+  eyebrow, home, away, source, date: '2026-11-08',
+}));
+
 /* بطاقات البطولات التي تبقى في الشريط حتى بعد إخفاء مواجهاتها: هي بطولات لا
    شرائح مواجهات، وقد اعتمدها المالك في الطلبين #346 و#347 (الكأسان الفضيتان)
    وأُضيف لها الدوري الأوروبي ليبقى شعاره بعد إخفاء شرائح 5 نوفمبر. */
@@ -76,14 +94,16 @@ export const CROWN_LEAGUE_CARDS: readonly { id: string; name: string }[] = [
   { id: 'uefa.europa', name: 'الدوري الأوروبي' },
 ];
 
-/* طلب المالك (6 نوفمبر): شرائح أبرز مواجهات غدًا السبت فقط، وإخفاء شرائح
-   دوري أبطال أوروبا (4 نوفمبر) والدوري الأوروبي (5 نوفمبر) من هذا الشريط وحده —
-   شرائح التذكرة والأخبار خارج هذا الملف لا تتغيّر. */
+/* طلب المالك (6 نوفمبر): شرائح أبرز مواجهات السبت، ثم أضيفت قمم الأحد
+   (7–8 نوفمبر) بطلبه. شرائح دوري أبطال أوروبا (4 نوفمبر) والدوري الأوروبي
+   (5 نوفمبر) تبقى مخفية من هذا الشريط وحده — شرائح التذكرة والأخبار خارج
+   هذا الملف لا تتغيّر. */
+const WEEKEND_DAYS = ['2026-11-07', '2026-11-08'];
 const clashKey = (clash: FeaturedClash) => `${clash.home.name}|${clash.away.name}`;
 export function novemberCrownClashes(previous: FeaturedClash[]): FeaturedClash[] {
-  const selected = NOVEMBER_7_CROWN_CLASHES;
+  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES];
   const seen = new Set(selected.map(clashKey));
-  // أي مواجهة سابقة تحمل تاريخ الغد تُسمح بها، بلا تكرار لبطاقة موجودة.
-  const kept = previous.filter(clash => clash.date === '2026-11-07');
+  // أي مواجهة سابقة تحمل تاريخ اليوم أو الغد تُسمح بها، بلا تكرار لبطاقة موجودة.
+  const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? ''));
   return [...selected, ...kept.filter(clash => !seen.has(clashKey(clash)))];
 }

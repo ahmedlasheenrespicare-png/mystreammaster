@@ -1104,7 +1104,7 @@ test('crown keeps all match and league cards with league identities after match 
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
     await strip.scrollIntoViewIfNeeded();
-    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(16);
     await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(11);
     const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
     const firstLeague = sequence.findIndex(slide => slide.kind === 'league');
@@ -1191,7 +1191,7 @@ test('background crown and ticket slides pause decorative animations without hid
   await expect(hiddenBadge).toHaveCSS('animation-play-state', 'paused');
   await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
   await expect(strip.locator('[data-crown-offset="0"] .hs-crown-match-heading')).toHaveCSS('animation-play-state', 'running');
-  await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
+  await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(16);
   // بطاقات مواجهات صف التذكرة مخفية بطلب المالك: تبقى شرائح الأخبار ظاهرة بلا إخفاء للمحتوى
   await expect(page.locator('.home-matches-ticket .league-ticket-slide').first()).toBeVisible();
 });
@@ -1264,10 +1264,12 @@ test('first visit defaults animations on while preserving a saved visitor prefer
 
 test('crown match cards use their league emblem as background without site branding', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
+  // الشريط يطول هذا الأسبوع إلى 27 بطاقة: بلا إطفاء التدوير يتنافس النقر مع التبديل التلقائي
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const cards = strip.locator('[data-crown-kind="match"]');
-  await expect(cards).toHaveCount(8);
+  await expect(cards).toHaveCount(16);
   await expect(cards.locator('.league-ticket-wordmark')).toHaveCount(0);
   await expect(cards).not.toContainText(['ستريم ماستر']);
   for (const card of await cards.all()) {
@@ -1397,7 +1399,7 @@ test('home match slides remain exclusive to crown when ticket-row matches are hi
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
-    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(16);
     await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
     await expect(page.locator('.home-matches-ticket .league-ticket-carousel')).toBeVisible();
     const sequence = await strip.locator('[data-crown-card]').evaluateAll(cards => cards.map(card => ({ league: card.getAttribute('data-crown-league'), kind: card.getAttribute('data-crown-kind') })));
@@ -1580,10 +1582,10 @@ test('crown preview prioritises live then upcoming then finished before all leag
     await expect(cards.first()).toHaveAttribute('data-crown-state', 'live');
     await expect(cards.nth(1)).toHaveAttribute('data-crown-state', 'scheduled');
     await expect(cards.nth(2)).toHaveAttribute('data-crown-state', 'finished');
-    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(8);
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(16);
     await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(11);
     const kinds = await cards.evaluateAll(els => els.map(el => el.getAttribute('data-crown-kind')));
-    expect(kinds).toEqual([...Array(8).fill('match'), ...Array(11).fill('league')]);
+    expect(kinds).toEqual([...Array(16).fill('match'), ...Array(11).fill('league')]);
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-state', 'live');
     await strip.locator('[data-crown-offset="0"]').press('Enter');
     const dialog = page.getByRole('dialog', { name: /عرض المواجهة/ });
@@ -1633,7 +1635,7 @@ test('fullscreen match shows sourced goals and cards beside the correct teams on
   await expect(page.getByRole('dialog').locator('.crown-team-incidents')).toHaveCount(0);
 });
 
-test('7 November crown slate carries the Saturday marquee fixtures and hides the 4-5 November slides', async ({ page }) => {
+test('weekend crown slate carries Saturday marquee fixtures and Sunday summits, hiding the 4-5 November slides', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-06T12:00:00Z'));
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ events: [] }) }));
@@ -1642,24 +1644,41 @@ test('7 November crown slate carries the Saturday marquee fixtures and hides the
   await strip.scrollIntoViewIfNeeded();
   const names = await strip.locator('[data-crown-card]').allTextContents();
   const matchNames = await strip.locator('.hs-crown-match').allTextContents();
-  const pairs = [
-    ['فالنسيا', 'ريال مدريد', 'الدوري الإسباني'],
-    ['نوتنغهام فورست', 'مانشستر سيتي', 'الدوري الإنجليزي'],
-    ['أرسنال', 'هول سيتي', 'الدوري الإنجليزي'],
-    ['ليدز يونايتد', 'توتنهام هوتسبير', 'الدوري الإنجليزي'],
-    ['ماينز', 'بايرن ميونخ', 'الدوري الألماني'],
-    ['بوروسيا دورتموند', 'إلفرسبرج', 'الدوري الألماني'],
-    ['روما', 'ساسولو', 'الدوري الإيطالي'],
-    ['باريس سان جيرمان', 'تروا', 'الدوري الفرنسي'],
+  const weekend = [
+    ['فالنسيا', 'ريال مدريد', 'الدوري الإسباني', '2026-11-07'],
+    ['نوتنغهام فورست', 'مانشستر سيتي', 'الدوري الإنجليزي', '2026-11-07'],
+    ['أرسنال', 'هول سيتي', 'الدوري الإنجليزي', '2026-11-07'],
+    ['ليدز يونايتد', 'توتنهام هوتسبير', 'الدوري الإنجليزي', '2026-11-07'],
+    ['ماينز', 'بايرن ميونخ', 'الدوري الألماني', '2026-11-07'],
+    ['بوروسيا دورتموند', 'إلفرسبرج', 'الدوري الألماني', '2026-11-07'],
+    ['روما', 'ساسولو', 'الدوري الإيطالي', '2026-11-07'],
+    ['باريس سان جيرمان', 'تروا', 'الدوري الفرنسي', '2026-11-07'],
+    ['أتلتيكو مدريد', 'برشلونة', 'الدوري الإسباني', '2026-11-08'],
+    ['فيورنتينا', 'يوفنتوس', 'الدوري الإيطالي', '2026-11-08'],
+    ['إنتر ميلان', 'كومو', 'الدوري الإيطالي', '2026-11-08'],
+    ['نابولي', 'لاتسيو', 'الدوري الإيطالي', '2026-11-08'],
+    ['مانشستر يونايتد', 'أستون فيلا', 'الدوري الإنجليزي', '2026-11-08'],
+    ['كريستال بالاس', 'ليفربول', 'الدوري الإنجليزي', '2026-11-08'],
+    ['سندرلاند', 'تشيلسي', 'الدوري الإنجليزي', '2026-11-08'],
+    ['لانس', 'مرسيليا', 'الدوري الفرنسي', '2026-11-08'],
   ];
-  for (const [home, away, league] of pairs) {
-    expect(matchNames.some(text => text.includes(home) && text.includes(away) && text.includes(league))).toBe(true);
+  for (const [home, away, league, date] of weekend) {
+    const slide = matchNames.find(text => text.includes(home) && text.includes(away));
+    expect(slide, `${home} × ${away}`).toBeDefined();
+    expect(slide).toContain(league);
+    expect(slide).toContain(date);
   }
-  await expect(strip.locator('.hs-crown-match')).toHaveCount(8);
-  // شرائح 4 و5 نوفمبر خرجت من الشريط بطلب المالك، وصفّ التذكرة يبقى مخفياً
-  expect(names.join(' ')).not.toMatch(/ميلان|فرينسفاروش|أيك أثينا|فنربخشة|كلوب بروج|أتلتيكو مدريد|نيوكاسل|أستون فيلا/);
-  expect(matchNames.filter(text => text.includes('الدوري الإنجليزي'))).toHaveLength(3);
+  await expect(strip.locator('.hs-crown-match')).toHaveCount(16);
+  // شرائح 4 و5 نوفمبر خرجت من الشريط بطلب المالك — يُفحص اقتران الفريقين لا اسم النادي مفرداً
+  expect(names.join(' ')).not.toMatch(/بين ميلان وفرينسفاروش|بين آزد ألكمار ويوفنتوس|بين باير ليفركوزن ومرسيليا|بين أيك أثينا وريال مدريد|بين بوروسيا دورتموند وريال بيتيس|بين سندرلاند ودينامو زغرب|بين فيكينغ وصباح/);
+  // وصفّ تذكرة الرئيسية تبقى بلا بطاقات مواجهات (نيوكاسل × إيفرتون مثالا)
+  expect(names.join(' ')).not.toMatch(/نيوكاسل|أتلتيكو مدريد وبايرن ميونخ|مانشستر يونايتد وروما/);
+  // كل شريحة تُسمّي بطولتها من مصدرها، والتوزيع كما في جدول نهاية الأسبوع
+  expect(matchNames.filter(text => text.includes('الدوري الإنجليزي'))).toHaveLength(6);
+  expect(matchNames.filter(text => text.includes('الدوري الإيطالي'))).toHaveLength(4);
   expect(matchNames.filter(text => text.includes('الدوري الألماني'))).toHaveLength(2);
+  expect(matchNames.filter(text => text.includes('الدوري الإسباني'))).toHaveLength(2);
+  expect(matchNames.filter(text => text.includes('الدوري الفرنسي'))).toHaveLength(2);
   // إخفاء المواجهات لا يخفي بطاقات البطولات: الكأسان الفضيتان والدوري الأوروبي باقون
   for (const league of ['eng.league_cup', 'afc.champions', 'uefa.europa']) {
     await expect(strip.locator(`[data-crown-card="${league}"]`)).toBeAttached();

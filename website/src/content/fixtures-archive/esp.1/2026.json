@@ -1840,18 +1840,29 @@
         "name": "Alavés"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 38803,
+      "statistics": {
+        "home": {
+          "possession": 60.1,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 39.9,
+          "shots": 9,
+          "passAccuracy": 0.6
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261106&limit=500"
       },
-      "fetchedAt": "2026-10-23T08:34:10.994Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
       "id": "401882812",
@@ -2102,6 +2113,106 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261120&limit=500"
       },
       "fetchedAt": "2026-11-06T10:54:23.718Z"
+    },
+    {
+      "id": "401882806",
+      "date": "2026-11-21T13:00:00.000Z",
+      "home": {
+        "id": "96",
+        "name": "Alavés"
+      },
+      "away": {
+        "id": "90",
+        "name": "Deportivo"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401882799",
+      "date": "2026-11-21T15:15:00.000Z",
+      "home": {
+        "id": "101",
+        "name": "Rayo Vallecano"
+      },
+      "away": {
+        "id": "94",
+        "name": "Valencia"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401882797",
+      "date": "2026-11-21T17:30:00.000Z",
+      "home": {
+        "id": "243",
+        "name": "Sevilla"
+      },
+      "away": {
+        "id": "244",
+        "name": "Real Betis"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401882798",
+      "date": "2026-11-21T20:00:00.000Z",
+      "home": {
+        "id": "86",
+        "name": "Real Madrid"
+      },
+      "away": {
+        "id": "85",
+        "name": "Celta Vigo"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     }
   ]
 }

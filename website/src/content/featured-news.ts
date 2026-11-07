@@ -38,6 +38,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "الاتحاد المصري يُنهي مهمة حسام حسن ويعيّن علي ماهر",
     description: "الاتحاد المصري يعلن إنهاء مهمة حسام حسن وجهازه الفني والإداري مع منتخب مصر، وتكليف علي ماهر بقيادة الفراعنة خلال المرحلة المقبلة، قبل مواجهتي مالاوي في تصفيات أمم إفريقيا 2027.",
     href: "news/egypt-hossam-hassan-ali-maher-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/egy-maher-named.webp", alt: "علي ماهر يصفّق لجماهير مصر بعد تكليفه بقيادة الفراعنة خلفاً لحسام حسن" },
+],
   },
   {
     category: "الدوري الإسباني",
@@ -45,6 +49,10 @@ export const FEATURED_NEWS: FeaturedNewsItem[] = [
     title: "فليك أمام 3 أزمات في تشكيلة برشلونة قبل أتلتيكو مدريد",
     description: "هانز فليك يواجه ثلاثة قرارات صعبة قبل مواجهة أتلتيكو مدريد الأحد، مع تأكد غياب جول كوندي بسبب إصابة الكاحل وعدم عودته قبل التوقف الدولي.",
     href: "news/barcelona-atletico-flick-selection-2026/",
+fullImage: true,
+images: [
+  { src: "images/players/esp-kounde-out.webp", alt: "جول كوندي بقميص برشلونة وهو يحمل الكرة قبل تأكد غيابه عن مواجهة أتلتيكو مدريد بإصابة الكاحل" },
+],
   },
   {
     category: "انتقالات",

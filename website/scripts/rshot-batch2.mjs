@@ -1,18 +1,16 @@
-import sparticuz from "@sparticuz/chromium";
+import sparticuz, { inflate } from "@sparticuz/chromium";
 import { chromium } from "playwright";
+import path from "node:path";
 import { mkdirSync } from "node:fs";
 
-process.env.LD_LIBRARY_PATH = "/tmp/al2023/lib:" + (process.env.LD_LIBRARY_PATH || "");
+const libraries = await inflate(path.resolve("node_modules/@sparticuz/chromium/bin/al2023.tar.br"));
+process.env.LD_LIBRARY_PATH = `${libraries}/lib:` + (process.env.LD_LIBRARY_PATH || "");
 process.env.FONTCONFIG_PATH = "/tmp/fonts";
 process.env.HOME = process.env.HOME || "/tmp";
 
 const SLIDES = [
-  ["bayern-kane-contract-2029-2026", "s1-kane"],
-  ["manchester-city-leipzig-3-2-2026", "s2-haaland"],
-  ["real-madrid-aek-athens-3-2-2026", "s3-valverde"],
-  ["fenerbahce-liverpool-3-2-2026", "s4-muriqi"],
-  ["como-lens-9-1-2026", "s5-douvikas"],
-  ["ronaldo-international-retirement-2026", "s6-ronaldo"],
+  ["egypt-hossam-hassan-ali-maher-2026", "b4-s1-maher"],
+  ["barcelona-atletico-flick-selection-2026", "b4-s2-kounde"],
 ];
 
 mkdirSync("/home/user/shots", { recursive: true });
@@ -20,6 +18,7 @@ mkdirSync("/home/user/shots", { recursive: true });
 const browser = await chromium.launch({
   executablePath: await sparticuz.executablePath(),
   args: [...sparticuz.args, "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+  env: { ...process.env, LD_LIBRARY_PATH: `${libraries}/lib:${process.env.LD_LIBRARY_PATH || ""}` },
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 

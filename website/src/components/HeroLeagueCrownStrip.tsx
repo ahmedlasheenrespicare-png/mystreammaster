@@ -352,6 +352,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
+  /* الخلفية تتبع البطولة النشطة: نفس لونَي الكارت (الهالة وتدرّج الشريط) */
+  const shellItem = items[active] ?? items[0];
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const expandedItem = items.find(item => item.key === expandedKey);
   const [autoplayStopped, setAutoplayStopped] = useState(false);
@@ -459,7 +461,12 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     >
       <div
         className={`hs-crown-shell${dragging ? " is-dragging" : ""}`}
-        style={dragX !== 0 ? ({ "--hs-drag-x": `${dragX}px` } as CSSProperties) : undefined}
+        data-crown-league={shellItem?.leagueId ?? ""}
+        style={{
+          ...(dragX !== 0 ? { "--hs-drag-x": `${dragX}px` } : null),
+          "--hs-shell-glow": shellItem?.stageGlow ?? "",
+          "--hs-shell-split": shellItem?.splitGradient ?? "",
+        } as CSSProperties}
         {...interactionPause}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft") {
@@ -471,6 +478,15 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }
         }}
       >
+        {/* خلفية الشريط (زينة خالصة، لا تستقبل أي مؤشر فتظل السحب والضغط كما
+            هما): تلوين بلون بطولة الشريحة النشطة + خطوط ملعب تتحرك بمقدار إيدك
+            عبر --hs-drag-x. لا أنيميشن مستمر في أيٍّ منهما. */}
+        <div className="hs-crown-tint" aria-hidden="true" />
+        <div className="hs-crown-pitch" aria-hidden="true">
+          <span className="hs-crown-pitch-arc hs-crown-pitch-arc--left" />
+          <span className="hs-crown-pitch-arc hs-crown-pitch-arc--right" />
+          <span className="hs-crown-pitch-line" />
+        </div>
         <div
           className="hs-crown-center"
           onPointerDown={(e) => {
@@ -508,6 +524,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 data-crown-kind={item.clashIndex >= 0 ? "match" : "league"}
                 data-crown-state={item.clashIndex >= 0 ? matches[item.clashIndex]?.state ?? "unconfirmed" : undefined}
                 data-crown-offset={offset}
+                draggable={false}
                 role="button"
                 aria-haspopup="dialog"
                 onKeyDown={event => {

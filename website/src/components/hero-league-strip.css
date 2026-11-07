@@ -11,6 +11,19 @@
   text-align: start;
 }
 
+/* ── خلفية الشريط: تلوين البطولة النشطة + خطوط ملعب تتفاعل مع السحب ─────────
+   بياض صريح (طلب المالك) وفوقه طبقتا زينة فقط: لا صورة، لا فيديو، لا أنيميشن
+   مستمر. التلوين قيمة واحدة على الغلاف تنتقل بنعومة عند تبديل الشريحة، والخطوط
+   تتحرك بمقدار يد الزائر وحده — فتبقى تكلفة الرسم صفرًا وهو ساكن. */
+
+/* التلوين معرَّف كـ@property بلون حتى يُنتقل إليه؛ ومن يختار السكون
+   (html[data-motion="off"]) تُبطَل الانتقالات عنده بأصل قاعدة الموقع. */
+@property --hs-shell-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(216, 255, 62, 0);
+}
+
 .hs-crown-shell {
   position: relative;
   display: flex;
@@ -21,17 +34,90 @@
   min-width: 0;
   padding: 11px 14px 9px;
   border-radius: 22px;
-  background:
-    radial-gradient(ellipse 46% 68% at 50% 42%, rgba(216, 255, 62, 0.16), transparent 72%),
-    radial-gradient(ellipse 68% 55% at 50% 88%, rgba(43, 78, 255, 0.08), transparent 76%),
-    linear-gradient(180deg, #faf8f2 0%, #f1eee4 100%);
-  border: 1.5px solid #dfd8c6;
+  background: #ffffff;
+  border: 1.5px solid rgba(216, 255, 62, 0.55);
   box-shadow:
     0 18px 36px -26px rgba(11, 11, 15, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
   user-select: none;
   touch-action: pan-y;
+  transition: --hs-shell-glow 0.7s ease;
+}
+
+/* هالة بلون بطولة الشريحة النشطة + تدرّج خافت نحو الحافة السفلية */
+.hs-crown-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* طبقتان من نفس تلوين البطولة: الداخلية تُبقي هالة محسوسة حول الكارت الأمامي،
+   والخارجية تفردها حتى الأطراف. الاثنتان فوق الأبيض بلا أي تعتيم. */
+  background:
+    radial-gradient(ellipse 44% 78% at center 42%, var(--hs-shell-glow, rgba(216, 255, 62, 0.22)), transparent 78%),
+    radial-gradient(ellipse 62% 92% at center 34%, var(--hs-shell-glow, rgba(216, 255, 62, 0.22)), transparent 74%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, rgba(11, 11, 15, 0.035) 100%);
+}
+
+/* خيط أسفل الشريط من تدرّج البطولة نفسه — صدى شريط الألوان داخل الكروت */
+.hs-crown-tint::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--hs-shell-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+  opacity: 0.65;
+}
+
+/* قوسا منطقة على الطرفين وخط المنتصف. توسّع الطبقة 60px لكل جهة حتى لا تنكشف
+   حافة أثناء التحريك، والميل -0.4 من إزاحة السحب فيبدو المشهد خلف البطاقات. */
+.hs-crown-pitch {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: -60px;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--hs-drag-x, 0px) * -0.4), 0, 0);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hs-crown-shell.is-dragging .hs-crown-pitch {
+  transition: none;
+}
+
+.hs-crown-pitch-arc {
+  position: absolute;
+  top: 50%;
+  width: 180px;
+  height: 180px;
+  margin-top: -90px;
+  border: 1.5px solid rgba(11, 11, 15, 0.085);
+  border-radius: 50%;
+}
+
+.hs-crown-pitch-arc--left {
+  left: -92px;
+}
+
+.hs-crown-pitch-arc--right {
+  right: -92px;
+}
+
+.hs-crown-pitch-line {
+  position: absolute;
+  inset-block: 10px;
+  inset-inline-start: 50%;
+  width: 1.5px;
+  margin-inline-start: -0.75px;
+  background: rgba(11, 11, 15, 0.1);
+}
+
+/* المحتوى فوق طبقتي الزينة دائماً */
+.hs-crown-shell > .hs-crown-center,
+.hs-crown-shell > .hs-crown-controls {
+  position: relative;
+  z-index: 1;
 }
 
 .hs-crown-shell.is-dragging {

@@ -1685,3 +1685,88 @@ test('weekend crown slate carries Saturday marquee fixtures and Sunday summits, 
   }
   await expect(page.locator('.hero-matches-ticket .league-ticket-clash')).toHaveCount(0);
 });
+
+
+test('crown strip background is the active championship tint over a pitch, not the logo', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const shell = page.locator('.hero-crown-strip .hs-crown-shell');
+  await shell.scrollIntoViewIfNeeded();
+
+  // بياض صريح، ولا طبقة شعار ولا طبقة فيلم داخل الخلفية
+  await expect(shell).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(shell.locator(':scope > .hs-crown-brand')).toHaveCount(0);
+  await expect(shell.locator(':scope > .hs-crown-film')).toHaveCount(0);
+  await expect(shell.locator('.sm-newt35')).toHaveCount(0);
+
+  // طبقتا الزينة: خلف المحتوى، لا تستقبلان أي مؤشر، ومخفيتان عن قارئ الشاشة
+  const tint = shell.locator(':scope > .hs-crown-tint');
+  const pitch = shell.locator(':scope > .hs-crown-pitch');
+  await expect(tint).toHaveCount(1);
+  await expect(pitch).toHaveCount(1);
+  for (const layer of [tint, pitch]) {
+    await expect(layer).toHaveCSS('position', 'absolute');
+    await expect(layer).toHaveCSS('z-index', '0');
+    await expect(layer).toHaveCSS('pointer-events', 'none');
+  }
+  await expect(tint).toHaveAttribute('aria-hidden', 'true');
+  await expect(shell.locator(':scope > .hs-crown-center')).toHaveCSS('z-index', '1');
+  await expect(pitch.locator('.hs-crown-pitch-arc--left')).toHaveCount(1);
+  await expect(pitch.locator('.hs-crown-pitch-arc--right')).toHaveCount(1);
+  await expect(pitch.locator('.hs-crown-pitch-line')).toHaveCount(1);
+
+  // التلوين هو لون هالة الشريحة النشطة نفسها (بطاقة مواجهة أو بطاقة بطولة)،
+  // ومعرّف البطولة على الغلاف يرافقها. الطرفان يمرّان على نفس مُطبِّع ألوان.
+  const glowOf = () =>
+    shell.evaluate((el) => {
+      const front = el.querySelector('[data-crown-offset="0"]') as HTMLElement;
+      const norm = (value: string) => {
+        const previous = el.style.color;
+        el.style.color = value;
+        const out = getComputedStyle(el).color;
+        el.style.color = previous;
+        return out;
+      };
+      return {
+        tint: norm(getComputedStyle(el).getPropertyValue('--hs-shell-glow').trim()),
+        front: norm(getComputedStyle(front).getPropertyValue('--hs-glow').trim()),
+        league: el.getAttribute('data-crown-league') || '',
+        card: front.getAttribute('data-crown-card') || '',
+      };
+    });
+  const before = await glowOf();
+  expect(before.tint).toMatch(/^rgba\(/);
+  expect(before.front).toBe(before.tint);
+  // بطاقة البطولة على الغلاف هي مفتاح الشريحة الأمامية (المباريات تُرمَّز «الدوري:فريق:فريق:تاريخ»)
+  expect(before.card === before.league || before.card.startsWith(`${before.league}:`)).toBe(true);
+
+  // بعد التبديل يبقى التلوين ملتصقاً بالشريحة الأمامية الجديدة
+  await shell.locator('.hs-crown-arrow').first().click();
+  await page.waitForTimeout(900);
+  const after = await glowOf();
+  expect(after.front).toBe(after.tint);
+  expect(after.card === after.league || after.card.startsWith(`${after.league}:`)).toBe(true);
+
+  // خطوط الملعب لا تتحرك إلا بمقدار يد الزائر: السحب يبدأ من منطقة البطاقات
+  // نفسها (|dx| > 8 بكسل)، وقيمته محصورة في ±48 بكسل.
+  const center = shell.locator(".hs-crown-center");
+  const centerBox = await center.boundingBox();
+  expect(centerBox).not.toBeNull();
+  const idle = await pitch.evaluate((el) => getComputedStyle(el).transform);
+  expect(idle).toBe("matrix(1, 0, 0, 1, 0, 0)");
+  await page.mouse.move(centerBox!.x + centerBox!.width / 2, centerBox!.y + centerBox!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(centerBox!.x + centerBox!.width / 2 - 120, centerBox!.y + centerBox!.height / 2, {
+    steps: 12,
+  });
+  await expect
+    .poll(async () => await pitch.evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 })
+    .not.toBe(idle);
+  // الإزاحة معاكسة للسحب ومحصورة في ±48 → أدنى قيمة ممكنة -48px
+  // الإزاحة معاكسة للسحب وأصغر منها (×0.4) ومحصورة في ±48 → 19.2px
+  expect(await pitch.evaluate((el) => getComputedStyle(el).transform)).toBe("matrix(1, 0, 0, 1, 19.2, 0)");
+  await page.mouse.up();
+
+  // الطبقة المتمدّدة خارج الإطار لا تسبّب أي تجاوز أفقي
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+});

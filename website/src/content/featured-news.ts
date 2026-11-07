@@ -33,6 +33,13 @@ export interface FeaturedNewsItem {
 
 export const FEATURED_NEWS: FeaturedNewsItem[] = [
   {
+    category: "منتخب مصر",
+    dateLabel: "7 نوفمبر 2026",
+    title: "الاتحاد المصري يُنهي مهمة حسام حسن ويعيّن علي ماهر",
+    description: "الاتحاد المصري يعلن إنهاء مهمة حسام حسن وجهازه الفني والإداري مع منتخب مصر، وتكليف علي ماهر بقيادة الفراعنة خلال المرحلة المقبلة، قبل مواجهتي مالاوي في تصفيات أمم إفريقيا 2027.",
+    href: "news/egypt-hossam-hassan-ali-maher-2026/",
+  },
+  {
     category: "الدوري الإسباني",
     dateLabel: "6 نوفمبر 2026",
     title: "فليك أمام 3 أزمات في تشكيلة برشلونة قبل أتلتيكو مدريد",

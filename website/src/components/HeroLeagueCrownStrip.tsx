@@ -345,6 +345,7 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[], ext
 ========================================================================== */
 export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[] } = {}) {
   const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes, extraLeagues);
+  const standingsMap = useLiveStandingsMap();
   const matches = useClashes("matches", clashes);
   const matchItems = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
     const clash = clashes[index];
@@ -359,6 +360,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   /* الخلفية تتبع البطولة النشطة: نفس لونَي الكارت (الهالة وتدرّج الشريط) */
   const shellItem = items[active] ?? items[0];
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const [expandedTab, setExpandedTab] = useState<"match" | "standings" | "stats" | null>(null);
   const expandedItem = items.find(item => item.key === expandedKey);
   const [autoplayStopped, setAutoplayStopped] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -568,6 +570,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                   e.preventDefault();
                   e.currentTarget.focus({ preventScroll: true });
                   setSharedActiveIndex(idx);
+                  setExpandedTab(null);
                   setExpandedKey(item.key);
                 }}
               >
@@ -681,6 +684,17 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               </a>
             );
           })}
+          {shellItem && <div className="hs-crown-tabs" role="group" aria-label={`تفاصيل ${shellItem.shortName}`}>
+            {([['match', 'المباراة'], ['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
+              <button key={tab} type="button" aria-haspopup="dialog" onPointerDown={event => event.stopPropagation()} onClick={event => {
+                event.stopPropagation();
+                setExpandedTab(tab);
+                setExpandedKey(shellItem.key);
+              }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                {tab === 'match' ? <><circle cx="12" cy="12" r="9" /><path d="m12 8 3 2.2-1.2 3.5h-3.6L9 10.2 12 8ZM12 3v3M3.5 9l3 1M5 17l2.5-1.5M19 17l-2.5-1.5M20.5 9l-3 1" /></> : tab === 'standings' ? <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M9 4v16M3 14.5h18" /></> : <><path d="M4 20h16M6 17v-5h3v5M11 17V7h3v10M16 17v-8h3v8" /></>}
+              </svg><span>{label}</span></span></button>
+            ))}
+          </div>}
         </div>
 
         <div className="hs-crown-controls">
@@ -708,16 +722,40 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           </button>
         </div>
       </div>
-      {expandedItem && expandedItem.clashIndex < 0 && (
+      {expandedItem && expandedTab === 'standings' && (
+        <CrownFullscreen label={`جدول ترتيب ${expandedItem.shortName}`} closeLabel="إغلاق جدول الترتيب" glow={expandedItem.stageGlow} onClose={() => setExpandedKey(null)}>
+          <CrownStandings item={expandedItem} record={standingsMap[expandedItem.standingsKey]} />
+        </CrownFullscreen>
+      )}
+      {expandedItem && (expandedTab === 'stats' || (expandedTab === null && expandedItem.clashIndex < 0)) && (
         <CrownFullscreen label={`إحصائيات بطولة ${expandedItem.shortName}`} closeLabel="إغلاق إحصائيات البطولة" glow={expandedItem.stageGlow} onClose={() => setExpandedKey(null)}>
           <CrownLeagueDetails item={expandedItem} />
         </CrownFullscreen>
       )}
-      {expandedItem && expandedItem.clashIndex >= 0 && (
+      {expandedItem && expandedTab === 'match' && expandedItem.clashIndex < 0 && (
+        <CrownFullscreen label={`المباراة - ${expandedItem.shortName}`} closeLabel="إغلاق المباراة" glow={expandedItem.stageGlow} onClose={() => setExpandedKey(null)}>
+          <div className="crown-league-details"><h2>المباراة</h2><p>لا توجد مباراة محددة لهذه البطاقة.</p></div>
+        </CrownFullscreen>
+      )}
+      {expandedItem && expandedItem.clashIndex >= 0 && (expandedTab === 'match' || expandedTab === null) && (
         <CrownMatchFullscreen glow={expandedItem.stageGlow} clash={clashes[expandedItem.clashIndex]} match={matches[expandedItem.clashIndex] ?? null} onClose={() => setExpandedKey(null)} />
       )}
     </section>
   );
+}
+
+function CrownStandings({ item, record }: { item: HeroLeagueData; record?: LiveLeagueRecord }) {
+  const table = record?.table;
+  const status = !table ? (record?.status === 'loading' ? 'جارٍ تحميل جدول الترتيب' : 'جدول الترتيب غير متاح لهذه البطولة حالياً')
+    : record?.stale ? 'آخر بيانات متاحة — قد تكون غير محدثة' : record?.source === 'live' ? 'بيانات مباشرة من المصدر' : 'بيانات جدول محفوظة';
+  return <div className="crown-league-details crown-standings" dir="rtl">
+    <h2>جدول ترتيب {item.shortName}</h2>
+    <p className="crown-standings-source" role="status">{status}{table ? ` · ${table.provider} · ${table.season}` : ''}</p>
+    {table && <div className="crown-standings-scroll"><table>
+      <thead><tr><th scope="col">الترتيب</th><th scope="col">الفريق</th><th scope="col">لعب</th><th scope="col">فاز</th><th scope="col">تعادل</th><th scope="col">خسر</th><th scope="col">الفارق</th><th scope="col">النقاط</th></tr></thead>
+      <tbody>{table.entries.map(entry => <tr key={entry.teamId}><td>{entry.rank}</td><th scope="row">{entry.name}</th><td>{entry.played ?? '—'}</td><td>{entry.wins ?? '—'}</td><td>{entry.draws ?? '—'}</td><td>{entry.losses ?? '—'}</td><td>{entry.goalDifference ?? '—'}</td><td>{entry.points ?? '—'}</td></tr>)}</tbody>
+    </table></div>}
+  </div>;
 }
 
 /* ==========================================================================

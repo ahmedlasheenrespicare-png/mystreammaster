@@ -2129,6 +2129,31 @@
       "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
+      "id": "401931957",
+      "date": "2026-11-13T14:10:00.000Z",
+      "home": {
+        "id": "4397",
+        "name": "United Arab Emirates"
+      },
+      "away": {
+        "id": "215",
+        "name": "Honduras"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
       "id": "401931476",
       "date": "2026-11-13T14:30:00.000Z",
       "home": {
@@ -2179,6 +2204,31 @@
       "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
+      "id": "401933636",
+      "date": "2026-11-13T15:00:00.000Z",
+      "home": {
+        "id": "4375",
+        "name": "Iraq"
+      },
+      "away": {
+        "id": "4388",
+        "name": "Lebanon"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
       "id": "401919975",
       "date": "2026-11-13T20:00:00.000Z",
       "home": {
@@ -2202,31 +2252,6 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
       },
       "fetchedAt": "2026-11-06T10:54:23.718Z"
-    },
-    {
-      "id": "401931957",
-      "date": "2026-11-13T20:00:00.000Z",
-      "home": {
-        "id": "4397",
-        "name": "United Arab Emirates"
-      },
-      "away": {
-        "id": "215",
-        "name": "Honduras"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fifa.friendly",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
-      },
-      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "401930876",
@@ -2430,7 +2455,7 @@
     },
     {
       "id": "401932237",
-      "date": "2026-11-14T16:00:00.000Z",
+      "date": "2026-11-14T15:00:00.000Z",
       "home": {
         "id": "6167",
         "name": "Palestine"
@@ -2451,7 +2476,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
       },
-      "fetchedAt": "2026-11-04T10:56:52.373Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
       "id": "401906463",
@@ -2604,6 +2629,31 @@
       "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
+      "id": "401933635",
+      "date": "2026-11-17T13:00:00.000Z",
+      "home": {
+        "id": "4388",
+        "name": "Lebanon"
+      },
+      "away": {
+        "id": "6167",
+        "name": "Palestine"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
       "id": "401916336",
       "date": "2026-11-17T13:10:00.000Z",
       "home": {
@@ -2652,6 +2702,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
       },
       "fetchedAt": "2026-11-04T10:56:52.373Z"
+    },
+    {
+      "id": "401932718",
+      "date": "2026-11-17T14:10:00.000Z",
+      "home": {
+        "id": "4397",
+        "name": "United Arab Emirates"
+      },
+      "away": {
+        "id": "4380",
+        "name": "Syria"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
       "id": "401931495",
@@ -2729,6 +2804,31 @@
       "fetchedAt": "2026-11-04T10:56:52.373Z"
     },
     {
+      "id": "401933615",
+      "date": "2026-11-17T16:15:00.000Z",
+      "home": {
+        "id": "4375",
+        "name": "Iraq"
+      },
+      "away": {
+        "id": "469",
+        "name": "Iran"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
       "id": "401930895",
       "date": "2026-11-17T20:00:00.000Z",
       "home": {
@@ -2763,31 +2863,6 @@
       "away": {
         "id": "215",
         "name": "Honduras"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fifa.friendly",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
-      },
-      "fetchedAt": "2026-11-04T10:56:52.373Z"
-    },
-    {
-      "id": "401932718",
-      "date": "2026-11-17T20:00:00.000Z",
-      "home": {
-        "id": "4397",
-        "name": "United Arab Emirates"
-      },
-      "away": {
-        "id": "4380",
-        "name": "Syria"
       },
       "score": {
         "home": null,

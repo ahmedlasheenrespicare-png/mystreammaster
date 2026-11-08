@@ -1197,6 +1197,7 @@ test('crown match content preserves live RTL scores and scheduled countdown from
 });
 
 test('crown drawer follows the match state: postponed wording, countdown above, live clock, league mark after', async ({ page }) => {
+  test.setTimeout(120000);
   /* الحالات الأربع مُجهَّزة بـroute يمرّ عبر parseScoreboard نفسه (لا JSX مُحرَّف):
      الفيڈ الحي لا يضمن مؤجَّلًا ولا منتهيًا في نافذة الاختبار. الوقت مُثبَّت على
      صافرة البداية + ٦٧:٠٩ لتُقاس الثواني بلا سباق، وكل تاريخ مضبوط ليُعطي عدّادًا
@@ -1282,7 +1283,7 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
   };
 
   const checkTopCenter = async (band: ReturnType<typeof page.locator>) => {
-    for (const width of [1440, 390]) {
+    for (const width of [1440, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
       const drawer = (await band.boundingBox())!;
       const chip = (await band.locator('.hs-crown-slide-chip').boundingBox())!;
@@ -1291,6 +1292,14 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
       expect(Math.abs(chip.x + chip.width / 2 - center)).toBeLessThan(2);
       expect(Math.abs(timer.x + timer.width / 2 - center)).toBeLessThan(2);
       expect(chip.y + chip.height).toBeLessThanOrEqual(timer.y);
+      const league = (await band.locator('.hs-crown-slide-league').boundingBox())!;
+      expect(league.y + league.height).toBeLessThanOrEqual(chip.y + 1);
+      expect(timer.x).toBeGreaterThanOrEqual(drawer.x);
+      expect(timer.x + timer.width).toBeLessThanOrEqual(drawer.x + drawer.width + 1);
+      const groups = await band.locator('.ticket-flip__group').all();
+      const boxes = await Promise.all(groups.map(group => group.boundingBox()));
+      const sorted = boxes.filter((box): box is NonNullable<typeof box> => box !== null).sort((a, b) => a.x - b.x);
+      for (let i = 1; i < sorted.length; i++) expect(sorted[i - 1].x + sorted[i - 1].width).toBeLessThanOrEqual(sorted[i].x + 1);
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
   };
@@ -1313,6 +1322,14 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(front).toHaveAttribute('data-crown-state', 'scheduled');
     await expect(band.locator('.hs-crown-slide-chip')).toHaveText('لم تبدأ');
     await expect(band.locator('.league-ticket-countdown')).toBeVisible();
+    // الظل للنص فقط؛ الدرجان يظلان شفافين بلا ظل صندوق.
+    for (const drawer of [band, bottom]) {
+      await expect(drawer).toHaveCSS('box-shadow', 'none');
+      await expect(drawer).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    }
+    await expect(band.locator('.hs-crown-slide-league')).not.toHaveCSS('text-shadow', 'none');
+    await expect(bottom.locator('.hs-crown-slide-when')).not.toHaveCSS('text-shadow', 'none');
+    await expect(band.locator('.ticket-flip__txt').first()).toHaveCSS('text-shadow', 'rgba(0, 0, 0, 0.45) 0px 1px 1px');
     expect(await band.locator('.ticket-flip__label').allTextContents()).toEqual(['ساعات', 'دقائق', 'ثوانٍ']);
     const clock = (await band.locator('.league-ticket-countdown').textContent()) ?? '';
     for (const part of ['٠٢', '١٣', '٤١']) expect(clock).toContain(part); // ٢:١٣:٤١ حتى الصافرة
@@ -1903,22 +1920,47 @@ test('weekend crown slate carries Saturday marquee fixtures and Sunday summits, 
 });
 
 
+test('enlarged league drawer statistics fit on narrow screens', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const keys = await strip.locator('[data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
+  await selectCrownSlide(page, keys.indexOf('eng.1'));
+  const front = strip.locator('[data-crown-offset="0"]');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const top = front.locator('.hs-crown-slide-band--top');
+    const bottom = front.locator('.hs-crown-slide-band--bottom');
+    const measurements = await top.evaluate(el => {
+      const rect = (selector: string) => el.querySelector(selector)!.getBoundingClientRect();
+      const sides = [...el.querySelectorAll('.lc-top-twin-side')].map(side => side.getBoundingClientRect()).sort((a, b) => a.x - b.x);
+      return { drawer: el.getBoundingClientRect().toJSON(), duel: rect('.lc-top-twin-duel').toJSON(), goals: rect('.lc-top-twin-goals').toJSON(), sides: sides.map(side => side.toJSON()) };
+    });
+    expect(measurements.sides[0].right).toBeLessThanOrEqual(measurements.sides[1].left);
+    expect(measurements.duel.bottom).toBeLessThanOrEqual(measurements.goals.top + 1);
+    expect(measurements.goals.bottom).toBeLessThanOrEqual(measurements.drawer.bottom + 1);
+    expect(await bottom.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await expect(top.locator('.lc-top-metric-val').first()).not.toHaveCSS('text-shadow', 'none');
+    await expect(bottom.locator('.lc-grades-num')).not.toHaveCSS('text-shadow', 'none');
+  }
+});
+
 test('crown strip uses a CSS grass pitch with visible field lines behind its cards', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.goto('/');
   const shell = page.locator('.hero-crown-strip .hs-crown-shell');
   await shell.scrollIntoViewIfNeeded();
 
-  // العشب مرسوم بمسارات SVG وتدرجات، وليس صورة خارجية.
+  // النمط بتدرجات CSS وحبيبات SVG، وليس صورة خارجية.
   const grass = shell.locator(':scope > .hs-crown-grass');
   await expect(grass).toHaveAttribute('aria-hidden', 'true');
   await expect(grass).toHaveCSS('pointer-events', 'none');
-  await expect(grass.locator('.hs-crown-grass-blades')).toHaveCount(4);
-  await expect(grass.locator('.hs-crown-grass-shadows use')).toHaveCount(4);
   await expect(grass.locator('.hs-crown-grass-grain')).toHaveCount(1);
   await expect(grass.locator('feTurbulence')).toHaveCount(1);
   const background = await shell.evaluate(el => getComputedStyle(el).backgroundImage);
-  expect(background).toContain('repeating-linear-gradient');
+  expect(background).toContain('repeating-linear-gradient(45deg');
+  expect(background).toContain('linear-gradient(135deg');
   expect(background).not.toContain('url(');
   await expect(shell.locator(':scope > .hs-crown-brand')).toHaveCount(0);
   await expect(shell.locator(':scope > .hs-crown-film')).toHaveCount(0);

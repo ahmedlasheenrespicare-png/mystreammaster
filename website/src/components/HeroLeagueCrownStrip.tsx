@@ -41,28 +41,6 @@ const STANDINGS_LEAGUE_IDS = STANDINGS_LEAGUES.map((entry) => entry.id);
 const REFRESH_MS = 5 * 60 * 1000;
 const STEP_INTERVAL_MS = 5000;
 
-/* نسيج عشبي مرسوم بالكود، ثابت بين الخادم والمتصفح ولا يستخدم صورة.
-   تُجمع آلاف الشعيرات في أربعة مسارات فقط حتى لا تُثقل DOM أو تحريك الشريط. */
-const CROWN_GRASS_PATHS = (() => {
-  let seed = 0x38a1f52d;
-  const random = () => {
-    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-    return seed / 0x100000000;
-  };
-  const paths: string[][] = [[], [], [], []];
-  for (let i = 0; i < 8500; i++) {
-    const x = random() * 1200;
-    const y = random() * 420;
-    const height = 4 + random() * 10;
-    const bend = (random() - 0.45) * 6;
-    const width = .45 + random() * 1.1;
-    const f = (n: number) => n.toFixed(1);
-    // ورقة مدببة منحنية بدل خط مسطّح؛ ظلّها يُرسم من المسار نفسه أدناه.
-    paths[i % paths.length].push(`M${f(x)} ${f(y)} Q${f(x + bend * .25)} ${f(y - height * .55)} ${f(x + bend)} ${f(y - height)} Q${f(x + bend * .5 + width)} ${f(y - height * .43)} ${f(x + width)} ${f(y)}Z`);
-  }
-  return paths.map(path => path.join(''));
-})();
-
 /* ── مخزن تزامن مشترك بين التاج المداري (أعلى التذكرة) وشريط الإحصائيات (أسفل التذكرة الرئيسية) ── */
 let sharedActiveIndex = 0;
 let sharedSlideLeagues: string[] = [];
@@ -509,17 +487,12 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
             عبر --hs-drag-x. لا أنيميشن مستمر في أيٍّ منهما. */}
         <svg className="hs-crown-grass" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
           <defs>
-            {CROWN_GRASS_PATHS.map((path, index) => <path key={index} id={`crown-grass-shape-${index}`} d={path} />)}
             <filter id="crown-grass-grain" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
               <feTurbulence type="fractalNoise" baseFrequency="0.42 0.68" numOctaves="3" seed="7" />
               <feColorMatrix type="saturate" values="0" />
             </filter>
           </defs>
           <rect className="hs-crown-grass-grain" width="1200" height="420" filter="url(#crown-grass-grain)" />
-          <g className="hs-crown-grass-shadows" transform="translate(1.7 2)">
-            {CROWN_GRASS_PATHS.map((_, index) => <use key={index} href={`#crown-grass-shape-${index}`} />)}
-          </g>
-          {CROWN_GRASS_PATHS.map((_, index) => <use key={index} href={`#crown-grass-shape-${index}`} className={`hs-crown-grass-blades hs-crown-grass-blades--${index}`} />)}
         </svg>
         <div className="hs-crown-tint" aria-hidden="true" />
         <svg className="hs-crown-pitch" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true" focusable="false">

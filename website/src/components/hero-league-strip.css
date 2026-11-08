@@ -34,10 +34,11 @@
   min-width: 0;
   padding: 11px 14px 9px;
   border-radius: 22px;
-  /* طبقة ضوء ناعمة وشرائط قصّ العشب، دون الاعتماد على صورة خارجية. */
+  /* Adapted from chase2k25's cold-quail-77 pattern (Uiverse, MIT):
+     diagonal depth stripes over a 135-degree gradient, in pitch greens. */
   background:
-    linear-gradient(180deg, rgba(32, 72, 30, .10), transparent 28%, transparent 70%, rgba(30, 66, 28, .12)),
-    repeating-linear-gradient(90deg, rgba(119, 164, 91, .62) 0 110px, rgba(102, 150, 80, .62) 110px 220px),
+    repeating-linear-gradient(45deg, transparent 0 20px, rgba(203, 230, 164, .15) 20px 40px),
+    linear-gradient(135deg, rgba(71, 127, 53, .72), rgba(123, 176, 91, .72), rgba(71, 127, 53, .72)),
     #fff;
   border: 1.5px solid rgba(216, 255, 62, 0.55);
   box-shadow:
@@ -49,7 +50,7 @@
   transition: --hs-shell-glow 0.7s ease;
 }
 
-/* خيوط متباينة الطول والانحناء: زخرفة ثابتة خلف الخطوط والتذاكر. */
+/* حبيبات دقيقة فوق التدرج، مرسومة بفلتر SVG ولا تحجب التذاكر. */
 .hs-crown-grass {
   position: absolute;
   inset: 0;
@@ -57,14 +58,8 @@
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: .58;
 }
-.hs-crown-grass-grain { opacity: .22; mix-blend-mode: multiply; }
-.hs-crown-grass-shadows { fill: rgba(30, 70, 30, .18); }
-.hs-crown-grass-blades--0 { fill: rgba(45, 104, 39, .44); }
-.hs-crown-grass-blades--1 { fill: rgba(212, 239, 174, .48); }
-.hs-crown-grass-blades--2 { fill: rgba(79, 137, 57, .48); }
-.hs-crown-grass-blades--3 { fill: rgba(150, 190, 103, .58); }
+.hs-crown-grass-grain { opacity: .12; mix-blend-mode: multiply; }
 
 /* خلفية الشريط بلا هالة حول التذكرة؛ يبقى الخيط الملون عند الحافة فقط. */
 .hs-crown-tint {
@@ -902,26 +897,23 @@ a.hs-crown-wing:hover {
 /* ── الشريحة من ثلاث قطع بأبعاد المرجع نفسه ─────────────────────────────────
    الدرجان نسخة طبق الأصل من .lc-top-drawer و.lc-detail في شريط «أسفل
    التذكرة» بصفحة المواعيد: نفس الحشو والزوايا والظل وتوقيتات الفتح والإغلاق،
-   ويفتحان على الشريحة الأمامية فقط ثم يُغلقان حين تمرّ. القياسات محقَّقة من
-   المرجع نفسه — على 1440: علوي 133px بارز بـ115px فوق الجسم، سفلي 97px
-   متأخر 18px داخله وبارز 79px تحته، والجسم 156px. وعلى 390: 115 / 85 / 141.
+   ويفتحان على الشريحة الأمامية فقط ثم يُغلقان حين تمرّ. زِيد ارتفاع الدرجين
+   لإتاحة مساحة للنصوص والعدادات الأكبر، مع حجز البروز في حشو الشريط.
    الشريط يحجز هذه المسافة في حشوه الداخلي، فلا درج يُقصّ ولا ما أسفل
    الشريط يزيح مليمترًا واحدًا. */
 
 .hs-crown-shell {
   --hs-core-h: 150px;
-  --hs-band-h: 133px;
-  /* 97px هو درج بطاقة المقدمة في المرجع؛ وحين توجد معدّلات المتصدّر يمدّ
-     المرجع نفسه درجَه حتى 131px — فالدرج هنا 106px، لا أقصر من المرجع ولا
-     zائدًا على مساحته المحجوزة. */
-  --hs-band-h-b: 106px;
+  --hs-band-h: 150px;
+  /* مساحة إضافية لنقاط المتصدّر وتفاصيلها بعد تكبير الخط. */
+  --hs-band-h-b: 120px;
   --hs-band-peek: 18px;
   --hs-band-peek-b: 18px;
   --hs-pad-t: 11px;
   --hs-pad-b: 9px;
   --hs-pad-i: 14px;
   --hs-band-radius: 22px;
-  /* فوق: الحشو يحجز بروز الدرج العلوي (133−18). تحت: صف التحكّم يجيء بعد
+  /* فوق: الحشو يحجز بروز الدرج العلوي. تحت: صف التحكّم يجيء بعد
      الجسم مباشرة، فالحجز لازم يكون إزاحة للصفّ نفسه لا حشوًا للغلاف — وإلا
      ارتسم الدرج فوق الأسهم. المسافة الكلية كما هي بالضبط. */
   padding:
@@ -973,6 +965,16 @@ a.hs-crown-wing:hover {
     opacity 0.28s ease 0s,
     transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
     visibility 0s linear 0.4s;
+}
+
+/* عمق خفيف للحروف وحدها، مع بقاء الدرجين بلا خلفية أو ظل صندوق. */
+.hs-crown-slide-band {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .32), 0 2px 2px rgba(0, 0, 0, .18);
+}
+
+/* أرقام العدّاد فاتحة فوق خانات داكنة؛ يستبدل هذا ظلّها المتوهّج الافتراضي. */
+.hs-crown-slide-band .ticket-flip__digit {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .45);
 }
 
 .hs-crown-slide-band > * {
@@ -1071,7 +1073,7 @@ a.hs-crown-wing:hover {
   border-radius: 999px;
   background: #0b0b0f;
   color: #f6f4ec;
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   font-weight: 800;
   line-height: 1.4;
   white-space: nowrap;
@@ -1093,13 +1095,13 @@ a.hs-crown-wing:hover {
 }
 
 .hs-crown-slide-band--top .ticket-flip__digit {
-  width: 0.86rem;
-  height: 1.18rem;
-  font-size: 0.72rem;
+  width: 1rem;
+  height: 1.5rem;
+  font-size: 0.88rem;
 }
 
 .hs-crown-slide-band--top .ticket-flip__label {
-  font-size: 0.44rem;
+  font-size: 0.58rem;
 }
 
 .hs-crown-drawer-league {
@@ -1130,9 +1132,9 @@ a.hs-crown-wing:hover {
   line-clamp: 2;
   margin: 0;
   color: #6b675e;
-  font-size: 0.58rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.4;
   text-align: start;
   overflow: hidden;
 }
@@ -1143,7 +1145,7 @@ a.hs-crown-wing:hover {
 
 .hs-crown-slide-when {
   font-family: var(--font-latin), var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 900;
   color: #0b0b0f;
   overflow: hidden;
@@ -1220,6 +1222,20 @@ a.hs-crown-wing:hover {
   min-width: 0;
 }
 
+/* تكبير إحصائيات البطولة داخل التاج فقط، مع إبقاء العمودين مرنين. */
+.hs-crown-slide-band .lc-top-metric-label { font-size: .68rem; }
+.hs-crown-slide-band .lc-top-metric-val { font-size: 1.08rem; }
+.hs-crown-slide-band .lc-top-metric-unit { font-size: .6rem; }
+.hs-crown-slide-band .lc-top-metric-team { font-size: .66rem; }
+.hs-crown-slide-band .lc-top-twin-goals-label { font-size: .65rem; }
+.hs-crown-slide-band .lc-top-twin-goals-val { font-size: .95rem; }
+.hs-crown-slide-band .lc-top-twin-goals-unit { font-size: .61rem; }
+.hs-crown-slide-band .lc-grades-label,
+.hs-crown-slide-band .lc-grades-meta { font-size: .7rem; }
+.hs-crown-slide-band .lc-grades-num { font-size: 1.45rem; }
+.hs-crown-slide-band .lc-grades-num small { font-size: .72rem; }
+.hs-crown-slide-band .lc-grades-rates { font-size: .65rem; }
+
 /* شريط التاج بلون البطولة أعلى الدرج العلوي — من المرجع نفسه */
 .hs-crown-slide-band > .lc-top-drawer-crown {
   inset-inline: 18px;
@@ -1228,8 +1244,8 @@ a.hs-crown-wing:hover {
 @media (max-width: 640px) {
   .hs-crown-shell {
     --hs-core-h: 135px;
-    --hs-band-h: 115px;
-    --hs-band-h-b: 104px;
+    --hs-band-h: 135px;
+    --hs-band-h-b: 116px;
     --hs-band-peek: 16px;
     --hs-band-peek-b: 11px;
     --hs-pad-t: 9px;

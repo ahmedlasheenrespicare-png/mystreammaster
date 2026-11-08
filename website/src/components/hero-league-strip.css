@@ -45,18 +45,13 @@
   transition: --hs-shell-glow 0.7s ease;
 }
 
-/* هالة بلون بطولة الشريحة النشطة + تدرّج خافت نحو الحافة السفلية */
+/* خلفية الشريط بلا هالة حول التذكرة؛ يبقى الخيط الملون عند الحافة فقط. */
 .hs-crown-tint {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* طبقتان من نفس تلوين البطولة: الداخلية تُبقي هالة محسوسة حول الكارت الأمامي،
-   والخارجية تفردها حتى الأطراف. الاثنتان فوق الأبيض بلا أي تعتيم. */
-  background:
-    radial-gradient(ellipse 44% 78% at center 42%, var(--hs-shell-glow, rgba(216, 255, 62, 0.22)), transparent 78%),
-    radial-gradient(ellipse 62% 92% at center 34%, var(--hs-shell-glow, rgba(216, 255, 62, 0.22)), transparent 74%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, rgba(11, 11, 15, 0.035) 100%);
+  background: transparent;
 }
 
 /* خيط أسفل الشريط من تدرّج البطولة نفسه — صدى شريط الألوان داخل الكروت */
@@ -164,9 +159,7 @@
   z-index: 5;
   opacity: 1;
   transform: translate3d(var(--hs-drag-x, 0px), 0, 0) scale(1);
-  box-shadow:
-    0 20px 36px -16px rgba(11, 11, 15, 0.58),
-    0 0 0 1px rgba(216, 255, 62, 0.32);
+  box-shadow: 0 20px 36px -16px rgba(11, 11, 15, 0.58);
 }
 
 .hs-crown-card[data-crown-offset="0"]:hover {
@@ -216,9 +209,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 9px 11px 8px;
-  background:
-    radial-gradient(circle at 18% 35%, var(--hs-glow, rgba(216, 255, 62, 0.22)), transparent 65%),
-    linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  background: linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
   color: #f6f4ec;
 }
 
@@ -844,7 +835,7 @@ a.hs-crown-wing:hover {
   border-radius: 16.5px 16.5px 0 0;
   display: flex; flex-direction: column; justify-content: space-between;
   padding: 6px 10px; gap: 3px; overflow: hidden;
-  background: radial-gradient(circle at 18% 35%,var(--hs-glow),transparent 65%),linear-gradient(155deg,#0b0b0f,#191d28);
+  background: linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
   color: #f6f4ec; text-align: center;
 }
 .hs-crown-match-art {
@@ -920,8 +911,11 @@ a.hs-crown-wing:hover {
 .hs-crown-match-art[data-match-league-background="eng.league_cup"],
 .hs-crown-match-art[data-match-league-background="afc.champions"] { opacity: .24; }
 
-/* Only the two cup identity cards also carry their competition watermark. */
-.hs-crown-card-top > .hs-crown-cup-background { opacity: .24; }
+/* شعار البطولة كعلامة مائية خلف محتوى بطاقة البطولة. */
+.hs-crown-card-top > .hs-crown-league-background { opacity: .3; }
+.hs-crown-league-background .league-carousel-logo {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+}
 
 
 /* ── الشريحة من ثلاث قطع بأبعاد المرجع نفسه ─────────────────────────────────
@@ -958,6 +952,13 @@ a.hs-crown-wing:hover {
   margin-bottom: calc(var(--hs-band-h-b) - var(--hs-band-peek-b));
 }
 
+/* الجسم وخلفيته في طبقة مستقلة تحت الدرجين الشفافين في البطولات والمباريات. */
+.hs-crown-card > .hs-crown-match,
+.hs-crown-card > .hs-crown-card-top {
+  position: relative;
+  z-index: 0;
+}
+
 /* الجسم = .lc-outline: الارتفاع المحجوز للشريحة نفسها */
 .hs-crown-center {
   height: calc(var(--hs-core-h) + 6px);
@@ -977,11 +978,10 @@ a.hs-crown-wing:hover {
   width: 100%;
   min-height: var(--hs-band-h);
   padding: 10px 9px 25px;
-  border: 1px solid #dfd8c6;
-  border-bottom: 0;
+  border: 0;
   border-radius: var(--hs-band-radius) var(--hs-band-radius) 0 0;
-  background: linear-gradient(180deg, #f3efe3 0%, #fcfbf7 100%);
-  box-shadow: 0 -12px 24px -14px rgba(11, 11, 15, 0.25);
+  background: transparent;
+  box-shadow: none;
   color: #0b0b0f;
   opacity: 0;
   visibility: hidden;
@@ -1007,11 +1007,10 @@ a.hs-crown-wing:hover {
   min-height: var(--hs-band-h-b);
   /* 10px بدل 14px الجانبية في المرجع: خانة النقاط كانت تفيض 6px عن العرض */
   padding: 26px 10px 12px;
-  border: 1px solid #dfd8c6;
-  border-top: 0;
+  border: 0;
   border-radius: 0 0 var(--hs-band-radius) var(--hs-band-radius);
-  background: #fcfbf7;
-  box-shadow: 0 12px 24px -14px rgba(11, 11, 15, 0.25);
+  background: transparent;
+  box-shadow: none;
   transform: translateY(-58%) scale(0.96);
   transform-origin: center top;
 }

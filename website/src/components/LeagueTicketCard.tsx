@@ -19,6 +19,7 @@ import {
   dayLabel,
   type Match,
 } from "../lib/matches.mjs";
+import { crownBandDetail, crownLiveClock, crownStateLabel } from "../lib/crown-status.mjs";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -380,6 +381,13 @@ function useNow(active: boolean) {
 const AR_DIGITS: Readonly<Record<string, string>> = { "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤", "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩" };
 const toArabicDigits = (western: string) => western.replace(/\d/g, (d) => AR_DIGITS[d]);
 
+/* دقائق:ثوانٍ داخل العدّاد المنقلب نفسه: تُبنى الوحدات بشكل splitCountdown حتى
+   يبقى التصميم — الخلية والرقم المشرقي وصفّ الجمع — من مصدر واحد لا من نسخة ثانية. */
+function flipClockUnits(minutes: number, seconds: number) {
+  const two = (n: number) => toArabicDigits(String(n).padStart(2, "0"));
+  return { days: 0, hours: two(0), minutes: two(minutes), seconds: two(seconds) };
+}
+
 function splitCountdown(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
   const days = Math.floor(total / 86400);
@@ -565,10 +573,14 @@ function FlipDigit({ value }: { value: string }) {
   );
 }
 
-export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof splitCountdown> }) {
-  /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفياً:
-     أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه) */
-  const cells: { label: string; value: string }[] = [
+export function FlipCountdown({ countdown, cells = "auto" }: { countdown: ReturnType<typeof splitCountdown>; cells?: "auto" | "minute-seconds" }) {
+  /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفيًا:
+     أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه).
+     `minute-seconds` يحتفظ بنفس الخلية والرقم والصف بخانتين فقط، لعدّاد
+     المباراة الجارية داخل الدرج العلوي بطلب المالك — تصميم واحد لا نسخة منه. */
+  const list: { label: string; value: string }[] = cells === "minute-seconds"
+    ? [{ label: "دقائق", value: countdown.minutes }, { label: "ثوانٍ", value: countdown.seconds }]
+    : [
     ...(countdown.days > 0 ? [{ label: "أيام", value: toArabicDigits(String(countdown.days).padStart(2, "0")) }] : []),
     { label: "ساعات", value: countdown.hours },
     { label: "دقائق", value: countdown.minutes },
@@ -576,7 +588,7 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
   ];
   return (
     <div className="league-ticket-countdown ticket-flip" role="presentation">
-      {cells.map((cell) => (
+      {list.map((cell) => (
         <span key={cell.label} className="ticket-flip__group">
           <span className="ticket-flip__pair">
             {cell.value.split("").map((digit, i) => (
@@ -710,10 +722,26 @@ function CrownTeamIncidents({ match, side }: { match: Match | null; side: 'home'
    يمرّان بلا parts فتبقى بنيتيهما كما هي حرفيًا. */
 const CROWN_BRAND_MARKS = ["nova-ticket.png", "xtv-ticket.png", "istar-ticket.png", "moka-ticket.png"];
 
+/* ماركة الدوري داخل الدرج بعد صافرة النهاية: نفس شارة الشعار المستخدمة في
+   الشريط (وبديلها المحايد حين لا شعار موثّق) مع اسم البطولة كما يُعرَّض في
+   الجسم — لا صورة تُخترع ولا اسم يُحرَّف. */
+function CrownDrawerLeagueMark({ clash, active }: { clash: FeaturedClash; active: boolean }) {
+  return (
+    <span className="hs-crown-drawer-league">
+      <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={30} eager={active} />
+      <span className="hs-crown-drawer-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span>
+    </span>
+  );
+}
+
 export function CrownClashSlide({ clash, match, active = true, showEvents = false, parts = false }: { clash: FeaturedClash; match: Match | null; active?: boolean; showEvents?: boolean; parts?: boolean }) {
   const pre = match?.state === "scheduled";
-  const now = useNow(pre && active);
+  const live = match?.state === "live";
+  const finished = match?.state === "finished";
+  /* نبضة الثانية مطلوبة للموعد القادم (عدّاد البداية) وللمباراة الجارية (دقائق وثوانٍ) معًا، ولا تُشغَّل لغيرهما */
+  const now = useNow((pre || live) && active);
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
+  const liveClock = match && live ? crownLiveClock(match.detail, now - Date.parse(match.date)) : null;
   const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
   const orderedSides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];
   // Prefer the live source badge when this newly selected team has no local art.
@@ -721,7 +749,10 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     crest: side.crest || (index === 0 ? match?.home.logo : match?.away.logo) || '',
   }));
   const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
-  const stateLabel = !match ? "بانتظار لوحة المواعيد" : match.state === "live" ? "مباشر الآن" : match.state === "finished" ? "انتهت" : "لم تبدأ";
+  /* الشارة والتفصيل من lib/crown-status.mjs (قابلان للاختبار في Node): حالة
+     `other` — تأجيل/إلغاء/إيقاف كما يرسلها الفيڈ — لها لفظ المصدر نفسه بدل أن
+     تُلقَّم في «لم تبدأ»، وسطر الدرج لا يُعاد حين يوازي الشارة. */
+  const stateLabel = crownStateLabel(match);
   const when = match
     ? `${dayInZone(new Date(match.date), CLASH_ZONE)} · ${kickoff(match.date, CLASH_ZONE)}`
     /* الشرائح غير المؤكّدة: تاريخ المواجهة نفسه بصيغة مقروءة بدل ISO الخام */
@@ -732,6 +763,19 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
   /* على الشريحة الأمامية تعيش الصفوف المساندة داخل الدرجين — في نفس الكارت،
      لا نسخة مزدوجة. الشرائح الجانبية تحتفظ بجسمها الكامل كما هو اليوم. */
   const inBand = parts && active;
+  /* نسخة الدرج العلوي وحدها: الشارة فيه بجوار السطر، فلو تُرك `detail` كما هو
+     لقرأ الزائر «انتهت / انتهت». بلا معلومة إضافية لا يُعرض سطر خيال. */
+  const bandDetail = crownBandDetail(match);
+  const bandStatus = <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{bandDetail}</small>;
+  /* مكان سطر التفصيل في الدرج العلوي بطلب المالك: قبل المباراة عدّاد البداية
+     (نُقل من الدرج السفلي)، وأثناءها دقائق وثواني بنفس تصميمه، وبعدها ماركة
+     الدوري. وحين لا مدخل في لوحة المواعيد تبقى الجملة التعريفية، ومع حالة
+     «مؤجَّلة/ملغاة» يبقى نص المصدر أو ملعبه — لا يُختلَق توقيت لم يحدث. */
+  const bandLine = !inBand ? null
+    : countdown ? <FlipCountdown countdown={countdown} />
+      : liveClock ? <FlipCountdown countdown={flipClockUnits(liveClock.minutes, liveClock.seconds)} cells="minute-seconds" />
+        : finished ? <CrownDrawerLeagueMark clash={clash} active={active} />
+          : bandDetail ? bandStatus : null;
   const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
       <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
@@ -763,13 +807,15 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       style={{ "--lc-split-gradient": "var(--hs-split)" } as CSSProperties}
     >
       <span className="lc-top-drawer-crown" aria-hidden="true" />
-      <span className="hs-crown-slide-league">{crownLeagueName(clash.source, clash.eyebrow)}</span>
-      <span className={`hs-crown-slide-chip${match?.state === "live" ? " is-live" : ""}`}>{stateLabel}</span>
-      {inBand && status}
+      {/* بعد النهاية تنتقل الاسم إلى داخل ماركة الدوري، فلا يُطبع الاسم مرتين */}
+      {finished ? null : <span className="hs-crown-slide-league">{crownLeagueName(clash.source, clash.eyebrow)}</span>}
+      <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>
+      {bandLine}
     </span>
     <span className="hs-crown-slide-band hs-crown-slide-band--bottom" data-crown-part="when" aria-hidden="true">
       <span className="hs-crown-slide-when">{when}</span>
-      {inBand ? (timer ?? marks) : null}
+      {/* العدّاد صار في الدرج العلوي قبل المباراة؛ السفلي للاسم والتاريخ وعلامات العارضين */}
+      {inBand ? marks : null}
     </span>
   </>;
 }

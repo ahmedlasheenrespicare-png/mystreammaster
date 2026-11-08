@@ -1903,14 +1903,23 @@ test('weekend crown slate carries Saturday marquee fixtures and Sunday summits, 
 });
 
 
-test('crown strip background is the active championship tint over a pitch, not the logo', async ({ page }) => {
+test('crown strip uses a CSS grass pitch with visible field lines behind its cards', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.goto('/');
   const shell = page.locator('.hero-crown-strip .hs-crown-shell');
   await shell.scrollIntoViewIfNeeded();
 
-  // بياض صريح، ولا طبقة شعار ولا طبقة فيلم داخل الخلفية
-  await expect(shell).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  // العشب مرسوم بمسارات SVG وتدرجات، وليس صورة خارجية.
+  const grass = shell.locator(':scope > .hs-crown-grass');
+  await expect(grass).toHaveAttribute('aria-hidden', 'true');
+  await expect(grass).toHaveCSS('pointer-events', 'none');
+  await expect(grass.locator('.hs-crown-grass-blades')).toHaveCount(4);
+  await expect(grass.locator('.hs-crown-grass-shadows use')).toHaveCount(4);
+  await expect(grass.locator('.hs-crown-grass-grain')).toHaveCount(1);
+  await expect(grass.locator('feTurbulence')).toHaveCount(1);
+  const background = await shell.evaluate(el => getComputedStyle(el).backgroundImage);
+  expect(background).toContain('repeating-linear-gradient');
+  expect(background).not.toContain('url(');
   await expect(shell.locator(':scope > .hs-crown-brand')).toHaveCount(0);
   await expect(shell.locator(':scope > .hs-crown-film')).toHaveCount(0);
   await expect(shell.locator('.sm-newt35')).toHaveCount(0);
@@ -1927,9 +1936,11 @@ test('crown strip background is the active championship tint over a pitch, not t
   }
   await expect(tint).toHaveAttribute('aria-hidden', 'true');
   await expect(shell.locator(':scope > .hs-crown-center')).toHaveCSS('z-index', '1');
-  await expect(pitch.locator('.hs-crown-pitch-arc--left')).toHaveCount(1);
-  await expect(pitch.locator('.hs-crown-pitch-arc--right')).toHaveCount(1);
-  await expect(pitch.locator('.hs-crown-pitch-line')).toHaveCount(1);
+  for (const part of ['boundary', 'line', 'center-circle', 'area', 'goal-area', 'penalty-arc']) {
+    await expect(pitch.locator(`.hs-crown-pitch-${part}`)).toHaveCount(1);
+  }
+  await expect(pitch.locator('.hs-crown-pitch-spots circle')).toHaveCount(3);
+  await expect(pitch.locator('.hs-crown-pitch-line')).toHaveCSS('stroke', 'rgba(255, 255, 255, 0.88)');
 
   // التلوين هو لون هالة الشريحة النشطة نفسها (بطاقة مواجهة أو بطاقة بطولة)،
   // ومعرّف البطولة على الغلاف يرافقها. الطرفان يمرّان على نفس مُطبِّع ألوان.

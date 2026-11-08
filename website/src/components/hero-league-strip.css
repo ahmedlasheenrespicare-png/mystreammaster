@@ -34,7 +34,11 @@
   min-width: 0;
   padding: 11px 14px 9px;
   border-radius: 22px;
-  background: #ffffff;
+  /* طبقة ضوء ناعمة وشرائط قصّ العشب، دون الاعتماد على صورة خارجية. */
+  background:
+    linear-gradient(180deg, rgba(32, 72, 30, .10), transparent 28%, transparent 70%, rgba(30, 66, 28, .12)),
+    repeating-linear-gradient(90deg, rgba(119, 164, 91, .62) 0 110px, rgba(102, 150, 80, .62) 110px 220px),
+    #fff;
   border: 1.5px solid rgba(216, 255, 62, 0.55);
   box-shadow:
     0 18px 36px -26px rgba(11, 11, 15, 0.32),
@@ -44,6 +48,23 @@
   touch-action: pan-y;
   transition: --hs-shell-glow 0.7s ease;
 }
+
+/* خيوط متباينة الطول والانحناء: زخرفة ثابتة خلف الخطوط والتذاكر. */
+.hs-crown-grass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .58;
+}
+.hs-crown-grass-grain { opacity: .22; mix-blend-mode: multiply; }
+.hs-crown-grass-shadows { fill: rgba(30, 70, 30, .18); }
+.hs-crown-grass-blades--0 { fill: rgba(45, 104, 39, .44); }
+.hs-crown-grass-blades--1 { fill: rgba(212, 239, 174, .48); }
+.hs-crown-grass-blades--2 { fill: rgba(79, 137, 57, .48); }
+.hs-crown-grass-blades--3 { fill: rgba(150, 190, 103, .58); }
 
 /* خلفية الشريط بلا هالة حول التذكرة؛ يبقى الخيط الملون عند الحافة فقط. */
 .hs-crown-tint {
@@ -65,12 +86,14 @@
   opacity: 0.65;
 }
 
-/* قوسا منطقة على الطرفين وخط المنتصف. توسّع الطبقة 60px لكل جهة حتى لا تنكشف
-   حافة أثناء التحريك، والميل -0.4 من إزاحة السحب فيبدو المشهد خلف البطاقات. */
+/* مخطط الملعب مرسوم بالكود ويتحرك بخفة خلف البطاقات أثناء السحب. */
 .hs-crown-pitch {
   position: absolute;
   inset-block: 0;
   inset-inline: -60px;
+  width: calc(100% + 120px);
+  height: 100%;
+  color: rgba(255, 255, 255, .88);
   z-index: 0;
   pointer-events: none;
   transform: translate3d(calc(var(--hs-drag-x, 0px) * -0.4), 0, 0);
@@ -81,31 +104,8 @@
   transition: none;
 }
 
-.hs-crown-pitch-arc {
-  position: absolute;
-  top: 50%;
-  width: 180px;
-  height: 180px;
-  margin-top: -90px;
-  border: 1.5px solid rgba(11, 11, 15, 0.085);
-  border-radius: 50%;
-}
-
-.hs-crown-pitch-arc--left {
-  left: -92px;
-}
-
-.hs-crown-pitch-arc--right {
-  right: -92px;
-}
-
-.hs-crown-pitch-line {
-  position: absolute;
-  inset-block: 10px;
-  inset-inline-start: 50%;
-  width: 1.5px;
-  margin-inline-start: -0.75px;
-  background: rgba(11, 11, 15, 0.1);
+.hs-crown-pitch-markings > * {
+  vector-effect: non-scaling-stroke;
 }
 
 /* المحتوى فوق طبقتي الزينة دائماً */

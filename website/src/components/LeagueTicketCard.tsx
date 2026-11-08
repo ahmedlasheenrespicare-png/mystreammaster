@@ -725,10 +725,20 @@ const CROWN_BRAND_MARKS = ["nova-ticket.png", "xtv-ticket.png", "istar-ticket.pn
 /* ماركة الدوري داخل الدرج بعد صافرة النهاية: نفس شارة الشعار المستخدمة في
    الشريط (وبديلها المحايد حين لا شعار موثّق) مع اسم البطولة كما يُعرَّض في
    الجسم — لا صورة تُخترع ولا اسم يُحرَّف. */
+function CrownLeagueCoin({ clash, active }: { clash: FeaturedClash; active: boolean }) {
+  const badge = () => <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={30} eager={active} />;
+  return <span className="hs-crown-league-coin" data-active={active} aria-hidden="true">
+    <span className="hs-crown-league-coin-rotor">
+      <span className="hs-crown-league-coin-face hs-crown-league-coin-front">{badge()}</span>
+      <span className="hs-crown-league-coin-face hs-crown-league-coin-back">{badge()}</span>
+    </span>
+  </span>;
+}
+
 function CrownDrawerLeagueMark({ clash, active }: { clash: FeaturedClash; active: boolean }) {
   return (
     <span className="hs-crown-drawer-league">
-      <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={30} eager={active} />
+      <CrownLeagueCoin clash={clash} active={active} />
       <span className="hs-crown-drawer-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span>
     </span>
   );
@@ -808,7 +818,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     >
       <span className="lc-top-drawer-crown" aria-hidden="true" />
       {/* بعد النهاية تنتقل الاسم إلى داخل ماركة الدوري، فلا يُطبع الاسم مرتين */}
-      {finished ? null : <span className="hs-crown-slide-league">{crownLeagueName(clash.source, clash.eyebrow)}</span>}
+      {finished ? null : <span className="hs-crown-slide-league">{pre && <CrownLeagueCoin clash={clash} active={active} />}<span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
       <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>
       {bandLine}
     </span>
@@ -844,7 +854,7 @@ export function clashSummary(match: Match | null, clash: FeaturedClash): string 
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false, extraSlides = [], hideBase = false }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false, extraSlides = [], hideBase = false, showArrows = false }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
@@ -866,6 +876,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   /* إخفاء شريحة الأساس (النظرة العامة) من الدورة: تبدأ الدورة من أول شريحة
      مواجهة أو خبر. لا يُخفى الأساس إن لم توجد أي شريحة أخرى */
   hideBase?: boolean;
+  showArrows?: boolean;
 }) {
   const matches = useClashes(leagueId, clashes);
   const baseHidden = hideBase && clashes.length + extraSlides.length > 0;
@@ -987,6 +998,11 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
           </div>
         ))}
       </div>
+      {showArrows && count > 1 && <div className="hs-crown-news-arrows" aria-label="التنقل بين الأخبار">
+        <button type="button" aria-label="الخبر السابق" onClick={() => go(wrap(active - 1))}>‹</button>
+        <span dir="ltr">{active - first + 1}/{count}</span>
+        <button type="button" aria-label="الخبر التالي" onClick={() => go(wrap(active + 1))}>›</button>
+      </div>}
       <div className="league-ticket-dots">
         {slides.map((slide, i) => baseHidden && i === 0 ? null : (
           <button

@@ -141,11 +141,13 @@
   cursor: grabbing;
 }
 
+/* الكرت لا يقصّ نفسه: الأدراج تبرز منه فوق وتحت، تمامًا كما في المرجع حيث
+   .league-carousel-item بلا overflow و.lc-outline هو وحده المَقصوص. الجسم
+   الداكن يحمل الزاوية والـoverflow بدلًا من الكرت، وخط التاج يستدير أسفلَه. */
 .hs-crown-card {
   position: absolute;
   width: 248px;
   border-radius: 18px;
-  overflow: hidden;
   border: 1.5px solid #0b0b0f;
   background: #fcfbf7;
   text-decoration: none;
@@ -208,6 +210,7 @@
 
 .hs-crown-card-top {
   position: relative;
+  border-radius: 16.5px 16.5px 0 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -259,6 +262,7 @@
   display: block;
   height: 2.5px;
   width: 100%;
+  border-radius: 0 0 16.5px 16.5px;
   background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
 }
 
@@ -837,6 +841,7 @@ a.hs-crown-wing:hover {
 .hero-crown-strip[data-has-matches="true"] .hs-crown-player { height: 160px; width: 132px; }
 .hs-crown-match {
   position: relative; isolation: isolate; min-height: 164px; box-sizing: border-box;
+  border-radius: 16.5px 16.5px 0 0;
   display: flex; flex-direction: column; justify-content: space-between;
   padding: 6px 10px; gap: 3px; overflow: hidden;
   background: radial-gradient(circle at 18% 35%,var(--hs-glow),transparent 65%),linear-gradient(155deg,#0b0b0f,#191d28);
@@ -917,3 +922,297 @@ a.hs-crown-wing:hover {
 
 /* Only the two cup identity cards also carry their competition watermark. */
 .hs-crown-card-top > .hs-crown-cup-background { opacity: .24; }
+
+
+/* ── الشريحة من ثلاث قطع بأبعاد المرجع نفسه ─────────────────────────────────
+   الدرجان نسخة طبق الأصل من .lc-top-drawer و.lc-detail في شريط «أسفل
+   التذكرة» بصفحة المواعيد: نفس الحشو والزوايا والظل وتوقيتات الفتح والإغلاق،
+   ويفتحان على الشريحة الأمامية فقط ثم يُغلقان حين تمرّ. القياسات محقَّقة من
+   المرجع نفسه — على 1440: علوي 133px بارز بـ115px فوق الجسم، سفلي 97px
+   متأخر 18px داخله وبارز 79px تحته، والجسم 156px. وعلى 390: 115 / 85 / 141.
+   الشريط يحجز هذه المسافة في حشوه الداخلي، فلا درج يُقصّ ولا ما أسفل
+   الشريط يزيح مليمترًا واحدًا. */
+
+.hs-crown-shell {
+  --hs-core-h: 150px;
+  --hs-band-h: 133px;
+  /* 97px هو درج بطاقة المقدمة في المرجع؛ وحين توجد معدّلات المتصدّر يمدّ
+     المرجع نفسه درجَه حتى 131px — فالدرج هنا 106px، لا أقصر من المرجع ولا
+     zائدًا على مساحته المحجوزة. */
+  --hs-band-h-b: 106px;
+  --hs-band-peek: 18px;
+  --hs-band-peek-b: 18px;
+  --hs-pad-t: 11px;
+  --hs-pad-b: 9px;
+  --hs-pad-i: 14px;
+  --hs-band-radius: 22px;
+  /* فوق: الحشو يحجز بروز الدرج العلوي (133−18). تحت: صف التحكّم يجيء بعد
+     الجسم مباشرة، فالحجز لازم يكون إزاحة للصفّ نفسه لا حشوًا للغلاف — وإلا
+     ارتسم الدرج فوق الأسهم. المسافة الكلية كما هي بالضبط. */
+  padding:
+    calc(var(--hs-pad-t) + var(--hs-band-h) - var(--hs-band-peek)) var(--hs-pad-i)
+    var(--hs-pad-b);
+}
+
+.hs-crown-shell > .hs-crown-center {
+  margin-bottom: calc(var(--hs-band-h-b) - var(--hs-band-peek-b));
+}
+
+/* الجسم = .lc-outline: الارتفاع المحجوز للشريحة نفسها */
+.hs-crown-center {
+  height: calc(var(--hs-core-h) + 6px);
+}
+
+.hs-crown-slide-band {
+  position: absolute;
+  top: var(--hs-band-peek);
+  inset-inline: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--hs-band-h);
+  padding: 10px 9px 25px;
+  border: 1px solid #dfd8c6;
+  border-bottom: 0;
+  border-radius: var(--hs-band-radius) var(--hs-band-radius) 0 0;
+  background: linear-gradient(180deg, #f3efe3 0%, #fcfbf7 100%);
+  box-shadow: 0 -12px 24px -14px rgba(11, 11, 15, 0.25);
+  color: #0b0b0f;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-20%) scale(0.96);
+  transform-origin: center bottom;
+  transition:
+    opacity 0.28s ease 0s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
+    visibility 0s linear 0.4s;
+}
+
+.hs-crown-slide-band > * {
+  min-width: 0;
+}
+
+.hs-crown-slide-band--bottom {
+  top: calc(100% - var(--hs-band-peek-b));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: var(--hs-band-h-b);
+  /* 10px بدل 14px الجانبية في المرجع: خانة النقاط كانت تفيض 6px عن العرض */
+  padding: 26px 10px 12px;
+  border: 1px solid #dfd8c6;
+  border-top: 0;
+  border-radius: 0 0 var(--hs-band-radius) var(--hs-band-radius);
+  background: #fcfbf7;
+  box-shadow: 0 12px 24px -14px rgba(11, 11, 15, 0.25);
+  transform: translateY(-58%) scale(0.96);
+  transform-origin: center top;
+}
+
+/* الفتح على الشريحة الأمامية — نفس التوقيتات المرجعية (تأخير 0.18s و0.22s) */
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-100%) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    visibility 0s linear 0s;
+}
+
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band--bottom {
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    visibility 0s linear 0s;
+}
+
+/* الشرائح الجانبية تحتفظ بجسمها الكامل كما كانت اليوم؛ النقل للأعلى/الأسفل
+   يجري على الأمامية وحدها، فلا تكرار للنص ولا سطر يختفي عند التبديل. */
+.hs-crown-slide {
+  min-height: var(--hs-core-h);
+  justify-content: center;
+  gap: 4px;
+}
+
+/* بأسبقية تطابق قاعدة «الشريط فيه مباريات» وإلا بقي الجسم على 164 */
+.hero-crown-strip .hs-crown-card > .hs-crown-card-top {
+  min-height: var(--hs-core-h);
+}
+
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide > .hs-crown-match-heading,
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide .hs-crown-match-result small {
+  display: none;
+}
+
+/* محتوى درج المباريات بنفس سلَّم طباعة المرجع */
+.hs-crown-slide-league {
+  /* سطر مستقل بعرض الدرج كما في .lc-heading المرجعي: لو تركناه في عمود
+     شبكي واحد مع الشارة صار الاسم «الدوري الإسبا…» */
+  grid-column: 1 / -1;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 900;
+  line-height: 1.32;
+  color: #1f2430;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-chip {
+  justify-self: end;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #0b0b0f;
+  color: #f6f4ec;
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-chip.is-live {
+  background: #d8ff3e;
+  color: #0b0b0f;
+}
+
+.hs-crown-slide-band .hs-crown-match-status {
+  grid-column: 1 / -1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin: 0;
+  color: #6b675e;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: start;
+  overflow: hidden;
+}
+
+.hs-crown-slide-band .hs-crown-match-status.is-live {
+  color: #7fb100;
+}
+
+.hs-crown-slide-when {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-band .league-ticket-countdown {
+  margin-inline-start: auto;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.hs-crown-slide-band .hs-crown-match-brands {
+  justify-content: flex-end;
+  gap: 5px;
+  height: 12px;
+}
+
+.hs-crown-slide-band .hs-crown-match-brands img {
+  width: 26px;
+  max-height: 12px;
+}
+
+/* اسم النادي لا يلتف داخل الدرج: 248px أضيّق من 266px الخاصة بالحلقة،
+   فالاسم الطويل يُقتطع بدل أن يرفع الدرج فوق مقاس المرجع. */
+.hs-crown-slide-band .lc-top-metric-team {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* plaintext: الاسم اللاتيني يُبتر من آخره يمينًا، والعربي من آخره يسارًا —
+     بلا «...aint-Germain» المقصوص من أوله */
+  direction: ltr;
+  unicode-bidi: plaintext;
+}
+
+/* شعار النادي ثابت لا يُضغط، كما في .lc-top-club-crest — لكن 18px لا 22px:
+   الكرت هنا 246px مقابل 266px للحلقة، وبغير هذا التضييق يُبتر اسم مثل
+   «Paris Saint-Germain» من آخره. */
+.hs-crown-slide-band .lc-top-club-row .hs-club-crest {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* محتوى المرجع يملأ عرض الدرج كاملًا: بغير هذا السطر تُضغط البنية في عمود
+   الشبكة الأول فتتلف الأسطر ويزداد الدرج 60px عن مقاس المرجع. */
+.hs-crown-slide-band > .lc-top-twin,
+.hs-crown-slide-band > .lc-grades-box {
+  grid-column: 1 / -1;
+}
+
+.hs-crown-slide-band .lc-grades-copy {
+  min-width: 0;
+}
+
+/* شريط التاج بلون البطولة أعلى الدرج العلوي — من المرجع نفسه */
+.hs-crown-slide-band > .lc-top-drawer-crown {
+  inset-inline: 18px;
+}
+
+@media (max-width: 640px) {
+  .hs-crown-shell {
+    --hs-core-h: 135px;
+    --hs-band-h: 115px;
+    --hs-band-h-b: 104px;
+    --hs-band-peek: 16px;
+    --hs-band-peek-b: 11px;
+    --hs-pad-t: 9px;
+    --hs-pad-b: 8px;
+    --hs-pad-i: 9px;
+    --hs-band-radius: 18px;
+  }
+
+  .hs-crown-slide-band {
+    padding: 8px 6px 21px;
+    row-gap: 4px;
+  }
+
+  .hs-crown-slide-band--bottom {
+    padding: 21px 10px 10px;
+    gap: 6px;
+  }
+
+  /* على 208px كان «Paris Saint-Germain» يفقد 4px من آخره */
+  .hs-crown-slide-band .lc-top-club-row {
+    gap: 3px;
+  }
+
+  .hs-crown-slide-band .lc-top-club-row .hs-club-crest {
+    flex-basis: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .hs-crown-slide-league {
+    font-size: 0.92rem;
+  }
+
+  .hs-crown-slide-band .hs-crown-match-brands {
+    display: none;
+  }
+
+  /* على 208px كان سطر «نقاط/م · هجوم/م» يلفّ آخر رقم وحده — يُعرض على
+     الحاسوب حيث يسع الدرج، ويُترك للموبايل النقاط ولعب وفارق */
+  .hs-crown-slide-band .lc-grades-rates {
+    display: none;
+  }
+}

@@ -112,3 +112,46 @@ export function MiniDuelDiamond() {
     </svg>
   );
 }
+
+/** أيقونة المنصّة ذات الثلاثة أعمدة في المنسدلة السفلية */
+export function GradesIcon() {
+  return (
+    <svg className="lc-grades-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path
+        d="M10 3C9.44772 3 9 3.44772 9 4V20H15V4C15 3.44772 14.5523 3 14 3H10Z"
+        fill="#2b4eff"
+      />
+      <path
+        d="M4 10C3.44772 10 3 10.4477 3 11V20H7V10H4Z"
+        fill="#f59e0b"
+      />
+      <path
+        d="M17 14V20H21V15C21 14.4477 20.5523 14 20 14H17Z"
+        fill="#38bdf8"
+      />
+    </svg>
+  );
+}
+
+/** ميدالية بشريط في المنسدلة السفلية */
+export function MedalRibbonIcon({ idSuffix = "ring" }: { idSuffix?: string }) {
+  const gradId = `lcMedalGold-${idSuffix}`;
+  return (
+    <svg className="lc-medals" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
+      <path d="M16 4H23L26 17H19L16 4Z" fill="#2b4eff" />
+      <path d="M32 4H25L22 17H29L32 4Z" fill="#60a5fa" />
+      <circle cx="24" cy="28" r="14" fill={`url(#${gradId})`} stroke="#d97706" strokeWidth="1.5" />
+      <circle cx="24" cy="28" r="10.2" stroke="#fef3c7" strokeWidth="1.1" strokeOpacity="0.85" />
+      <path
+        d="M24 20.6L26.08 24.82L30.74 25.5L27.37 28.78L28.17 33.42L24 31.23L19.83 33.42L20.63 28.78L17.26 25.5L21.92 24.82L24 20.6Z"
+        fill="#b45309"
+      />
+      <defs>
+        <linearGradient id={gradId} x1="14" y1="14" x2="34" y2="42" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#fcd34d" />
+          <stop offset="1" stopColor="#f59e0b" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}

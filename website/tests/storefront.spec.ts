@@ -715,11 +715,15 @@ test('angled television sits behind the phone and supports touch and keyboard wi
 });
 
 test('small screens show a miniature tilted television behind the full-size phone', async ({ page }) => {
+  // السكون مطلوب هنا: القياسات مواضع، وأنيميشن الكشف .rv يقلب فارق 7px إلى
+  // −22px إن هوُ التقط في منتصفه (خصوصًا بعد أن طال الشريط وزاد التمرير).
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   for (const width of [320, 390, 600, 767]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
     const stage = page.locator('.hero-phone-stage');
     await stage.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(250);
     const phone = stage.locator('[data-hero-phone]');
     const tv = stage.locator('[data-hero-tv]');
     const device = await phone.boundingBox();
@@ -980,11 +984,13 @@ test('laptop stays left of the phone without preview controls or horizontal over
 });
 
 test('mobile laptop base aligns with the phone base', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   for (const width of [320, 390, 600, 767]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
     const stage = page.locator('.hero-phone-stage--laptop');
     await stage.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(250);
     const laptop = await stage.locator('[data-hero-laptop]').boundingBox();
     const phone = await stage.locator('[data-hero-phone]').boundingBox();
     expect(laptop!.x).toBeLessThan(phone!.x);
@@ -1161,7 +1167,12 @@ test('crown match content preserves live RTL scores and scheduled countdown from
     await strip.scrollIntoViewIfNeeded();
     const rows = await front.locator('.hs-crown-match').evaluate(el => {
       const box = el.getBoundingClientRect();
-      const children = Array.from(el.children).filter(child => !child.classList.contains('hs-crown-match-art')).map(child => {
+      const children = Array.from(el.children)
+        .filter(child => !child.classList.contains('hs-crown-match-art'))
+        /* الوضع الثلاثي يخفي اسم البطولة داخل الجسم (صار في الدرج العلوي) —
+           عنصر مخفي لا صفّ يُرصّ، فلا يُحسب في تسلسل الصفوف. */
+        .filter(child => getComputedStyle(child).display !== 'none')
+        .map(child => {
         const rect = child.getBoundingClientRect();
         return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right };
       });
@@ -1768,5 +1779,125 @@ test('crown strip background is the active championship tint over a pitch, not t
   await page.mouse.up();
 
   // الطبقة المتمدّدة خارج الإطار لا تسبّب أي تجاوز أفقي
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+});
+
+test('crown strip slides carry the reference-sized three parts, open only while in front', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+
+  /* القياس المرجعي: شرائح «أسفل التذكرة» في صفحة مواعيد المباريات — المنسدلة
+     العلوية والجسم والسفلية. الشريط لازم يطابق نفس المقاسات، لا نسخة مصغّرة. */
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/matches/');
+  await page.waitForSelector('.league-carousel-item[data-ring-pos="front"]', { timeout: 20000 });
+  await page.waitForTimeout(900);
+  // المرجع يُقاس من بطاقة المقدمة نفسها: البطاقات الجانبية أدراجها مغلقة
+  const ref = await page.evaluate(() => {
+    const front = document.querySelector('.league-carousel-item[data-ring-pos="front"]') as HTMLElement;
+    const h = (sel: string) => Math.round((front.querySelector(sel) as HTMLElement).getBoundingClientRect().height);
+    return { top: h('.lc-top-drawer'), outline: h('.lc-outline'), detail: h('.lc-detail') };
+  });
+  expect(ref.top).toBeGreaterThan(100);
+  expect(ref.detail).toBeGreaterThan(60);
+
+  const parts = async (width: number) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/');
+    const shell = page.locator('.hero-crown-strip .hs-crown-shell');
+    await shell.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(700);
+    return { shell, front: shell.locator('[data-crown-offset="0"]') };
+  };
+
+  const { shell, front } = await parts(1440);
+
+  /* كل الشرائح تحمل القطع الثلاث، لا الأمامية وحدها */
+  const counter = (await shell.locator('.hs-crown-counter').textContent()) || '';
+  const total = Number(counter.split('/')[1]);
+  expect(total).toBeGreaterThan(10);
+  await expect(shell.locator('.hs-crown-card .hs-crown-slide-band')).toHaveCount(total * 2);
+  const cards = await shell.locator('.hs-crown-card').all();
+  expect(cards.length).toBe(total);
+  for (const card of cards) {
+    await expect(card.locator('.hs-crown-slide-band--top')).toHaveCount(1);
+    await expect(card.locator('.hs-crown-slide-band--bottom')).toHaveCount(1);
+  }
+
+  /* المقاسات = مقاسات بطاقة المقدمة المرجعية. الدرج السفلي وحده يُسمح له
+     أن يزيد: المرجع نفسه يطوّله بسطر «نقاط/م · هجوم/م» عند توفّر المعدّلات،
+     فمداه [+12، −3]. العلوي والجسم مطابقان. */
+  const sizes = (locator: ReturnType<typeof shell.locator>) => locator.evaluate((el: Element) => {
+    const H = (sel: string) => Math.round((el.querySelector(sel) as HTMLElement).getBoundingClientRect().height);
+    const card = el.getBoundingClientRect();
+    const top = (el.querySelector('.hs-crown-slide-band--top') as HTMLElement).getBoundingClientRect();
+    const bottom = (el.querySelector('.hs-crown-slide-band--bottom') as HTMLElement).getBoundingClientRect();
+    return {
+      top: H('.hs-crown-slide-band--top'), bottom: H('.hs-crown-slide-band--bottom'), core: H('.hs-crown-match, .hs-crown-card-top'),
+      peekTop: Math.round(top.bottom - card.top), peekBottom: Math.round(card.bottom - bottom.top),
+      spill: Array.from(el.querySelectorAll<HTMLElement>('.hs-crown-slide-band')).reduce(
+        (n, b) => n
+          + Math.max(0, b.scrollHeight - b.clientHeight)
+          + Math.max(0, b.scrollWidth - b.clientWidth)
+          /* كل سطر داخل الدرج يُقاس وحده: بتر «الدوري الإسبا…» لم يكن ليُرى
+             لو قِسنا الدرج كأب فقط */
+          + Array.from(b.querySelectorAll<HTMLElement>('*'))
+            .reduce((k, t) => k + (t.clientWidth > 0 && t.scrollWidth > t.clientWidth + 1 ? 1 : 0), 0),
+        0),
+    };
+  });
+  const onDesk = await sizes(front);
+  expect(Math.abs(onDesk.top - ref.top)).toBeLessThanOrEqual(3);
+  expect(onDesk.bottom).toBeGreaterThanOrEqual(ref.detail - 3);
+  expect(onDesk.bottom).toBeLessThanOrEqual(ref.detail + 12);
+  expect(Math.abs(onDesk.core - ref.outline)).toBeLessThanOrEqual(8);
+  // الدرجان يبرز 18px داخل الكارت فقط، كما في المرجع
+  expect(onDesk.peekTop).toBeLessThanOrEqual(20);
+  expect(onDesk.peekBottom).toBeLessThanOrEqual(20);
+  expect(onDesk.spill).toBe(0);
+
+  /* ولا درج يلامس صفّ التحكّم تحت الشريحة — الحجز محسوب من البروز لا من الحشو */
+  const drawerClear = await front.evaluate(el => {
+    const card = el.closest('.hs-crown-shell')!.querySelector('.hs-crown-card[data-crown-offset=\"0\"]') as HTMLElement;
+    const b = (card.querySelector('.hs-crown-slide-band--bottom') as HTMLElement).getBoundingClientRect();
+    const c = (el.closest('.hs-crown-shell')!.querySelector('.hs-crown-controls') as HTMLElement).getBoundingClientRect();
+    return { gap: Math.round(c.top - b.bottom), cardClips: getComputedStyle(card).overflow };
+  });
+  expect(drawerClear.gap).toBeGreaterThanOrEqual(0);
+  // الكرت نفسه لا يقصّ: لو رجع overflow:hidden بطل الدرج يبان (علة صُحّحت)
+  expect(drawerClear.cardClips).not.toBe('hidden');
+
+  /* لا درج يُقصّه إطار الشريط: الحشو الداخلي يحجز مساحة المرجعين كاملة */
+  const shellBox = await shell.boundingBox();
+  for (const sel of ['.hs-crown-slide-band--top', '.hs-crown-slide-band--bottom']) {
+    const b = await front.locator(sel).boundingBox();
+    expect(b!.y).toBeGreaterThanOrEqual(shellBox!.y - 1);
+    expect(b!.y + b!.height).toBeLessThanOrEqual(shellBox!.y + shellBox!.height + 1);
+  }
+
+  /* الفتح على الشريحة الأمامية، والقفل لما تمرّ — وبياناتها ترجع لجسمها */
+  const key = await front.getAttribute('data-crown-card');
+  expect(await front.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).visibility)).toBe('visible');
+  expect(await front.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+  const statusInBand = await front.locator('.hs-crown-slide-band--top .hs-crown-match-status, .hs-crown-slide-band--top [data-stat-metric]').count();
+  expect(statusInBand).toBeGreaterThan(0);
+  await shell.locator('.hs-crown-arrow').first().click();
+  await page.waitForTimeout(900);
+  const passed = shell.locator(`.hs-crown-card[data-crown-card="${key}"]`);
+  await expect(passed).toHaveCount(1);
+  expect(await passed.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).visibility)).toBe('hidden');
+  expect(await passed.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).opacity)).toBe('0');
+  // الشريحة اللي مرّت تحتفظ بجسمها الكامل: الاسم وسطر الحالة رجعا لجوه
+  expect(await passed.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(1);
+  expect(await passed.locator('.hs-crown-match .hs-crown-match-heading').evaluate(el => getComputedStyle(el).display)).not.toBe('none');
+  // الجديدة صارت أمامية ومفتوحة
+  const next = shell.locator('[data-crown-offset="0"]');
+  expect(await next.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).visibility)).toBe('visible');
+
+  /* الموبايل: نفس البنية بمقاسات الموبايل المرجعية، من غير بتر ولا تجاوز أفقي */
+  const onPhone = await sizes((await parts(390)).front);
+  expect(onPhone.top).toBeGreaterThanOrEqual(100);
+  expect(onPhone.bottom).toBeGreaterThanOrEqual(70);
+  expect(onPhone.core).toBeGreaterThanOrEqual(120);
+  expect(onPhone.spill).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 });

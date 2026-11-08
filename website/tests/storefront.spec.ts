@@ -1474,6 +1474,9 @@ test('crown match cards use their league emblem as background without site brand
     const league = await card.getAttribute('data-crown-league');
     await expect(card.locator('[data-match-league-background]')).toHaveAttribute('data-match-league-background', league!);
     await expect(card.locator('.hs-crown-match-art .league-carousel-badge')).toHaveCount(1);
+    const logos: Record<string, string> = { 'esp.1': '15', 'eng.1': '23', 'ger.1': '10', 'ita.1': '12', 'fra.1': '9' };
+    expect(league && logos[league], `شعار موثّق للبطولة ${league}`).toBeTruthy();
+    await expect(card.locator('.hs-crown-match-art img')).toHaveAttribute('src', `https://a.espncdn.com/i/leaguelogos/soccer/500/${logos[league!]}.png`);
     expect(await card.locator('.hs-crown-match').evaluate(el => getComputedStyle(el).backgroundImage)).not.toContain('radial-gradient');
     await expect(card.locator('.hs-crown-match-team')).toHaveCount(2);
     await expect(card.locator('.hs-crown-match-brands img')).toHaveCount(4);
@@ -1495,24 +1498,32 @@ test('crown match cards use their league emblem as background without site brand
   }
 });
 
-test('league background emblems on match slides keep light contrast and eager active loading', async ({ page }) => {
+test('league background emblems preserve source colors and load eagerly on active match slides', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-02T10:00:00Z'));
   // بلا إطفاء التدوير تنزلق الشريحة الأمامية أثناء الفحص فتُقرأ بطاقة أخرى
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
-  // Controlled dark transparent artwork isolates CSS contrast and load state.
+  // صورة اختبار ملونة لعزل حالة التحميل والتأكد من عدم تحويل ألوان الشعار للأبيض.
   await page.route('https://a.espncdn.com/i/leaguelogos/soccer/500/*', route => route.fulfill({
-    contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="#000" d="M20 10h60v55L50 95 20 65z"/></svg>',
+    contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="#e32020" d="M20 10h60v55L50 95 20 65z"/></svg>',
   }));
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
-  for (const [league, pairing] of [['esp.1', /فالنسيا.*ريال مدريد/s], ['eng.1', /أرسنال.*هول سيتي/s]] as const) {
+  for (const [league, pairing, logoId] of [
+    ['esp.1', /فالنسيا.*ريال مدريد/s, '15'],
+    ['eng.1', /أرسنال.*هول سيتي/s, '23'],
+    ['ger.1', /ماينز.*بايرن ميونخ/s, '10'],
+    ['ita.1', /روما.*ساسولو/s, '12'],
+    ['fra.1', /باريس سان جيرمان.*تروا/s, '9'],
+  ] as const) {
     await selectCrownSlide(page, pairing);
     const background = strip.locator(`[data-crown-offset="0"] [data-match-league-background="${league}"]`);
     const image = background.locator('img');
+    await expect(image).toHaveAttribute('src', `https://a.espncdn.com/i/leaguelogos/soccer/500/${logoId}.png`);
     await expect(image).toHaveAttribute('data-loaded', 'true');
     await expect(image).toHaveAttribute('loading', 'eager');
-    await expect(image).toHaveCSS('filter', 'brightness(0) invert(1)');
-    await expect(background).toHaveCSS('opacity', '0.22');
+    const filter = await image.evaluate(el => getComputedStyle(el).filter);
+    expect(filter).not.toMatch(/brightness\(0\)|invert\(|grayscale\(/);
+    await expect(background).toHaveCSS('opacity', '0.32');
     await expect(background.locator('.league-carousel-fallback')).toHaveCSS('visibility', 'hidden');
   }
   const originalLogo = strip.locator('[data-crown-card="eng.1"] .league-carousel-logo').first();

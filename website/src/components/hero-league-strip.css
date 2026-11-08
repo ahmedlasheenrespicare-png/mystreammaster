@@ -839,7 +839,7 @@ a.hs-crown-wing:hover {
   color: #f6f4ec; text-align: center;
 }
 .hs-crown-match-art {
-  position: absolute; inset: 0; z-index: -1; opacity: .14;
+  position: absolute; inset: 0; z-index: -1; opacity: .32;
   display: grid; place-items: center; pointer-events: none;
 }
 .hs-crown-match-art .league-carousel-badge {
@@ -887,29 +887,10 @@ a.hs-crown-wing:hover {
   font-variant-numeric: tabular-nums; color: #53594a; white-space: nowrap;
 }
 
-/* These source emblems are dark artwork. Render just the decorative watermark
-   in white so it remains visible on the dark match card; do not recolour the
-   original league cards, trophy emblems or team crests. */
-.hs-crown-match-art[data-match-league-background="eng.1"],
-.hs-crown-match-art[data-match-league-background="esp.1"],
-.hs-crown-match-art[data-match-league-background="ger.1"],
-.hs-crown-match-art[data-match-league-background="ita.1"],
-.hs-crown-match-art[data-match-league-background="fra.1"],
-.hs-crown-match-art[data-match-league-background="uefa.champions"],
-.hs-crown-match-art[data-match-league-background="uefa.europa"] { opacity: .22; }
-.hs-crown-match-art[data-match-league-background="eng.1"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="esp.1"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="ger.1"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="ita.1"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="fra.1"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="uefa.champions"] .league-carousel-logo,
-.hs-crown-match-art[data-match-league-background="uefa.europa"] .league-carousel-logo {
-  filter: brightness(0) invert(1);
+/* نحافظ على ألوان شعارات المصدر، مع تحديد خفيف يبرز الشعارات الداكنة. */
+.hs-crown-match-art[data-match-league-background] .league-carousel-logo {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
 }
-
-/* Cup competition watermarks keep their source colours and transparency. */
-.hs-crown-match-art[data-match-league-background="eng.league_cup"],
-.hs-crown-match-art[data-match-league-background="afc.champions"] { opacity: .24; }
 
 /* شعار البطولة كعلامة مائية خلف محتوى بطاقة البطولة. */
 .hs-crown-card-top > .hs-crown-league-background { opacity: .3; }

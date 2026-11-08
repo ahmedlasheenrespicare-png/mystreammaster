@@ -195,6 +195,41 @@
       "currentPhase": "League Phase (Oct 15-Dec 17) ثم Knockout Round Playoffs (Dec 19-Feb 26)",
       "slugNote": "المعرّف uefa.europa.conf لا uefa.europa_conf — الأخير يُرجع HTTP 400 كما يُثبته notCovered.wrongSlug أدناه",
       "addedFor": "صفحة نادي طرابزون سبور — /teams/طرابزون-سبور"
+    },
+    {
+      "league": "uefa.nations",
+      "ok": true,
+      "name": "دوري الأمم الأوروبية",
+      "slugEchoedBySource": "uefa.nations",
+      "leagueIdAtSource": "2395",
+      "uid": "s:600~l:2395",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 UEFA Nations League",
+      "sampledDay": "2026-09-26",
+      "sample": [
+        {
+          "date": "2026-09-26T13:00Z",
+          "home": "Slovenia",
+          "away": "Scotland",
+          "score": "0-0",
+          "state": "finished",
+          "venue": "Stadion Stozice",
+          "group": "Group B1"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2395.png",
+      "currentPhase": "League Phase (Sep 24-Nov 17) ثم Quarterfinals (Nov 19-Mar 31) والنهائي يونيو 2027",
+      "upcomingSample": {
+        "sampledDay": "2026-11-14",
+        "date": "2026-11-14T14:00Z",
+        "home": "Kosovo",
+        "away": "Israel",
+        "state": "scheduled",
+        "venue": "Stadiumi Fadil Vokrri",
+        "group": "Group B3"
+      },
+      "emptyDaysNote": "أيام 2026-10-09 و 10-11 و 10-23 و 10-24 و 10-26 كلها بلا أحداث: أكتوبر 2026 بين فترتين دوليتين لا بين جولات. النافذة القادمة 12-17 نوفمبر. نافذة فارغة حالة مشروعة في هذا المسبار لا فشل، لكن أثرها عملي: قسم البطولة في الجدول يظهر فارغاً حتى يقترب مدى الأيام الخمسة عشر المعروض من نوفمبر.",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
     }
   ],
   "outOfScope": {

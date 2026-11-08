@@ -22,7 +22,14 @@ test('every registered fixture has the shared pitch and data-driven panel in its
     routes.add(route);
 
     const file = generatedPage(match);
-    const published = await fs.readFile(file, 'utf8');
+    // نفس سبب الصورة التمهيدية: المواعيد تُولَّد من ملف الأرشيف، وصفحتها الثابتة
+    // في جذر المستودع لازم تتولّد معاه (`npm run build` = prerender + publish-static).
+    let published;
+    try {
+      published = await fs.readFile(file, 'utf8');
+    } catch {
+      assert.fail(`${route}: الصفحة الثابتة لهذا الموعد غير مبنية في الجذر — شغّل «npm run build» ثم راجع website/scripts/check-match-derivatives.mjs`);
+    }
     assert.match(published, /class="mc-pitch-frame"/, `${route}: published shared football pitch missing`);
     assert.match(published, /class="mc-match-title"/, `${route}: published match title missing`);
     // pretest builds SSR before build publishes the root. Test the current panel

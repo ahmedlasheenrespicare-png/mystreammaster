@@ -2,6 +2,14 @@
  * Serie A Match Center bindings are derived only from the locally committed
  * ESPN archive. No venue, round, event timeline, lineup, or missing statistic
  * is filled in from another endpoint or guessed here.
+ *
+ * Deriving has a cost that must not be forgotten: every match listed here
+ * inherits two artifacts outside `website/src` — a 1200x630
+ * `public/images/og/match-<slug>.png` (plus its root copy that gets deployed)
+ * and a committed `matches/<league>/<slug>/index.html`. Because the list grows
+ * on its own whenever the nightly archive lands, the archive workflow
+ * regenerates whatever is missing in the very same commit
+ * (`scripts/check-match-derivatives.mjs`); a hand-edited registry must run it too.
  */
 import archive from './fixtures-archive/ita.1/2026.json' with { type: 'json' };
 

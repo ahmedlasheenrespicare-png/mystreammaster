@@ -52,25 +52,18 @@ export function crownBandDetail(match) {
 /**
  * دقائق المباراة الجارية وثوانيها — للعرض داخل الدرج العلوي بطلب المالك.
  *
- * الأمانة هي التصميم نفسه: المصدر لا يرسل الثواني في الغالب، فالقاعدة:
- *  • الدقيقة **من الفيڈ وحده** (`status.displayClock`)، لا من ساعة الجهاز.
- *  • لو أرسل المصدر `mm:ss` (بعض المزوّدين يرسلونها) تُستخدم الرقمتان حرفيًا.
- *  • وإلا فالثواني تُستكمل داخل الدقيقة المعلَنة فقط؛ ولو تأخّر التحديث
- *    (الفيد يُسحب كل 60 ثانية) تبقى على 59 — لا دقيقة تُختلَق لم يعلنها المصدر.
- *  • توقيت غير رقمي («HT»، «FO»، «مباشر») = لا ساعة تُعرض إطلاقًا، لا صفر مُوهِم.
- * `elapsedMs` = الآن ناقص صافرة البداية؛ السالب أو غير الرقمي يُثبّت الثواني على 0.
+ * الدقيقة من المصدر فقط، أما الثواني فعداد محلي مستقل يدور من 0 إلى 59
+ * حتى لو تأخر تحديث الدقيقة أو أرسل المصدر ثوانيه الخاصة. الثواني شكلية
+ * وليست قياسًا موثوقًا لساعة المباراة الفعلية أو لفترات التوقف.
+ * التوقيت غير الرقمي («HT»، «FO»، «مباشر») لا يعرض ساعة.
+ * `elapsedMs` = الآن ناقص موعد البداية؛ السالب أو غير الرقمي يعطي 0.
  */
 export function crownLiveClock(detail, elapsedMs) {
   const text = String(detail ?? "").trim();
-  const withSeconds = /(\d{1,3})\s*[:'′’]\s*(\d{1,2})/.exec(text);
-  if (withSeconds) {
-    const seconds = Number(withSeconds[2]);
-    return { minutes: Number(withSeconds[1]), seconds: seconds > 59 ? 59 : seconds };
-  }
   const minuteOnly = /(\d{1,3})/.exec(text);
   if (!minuteOnly) return null;
   const minutes = Number(minuteOnly[1]);
   const elapsed = Number(elapsedMs);
   if (!Number.isFinite(elapsed) || elapsed < 0) return { minutes, seconds: 0 };
-  return { minutes, seconds: Math.max(0, Math.min(59, Math.floor(elapsed / 1000) - minutes * 60)) };
+  return { minutes, seconds: Math.floor(elapsed / 1000) % 60 };
 }

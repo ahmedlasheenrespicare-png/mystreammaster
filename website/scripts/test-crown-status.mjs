@@ -65,17 +65,17 @@ test('خاصة عامة: الشريط لا يطبع الشارة مرتين مه
   }
 });
 
-test('ساعة المباراة الجارية: الدقيقة من المصدر والثواني تُستكمل داخلها فقط', () => {
+test('ساعة المباراة الجارية: الدقيقة من المصدر والثواني عدّاد محلي مستقل', () => {
   const at = (min, sec) => (min * 60 + sec) * 1000;
-  // المصدر أرسل mm:ss → تُستخدم الرقمتان حرفيًا، مهما قال عدّاد الجهاز.
-  assert.deepEqual(crownLiveClock('67:12', at(70, 0)), { minutes: 67, seconds: 12 });
-  // دقيقة فقط: الثواني تُحسب من صافرة البداية داخل الدقيقة المعلَنة.
+  // حتى لو أرسل المصدر ثواني، تتحرك الثواني المحلية مستقلة عنه.
+  assert.deepEqual(crownLiveClock('67:12', at(70, 0)), { minutes: 67, seconds: 0 });
   assert.deepEqual(crownLiveClock('67′', at(67, 9)), { minutes: 67, seconds: 9 });
-  // الدقيقة ٦٨ مرّت على الساعة لكن المصدر لم يُحدّث بعد: تُثبَّت على ٥٩،
-  // فاختراع دقيقة لم يعلنها المصدر أسوأ من ثوانٍ متوقفة.
-  assert.deepEqual(crownLiveClock('67′', at(68, 30)), { minutes: 67, seconds: 59 });
-  // دقيقة مع وقت بدل ضائع («45'+2'») → ٤٥ من المصدر، والثواني لا تتخطى الدقيقة المعلَنة.
-  assert.deepEqual(crownLiveClock("45'+2'", at(46, 10)), { minutes: 45, seconds: 59 });
+  assert.deepEqual(crownLiveClock('67′', at(67, 59)), { minutes: 67, seconds: 59 });
+  assert.deepEqual(crownLiveClock('67′', at(68, 0)), { minutes: 67, seconds: 0 });
+  assert.deepEqual(crownLiveClock('67′', at(68, 30)), { minutes: 67, seconds: 30 });
+  assert.deepEqual(crownLiveClock('68′', at(68, 30)), { minutes: 68, seconds: 30 });
+  // دقيقة مع وقت بدل ضائع تُقرأ كما كانت، والثواني تستمر مستقلة.
+  assert.deepEqual(crownLiveClock("45'+2'", at(46, 10)), { minutes: 45, seconds: 10 });
   // صافرة لم تدق بعد (توقيت في المستقبل) أو قيمة غير رقمية → صفر لا ساعة مُوهِمة.
   assert.deepEqual(crownLiveClock('67′', -3_600_000), { minutes: 67, seconds: 0 });
   assert.deepEqual(crownLiveClock('67′', Number.NaN), { minutes: 67, seconds: 0 });

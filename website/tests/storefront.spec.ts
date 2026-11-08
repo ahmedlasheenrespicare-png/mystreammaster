@@ -1151,7 +1151,11 @@ test('crown match content preserves live RTL scores and scheduled countdown from
   const strip = page.locator('[data-hero-league-strip]');
   await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
   const front = strip.locator('[data-crown-offset="0"]');
-  await expect(front.locator('.hs-crown-match-status')).toContainText('67');
+  // المباشر بطلب المالك: مكان سطر التفصيل عدّاد الدقائق لا نصًا صافيًا — والدقيقة
+  // من displayClock نفسه، فلا يزال «٦٧» هو المقروء وإن تغيّر وعاء العرض.
+  const bandClock = (await front.locator('.hs-crown-slide-band--top .league-ticket-countdown').textContent()) ?? '';
+  expect(bandClock).toContain('٦٧');
+  expect(await front.locator('.hs-crown-match-status').count()).toBe(0);
   await expect(front.locator('.hs-crown-match-team').first()).toContainText('ريال مدريد');
   await expect(front.locator('.hs-crown-match-team').last()).toContainText('فالنسيا');
   await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
@@ -1190,6 +1194,107 @@ test('crown match content preserves live RTL scores and scheduled countdown from
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   await strip.screenshot({ path: '/home/user/crown-countdown.png' });
+});
+
+test('crown drawer follows the match state: postponed wording, countdown above, live clock, league mark after', async ({ page }) => {
+  /* الحالات الأربع مُجهَّزة بـroute يمرّ عبر parseScoreboard نفسه (لا JSX مُحرَّف):
+     الفيڈ الحي لا يضمن مؤجَّلًا ولا منتهيًا في نافذة الاختبار. الوقت مُثبَّت على
+     صافرة البداية + ٦٧:٠٩ لتُقاس الثواني بلا سباق، وكل تاريخ مضبوط ليُعطي عدّادًا
+     معروفًا. الانحراف المُصلَّح: «مؤجلة» كانت تُنعَت «لم تبدأ»، والدرج كان يُعيد
+     نص شارته في سطر ثانٍ، والعدّاد كان يسكن الدرج السفلي. */
+  await page.clock.setFixedTime(new Date('2026-11-07T20:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  let mode: 'postponed' | 'scheduled' | 'live' | 'finished' = 'postponed';
+  const kickoffOf = () => (mode === 'scheduled' ? '2026-11-07T22:13:41Z' : mode === 'live' ? '2026-11-07T18:52:51Z' : '2026-11-07T20:00:00Z');
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({
+    ok: true,
+    events: new URL(route.request().url()).searchParams.get('league') === 'esp.1' ? [{
+      id: 'crown-test-valencia', date: kickoffOf(), competitions: [{
+        // الملعب من المصدر: هو ما يحل محل سطر التفصيل حين يوازي الشارة، وغيابه يعني
+        // حذف السطر لا وضع شرطة بديلة.
+        venue: mode === 'postponed' ? { fullName: 'المستايا' } : undefined,
+        status: {
+          displayClock: mode === 'live' ? '67′' : undefined,
+          type: {
+            state: mode === 'live' ? 'in' : 'pre',
+            name: mode === 'postponed' ? 'STATUS_POSTPONED' : mode === 'finished' ? 'STATUS_FULL_TIME' : 'STATUS_SCHEDULED',
+            completed: mode === 'finished',
+          },
+        },
+        competitors: [
+          { homeAway: 'home', score: mode === 'finished' ? '3' : undefined, team: { displayName: 'Real Madrid' } },
+          { homeAway: 'away', score: mode === 'finished' ? '1' : undefined, team: { displayName: 'Valencia' } },
+        ],
+      }],
+    }] : [],
+  }) }));
+  const strip = page.locator('[data-hero-league-strip]');
+  const open = async (want: 'postponed' | 'scheduled' | 'live' | 'finished') => {
+    mode = want;
+    await page.goto('/');
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
+    const front = strip.locator('[data-crown-offset="0"]');
+    return { front, band: front.locator('.hs-crown-slide-band--top'), bottom: front.locator('.hs-crown-slide-band--bottom') };
+  };
+
+  // ١) مؤجَّلة: لفظ المصدر في الشارة، والملعب في سطر الدرج — لا «لم تبدأ» ولا ازدواج.
+  {
+    const { front, band, bottom } = await open('postponed');
+    await expect(front).toHaveAttribute('data-crown-state', 'other');
+    await expect(band.locator('.hs-crown-slide-chip')).toHaveText('مؤجلة');
+    await expect(band.locator('.hs-crown-match-status')).toHaveText('المستايا');
+    expect(await band.locator('.league-ticket-countdown').count()).toBe(0);
+    expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
+    await band.screenshot({ path: '/home/user/crown-postponed-drawer.png' });
+    expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
+  }
+
+  // ٢) قبل المباراة: عدّاد البداية صعد إلى الدرج العلوي، ورحل عن السفلي بطلب المالك.
+  {
+    const { front, band, bottom } = await open('scheduled');
+    await expect(front).toHaveAttribute('data-crown-state', 'scheduled');
+    await expect(band.locator('.hs-crown-slide-chip')).toHaveText('لم تبدأ');
+    await expect(band.locator('.league-ticket-countdown')).toBeVisible();
+    expect(await band.locator('.ticket-flip__label').allTextContents()).toEqual(['ساعات', 'دقائق', 'ثوانٍ']);
+    const clock = (await band.locator('.league-ticket-countdown').textContent()) ?? '';
+    for (const part of ['٠٢', '١٣', '٤١']) expect(clock).toContain(part); // ٢:١٣:٤١ حتى الصافرة
+    expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
+    expect(await band.locator('.hs-crown-match-status').count()).toBe(0); // لا نص يُعيد الشارة
+    expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
+    // والاسم والتاريخ بقيا في موضعهما: سطر الاسم في الأعلى، و«متى» في الأسفل.
+    await expect(band.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
+    await expect(bottom.locator('.hs-crown-slide-when')).toBeVisible();
+    await band.screenshot({ path: '/home/user/crown-topcountdown-drawer.png' });
+  }
+
+  // ٣) أثناء المباراة: دقائق وثواني بنفس تصميم العدّاد، والدقيقة من الفيڈ لا من الساعة.
+  {
+    const { band, bottom } = await open('live');
+    await expect(band.locator('.hs-crown-slide-chip')).toHaveText('مباشر الآن');
+    await expect(band.locator('.ticket-flip__label').first()).toHaveText('دقائق');
+    expect(await band.locator('.ticket-flip__label').allTextContents()).toEqual(['دقائق', 'ثوانٍ']);
+    const clock = (await band.locator('.league-ticket-countdown').textContent()) ?? '';
+    expect(clock).toContain('٦٧'); // الدقيقة كما أرسلها المصدر
+    expect(clock).toContain('٠٩'); // والثواني مستكمَلة داخلها: ٦٧:٠٩ بعد الصافرة
+    expect(await band.locator('.hs-crown-match-status').count()).toBe(0);
+    expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
+    await band.screenshot({ path: '/home/user/crown-liveclock-drawer.png' });
+  }
+
+  // ٤) بعد المباراة: ماركة الدوري (شارة + اسم) في مكان السطر، والاسم لا يُطبع مرتين.
+  {
+    const { front, band } = await open('finished');
+    await expect(front).toHaveAttribute('data-crown-state', 'finished');
+    await expect(band.locator('.hs-crown-slide-chip')).toHaveText('انتهت');
+    const mark = band.locator('.hs-crown-drawer-league');
+    await expect(mark).toBeVisible();
+    await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveText('الدوري الإسباني');
+    expect(await mark.locator('.league-carousel-badge').count()).toBe(1);
+    expect(await band.locator('.hs-crown-slide-league').count()).toBe(0); // لا تكرار للاسم
+    expect(await band.locator('.league-ticket-countdown').count()).toBe(0);
+    await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
+    await band.screenshot({ path: '/home/user/crown-league-mark-drawer.png' });
+  }
 });
 
 test('background crown and ticket slides pause decorative animations without hiding content', async ({ page }) => {
@@ -1878,8 +1983,20 @@ test('crown strip slides carry the reference-sized three parts, open only while 
   const key = await front.getAttribute('data-crown-card');
   expect(await front.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).visibility)).toBe('visible');
   expect(await front.locator('.hs-crown-slide-band--top').evaluate(el => getComputedStyle(el).opacity)).toBe('1');
-  const statusInBand = await front.locator('.hs-crown-slide-band--top .hs-crown-match-status, .hs-crown-slide-band--top [data-stat-metric]').count();
-  expect(statusInBand).toBeGreaterThan(0);
+  /* الشارة تسكن الدرج دائمًا. سطر التفصيل اختيارٌ مش فرض: حين لا يقول شيئًا
+     غير الشارة يُحذف، فالمعيار الحقيقي هو «لا ازدواج» — لا «يوجد سطر». */
+  const chip = front.locator('.hs-crown-slide-band--top .hs-crown-slide-chip');
+  const chipText = (await chip.count()) ? (await chip.textContent())?.trim() ?? '' : '';
+  if (chipText) {
+    expect(((await front.locator('.hs-crown-slide-band--top').textContent()) ?? '')).toContain(chipText);
+    const bandStatus = front.locator('.hs-crown-slide-band--top .hs-crown-match-status');
+    if (await bandStatus.count()) {
+      expect((await bandStatus.textContent())?.trim()).not.toBe(chipText);
+    }
+    // لا نسخة من السطر في الجسم أثناء الفتح — النقل وليس التكرار.
+    expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
+  }
+  expect(await front.locator('.hs-crown-slide-band--top .lc-top-drawer-crown, .hs-crown-slide-band--top [data-stat-metric], .hs-crown-slide-band--top .lc-grades-box').count()).toBeGreaterThan(0);
   await shell.locator('.hs-crown-arrow').first().click();
   await page.waitForTimeout(900);
   const passed = shell.locator(`.hs-crown-card[data-crown-card="${key}"]`);

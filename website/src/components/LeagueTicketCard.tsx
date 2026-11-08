@@ -812,15 +812,10 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>
       {bandLine}
     </span>
-    <span
-      className="hs-crown-slide-band hs-crown-slide-band--bottom"
-      data-crown-part="when"
-      aria-hidden="true"
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '26px 10px 12px' } as CSSProperties}
-    >
-      <span className="hs-crown-slide-when" style={{ textAlign: 'center' }}>{when}</span>
-      {/* العلامات التجارية في المنتصف تحت التاريخ/الوقت */}
-      {inBand ? <span className="hs-crown-match-brands-center" style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '4px' }}>{CROWN_BRAND_MARKS.map(src => <img key={src} src={`/images/brand/${src}`} alt="" loading="lazy" />)}</span> : null}
+    <span className="hs-crown-slide-band hs-crown-slide-band--bottom" data-crown-part="when" aria-hidden="true">
+      <span className="hs-crown-slide-when">{when}</span>
+      {/* العدّاد صار في الدرج العلوي قبل المباراة؛ السفلي للاسم والتاريخ وعلامات العارضين */}
+      {inBand ? marks : null}
     </span>
   </>;
 }

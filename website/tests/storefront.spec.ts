@@ -1239,6 +1239,31 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
 
   const checkBottomLayout = async (bottom: ReturnType<typeof page.locator>) => {
     for (const width of [1440, 390]) {
+      const top = bottom.locator('..').locator('.hs-crown-slide-band--top');
+      for (const drawer of [top, bottom]) {
+        await expect(drawer).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+        await expect(drawer).toHaveCSS('background-image', 'none');
+        await expect(drawer).toHaveCSS('box-shadow', 'none');
+        await expect(drawer).toHaveCSS('border-top-width', '0px');
+        await expect(drawer).toHaveCSS('border-bottom-width', '0px');
+        // نحاكي تداخل الدرج مع جسم التذكرة لنتحقق من ترتيب الرسم فعليًا.
+        const aboveCore = await drawer.evaluate(el => {
+          const drawer = el as HTMLElement;
+          const card = drawer.parentElement!;
+          const core = card.querySelector<HTMLElement>('.hs-crown-match')!;
+          const previous = drawer.getAttribute('style');
+          try {
+            Object.assign(drawer.style, { top: '0px', transform: 'none', pointerEvents: 'auto', opacity: '1', visibility: 'visible' });
+            const rect = core.getBoundingClientRect();
+            const stack = document.elementsFromPoint(rect.left + rect.width / 2, rect.top + 10);
+            return stack.indexOf(drawer) >= 0 && stack.indexOf(core) > stack.indexOf(drawer);
+          } finally {
+            if (previous === null) drawer.removeAttribute('style');
+            else drawer.setAttribute('style', previous);
+          }
+        });
+        expect(aboveCore).toBe(true);
+      }
       await page.setViewportSize({ width, height: 1000 });
       const when = bottom.locator('.hs-crown-slide-when');
       const brands = bottom.locator('.hs-crown-match-brands');
@@ -1440,6 +1465,8 @@ test('crown match cards use their league emblem as background without site brand
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const cards = strip.locator('[data-crown-kind="match"]');
+  await expect(strip.locator('.hs-crown-tint')).toHaveCSS('background-image', 'none');
+  await expect(strip.locator('.hs-crown-tint')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(cards).toHaveCount(16);
   await expect(cards.locator('.league-ticket-wordmark')).toHaveCount(0);
   await expect(cards).not.toContainText(['ستريم ماستر']);
@@ -1447,12 +1474,19 @@ test('crown match cards use their league emblem as background without site brand
     const league = await card.getAttribute('data-crown-league');
     await expect(card.locator('[data-match-league-background]')).toHaveAttribute('data-match-league-background', league!);
     await expect(card.locator('.hs-crown-match-art .league-carousel-badge')).toHaveCount(1);
+    expect(await card.locator('.hs-crown-match').evaluate(el => getComputedStyle(el).backgroundImage)).not.toContain('radial-gradient');
     await expect(card.locator('.hs-crown-match-team')).toHaveCount(2);
     await expect(card.locator('.hs-crown-match-brands img')).toHaveCount(4);
   }
-  // Original ticket-row branding and league-card artwork remain untouched.
+  // تبقى صور اللاعبين والعلامة الأصلية، وتحمل كل بطاقة بطولة شعارها في الخلفية.
   await expect(page.locator('.home-matches-ticket .league-ticket-wordmark').first()).toBeAttached();
   await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
+  for (const card of await strip.locator('[data-crown-kind="league"]').all()) {
+    const league = await card.getAttribute('data-crown-league');
+    await expect(card.locator('[data-league-card-background]')).toHaveAttribute('data-league-card-background', league!);
+    await expect(card.locator('.hs-crown-league-background .league-carousel-badge')).toHaveCount(1);
+    expect(await card.locator('.hs-crown-card-top').evaluate(el => getComputedStyle(el).backgroundImage)).not.toContain('radial-gradient');
+  }
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);

@@ -558,11 +558,9 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                   <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
                   <CrownClashSlide parts active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
-                  {CROWN_CUP_LOGOS[item.leagueId] && (
-                    <span className="hs-crown-match-art hs-crown-cup-background" data-league-card-background={item.leagueId} aria-hidden="true">
-                      <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={132} eager={isFront} />
-                    </span>
-                  )}
+                  <span className="hs-crown-match-art hs-crown-league-background" data-league-card-background={item.leagueId} aria-hidden="true">
+                    <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={132} eager={isFront} />
+                  </span>
                   <span className="hs-crown-players" aria-hidden="true">
                     {(LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map((src, index) => (
                       <TicketImage key={src} className={`hs-crown-player hs-crown-player--${index + 1}`} src={src} alt="" loading="lazy" decoding="async" />

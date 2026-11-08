@@ -49,6 +49,11 @@ test('كل مباراة مسجلة لها صورتها التمهيدية على
   assert.equal(MATCH_CENTER_ALL_MATCHES.length, 624 + MATCH_CENTER_ITALIAN_MATCHES.length);
   for (const match of MATCH_CENTER_ALL_MATCHES) {
     const file = path.join(website, `public/images/og/match-${match.slug}.png`);
+    // السجل مُشتق من ملف الأرشيف (`match-center-italian.mjs` يستورده)، فأي
+    // أرشيف ليلي يضيف موعدًا بلا صورته. الفشل هنا يُقرأ في بوابة النشر بعد
+    // نصف ساعة من الدمج — لذا رسالة صريحة بالعلاج، وراجع check-match-derivatives.mjs.
+    assert.ok(fs.existsSync(file),
+      `${match.slug}: صورة OG مفقودة — ولّدها بـ «node scripts/generate-match-og.mjs --missing-only»`);
     const buf = fs.readFileSync(file);
     assert.equal(buf.subarray(1, 4).toString('ascii'), 'PNG', `${match.slug}: ملف PNG فعلي`);
     assert.equal(buf.readUInt32BE(16), 1200, `${match.slug}: العرض 1200`);

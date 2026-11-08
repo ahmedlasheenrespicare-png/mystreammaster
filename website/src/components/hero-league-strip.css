@@ -1016,6 +1016,23 @@ a.hs-crown-wing:hover {
   transform-origin: center top;
 }
 
+/* درج المباراة: الموعد فوق الشعارات، وكلاهما في منتصف الدرج. */
+.hs-crown-card--match .hs-crown-slide-band--bottom {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.hs-crown-card--match .hs-crown-slide-band--bottom .hs-crown-slide-when {
+  max-width: 100%;
+  text-align: center;
+}
+
+.hs-crown-card--match .hs-crown-slide-band--bottom .hs-crown-match-brands {
+  justify-content: center;
+}
+
 /* الفتح على الشريحة الأمامية — نفس التوقيتات المرجعية (تأخير 0.18s و0.22s) */
 .hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band {
   opacity: 1;
@@ -1171,6 +1188,26 @@ a.hs-crown-wing:hover {
   max-height: 12px;
 }
 
+/* قبل المباراة وأثناءها: الشارة والعدّاد كلٌّ في منتصف سطر مستقل. */
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-slide-band--top .hs-crown-slide-chip,
+.hs-crown-card[data-crown-state="live"] .hs-crown-slide-band--top .hs-crown-slide-chip {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-slide-band--top .league-ticket-countdown,
+.hs-crown-card[data-crown-state="live"] .hs-crown-slide-band--top .league-ticket-countdown {
+  justify-self: center;
+  justify-content: center;
+  margin-inline: 0;
+}
+
+/* العدّ التنازلي قبل البداية يملأ سطره وتُوزَّع وحداته بالتساوي. */
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-slide-band--top .league-ticket-countdown {
+  width: 100%;
+  justify-content: space-evenly;
+}
+
 /* اسم النادي لا يلتف داخل الدرج: 248px أضيّق من 266px الخاصة بالحلقة،
    فالاسم الطويل يُقتطع بدل أن يرفع الدرج فوق مقاس المرجع. */
 .hs-crown-slide-band .lc-top-metric-team {
@@ -1248,6 +1285,10 @@ a.hs-crown-wing:hover {
 
   .hs-crown-slide-band .hs-crown-match-brands {
     display: none;
+  }
+
+  .hs-crown-card--match .hs-crown-slide-band--bottom .hs-crown-match-brands {
+    display: flex;
   }
 
   /* على 208px كان سطر «نقاط/م · هجوم/م» يلفّ آخر رقم وحده — يُعرض على

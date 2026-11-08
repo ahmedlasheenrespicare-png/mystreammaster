@@ -2171,3 +2171,42 @@ test('crown strip slides carry the reference-sized three parts, open only while 
   expect(onPhone.spill).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 });
+
+test('crown drawer tabs open source standings, stats and the selected match', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const tabs = strip.locator('.hs-crown-tabs');
+  await expect(tabs.locator('button .hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(3);
+  const keys = await strip.locator('[data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
+  await selectCrownSlide(page, keys.indexOf('eng.1'));
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const bounds = await tabs.boundingBox();
+    const line = await strip.locator('[data-crown-offset="0"] .hs-crown-slide-band--top .lc-top-drawer-crown').boundingBox();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(line!.y + 2);
+    const buttons = await tabs.locator('button').all();
+    const boxes = (await Promise.all(buttons.map(button => button.boundingBox()))).filter((b): b is NonNullable<typeof b> => !!b).sort((a,b) => a.x-b.x);
+    for (let i=1; i<boxes.length; i++) expect(boxes[i-1].x + boxes[i-1].width).toBeLessThanOrEqual(boxes[i].x + 1);
+  }
+  await tabs.getByRole('button', { name: 'المباراة' }).click();
+  let dialog = page.getByRole('dialog', { name: /المباراة -/ });
+  await expect(dialog).toContainText('لا توجد مباراة محددة لهذه البطاقة');
+  await dialog.getByRole('button', { name: 'إغلاق المباراة' }).click();
+  await expect(tabs.getByRole('button', { name: 'المباراة' })).toBeFocused();
+  await tabs.getByRole('button', { name: 'جدول الترتيب' }).click();
+  dialog = page.getByRole('dialog', { name: /جدول ترتيب/ });
+  await expect(dialog.locator('tbody tr')).not.toHaveCount(0);
+  await expect(dialog.locator('.crown-standings-source')).toContainText('ESPN');
+  await dialog.getByRole('button', { name: 'إغلاق جدول الترتيب' }).click();
+  await tabs.getByRole('button', { name: 'إحصائيات' }).click();
+  dialog = page.getByRole('dialog', { name: /إحصائيات بطولة/ });
+  await expect(dialog.locator('[data-crown-wing="stats"]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
+  await tabs.getByRole('button', { name: 'المباراة' }).click();
+  await expect(page.getByRole('dialog', { name: /عرض المواجهة/ })).toBeVisible();
+});

@@ -90,3 +90,12 @@
 .crown-incident-icon--goal { height: auto; font-size: 15px; }
 .crown-incident-icon--yellow { background: #facc15; border: 1px solid #dca70c; }
 .crown-incident-icon--red { background: #ef4444; border: 1px solid #cf2626; }
+
+.crown-standings { text-align: center; }
+.crown-standings h2 { font-size: clamp(22px, 4vw, 36px); }
+.crown-standings-source { color: #d5dac9; font-size: .9rem; }
+.crown-standings-scroll { max-width: 900px; margin: 24px auto; overflow-x: auto; }
+.crown-standings table { width: 100%; min-width: 580px; border-collapse: collapse; background: #171d18; text-align: center; }
+.crown-standings th, .crown-standings td { padding: 12px 8px; border-bottom: 1px solid #ffffff22; }
+.crown-standings tbody th { text-align: right; }
+.crown-standings thead { color: #d8ff3e; }

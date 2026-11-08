@@ -1293,3 +1293,47 @@ a.hs-crown-wing:hover {
     display: none;
   }
 }
+
+/* أزرار مستقلة عن البطاقة. تصميم مستوحى من modern-husky-6
+   بواسطة augustin_4687 على Uiverse (ترخيص MIT). */
+.hs-crown-shell { padding-top: calc(var(--hs-pad-t) + var(--hs-band-h) - var(--hs-band-peek) + 45px); }
+.hs-crown-tabs {
+  position: absolute;
+  top: calc(-1 * (var(--hs-band-h) - var(--hs-band-peek)) - 42px);
+  left: 50%; transform: translateX(-50%);
+  width: 260px; max-width: 100%; z-index: 10;
+  display: flex; justify-content: center; gap: 7px;
+}
+.hs-crown-tabs button {
+  position: relative; flex: 1 1 0; min-width: 0; min-height: 34px; padding: 1px;
+  border: 0; border-radius: 999px; background: #292524; color: #292524;
+  font: 800 .66rem/1.2 var(--font-sans); cursor: pointer;
+  transform: translate(-2px, -2px);
+  box-shadow: 1px 1px #292524, 2px 2px #292524, 3px 3px #292524,
+    0 0 0 2px #fafaf9, 2px 2px 0 2px #fafaf9, 4px 4px 0 2px #fafaf9;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.hs-crown-tabs button:hover, .hs-crown-tabs button:active {
+  transform: translate(0, 0); box-shadow: 0 0 0 2px #fafaf9;
+}
+.hs-crown-tabs button:focus-visible { outline: 2px dashed #292524; outline-offset: 4px; }
+.hs-crown-tab-content {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  gap: 3px; min-height: 32px; padding: 3px 4px; box-sizing: border-box;
+  border: 2px solid rgba(255,255,255,.3); border-radius: 999px;
+  background: #facc15; overflow: hidden; pointer-events: none;
+}
+.hs-crown-tab-content::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .35;
+  background-image: radial-gradient(rgba(255,255,255,.8) 20%, transparent 20%), radial-gradient(#fff 20%, transparent 20%);
+  background-position: 0 0, 4px 4px; background-size: 8px 8px;
+}
+.hs-crown-tab-content > * { position: relative; }
+.hs-crown-tab-icon { flex: 0 0 13px; width: 13px; height: 13px; }
+@media (max-width: 640px) {
+  .hs-crown-tabs { width: 240px; }
+  .hs-crown-tabs button { font-size: .6rem; }
+  .hs-crown-tab-content { gap: 2px; padding-inline: 2px; }
+  .hs-crown-tab-icon { flex-basis: 12px; width: 12px; height: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .hs-crown-tabs button { transition: none; } }

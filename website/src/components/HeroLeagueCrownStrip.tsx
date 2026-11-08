@@ -27,7 +27,11 @@ import { getLeagueTrophyTheme } from "./LeagueTrophySvg";
 import CrownLeagueTrophy from "./CrownLeagueTrophy";
 import {
   GoldenBootMedalIcon,
+  GoalsNetBurstIcon,
+  GradesIcon,
   GuardianShieldMedalIcon,
+  MedalRibbonIcon,
+  MiniDuelDiamond,
 } from "./LeagueTopDrawerIcons";
 import "./league-carousel.css";
 import "./hero-league-strip.css";
@@ -352,6 +356,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
+  /* الخلفية تتبع البطولة النشطة: نفس لونَي الكارت (الهالة وتدرّج الشريط) */
+  const shellItem = items[active] ?? items[0];
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const expandedItem = items.find(item => item.key === expandedKey);
   const [autoplayStopped, setAutoplayStopped] = useState(false);
@@ -459,7 +465,12 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     >
       <div
         className={`hs-crown-shell${dragging ? " is-dragging" : ""}`}
-        style={dragX !== 0 ? ({ "--hs-drag-x": `${dragX}px` } as CSSProperties) : undefined}
+        data-crown-league={shellItem?.leagueId ?? ""}
+        style={{
+          ...(dragX !== 0 ? { "--hs-drag-x": `${dragX}px` } : null),
+          "--hs-shell-glow": shellItem?.stageGlow ?? "",
+          "--hs-shell-split": shellItem?.splitGradient ?? "",
+        } as CSSProperties}
         {...interactionPause}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft") {
@@ -471,6 +482,15 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }
         }}
       >
+        {/* خلفية الشريط (زينة خالصة، لا تستقبل أي مؤشر فتظل السحب والضغط كما
+            هما): تلوين بلون بطولة الشريحة النشطة + خطوط ملعب تتحرك بمقدار إيدك
+            عبر --hs-drag-x. لا أنيميشن مستمر في أيٍّ منهما. */}
+        <div className="hs-crown-tint" aria-hidden="true" />
+        <div className="hs-crown-pitch" aria-hidden="true">
+          <span className="hs-crown-pitch-arc hs-crown-pitch-arc--left" />
+          <span className="hs-crown-pitch-arc hs-crown-pitch-arc--right" />
+          <span className="hs-crown-pitch-line" />
+        </div>
         <div
           className="hs-crown-center"
           onPointerDown={(e) => {
@@ -508,6 +528,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 data-crown-kind={item.clashIndex >= 0 ? "match" : "league"}
                 data-crown-state={item.clashIndex >= 0 ? matches[item.clashIndex]?.state ?? "unconfirmed" : undefined}
                 data-crown-offset={offset}
+                draggable={false}
                 role="button"
                 aria-haspopup="dialog"
                 onKeyDown={event => {
@@ -535,7 +556,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               >
                 {item.clashIndex >= 0 ? <>
                   <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
-                  <CrownClashSlide active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
+                  <CrownClashSlide parts active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
                   {CROWN_CUP_LOGOS[item.leagueId] && (
                     <span className="hs-crown-match-art hs-crown-cup-background" data-league-card-background={item.leagueId} aria-hidden="true">
@@ -563,6 +584,84 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                   </span>
                 </span>
                 }
+                {item.clashIndex < 0 && (
+                  <>
+                    <span className="hs-crown-slide-band hs-crown-slide-band--top" data-crown-part="rates" aria-hidden="true" style={{ "--lc-split-gradient": item.splitGradient } as CSSProperties}>
+                      <span className="lc-top-drawer-crown" aria-hidden="true" />
+                      <span className="lc-top-twin">
+                        <span className="lc-top-twin-duel">
+                          {[
+                            { key: "best-attack", label: "أقوى هجوم", club: item.bestAttack, Icon: GoldenBootMedalIcon, unit: "is-coral" },
+                            { key: "best-defence", label: "أقوى دفاع", club: item.bestDefence, Icon: GuardianShieldMedalIcon, unit: "is-emerald" },
+                          ].flatMap(({ key, label, club, Icon, unit }, sideIndex) => [
+                            /* فاصل الماسة بين العمودين: عمود الشبكة الأوسط (14px)
+                               له، ومن دونه تسقط البطاقة الثانية في 14px نفسها */
+                            ...(sideIndex ? [<MiniDuelDiamond key={`${key}-sep`} />] : []),
+                            <span key={key} className="lc-top-twin-side" data-stat-metric={key}>
+                              <span className="lc-top-twin-head">
+                                <Icon idSuffix={`crown-${key}-${item.leagueId}`} />
+                                <span className="lc-top-metric-label">{label}</span>
+                              </span>
+                              <span className="lc-top-twin-val-row">
+                                <strong className="lc-top-metric-val" data-stat-value="">
+                                  <bdi dir="ltr">{club ? club.rate.toFixed(2) : "—"}</bdi>
+                                </strong>
+                                {club && <span className={`lc-top-metric-unit ${unit}`}>هدف/م</span>}
+                              </span>
+                              <span className="lc-top-club-row">
+                                {club && <HeroClubCrest club={club} />}
+                                <span className="lc-top-metric-team" data-stat-team="">
+                                  <bdi dir="ltr">{club ? club.name : "—"}</bdi>
+                                </span>
+                              </span>
+                            </span>,
+                          ])}
+                        </span>
+                        <span className="lc-top-twin-goals" data-stat-metric="total-goals">
+                          <GoalsNetBurstIcon className="lc-top-twin-net" />
+                          <span className="lc-top-twin-goals-label">إجمالي الأهداف</span>
+                          <strong className="lc-top-twin-goals-val" data-stat-value="">
+                            <bdi dir="ltr">{item.totalGoals !== null ? item.totalGoals.toLocaleString("en-US") : "—"}</bdi>
+                          </strong>
+                          {item.totalGoals !== null && <span className="lc-top-twin-goals-unit">هدفاً</span>}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="hs-crown-slide-band hs-crown-slide-band--bottom" data-crown-part="leader" aria-hidden="true">
+                      <span className="lc-grades-box">
+                        <GradesIcon />
+                        <span className="lc-grades-copy">
+                          <span className="lc-grades-label">نقاط المتصدّر</span>
+                          <span className="lc-grades-num" data-leader-points="">
+                            {item.leader ? (
+                              <>
+                                <bdi dir="ltr">{item.leader.points}</bdi>
+                                <small>نقطة</small>
+                              </>
+                            ) : (
+                              "—"
+                            )}
+                          </span>
+                          {item.leader ? (
+                            <span className="lc-grades-meta" data-leader-meta="">
+                              لعب <bdi dir="ltr">{item.leader.played}</bdi> · فارق{" "}
+                              <bdi dir="ltr">{item.leader.gd > 0 ? `+${item.leader.gd}` : item.leader.gd}</bdi>
+                            </span>
+                          ) : (
+                            <span className="lc-grades-meta">جدول الترتيب قيد التحديث</span>
+                          )}
+                          {item.leader && item.leader.ppm !== null && (
+                            <span className="lc-grades-rates" data-leader-rates="">
+                              نقاط/م <bdi dir="ltr">{item.leader.ppm.toFixed(2)}</bdi> · هجوم/م{" "}
+                              <bdi dir="ltr">{item.bestAttack ? item.bestAttack.rate.toFixed(2) : "—"}</bdi>
+                            </span>
+                          )}
+                        </span>
+                      </span>
+                      <MedalRibbonIcon idSuffix={`crown-${item.leagueId}`} />
+                    </span>
+                  </>
+                )}
                 <span className="hs-crown-split" aria-hidden="true" />
               </a>
             );

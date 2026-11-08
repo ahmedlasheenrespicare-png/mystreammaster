@@ -4,7 +4,7 @@ import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { useTicketSwipe } from "./useTicketSwipe";
 import { TicketImage } from "./TicketImage";
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { IconPlay } from "./Icons";
 import { trackHomeEvent } from "../lib/analytics";
@@ -705,7 +705,12 @@ function CrownTeamIncidents({ match, side }: { match: Match | null; side: 'home'
   </span>;
 }
 
-export function CrownClashSlide({ clash, match, active = true, showEvents = false }: { clash: FeaturedClash; match: Match | null; active?: boolean; showEvents?: boolean }) {
+/* `parts` = وضع الشرائح الثلاثي (شريط البطولات المتحرك فقط): درج كريمي فوق الجسم الداكن
+   وحته، مثل شرائح «أسفل التذكرة» في صفحة المواعيد. الفول-سكرين والتذكرة الجامعة
+   يمرّان بلا parts فتبقى بنيتيهما كما هي حرفيًا. */
+const CROWN_BRAND_MARKS = ["nova-ticket.png", "xtv-ticket.png", "istar-ticket.png", "moka-ticket.png"];
+
+export function CrownClashSlide({ clash, match, active = true, showEvents = false, parts = false }: { clash: FeaturedClash; match: Match | null; active?: boolean; showEvents?: boolean; parts?: boolean }) {
   const pre = match?.state === "scheduled";
   const now = useNow(pre && active);
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
@@ -716,7 +721,18 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     crest: side.crest || (index === 0 ? match?.home.logo : match?.away.logo) || '',
   }));
   const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
-  return <div className="hs-crown-match" dir="rtl">
+  const stateLabel = !match ? "بانتظار لوحة المواعيد" : match.state === "live" ? "مباشر الآن" : match.state === "finished" ? "انتهت" : "لم تبدأ";
+  const when = match
+    ? `${dayInZone(new Date(match.date), CLASH_ZONE)} · ${kickoff(match.date, CLASH_ZONE)}`
+    /* الشرائح غير المؤكّدة: تاريخ المواجهة نفسه بصيغة مقروءة بدل ISO الخام */
+    : clash.date ? dayLabel(clash.date, { weekday: "long" }) : "قريباً";
+  const timer = countdown ? <FlipCountdown countdown={countdown} /> : null;
+  const marks = <span className="hs-crown-match-brands" aria-hidden="true">{CROWN_BRAND_MARKS.map(src => <img key={src} src={`/images/brand/${src}`} alt="" loading="lazy" />)}</span>;
+  const status = <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{match?.detail ?? "نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً"}</small>;
+  /* على الشريحة الأمامية تعيش الصفوف المساندة داخل الدرجين — في نفس الكارت،
+     لا نسخة مزدوجة. الشرائح الجانبية تحتفظ بجسمها الكامل كما هو اليوم. */
+  const inBand = parts && active;
+  const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
       <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
     </span>
@@ -729,10 +745,33 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       </span>
       <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>
     </div>
-    <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{match?.detail ?? "نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً"}</small>
-    {countdown ? <FlipCountdown countdown={countdown} /> : null}
-    <span className="hs-crown-match-brands" aria-hidden="true">{["nova-ticket.png", "xtv-ticket.png", "istar-ticket.png", "moka-ticket.png"].map(src => <img key={src} src={`/images/brand/${src}`} alt="" loading="lazy" />)}</span>
+    {!inBand && status}
+    {!inBand && timer}
+    {!inBand && marks}
   </div>;
+  if (!parts) return core;
+  /* الدرجان خارج الجسم، مقاس موضعهما كما في شريحة «أسفل التذكرة»: العلوي يبرز
+     فوق الـoutline بـ115px والسفلي يتأخر 17px داخله ثم يهبط 80px تحته. */
+  return <>
+    {core}
+    <span
+      className="hs-crown-slide-band hs-crown-slide-band--top"
+      data-crown-part="state"
+      aria-hidden="true"
+      /* شريط التاج بلون بطولة الشريحة: نفس .lc-top-drawer-crown في المرجع،
+         ولونُه هو تدرّج الكارت نفسه (--hs-split) فلا قيمة تُختَرع له */
+      style={{ "--lc-split-gradient": "var(--hs-split)" } as CSSProperties}
+    >
+      <span className="lc-top-drawer-crown" aria-hidden="true" />
+      <span className="hs-crown-slide-league">{crownLeagueName(clash.source, clash.eyebrow)}</span>
+      <span className={`hs-crown-slide-chip${match?.state === "live" ? " is-live" : ""}`}>{stateLabel}</span>
+      {inBand && status}
+    </span>
+    <span className="hs-crown-slide-band hs-crown-slide-band--bottom" data-crown-part="when" aria-hidden="true">
+      <span className="hs-crown-slide-when">{when}</span>
+      {inBand ? (timer ?? marks) : null}
+    </span>
+  </>;
 }
 
 /* نص مقروء لقارئ الشاشة يلخّص حالة المواجهة — التذكرة نفسها زخرفية */

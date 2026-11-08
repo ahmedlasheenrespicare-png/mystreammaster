@@ -1,4 +1,982 @@
-.hs-crown-slide-band--bottom {
+/* ==========================================================================
+   1) التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو (/)
+   2) شريط إحصائيات البطولة الحية — أسفل التذكرة الرئيسية مباشرةً
+========================================================================== */
+
+.hero-crown-strip {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: 12px;
+  text-align: start;
+}
+
+/* ── خلفية الشريط: تلوين البطولة النشطة + خطوط ملعب تتفاعل مع السحب ─────────
+   بياض صريح (طلب المالك) وفوقه طبقتا زينة فقط: لا صورة، لا فيديو، لا أنيميشن
+   مستمر. التلوين قيمة واحدة على الغلاف تنتقل بنعومة عند تبديل الشريحة، والخطوط
+   تتحرك بمقدار يد الزائر وحده — فتبقى تكلفة الرسم صفرًا وهو ساكن. */
+
+/* التلوين معرَّف كـ@property بلون حتى يُنتقل إليه؛ ومن يختار السكون
+   (html[data-motion="off"]) تُبطَل الانتقالات عنده بأصل قاعدة الموقع. */
+@property --hs-shell-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(216, 255, 62, 0);
+}
+
+.hs-crown-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px 9px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1.5px solid rgba(216, 255, 62, 0.55);
+  box-shadow:
+    0 18px 36px -26px rgba(11, 11, 15, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+  transition: --hs-shell-glow 0.7s ease;
+}
+
+/* هالة بلون بطولة الشريحة النشطة + تدرّج خافت نحو الحافة السفلية */
+.hs-crown-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* طبقتان من نفس تلوين البطولة: الداخلية تُبقي هالة محسوسة حول الكارت الأمامي،
+   والخارجية تفردها حتى الأطراف. الاثنتان فوق الأبيض بلا أي تعتيم. */
+  background:
+    radial-gradient(ellipse 44% 78% at center 42%, var(--hs-shell-glow, rgba(216, 255, 62, 0.22)), transparent 78%),
+    radial-gradient(ellipse 62% 92% at center 34%, var(--hs-shell-glow, rgba(216, 255, 62, 0.22)), transparent 74%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, rgba(11, 11, 15, 0.035) 100%);
+}
+
+/* خيط أسفل الشريط من تدرّج البطولة نفسه — صدى شريط الألوان داخل الكروت */
+.hs-crown-tint::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--hs-shell-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+  opacity: 0.65;
+}
+
+/* قوسا منطقة على الطرفين وخط المنتصف. توسّع الطبقة 60px لكل جهة حتى لا تنكشف
+   حافة أثناء التحريك، والميل -0.4 من إزاحة السحب فيبدو المشهد خلف البطاقات. */
+.hs-crown-pitch {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: -60px;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--hs-drag-x, 0px) * -0.4), 0, 0);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hs-crown-shell.is-dragging .hs-crown-pitch {
+  transition: none;
+}
+
+.hs-crown-pitch-arc {
+  position: absolute;
+  top: 50%;
+  width: 180px;
+  height: 180px;
+  margin-top: -90px;
+  border: 1.5px solid rgba(11, 11, 15, 0.085);
+  border-radius: 50%;
+}
+
+.hs-crown-pitch-arc--left {
+  left: -92px;
+}
+
+.hs-crown-pitch-arc--right {
+  right: -92px;
+}
+
+.hs-crown-pitch-line {
+  position: absolute;
+  inset-block: 10px;
+  inset-inline-start: 50%;
+  width: 1.5px;
+  margin-inline-start: -0.75px;
+  background: rgba(11, 11, 15, 0.1);
+}
+
+/* المحتوى فوق طبقتي الزينة دائماً */
+.hs-crown-shell > .hs-crown-center,
+.hs-crown-shell > .hs-crown-controls {
+  position: relative;
+  z-index: 1;
+}
+
+.hs-crown-shell.is-dragging {
+  cursor: grabbing;
+}
+
+/* ── القلب المداري ثلاثي الأبعاد الواسع (3D Coverflow Arc) ─────────────── */
+.hs-crown-center {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 780px;
+  height: 112px;
+  perspective: 1020px;
+  cursor: grab;
+}
+
+.hs-crown-shell.is-dragging .hs-crown-center {
+  cursor: grabbing;
+}
+
+/* الكرت لا يقصّ نفسه: الأدراج تبرز منه فوق وتحت، تمامًا كما في المرجع حيث
+   .league-carousel-item بلا overflow و.lc-outline هو وحده المَقصوص. الجسم
+   الداكن يحمل الزاوية والـoverflow بدلًا من الكرت، وخط التاج يستدير أسفلَه. */
+.hs-crown-card {
+  position: absolute;
+  width: 248px;
+  border-radius: 18px;
+  border: 1.5px solid #0b0b0f;
+  background: #fcfbf7;
+  text-decoration: none;
+  color: #0b0b0f;
+  box-shadow: 0 16px 30px -16px rgba(11, 11, 15, 0.48);
+  transition:
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.52s ease,
+    filter 0.52s ease,
+    box-shadow 0.52s ease;
+}
+
+.hs-crown-card[data-crown-offset="0"] {
+  z-index: 5;
+  opacity: 1;
+  transform: translate3d(var(--hs-drag-x, 0px), 0, 0) scale(1);
+  box-shadow:
+    0 20px 36px -16px rgba(11, 11, 15, 0.58),
+    0 0 0 1px rgba(216, 255, 62, 0.32);
+}
+
+.hs-crown-card[data-crown-offset="0"]:hover {
+  transform: translate3d(var(--hs-drag-x, 0px), -2px, 0) scale(1.015);
+}
+
+.hs-crown-card[data-crown-offset="1"] {
+  z-index: 3;
+  opacity: 0.84;
+  filter: brightness(0.92);
+  transform: translate3d(calc(-146px + var(--hs-drag-x, 0px) * 0.45), 3px, -64px) rotateY(21deg) scale(0.88);
+}
+
+.hs-crown-card[data-crown-offset="-1"] {
+  z-index: 3;
+  opacity: 0.84;
+  filter: brightness(0.92);
+  transform: translate3d(calc(146px + var(--hs-drag-x, 0px) * 0.45), 3px, -64px) rotateY(-21deg) scale(0.88);
+}
+
+.hs-crown-card[data-crown-offset="2"] {
+  z-index: 2;
+  opacity: 0.5;
+  filter: brightness(0.84);
+  transform: translate3d(-258px, 7px, -132px) rotateY(30deg) scale(0.76);
+}
+
+.hs-crown-card[data-crown-offset="-2"] {
+  z-index: 2;
+  opacity: 0.5;
+  filter: brightness(0.84);
+  transform: translate3d(258px, 7px, -132px) rotateY(-30deg) scale(0.76);
+}
+
+.hs-crown-card[data-crown-offset="hidden"] {
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, -210px) scale(0.6);
+}
+
+.hs-crown-card-top {
+  position: relative;
+  border-radius: 16.5px 16.5px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 11px 8px;
+  background:
+    radial-gradient(circle at 18% 35%, var(--hs-glow, rgba(216, 255, 62, 0.22)), transparent 65%),
+    linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec;
+}
+
+.hs-crown-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hs-crown-league-name {
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #f6f4ec;
+  line-height: 1.2;
+}
+
+.hs-crown-leader-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 5px;
+  border-radius: 999px;
+  background: rgba(252, 251, 247, 0.96);
+  color: #0b0b0f;
+  max-width: 174px;
+}
+
+.hs-crown-leader-name {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hs-crown-split {
+  display: block;
+  height: 2.5px;
+  width: 100%;
+  border-radius: 0 0 16.5px 16.5px;
+  background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+}
+
+/* ── الكؤوس المخصّصة بشعار شفاف وشعارات الأندية المعتمدة ────────────────── */
+.hs-mini-trophy {
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  pointer-events: none;
+}
+
+.hs-mini-trophy .lc-trophy-wrap,
+.hs-stats-identity-trophy .lc-trophy-wrap {
+  position: relative;
+  top: auto;
+  inset-inline-end: auto;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform: none;
+}
+
+.hs-mini-trophy .lc-trophy-svg,
+.hs-stats-identity-trophy .lc-trophy-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.hs-mini-trophy .lc-trophy-emblem {
+  --league-badge-size: 17px;
+}
+
+.hs-stats-identity-trophy .lc-trophy-emblem {
+  --league-badge-size: 14px;
+}
+
+.hs-club-crest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #eef2f6);
+  border: 1px solid rgba(11, 11, 15, 0.12);
+  box-shadow: 0 1px 4px rgba(11, 11, 15, 0.12);
+  overflow: hidden;
+}
+
+.hs-club-crest--md {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.hs-club-initials {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.42rem;
+  font-weight: 900;
+  color: #244859;
+  line-height: 1;
+}
+
+.hs-club-crest--md .hs-club-initials {
+  font-size: 0.54rem;
+}
+
+.hs-club-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.hs-club-logo.is-loaded {
+  opacity: 1;
+}
+
+/* ── شريط أزرار التنقّل والنقاط الدلالية للبطولات الثماني ─────────────────── */
+.hs-crown-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hs-crown-arrow {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(11, 11, 15, 0.16);
+  background: #ffffff;
+  color: #0b0b0f;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.hs-crown-arrow:hover {
+  background: #0b0b0f;
+  border-color: #0b0b0f;
+  color: #d8ff3e;
+}
+
+.hs-crown-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hs-crown-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(11, 11, 15, 0.22);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.28s ease, background 0.28s ease;
+}
+
+.hs-crown-dot.is-active {
+  width: 24px;
+  background: #0b0b0f;
+}
+
+/* ==========================================================================
+   شريط الإحصائيات الحي أسفل التذكرة الرئيسية مباشرةً (.hero-crown-stats-bar)
+   يحاذي على سطح المكتب شبكة .hero-ticket-row (180px يميناً + 1fr تحت الرئيسية)
+========================================================================== */
+
+.hero-crown-stats-bar {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 12px;
+  text-align: start;
+}
+
+.hs-stats-bar-grid {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* بطاقة تعريف البطولة النشطة (180px يميناً تحت تذكرة المواعيد) */
+.hs-stats-identity {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 11px 12px;
+  border-radius: 18px;
+  border: 1.5px solid #0b0b0f;
+  background:
+    radial-gradient(circle at 20% 35%, var(--hs-glow, rgba(216, 255, 62, 0.2)), transparent 65%),
+    linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 12px 24px -18px rgba(11, 11, 15, 0.45);
+  animation: hs-wing-open-inline-start 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.hs-stats-identity:hover {
+  transform: translateY(-1px);
+  border-color: #2b4eff;
+}
+
+.hs-stats-identity-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hs-stats-identity-kicker {
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #d8ff3e;
+  line-height: 1.2;
+}
+
+.hs-stats-identity-title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 112px;
+}
+
+.hs-stats-identity-trophy {
+  position: relative;
+  display: block;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  pointer-events: none;
+}
+
+.hs-stats-identity-split {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2.5px;
+  background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+}
+
+/* زوج الإحصائيات المتناظر مباشرةً أسفل التذكرة الرئيسية (.home-matches-ticket) */
+.hs-stats-wings-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hs-crown-wing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 70px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fcfbf7 0%, #f3efe3 100%);
+  border: 1.5px solid #dfd8c6;
+  box-shadow: 0 12px 24px -18px rgba(11, 11, 15, 0.26);
+  min-width: 0;
+  color: #0b0b0f;
+  text-decoration: none;
+  transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+a.hs-crown-wing:hover {
+  border-color: rgba(43, 78, 255, 0.38);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -18px rgba(11, 11, 15, 0.34);
+}
+
+.hs-crown-wing--leader {
+  animation: hs-wing-open-inline-start 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hs-crown-wing--stats {
+  animation: hs-wing-open-inline-end 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hs-wing-open-inline-start {
+  from {
+    opacity: 0;
+    transform: translate3d(-10px, 3px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hs-wing-open-inline-end {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 3px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.hs-leader-wing-main {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.hs-leader-wing-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 0;
+}
+
+.hs-leader-wing-kicker {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #2b4eff;
+  line-height: 1.2;
+}
+
+.hs-leader-wing-club {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 210px;
+}
+
+.hs-leader-wing-numbers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.hs-leader-wing-pts {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1;
+}
+
+.hs-leader-wing-pts small {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.hs-leader-wing-meta {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #6b675e;
+  white-space: nowrap;
+}
+
+/* ── أوسمة الهجوم والدفاع وإجمالي الأهداف ───────────────────────────────── */
+.hs-stat-wing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hs-stat-wing-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+}
+
+.hs-stat-medal {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+
+.hs-stat-kicker {
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #5b5850;
+  white-space: nowrap;
+}
+
+.hs-stat-club {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  min-width: 0;
+  max-width: 145px;
+}
+
+.hs-stat-club-name {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hs-stat-rate {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: #0b0b0f;
+}
+
+.hs-stat-rate small {
+  font-family: var(--font-sans);
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #2b4eff;
+  margin-inline-start: 2px;
+}
+
+.hs-stat-divider {
+  width: 1px;
+  height: 38px;
+  background: #dfd8c6;
+  flex: 0 0 1px;
+}
+
+.hs-stat-goals-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5px 9px;
+  border-radius: 11px;
+  background: rgba(43, 78, 255, 0.08);
+  border: 1px solid rgba(43, 78, 255, 0.16);
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.hs-stat-goals-num {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.1;
+}
+
+.hs-stat-goals-lbl {
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #2b4eff;
+  white-space: nowrap;
+}
+
+/* ── التجاوب مع الشاشات المتوسطة والجوال وتقليل الحركة ──────────────────── */
+@media (max-width: 1023px) {
+  .hs-stats-bar-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .hs-stats-identity-title {
+    max-width: none;
+  }
+
+  .hs-crown-card[data-crown-offset="2"] {
+    transform: translate3d(-200px, 7px, -132px) rotateY(30deg) scale(0.74);
+  }
+
+  .hs-crown-card[data-crown-offset="-2"] {
+    transform: translate3d(200px, 7px, -132px) rotateY(-30deg) scale(0.74);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-crown-strip {
+    margin-bottom: 10px;
+  }
+
+  .hs-crown-shell {
+    padding: 9px 9px 8px;
+    border-radius: 20px;
+    gap: 6px;
+  }
+
+  .hs-crown-center {
+    height: 102px;
+    max-width: 100%;
+  }
+
+  .hs-crown-card {
+    width: 208px;
+  }
+
+  .hs-crown-card[data-crown-offset="1"] {
+    transform: translate3d(calc(-56px + var(--hs-drag-x, 0px) * 0.35), 4px, -70px) rotateY(22deg) scale(0.84);
+  }
+
+  .hs-crown-card[data-crown-offset="-1"] {
+    transform: translate3d(calc(56px + var(--hs-drag-x, 0px) * 0.35), 4px, -70px) rotateY(-22deg) scale(0.84);
+  }
+
+  .hs-crown-card[data-crown-offset="2"],
+  .hs-crown-card[data-crown-offset="-2"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-crown-stats-bar {
+    margin-top: 10px;
+  }
+
+  .hs-stats-identity {
+    padding: 8px 11px 10px;
+    border-radius: 15px;
+  }
+
+  .hs-stats-wings-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .hs-crown-wing {
+    min-height: 0;
+    padding: 9px 11px;
+    border-radius: 15px;
+  }
+
+  .hs-leader-wing-club {
+    max-width: 145px;
+  }
+
+  .hs-stat-club {
+    max-width: 92px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-crown-card,
+  .hs-crown-dot,
+  .hs-crown-wing,
+  .hs-stats-identity {
+    transition: none;
+  }
+
+  .hs-crown-wing--leader,
+  .hs-crown-wing--stats,
+  .hs-stats-identity {
+    animation: none;
+  }
+}
+
+/* Same league-ticket stars, behind the readable title and authentic trophy. */
+.hs-crown-card-top { isolation: isolate; min-height: 104px; overflow: hidden; }
+.hs-crown-players { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.hs-crown-player {
+  position: absolute; bottom: -8px; height: 112px; width: 110px;
+  object-fit: contain; object-position: center bottom;
+  opacity: .7;
+  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+}
+.hs-crown-player--1 { left: 36px; transform: rotate(-5deg); }
+.hs-crown-player--2 { right: 17px; transform: rotate(5deg); }
+.hs-crown-players::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #0b0b0f33, transparent 45%, #0b0b0fc9 100%), linear-gradient(0deg, #0b0b0f70, transparent 75%);
+}
+.hs-crown-card-meta, .hs-mini-trophy { position: relative; z-index: 1; }
+.hs-crown-league-name { text-shadow: 0 1px 5px #000, 0 0 10px #000b; }
+.hs-crown-players picture { display: contents; }
+
+/* Match slides share the crown's frame, coverflow and palette. Reserve enough
+   vertical space for the full pairing/status/countdown, rather than clipping it. */
+.hero-crown-strip[data-has-matches="true"] .hs-crown-center { height: 174px; }
+.hero-crown-strip[data-has-matches="true"] .hs-crown-card-top { min-height: 164px; }
+.hero-crown-strip[data-has-matches="true"] .hs-crown-player { height: 160px; width: 132px; }
+.hs-crown-match {
+  position: relative; isolation: isolate; min-height: 164px; box-sizing: border-box;
+  border-radius: 16.5px 16.5px 0 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 6px 10px; gap: 3px; overflow: hidden;
+  background: radial-gradient(circle at 18% 35%,var(--hs-glow),transparent 65%),linear-gradient(155deg,#0b0b0f,#191d28);
+  color: #f6f4ec; text-align: center;
+}
+.hs-crown-match-art {
+  position: absolute; inset: 0; z-index: -1; opacity: .14;
+  display: grid; place-items: center; pointer-events: none;
+}
+.hs-crown-match-art .league-carousel-badge {
+  background: transparent; border: 0; border-radius: 0;
+}
+.hs-crown-match-art .league-carousel-logo {
+  inset: 0; width: 100%; height: 100%; background: transparent;
+}
+.hs-crown-match-art .league-carousel-badge:has(img[data-loaded="true"]) .league-carousel-fallback { visibility: hidden; }
+.hs-crown-match-art .league-carousel-fallback { width: 85%; height: 85%; color: #d8ff3e; }
+.hs-crown-match-heading { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10px; font-weight: 800; min-height: 22px; }
+.hs-crown-match-teams { display: grid; grid-template-columns: minmax(0,1fr) 56px minmax(0,1fr); align-items: center; gap: 3px; }
+.hs-crown-match-team { display: flex; align-items: center; flex-direction: column; gap: 3px; font-size: 10px; line-height: 1.4; text-shadow: 0 1px 4px #000; }
+.hs-crown-match-team .league-ticket-crest { position: static; width: 27px; height: 27px; object-fit: contain; }
+.hs-crown-match-team .league-ticket-crest--mono { display: grid; place-items: center; font-size: 9px; }
+.hs-crown-match-result { display: flex; flex-direction: column; gap: 3px; font-size: 15px; }
+.hs-crown-match-result small { font-size: 8px; direction: ltr; }
+.hs-crown-match-score { display: flex; align-items: center; justify-content: center; gap: 6px; direction: rtl; }
+.hs-crown-match-status { display: block; font-size: 8px; line-height: 1.5; }
+.hs-crown-match-status.is-live { color: #d8ff3e; }
+.hs-crown-match .league-ticket-countdown { position: static; inset: auto; transform: none; margin: 0; justify-content: center; gap: 4px; }
+.hs-crown-match .ticket-flip__digit { width: 12px; height: 22px; font-size: 14px; }
+.hs-crown-match .ticket-flip__txt { font-size: 14px; line-height: 22px; }
+.hs-crown-match .ticket-flip__label { font-size: 7px; }
+.hs-crown-match-brands { display: flex; justify-content: center; align-items: center; gap: 7px; height: 12px; }
+.hs-crown-match-brands img { width: 24px; max-height: 12px; object-fit: contain; }
+.hs-crown-controls { max-width: 100%; }
+.hs-crown-dots { flex-wrap: wrap; justify-content: center; max-width: 340px; }
+@media (max-width: 640px) { .hs-crown-dots { max-width: 150px; gap: 5px; } }
+
+/* Invisible/background slides must not keep decorative infinite animations
+   running behind the active card, especially on mobile GPUs. */
+.hs-crown-card:not([data-crown-offset="0"]) *,
+.hs-crown-card:not([data-crown-offset="0"]) *::before,
+.hs-crown-card:not([data-crown-offset="0"]) *::after {
+  animation-play-state: paused !important;
+}
+
+/* Preserve every content row instead of squeezing text or countdown digits. */
+.hs-crown-match > :not(.hs-crown-match-art) { flex-shrink: 0; }
+
+/* Compact numeric pagination, matching the match-ticket current/total pattern. */
+.hs-crown-counter {
+  min-width: 42px; text-align: center; font-size: 11px; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: #53594a; white-space: nowrap;
+}
+
+/* These source emblems are dark artwork. Render just the decorative watermark
+   in white so it remains visible on the dark match card; do not recolour the
+   original league cards, trophy emblems or team crests. */
+.hs-crown-match-art[data-match-league-background="eng.1"],
+.hs-crown-match-art[data-match-league-background="esp.1"],
+.hs-crown-match-art[data-match-league-background="ger.1"],
+.hs-crown-match-art[data-match-league-background="ita.1"],
+.hs-crown-match-art[data-match-league-background="fra.1"],
+.hs-crown-match-art[data-match-league-background="uefa.champions"],
+.hs-crown-match-art[data-match-league-background="uefa.europa"] { opacity: .22; }
+.hs-crown-match-art[data-match-league-background="eng.1"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="esp.1"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="ger.1"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="ita.1"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="fra.1"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="uefa.champions"] .league-carousel-logo,
+.hs-crown-match-art[data-match-league-background="uefa.europa"] .league-carousel-logo {
+  filter: brightness(0) invert(1);
+}
+
+/* Cup competition watermarks keep their source colours and transparency. */
+.hs-crown-match-art[data-match-league-background="eng.league_cup"],
+.hs-crown-match-art[data-match-league-background="afc.champions"] { opacity: .24; }
+
+/* Only the two cup identity cards also carry their competition watermark. */
+.hs-crown-card-top > .hs-crown-cup-background { opacity: .24; }
+
+
+/* ── الشريحة من ثلاث قطع بأبعاد المرجع نفسه ─────────────────────────────────
+   الدرجان نسخة طبق الأصل من .lc-top-drawer و.lc-detail في شريط «أسفل
+   التذكرة» بصفحة المواعيد: نفس الحشو والزوايا والظل وتوقيتات الفتح والإغلاق،
+   ويفتحان على الشريحة الأمامية فقط ثم يُغلقان حين تمرّ. القياسات محقَّقة من
+   المرجع نفسه — على 1440: علوي 133px بارز بـ115px فوق الجسم، سفلي 97px
+   متأخر 18px داخله وبارز 79px تحته، والجسم 156px. وعلى 390: 115 / 85 / 141.
+   الشريط يحجز هذه المسافة في حشوه الداخلي، فلا درج يُقصّ ولا ما أسفل
+   الشريط يزيح مليمترًا واحدًا. */
+
+.hs-crown-shell {
+  --hs-core-h: 150px;
+  --hs-band-h: 133px;
+  /* 97px هو درج بطاقة المقدمة في المرجع؛ وحين توجد معدّلات المتصدّر يمدّ
+     المرجع نفسه درجَه حتى 131px — فالدرج هنا 106px، لا أقصر من المرجع ولا
+     zائدًا على مساحته المحجوزة. */
+  --hs-band-h-b: 106px;
+  --hs-band-peek: 18px;
+  --hs-band-peek-b: 18px;
+  --hs-pad-t: 11px;
+  --hs-pad-b: 9px;
+  --hs-pad-i: 14px;
+  --hs-band-radius: 22px;
+  /* فوق: الحشو يحجز بروز الدرج العلوي (133−18). تحت: صف التحكّم يجيء بعد
+     الجسم مباشرة، فالحجز لازم يكون إزاحة للصفّ نفسه لا حشوًا للغلاف — وإلا
+     ارتسم الدرج فوق الأسهم. المسافة الكلية كما هي بالضبط. */
+  padding:
+    calc(var(--hs-pad-t) + var(--hs-band-h) - var(--hs-band-peek)) var(--hs-pad-i)
+    var(--hs-pad-b);
+}
+
+.hs-crown-shell > .hs-crown-center {
+  margin-bottom: calc(var(--hs-band-h-b) - var(--hs-band-peek-b));
+}
+
+/* الجسم = .lc-outline: الارتفاع المحجوز للشريحة نفسها */
+.hs-crown-center {
+  height: calc(var(--hs-core-h) + 6px);
+}
+
+.hs-crown-slide-band {
+  position: absolute;
+  top: var(--hs-band-peek);
+  inset-inline: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--hs-band-h);
+  padding: 10px 9px 25px;
   border: 1px solid #dfd8c6;
   border-bottom: 0;
   border-radius: var(--hs-band-radius) var(--hs-band-radius) 0 0;
@@ -14,12 +992,28 @@
     opacity 0.28s ease 0s,
     transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
     visibility 0s linear 0.4s;
+}
+
+.hs-crown-slide-band > * {
+  min-width: 0;
+}
+
+.hs-crown-slide-band--bottom {
+  top: calc(100% - var(--hs-band-peek-b));
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 8px;
+  min-height: var(--hs-band-h-b);
+  /* 10px بدل 14px الجانبية في المرجع: خانة النقاط كانت تفيض 6px عن العرض */
   padding: 26px 10px 12px;
+  border: 1px solid #dfd8c6;
+  border-top: 0;
+  border-radius: 0 0 var(--hs-band-radius) var(--hs-band-radius);
+  background: #fcfbf7;
+  box-shadow: 0 12px 24px -14px rgba(11, 11, 15, 0.25);
+  transform: translateY(-58%) scale(0.96);
+  transform-origin: center top;
 }
 
 /* الفتح على الشريحة الأمامية — نفس التوقيتات المرجعية (تأخير 0.18s و0.22s) */
@@ -78,4 +1072,187 @@
   justify-self: end;
   padding: 2px 8px;
   border-radius: 999px;
+  background: #0b0b0f;
+  color: #f6f4ec;
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-chip.is-live {
+  background: #d8ff3e;
+  color: #0b0b0f;
+}
+
+/* ── مكان سطر التفصيل في درج المباريات: موجَّه بحالة الموعد (بطلب المالك) ──
+   قبل المباراة عدّاد البداية، وأثناءها دقائق وثوانٍ بنفس التصميم، وبعدها ماركة
+   الدوري. الكل في صَفّ الشبكة الأخير بعرض الدرج على الأرضية نفسها (كريمي مثل
+   الدرج السفلي في المرجع)، فلا لون جديد — المقاس فقط ليجمع الخانات الأربع داخل
+   133px من درج المرجع دون أن يفيض. */
+.hs-crown-slide-band--top .league-ticket-countdown {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+}
+
+.hs-crown-slide-band--top .ticket-flip__digit {
+  width: 0.86rem;
+  height: 1.18rem;
+  font-size: 0.72rem;
+}
+
+.hs-crown-slide-band--top .ticket-flip__label {
+  font-size: 0.44rem;
+}
+
+.hs-crown-drawer-league {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.hs-crown-drawer-league-name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1.3;
+  color: #1f2430;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-band .hs-crown-match-status {
+  grid-column: 1 / -1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin: 0;
+  color: #6b675e;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: start;
+  overflow: hidden;
+}
+
+.hs-crown-slide-band .hs-crown-match-status.is-live {
+  color: #7fb100;
+}
+
+.hs-crown-slide-when {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-band .league-ticket-countdown {
+  margin-inline-start: auto;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.hs-crown-slide-band .hs-crown-match-brands {
+  justify-content: flex-end;
+  gap: 5px;
+  height: 12px;
+}
+
+.hs-crown-slide-band .hs-crown-match-brands img {
+  width: 26px;
+  max-height: 12px;
+}
+
+/* اسم النادي لا يلتف داخل الدرج: 248px أضيّق من 266px الخاصة بالحلقة،
+   فالاسم الطويل يُقتطع بدل أن يرفع الدرج فوق مقاس المرجع. */
+.hs-crown-slide-band .lc-top-metric-team {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* plaintext: الاسم اللاتيني يُبتر من آخره يمينًا، والعربي من آخره يسارًا —
+     بلا «...aint-Germain» المقصوص من أوله */
+  direction: ltr;
+  unicode-bidi: plaintext;
+}
+
+/* شعار النادي ثابت لا يُضغط، كما في .lc-top-club-crest — لكن 18px لا 22px:
+   الكرت هنا 246px مقابل 266px للحلقة، وبغير هذا التضييق يُبتر اسم مثل
+   «Paris Saint-Germain» من آخره. */
+.hs-crown-slide-band .lc-top-club-row .hs-club-crest {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* محتوى المرجع يملأ عرض الدرج كاملًا: بغير هذا السطر تُضغط البنية في عمود
+   الشبكة الأول فتتلف الأسطر ويزداد الدرج 60px عن مقاس المرجع. */
+.hs-crown-slide-band > .lc-top-twin,
+.hs-crown-slide-band > .lc-grades-box {
+  grid-column: 1 / -1;
+}
+
+.hs-crown-slide-band .lc-grades-copy {
+  min-width: 0;
+}
+
+/* شريط التاج بلون البطولة أعلى الدرج العلوي — من المرجع نفسه */
+.hs-crown-slide-band > .lc-top-drawer-crown {
+  inset-inline: 18px;
+}
+
+@media (max-width: 640px) {
+  .hs-crown-shell {
+    --hs-core-h: 135px;
+    --hs-band-h: 115px;
+    --hs-band-h-b: 104px;
+    --hs-band-peek: 16px;
+    --hs-band-peek-b: 11px;
+    --hs-pad-t: 9px;
+    --hs-pad-b: 8px;
+    --hs-pad-i: 9px;
+    --hs-band-radius: 18px;
+  }
+
+  .hs-crown-slide-band {
+    padding: 8px 6px 21px;
+    row-gap: 4px;
+  }
+
+  .hs-crown-slide-band--bottom {
+    padding: 21px 10px 10px;
+    gap: 6px;
+  }
+
+  /* على 208px كان «Paris Saint-Germain» يفقد 4px من آخره */
+  .hs-crown-slide-band .lc-top-club-row {
+    gap: 3px;
+  }
+
+  .hs-crown-slide-band .lc-top-club-row .hs-club-crest {
+    flex-basis: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .hs-crown-slide-league {
+    font-size: 0.92rem;
+  }
+
+  .hs-crown-slide-band .hs-crown-match-brands {
+    display: none;
+  }
+
+  /* على 208px كان سطر «نقاط/م · هجوم/م» يلفّ آخر رقم وحده — يُعرض على
+     الحاسوب حيث يسع الدرج، ويُترك للموبايل النقاط ولعب وفارق */
+  .hs-crown-slide-band .lc-grades-rates {
+    display: none;
+  }
 }

@@ -300,6 +300,87 @@
       "league": "uefa.europa_conf",
       "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_conf/scoreboard?dates=20261105&limit=1",
       "result": "HTTP 400 — المعرّف الصحيح uefa.europa.conf (بنقطة قبل conf لا بشرطة سفلية)"
+    },
+    "egyptCup": {
+      "claim": "كأس مصر (Egypt Cup) غير متاحة من أيّ مصدر يعتمده الموقع: لا معرّف لها في TheSportsDB، وليست في فهرس ESPN لكرة القدم.",
+      "tested": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/egy.cup/scoreboard?dates=20261108",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/egy.egypt_cup/scoreboard?dates=20261108",
+          "result": "HTTP 400 — نفس الخطأ"
+        },
+        {
+          "url": "https://sports.core.api.espn.com/v2/sports/soccer/leagues?limit=400",
+          "result": "HTTP 200 — 220 بطولة كرة قدم، لا معرّف egy.* واحد فيها (ولا الدوري المصري نفسه)"
+        },
+        {
+          "url": "https://www.thesportsdb.com/api/v1/json/123/search_all_leagues.php?c=Egypt",
+          "result": "بطولتان فقط: 4829 الدوري المصري، و5185 كأس الرابطة — لا بطولة باسم Egypt Cup"
+        }
+      ],
+      "falseLead": {
+        "claim": "نتائج البحث على الويب تُظهر أن المعرّف 4830 هو كأس مصر",
+        "verification": "https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=4830",
+        "result": "4830 = Korean KBO League (بيسبول، كوريا الجنوبية)، وeventsround.php?id=4830 يرجّع events: null. قاعدة: لا يُعتمد معرّف من طرف ثالث دون تحقّق lookupleague."
+      },
+      "resolution": "بقرار من صاحب المشروع أُضيفت كأس الرابطة المصرية (egy.league_cup = 5185) بدلاً منها: بياناتها مؤكدة من المصدر، وهي بطولة كأس مصرية فعلية. متى أضافت المصادر كأس مصر تُدرج حينها."
     }
+  },
+  "sportsdb": {
+    "purpose": "مصدر بديل للبطولات التي لا يوفّرها ESPN: يجلب scoreboard.php جولة كاملة من eventsround.php ثم يطبّعها إلى نفس بنية ESPN (php-lib/sportsdb_source.php).",
+    "probedAt": "2026-11-09",
+    "key": {
+      "value": "123",
+      "note": "المفتاح العام المعلن؛ المفتاح المجاني القديم 3 أُوقف نهائياً ويرجّع رسالة تعطيل صريحة. قابل للتغيير عبر متغير البيئة SM_SPORTSDB_KEY."
+    },
+    "whyNotEventsday": "eventsday.php يقتصر على 3 أحداث لليوم، بينما يبحث الموقع عن يوم كامل من جولة؛ وeventsseason.php يقتطع الموسم إلى 15 حدثاً.",
+    "leagues": [
+      {
+        "league": "egy.1",
+        "id": 4829,
+        "name": "Egyptian Premier League",
+        "nameAr": "الدوري المصري الممتاز",
+        "season": "2026-2027",
+        "note": "قائم قبل هذا التغيير؛ يُذكر للمقارنة فقط."
+      },
+      {
+        "league": "egy.league_cup",
+        "id": 5185,
+        "name": "Egypt League Cup",
+        "nameAr": "كأس الرابطة المصرية",
+        "season": "2026-2027",
+        "verifiedBy": [
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/search_all_leagues.php?c=Egypt",
+            "result": "بطولتان مصريتان فقط: 4829 و5185 — لا توجد بطولة باسم Egypt Cup"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=5185",
+            "result": "5185 = Egypt League Cup، بديل الاسم «Cup of the Capital of Egypt، كأس الرابطة المصرية»، idCup: 1، الموسم الحالي 2026-2027"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/eventsround.php?id=5185&r=1&s=2026-2027",
+            "result": "HTTP 200 — 8 أحداث بحالة FT"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=5185",
+            "result": "HTTP 200 — الحدث التالي National Bank of Egypt ضد Smouha، 2026-12-01، الجولة 3، الحالة NS"
+          }
+        ],
+        "roundSizeGuard": "ROUND_TRUNCATE_AT = 15: أي جولة يبلغ عدد أحداثها 15 أو أكثر تُرفق بـ UPSTREAM_TRUNCATED بدل أن تُنشر ناقصة. الجولة الأولى لكأس الرابطة 8 أحداث، فهي داخل الحد؛ ويُراجَع الحد متى وصلت البطولة إلى أدوار تزيد مبارياتها على ذلك.",
+        "seasonAlignment": "موسم المصدر 2026-2027 يطابق ناتج season_label() لأي يوم من 2026-07 إلى 2027-06، وهو ما يبحث عنه البحث الثنائي على الجولات.",
+        "sample": [
+          "2026-10-07 Pyramids 3-2 El Qanah (FT)",
+          "2026-10-07 Asyut Petroleum 0-5 Al Ahly (FT)",
+          "2026-10-08 Zamalek 0-3 ZED (FT)",
+          "2026-10-08 Ceramica 0-1 Al Masry (FT)",
+          "2026-10-08 Ghazl El Mahalla 1-1 Abou Qir Fertilizers (FT)",
+          "2026-10-08 Modern Sport 2-0 National Bank of Egypt (FT)"
+        ]
+      }
+    ]
   }
 }

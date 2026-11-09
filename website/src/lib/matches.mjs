@@ -21,6 +21,9 @@ export const LEAGUES = [
   { id: 'fra.1', name: 'الدوري الفرنسي' },
   { id: 'sau.1', name: 'الدوري السعودي' },
   { id: 'egy.1', name: 'الدوري المصري' },
+  /* كأس الرابطة المصرية تتبع دوريها مباشرة — ومصدرها TheSportsDB لا ESPN،
+     فهي مُسجّلة في ROUND_LEAGUES بـ php-lib/sportsdb_source.php أيضاً. */
+  { id: 'egy.league_cup', name: 'كأس الرابطة المصرية' },
   { id: 'tur.1', name: 'الدوري التركي' },
   { id: 'uefa.champions', name: 'دوري أبطال أوروبا' },
   { id: 'uefa.europa', name: 'الدوري الأوروبي' },

@@ -5,7 +5,7 @@ import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { useTicketSwipe } from "./useTicketSwipe";
 import { TicketImage } from "./TicketImage";
-import { useEffect, useRef, useState, type CSSProperties, type ReactElement } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { IconPlay } from "./Icons";
 import { trackHomeEvent } from "../lib/analytics";
@@ -829,11 +829,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       className="hs-crown-slide-band hs-crown-slide-band--top"
       data-crown-part="state"
       aria-hidden="true"
-      /* شريط التاج بلون بطولة الشريحة: نفس .lc-top-drawer-crown في المرجع،
-         ولونُه هو تدرّج الكارت نفسه (--hs-split) فلا قيمة تُختَرع له */
-      style={{ "--lc-split-gradient": "var(--hs-split)" } as CSSProperties}
     >
-      <span className="lc-top-drawer-crown" aria-hidden="true" />
       {/* بعد النهاية تنتقل الاسم إلى داخل ماركة الدوري، فلا يُطبع الاسم مرتين */}
       {finished ? null : <span className="hs-crown-slide-league">{pre && <CrownLeagueCoin clash={clash} active={active} />}<span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
       <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>

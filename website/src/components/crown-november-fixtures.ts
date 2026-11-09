@@ -80,10 +80,23 @@ const november8Pairs: Array<[ReturnType<typeof team>, ReturnType<typeof team>, s
   [team('كريستال بالاس', ['crystal palace', 'كريستال بالاس']), team('ليفربول', ['liverpool', 'ليفربول'], 'liverpool-badge'), 'الدوري الإنجليزي', 'eng.1'],
   [team('سندرلاند', ['sunderland', 'سندرلاند']), team('تشيلسي', ['chelsea', 'تشيلسي'], 'chelsea-badge'), 'الدوري الإنجليزي', 'eng.1'],
   [team('لانس', ['lens', 'لانس']), team('مرسيليا', ['marseille', 'olympique de marseille', 'مرسيليا', 'مارسيليا']), 'الدوري الفرنسي', 'fra.1'],
+  [team('برايتون', ['brighton', 'برايتون'], 'brighton-badge'), team('برينتفورد', ['brentford', 'برينتفورد']), 'الدوري الإنجليزي', 'eng.1'],
+  [team('إيبسويتش تاون', ['ipswich', 'إيبسويتش']), team('بورنموث', ['bournemouth', 'بورنموث'], 'bournemouth-badge'), 'الدوري الإنجليزي', 'eng.1'],
+  [team('إلتشي', ['elche', 'إلتشي']), team('ريال بيتيس', ['real betis', 'بيتيس']), 'الدوري الإسباني', 'esp.1'],
+  [team('كولن', ['cologne', 'köln', 'كولن']), team('باير ليفركوزن', ['leverkusen', 'ليفركوزن']), 'الدوري الألماني', 'ger.1'],
 ];
 export const NOVEMBER_8_CROWN_CLASHES: FeaturedClash[] = november8Pairs.map(([home, away, eyebrow, source]) => ({
   eyebrow, home, away, source, date: '2026-11-08',
 }));
+
+/* كأس الاتحاد الإنجليزي — 9 نوفمبر، وفق بيانات scoreboard.php (ESPN).
+   الموعد والحالة والنتيجة تبقى من المصدر، لا من التاريخ المثبّت للبطاقة. */
+export const NOVEMBER_9_CROWN_CLASHES: FeaturedClash[] = [{
+  eyebrow: 'كأس الاتحاد الإنجليزي',
+  home: team('بليموث باركواي', ['plymouth parkway', 'بليموث باركواي']),
+  away: team('بيركهامستيد', ['berkhamsted', 'بيركهامستيد']),
+  source: 'eng.fa', date: '2026-11-09',
+}];
 
 /* بطاقات البطولات التي تبقى في الشريط حتى بعد إخفاء مواجهاتها: هي بطولات لا
    شرائح مواجهات، وقد اعتمدها المالك في الطلبين #346 و#347 (الكأسان الفضيتان)
@@ -98,10 +111,10 @@ export const CROWN_LEAGUE_CARDS: readonly { id: string; name: string }[] = [
    (7–8 نوفمبر) بطلبه. شرائح دوري أبطال أوروبا (4 نوفمبر) والدوري الأوروبي
    (5 نوفمبر) تبقى مخفية من هذا الشريط وحده — شرائح التذكرة والأخبار خارج
    هذا الملف لا تتغيّر. */
-const WEEKEND_DAYS = ['2026-11-07', '2026-11-08'];
+const WEEKEND_DAYS = ['2026-11-07', '2026-11-08', '2026-11-09'];
 const clashKey = (clash: FeaturedClash) => `${clash.home.name}|${clash.away.name}`;
 export function novemberCrownClashes(previous: FeaturedClash[]): FeaturedClash[] {
-  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES];
+  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES, ...NOVEMBER_9_CROWN_CLASHES];
   const seen = new Set(selected.map(clashKey));
   // أي مواجهة سابقة تحمل تاريخ اليوم أو الغد تُسمح بها، بلا تكرار لبطاقة موجودة.
   const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? ''));

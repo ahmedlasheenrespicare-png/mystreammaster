@@ -310,9 +310,9 @@ function selectClash(list: Match[], clash: FeaturedClash): Match | null {
    مغذِّية (نافذتان: أسبوع للوراء + أسبوع للأمام)، ولكل مواجهة
    اختيارها الخاص من قائمة بطولتها هي دون سواها: تغذية واحدة كما كان
    في تذاكر البطولات، وعدّة تغذيات في التذكرة الجامعة بصفحة المواعيد */
-export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
+export function useClashesWithStatus(leagueId: string, clashes: FeaturedClash[]) {
   const clashesKey = clashes.map(c => `${c.source ?? leagueId}:${c.eyebrow}:${c.home.name}:${c.away.name}:${c.date ?? ""}`).join("|");
-  const [resolved, setResolved] = useState<{ key: string; matches: (Match | null)[] }>({ key: "", matches: [] });
+  const [resolved, setResolved] = useState<{ key: string; matches: (Match | null)[]; status: "ready" | "stale" | "error" }>({ key: "", matches: [], status: "error" });
   useEffect(() => {
     let alive = true;
     const controller = new AbortController();
@@ -328,6 +328,7 @@ export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
         const dayCompact = compact(day);
         const fromCompact = compact(shiftDay(day, -WINDOW_DAYS));
         const toCompact = compact(shiftDay(day, WINDOW_DAYS));
+        let stale = false;
         const feeds = await Promise.all(sources.map(async source => {
           const urls = [
             `/scoreboard.php?league=${encodeURIComponent(source)}&dates=${fromCompact}-${dayCompact}`,
@@ -337,6 +338,7 @@ export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
           const list: Match[] = [];
           for (const response of responses) {
             const result = await readScoreboardResponse(response, { id: source, name: source });
+            if (result.stale) stale = true;
             list.push(...(result.matches as Match[]));
           }
           /* اليوم مشترك بين النافذتين — إزالة التكرار */
@@ -345,9 +347,11 @@ export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
         }));
         if (!alive) return;
         const bySource = new Map(sources.map((source, i) => [source, feeds[i]]));
-        setResolved({ key: clashesKey, matches: clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)) });
+        setResolved({ key: clashesKey, matches: clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)), status: stale ? "stale" : "ready" });
       } catch {
-        /* الصمت مقصود: بطاقة الانتظار هي حالة الفشل المصمّمة */
+        if (alive) setResolved(prev => prev.key === clashesKey && prev.matches.some(Boolean)
+          ? { ...prev, status: "stale" }
+          : { key: clashesKey, matches: clashes.map(() => null), status: "error" });
       }
     };
     load();
@@ -359,7 +363,11 @@ export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagueId, clashesKey]);
-  return resolved.key === clashesKey ? resolved.matches : clashes.map(() => null);
+  return resolved.key === clashesKey ? resolved : { key: clashesKey, matches: clashes.map(() => null), status: "loading" as const };
+}
+
+export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
+  return useClashesWithStatus(leagueId, clashes).matches;
 }
 
 /* ── نبضة ثانية واحدة لعداد البداية فقط (لا تكلفة عند عدم الحاجة) ── */

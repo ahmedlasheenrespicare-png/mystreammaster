@@ -2189,7 +2189,7 @@ test('crown drawer tabs open source standings, stats and the selected match', as
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const tabs = strip.locator('.hs-crown-tabs');
-  await expect(tabs.locator('button .hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(4);
+  await expect(tabs.locator('button .hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(5);
   const keys = await strip.locator('[data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
   await selectCrownSlide(page, keys.indexOf('eng.1'));
   for (const width of [320, 390, 1440]) {
@@ -2263,4 +2263,132 @@ test('news tab moves the existing home ticket into the crown and back', async ({
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', selected!);
     await expect(strip.getByRole('button', { name: 'الأخبار', exact: true })).toBeFocused();
   }
+});
+
+test('day tabs filter the existing crown carousel instead of creating new cards', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.route('**/scoreboard.php*', route => {
+    const league = new URL(route.request().url()).searchParams.get('league');
+    const event = (id: string, date: string, home: string, away: string, live: boolean) => ({
+      id, date, competitions: [{ status: { displayClock: live ? '42:00' : undefined, type: { state: live ? 'in' : 'pre', name: live ? 'STATUS_IN_PROGRESS' : 'STATUS_SCHEDULED', completed: false } }, competitors: [
+        { homeAway: 'home', team: { displayName: home }, score: live ? '1' : undefined },
+        { homeAway: 'away', team: { displayName: away }, score: live ? '0' : undefined },
+      ] }],
+    });
+    const events = league === 'esp.1' ? [
+      event('valencia', '2026-11-07T20:00:00Z', 'Valencia', 'Real Madrid', true),
+      event('barca', '2026-11-08T20:00:00Z', 'Atletico Madrid', 'Barcelona', false),
+      event('unselected', '2026-11-08T19:00:00Z', 'Club X', 'Club Y', true),
+    ] : [];
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events }) });
+  });
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const tabs = strip.locator('.hs-day-tabs');
+  await expect(strip.locator('[data-crown-state="live"]')).toHaveCount(1);
+  await expect(tabs.locator('.hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(4);
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const drawer = (await strip.locator('[data-crown-offset="0"] .hs-crown-slide-band--bottom').boundingBox())!;
+    const bounds = (await tabs.boundingBox())!;
+    expect(bounds.y).toBeGreaterThanOrEqual(drawer.y + drawer.height - 1);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    await tabs.getByRole('button', { name: 'أمس' }).click();
+    await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('فالنسيا');
+    await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(0);
+    await tabs.getByRole('button', { name: 'اليوم' }).click();
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('برشلونة');
+    await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
+    await expect(strip).not.toContainText('Club X');
+    await tabs.getByRole('button', { name: 'مباشر' }).click();
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('فالنسيا');
+    await tabs.getByRole('button', { name: 'غداً' }).click();
+    await expect(strip.locator('[data-crown-card]')).toHaveCount(0);
+    await expect(strip.locator('.hs-day-empty')).toContainText('لا توجد مباريات مؤكدة مطابقة');
+    await strip.getByRole('button', { name: 'عرض جميع البطاقات' }).click();
+    await expect(strip.locator('[data-crown-kind="league"]').first()).toBeAttached();
+    await expect(strip.locator('.hs-day-empty')).toHaveCount(0);
+  }
+});
+
+test('day filter reports a source failure instead of asserting there are no matches', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.route('**/scoreboard.php*', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false}' }));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.locator('.hs-day-tabs').getByRole('button', { name: 'مباشر' }).click();
+  await expect(strip.locator('.hs-day-empty')).toContainText('تعذّر تحديث مباريات الشريط');
+  await expect(strip.locator('[data-crown-card]')).toHaveCount(0);
+  await strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات' }).click();
+  await expect(strip.locator('[data-crown-kind="league"]').first()).toBeAttached();
+});
+
+test('top competitions tab filters to league cards and day filters still switch back to matches', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.route('**/scoreboard.php*', route => {
+    const events = new URL(route.request().url()).searchParams.get('league') === 'esp.1' ? [{ id: 'selected-match', date: '2026-11-08T20:00:00Z', competitions: [{ status: { type: { state: 'pre', name: 'STATUS_SCHEDULED', completed: false } }, competitors: [{ homeAway: 'home', team: { displayName: 'Atletico Madrid' } }, { homeAway: 'away', team: { displayName: 'Barcelona' } }] }] }] : [];
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events }) });
+  });
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await expect(strip.locator('[data-crown-state="scheduled"]')).toHaveCount(1, { timeout: 20000 });
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const topTabs = strip.locator('.hs-crown-tabs');
+    const competition = topTabs.getByRole('button', { name: 'البطولات', exact: true });
+    await competition.click();
+    await expect(competition).toHaveAttribute('aria-pressed', 'true');
+    await expect(strip.locator('[data-crown-kind="match"]')).toHaveCount(0);
+    expect(await strip.locator('[data-crown-kind="league"]').count()).toBeGreaterThan(1);
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-kind', 'league');
+    const boxes = await topTabs.locator('button').evaluateAll(els => els.map(el => el.getBoundingClientRect().toJSON()).sort((a,b) => a.x-b.x));
+    for (let i = 1; i < boxes.length; i++) expect(boxes[i-1].right).toBeLessThanOrEqual(boxes[i].left + 1);
+    expect(boxes[0].left).toBeGreaterThanOrEqual(0);
+    expect(boxes[boxes.length - 1].right).toBeLessThanOrEqual(width);
+    await strip.locator('.hs-crown-arrow').first().click();
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-kind', 'league');
+    await strip.locator('.hs-day-tabs').getByRole('button', { name: 'اليوم' }).click();
+    await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(0);
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('برشلونة');
+    await strip.getByRole('button', { name: 'عرض جميع البطاقات' }).click();
+    await expect(strip.locator('[data-crown-kind="match"]').first()).toBeAttached();
+    await expect(strip.locator('[data-crown-kind="league"]').first()).toBeAttached();
+  }
+});
+
+test('new source-confirmed fixtures appear in the existing day-filtered crown', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-09T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.route('**/scoreboard.php*', route => {
+    const league = new URL(route.request().url()).searchParams.get('league');
+    const pairs: Record<string, [string, string, string][]> = {
+      'eng.1': [['Brighton & Hove Albion', 'Brentford', '2026-11-08T14:00:00Z'], ['Ipswich Town', 'AFC Bournemouth', '2026-11-08T14:00:00Z']],
+      'esp.1': [['Elche', 'Real Betis', '2026-11-08T13:00:00Z']],
+      'ger.1': [['FC Cologne', 'Bayer Leverkusen', '2026-11-08T14:30:00Z']],
+      'eng.fa': [['Plymouth Parkway', 'Berkhamsted', '2026-11-09T19:30:00Z']],
+    };
+    const events = (pairs[league ?? ''] ?? []).map(([home, away, date], i) => ({ id: `${league}-${i}`, date,
+      competitions: [{ status: { type: { state: league === 'eng.fa' ? 'pre' : 'post', name: league === 'eng.fa' ? 'STATUS_SCHEDULED' : 'STATUS_FULL_TIME', completed: league !== 'eng.fa' } }, competitors: [
+        { homeAway: 'home', team: { displayName: home }, score: '2' }, { homeAway: 'away', team: { displayName: away }, score: '1' },
+      ] }],
+    }));
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events }) });
+  });
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await expect(strip.locator('[data-crown-state="scheduled"]')).toHaveCount(1);
+  await strip.locator('.hs-day-tabs').getByRole('button', { name: 'أمس' }).click();
+  await expect(strip.locator('[data-crown-card]')).toHaveCount(4);
+  for (const team of ['برايتون', 'إيبسويتش', 'إلتشي', 'كولن']) await expect(strip.locator('[data-crown-card]').filter({ hasText: team })).toHaveCount(1);
+  await strip.locator('.hs-day-tabs').getByRole('button', { name: 'اليوم' }).click();
+  await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
+  await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بليموث باركواي');
+  await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بيركهامستيد');
+  await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-state', 'scheduled');
 });

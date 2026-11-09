@@ -51,10 +51,17 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
 
   await page.goto('/');
 
-  await page.locator('.hero-side-ticket--matches').getByRole('tab', { name: 'غد' }).click();
-  const matchLink = page.locator('#hero-matches-panel a.hero-match-slide').first();
-  await expect(matchLink).toBeVisible();
-  await matchLink.click();
+  /* تذكرة مباريات الهيرو مخفية بطلب المالك (HERO_MATCHES_TICKET_VISIBLE)،
+     فحدث hero_match_open لا يُطلق اليوم؛ يُفحص كل ما بقي، ويعود الشرط
+     كاملاً تلقائياً متى أُعيدت التذكرة. */
+  const matchesTicket = page.locator('.hero-side-ticket--matches');
+  const matchesTicketVisible = (await matchesTicket.count()) > 0;
+  if (matchesTicketVisible) {
+    await matchesTicket.getByRole('tab', { name: 'غد' }).click();
+    const matchLink = page.locator('#hero-matches-panel a.hero-match-slide').first();
+    await expect(matchLink).toBeVisible();
+    await matchLink.click();
+  }
   await page.locator('.home-matches-ticket .league-ticket-dot').nth(1).click();
   const newsLink = page.locator('.home-matches-ticket .league-ticket-slide.is-active a[href*="/news/"]');
   const newsHref = await newsLink.getAttribute('href');
@@ -79,11 +86,12 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
       .map(entry => ({ name: entry[1], params: entry[2] }));
   });
 
-  expect(events).toEqual(expect.arrayContaining([
-    expect.objectContaining({
+  const expectedEvents = [
+    /* hero_match_open يأتي من تذكرة المباريات الجانبية — تُفحص فقط وهي ظاهرة */
+    ...(matchesTicketVisible ? [expect.objectContaining({
       name: 'hero_match_open',
       params: expect.objectContaining({ placement: 'home_hero', league_id: expect.any(String) }),
-    }),
+    })] : []),
     expect.objectContaining({
       name: 'hero_ticket_slide_select',
       params: expect.objectContaining({ placement: 'home_hero', slide_kind: 'news' }),
@@ -104,6 +112,7 @@ test('homepage match and news engagement plus trial, plan, and pricing clicks re
       name: 'commercial_cta_click',
       params: expect.objectContaining({ cta_type: 'trial', cta_location: 'trial_modal' }),
     }),
-  ]));
+  ];
+  expect(events).toEqual(expect.arrayContaining(expectedEvents));
   expect(events.some(event => event.name === 'hero_match_day_select')).toBe(false);
 });

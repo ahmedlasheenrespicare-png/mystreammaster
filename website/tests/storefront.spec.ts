@@ -1,5 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
 
+/* التذكرة الجانبية «مباريات أمس/اليوم/غد» مخفية من الهيرو بطلب المالك
+   (HERO_MATCHES_TICKET_VISIBLE = false في Hero.tsx) — مكوّنها وبياناته
+   باقون. الحرّاس الخاصة بها تُتخطّى وهي تعود للعمل تلقائياً فور إرجاعها،
+   بدل حذف التغطية. */
+async function heroMatchesTicketHidden(page: Page): Promise<boolean> {
+  return (await page.locator('[data-hero-side="matches"]').count()) === 0;
+}
+
 async function selectCrownSlide(page: Page, target: number | RegExp) {
   const strip = page.locator('[data-hero-league-strip]');
   const cards = strip.locator('[data-crown-card]');
@@ -297,6 +305,19 @@ test('hero main ticket fills the hidden news space beside the matches ticket', a
   const mainBox = await main.boundingBox();
   const rowBox = await row.boundingBox();
   expect(mainBox && rowBox).toBeTruthy();
+  const hidden = await heroMatchesTicketHidden(page);
+  const newsTicket = page.locator('[data-hero-side="news"]');
+  await expect(newsTicket).toHaveCount(0);
+
+  if (hidden) {
+    /* تذكرة المباريات مخفية بطلب المالك: لا عمود فارغ 190px — الرئيسية
+       تمتلئ بعرض الصف كله، وتبقى بارتفاع 265px */
+    expect(Math.abs(mainBox!.width - rowBox!.width)).toBeLessThanOrEqual(2);
+    expect(Math.abs(mainBox!.x - rowBox!.x)).toBeLessThanOrEqual(2);
+    expect(mainBox!.height).toBeCloseTo(265, 0);
+    return;
+  }
+
   // No empty news column: main fills the entire remaining desktop width.
   expect(Math.abs(mainBox!.width - (rowBox!.width - 190))).toBeLessThanOrEqual(2);
   expect(Math.abs(mainBox!.x - rowBox!.x)).toBeLessThanOrEqual(2);
@@ -304,9 +325,7 @@ test('hero main ticket fills the hidden news space beside the matches ticket', a
   expect(mainBox!.height).toBeCloseTo(265, 0);
 
   const matchesTicket = page.locator('[data-hero-side="matches"]');
-  const newsTicket = page.locator('[data-hero-side="news"]');
   await expect(matchesTicket).toHaveCount(1);
-  await expect(newsTicket).toHaveCount(0);
   const matchesBox = await matchesTicket.boundingBox();
   expect(matchesBox).toBeTruthy();
 
@@ -360,6 +379,8 @@ test('hero matches ticket has yesterday/today/tomorrow tabs, club logos and arro
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
+  /* تذكرة المباريات مخفية بطلب المالك: هذا الحارس يعود تلقائياً مع إرجاعها */
+  if (await heroMatchesTicketHidden(page)) test.skip(true, 'hero matches ticket hidden by owner request');
 
   const ticket = page.locator('[data-hero-side="matches"]');
   const tabs = ticket.getByRole('tab');
@@ -423,6 +444,8 @@ test('hero slide shows the competition logo of its own league in the background'
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
+  /* تذكرة المباريات مخفية بطلب المالك: هذا الحارس يعود تلقائياً مع إرجاعها */
+  if (await heroMatchesTicketHidden(page)) test.skip(true, 'hero matches ticket hidden by owner request');
   const ticket = page.locator('[data-hero-side="matches"]');
   await expect(ticket.locator('text=1/2')).toBeVisible();
 
@@ -467,6 +490,8 @@ test('hero side news ticket is temporarily hidden on desktop and mobile', async 
 test('hero matches ticket sits above the main ticket on mobile at half its height', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto('/');
+  /* تذكرة المباريات مخفية بطلب المالك: هذا الحارس يعود تلقائياً مع إرجاعها */
+  if (await heroMatchesTicketHidden(page)) test.skip(true, 'hero matches ticket hidden by owner request');
   const matches = await page.locator('[data-hero-side="matches"]').boundingBox();
   const main = await page.locator('.hero-ticket-row .home-matches-ticket').boundingBox();
   expect(matches && main).toBeTruthy();
@@ -493,6 +518,8 @@ test('hero live match shows source minute and links only to its registered match
     }] : [] }) });
   });
   await page.goto('/');
+  /* تذكرة المباريات مخفية بطلب المالك: هذا الحارس يعود تلقائياً مع إرجاعها */
+  if (await heroMatchesTicketHidden(page)) test.skip(true, 'hero matches ticket hidden by owner request');
   const slide = page.locator('[data-hero-side="matches"] .hero-match-slide');
   await expect(slide).toContainText('مباشر');
   await expect(slide).toContainText('67′');
@@ -528,6 +555,8 @@ test('ticket touch gestures reach finished matches beyond twelve in every day ta
     return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events: league === 'eng.1' ? events : [] }) });
   });
   await page.goto('/');
+  /* تذكرة المباريات مخفية بطلب المالك: هذا الحارس يعود تلقائياً مع إرجاعها */
+  if (await heroMatchesTicketHidden(page)) test.skip(true, 'hero matches ticket hidden by owner request');
   const ticket = page.locator('[data-hero-side="matches"]');
   const swipe = async (locator: ReturnType<typeof page.locator>, dx: number, dy = 0) => {
     await locator.evaluate((el, { dx, dy }) => {
@@ -560,6 +589,8 @@ test('matches ticket uses the white and lime reference frame with accessible dar
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
+    /* تذكرة المباريات مخفية بطلب المالك: هذا الحارس يعود تلقائياً مع إرجاعها */
+    if (await heroMatchesTicketHidden(page)) test.skip(true, 'hero matches ticket hidden by owner request');
     const ticket = page.locator('[data-hero-side="matches"]');
     await ticket.scrollIntoViewIfNeeded();
     await page.mouse.move(0, 0);

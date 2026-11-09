@@ -153,6 +153,10 @@ test.describe('Hero 3D Crown tournament strip on home page (/)', () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto('/');
 
+    /* التذكرة الجانبية «مباريات أمس/اليوم/غد» مخفية من الهيرو بطلب المالك
+       (HERO_MATCHES_TICKET_VISIBLE = false) — يعود هذا الحارس تلقائياً مع
+       إرجاعها بدل حذف التغطية */
+    test.skip((await page.locator('[data-hero-side="matches"]').count()) === 0, 'hero matches ticket hidden by owner request');
     const ticket = page.locator('[data-hero-side="matches"]');
     await expect(ticket.locator('[data-day-tabs-variant="diagonal"]')).toBeVisible();
     const todayTab = ticket.getByRole('tab', { name: 'اليوم', exact: true });

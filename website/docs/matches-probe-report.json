@@ -230,6 +230,87 @@
       },
       "emptyDaysNote": "أيام 2026-10-09 و 10-11 و 10-23 و 10-24 و 10-26 كلها بلا أحداث: أكتوبر 2026 بين فترتين دوليتين لا بين جولات. النافذة القادمة 12-17 نوفمبر. نافذة فارغة حالة مشروعة في هذا المسبار لا فشل، لكن أثرها عملي: قسم البطولة في الجدول يظهر فارغاً حتى يقترب مدى الأيام الخمسة عشر المعروض من نوفمبر.",
       "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    },
+    {
+      "league": "concacaf.nations.league",
+      "ok": true,
+      "name": "دوري أمم كونكاكاف",
+      "slugEchoedBySource": "concacaf.nations.league",
+      "leagueIdAtSource": "19267",
+      "uid": "s:600~l:19267",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 Concacaf Nations League",
+      "sampledDay": "2026-10-06",
+      "sample": [
+        {
+          "date": "2026-10-06T20:00Z",
+          "home": "Montserrat",
+          "away": "Turks and Caicos Islands",
+          "score": "4-1",
+          "state": "finished",
+          "venue": "TCIFA National Stadium, Providenciales",
+          "group": "League C, Group A"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2406.png",
+      "currentPhase": "Group (Sep 23-Nov 17) ثم Quarterfinals وGold Cup Prelims (Nov 12-17 2026) ثم Semifinals (Dec 1-Mar 26) والنهائي والمركز الثالث (Mar 27-31 2027)",
+      "upcomingSample": {
+        "sampledDay": "2026-11-14",
+        "date": "2026-11-14T19:00Z",
+        "home": "Sint Maarten",
+        "away": "French Guiana",
+        "state": "scheduled",
+        "venue": "Arnos Vale Stadium",
+        "group": "League B, Group D"
+      },
+      "wrongSlug": "concacaf.nations وconcacaf.nations_league وconcacaf.cnl كلها HTTP 400؛ المعرّف الصحيح concacaf.nations.league بنقطتين. المُراقِب concacaf.gold يستجيب 200 (المعرّف 4004)، فالـ400 خاص بالاسم لا بالبادئة",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    },
+    {
+      "league": "caf.nations_qual",
+      "ok": true,
+      "name": "تصفيات كأس أمم أفريقيا",
+      "slugEchoedBySource": "caf.nations_qual",
+      "leagueIdAtSource": "8315",
+      "uid": "s:600~l:8315",
+      "season": 2026,
+      "seasonDisplayName": "2027 Africa Cup of Nations Qualifying",
+      "sampledDay": "2026-09-25",
+      "sample": [
+        {
+          "date": "2026-09-25T13:00Z",
+          "home": "Mozambique",
+          "away": "Senegal",
+          "score": "1-1",
+          "state": "finished",
+          "venue": "Estádio do Zimpeto, Maputo",
+          "group": "Group J"
+        },
+        {
+          "date": "2026-10-06T19:00Z",
+          "home": "Angola",
+          "away": "Malawi",
+          "score": "3-1",
+          "state": "finished",
+          "venue": "Estádio 11 de Novembro, Luanda",
+          "group": "Group B"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/default-team-logo-500.png&w=100&h=100",
+      "currentPhase": "Preliminary Round (Mar 25-31، لُعبت) ثم Group (Sep 24 2026 - Mar 28 2027): الجولة الثالثة 12-14 نوفمبر 2026 والرابعة 16-17 نوفمبر، ثم الخامسة والسادسة مارس 2027",
+      "upcomingSample": {
+        "sampledDay": "2026-11-12",
+        "date": "2026-11-12T15:00Z",
+        "home": "Ghana",
+        "away": "Somalia",
+        "state": "scheduled",
+        "venue": "Ohene Djan Stadium, Accra",
+        "group": "Group C"
+      },
+      "emptyDaysNote": "لا مباريات في 2026-10-05: المسابقة تعمل بنوافذ دولية (جولتان في نافذة واحدة) لا أسبوعياً، فاليوم الخالي بين النوافذ حالة مشروعة لا فشل. أثرها العملي أن قسم البطولة يظهر فارغاً بين النوافذ ثم يمتلئ مع النافذة القادمة.",
+      "logoNote": "المصدر لا يوفّر شعاراً خاصاً بهذه المسابقة: الحقل logos يُرجع صورة بديلة عامة (default-team-logo). يُذكر ذلك حتى لا يُظنّ الشعار العام خطأً في الإسناد.",
+      "wrongSlug": "caf.qual يُرجع HTTP 400؛ المعرّف الصحيح caf.nations_qual (بـnations_ لا qual وحدها)",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
     }
   ],
   "outOfScope": {
@@ -300,6 +381,87 @@
       "league": "uefa.europa_conf",
       "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_conf/scoreboard?dates=20261105&limit=1",
       "result": "HTTP 400 — المعرّف الصحيح uefa.europa.conf (بنقطة قبل conf لا بشرطة سفلية)"
+    },
+    "egyptCup": {
+      "claim": "كأس مصر (Egypt Cup) غير متاحة من أيّ مصدر يعتمده الموقع: لا معرّف لها في TheSportsDB، وليست في فهرس ESPN لكرة القدم.",
+      "tested": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/egy.cup/scoreboard?dates=20261108",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/egy.egypt_cup/scoreboard?dates=20261108",
+          "result": "HTTP 400 — نفس الخطأ"
+        },
+        {
+          "url": "https://sports.core.api.espn.com/v2/sports/soccer/leagues?limit=400",
+          "result": "HTTP 200 — 220 بطولة كرة قدم، لا معرّف egy.* واحد فيها (ولا الدوري المصري نفسه)"
+        },
+        {
+          "url": "https://www.thesportsdb.com/api/v1/json/123/search_all_leagues.php?c=Egypt",
+          "result": "بطولتان فقط: 4829 الدوري المصري، و5185 كأس الرابطة — لا بطولة باسم Egypt Cup"
+        }
+      ],
+      "falseLead": {
+        "claim": "نتائج البحث على الويب تُظهر أن المعرّف 4830 هو كأس مصر",
+        "verification": "https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=4830",
+        "result": "4830 = Korean KBO League (بيسبول، كوريا الجنوبية)، وeventsround.php?id=4830 يرجّع events: null. قاعدة: لا يُعتمد معرّف من طرف ثالث دون تحقّق lookupleague."
+      },
+      "resolution": "بقرار من صاحب المشروع أُضيفت كأس الرابطة المصرية (egy.league_cup = 5185) بدلاً منها: بياناتها مؤكدة من المصدر، وهي بطولة كأس مصرية فعلية. متى أضافت المصادر كأس مصر تُدرج حينها."
     }
+  },
+  "sportsdb": {
+    "purpose": "مصدر بديل للبطولات التي لا يوفّرها ESPN: يجلب scoreboard.php جولة كاملة من eventsround.php ثم يطبّعها إلى نفس بنية ESPN (php-lib/sportsdb_source.php).",
+    "probedAt": "2026-11-09",
+    "key": {
+      "value": "123",
+      "note": "المفتاح العام المعلن؛ المفتاح المجاني القديم 3 أُوقف نهائياً ويرجّع رسالة تعطيل صريحة. قابل للتغيير عبر متغير البيئة SM_SPORTSDB_KEY."
+    },
+    "whyNotEventsday": "eventsday.php يقتصر على 3 أحداث لليوم، بينما يبحث الموقع عن يوم كامل من جولة؛ وeventsseason.php يقتطع الموسم إلى 15 حدثاً.",
+    "leagues": [
+      {
+        "league": "egy.1",
+        "id": 4829,
+        "name": "Egyptian Premier League",
+        "nameAr": "الدوري المصري الممتاز",
+        "season": "2026-2027",
+        "note": "قائم قبل هذا التغيير؛ يُذكر للمقارنة فقط."
+      },
+      {
+        "league": "egy.league_cup",
+        "id": 5185,
+        "name": "Egypt League Cup",
+        "nameAr": "كأس الرابطة المصرية",
+        "season": "2026-2027",
+        "verifiedBy": [
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/search_all_leagues.php?c=Egypt",
+            "result": "بطولتان مصريتان فقط: 4829 و5185 — لا توجد بطولة باسم Egypt Cup"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=5185",
+            "result": "5185 = Egypt League Cup، بديل الاسم «Cup of the Capital of Egypt، كأس الرابطة المصرية»، idCup: 1، الموسم الحالي 2026-2027"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/eventsround.php?id=5185&r=1&s=2026-2027",
+            "result": "HTTP 200 — 8 أحداث بحالة FT"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=5185",
+            "result": "HTTP 200 — الحدث التالي National Bank of Egypt ضد Smouha، 2026-12-01، الجولة 3، الحالة NS"
+          }
+        ],
+        "roundSizeGuard": "ROUND_TRUNCATE_AT = 15: أي جولة يبلغ عدد أحداثها 15 أو أكثر تُرفق بـ UPSTREAM_TRUNCATED بدل أن تُنشر ناقصة. الجولة الأولى لكأس الرابطة 8 أحداث، فهي داخل الحد؛ ويُراجَع الحد متى وصلت البطولة إلى أدوار تزيد مبارياتها على ذلك.",
+        "seasonAlignment": "موسم المصدر 2026-2027 يطابق ناتج season_label() لأي يوم من 2026-07 إلى 2027-06، وهو ما يبحث عنه البحث الثنائي على الجولات.",
+        "sample": [
+          "2026-10-07 Pyramids 3-2 El Qanah (FT)",
+          "2026-10-07 Asyut Petroleum 0-5 Al Ahly (FT)",
+          "2026-10-08 Zamalek 0-3 ZED (FT)",
+          "2026-10-08 Ceramica 0-1 Al Masry (FT)",
+          "2026-10-08 Ghazl El Mahalla 1-1 Abou Qir Fertilizers (FT)",
+          "2026-10-08 Modern Sport 2-0 National Bank of Egypt (FT)"
+        ]
+      }
+    ]
   }
 }

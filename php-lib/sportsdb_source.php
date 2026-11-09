@@ -9,6 +9,7 @@ const ROUND_TTL_SCHEDULED = 900; // تحديث الجولة المجدولة ب�
 const ROUND_TTL_EMPTY    = 3600; // جولة فارغة (ما بعد نهاية الموسم أو لم تُنشر بعد)
 const ROUND_LEAGUES = [
     'egy.1' => 4829, // Egyptian Premier League (الدوري المصري الممتاز)
+    'egy.league_cup' => 5185, // Egypt League Cup (كأس الرابطة المصرية)
     'sau.1' => 4668, // Saudi-Arabian Pro League (دوري روشن السعودي)
 ];
 

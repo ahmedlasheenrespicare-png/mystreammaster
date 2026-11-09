@@ -7,6 +7,7 @@
  *     dates=YYYYMMDD&limit=500 لأن ESPN أوقفت قبول النطاقات dates=YYYYMMDD-YYYYMMDD).
  *  2. TheSportsDB API v1 (eventsround.php) للدوريين اللذين لا توفرهما ESPN:
  *     - الدوري المصري egy.1 -> 4829 (الدوري المصري الممتاز)
+ *     - كأس الرابطة المصرية egy.league_cup -> 5185 (كأس الرابطة المصرية)
  *     - الدوري السعودي sau.1 -> 4668 (دوري روشن)
  *     المفتاح من SM_SPORTSDB_KEY أو ملف الخادم الخاص فقط. نقطة eventsday.php لم تعد
  *     مناسبة لأنها تُرجع 3 مباريات لليوم فقط، وeventsseason.php تُرجع 15 حدثاً فقط للموسم.
@@ -64,6 +65,7 @@ const ALLOWED_LEAGUES = [
     'fra.1',
     'sau.1',
     'egy.1',
+    'egy.league_cup',
     'tur.1',
     'uefa.champions',
     'uefa.europa',
@@ -72,6 +74,8 @@ const ALLOWED_LEAGUES = [
     'caf.confed',
     'afc.champions',
     'uefa.nations',
+    'concacaf.nations.league',
+    'caf.nations_qual',
     'fifa.worldq.caf',
     'fifa.worldq.uefa',
     'fifa.friendly',

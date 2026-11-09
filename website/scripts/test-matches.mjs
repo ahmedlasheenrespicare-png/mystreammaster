@@ -318,6 +318,9 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
     { id: 'eng.fa', name: 'كأس الاتحاد الإنجليزي' },
     { id: 'tur.1', name: 'الدوري التركي' },
     { id: 'uefa.nations', name: 'دوري الأمم الأوروبية' },
+    { id: 'egy.league_cup', name: 'كأس الرابطة المصرية' },
+    { id: 'concacaf.nations.league', name: 'دوري أمم كونكاكاف' },
+    { id: 'caf.nations_qual', name: 'تصفيات كأس أمم أفريقيا' },
   ];
   for (const entry of added) {
     const found = LEAGUES.find((league) => league.id === entry.id);
@@ -335,6 +338,9 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
   assert.ok(at('eng.1') < at('eng.league_cup'), 'كأس الرابطة يتبع دوري بلده');
   assert.ok(at('eng.league_cup') < at('eng.fa'), 'كأس الرابطة قبل كأس الاتحاد');
   assert.ok(at('eng.fa') < at('esp.1'), 'بطولات إنجلترا كتلة واحدة قبل بقية الدوريات');
+  /* كأس الرابطة المصرية تتبع دوريها مباشرة، ككأسي إنجلترا مع دوريها */
+  assert.ok(at('egy.1') < at('egy.league_cup'), 'كأس الرابطة المصرية تتبع دوريها');
+  assert.ok(at('egy.league_cup') < at('tur.1'), 'كأس الرابطة المصرية قبل بقية الدوريات');
   /* القارية كتلة متتابعة بين المسابقات الأوروبية ومسابقات المنتخبات.
      كان هذا التأكيد شريحة ثابتة من caf.champions إلى fifa.worldq.caf،
      فلم يعد صالحاً بعد إدراج دوري الأمم بينهما: الشريحة تصير مشتملة عليه.
@@ -358,6 +364,15 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
      وقبل التصفيات والوديات، فتتجاور مسابقات المنتخبات في الجدول. */
   assert.ok(at('afc.champions') < at('uefa.nations'), 'دوري الأمم بعد الكتلة القارية');
   assert.ok(at('uefa.nations') < at('fifa.worldq.caf'), 'دوري الأمم يسبق تصفيات كأس العالم');
+  /* تصفيات أمم أفريقيا مسابقة منتخبات، فهي مع دوري الأمم لا مع بطولات
+     الأندية القارية، وتجاور تصفيات كأس العالم الأفريقية */
+  assert.ok(at('afc.champions') < at('caf.nations_qual'), 'تصفيات أمم أفريقيا تلي الكتلة القارية');
+  assert.ok(at('uefa.nations') < at('caf.nations_qual'), 'تصفيات أمم أفريقيا تلي دوري الأمم');
+  /* دوري أمم كونكاكاف نظير دوري الأمم الأوروبية: يقترن به مباشرة */
+  assert.ok(at('afc.champions') < at('concacaf.nations.league'), 'دوري أمم كونكاكاف يلي الكتلة القارية');
+  assert.ok(at('uefa.nations') < at('concacaf.nations.league'), 'دوري أمم كونكاكاف يلي نظيره الأوروبي');
+  assert.ok(at('concacaf.nations.league') < at('caf.nations_qual'), 'دوري أمم كونكاكاف يسبق تصفيات أمم أفريقيا');
+  assert.ok(at('caf.nations_qual') < at('fifa.worldq.caf'), 'تصفيات أمم أفريقيا تجاور تصفيات كأس العالم الأفريقية');
   assert.equal(new Set(ids).size, ids.length, 'لا معرّف مكرر في قائمة البطولات');
 });
 

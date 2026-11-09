@@ -803,7 +803,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
         : finished ? <CrownDrawerLeagueMark clash={clash} active={active} />
           : bandDetail ? bandStatus : null;
   const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
-    {parts && <CrownPitchBackground active={active} />}
+    {parts && <CrownPitchBackground />}
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
       <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
     </span>

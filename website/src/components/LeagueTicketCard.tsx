@@ -802,12 +802,19 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       : liveClock ? <FlipCountdown countdown={flipClockUnits(liveClock.minutes, liveClock.seconds)} cells="minute-seconds" />
         : finished ? <CrownDrawerLeagueMark clash={clash} active={active} />
           : bandDetail ? bandStatus : null;
+  const detailsOnPitch = (pre || finished) && inBand;
+  const pitchDetails = detailsOnPitch ? <div className="hs-crown-scheduled-details" aria-hidden="true">
+    {pre && <span className="hs-crown-slide-league"><CrownLeagueCoin clash={clash} active={active} /><span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
+    <span className="hs-crown-slide-chip">{stateLabel}</span>
+    {bandLine}
+  </div> : null;
   const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
     {parts && <CrownPitchBackground />}
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
       <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
     </span>
     <div className="hs-crown-match-heading"><span>{crownLeagueName(clash.source, clash.eyebrow)}</span></div>
+    {pitchDetails}
     <div className="hs-crown-match-teams">
       <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="home" />}</span>
       <span className="hs-crown-match-result">
@@ -816,6 +823,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       </span>
       <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>
     </div>
+    {detailsOnPitch && <div className="hs-crown-scheduled-when" aria-hidden="true"><span className="hs-crown-slide-when">{when}</span>{marks}</div>}
     {!inBand && status}
     {!inBand && timer}
     {!inBand && marks}
@@ -831,14 +839,17 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       aria-hidden="true"
     >
       {/* بعد النهاية تنتقل الاسم إلى داخل ماركة الدوري، فلا يُطبع الاسم مرتين */}
-      {finished ? null : <span className="hs-crown-slide-league">{pre && <CrownLeagueCoin clash={clash} active={active} />}<span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
-      <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>
-      {bandLine}
+      {!detailsOnPitch && <>
+        {finished ? null : <span className="hs-crown-slide-league">{pre && <CrownLeagueCoin clash={clash} active={active} />}<span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
+        <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>
+        {bandLine}
+      </>}
     </span>
     <span className="hs-crown-slide-band hs-crown-slide-band--bottom" data-crown-part="when" aria-hidden="true">
-      <span className="hs-crown-slide-when">{when}</span>
-      {/* العدّاد صار في الدرج العلوي قبل المباراة؛ السفلي للاسم والتاريخ وعلامات العارضين */}
-      {inBand ? marks : null}
+      {!detailsOnPitch && <>
+        <span className="hs-crown-slide-when">{when}</span>
+        {inBand ? marks : null}
+      </>}
     </span>
   </>;
 }

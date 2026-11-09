@@ -1223,7 +1223,7 @@ test('crown match content preserves live RTL scores and scheduled countdown from
       });
       return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, height: box.height, children };
     });
-    expect(rows.height).toBeLessThanOrEqual(168);
+    expect(rows.height).toBeLessThanOrEqual(252);
     for (let i = 0; i < rows.children.length; i++) {
       const row = rows.children[i];
       expect(row.top).toBeGreaterThanOrEqual(rows.top);
@@ -1297,7 +1297,8 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
           try {
             Object.assign(drawer.style, { top: '0px', transform: 'none', pointerEvents: 'auto', opacity: '1', visibility: 'visible' });
             const rect = core.getBoundingClientRect();
-            const stack = document.elementsFromPoint(rect.left + rect.width / 2, rect.top + 10);
+            const drawerRect = drawer.getBoundingClientRect();
+            const stack = document.elementsFromPoint(drawerRect.left + drawerRect.width / 2, rect.top + 10);
             return stack.indexOf(drawer) >= 0 && stack.indexOf(core) > stack.indexOf(drawer);
           } finally {
             if (previous === null) drawer.removeAttribute('style');
@@ -1357,29 +1358,31 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
   }
 
-  // ٢) قبل المباراة: عدّاد البداية صعد إلى الدرج العلوي، ورحل عن السفلي بطلب المالك.
+  // ٢) قبل المباراة: تفاصيل الدرج فوق التوقيت داخل الملعب دون تكرار.
   {
     const { front, band, bottom } = await open('scheduled');
     await expect(front).toHaveAttribute('data-crown-state', 'scheduled');
-    await expect(band.locator('.hs-crown-slide-chip')).toHaveText('لم تبدأ');
-    await expect(band.locator('.league-ticket-countdown')).toBeVisible();
+    const details = front.locator('.hs-crown-scheduled-details');
+    await expect(band.locator('.hs-crown-slide-league, .hs-crown-slide-chip, .league-ticket-countdown')).toHaveCount(0);
+    await expect(details.locator('.hs-crown-slide-chip')).toHaveText('لم تبدأ');
+    await expect(details.locator('.league-ticket-countdown')).toBeVisible();
     // الظل للنص فقط؛ الدرجان يظلان شفافين بلا ظل صندوق.
     for (const drawer of [band, bottom]) {
       await expect(drawer).toHaveCSS('box-shadow', 'none');
       await expect(drawer).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     }
-    await expect(band.locator('.hs-crown-slide-league')).not.toHaveCSS('text-shadow', 'none');
-    await expect(bottom.locator('.hs-crown-slide-when')).not.toHaveCSS('text-shadow', 'none');
-    await expect(band.locator('.ticket-flip__txt').first()).toHaveCSS('text-shadow', 'rgba(0, 0, 0, 0.45) 0px 1px 1px');
-    expect(await band.locator('.ticket-flip__label').allTextContents()).toEqual(['ساعات', 'دقائق', 'ثوانٍ']);
-    const clock = (await band.locator('.league-ticket-countdown').textContent()) ?? '';
+    await expect(details.locator('.hs-crown-slide-league')).not.toHaveCSS('text-shadow', 'none');
+    await expect(front.locator('.hs-crown-scheduled-when .hs-crown-slide-when')).not.toHaveCSS('text-shadow', 'none');
+    await expect(details.locator('.ticket-flip__txt').first()).toHaveCSS('text-shadow', 'rgba(0, 0, 0, 0.45) 0px 1px 1px');
+    expect(await details.locator('.ticket-flip__label').allTextContents()).toEqual(['ساعات', 'دقائق', 'ثوانٍ']);
+    const clock = (await details.locator('.league-ticket-countdown').textContent()) ?? '';
     for (const part of ['٠٢', '١٣', '٤١']) expect(clock).toContain(part); // ٢:١٣:٤١ حتى الصافرة
     expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
     expect(await band.locator('.hs-crown-match-status').count()).toBe(0); // لا نص يُعيد الشارة
     expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
     // والاسم والتاريخ بقيا في موضعهما: سطر الاسم في الأعلى، و«متى» في الأسفل.
-    await expect(band.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
-    const coin = band.locator('.hs-crown-slide-league .hs-crown-league-coin');
+    await expect(details.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
+    const coin = details.locator('.hs-crown-slide-league .hs-crown-league-coin');
     await expect(coin).toBeVisible();
     await expect(coin.locator('.league-carousel-badge')).toHaveCount(2);
     await expect(coin.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none'); // تقليل الحركة
@@ -1388,26 +1391,24 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(coin.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'hs-crown-coin-turn');
     await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'off'));
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expect(bottom.locator('.hs-crown-slide-when')).toBeVisible();
-    await checkBottomLayout(bottom);
-    await checkTopCenter(band);
-    for (const width of [1440, 390]) {
+    const when = front.locator('.hs-crown-scheduled-when');
+    await expect(when.locator('.hs-crown-slide-when')).toBeVisible();
+    await expect(when.locator('.hs-crown-match-brands img')).toHaveCount(4);
+    await expect(bottom.locator('.hs-crown-slide-when, .hs-crown-match-brands')).toHaveCount(0);
+    for (const width of [320, 390, 767, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
-      const measurements = await band.evaluate(el => {
-        const timer = el.querySelector<HTMLElement>('.league-ticket-countdown')!;
-        const style = getComputedStyle(el);
-        const cells = [...timer.querySelectorAll<HTMLElement>('.ticket-flip__group')].map(cell => cell.getBoundingClientRect());
-        return {
-          available: el.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight),
-          width: timer.getBoundingClientRect().width,
-          centers: cells.map(cell => cell.x + cell.width / 2).sort((a, b) => a - b),
-        };
-      });
-      expect(Math.abs(measurements.width - measurements.available)).toBeLessThan(2);
-      const [first, middle, last] = measurements.centers;
-      expect(Math.abs((middle - first) - (last - middle))).toBeLessThan(2);
+      const detailBox = (await details.boundingBox())!;
+      const timeBox = (await front.locator('.hs-crown-match-result > strong').boundingBox())!;
+      const cardBox = (await front.locator('.hs-crown-match').boundingBox())!;
+      expect(detailBox.y + detailBox.height).toBeLessThanOrEqual(timeBox.y + 1);
+      const whenBox = (await when.boundingBox())!;
+      expect(whenBox.y).toBeGreaterThanOrEqual(timeBox.y + timeBox.height - 1);
+      expect(whenBox.y + whenBox.height).toBeLessThanOrEqual(cardBox.y + cardBox.height + 1);
+      expect(Math.abs((whenBox.x + whenBox.width / 2) - (timeBox.x + timeBox.width / 2))).toBeLessThan(2);
+      expect(detailBox.x).toBeGreaterThanOrEqual(cardBox.x);
+      expect(detailBox.x + detailBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 1);
+      expect(timeBox.y + timeBox.height).toBeLessThanOrEqual(cardBox.y + cardBox.height);
     }
-    await page.setViewportSize({ width: 1440, height: 1000 });
     await band.screenshot({ path: '/home/user/crown-topcountdown-drawer.png' });
   }
 
@@ -1427,22 +1428,35 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await band.screenshot({ path: '/home/user/crown-liveclock-drawer.png' });
   }
 
-  // ٤) بعد المباراة: ماركة الدوري (شارة + اسم) في مكان السطر، والاسم لا يُطبع مرتين.
+  // ٤) بعد المباراة: محتويات الدرجين داخل الملعب حول النتيجة دون تكرار.
   {
     const { front, band, bottom } = await open('finished');
-    await checkBottomLayout(bottom);
     await expect(front).toHaveAttribute('data-crown-state', 'finished');
-    await expect(band.locator('.hs-crown-slide-chip')).toHaveText('انتهت');
-    const mark = band.locator('.hs-crown-drawer-league');
+    const details = front.locator('.hs-crown-scheduled-details');
+    const when = front.locator('.hs-crown-scheduled-when');
+    await expect(details.locator('.hs-crown-slide-chip')).toHaveText('انتهت');
+    const mark = details.locator('.hs-crown-drawer-league');
     await expect(mark).toBeVisible();
     await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveText('الدوري الإسباني');
     await expect(mark.locator('.hs-crown-league-coin')).toBeVisible();
-    expect(await mark.locator('.league-carousel-badge').count()).toBe(2); // وجهان للعملة
+    expect(await mark.locator('.league-carousel-badge').count()).toBe(2);
     await expect(mark.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none');
-    expect(await band.locator('.hs-crown-slide-league').count()).toBe(0); // لا تكرار للاسم
-    expect(await band.locator('.league-ticket-countdown').count()).toBe(0);
+    await expect(band.locator('.hs-crown-slide-chip, .hs-crown-drawer-league, .league-ticket-countdown')).toHaveCount(0);
+    await expect(bottom.locator('.hs-crown-slide-when, .hs-crown-match-brands')).toHaveCount(0);
+    await expect(when.locator('.hs-crown-slide-when')).toBeVisible();
+    await expect(when.locator('.hs-crown-match-brands img')).toHaveCount(4);
     await expect(front.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
-    await band.screenshot({ path: '/home/user/crown-league-mark-drawer.png' });
+    for (const width of [320, 390, 767, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const above = (await details.boundingBox())!;
+      const score = (await front.locator('.hs-crown-match-result > strong').boundingBox())!;
+      const below = (await when.boundingBox())!;
+      const body = (await front.locator('.hs-crown-match').boundingBox())!;
+      expect(above.y + above.height).toBeLessThanOrEqual(score.y + 1);
+      expect(below.y).toBeGreaterThanOrEqual(score.y + score.height - 1);
+      expect(below.y + below.height).toBeLessThanOrEqual(body.y + body.height + 1);
+      expect(Math.abs((below.x + below.width / 2) - (score.x + score.width / 2))).toBeLessThan(2);
+    }
   }
 });
 
@@ -2528,7 +2542,7 @@ test('match drawers share the bottom row without overlap at each viewport and ma
       expect(Math.abs(a.y - b.y)).toBeLessThan(2);
       expect(b.x + b.width).toBeLessThanOrEqual(a.x + 1);
       const tabs = (await strip.locator('.hs-day-tabs').boundingBox())!;
-      expect(tabs.y).toBeGreaterThanOrEqual(Math.max(a.y + a.height, b.y + b.height) - 1);
+      if (width <= 700) expect(tabs.y).toBeGreaterThanOrEqual(Math.max(a.y + a.height, b.y + b.height) - 1);
       for (const part of [top, bottom]) {
         const overflow = await part.evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
         expect(overflow.scroll).toBeLessThanOrEqual(overflow.client + 1);

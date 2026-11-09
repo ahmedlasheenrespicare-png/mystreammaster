@@ -1871,3 +1871,37 @@ html[data-motion="off"] :is(.hs-crown-tabs, .hs-day-tabs) > button { transition:
   .hs-crown-sidebar .hs-day-tabs .hs-crown-tab-content { gap: 2px; padding-inline: 1px; font-size: .6rem; }
   .hs-crown-sidebar .hs-day-tabs .hs-crown-tab-icon { padding: 3px; }
 }
+
+/* قبل البداية وبعد النهاية تظهر معلومات الدرجين داخل الملعب. */
+.hero-crown-strip:has(.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"])) .hs-crown-center { height: 260px; }
+.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"]) > .hs-crown-match { min-height: 250px; }
+.hs-crown-scheduled-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  max-width: 100%;
+  min-width: 0;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+}
+.hs-crown-scheduled-details .hs-crown-slide-league { justify-content: center; max-width: 100%; color: #fff; font-size: clamp(.75rem, 1.5vw, .95rem); text-shadow: 0 1px 4px #000; }
+.hs-crown-scheduled-details .hs-crown-slide-chip { align-self: center; }
+.hs-crown-match .hs-crown-scheduled-details .league-ticket-countdown { width: auto; max-width: 100%; justify-content: center; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__txt { text-shadow: 0 1px 1px rgba(0, 0, 0, .45); }
+
+.hs-crown-scheduled-when {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  max-width: 100%;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+}
+.hs-crown-scheduled-when .hs-crown-slide-when { color: inherit; text-align: center; font-size: .7rem; }
+.hs-crown-scheduled-when .hs-crown-match-brands { justify-content: center; }
+
+.hs-crown-scheduled-details .hs-crown-drawer-league { margin: 0; justify-content: center; color: #fff; text-shadow: 0 1px 4px #000; }

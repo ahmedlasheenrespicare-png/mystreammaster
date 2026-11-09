@@ -1184,8 +1184,10 @@ test('crown match content preserves live RTL scores and scheduled countdown from
   expect(await front.locator('.hs-crown-match-status').count()).toBe(0);
   await expect(front.locator('.hs-crown-match-team').first()).toContainText('ريال مدريد');
   await expect(front.locator('.hs-crown-match-team').last()).toContainText('فالنسيا');
-  await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
-  await expect(front.locator('.hs-crown-match-score b').last()).toHaveText('1');
+  await expect(front.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
+  await expect(front.locator('.hs-crown-match-score b').last()).toHaveAttribute('aria-label', '1');
+  await expect(front.locator('.hs-crown-match-score .ticket-flip__digit')).toHaveCount(2);
+  await expect(front.locator('.hs-crown-match-score .ticket-flip__digit').first()).toHaveCSS('color', 'rgb(216, 255, 62)');
   // بطاقات صف التذكرة مخفية بطلب المالك، وتُغطى أحداث المواجهة في اختبار الملء الشاشة
   scheduled = true;
   await page.reload();
@@ -1198,7 +1200,7 @@ test('crown match content preserves live RTL scores and scheduled countdown from
     const rows = await front.locator('.hs-crown-match').evaluate(el => {
       const box = el.getBoundingClientRect();
       const children = Array.from(el.children)
-        .filter(child => !child.classList.contains('hs-crown-match-art'))
+        .filter(child => !child.classList.contains('hs-crown-match-art') && !child.classList.contains('hs-crown-match-pitch'))
         /* الوضع الثلاثي يخفي اسم البطولة داخل الجسم (صار في الدرج العلوي) —
            عنصر مخفي لا صفّ يُرصّ، فلا يُحسب في تسلسل الصفوف. */
         .filter(child => getComputedStyle(child).display !== 'none')
@@ -1426,7 +1428,7 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(mark.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none');
     expect(await band.locator('.hs-crown-slide-league').count()).toBe(0); // لا تكرار للاسم
     expect(await band.locator('.league-ticket-countdown').count()).toBe(0);
-    await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
+    await expect(front.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
     await band.screenshot({ path: '/home/user/crown-league-mark-drawer.png' });
   }
 });
@@ -1519,8 +1521,8 @@ test('crown match cards use their league emblem as background without site brand
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const cards = strip.locator('[data-crown-kind="match"]');
-  await expect(strip.locator('.hs-crown-tint')).toHaveCSS('background-image', 'none');
-  await expect(strip.locator('.hs-crown-tint')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(strip.locator('.hs-crown-tint').first()).toHaveCSS('background-image', 'none');
+  await expect(strip.locator('.hs-crown-tint').first()).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(cards).toHaveCount(16);
   await expect(cards.locator('.league-ticket-wordmark')).toHaveCount(0);
   await expect(cards).not.toContainText(['ستريم ماستر']);
@@ -1983,114 +1985,39 @@ test('enlarged league drawer statistics fit on narrow screens', async ({ page })
   }
 });
 
-test('crown strip uses a CSS grass pitch with visible field lines behind its cards', async ({ page }) => {
+test('pitch and lighting are confined to the middle of match cards', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
   await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
   await page.goto('/');
-  const shell = page.locator('.hero-crown-strip .hs-crown-shell');
-  await shell.scrollIntoViewIfNeeded();
-
-  // النمط بتدرجات CSS وحبيبات SVG، وليس صورة خارجية.
-  const floor = shell.locator(':scope > .hs-crown-floor');
-  await expect(floor).toHaveAttribute('aria-hidden', 'true');
-  await expect(floor).toHaveCSS('pointer-events', 'none');
-  expect(await floor.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d\(/);
-  const grass = floor.locator(':scope > .hs-crown-grass');
-  await expect(grass).toHaveAttribute('aria-hidden', 'true');
-  await expect(grass).toHaveCSS('pointer-events', 'none');
-  await expect(grass.locator('.hs-crown-grass-grain')).toHaveCount(1);
-  await expect(grass.locator('feTurbulence')).toHaveCount(1);
+  const strip = page.locator('[data-hero-league-strip]');
+  const shell = strip.locator('.hs-crown-shell');
+  await expect(shell.locator(':scope > .hs-crown-floor, :scope > .hs-crown-tint, :scope > .hs-crown-side-light')).toHaveCount(0);
+  await expect(strip.locator('[data-crown-kind="league"] .hs-crown-match-pitch')).toHaveCount(0);
+  const matches = strip.locator('[data-crown-kind="match"]');
+  expect(await matches.count()).toBeGreaterThan(0);
+  for (const card of await matches.all()) await expect(card.locator(':scope > .hs-crown-match > .hs-crown-match-pitch')).toHaveCount(1);
+  const cards = strip.locator('[data-crown-card]');
+  const firstMatch = await cards.evaluateAll(els => els.findIndex(el => el.getAttribute('data-crown-kind') === 'match'));
+  await selectCrownSlide(page, firstMatch);
+  const front = strip.locator('[data-crown-offset="0"]');
+  const pitch = front.locator('.hs-crown-match-pitch');
+  await expect(pitch).toBeVisible();
+  await expect(pitch).toHaveCSS('pointer-events', 'none');
+  const backdrop = await pitch.evaluate(el => getComputedStyle(el).backgroundImage);
+  expect(backdrop).toContain('rgb(238, 229, 211)');
+  expect(backdrop).toContain('rgb(217, 203, 174)');
+  const floor = pitch.locator('.hs-crown-floor');
   const background = await floor.evaluate(el => getComputedStyle(el).backgroundImage);
-  expect(background).toContain('repeating-linear-gradient(45deg');
-  expect(background).toContain('linear-gradient(135deg');
-  expect(background).toContain('rgba(71, 127, 53, 0.72)');
-  expect(background).toContain('rgba(123, 176, 91, 0.72)');
+  expect(background).toContain('rgb(27, 74, 41)');
+  expect(background).toContain('rgb(50, 107, 60)');
   expect(background).not.toContain('url(');
-  await expect(shell.locator(':scope > .hs-crown-brand')).toHaveCount(0);
-  await expect(shell.locator(':scope > .hs-crown-film')).toHaveCount(0);
-  await expect(shell.locator('.sm-newt35')).toHaveCount(0);
-
-  // طبقتا الزينة: خلف المحتوى، لا تستقبلان أي مؤشر، ومخفيتان عن قارئ الشاشة
-  const tint = shell.locator(':scope > .hs-crown-tint');
-  const sideLight = shell.locator(':scope > .hs-crown-side-light');
-  await expect(sideLight).toHaveAttribute('aria-hidden', 'true');
-  await expect(sideLight).toHaveCSS('pointer-events', 'none');
-  const lightBackground = await sideLight.evaluate(el => getComputedStyle(el).backgroundImage);
-  for (const origin of ['at 100% 100%', 'at 0% 100%', 'at 50% 85%']) expect(lightBackground).toContain(origin);
-  const pitch = floor.locator(':scope > .hs-crown-pitch');
-  await expect(tint).toHaveCount(1);
-  await expect(pitch).toHaveCount(1);
-  for (const layer of [tint, pitch]) {
-    await expect(layer).toHaveCSS('position', 'absolute');
-    await expect(layer).toHaveCSS('z-index', '0');
-    await expect(layer).toHaveCSS('pointer-events', 'none');
-  }
-  await expect(tint).toHaveAttribute('aria-hidden', 'true');
-  const rays = await tint.evaluate(el => { const css = getComputedStyle(el, '::before'); return { backgroundImage: css.backgroundImage, maskImage: css.maskImage }; });
-  expect(rays.backgroundImage).toContain('conic-gradient');
-  expect(rays.backgroundImage).toContain('216, 255, 62');
-  expect(rays.backgroundImage).toContain('43, 78, 255');
-  expect(rays.maskImage).toContain('linear-gradient');
-  await expect(shell.locator(':scope > .hs-crown-center')).toHaveCSS('z-index', '1');
-  for (const part of ['boundary', 'line', 'center-circle', 'area', 'goal-area', 'penalty-arc']) {
-    await expect(pitch.locator(`.hs-crown-pitch-${part}`)).toHaveCount(1);
-  }
-  await expect(pitch.locator('.hs-crown-pitch-spots circle')).toHaveCount(3);
+  expect(await floor.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d\(/);
   await expect(pitch.locator('.hs-crown-pitch-line')).toHaveCSS('stroke', 'rgba(255, 255, 255, 0.88)');
-
-  // التلوين هو لون هالة الشريحة النشطة نفسها (بطاقة مواجهة أو بطاقة بطولة)،
-  // ومعرّف البطولة على الغلاف يرافقها. الطرفان يمرّان على نفس مُطبِّع ألوان.
-  const glowOf = () =>
-    shell.evaluate((el) => {
-      const front = el.querySelector('[data-crown-offset="0"]') as HTMLElement;
-      const norm = (value: string) => {
-        const previous = el.style.color;
-        el.style.color = value;
-        const out = getComputedStyle(el).color;
-        el.style.color = previous;
-        return out;
-      };
-      return {
-        tint: norm(getComputedStyle(el).getPropertyValue('--hs-shell-glow').trim()),
-        front: norm(getComputedStyle(front).getPropertyValue('--hs-glow').trim()),
-        league: el.getAttribute('data-crown-league') || '',
-        card: front.getAttribute('data-crown-card') || '',
-      };
-    });
-  const before = await glowOf();
-  expect(before.tint).toMatch(/^rgba\(/);
-  expect(before.front).toBe(before.tint);
-  // بطاقة البطولة على الغلاف هي مفتاح الشريحة الأمامية (المباريات تُرمَّز «الدوري:فريق:فريق:تاريخ»)
-  expect(before.card === before.league || before.card.startsWith(`${before.league}:`)).toBe(true);
-
-  // بعد التبديل يبقى التلوين ملتصقاً بالشريحة الأمامية الجديدة
-  await shell.locator('.hs-crown-arrow').first().click();
-  await page.waitForTimeout(900);
-  const after = await glowOf();
-  expect(after.front).toBe(after.tint);
-  expect(after.card === after.league || after.card.startsWith(`${after.league}:`)).toBe(true);
-
-  // خطوط الملعب لا تتحرك إلا بمقدار يد الزائر: السحب يبدأ من منطقة البطاقات
-  // نفسها (|dx| > 8 بكسل)، وقيمته محصورة في ±48 بكسل.
-  const center = shell.locator(".hs-crown-center");
-  const centerBox = await center.boundingBox();
-  expect(centerBox).not.toBeNull();
-  const idle = await pitch.evaluate((el) => getComputedStyle(el).transform);
-  expect(idle).toBe("matrix(1, 0, 0, 1, 0, 0)");
-  await page.mouse.move(centerBox!.x + centerBox!.width / 2, centerBox!.y + centerBox!.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(centerBox!.x + centerBox!.width / 2 - 120, centerBox!.y + centerBox!.height / 2, {
-    steps: 12,
-  });
-  await expect
-    .poll(async () => await pitch.evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 })
-    .not.toBe(idle);
-  // الإزاحة معاكسة للسحب ومحصورة في ±48 → أدنى قيمة ممكنة -48px
-  // الإزاحة معاكسة للسحب وأصغر منها (×0.4) ومحصورة في ±48 → 19.2px
-  expect(await pitch.evaluate((el) => getComputedStyle(el).transform)).toBe("matrix(1, 0, 0, 1, 19.2, 0)");
-  await page.mouse.up();
-
-  // الطبقة المتمدّدة خارج الإطار لا تسبّب أي تجاوز أفقي
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+  await expect(pitch.locator('.hs-crown-grass-grain')).toHaveCount(1);
+  const light = await pitch.locator('.hs-crown-side-light').evaluate(el => getComputedStyle(el).backgroundImage);
+  for (const origin of ['at 100% 100%', 'at 0% 100%', 'at 50% 85%']) expect(light).toContain(origin);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('crown strip slides carry the reference-sized three parts, open only while in front', async ({ page }) => {
@@ -2266,9 +2193,10 @@ test('crown drawer tabs open source standings, stats and the selected match', as
 
 test('crown rays move gently and respect both reduced-motion controls', async ({ page }) => {
   test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  const tint = page.locator('.hs-crown-tint');
+  const tint = page.locator('.hs-crown-tint').first();
   const animation = () => tint.evaluate(el => getComputedStyle(el, '::before').animationName);
   await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'on'));
   await expect.poll(animation, { timeout: 20000 }).toBe('crown-rays-breathe');
@@ -2297,9 +2225,9 @@ test('news tab moves the existing home ticket into the crown and back', async ({
     await strip.getByRole('button', { name: 'الأخبار', exact: true }).click();
     await expect(ticket).toHaveCount(1);
     await expect(strip.locator('[data-home-news-ticket]')).toBeVisible();
-    await expect(strip.locator('.hs-crown-grass')).toBeHidden();
-    await expect(strip.locator('.hs-crown-side-light')).toBeHidden();
-    await expect(strip.locator('.hs-crown-pitch')).toBeHidden();
+    await expect(strip.locator('.hs-crown-grass')).toHaveCount(0);
+    await expect(strip.locator('.hs-crown-side-light')).toHaveCount(0);
+    await expect(strip.locator('.hs-crown-pitch')).toHaveCount(0);
     await expect(strip.locator('.hs-crown-shell')).toHaveCSS('background-image', 'none');
     await expect(page.locator('.hero-ticket-row [data-home-news-ticket]')).toHaveCount(0);
     expect(await ticket.locator('.league-ticket-slide a[href*="/news/"]').evaluateAll(els => els.map(el => el.getAttribute('href')))).toEqual(initialHrefs);
@@ -2316,9 +2244,8 @@ test('news tab moves the existing home ticket into the crown and back', async ({
     }
     await strip.getByRole('button', { name: 'العودة إلى البطولات' }).click();
     await expect(page.locator('.hero-ticket-row [data-home-news-ticket]')).toBeVisible();
-    await expect(strip.locator('.hs-crown-pitch')).toBeVisible();
-    await expect(strip.locator('.hs-crown-grass')).toBeVisible();
-    await expect(strip.locator('.hs-crown-shell')).not.toHaveCSS('background-image', 'none');
+    await expect(strip.locator('[data-crown-kind="match"] .hs-crown-pitch').first()).toBeAttached();
+    await expect(strip.locator('.hs-crown-shell')).toHaveCSS('background-color', 'rgb(250, 249, 246)');
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', selected!);
     await expect(strip.getByRole('button', { name: 'الأخبار', exact: true })).toBeFocused();
   }

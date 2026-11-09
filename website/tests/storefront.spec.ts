@@ -2004,13 +2004,11 @@ test('pitch and lighting are confined to the middle of match cards', async ({ pa
   const pitch = front.locator('.hs-crown-match-pitch');
   await expect(pitch).toBeVisible();
   await expect(pitch).toHaveCSS('pointer-events', 'none');
-  const backdrop = await pitch.evaluate(el => getComputedStyle(el).backgroundImage);
-  expect(backdrop).toContain('rgb(238, 229, 211)');
-  expect(backdrop).toContain('rgb(217, 203, 174)');
+  await expect(pitch).toHaveCSS('background-color', 'rgb(250, 204, 21)');
   const floor = pitch.locator('.hs-crown-floor');
   const background = await floor.evaluate(el => getComputedStyle(el).backgroundImage);
-  expect(background).toContain('rgb(27, 74, 41)');
-  expect(background).toContain('rgb(50, 107, 60)');
+  expect(background).toContain('rgb(12, 103, 48)');
+  expect(background).toContain('rgb(33, 139, 65)');
   expect(background).not.toContain('url(');
   expect(await floor.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d\(/);
   await expect(pitch.locator('.hs-crown-pitch-line')).toHaveCSS('stroke', 'rgba(255, 255, 255, 0.88)');
@@ -2443,4 +2441,126 @@ test('Egyptian league crown card shows its local ORA league logo', async ({ page
   await expect(logo).toHaveAttribute('src', '/images/competitions/egyptian-premier-league.webp');
   await expect(logo).toHaveAttribute('data-loaded', 'true', { timeout: 20000 });
   await expect(card.locator('.league-carousel-fallback').first()).toHaveCSS('visibility', 'hidden');
+});
+
+test('match drawers share the bottom row without overlap at each viewport and match state', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.clock.setFixedTime(new Date('2026-11-07T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  let state: 'pre' | 'in' | 'post' = 'pre';
+  await page.route('**/scoreboard.php*', route => {
+    const league = new URL(route.request().url()).searchParams.get('league');
+    const events = league === 'esp.1' ? [{ id: 'drawer-test', date: '2026-11-07T20:00:00Z', competitions: [{
+      status: { displayClock: state === 'in' ? '67:00' : undefined, type: { state, name: state === 'pre' ? 'STATUS_SCHEDULED' : state === 'in' ? 'STATUS_IN_PROGRESS' : 'STATUS_FULL_TIME', completed: state === 'post' } },
+      competitors: [{ homeAway: 'home', team: { displayName: 'Valencia' }, score: '2' }, { homeAway: 'away', team: { displayName: 'Real Madrid' }, score: '1' }],
+    }] }] : [];
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events }) });
+  });
+  for (state of ['pre', 'in', 'post']) {
+    await page.goto('/');
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
+    const strip = page.locator('[data-hero-league-strip]');
+    const front = strip.locator('[data-crown-offset="0"]');
+    await expect(front).toHaveAttribute('data-crown-state', state === 'pre' ? 'scheduled' : state === 'in' ? 'live' : 'finished', { timeout: 20000 });
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      const top = front.locator('.hs-crown-slide-band--top');
+      const bottom = front.locator('.hs-crown-slide-band--bottom');
+      const cardBox = (await front.boundingBox())!;
+      const a = (await top.boundingBox())!;
+      const b = (await bottom.boundingBox())!;
+      expect(Math.abs(a.width - cardBox.width / 2)).toBeLessThan(2);
+      expect(Math.abs(b.width - cardBox.width / 2)).toBeLessThan(2);
+      expect(Math.abs(a.y - b.y)).toBeLessThan(2);
+      expect(b.x + b.width).toBeLessThanOrEqual(a.x + 1);
+      const tabs = (await strip.locator('.hs-day-tabs').boundingBox())!;
+      expect(tabs.y).toBeGreaterThanOrEqual(Math.max(a.y + a.height, b.y + b.height) - 1);
+      for (const part of [top, bottom]) {
+        const overflow = await part.evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
+        expect(overflow.scroll).toBeLessThanOrEqual(overflow.client + 1);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+  }
+});
+
+test('league drawers also share the bottom row without overflowing', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات', exact: true }).click();
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const front = strip.locator('[data-crown-offset="0"]');
+    await expect(front).toHaveAttribute('data-crown-kind', 'league');
+    const top = front.locator('.hs-crown-slide-band--top');
+    const bottom = front.locator('.hs-crown-slide-band--bottom');
+    const cardBox = (await front.boundingBox())!;
+    const a = (await top.boundingBox())!;
+    const b = (await bottom.boundingBox())!;
+    expect(Math.abs(a.width - cardBox.width / 2)).toBeLessThan(2);
+    expect(Math.abs(b.width - cardBox.width / 2)).toBeLessThan(2);
+    expect(Math.abs(a.y - b.y)).toBeLessThan(2);
+    expect(b.x + b.width).toBeLessThanOrEqual(a.x + 1);
+    const tabs = (await strip.locator('.hs-day-tabs').boundingBox())!;
+    expect(tabs.y).toBeGreaterThanOrEqual(Math.max(a.y + a.height, b.y + b.height) - 1);
+    for (const part of [top, bottom]) {
+      const overflow = await part.evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
+      expect(overflow.scroll).toBeLessThanOrEqual(overflow.client + 1);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('crown tabs sit close above the card without an unused upper drawer gap', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const mode of ['all', 'league'] as const) {
+      if (mode === 'league') await strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات', exact: true }).click();
+      const tabs = (await strip.locator('.hs-crown-tabs').boundingBox())!;
+      const front = (await strip.locator('[data-crown-offset="0"]').boundingBox())!;
+      expect(front.y - (tabs.y + tabs.height)).toBeGreaterThanOrEqual(-1);
+      expect(front.y - (tabs.y + tabs.height)).toBeLessThan(25);
+      const shell = (await strip.locator('.hs-crown-shell').boundingBox())!;
+      expect(tabs.y).toBeGreaterThanOrEqual(shell.y - 1);
+      await strip.locator('.hs-crown-arrow').first().click();
+    }
+    await strip.getByRole('button', { name: 'عرض جميع البطاقات' }).click();
+  }
+});
+
+test('league leader identity moves into the left bottom drawer', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات', exact: true }).click();
+  const cards = strip.locator('[data-crown-kind="league"]');
+  await expect.poll(async () => cards.locator('[data-crown-part="leader"] .hs-crown-leader-pill').count(), { timeout: 20000 }).toBeGreaterThan(0);
+  const index = await cards.evaluateAll(els => els.findIndex(el => !!el.querySelector('[data-crown-part="leader"] .hs-crown-leader-pill')));
+  await selectCrownSlide(page, index);
+  const front = strip.locator('[data-crown-offset="0"]');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const bottom = front.locator('[data-crown-part="leader"]');
+    const pill = bottom.locator('.hs-crown-leader-pill');
+    await expect(pill).toBeVisible();
+    await expect(pill.locator('.hs-club-crest')).toHaveCount(1);
+    await expect(pill.locator('.hs-crown-leader-name')).not.toBeEmpty();
+    await expect(front.locator('.hs-crown-card-top .hs-crown-leader-pill')).toHaveCount(0);
+    await expect(bottom.locator('[data-leader-points]')).toBeVisible();
+    const box = (await bottom.boundingBox())!;
+    const pillBox = (await pill.boundingBox())!;
+    expect(pillBox.x).toBeGreaterThanOrEqual(box.x - 1);
+    expect(pillBox.x + pillBox.width).toBeLessThanOrEqual(box.x + box.width + 1);
+    expect(pillBox.y + pillBox.height).toBeLessThanOrEqual(box.y + box.height + 1);
+    const tabs = (await strip.locator('.hs-day-tabs').boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(tabs.y + 1);
+  }
 });

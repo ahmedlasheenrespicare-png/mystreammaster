@@ -586,14 +586,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                   </span>
                   <span className="hs-crown-card-meta">
                     <span className="hs-crown-league-name">{item.shortName}</span>
-                    {item.leader && (
-                      <span className="hs-crown-leader-pill">
-                        <HeroClubCrest club={item.leader} />
-                        <span className="hs-crown-leader-name">
-                          <bdi dir="ltr">{item.leader.name}</bdi>
-                        </span>
-                      </span>
-                    )}
+                    {item.leader && <span className="sr-only">متصدر البطولة: {item.leader.name}</span>}
                   </span>
                   <span className="hs-mini-trophy">
                     <CrownLeagueTrophy leagueId={item.leagueId} />
@@ -647,6 +640,10 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                       <span className="lc-grades-box">
                         <GradesIcon />
                         <span className="lc-grades-copy">
+                          {item.leader && <span className="hs-crown-leader-pill">
+                            <HeroClubCrest club={item.leader} />
+                            <span className="hs-crown-leader-name"><bdi dir="ltr">{item.leader.name}</bdi></span>
+                          </span>}
                           <span className="lc-grades-label">نقاط المتصدّر</span>
                           <span className="lc-grades-num" data-leader-points="">
                             {item.leader ? (

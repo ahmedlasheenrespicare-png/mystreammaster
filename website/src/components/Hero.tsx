@@ -357,6 +357,12 @@ interface HeroProps {
 /* بطاقات المباريات في تذكرة الرئيسية — مخفية مؤقتاً (طلب المالك) */
 const HOME_MATCH_CARDS_VISIBLE = false;
 
+/* تذكرة «مباريات أمس/اليوم/غد» (العمود الأيسر في صف التذاكر) — مخفية من
+   الهيرو بطلب المالك. المكوّن وبياناته ومنطقه الحيّ باقية في
+   HeroSideTickets.tsx بلا حذف؛ ولإرجاعها يكفي ضبط هذا الثابت على true
+   فيعود العمود الأيسر (190px) وتُضبط الشبكة تلقائياً. */
+const HERO_MATCHES_TICKET_VISIBLE = false;
+
 /* الحد الأقصى لعدد شرائح التذكرة الظاهرة في الصفحة الرئيسية (طلب المالك).
    تُعرض الأولى بحسب الترتيب في HOME_TICKET_SLOTS، والباقي يُخفى. */
 const HOME_TICKET_MAX_SLIDES = 18;
@@ -505,9 +511,13 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full">
-          <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
-            <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
-            {!newsInCrown && <div className="order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">{newsTicket}</div>}
+          {/* الشبكة تتغيّر مع ظهور تذكرة المباريات: بعمودها الأيسر (190px)
+              حين تظهر، وبعمود واحد تمتلئه التذكرة الرئيسية حين تُخفى */}
+          <div className={`hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:gap-0 ${HERO_MATCHES_TICKET_VISIBLE ? "lg:grid-cols-[190px_minmax(0,1fr)]" : "lg:grid-cols-1"}`}>
+            {HERO_MATCHES_TICKET_VISIBLE && (
+              <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
+            )}
+            {!newsInCrown && <div className={`min-w-0 ${HERO_MATCHES_TICKET_VISIBLE ? "order-2 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1" : "order-1 md:order-1 md:col-span-2 lg:col-span-1"}`}>{newsTicket}</div>}
             {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
                 الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
           </div>

@@ -1,3 +1,4 @@
+import CrownPitchBackground from "./CrownPitchBackground";
 import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
 import { useMotionReduced } from "./useMotionReduced";
 import { motionReduced } from "../lib/motion-preference";
@@ -581,6 +582,13 @@ function FlipDigit({ value }: { value: string }) {
   );
 }
 
+function CrownScoreDigits({ value }: { value: number }) {
+  const text = String(value);
+  return <b aria-label={text}><span className="ticket-flip__pair" aria-hidden="true">
+    {Array.from(text).map((digit, index) => <FlipDigit key={index} value={digit} />)}
+  </span></b>;
+}
+
 export function FlipCountdown({ countdown, cells = "auto" }: { countdown: ReturnType<typeof splitCountdown>; cells?: "auto" | "minute-seconds" }) {
   /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفيًا:
      أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه).
@@ -795,6 +803,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
         : finished ? <CrownDrawerLeagueMark clash={clash} active={active} />
           : bandDetail ? bandStatus : null;
   const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
+    {parts && <CrownPitchBackground />}
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
       <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
     </span>
@@ -802,7 +811,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     <div className="hs-crown-match-teams">
       <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="home" />}</span>
       <span className="hs-crown-match-result">
-        <strong>{score ? <span className="hs-crown-match-score"><b>{match.home.score}</b><span>:</span><b>{match.away.score}</b></span> : match ? kickoff(match.date, CLASH_ZONE) : "قريباً"}</strong>
+        <strong>{score ? <span className="hs-crown-match-score"><CrownScoreDigits value={match.home.score!} /><span aria-hidden="true">:</span><CrownScoreDigits value={match.away.score!} /></span> : match ? kickoff(match.date, CLASH_ZONE) : "قريباً"}</strong>
         <small>{match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date}</small>
       </span>
       <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>

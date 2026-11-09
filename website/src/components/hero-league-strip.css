@@ -34,7 +34,7 @@
   min-width: 0;
   padding: 11px 14px 9px;
   border-radius: 22px;
-  background: linear-gradient(180deg, #f8f8f8, #dedfe0);
+  background: #faf9f6;
   border: 1.5px solid rgba(216, 255, 62, 0.55);
   box-shadow:
     0 18px 36px -26px rgba(11, 11, 15, 0.32),
@@ -43,6 +43,16 @@
   user-select: none;
   touch-action: pan-y;
   transition: --hs-shell-glow 0.7s ease;
+}
+
+/* الملعب مقصور داخل جسم بطاقة المواجهة، تحت الشعار والنصوص. */
+.hs-crown-match-pitch {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(180deg, #eee5d3, #d9cbae);
 }
 
 /* Floor perspective inspired by escannord's pretty-eagle-45 (Uiverse, MIT).
@@ -55,9 +65,9 @@
   transform: perspective(900px) rotateX(55deg);
   transform-origin: center bottom;
   background:
-    repeating-linear-gradient(45deg, transparent 0 20px, rgba(203, 230, 164, .15) 20px 40px),
-    linear-gradient(135deg, rgba(71, 127, 53, .72), rgba(123, 176, 91, .72), rgba(71, 127, 53, .72)),
-    #fff;
+    repeating-linear-gradient(45deg, transparent 0 20px, rgba(152, 192, 130, .12) 20px 40px),
+    linear-gradient(135deg, #1b4a29, #326b3c, #1b4a29),
+    #1b4a29;
 }
 
 /* حبيبات دقيقة فوق التدرج، مرسومة بفلتر SVG ولا تحجب التذاكر. */
@@ -1396,9 +1406,6 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
 .hs-crown-tabs { width: 330px; }
 @media (max-width: 640px) { .hs-crown-tabs { width: min(280px, 100%); } }
 .hs-crown-shell.is-news-open { padding: 14px; background: transparent; }
-.hs-crown-shell.is-news-open > .hs-crown-floor,
-.hs-crown-shell.is-news-open > .hs-crown-side-light,
-.hs-crown-shell.is-news-open > .hs-crown-tint { display: none; }
 .hs-crown-news-panel { position: relative; z-index: 1; width: min(100%, 900px); min-width: 0; }
 .hs-crown-news-back { display: block; margin: 0 auto 12px; padding: 8px 16px; border: 1px solid #292524; border-radius: 999px; background: #facc15; color: #292524; font: 800 .85rem var(--font-sans); cursor: pointer; }
 .hs-crown-news-back:focus-visible { outline: 3px solid #292524; outline-offset: 3px; }
@@ -1468,3 +1475,20 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
 /* إبراز شعار البطولة بألوانه الأصلية خلف محتوى الجسم الشفاف. */
 .hs-crown-center .hs-crown-card .hs-crown-match-art,
 .hs-crown-center .hs-crown-card .hs-crown-league-background { opacity: .72; }
+
+/* تباين محتوى المباراة فوق العشب الغامق، مع الحفاظ على ألوان الشعارات. */
+.hs-crown-center .hs-crown-card > .hs-crown-match { color: #fff; }
+.hs-crown-center .hs-crown-match-team { text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+.hs-crown-center .hs-crown-match-result { text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+
+/* نتيجة المباراة تستعمل خانات الفليب نفسها المستخدمة في عدّاد الوقت. */
+.hs-crown-match-score b { display: inline-flex; }
+.hs-crown-match .hs-crown-match-score .ticket-flip__digit {
+  width: 1rem;
+  height: 1.5rem;
+  font-size: .88rem;
+}
+.hs-crown-match .hs-crown-match-score .ticket-flip__txt {
+  font-size: inherit;
+  line-height: normal;
+}

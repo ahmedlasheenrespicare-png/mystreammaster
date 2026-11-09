@@ -1184,6 +1184,11 @@ test('crown match content preserves live RTL scores and scheduled countdown from
   expect(await front.locator('.hs-crown-match-status').count()).toBe(0);
   await expect(front.locator('.hs-crown-match-team').first()).toContainText('ريال مدريد');
   await expect(front.locator('.hs-crown-match-team').last()).toContainText('فالنسيا');
+  await expect(front.locator('.hs-crown-match-team > strong').first()).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  for (const label of await front.locator('.hs-crown-match-result > strong').all()) {
+    await expect(label).toHaveCSS('color', 'rgb(11, 11, 15)');
+    await expect(label).toHaveCSS('background-color', 'rgb(250, 249, 246)');
+  }
   await expect(front.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
   await expect(front.locator('.hs-crown-match-score b').last()).toHaveAttribute('aria-label', '1');
   await expect(front.locator('.hs-crown-match-score .ticket-flip__digit')).toHaveCount(2);
@@ -2004,7 +2009,7 @@ test('pitch and lighting are confined to the middle of match cards', async ({ pa
   const pitch = front.locator('.hs-crown-match-pitch');
   await expect(pitch).toBeVisible();
   await expect(pitch).toHaveCSS('pointer-events', 'none');
-  await expect(pitch).toHaveCSS('background-color', 'rgb(250, 204, 21)');
+  await expect(pitch).toHaveCSS('background-color', 'rgb(253, 230, 138)');
   const floor = pitch.locator('.hs-crown-floor');
   const background = await floor.evaluate(el => getComputedStyle(el).backgroundImage);
   expect(background).toContain('rgb(12, 103, 48)');
@@ -2127,7 +2132,7 @@ test('crown strip slides carry the reference-sized three parts, open only while 
     // لا نسخة من السطر في الجسم أثناء الفتح — النقل وليس التكرار.
     expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
   }
-  expect(await front.locator('.hs-crown-slide-band--top .lc-top-drawer-crown, .hs-crown-slide-band--top [data-stat-metric], .hs-crown-slide-band--top .lc-grades-box').count()).toBeGreaterThan(0);
+  expect(await front.locator('.hs-crown-slide-band--top .hs-crown-slide-chip, .hs-crown-slide-band--top [data-stat-metric]').count()).toBeGreaterThan(0);
   await shell.locator('.hs-crown-arrow').first().click();
   await page.waitForTimeout(900);
   const passed = shell.locator(`.hs-crown-card[data-crown-card="${key}"]`);
@@ -2162,10 +2167,10 @@ test('crown drawer tabs open source standings, stats and the selected match', as
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const bounds = await tabs.boundingBox();
-    const line = await strip.locator('[data-crown-offset="0"] .hs-crown-slide-band--top .lc-top-drawer-crown').boundingBox();
+    const card = await strip.locator('[data-crown-offset="0"]').boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
-    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(line!.y + 2);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(card!.y + 2);
     const buttons = await tabs.locator('button').all();
     const boxes = (await Promise.all(buttons.map(button => button.boundingBox()))).filter((b): b is NonNullable<typeof b> => !!b).sort((a,b) => a.x-b.x);
     for (let i=1; i<boxes.length; i++) expect(boxes[i-1].x + boxes[i-1].width).toBeLessThanOrEqual(boxes[i].x + 1);
@@ -2563,4 +2568,61 @@ test('league leader identity moves into the left bottom drawer', async ({ page }
     const tabs = (await strip.locator('.hs-day-tabs').boundingBox())!;
     expect(box.y + box.height).toBeLessThanOrEqual(tabs.y + 1);
   }
+});
+
+test('right lower drawer enters from the left and respects reduced motion', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const front = strip.locator('[data-crown-offset="0"] .hs-crown-slide-band--top');
+  const next = strip.locator('[data-crown-offset="1"] .hs-crown-slide-band--top');
+  await expect(front).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  await expect(next).toHaveCSS('transform', 'matrix(1, 0, 0, 1, -28, 0)');
+  await expect(front).toHaveCSS('transition-duration', '0s');
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'auto'));
+  await expect(front).toHaveCSS('transition-property', 'opacity, transform, visibility');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(front).toHaveCSS('transition-duration', '0s');
+  await strip.locator('.hs-crown-arrow').first().click();
+  await expect(strip.locator('[data-crown-offset="0"] .hs-crown-slide-band--top')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+});
+
+test('crown drawers have no decorative crown line', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await expect(strip.locator('[data-crown-kind="league"]').first()).toBeAttached();
+  await expect(strip.locator('[data-crown-kind="match"]').first()).toBeAttached();
+  await expect(strip.locator('.hs-crown-slide-band .lc-top-drawer-crown')).toHaveCount(0);
+});
+
+test('selected crown tabs remain yellow with a clear dark selection ring', async ({ page }) => {
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const competition = strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات', exact: true });
+  await competition.click();
+  await expect(competition).toHaveAttribute('aria-pressed', 'true');
+  const content = competition.locator('.hs-crown-tab-content');
+  await expect(content).toHaveCSS('background-color', 'rgb(250, 204, 21)');
+  expect(await content.evaluate(el => getComputedStyle(el).boxShadow)).toContain('3px');
+  const dayTabs = strip.locator('.hs-day-tabs');
+  await expect(dayTabs).toHaveCSS('border-top-width', '1px');
+  await expect(dayTabs).toHaveCSS('border-top-left-radius', '24px');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const frame = await dayTabs.boundingBox();
+    expect(frame).not.toBeNull();
+    for (const button of await dayTabs.getByRole('button').all()) {
+      const box = await button.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(frame!.x);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(frame!.x + frame!.width + 0.5);
+    }
+  }
+  const day = dayTabs.getByRole('button', { name: 'اليوم' });
+  await day.click();
+  await expect(day).toHaveAttribute('aria-pressed', 'true');
+  expect(await day.locator('.hs-crown-tab-content').evaluate(el => getComputedStyle(el).boxShadow)).toContain('3px');
 });

@@ -595,8 +595,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 }
                 {item.clashIndex < 0 && (
                   <>
-                    <span className="hs-crown-slide-band hs-crown-slide-band--top" data-crown-part="rates" aria-hidden="true" style={{ "--lc-split-gradient": item.splitGradient } as CSSProperties}>
-                      <span className="lc-top-drawer-crown" aria-hidden="true" />
+                    <span className="hs-crown-slide-band hs-crown-slide-band--top" data-crown-part="rates" aria-hidden="true">
                       <span className="lc-top-twin">
                         <span className="lc-top-twin-duel">
                           {[

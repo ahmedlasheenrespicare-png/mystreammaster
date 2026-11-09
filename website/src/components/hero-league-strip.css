@@ -52,7 +52,7 @@
   z-index: -2;
   overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(180deg, #eee5d3, #d9cbae);
+  background: #facc15;
 }
 
 /* Floor perspective inspired by escannord's pretty-eagle-45 (Uiverse, MIT).
@@ -66,8 +66,8 @@
   transform-origin: center bottom;
   background:
     repeating-linear-gradient(45deg, transparent 0 20px, rgba(152, 192, 130, .12) 20px 40px),
-    linear-gradient(135deg, #1b4a29, #326b3c, #1b4a29),
-    #1b4a29;
+    linear-gradient(135deg, #0c6730, #218b41, #0c6730),
+    #0c6730;
 }
 
 /* حبيبات دقيقة فوق التدرج، مرسومة بفلتر SVG ولا تحجب التذاكر. */
@@ -1492,3 +1492,65 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
   font-size: inherit;
   line-height: normal;
 }
+
+/* في بطاقات المباريات والبطولات: الدرجان جنبًا إلى جنب أسفل الجسم. */
+.hs-crown-shell:has(.hs-crown-card[data-crown-offset="0"]) > .hs-crown-center {
+  margin-bottom: calc(var(--hs-band-h) - var(--hs-band-peek-b));
+}
+.hs-crown-card .hs-crown-slide-band {
+  top: calc(100% - var(--hs-band-peek-b));
+  width: 50%;
+  min-height: var(--hs-band-h);
+  padding: 18px 6px 8px;
+  border-radius: 0;
+  transform-origin: center top;
+}
+.hs-crown-card .hs-crown-slide-band--top { left: 50%; right: auto; }
+.hs-crown-card .hs-crown-slide-band--bottom { left: 0; right: auto; }
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band--top {
+  transform: translateY(0) scale(1);
+}
+.hs-crown-card--match .hs-crown-slide-band--top .hs-crown-slide-league {
+  justify-content: center;
+}
+.hs-crown-card--match .hs-crown-slide-band--top .lc-top-drawer-crown { inset-inline: 8px; }
+@media (max-width: 640px) {
+  .hs-crown-card--match .hs-crown-slide-band--top .hs-crown-slide-league { font-size: .75rem; gap: 3px; }
+  .hs-crown-card--match .hs-crown-slide-band--top .league-ticket-countdown { gap: 2px; }
+  .hs-crown-card--match .hs-crown-slide-band--top .ticket-flip__pair { gap: 1px; }
+  .hs-crown-card--match .hs-crown-slide-band--top .ticket-flip__digit { width: .72rem; font-size: .72rem; }
+  .hs-crown-card--match .hs-crown-slide-when { font-size: .72rem; }
+}
+
+/* ضبط محتوى إحصاءات البطولة عندما يتقاسم الدرجان العرض على الهاتف. */
+@media (max-width: 640px) {
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-twin-duel { grid-template-columns: minmax(0,1fr) 8px minmax(0,1fr); gap: 2px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-twin-head { gap: 2px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-medal-icon { width: 13px; height: 13px; flex-basis: 13px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-label { font-size: .52rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-val { font-size: .9rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-unit { font-size: .48rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-team { font-size: .55rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-box { gap: 3px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-icon { width: 23px; height: 23px; flex-basis: 23px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-medals { width: 25px; height: 25px; flex: 0 0 25px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-label,
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-meta { font-size: .59rem; }
+}
+
+/* بعد نقل الدرجين للأسفل لم تعد هناك حاجة لحجز مساحة الدرج العلوي. */
+.hs-crown-shell:not(.is-news-open) { padding-top: calc(var(--hs-pad-t) + 33px); }
+.hs-crown-shell:not(.is-news-open) .hs-crown-tabs { top: -30px; }
+@media (max-width: 640px) {
+  .hs-crown-shell:not(.is-news-open) { padding-top: calc(var(--hs-pad-t) + 46px); }
+  .hs-crown-shell:not(.is-news-open) .hs-crown-tabs { top: -43px; }
+}
+
+/* اسم المتصدر وشعاره داخل درج النقاط الأيسر، دون نسخ داخل جسم البطاقة. */
+.hs-crown-slide-band--bottom .hs-crown-leader-pill {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-bottom: 3px;
+}
+.hs-crown-slide-band--bottom .hs-crown-leader-name { min-width: 0; }

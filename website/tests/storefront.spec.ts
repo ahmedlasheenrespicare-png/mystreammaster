@@ -2647,18 +2647,19 @@ test('crown drawers have no decorative crown line', async ({ page }) => {
   await expect(strip.locator('.hs-crown-slide-band .lc-top-drawer-crown')).toHaveCount(0);
 });
 
-test('selected crown tabs remain yellow with a clear dark selection ring', async ({ page }) => {
+test('selected crown tabs use the channel list selection style', async ({ page }) => {
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const competition = strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات', exact: true });
   await competition.click();
   await expect(competition).toHaveAttribute('aria-pressed', 'true');
   const content = competition.locator('.hs-crown-tab-content');
-  await expect(content).toHaveCSS('background-color', 'rgb(250, 204, 21)');
-  expect(await content.evaluate(el => getComputedStyle(el).boxShadow)).toContain('3px');
+  await expect(content).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(competition).toHaveCSS('background-color', 'rgb(239, 241, 255)');
+  await expect(competition).toHaveCSS('color', 'rgb(43, 78, 255)');
   const dayTabs = strip.locator('.hs-day-tabs');
-  await expect(dayTabs).toHaveCSS('border-top-width', '1px');
-  await expect(dayTabs).toHaveCSS('border-top-left-radius', '24px');
+  await expect(dayTabs).toHaveCSS('display', 'grid');
+  await expect(dayTabs).toHaveCSS('border-top-width', '0px');
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     const frame = await dayTabs.boundingBox();
@@ -2673,5 +2674,52 @@ test('selected crown tabs remain yellow with a clear dark selection ring', async
   const day = dayTabs.getByRole('button', { name: 'اليوم' });
   await day.click();
   await expect(day).toHaveAttribute('aria-pressed', 'true');
-  expect(await day.locator('.hs-crown-tab-content').evaluate(el => getComputedStyle(el).boxShadow)).toContain('3px');
+  await expect(day).toHaveCSS('background-color', 'rgb(239, 241, 255)');
+  await expect(day.locator('.hs-crown-tab-icon')).toHaveCSS('background-color', 'rgb(11, 11, 15)');
+});
+
+test('crown uses a guide-inspired frame while keeping its controls and news accessible', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const browser = strip.locator('.hs-crown-browser');
+  await expect(browser).toContainText('المباريات والبطولات');
+  await expect(browser.locator('.hs-crown-browser-dots i')).toHaveCount(3);
+  for (const width of [320, 390, 767, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const bar = await browser.boundingBox();
+    const tabs = await strip.locator('.hs-crown-tabs').boundingBox();
+    const card = await strip.locator('[data-crown-offset="0"]').boundingBox();
+    expect(bar).not.toBeNull(); expect(tabs).not.toBeNull(); expect(card).not.toBeNull();
+    const sidebar = await strip.locator('.hs-crown-sidebar').boundingBox();
+    expect(sidebar).not.toBeNull();
+    expect(tabs!.x).toBeGreaterThanOrEqual(sidebar!.x);
+    expect(tabs!.x + tabs!.width).toBeLessThanOrEqual(sidebar!.x + sidebar!.width + 1);
+    if (width > 700) expect(sidebar!.x + sidebar!.width).toBeLessThanOrEqual(card!.x + 1);
+    else expect(sidebar!.y).toBeGreaterThan(card!.y + card!.height);
+    expect(card!.y).toBeGreaterThanOrEqual(bar!.y + bar!.height - 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await strip.getByRole('button', { name: 'الأخبار', exact: true }).click();
+  await expect(browser).toHaveCount(0);
+  await strip.getByRole('button', { name: 'العودة إلى البطولات' }).click();
+  await expect(browser).toBeVisible();
+});
+
+test('mobile crown sidebar keeps compact controls accessible', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.setViewportSize({ width: 320, height: 1000 });
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const tabs = strip.locator('.hs-crown-tabs');
+  await expect(tabs).toHaveCSS('overflow-x', 'auto');
+  const days = strip.locator('.hs-day-tabs');
+  const dayButtons = days.getByRole('button');
+  await expect(dayButtons).toHaveCount(4);
+  const rects = await dayButtons.evaluateAll(els => els.map(el => { const rect = el.getBoundingClientRect(); return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }; }));
+  expect(new Set(rects.map(rect => Math.round(rect.y))).size).toBe(1);
+  for (const rect of rects) { expect(rect.width).toBeGreaterThan(40); expect(rect.height).toBeGreaterThanOrEqual(38); }
+  await strip.getByRole('button', { name: 'الأخبار', exact: true }).click();
+  await expect(strip.getByRole('button', { name: 'العودة إلى البطولات' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

@@ -2020,18 +2020,29 @@
         "name": "Real Betis"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 26884,
+      "statistics": {
+        "home": {
+          "possession": 47.9,
+          "shots": 13,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 52.1,
+          "shots": 18,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261108&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     },
     {
       "id": "401882810",
@@ -2045,18 +2056,29 @@
         "name": "Rayo Vallecano"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 50.8,
+          "shots": 17,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 49.2,
+          "shots": 11,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261108&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     },
     {
       "id": "401882807",
@@ -2070,18 +2092,29 @@
         "name": "Getafe"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 17102,
+      "statistics": {
+        "home": {
+          "possession": 72.4,
+          "shots": 22,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 27.6,
+          "shots": 9,
+          "passAccuracy": 0.6
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261108&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     },
     {
       "id": "401882815",
@@ -2095,18 +2128,29 @@
         "name": "Levante"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 19207,
+      "statistics": {
+        "home": {
+          "possession": 58.7,
+          "shots": 23,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 41.3,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261108&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     },
     {
       "id": "401882816",
@@ -2120,18 +2164,29 @@
         "name": "Barcelona"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 69788,
+      "statistics": {
+        "home": {
+          "possession": 37,
+          "shots": 9,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 63,
+          "shots": 19,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "esp.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261108&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     },
     {
       "id": "401882805",
@@ -2357,6 +2412,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261122&limit=500"
       },
       "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401882802",
+      "date": "2026-11-23T20:00:00.000Z",
+      "home": {
+        "id": "1538",
+        "name": "Levante"
+      },
+      "away": {
+        "id": "3751",
+        "name": "Elche"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261123&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     }
   ]
 }

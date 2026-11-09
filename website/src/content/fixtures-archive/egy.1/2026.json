@@ -752,6 +752,56 @@
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-10-31&limit=100&offset=0"
       },
       "fetchedAt": "2026-11-01T10:29:01.813Z"
+    },
+    {
+      "id": "1372050213",
+      "date": "2026-11-23T15:00:00.000Z",
+      "home": {
+        "id": "1340258",
+        "name": "El Gouna"
+      },
+      "away": {
+        "id": "885824",
+        "name": "Zamalek SC"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": null,
+      "statistics": null,
+      "source": {
+        "provider": "Highlightly",
+        "leagueId": "199067",
+        "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-23&limit=100&offset=0"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "1372051064",
+      "date": "2026-11-23T18:00:00.000Z",
+      "home": {
+        "id": "1342811",
+        "name": "Al Ahly"
+      },
+      "away": {
+        "id": "882420",
+        "name": "Al Assiouty Sport"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": null,
+      "statistics": null,
+      "source": {
+        "provider": "Highlightly",
+        "leagueId": "199067",
+        "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-23&limit=100&offset=0"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
     }
   ]
 }

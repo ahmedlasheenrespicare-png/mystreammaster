@@ -98,6 +98,104 @@ export const NOVEMBER_9_CROWN_CLASHES: FeaturedClash[] = [{
   source: 'eng.fa', date: '2026-11-09',
 }];
 
+/* ── الثلاثاء 11 نوفمبر 2026 — مصدر الموقع (ESPN) ── */
+const november11Pairs: Array<[ReturnType<typeof team>, ReturnType<typeof team>, string, string]> = [
+  [team('فيتنام', ['vietnam', 'فيتنام']), team('تايبيه الصينية', ['chinese taipei', 'تايبيه الصينية']), 'مباريات دولية ودية', 'fifa.friendly'],
+];
+export const NOVEMBER_11_CROWN_CLASHES: FeaturedClash[] = november11Pairs.map(([home, away, eyebrow, source]) => ({
+  eyebrow, home, away, source, date: '2026-11-11',
+}));
+
+/* ── الأربعاء 12 نوفمبر 2026 — مصدر الموقع (ESPN) ── */
+const november12UefaNations: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('أرمينيا', ['armenia', 'أرمينيا']), team('قبرص', ['cyprus', 'قبرص'])],
+  [team('تركيا', ['turkey', 'تürkiye', 'تركيا']), team('بلجيكا', ['belgium', 'بلجيكا'])],
+  [team('ألبانيا', ['albania', 'ألبانيا']), team('فنلندا', ['finland', 'فنلندا'])],
+  [team('التشيك', ['czechia', 'التشيك', 'تشيكيا']), team('إسبانيا', ['spain', 'إسبانيا'])],
+  [team('إنجلترا', ['england', 'إنجلترا']), team('كرواتيا', ['croatia', 'كرواتيا'])],
+  [team('إيطاليا', ['italy', 'إيطاليا']), team('فرنسا', ['france', 'فرنسا'])],
+  [team('الجبل الأسود', ['montenegro', 'الجبل الأسود']), team('لاتفيا', ['latvia', 'لاتفيا'])],
+  [team('سان مارينو', ['san marino', 'سان مارينو']), team('بيلاروس', ['belarus', 'بيلاروس'])],
+];
+const november12CafQual: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('غانا', ['ghana', 'غانا']), team('الصومال', ['somalia', 'الصومال'])],
+  [team('جمهورية الكونغو الديمقراطية', ['congo dr', 'الكونغو الديمقراطية', 'كينشاسا']), team('سيراليون', ['sierra leone', 'سيراليون'])],
+  [team('غينيا الاستوائية', ['equatorial guinea', 'غينيا الاستوائية']), team('زيمبابوي', ['zimbabwe', 'زيمبابوي'])],
+  [team('مدغشقر', ['madagascar', 'مدغشقر']), team('غينيا بيساو', ['guinea-bissau', 'غينيا بيساو'])],
+  [team('غينيا', ['guinea', 'غينيا']), team('إريتريا', ['eritrea', 'إريتريا'])],
+  [team('بنين', ['benin', 'بنين']), team('جمهورية أفريقيا الوسطى', ['central african republic', 'أفريقيا الوسطى'])],
+  [team('الكاميرون', ['cameroon', 'الكاميرون']), team('ناميبيا', ['namibia', 'ناميبيا'])],
+  [team('ساحل العاج', ['ivory coast', 'ساحل العاج', 'كوت ديفوار']), team('غامبيا', ['gambia', 'غامبيا'])],
+  [team('السنغال', ['senegal', 'السنغال']), team('السودان', ['sudan', 'السودان'])],
+];
+const november12FifaFriendly: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('نيوزيلندا', ['new zealand', 'نيوزيلندا']), team('الهند', ['india', 'الهند'])],
+  [team('أوزبكستان', ['uzbekistan', 'أوزبكستان']), team('روسيا', ['russia', 'روسيا'])],
+  [team('ليتوانيا', ['lithuania', 'ليتوانيا']), team('سورينام', ['suriname', 'سورينام'])],
+  [team('مالطا', ['malta', 'مالطا']), team('إسواتيني', ['eswatini', 'إسواتيني'])],
+];
+const november12Concacaf: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('باربادوس', ['barbados', 'باربادوس']), team('غوادلوب', ['guadeloupe', 'غوادلوب'])],
+  [team('جزر كايمان', ['cayman islands', 'جزر كايمان']), team('غيانا', ['guyana', 'غيانا'])],
+  [team('بونير', ['bonaire', 'بونير']), team('كوبا', ['cuba', 'كوبا'])],
+];
+export const NOVEMBER_12_CROWN_CLASHES: FeaturedClash[] = [
+  ...november12UefaNations.map(([home, away]) => ({ eyebrow: 'دوري الأمم الأوروبية', home, away, source: 'uefa.nations', date: '2026-11-12' })),
+  ...november12CafQual.map(([home, away]) => ({ eyebrow: 'تصفيات كأس أمم أفريقيا', home, away, source: 'caf.nations_qual', date: '2026-11-12' })),
+  ...november12FifaFriendly.map(([home, away]) => ({ eyebrow: 'مباريات دولية ودية', home, away, source: 'fifa.friendly', date: '2026-11-12' })),
+  ...november12Concacaf.map(([home, away]) => ({ eyebrow: 'دوري أمم كونكاكاف', home, away, source: 'concacaf.nations.league', date: '2026-11-12' })),
+];
+
+/* ── الخميس 13 نوفمبر 2026 — مصدر الموقع (ESPN) ── */
+const november13UefaNations: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('مولدوفا', ['moldova', 'مولدوفا']), team('كازاخستان', ['kazakhstan', 'كازاخستان'])],
+  [team('أندورا', ['andorra', 'أندورا']), team('جبل طارق', ['gibraltar', 'جبل طارق'])],
+  [team('بلغاريا', ['bulgaria', 'بلغاريا']), team('آيسلندا', ['iceland', 'آيسلندا'])],
+  [team('ليختنشتاين', ['liechtenstein', 'ليختنشتاين']), team('أذربيجان', ['azerbaijan', 'أذربيجان'])],
+  [team('لوكسمبورغ', ['luxembourg', 'لوكسمبورغ']), team('إستونيا', ['estonia', 'إستونيا'])],
+  [team('هولندا', ['netherlands', 'هولندا']), team('اليونان', ['greece', 'اليونان'])],
+  [team('إسكتلندا', ['scotland', 'إسكتلندا']), team('مقدونيا الشمالية', ['north macedonia', 'مقدونيا الشمالية'])],
+  [team('صربيا', ['serbia', 'صربيا']), team('ألمانيا', ['germany', 'ألمانيا'])],
+  [team('سلوفاكيا', ['slovakia', 'سلوفاكيا']), team('جزر فارو', ['faroe islands', 'جزر فارو'])],
+  [team('سلوفينيا', ['slovenia', 'سلوفينيا']), team('سويسرا', ['switzerland', 'سويسرا'])],
+];
+const november13CafQual: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('جزر القمر', ['comoros', 'جزر القمر']), team('الكونغو', ['congo', 'الكونغو'])],
+  [team('موزمبيق', ['mozambique', 'موزمبيق']), team('إثيوبيا', ['ethiopia', 'إثيوبيا'])],
+  [team('زامبيا', ['zambia', 'زامبيا']), team('بوروندي', ['burundi', 'بوروندي'])],
+  [team('بوركينا فاسو', ['burkina faso', 'بوركينا فاسو']), team('موريتانيا', ['mauritania', 'موريتانيا'])],
+  [team('الرأس الأخضر', ['cape verde', 'الرأس الأخضر']), team('ليبيريا', ['liberia', 'ليبيريا'])],
+  [team('الغابون', ['gabon', 'الغابون']), team('ليسوتو', ['lesotho', 'ليسوتو'])],
+  [team('نيجيريا', ['nigeria', 'نيجيريا']), team('تنزانيا', ['tanzania', 'تنزانيا'])],
+  [team('جنوب أفريقيا', ['south africa', 'جنوب أفريقيا']), team('كينيا', ['kenya', 'كينيا'])],
+  [team('تونس', ['tunisia', 'تونس']), team('ليبيا', ['libya', 'ليبيا'])],
+  [team('مصر', ['egypt', 'مصر']), team('مالاوي', ['malawi', 'مالاوي'])],
+  [team('مالي', ['mali', 'مالي']), team('رواندا', ['rwanda', 'رواندا'])],
+  [team('المغرب', ['morocco', 'المغرب']), team('النيجر', ['niger', 'النيجر'])],
+];
+const november13FifaFriendly: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('سنغافورة', ['singapore', 'سنغافورة']), team('باراغواي', ['paraguay', 'باراغواي'])],
+  [team('الكويت', ['kuwait', 'الكويت']), team('سوريا', ['syria', 'سوريا'])],
+  [team('الإمارات', ['united arab emirates', 'الإمارات']), team('هندوراس', ['honduras', 'هندوراس'])],
+  [team('السعودية', ['saudi arabia', 'السعودية']), team('كوريا الجنوبية', ['south korea', 'كوريا الجنوبية'])],
+  [team('قطر', ['qatar', 'قطر']), team('أستراليا', ['australia', 'أستراليا'])],
+  [team('العراق', ['iraq', 'العراق']), team('لبنان', ['lebanon', 'لبنان'])],
+];
+const november13Concacaf: Array<[ReturnType<typeof team>, ReturnType<typeof team>]> = [
+  [team('أروبا', ['aruba', 'أروبا']), team('مارتينيك', ['martinique', 'مارتينيك'])],
+  [team('أنتيغوا وباربودا', ['antigua and barbuda', 'أنتيغوا وباربودا']), team('ترينيداد وتوباغو', ['trinidad and tobago', 'ترينيداد وتوباغو'])],
+  [team('كوراساو', ['curaçao', 'كوراساو', 'كوراسو']), team('بنما', ['panama', 'بنما'])],
+  [team('برمودا', ['bermuda', 'برمودا']), team('سانت لوسيا', ['st. lucia', 'سانت لوسيا'])],
+  [team('بورتوريكو', ['puerto rico', 'بورتوريكو']), team('دومينيكا', ['dominica', 'دومينيكا'])],
+  [team('غرينادا', ['grenada', 'غرينادا']), team('سانت كيتس ونيفيس', ['st. kitts and nevis', 'سانت كيتس ونيفيس'])],
+];
+export const NOVEMBER_13_CROWN_CLASHES: FeaturedClash[] = [
+  ...november13UefaNations.map(([home, away]) => ({ eyebrow: 'دوري الأمم الأوروبية', home, away, source: 'uefa.nations', date: '2026-11-13' })),
+  ...november13CafQual.map(([home, away]) => ({ eyebrow: 'تصفيات كأس أمم أفريقيا', home, away, source: 'caf.nations_qual', date: '2026-11-13' })),
+  ...november13FifaFriendly.map(([home, away]) => ({ eyebrow: 'مباريات دولية ودية', home, away, source: 'fifa.friendly', date: '2026-11-13' })),
+  ...november13Concacaf.map(([home, away]) => ({ eyebrow: 'دوري أمم كونكاكاف', home, away, source: 'concacaf.nations.league', date: '2026-11-13' })),
+];
+
 /* بطاقات البطولات التي تبقى في الشريط حتى بعد إخفاء مواجهاتها: هي بطولات لا
    شرائح مواجهات، وقد اعتمدها المالك في الطلبين #346 و#347 (الكأسان الفضيتان)
    وأُضيف لها الدوري الأوروبي ليبقى شعاره بعد إخفاء شرائح 5 نوفمبر. */
@@ -112,10 +210,10 @@ export const CROWN_LEAGUE_CARDS: readonly { id: string; name: string }[] = [
    (7–8 نوفمبر) بطلبه. شرائح دوري أبطال أوروبا (4 نوفمبر) والدوري الأوروبي
    (5 نوفمبر) تبقى مخفية من هذا الشريط وحده — شرائح التذكرة والأخبار خارج
    هذا الملف لا تتغيّر. */
-const WEEKEND_DAYS = ['2026-11-07', '2026-11-08', '2026-11-09'];
+const WEEKEND_DAYS = ['2026-11-07', '2026-11-08', '2026-11-09', '2026-11-11', '2026-11-12', '2026-11-13'];
 const clashKey = (clash: FeaturedClash) => `${clash.home.name}|${clash.away.name}`;
 export function novemberCrownClashes(previous: FeaturedClash[]): FeaturedClash[] {
-  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES, ...NOVEMBER_9_CROWN_CLASHES];
+  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES, ...NOVEMBER_9_CROWN_CLASHES, ...NOVEMBER_11_CROWN_CLASHES, ...NOVEMBER_12_CROWN_CLASHES, ...NOVEMBER_13_CROWN_CLASHES];
   const seen = new Set(selected.map(clashKey));
   // أي مواجهة سابقة تحمل تاريخ اليوم أو الغد تُسمح بها، بلا تكرار لبطاقة موجودة.
   const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? ''));

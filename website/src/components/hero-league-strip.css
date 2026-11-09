@@ -1901,7 +1901,32 @@ html[data-motion="off"] :is(.hs-crown-tabs, .hs-day-tabs) > button { transition:
   color: #fff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
 }
-.hs-crown-scheduled-when .hs-crown-slide-when { color: inherit; text-align: center; font-size: .7rem; }
 .hs-crown-scheduled-when .hs-crown-match-brands { justify-content: center; }
 
 .hs-crown-scheduled-details .hs-crown-drawer-league { margin: 0; justify-content: center; color: #fff; text-shadow: 0 1px 4px #000; }
+
+/* إبراز هوية البطولة والعدّ التنازلي والعلامات قبل البداية فقط. */
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-details .hs-crown-slide-league {
+  font-size: clamp(.95rem, 1.8vw, 1.12rem);
+  gap: 8px;
+}
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-details .hs-crown-league-coin {
+  flex-basis: 38px;
+  width: 38px;
+  height: 38px;
+}
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-details .hs-crown-league-coin-rotor::before { left: 17px; height: 38px; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__digit { width: 15px; height: 26px; font-size: 16px; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__txt { font-size: 16px; line-height: 26px; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__label { font-size: 9px; }
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-when .hs-crown-match-brands { height: 20px; gap: 9px; }
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-when .hs-crown-match-brands img { width: 34px; max-height: 20px; }
+
+/* نفس إبراز البطولة والعلامات بعد نهاية المباراة، مع نتيجة أوضح. */
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-drawer-league { gap: 8px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-drawer-league-name { color: #fff; font-size: clamp(.95rem, 1.8vw, 1.12rem); }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-league-coin { flex-basis: 38px; width: 38px; height: 38px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-league-coin-rotor::before { left: 17px; height: 38px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-match .hs-crown-match-score .ticket-flip__digit { width: 19px; height: 28px; font-size: 16px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-when .hs-crown-match-brands { height: 20px; gap: 9px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-when .hs-crown-match-brands img { width: 34px; max-height: 20px; }

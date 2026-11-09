@@ -823,7 +823,7 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
       </span>
       <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>
     </div>
-    {detailsOnPitch && <div className="hs-crown-scheduled-when" aria-hidden="true"><span className="hs-crown-slide-when">{when}</span>{marks}</div>}
+    {detailsOnPitch && <div className="hs-crown-scheduled-when" aria-hidden="true">{marks}</div>}
     {!inBand && status}
     {!inBand && timer}
     {!inBand && marks}

@@ -1372,7 +1372,6 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
       await expect(drawer).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     }
     await expect(details.locator('.hs-crown-slide-league')).not.toHaveCSS('text-shadow', 'none');
-    await expect(front.locator('.hs-crown-scheduled-when .hs-crown-slide-when')).not.toHaveCSS('text-shadow', 'none');
     await expect(details.locator('.ticket-flip__txt').first()).toHaveCSS('text-shadow', 'rgba(0, 0, 0, 0.45) 0px 1px 1px');
     expect(await details.locator('.ticket-flip__label').allTextContents()).toEqual(['ساعات', 'دقائق', 'ثوانٍ']);
     const clock = (await details.locator('.league-ticket-countdown').textContent()) ?? '';
@@ -1380,10 +1379,12 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
     expect(await band.locator('.hs-crown-match-status').count()).toBe(0); // لا نص يُعيد الشارة
     expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
-    // والاسم والتاريخ بقيا في موضعهما: سطر الاسم في الأعلى، و«متى» في الأسفل.
+    // اسم البطولة بالأعلى والعلامات بالأسفل دون تكرار التاريخ والوقت.
     await expect(details.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
     const coin = details.locator('.hs-crown-slide-league .hs-crown-league-coin');
     await expect(coin).toBeVisible();
+    await expect(coin).toHaveCSS('width', '38px');
+    await expect(details.locator('.ticket-flip__digit').first()).toHaveCSS('width', '15px');
     await expect(coin.locator('.league-carousel-badge')).toHaveCount(2);
     await expect(coin.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none'); // تقليل الحركة
     await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -1392,8 +1393,9 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'off'));
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const when = front.locator('.hs-crown-scheduled-when');
-    await expect(when.locator('.hs-crown-slide-when')).toBeVisible();
+    await expect(when.locator('.hs-crown-slide-when')).toHaveCount(0);
     await expect(when.locator('.hs-crown-match-brands img')).toHaveCount(4);
+    await expect(when.locator('.hs-crown-match-brands img').first()).toHaveCSS('width', '34px');
     await expect(bottom.locator('.hs-crown-slide-when, .hs-crown-match-brands')).toHaveCount(0);
     for (const width of [320, 390, 767, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
@@ -1439,12 +1441,16 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(mark).toBeVisible();
     await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveText('الدوري الإسباني');
     await expect(mark.locator('.hs-crown-league-coin')).toBeVisible();
+    await expect(mark.locator('.hs-crown-league-coin')).toHaveCSS('width', '38px');
+    await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveCSS('color', 'rgb(255, 255, 255)');
     expect(await mark.locator('.league-carousel-badge').count()).toBe(2);
     await expect(mark.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none');
     await expect(band.locator('.hs-crown-slide-chip, .hs-crown-drawer-league, .league-ticket-countdown')).toHaveCount(0);
     await expect(bottom.locator('.hs-crown-slide-when, .hs-crown-match-brands')).toHaveCount(0);
-    await expect(when.locator('.hs-crown-slide-when')).toBeVisible();
+    await expect(when.locator('.hs-crown-slide-when')).toHaveCount(0);
     await expect(when.locator('.hs-crown-match-brands img')).toHaveCount(4);
+    await expect(when.locator('.hs-crown-match-brands img').first()).toHaveCSS('width', '34px');
+    await expect(front.locator('.hs-crown-match-score .ticket-flip__digit').first()).toHaveCSS('width', '19px');
     await expect(front.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
     for (const width of [320, 390, 767, 1440]) {
       await page.setViewportSize({ width, height: 1000 });

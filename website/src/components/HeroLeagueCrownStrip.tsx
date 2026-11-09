@@ -346,7 +346,7 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[], ext
 /* ==========================================================================
    1) شريط التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو
 ========================================================================== */
-export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES, newsOpen = false, onNewsOpenChange, newsTicket }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[]; newsOpen?: boolean; onNewsOpenChange?: (open: boolean) => void; newsTicket?: ReactNode } = {}) {
+export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES, newsOpen = false, onNewsOpenChange, newsTicket, sidebarNews = false }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[]; newsOpen?: boolean; onNewsOpenChange?: (open: boolean) => void; newsTicket?: ReactNode; sidebarNews?: boolean } = {}) {
   const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes, extraLeagues);
   const standingsMap = useLiveStandingsMap();
   const [dayView, setDayView] = useState<Day | null>(null);
@@ -688,24 +688,37 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
 
         <aside className="hs-crown-sidebar" aria-label="خيارات المباريات والبطولات">
           <div className="hs-crown-sidebar-heading"><strong>المباريات والبطولات</strong><span>استكشف</span></div>
-          <div className="hs-crown-tabs" role="group" aria-label={shellItem ? `تفاصيل ${shellItem.shortName}` : 'اختيارات الشريط'}>
+          <div className="hs-crown-tabs" role="group" aria-label="اختيارات الشريط">
             <button type="button" aria-pressed={leagueOnly} onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); setSharedActiveIndex(0); setDayView(null); setLeagueOnly(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v4M8 20h8M9 17h6"/></svg><span>البطولات</span></span></button>
-            {shellItem && ([['match', 'المباراة'], ['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
+            {shellItem && ([['match', 'المباراة']] as const).map(([tab, label]) => (
               <button key={tab} type="button" aria-haspopup="dialog" onPointerDown={event => event.stopPropagation()} onClick={event => {
                 event.stopPropagation();
                 setExpandedTab(tab);
                 setExpandedKey(shellItem.key);
               }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-                {tab === 'match' ? <><circle cx="12" cy="12" r="9" /><path d="m12 8 3 2.2-1.2 3.5h-3.6L9 10.2 12 8ZM12 3v3M3.5 9l3 1M5 17l2.5-1.5M19 17l-2.5-1.5M20.5 9l-3 1" /></> : tab === 'standings' ? <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M9 4v16M3 14.5h18" /></> : <><path d="M4 20h16M6 17v-5h3v5M11 17V7h3v10M16 17v-8h3v8" /></>}
+                <circle cx="12" cy="12" r="9" /><path d="m12 8 3 2.2-1.2 3.5h-3.6L9 10.2 12 8ZM12 3v3M3.5 9l3 1M5 17l2.5-1.5M19 17l-2.5-1.5M20.5 9l-3 1" />
+              </svg><span>{label}</span></span></button>
+            ))}
+          </div>
+          {sidebarNews && newsTicket && <div className="hs-crown-sidebar-news" aria-label="تذكرة الأخبار">{newsTicket}</div>}
+        </aside>
+        <div className="hs-crown-top-options" aria-label="خيارات إضافية للمباريات">
+          <div className="hs-crown-tabs hs-crown-extra-tabs" role="group" aria-label="تفاصيل وأخبار">
+            {shellItem && ([['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
+              <button key={tab} type="button" aria-haspopup="dialog" onPointerDown={event => event.stopPropagation()} onClick={event => {
+                event.stopPropagation();
+                setExpandedTab(tab);
+                setExpandedKey(shellItem.key);
+              }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                {tab === 'standings' ? <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M9 4v16M3 14.5h18" /></> : <><path d="M4 20h16M6 17v-5h3v5M11 17V7h3v10M16 17v-8h3v8" /></>}
               </svg><span>{label}</span></span></button>
             ))}
             {onNewsOpenChange && <button type="button" className="hs-crown-news-tab" onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); onNewsOpenChange(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4v4H7zM14 8h4M14 12h4M7 16h11"/></svg><span>الأخبار</span></span></button>}
           </div>
-          <div className="hs-crown-sidebar-label">اختر يوم المباريات</div>
         <DayButtons selected={dayView} onSelect={day => { setSharedActiveIndex(0); setLeagueOnly(false); setDayView(day); }} />
         {(dayView || leagueOnly) && <button type="button" className="hs-day-clear" onClick={() => { setSharedActiveIndex(0); setDayView(null); setLeagueOnly(false); }}>عرض جميع البطاقات</button>}
         {dayView && matchesStatus === "stale" && <p className="hs-day-warning" role="status">تعذّر تحديث بعض بيانات المباريات؛ المعروض من آخر بيانات متاحة وقد لا يكون محدثاً.</p>}
-        </aside>
+        </div>
         <div className="hs-crown-controls">
           <button type="button" className="hs-crown-autoplay" aria-pressed={autoplayStopped} onClick={() => setAutoplayStopped(value => !value)}>
             {autoplayStopped ? "تشغيل الشريط" : "إيقاف الشريط"}

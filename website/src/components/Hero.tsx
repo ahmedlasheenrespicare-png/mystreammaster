@@ -451,6 +451,14 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   const [heroWord, setHeroWord] = useState(0);
   const [frontDevice, setFrontDevice] = useState<"phone" | "tv">("phone");
   const [newsInCrown, setNewsInCrown] = useState(false);
+  const [desktopNews, setDesktopNews] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 701px)");
+    const update = () => setDesktopNews(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   /* تدوير كلمة العنوان الرئيسي */
   useEffect(() => {
@@ -507,7 +515,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
         <Reveal variant="up" delay={90} className="w-full">
-          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown ? newsTicket : null} />
+          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} />
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full">
@@ -517,7 +525,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             {HERO_MATCHES_TICKET_VISIBLE && (
               <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
             )}
-            {!newsInCrown && <div className={`min-w-0 ${HERO_MATCHES_TICKET_VISIBLE ? "order-2 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1" : "order-1 md:order-1 md:col-span-2 lg:col-span-1"}`}>{newsTicket}</div>}
+            {!newsInCrown && !desktopNews && <div className={`min-w-0 ${HERO_MATCHES_TICKET_VISIBLE ? "order-2 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1" : "order-1 md:order-1 md:col-span-2 lg:col-span-1"}`}>{newsTicket}</div>}
             {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
                 الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
           </div>

@@ -1020,20 +1020,16 @@ test('classic lime television keeps content and interactions without preview con
   }
 });
 
-test.describe('league strip player backgrounds and mobile rotation', () => {
+test.describe('league strip mobile rotation', () => {
   test.use({ viewport: { width: 390, height: 900 }, hasTouch: true, isMobile: true });
 
-  test('uses the ticket artwork for all leagues and auto-rotates after touch', async ({ page }) => {
+  test('keeps league cards free of players and auto-rotates after touch', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/');
     const strip = page.locator('[data-hero-league-strip]');
     await strip.scrollIntoViewIfNeeded();
-    const { LEAGUE_TICKET_PLAYERS } = await import('../src/content/league-ticket-players');
     expect(await strip.locator('[data-crown-kind="league"]').count()).toBeGreaterThanOrEqual(8);
-    for (const [league, players] of Object.entries(LEAGUE_TICKET_PLAYERS)) {
-      const card = strip.locator(`[data-crown-card="${league}"]`);
-      expect(await card.locator('.hs-crown-player').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')))).toEqual(players);
-    }
+    await expect(strip.locator('.hs-crown-player')).toHaveCount(0);
     // Touch a navigation dot: synthetic hover/focus must not leave autoplay paused.
     await selectCrownSlide(page, 2);
     const front = strip.locator('[data-crown-offset="0"]');
@@ -1041,7 +1037,6 @@ test.describe('league strip player backgrounds and mobile rotation', () => {
     await expect.poll(() => front.getAttribute('data-crown-card'), { timeout: 8500 }).not.toBe(selected);
     const active = await front.getAttribute('data-crown-league');
     await expect(page.locator('[data-crown-stats-league]')).toHaveAttribute('data-crown-stats-league', active!);
-    await expect.poll(() => front.locator('.hs-crown-player').evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await strip.screenshot({ path: '/home/user/league-strip-mobile.png' });
   });
@@ -1116,7 +1111,7 @@ test('crown keeps all match and league cards with league identities after match 
     const firstLeague = sequence.findIndex(slide => slide.kind === 'league');
     expect(sequence.slice(firstLeague).every(slide => slide.kind === 'league')).toBe(true);
     await expect(strip.locator('[data-crown-kind="league"] .hs-mini-trophy')).toHaveCount(11);
-    await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
+    await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(0);
     await expect(page.locator('.home-matches-ticket .league-ticket-body--clash')).toHaveCount(0);
     await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
     const front = strip.locator('[data-crown-offset="0"]');
@@ -1509,9 +1504,9 @@ test('crown match cards use their league emblem as background without site brand
     await expect(card.locator('.hs-crown-match-team')).toHaveCount(2);
     await expect(card.locator('.hs-crown-match-brands img')).toHaveCount(4);
   }
-  // تبقى صور اللاعبين والعلامة الأصلية، وتحمل كل بطاقة بطولة شعارها في الخلفية.
+  // تبقى العلامة الأصلية، وتحمل كل بطاقة بطولة شعارها دون صور اللاعبين.
   await expect(page.locator('.home-matches-ticket .league-ticket-wordmark').first()).toBeAttached();
-  await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(16);
+  await expect(strip.locator('[data-crown-kind="league"] .hs-crown-player')).toHaveCount(0);
   for (const card of await strip.locator('[data-crown-kind="league"]').all()) {
     const league = await card.getAttribute('data-crown-league');
     await expect(card.locator('[data-league-card-background]')).toHaveAttribute('data-league-card-background', league!);
@@ -1551,7 +1546,7 @@ test('league background emblems preserve source colors and load eagerly on activ
     await expect(image).toHaveAttribute('loading', 'eager');
     const filter = await image.evaluate(el => getComputedStyle(el).filter);
     expect(filter).not.toMatch(/brightness\(0\)|invert\(|grayscale\(/);
-    await expect(background).toHaveCSS('opacity', '0.32');
+    await expect(background).toHaveCSS('opacity', '0.72');
     await expect(background.locator('.league-carousel-fallback')).toHaveCSS('visibility', 'hidden');
   }
   const originalLogo = strip.locator('[data-crown-card="eng.1"] .league-carousel-logo').first();
@@ -1628,7 +1623,7 @@ test('cup league identity cards also show faint competition logos without replac
     const card = strip.locator(`[data-crown-card="${league}"]`);
     const background = card.locator(`[data-league-card-background="${league}"]`);
     await expect(background.locator('img')).toHaveAttribute('src', `https://a.espncdn.com/i/leaguelogos/soccer/500/${logo}.png`);
-    await expect(background).toHaveCSS('opacity', '0.24');
+    await expect(background).toHaveCSS('opacity', '0.72');
     await expect(card.locator('[data-crown-cup]')).toHaveCount(1);
     await expect(card.locator('.hs-crown-league-name')).not.toBeEmpty();
   }
@@ -1985,6 +1980,11 @@ test('crown strip uses a CSS grass pitch with visible field lines behind its car
 
   // طبقتا الزينة: خلف المحتوى، لا تستقبلان أي مؤشر، ومخفيتان عن قارئ الشاشة
   const tint = shell.locator(':scope > .hs-crown-tint');
+  const sideLight = shell.locator(':scope > .hs-crown-side-light');
+  await expect(sideLight).toHaveAttribute('aria-hidden', 'true');
+  await expect(sideLight).toHaveCSS('pointer-events', 'none');
+  const lightBackground = await sideLight.evaluate(el => getComputedStyle(el).backgroundImage);
+  for (const origin of ['at 100% 100%', 'at 0% 100%', 'at 50% 85%']) expect(lightBackground).toContain(origin);
   const pitch = floor.locator(':scope > .hs-crown-pitch');
   await expect(tint).toHaveCount(1);
   await expect(pitch).toHaveCount(1);
@@ -1994,6 +1994,11 @@ test('crown strip uses a CSS grass pitch with visible field lines behind its car
     await expect(layer).toHaveCSS('pointer-events', 'none');
   }
   await expect(tint).toHaveAttribute('aria-hidden', 'true');
+  const rays = await tint.evaluate(el => { const css = getComputedStyle(el, '::before'); return { backgroundImage: css.backgroundImage, maskImage: css.maskImage }; });
+  expect(rays.backgroundImage).toContain('conic-gradient');
+  expect(rays.backgroundImage).toContain('216, 255, 62');
+  expect(rays.backgroundImage).toContain('43, 78, 255');
+  expect(rays.maskImage).toContain('linear-gradient');
   await expect(shell.locator(':scope > .hs-crown-center')).toHaveCSS('z-index', '1');
   for (const part of ['boundary', 'line', 'center-circle', 'area', 'goal-area', 'penalty-arc']) {
     await expect(pitch.locator(`.hs-crown-pitch-${part}`)).toHaveCount(1);
@@ -2228,6 +2233,22 @@ test('crown drawer tabs open source standings, stats and the selected match', as
   await expect(page.getByRole('dialog', { name: /عرض المواجهة/ })).toBeVisible();
 });
 
+test('crown rays move gently and respect both reduced-motion controls', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const tint = page.locator('.hs-crown-tint');
+  const animation = () => tint.evaluate(el => getComputedStyle(el, '::before').animationName);
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'on'));
+  await expect.poll(animation, { timeout: 20000 }).toBe('crown-rays-breathe');
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'auto'));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(animation).toBe('none');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'off'));
+  await expect.poll(animation).toBe('none');
+});
+
 test('news tab moves the existing home ticket into the crown and back', async ({ page }) => {
   test.setTimeout(90000);
   await page.clock.setFixedTime(new Date('2026-11-08T12:00:00Z'));
@@ -2246,6 +2267,7 @@ test('news tab moves the existing home ticket into the crown and back', async ({
     await expect(ticket).toHaveCount(1);
     await expect(strip.locator('[data-home-news-ticket]')).toBeVisible();
     await expect(strip.locator('.hs-crown-grass')).toBeHidden();
+    await expect(strip.locator('.hs-crown-side-light')).toBeHidden();
     await expect(strip.locator('.hs-crown-pitch')).toBeHidden();
     await expect(strip.locator('.hs-crown-shell')).toHaveCSS('background-image', 'none');
     await expect(page.locator('.hero-ticket-row [data-home-news-ticket]')).toHaveCount(0);
@@ -2293,7 +2315,7 @@ test('day tabs filter the existing crown carousel instead of creating new cards'
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const tabs = strip.locator('.hs-day-tabs');
-  await expect(strip.locator('[data-crown-state="live"]')).toHaveCount(1);
+  await expect(strip.locator('[data-crown-state="live"]')).toHaveCount(1, { timeout: 20000 });
   await expect(tabs.locator('.hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(4);
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
@@ -2403,6 +2425,7 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
   }
   const cupLogo = '/images/competitions/fa-cup.webp';
+  await expect(strip.locator('[data-crown-offset="0"] [data-match-league-background="eng.fa"]')).toHaveCSS('opacity', '0.72');
   const matchLogo = strip.locator(`[data-crown-offset="0"] [data-match-league-background="eng.fa"] img[src="${cupLogo}"]`);
   await expect(matchLogo).toBeAttached();
   await expect.poll(() => matchLogo.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
@@ -2410,4 +2433,56 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
   const league = strip.locator('[data-crown-kind="league"][data-crown-league="eng.fa"]');
   await expect(league).toHaveCount(1);
   await expect(league.locator(`img[src="${cupLogo}"]`)).toBeAttached();
+  await expect(league.locator('[data-league-card-background="eng.fa"]')).toHaveCSS('opacity', '0.72');
+});
+
+test('front crown card fills the ticket and navigation stays usable', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const center = strip.locator('.hs-crown-center');
+    const card = strip.locator('[data-crown-offset="0"]');
+    const centerBox = (await center.boundingBox())!;
+    const cardBox = (await card.boundingBox())!;
+    expect(Math.abs(cardBox.width - centerBox.width)).toBeLessThan(2);
+    await expect(card).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    const body = card.locator(':scope > .hs-crown-match, :scope > .hs-crown-card-top');
+    await expect(body).toHaveCSS('background-image', 'none');
+    await expect(body).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    expect(cardBox.x).toBeGreaterThanOrEqual(-1);
+    expect(cardBox.x + cardBox.width).toBeLessThanOrEqual(width + 1);
+    for (const side of await strip.locator('[data-crown-card]:not([data-crown-offset="0"])').all()) {
+      await expect(side).toBeHidden();
+    }
+    const previous = await card.getAttribute('data-crown-card');
+    await strip.getByRole('button', { name: 'البطولة التالية في شريط الهيرو' }).click();
+    await expect(strip.locator('[data-crown-offset="0"]')).not.toHaveAttribute('data-crown-card', previous!);
+  }
+});
+
+test('league cards do not render player artwork', async ({ page }) => {
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  await expect(strip.locator('[data-crown-kind="league"]').first()).toBeAttached();
+  await expect(strip.locator('.hs-crown-player')).toHaveCount(0);
+  await expect(strip.locator('[data-league-card-background]').first()).toBeAttached();
+});
+
+test('Egyptian league crown card shows its local ORA league logo', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const cards = strip.locator('[data-crown-card]');
+  const index = await cards.evaluateAll(els => els.findIndex(el => el.getAttribute('data-crown-card') === 'egy.1'));
+  expect(index).toBeGreaterThanOrEqual(0);
+  await selectCrownSlide(page, index);
+  const card = strip.locator('[data-crown-offset="0"][data-crown-league="egy.1"]');
+  const logo = card.locator('[data-league-card-background="egy.1"] img');
+  await expect(logo).toHaveAttribute('src', '/images/competitions/egyptian-premier-league.webp');
+  await expect(logo).toHaveAttribute('data-loaded', 'true', { timeout: 20000 });
+  await expect(card.locator('.league-carousel-fallback').first()).toHaveCSS('visibility', 'hidden');
 });

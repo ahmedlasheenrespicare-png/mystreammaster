@@ -532,6 +532,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           </g>
         </svg>
         </div>
+        <div className="hs-crown-side-light" aria-hidden="true" />
         <div className="hs-crown-tint" aria-hidden="true" />
         {newsOpen ? <div className="hs-crown-news-panel" aria-label="أخبار الموقع">
           <button type="button" className="hs-crown-news-back" autoFocus onClick={() => {
@@ -611,11 +612,6 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 </> : <span className="hs-crown-card-top">
                   <span className="hs-crown-match-art hs-crown-league-background" data-league-card-background={item.leagueId} aria-hidden="true">
                     <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={132} eager={isFront} />
-                  </span>
-                  <span className="hs-crown-players" aria-hidden="true">
-                    {(LEAGUE_TICKET_PLAYERS[item.leagueId] ?? []).map((src, index) => (
-                      <TicketImage key={src} className={`hs-crown-player hs-crown-player--${index + 1}`} src={src} alt="" loading="lazy" decoding="async" />
-                    ))}
                   </span>
                   <span className="hs-crown-card-meta">
                     <span className="hs-crown-league-name">{item.shortName}</span>

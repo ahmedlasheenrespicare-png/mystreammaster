@@ -2053,9 +2053,11 @@ test('pitch and lighting are confined to the middle of match cards', async ({ pa
   expect(upperDivider.top).toBeCloseTo(divider.pitchHeight * 0.39, 0);
   expect(upperDivider.height).toBe(1);
   const upperPattern = pitch.locator('.hs-crown-upper-pattern');
-  await expect(upperPattern).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  await expect(upperPattern).toHaveCSS('background-color', 'rgb(19, 45, 53)');
   await expect(upperPattern).toHaveCSS('pointer-events', 'none');
   expect(await upperPattern.evaluate(el => getComputedStyle(el).backgroundSize)).toContain('20px 35px');
+  const standsBackground = await upperPattern.evaluate(el => getComputedStyle(el).backgroundImage);
+  for (const color of ['rgb(38, 78, 131)', 'rgb(151, 80, 68)', 'rgb(142, 117, 58)', 'rgb(40, 100, 72)']) expect(standsBackground).toContain(color);
   await expect(pitch.locator('.hs-noodle-frame')).toHaveCount(0);
   const pattern = pitch.locator('.hs-crown-pattern-band');
   await expect(pattern).toHaveCSS('background-repeat', 'repeat');
@@ -2742,4 +2744,69 @@ test('mobile crown sidebar keeps compact controls accessible', async ({ page }) 
   await strip.getByRole('button', { name: 'الأخبار', exact: true }).click();
   await expect(strip.getByRole('button', { name: 'العودة إلى البطولات' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('visible match crests pulse and respect motion preferences', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const index = await strip.locator('[data-crown-card]').evaluateAll(els => els.findIndex(el => el.getAttribute('data-crown-kind') === 'match'));
+  await selectCrownSlide(page, index);
+  const front = strip.locator('[data-crown-offset="0"]');
+  const crests = front.locator('.hs-crown-match-team .league-ticket-crest');
+  await expect(crests).toHaveCount(2);
+  await expect(front.locator('.hs-crown-crest-rings')).toHaveCount(0);
+  await expect(crests.first()).toHaveCSS('animation-name', 'none');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'on'));
+  for (const crest of await crests.all()) {
+    await expect(crest).toHaveCSS('animation-name', 'hs-crown-crest-pulse');
+    await expect(crest).toHaveCSS('animation-iteration-count', '1');
+    await expect(crest).toHaveCSS('animation-fill-mode', 'both');
+  }
+  const positions = await crests.first().evaluate(el => {
+    const animation = el.getAnimations()[0];
+    animation.pause(); animation.currentTime = 0;
+    const start = getComputedStyle(el).transform;
+    animation.currentTime = 700;
+    const middle = getComputedStyle(el).transform;
+    animation.currentTime = 1400;
+    return { start, middle, end: getComputedStyle(el).transform };
+  });
+  expect(positions.start).toBe('matrix(1, 0, 0, 1, 0, 0)');
+  expect(positions.middle).toBe('matrix(1.3, 0, 0, 1.3, 0, 0)');
+  expect(positions.end).toBe('matrix(1, 0, 0, 1, 0, 0)');
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'auto'));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const crest of await crests.all()) await expect(crest).toHaveCSS('animation-name', 'none');
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'off'));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const crest of await crests.all()) await expect(crest).toHaveCSS('animation-name', 'none');
+});
+
+test('match pitch and stands enter together without motion when disabled', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const index = await strip.locator('[data-crown-card]').evaluateAll(els => els.findIndex(el => el.getAttribute('data-crown-kind') === 'match'));
+  await selectCrownSlide(page, index);
+  const pitch = strip.locator('[data-crown-offset="0"] .hs-crown-match-pitch');
+  await expect(pitch.locator('.hs-crown-floor')).toHaveCount(1);
+  await expect(pitch.locator('.hs-crown-upper-pattern')).toHaveCount(1);
+  await expect(pitch).toHaveCSS('animation-name', 'none');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'on'));
+  await expect(pitch).toHaveCSS('animation-name', 'hs-crown-pitch-enter');
+  const positions = await pitch.evaluate(el => {
+    const animation = el.getAnimations().find(item => (item as CSSAnimation).animationName === 'hs-crown-pitch-enter')!;
+    animation.pause(); animation.currentTime = 0;
+    const start = getComputedStyle(el).transform;
+    animation.currentTime = 1600;
+    return { start, end: getComputedStyle(el).transform };
+  });
+  expect(positions.start).toBe('matrix(1.3, 0, 0, 1.3, 0, 0)');
+  expect(positions.end).toBe('matrix(1, 0, 0, 1, 0, 0)');
+  await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'auto'));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(pitch).toHaveCSS('animation-name', 'none');
 });

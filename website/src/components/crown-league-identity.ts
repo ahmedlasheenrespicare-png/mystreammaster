@@ -10,6 +10,10 @@ export const CROWN_CUP_LOGOS: Readonly<Record<string, string>> = {
   'eng.fa': '/images/competitions/fa-cup.webp',
   'eng.league_cup': 'https://a.espncdn.com/i/leaguelogos/soccer/500/41.png',
   'afc.champions': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2200.png',
+  'uefa.europa': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png',
+  'uefa.nations': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2395.png',
+  'fifa.friendly': 'https://a.espncdn.com/i/leaguelogos/soccer/500/53.png',
+  'concacaf.nations.league': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2406.png',
 };
 export function crownLeagueName(leagueId: string | undefined, fallback: string): string {
   return leagueId === 'eng.league_cup' ? 'كأس الرابطة الإنجليزي' : fallback;

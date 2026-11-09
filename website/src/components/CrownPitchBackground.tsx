@@ -1,7 +1,8 @@
 import { useId } from "react";
+import CrownNoodlePattern from "./CrownNoodlePattern";
 
 /** Decorative pitch shared only by match card bodies; each SVG filter gets a unique ID. */
-export default function CrownPitchBackground() {
+export default function CrownPitchBackground({ active = false }: { active?: boolean }) {
   const filterId = `crown-grass-${useId().replace(/:/g, "")}`;
   return <span className="hs-crown-match-pitch" aria-hidden="true">
         <div className="hs-crown-floor" aria-hidden="true">
@@ -28,6 +29,8 @@ export default function CrownPitchBackground() {
           </g>
         </svg>
         </div>
+        <div className="hs-crown-upper-pattern" aria-hidden="true">{active && <CrownNoodlePattern />}</div>
+        <div className="hs-crown-pattern-band" aria-hidden="true" />
         <div className="hs-crown-side-light" aria-hidden="true" />
         <div className="hs-crown-tint" aria-hidden="true" />
   </span>;

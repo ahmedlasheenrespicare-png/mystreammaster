@@ -2010,6 +2010,48 @@ test('pitch and lighting are confined to the middle of match cards', async ({ pa
   await expect(pitch).toBeVisible();
   await expect(pitch).toHaveCSS('pointer-events', 'none');
   await expect(pitch).toHaveCSS('background-color', 'rgb(253, 230, 138)');
+  const divider = await pitch.evaluate(el => {
+    const style = getComputedStyle(el, '::after');
+    return { content: style.content, top: parseFloat(style.top), height: parseFloat(style.height), pitchHeight: el.getBoundingClientRect().height };
+  });
+  expect(divider.content).not.toBe('none');
+  expect(divider.top).toBeCloseTo(divider.pitchHeight * 0.51, 0);
+  expect(divider.height).toBe(1);
+  const upperDivider = await pitch.evaluate(el => {
+    const style = getComputedStyle(el, '::before');
+    return { content: style.content, top: parseFloat(style.top), height: parseFloat(style.height) };
+  });
+  expect(upperDivider.content).not.toBe('none');
+  expect(upperDivider.top).toBeCloseTo(divider.pitchHeight * 0.39, 0);
+  expect(upperDivider.height).toBe(1);
+  const upperPattern = pitch.locator('.hs-crown-upper-pattern');
+  await expect(upperPattern).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  await expect(upperPattern).toHaveCSS('pointer-events', 'none');
+  expect(await upperPattern.evaluate(el => getComputedStyle(el).backgroundSize)).toContain('20px 35px');
+  const scenes = upperPattern.locator('.hs-noodle-frame');
+  await expect.poll(() => scenes.count()).toBeGreaterThan(1);
+  await expect(scenes.first().locator('.boy')).toHaveCSS('animation-play-state', 'paused');
+  await expect(strip.locator('[data-crown-offset]:not([data-crown-offset="0"]) .hs-noodle-frame')).toHaveCount(0);
+  const pattern = pitch.locator('.hs-crown-pattern-band');
+  await expect(pattern).toHaveCSS('background-repeat', 'repeat');
+  await expect(pattern).toHaveCSS('background-size', '160px 100%');
+  const patternBackground = await pattern.evaluate(el => getComputedStyle(el).backgroundImage);
+  for (const color of ['rgb(40, 154, 106)', 'rgb(255, 205, 0)', 'rgb(239, 51, 64)']) expect(patternBackground).toContain(color);
+  await expect(pattern).toHaveCSS('animation-name', 'none');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const bounds = await pattern.evaluate(el => {
+      const parent = el.parentElement!.getBoundingClientRect();
+      const band = el.getBoundingClientRect();
+      return { top: band.top - parent.top, bottom: band.bottom - parent.top, height: parent.height };
+    });
+    expect(bounds.top).toBeCloseTo(bounds.height * 0.39, 0);
+    expect(bounds.bottom).toBeCloseTo(bounds.height * 0.51, 0);
+    const upperBounds = await upperPattern.boundingBox();
+    const pitchBounds = await pitch.boundingBox();
+    expect(upperBounds!.y).toBeCloseTo(pitchBounds!.y, 0);
+    expect(upperBounds!.y + upperBounds!.height).toBeCloseTo(pitchBounds!.y + bounds.bottom, 0);
+  }
   const floor = pitch.locator('.hs-crown-floor');
   const background = await floor.evaluate(el => getComputedStyle(el).backgroundImage);
   expect(background).toContain('rgb(12, 103, 48)');

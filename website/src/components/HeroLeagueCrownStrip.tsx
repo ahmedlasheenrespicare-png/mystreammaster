@@ -508,6 +508,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
         {/* خلفية الشريط (زينة خالصة، لا تستقبل أي مؤشر فتظل السحب والضغط كما
             هما): تلوين بلون بطولة الشريحة النشطة + خطوط ملعب تتحرك بمقدار إيدك
             عبر --hs-drag-x. لا أنيميشن مستمر في أيٍّ منهما. */}
+        <div className="hs-crown-floor" aria-hidden="true">
         <svg className="hs-crown-grass" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
           <defs>
             <filter id="crown-grass-grain" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
@@ -517,7 +518,6 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           </defs>
           <rect className="hs-crown-grass-grain" width="1200" height="420" filter="url(#crown-grass-grain)" />
         </svg>
-        <div className="hs-crown-tint" aria-hidden="true" />
         <svg className="hs-crown-pitch" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true" focusable="false">
           <g className="hs-crown-pitch-markings" fill="none" stroke="currentColor" strokeWidth="3" vectorEffect="non-scaling-stroke">
             <rect className="hs-crown-pitch-boundary" x="80" y="20" width="1040" height="380" />
@@ -531,6 +531,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
             <circle cx="600" cy="210" r="3" /><circle cx="182" cy="210" r="3" /><circle cx="1018" cy="210" r="3" />
           </g>
         </svg>
+        </div>
+        <div className="hs-crown-tint" aria-hidden="true" />
         {newsOpen ? <div className="hs-crown-news-panel" aria-label="أخبار الموقع">
           <button type="button" className="hs-crown-news-back" autoFocus onClick={() => {
             onNewsOpenChange?.(false);

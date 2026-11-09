@@ -93,8 +93,8 @@ export const NOVEMBER_8_CROWN_CLASHES: FeaturedClash[] = november8Pairs.map(([ho
    الموعد والحالة والنتيجة تبقى من المصدر، لا من التاريخ المثبّت للبطاقة. */
 export const NOVEMBER_9_CROWN_CLASHES: FeaturedClash[] = [{
   eyebrow: 'كأس الاتحاد الإنجليزي',
-  home: team('بليموث باركواي', ['plymouth parkway', 'بليموث باركواي']),
-  away: team('بيركهامستيد', ['berkhamsted', 'بيركهامستيد']),
+  home: team('بليموث باركواي', ['plymouth parkway', 'بليموث باركواي'], 'plymouth-parkway-badge'),
+  away: team('بيركهامستيد', ['berkhamsted', 'بيركهامستيد'], 'berkhamsted-badge'),
   source: 'eng.fa', date: '2026-11-09',
 }];
 
@@ -102,6 +102,7 @@ export const NOVEMBER_9_CROWN_CLASHES: FeaturedClash[] = [{
    شرائح مواجهات، وقد اعتمدها المالك في الطلبين #346 و#347 (الكأسان الفضيتان)
    وأُضيف لها الدوري الأوروبي ليبقى شعاره بعد إخفاء شرائح 5 نوفمبر. */
 export const CROWN_LEAGUE_CARDS: readonly { id: string; name: string }[] = [
+  { id: 'eng.fa', name: 'كأس الاتحاد الإنجليزي' },
   { id: 'eng.league_cup', name: 'كأس الرابطة' },
   { id: 'afc.champions', name: 'دوري أبطال آسيا للنخبة' },
   { id: 'uefa.europa', name: 'الدوري الأوروبي' },

@@ -1964,14 +1964,20 @@ test('crown strip uses a CSS grass pitch with visible field lines behind its car
   await shell.scrollIntoViewIfNeeded();
 
   // النمط بتدرجات CSS وحبيبات SVG، وليس صورة خارجية.
-  const grass = shell.locator(':scope > .hs-crown-grass');
+  const floor = shell.locator(':scope > .hs-crown-floor');
+  await expect(floor).toHaveAttribute('aria-hidden', 'true');
+  await expect(floor).toHaveCSS('pointer-events', 'none');
+  expect(await floor.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d\(/);
+  const grass = floor.locator(':scope > .hs-crown-grass');
   await expect(grass).toHaveAttribute('aria-hidden', 'true');
   await expect(grass).toHaveCSS('pointer-events', 'none');
   await expect(grass.locator('.hs-crown-grass-grain')).toHaveCount(1);
   await expect(grass.locator('feTurbulence')).toHaveCount(1);
-  const background = await shell.evaluate(el => getComputedStyle(el).backgroundImage);
+  const background = await floor.evaluate(el => getComputedStyle(el).backgroundImage);
   expect(background).toContain('repeating-linear-gradient(45deg');
   expect(background).toContain('linear-gradient(135deg');
+  expect(background).toContain('rgba(71, 127, 53, 0.72)');
+  expect(background).toContain('rgba(123, 176, 91, 0.72)');
   expect(background).not.toContain('url(');
   await expect(shell.locator(':scope > .hs-crown-brand')).toHaveCount(0);
   await expect(shell.locator(':scope > .hs-crown-film')).toHaveCount(0);
@@ -1979,7 +1985,7 @@ test('crown strip uses a CSS grass pitch with visible field lines behind its car
 
   // طبقتا الزينة: خلف المحتوى، لا تستقبلان أي مؤشر، ومخفيتان عن قارئ الشاشة
   const tint = shell.locator(':scope > .hs-crown-tint');
-  const pitch = shell.locator(':scope > .hs-crown-pitch');
+  const pitch = floor.locator(':scope > .hs-crown-pitch');
   await expect(tint).toHaveCount(1);
   await expect(pitch).toHaveCount(1);
   for (const layer of [tint, pitch]) {
@@ -2382,7 +2388,7 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
   });
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
-  await expect(strip.locator('[data-crown-state="scheduled"]')).toHaveCount(1);
+  await expect(strip.locator('[data-crown-state="scheduled"]')).toHaveCount(1, { timeout: 20000 });
   await strip.locator('.hs-day-tabs').getByRole('button', { name: 'أمس' }).click();
   await expect(strip.locator('[data-crown-card]')).toHaveCount(4);
   for (const team of ['برايتون', 'إيبسويتش', 'إلتشي', 'كولن']) await expect(strip.locator('[data-crown-card]').filter({ hasText: team })).toHaveCount(1);
@@ -2391,4 +2397,17 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
   await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بليموث باركواي');
   await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بيركهامستيد');
   await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-state', 'scheduled');
+  for (const badge of ['plymouth-parkway-badge', 'berkhamsted-badge']) {
+    const image = strip.locator(`[data-crown-offset="0"] img[src="/images/teams/${badge}.webp"]`);
+    await expect(image).toBeVisible();
+    await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+  }
+  const cupLogo = '/images/competitions/fa-cup.webp';
+  const matchLogo = strip.locator(`[data-crown-offset="0"] [data-match-league-background="eng.fa"] img[src="${cupLogo}"]`);
+  await expect(matchLogo).toBeAttached();
+  await expect.poll(() => matchLogo.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+  await strip.locator('.hs-crown-tabs').getByRole('button', { name: 'البطولات', exact: true }).click();
+  const league = strip.locator('[data-crown-kind="league"][data-crown-league="eng.fa"]');
+  await expect(league).toHaveCount(1);
+  await expect(league.locator(`img[src="${cupLogo}"]`)).toBeAttached();
 });

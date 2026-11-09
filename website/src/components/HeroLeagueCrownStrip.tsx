@@ -1,8 +1,9 @@
+import { DayButtons, type Day } from "./CrownDayMatches";
 import { orderCrownMatches } from "./crown-slide-order";
 import CrownMatchFullscreen, { CrownFullscreen } from "./CrownMatchFullscreen";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
-import { CrownClashSlide, clashSummary, useClashes, type FeaturedClash } from "./LeagueTicketCard";
+import { CrownClashSlide, clashSummary, useClashesWithStatus, type FeaturedClash } from "./LeagueTicketCard";
 import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { TicketImage } from "./TicketImage";
@@ -15,6 +16,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
+import { dayInZone, shiftDay } from "../lib/matches.mjs";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import { STANDINGS_LEAGUES } from "../lib/standings.mjs";
@@ -347,14 +349,31 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[], ext
 export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES, newsOpen = false, onNewsOpenChange, newsTicket }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[]; newsOpen?: boolean; onNewsOpenChange?: (open: boolean) => void; newsTicket?: ReactNode } = {}) {
   const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes, extraLeagues);
   const standingsMap = useLiveStandingsMap();
-  const matches = useClashes("matches", clashes);
+  const [dayView, setDayView] = useState<Day | null>(null);
+  const [leagueOnly, setLeagueOnly] = useState(false);
+  const [today, setToday] = useState(() => dayInZone(new Date(), "Africa/Cairo"));
+  useEffect(() => {
+    const check = () => setToday(dayInZone(new Date(), "Africa/Cairo"));
+    const timer = window.setInterval(check, 30_000);
+    document.addEventListener("visibilitychange", check);
+    return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", check); };
+  }, []);
+  const { matches, status: matchesStatus } = useClashesWithStatus("matches", clashes);
   const matchItems = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
     const clash = clashes[index];
     const league = leagueItems.find(item => item.leagueId === clash.source);
     return league ? [{ ...league, key: `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : [];
   });
   // Global priority: live → scheduled → finished → unconfirmed → league cards.
-  const items = [...matchItems, ...leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }))];
+  const selectedDate = dayView && dayView !== "live" ? shiftDay(today, dayView === "yesterday" ? -1 : dayView === "tomorrow" ? 1 : 0) : null;
+  const filteredMatches = dayView ? matchItems.filter(item => {
+    const match = matches[item.clashIndex];
+    if (!match) return false;
+    if (dayView === "live") return match.state === "live";
+    return dayInZone(new Date(match.date), "Africa/Cairo") === selectedDate;
+  }) : matchItems;
+  const leagueCards = leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }));
+  const items = dayView ? filteredMatches : leagueOnly ? leagueCards : [...matchItems, ...leagueCards];
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
@@ -476,7 +495,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
         } as CSSProperties}
         {...interactionPause}
         onKeyDown={(e) => {
-          if (newsOpen) return;
+          if (newsOpen || (e.target as HTMLElement).closest("button")) return;
           if (e.key === "ArrowLeft") {
             e.preventDefault();
             step(1);
@@ -543,6 +562,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }}
           onPointerCancel={() => finishDrag(null)}
         >
+          {dayView && !items.length && <p className="hs-day-empty" role="status">{matchesStatus === "loading" ? "جارٍ تحديث المباريات…" : matchesStatus === "error" ? "تعذّر تحديث مباريات الشريط من المصدر." : "لا توجد مباريات مؤكدة مطابقة في الشريط لهذا الاختيار."}</p>}
           {items.map((item, idx) => {
             const offset = getOffset(idx);
             const isFront = offset === "0";
@@ -693,8 +713,9 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               </a>
             );
           })}
-          {shellItem && <div className="hs-crown-tabs" role="group" aria-label={`تفاصيل ${shellItem.shortName}`}>
-            {([['match', 'المباراة'], ['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
+          <div className="hs-crown-tabs" role="group" aria-label={shellItem ? `تفاصيل ${shellItem.shortName}` : 'اختيارات الشريط'}>
+            <button type="button" aria-pressed={leagueOnly} onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); setSharedActiveIndex(0); setDayView(null); setLeagueOnly(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v4M8 20h8M9 17h6"/></svg><span>البطولات</span></span></button>
+            {shellItem && ([['match', 'المباراة'], ['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
               <button key={tab} type="button" aria-haspopup="dialog" onPointerDown={event => event.stopPropagation()} onClick={event => {
                 event.stopPropagation();
                 setExpandedTab(tab);
@@ -704,9 +725,12 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               </svg><span>{label}</span></span></button>
             ))}
             {onNewsOpenChange && <button type="button" className="hs-crown-news-tab" onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); onNewsOpenChange(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4v4H7zM14 8h4M14 12h4M7 16h11"/></svg><span>الأخبار</span></span></button>}
-          </div>}
+          </div>
         </div>
 
+        <DayButtons selected={dayView} onSelect={day => { setSharedActiveIndex(0); setLeagueOnly(false); setDayView(day); }} />
+        {(dayView || leagueOnly) && <button type="button" className="hs-day-clear" onClick={() => { setSharedActiveIndex(0); setDayView(null); setLeagueOnly(false); }}>عرض جميع البطاقات</button>}
+        {dayView && matchesStatus === "stale" && <p className="hs-day-warning" role="status">تعذّر تحديث بعض بيانات المباريات؛ المعروض من آخر بيانات متاحة وقد لا يكون محدثاً.</p>}
         <div className="hs-crown-controls">
           <button type="button" className="hs-crown-autoplay" aria-pressed={autoplayStopped} onClick={() => setAutoplayStopped(value => !value)}>
             {autoplayStopped ? "تشغيل الشريط" : "إيقاف الشريط"}
@@ -720,7 +744,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
             ›
           </button>
           <span className="hs-crown-counter" dir="ltr" role="status" aria-live="off" aria-label={`الشريحة ${items.length ? active + 1 : 0} من ${items.length}`}>
-            {items.length ? active + 1 : 0}/{items.length}
+            {items.length ? (active % items.length) + 1 : 0}/{items.length}
           </span>
           <button
             type="button"

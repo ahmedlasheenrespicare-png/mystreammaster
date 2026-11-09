@@ -232,6 +232,41 @@
       "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
     },
     {
+      "league": "concacaf.nations.league",
+      "ok": true,
+      "name": "دوري أمم كونكاكاف",
+      "slugEchoedBySource": "concacaf.nations.league",
+      "leagueIdAtSource": "19267",
+      "uid": "s:600~l:19267",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 Concacaf Nations League",
+      "sampledDay": "2026-10-06",
+      "sample": [
+        {
+          "date": "2026-10-06T20:00Z",
+          "home": "Montserrat",
+          "away": "Turks and Caicos Islands",
+          "score": "4-1",
+          "state": "finished",
+          "venue": "TCIFA National Stadium, Providenciales",
+          "group": "League C, Group A"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2406.png",
+      "currentPhase": "Group (Sep 23-Nov 17) ثم Quarterfinals وGold Cup Prelims (Nov 12-17 2026) ثم Semifinals (Dec 1-Mar 26) والنهائي والمركز الثالث (Mar 27-31 2027)",
+      "upcomingSample": {
+        "sampledDay": "2026-11-14",
+        "date": "2026-11-14T19:00Z",
+        "home": "Sint Maarten",
+        "away": "French Guiana",
+        "state": "scheduled",
+        "venue": "Arnos Vale Stadium",
+        "group": "League B, Group D"
+      },
+      "wrongSlug": "concacaf.nations وconcacaf.nations_league وconcacaf.cnl كلها HTTP 400؛ المعرّف الصحيح concacaf.nations.league بنقطتين. المُراقِب concacaf.gold يستجيب 200 (المعرّف 4004)، فالـ400 خاص بالاسم لا بالبادئة",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    },
+    {
       "league": "caf.nations_qual",
       "ok": true,
       "name": "تصفيات كأس أمم أفريقيا",

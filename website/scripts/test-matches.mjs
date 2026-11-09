@@ -319,6 +319,7 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
     { id: 'tur.1', name: 'الدوري التركي' },
     { id: 'uefa.nations', name: 'دوري الأمم الأوروبية' },
     { id: 'egy.league_cup', name: 'كأس الرابطة المصرية' },
+    { id: 'concacaf.nations.league', name: 'دوري أمم كونكاكاف' },
     { id: 'caf.nations_qual', name: 'تصفيات كأس أمم أفريقيا' },
   ];
   for (const entry of added) {
@@ -367,6 +368,10 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
      الأندية القارية، وتجاور تصفيات كأس العالم الأفريقية */
   assert.ok(at('afc.champions') < at('caf.nations_qual'), 'تصفيات أمم أفريقيا تلي الكتلة القارية');
   assert.ok(at('uefa.nations') < at('caf.nations_qual'), 'تصفيات أمم أفريقيا تلي دوري الأمم');
+  /* دوري أمم كونكاكاف نظير دوري الأمم الأوروبية: يقترن به مباشرة */
+  assert.ok(at('afc.champions') < at('concacaf.nations.league'), 'دوري أمم كونكاكاف يلي الكتلة القارية');
+  assert.ok(at('uefa.nations') < at('concacaf.nations.league'), 'دوري أمم كونكاكاف يلي نظيره الأوروبي');
+  assert.ok(at('concacaf.nations.league') < at('caf.nations_qual'), 'دوري أمم كونكاكاف يسبق تصفيات أمم أفريقيا');
   assert.ok(at('caf.nations_qual') < at('fifa.worldq.caf'), 'تصفيات أمم أفريقيا تجاور تصفيات كأس العالم الأفريقية');
   assert.equal(new Set(ids).size, ids.length, 'لا معرّف مكرر في قائمة البطولات');
 });

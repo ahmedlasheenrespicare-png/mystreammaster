@@ -74,6 +74,7 @@ const ALLOWED_LEAGUES = [
     'caf.confed',
     'afc.champions',
     'uefa.nations',
+    'concacaf.nations.league',
     'caf.nations_qual',
     'fifa.worldq.caf',
     'fifa.worldq.uefa',

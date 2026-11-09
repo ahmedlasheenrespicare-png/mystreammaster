@@ -1380,8 +1380,10 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     expect(await bottom.locator('.league-ticket-countdown').count()).toBe(0);
     expect(await band.locator('.hs-crown-match-status').count()).toBe(0); // لا نص يُعيد الشارة
     expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
-    // اسم البطولة بالأعلى والعلامات بالأسفل دون تكرار التاريخ والوقت.
+    // اسم البطولة والعلامات بالأعلى دون تكرار التاريخ والوقت.
     await expect(details.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
+    await expect(front.locator('.hs-crown-split')).toHaveCSS('display', 'none');
+    expect(await front.locator('.hs-crown-tint').evaluate(el => getComputedStyle(el, '::after').display)).toBe('none');
     const coin = details.locator('.hs-crown-slide-league .hs-crown-league-coin');
     await expect(coin).toBeVisible();
     await expect(coin).toHaveCSS('width', '50px');
@@ -1406,9 +1408,9 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
       const cardBox = (await front.locator('.hs-crown-match').boundingBox())!;
       expect(detailBox.y + detailBox.height).toBeLessThanOrEqual(timeBox.y + 1);
       const whenBox = (await when.boundingBox())!;
-      expect(whenBox.y).toBeGreaterThanOrEqual(timeBox.y + timeBox.height - 1);
-      expect(whenBox.y + whenBox.height).toBeLessThanOrEqual(cardBox.y + cardBox.height + 1);
-      expect(Math.abs((whenBox.x + whenBox.width / 2) - (timeBox.x + timeBox.width / 2))).toBeLessThan(2);
+      expect(Math.abs(whenBox.x - cardBox.x - 8)).toBeLessThan(2);
+      expect(Math.abs(whenBox.y - cardBox.y - 5)).toBeLessThan(2);
+      expect(whenBox.y + whenBox.height).toBeLessThanOrEqual(detailBox.y + 1);
       expect(detailBox.x).toBeGreaterThanOrEqual(cardBox.x);
       expect(detailBox.x + detailBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 1);
       expect(timeBox.y + timeBox.height).toBeLessThanOrEqual(cardBox.y + cardBox.height);
@@ -1418,7 +1420,9 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
 
   // ٣) أثناء المباراة: دقائق وثواني بنفس تصميم العدّاد، والدقيقة من الفيڈ لا من الساعة.
   {
-    const { band, bottom } = await open('live');
+    const { front, band, bottom } = await open('live');
+    await expect(front.locator('.hs-crown-split')).toHaveCSS('display', 'block');
+    expect(await front.locator('.hs-crown-tint').evaluate(el => getComputedStyle(el, '::after').display)).not.toBe('none');
     await expect(band.locator('.hs-crown-slide-chip')).toHaveText('مباشر الآن');
     await expect(band.locator('.ticket-flip__label').first()).toHaveText('دقائق');
     expect(await band.locator('.ticket-flip__label').allTextContents()).toEqual(['دقائق', 'ثوانٍ']);
@@ -1436,6 +1440,8 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
   {
     const { front, band, bottom } = await open('finished');
     await expect(front).toHaveAttribute('data-crown-state', 'finished');
+    await expect(front.locator('.hs-crown-split')).toHaveCSS('display', 'none');
+    expect(await front.locator('.hs-crown-tint').evaluate(el => getComputedStyle(el, '::after').display)).toBe('none');
     const details = front.locator('.hs-crown-scheduled-details');
     const when = front.locator('.hs-crown-scheduled-when');
     await expect(details.locator('.hs-crown-slide-chip')).toHaveText('انتهت');
@@ -1464,9 +1470,9 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
       const below = (await when.boundingBox())!;
       const body = (await front.locator('.hs-crown-match').boundingBox())!;
       expect(above.y + above.height).toBeLessThanOrEqual(score.y + 1);
-      expect(below.y).toBeGreaterThanOrEqual(score.y + score.height - 1);
-      expect(below.y + below.height).toBeLessThanOrEqual(body.y + body.height + 1);
-      expect(Math.abs((below.x + below.width / 2) - (score.x + score.width / 2))).toBeLessThan(2);
+      expect(Math.abs(below.x - body.x - 8)).toBeLessThan(2);
+      expect(Math.abs(below.y - body.y - 5)).toBeLessThan(2);
+      expect(below.y + below.height).toBeLessThanOrEqual(above.y + 1);
     }
   }
 });
@@ -1617,7 +1623,13 @@ test('league background emblems preserve source colors and load eagerly on activ
     await expect(image).toHaveAttribute('loading', 'eager');
     const filter = await image.evaluate(el => getComputedStyle(el).filter);
     expect(filter).not.toMatch(/brightness\(0\)|invert\(|grayscale\(/);
-    await expect(background).toHaveCSS('opacity', '0.35');
+    await expect(background).toHaveCSS('opacity', '0.72');
+    const body = (await background.locator('..').boundingBox())!;
+    const logo = (await background.locator('.league-carousel-badge').boundingBox())!;
+    expect(Math.abs(logo.x + logo.width / 2 - (body.x + body.width / 2))).toBeLessThan(2);
+    expect(Math.abs(logo.y + logo.height / 2 - (body.y + body.height * .755))).toBeLessThan(2);
+    expect(logo.y).toBeGreaterThanOrEqual(body.y + body.height * .51 - 1);
+    expect(logo.y + logo.height).toBeLessThanOrEqual(body.y + body.height + 1);
     await expect(background.locator('.league-carousel-fallback')).toHaveCSS('visibility', 'hidden');
   }
   const originalLogo = strip.locator('[data-crown-card="eng.1"] .league-carousel-logo').first();
@@ -2462,7 +2474,7 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
   }
   const cupLogo = '/images/competitions/fa-cup.webp';
-  await expect(strip.locator('[data-crown-offset="0"] [data-match-league-background="eng.fa"]')).toHaveCSS('opacity', '0.35');
+  await expect(strip.locator('[data-crown-offset="0"] [data-match-league-background="eng.fa"]')).toHaveCSS('opacity', '0.72');
   const matchLogo = strip.locator(`[data-crown-offset="0"] [data-match-league-background="eng.fa"] img[src="${cupLogo}"]`);
   await expect(matchLogo).toBeAttached();
   await expect.poll(() => matchLogo.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);

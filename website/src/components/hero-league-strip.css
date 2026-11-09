@@ -1530,8 +1530,8 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
 /* إبراز شعار البطولة بألوانه الأصلية خلف محتوى الجسم الشفاف. */
 .hs-crown-center .hs-crown-card .hs-crown-match-art,
 .hs-crown-center .hs-crown-card .hs-crown-league-background { opacity: .72; }
-/* شعار المباراة أخف حتى يبقى علامة مائية خلف النتيجة. */
-.hs-crown-center .hs-crown-card .hs-crown-match-art[data-match-league-background] { opacity: .35; }
+/* شعار البطولة واضح خلف محتوى المباراة مع الحفاظ على ألوانه. */
+.hs-crown-center .hs-crown-card .hs-crown-match-art[data-match-league-background] { opacity: .72; }
 
 /* تباين محتوى المباراة فوق العشب الغامق، مع الحفاظ على ألوان الشعارات. */
 .hs-crown-center .hs-crown-card > .hs-crown-match { color: #fff; }
@@ -2027,3 +2027,30 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
 .hs-crown-sidebar-news { min-width: 0; width: 100%; }
 .hs-crown-sidebar-news .league-ticket-track { height: 265px; }
 .hs-crown-sidebar-news .league-ticket--in-track { min-width: 0; }
+
+/* علامات الموقع في أقصى أعلى يسار بطاقتي ما قبل المباراة وما بعدها. */
+.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"]) > .hs-crown-match {
+  padding-top: 30px;
+}
+.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-when {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  z-index: 1;
+}
+
+/* إخفاء الخط الزخرفي السفلي قبل المباراة وبعدها فقط. */
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) > .hs-crown-split,
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-tint::after {
+  display: none;
+}
+
+/* توسيط شعار البطولة الخلفي على الجزء السفلي الذي يمثل أرضية الملعب. */
+.hs-crown-card .hs-crown-match-art[data-match-league-background] {
+  top: 51%;
+}
+.hs-crown-card .hs-crown-match-art[data-match-league-background] .league-carousel-badge {
+  width: auto;
+  height: min(132px, 90%);
+  aspect-ratio: 1;
+}

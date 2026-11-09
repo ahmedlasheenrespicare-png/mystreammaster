@@ -230,6 +230,52 @@
       },
       "emptyDaysNote": "أيام 2026-10-09 و 10-11 و 10-23 و 10-24 و 10-26 كلها بلا أحداث: أكتوبر 2026 بين فترتين دوليتين لا بين جولات. النافذة القادمة 12-17 نوفمبر. نافذة فارغة حالة مشروعة في هذا المسبار لا فشل، لكن أثرها عملي: قسم البطولة في الجدول يظهر فارغاً حتى يقترب مدى الأيام الخمسة عشر المعروض من نوفمبر.",
       "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    },
+    {
+      "league": "caf.nations_qual",
+      "ok": true,
+      "name": "تصفيات كأس أمم أفريقيا",
+      "slugEchoedBySource": "caf.nations_qual",
+      "leagueIdAtSource": "8315",
+      "uid": "s:600~l:8315",
+      "season": 2026,
+      "seasonDisplayName": "2027 Africa Cup of Nations Qualifying",
+      "sampledDay": "2026-09-25",
+      "sample": [
+        {
+          "date": "2026-09-25T13:00Z",
+          "home": "Mozambique",
+          "away": "Senegal",
+          "score": "1-1",
+          "state": "finished",
+          "venue": "Estádio do Zimpeto, Maputo",
+          "group": "Group J"
+        },
+        {
+          "date": "2026-10-06T19:00Z",
+          "home": "Angola",
+          "away": "Malawi",
+          "score": "3-1",
+          "state": "finished",
+          "venue": "Estádio 11 de Novembro, Luanda",
+          "group": "Group B"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/default-team-logo-500.png&w=100&h=100",
+      "currentPhase": "Preliminary Round (Mar 25-31، لُعبت) ثم Group (Sep 24 2026 - Mar 28 2027): الجولة الثالثة 12-14 نوفمبر 2026 والرابعة 16-17 نوفمبر، ثم الخامسة والسادسة مارس 2027",
+      "upcomingSample": {
+        "sampledDay": "2026-11-12",
+        "date": "2026-11-12T15:00Z",
+        "home": "Ghana",
+        "away": "Somalia",
+        "state": "scheduled",
+        "venue": "Ohene Djan Stadium, Accra",
+        "group": "Group C"
+      },
+      "emptyDaysNote": "لا مباريات في 2026-10-05: المسابقة تعمل بنوافذ دولية (جولتان في نافذة واحدة) لا أسبوعياً، فاليوم الخالي بين النوافذ حالة مشروعة لا فشل. أثرها العملي أن قسم البطولة يظهر فارغاً بين النوافذ ثم يمتلئ مع النافذة القادمة.",
+      "logoNote": "المصدر لا يوفّر شعاراً خاصاً بهذه المسابقة: الحقل logos يُرجع صورة بديلة عامة (default-team-logo). يُذكر ذلك حتى لا يُظنّ الشعار العام خطأً في الإسناد.",
+      "wrongSlug": "caf.qual يُرجع HTTP 400؛ المعرّف الصحيح caf.nations_qual (بـnations_ لا qual وحدها)",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
     }
   ],
   "outOfScope": {

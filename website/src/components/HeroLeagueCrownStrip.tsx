@@ -512,6 +512,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }}>العودة إلى البطولات</button>
           {newsTicket}
         </div> : <>
+        <div className="hs-crown-browser" aria-label="شريط المباريات والبطولات">
+          <span className="hs-crown-browser-dots" aria-hidden="true"><i /><i /><i /></span>
+          <span className="hs-crown-browser-title">المباريات والبطولات</span>
+          <span className="hs-crown-browser-badge">الرياضة</span>
+        </div>
         <div
           className="hs-crown-center"
           onPointerDown={(e) => {
@@ -678,6 +683,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               </a>
             );
           })}
+
+        </div>
+
+        <aside className="hs-crown-sidebar" aria-label="خيارات المباريات والبطولات">
+          <div className="hs-crown-sidebar-heading"><strong>المباريات والبطولات</strong><span>استكشف</span></div>
           <div className="hs-crown-tabs" role="group" aria-label={shellItem ? `تفاصيل ${shellItem.shortName}` : 'اختيارات الشريط'}>
             <button type="button" aria-pressed={leagueOnly} onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); setSharedActiveIndex(0); setDayView(null); setLeagueOnly(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v4M8 20h8M9 17h6"/></svg><span>البطولات</span></span></button>
             {shellItem && ([['match', 'المباراة'], ['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
@@ -691,11 +701,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
             ))}
             {onNewsOpenChange && <button type="button" className="hs-crown-news-tab" onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); onNewsOpenChange(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4v4H7zM14 8h4M14 12h4M7 16h11"/></svg><span>الأخبار</span></span></button>}
           </div>
-        </div>
-
+          <div className="hs-crown-sidebar-label">اختر يوم المباريات</div>
         <DayButtons selected={dayView} onSelect={day => { setSharedActiveIndex(0); setLeagueOnly(false); setDayView(day); }} />
         {(dayView || leagueOnly) && <button type="button" className="hs-day-clear" onClick={() => { setSharedActiveIndex(0); setDayView(null); setLeagueOnly(false); }}>عرض جميع البطاقات</button>}
         {dayView && matchesStatus === "stale" && <p className="hs-day-warning" role="status">تعذّر تحديث بعض بيانات المباريات؛ المعروض من آخر بيانات متاحة وقد لا يكون محدثاً.</p>}
+        </aside>
         <div className="hs-crown-controls">
           <button type="button" className="hs-crown-autoplay" aria-pressed={autoplayStopped} onClick={() => setAutoplayStopped(value => !value)}>
             {autoplayStopped ? "تشغيل الشريط" : "إيقاف الشريط"}

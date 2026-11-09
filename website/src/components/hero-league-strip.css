@@ -1693,3 +1693,181 @@ html[data-motion="off"] .hs-day-tabs > button { transition: none; }
   z-index: -1;
   pointer-events: none;
 }
+
+/* إطار مستوحى من بطاقة دليل المشاهدة، مع إبقاء الملعب وأدوات الشريط. */
+.hs-crown-shell:not(.is-news-open) {
+  padding-top: 0;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 24px;
+  box-shadow: 0 35px 70px -40px rgba(0, 0, 0, .32);
+}
+.hs-crown-browser {
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--hs-pad-i));
+  min-height: 48px;
+  padding: 0 20px;
+  margin-bottom: 33px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: ltr;
+  background: #f7f6f2;
+  border-bottom: 1px solid rgba(11, 11, 15, .1);
+  user-select: none;
+}
+.hs-crown-browser-dots { display: flex; gap: 6px; }
+.hs-crown-browser-dots i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+.hs-crown-browser-dots i:nth-child(2) { background: #febc2e; }
+.hs-crown-browser-dots i:nth-child(3) { background: #28c840; }
+.hs-crown-browser-title {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 30px;
+  background: #fff;
+  color: #666;
+  text-align: center;
+  font-size: .7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  direction: rtl;
+}
+.hs-crown-browser-badge { border-radius: 20px; background: #0b0b0f; color: #fff; font-size: .65rem; font-weight: 800; padding: 4px 10px; }
+@media (max-width: 640px) {
+  .hs-crown-browser { padding-inline: 12px; gap: 8px; margin-bottom: 46px; }
+  .hs-crown-browser-dots { gap: 4px; }
+  .hs-crown-browser-dots i { width: 8px; height: 8px; }
+}
+
+/* أزرار الشريط على نمط عناصر قائمة القنوات في دليل المشاهدة. */
+:is(.hs-crown-tabs, .hs-day-tabs) > button {
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 13px;
+  padding: 2px;
+  color: #0b0b0f;
+  background: #fff;
+  box-shadow: none;
+  transform: none;
+  transition: background-color .2s, border-color .2s;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button:hover,
+:is(.hs-crown-tabs, .hs-day-tabs) > button:active {
+  background: #f6f6f9;
+  box-shadow: none;
+  transform: none;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button:focus-visible { outline: 3px solid #748bff; outline-offset: 3px; }
+:is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] {
+  color: #2b4eff;
+  border-color: rgba(43, 78, 255, .31);
+  background: #eff1ff;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button .hs-crown-tab-content {
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  gap: 5px;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button .hs-crown-tab-content::before { content: none; }
+:is(.hs-crown-tabs, .hs-day-tabs) > button .hs-crown-tab-icon {
+  box-sizing: content-box;
+  padding: 4px;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 7px;
+  background: #f2f1ed;
+  color: #60636e;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] .hs-crown-tab-icon { background: #0b0b0f; color: #d8ff3e; }
+.hs-day-tabs { background: #faf9f6; border-color: rgba(11, 11, 15, .1); box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  :is(.hs-crown-tabs, .hs-day-tabs) > button { transition: none; }
+}
+html[data-motion="off"] :is(.hs-crown-tabs, .hs-day-tabs) > button { transition: none; }
+:is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] .hs-crown-tab-content { box-shadow: none; }
+
+/* مثل دليل المشاهدة: العرض إلى اليمين والقائمة إلى اليسار. */
+.hs-crown-shell:not(.is-news-open) {
+  display: grid;
+  direction: rtl;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  grid-template-areas: "browser browser" "stage sidebar" "controls sidebar";
+  align-items: start;
+  gap: 0 16px;
+  padding-bottom: 14px;
+}
+.hs-crown-browser { grid-area: browser; margin-bottom: 16px; }
+.hs-crown-shell > .hs-crown-center { grid-area: stage; align-self: start; }
+.hs-crown-shell > .hs-crown-controls { grid-area: controls; justify-self: center; margin: 8px 0 0; }
+.hs-crown-sidebar {
+  grid-area: sidebar;
+  min-width: 0;
+  align-self: stretch;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 20px 40px -30px #0004;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hs-crown-sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .82rem; }
+.hs-crown-sidebar-heading span { border-radius: 20px; background: #d8ff3e; padding: 3px 9px; font-size: .65rem; }
+.hs-crown-sidebar .hs-crown-tabs {
+  position: static;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+.hs-crown-sidebar .hs-crown-tabs > button { width: 100%; min-height: 38px; }
+.hs-crown-sidebar .hs-crown-tabs .hs-crown-tab-content {
+  min-height: 32px;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding-inline: 8px;
+  gap: 10px;
+  font-size: .75rem;
+}
+.hs-crown-sidebar-label { border-top: 1px solid rgba(11, 11, 15, .1); padding-top: 9px; font-size: .72rem; font-weight: 800; }
+.hs-crown-sidebar .hs-day-tabs { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; border: 0; background: transparent; border-radius: 0; }
+.hs-crown-sidebar .hs-day-tabs .hs-crown-tab-content { min-height: 32px; }
+.hs-crown-sidebar .hs-day-clear { align-self: center; }
+.hs-crown-sidebar .hs-day-warning, .hs-crown-sidebar .hs-day-empty { max-width: 100%; }
+@media (max-width: 700px) {
+  .hs-crown-shell:not(.is-news-open) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "browser" "stage" "controls" "sidebar";
+    gap: 0;
+  }
+  .hs-crown-browser { margin-bottom: 12px; }
+  .hs-crown-shell > .hs-crown-controls { margin: 8px 0 12px; }
+  .hs-crown-sidebar .hs-crown-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* لوحة مدمجة للهاتف: صف قابل للتمرير وأيام متجاورة بلا إخفاء أي خيار. */
+@media (max-width: 700px) {
+  .hs-crown-sidebar { padding: 9px; gap: 7px; border-radius: 14px; }
+  .hs-crown-sidebar-heading { font-size: .75rem; }
+  .hs-crown-sidebar .hs-crown-tabs {
+    display: flex;
+    justify-content: flex-start;
+    gap: 5px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .hs-crown-sidebar .hs-crown-tabs > button { flex: 0 0 auto; width: auto; min-height: 38px; }
+  .hs-crown-sidebar .hs-crown-tabs .hs-crown-tab-content { min-height: 32px; padding-inline: 7px; gap: 5px; white-space: nowrap; font-size: .68rem; }
+  .hs-crown-sidebar-label { padding-top: 7px; }
+  .hs-crown-sidebar .hs-day-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .hs-crown-sidebar .hs-day-tabs > button { min-height: 38px; }
+  .hs-crown-sidebar .hs-day-tabs .hs-crown-tab-content { gap: 2px; padding-inline: 1px; font-size: .6rem; }
+  .hs-crown-sidebar .hs-day-tabs .hs-crown-tab-icon { padding: 3px; }
+}

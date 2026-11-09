@@ -71,7 +71,19 @@
 }
 .hs-crown-grass-grain { opacity: .12; mix-blend-mode: multiply; }
 
-/* خلفية الشريط بلا هالة حول التذكرة؛ يبقى الخيط الملون عند الحافة فقط. */
+/* إضاءة ثابتة من أسفل الجانبين ووسط الخلفية، خلف محتوى البطاقة. */
+.hs-crown-side-light {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 42% 72% at 100% 100%, rgba(216, 255, 62, .55), rgba(216, 255, 62, .16) 38%, transparent 75%),
+    radial-gradient(ellipse 42% 72% at 0% 100%, rgba(216, 255, 62, .55), rgba(216, 255, 62, .16) 38%, transparent 75%),
+    radial-gradient(ellipse 50% 65% at 50% 85%, rgba(216, 255, 62, .34), rgba(216, 255, 62, .1) 42%, transparent 75%);
+}
+
+/* أشعة ضوء هادئة تصعد من الملعب خلف البطاقات بألوان هوية الموقع. */
 .hs-crown-tint {
   position: absolute;
   inset: 0;
@@ -79,6 +91,34 @@
   pointer-events: none;
   background: transparent;
 }
+
+.hs-crown-tint::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 28% at 50% 100%, rgba(216, 255, 62, .32), transparent 75%),
+    conic-gradient(from 305deg at 50% 110%,
+      transparent 0deg, rgba(43, 78, 255, .16) 8deg, transparent 18deg,
+      rgba(124, 92, 255, .16) 30deg, transparent 40deg,
+      rgba(216, 255, 62, .24) 52deg, transparent 64deg,
+      rgba(62, 255, 224, .16) 76deg, transparent 88deg,
+      rgba(43, 78, 255, .14) 101deg, transparent 110deg);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .8) 35%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .8) 35%, transparent 100%);
+  opacity: .72;
+  animation: crown-rays-breathe 14s ease-in-out infinite alternate;
+}
+
+@keyframes crown-rays-breathe {
+  from { opacity: .55; }
+  to { opacity: .85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-crown-tint::before { animation: none; }
+}
+html[data-motion="off"] .hs-crown-tint::before { animation: none !important; }
 
 /* خيط أسفل الشريط من تدرّج البطولة نفسه — صدى شريط الألوان داخل الكروت */
 .hs-crown-tint::after {
@@ -813,28 +853,13 @@ a.hs-crown-wing:hover {
 
 /* Same league-ticket stars, behind the readable title and authentic trophy. */
 .hs-crown-card-top { isolation: isolate; min-height: 104px; overflow: hidden; }
-.hs-crown-players { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.hs-crown-player {
-  position: absolute; bottom: -8px; height: 112px; width: 110px;
-  object-fit: contain; object-position: center bottom;
-  opacity: .7;
-  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
-}
-.hs-crown-player--1 { left: 36px; transform: rotate(-5deg); }
-.hs-crown-player--2 { right: 17px; transform: rotate(5deg); }
-.hs-crown-players::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(90deg, #0b0b0f33, transparent 45%, #0b0b0fc9 100%), linear-gradient(0deg, #0b0b0f70, transparent 75%);
-}
 .hs-crown-card-meta, .hs-mini-trophy { position: relative; z-index: 1; }
 .hs-crown-league-name { text-shadow: 0 1px 5px #000, 0 0 10px #000b; }
-.hs-crown-players picture { display: contents; }
 
 /* Match slides share the crown's frame, coverflow and palette. Reserve enough
    vertical space for the full pairing/status/countdown, rather than clipping it. */
 .hero-crown-strip[data-has-matches="true"] .hs-crown-center { height: 174px; }
 .hero-crown-strip[data-has-matches="true"] .hs-crown-card-top { min-height: 164px; }
-.hero-crown-strip[data-has-matches="true"] .hs-crown-player { height: 160px; width: 132px; }
 .hs-crown-match {
   position: relative; isolation: isolate; min-height: 164px; box-sizing: border-box;
   border-radius: 16.5px 16.5px 0 0;
@@ -1372,6 +1397,7 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
 @media (max-width: 640px) { .hs-crown-tabs { width: min(280px, 100%); } }
 .hs-crown-shell.is-news-open { padding: 14px; background: transparent; }
 .hs-crown-shell.is-news-open > .hs-crown-floor,
+.hs-crown-shell.is-news-open > .hs-crown-side-light,
 .hs-crown-shell.is-news-open > .hs-crown-tint { display: none; }
 .hs-crown-news-panel { position: relative; z-index: 1; width: min(100%, 900px); min-width: 0; }
 .hs-crown-news-back { display: block; margin: 0 auto 12px; padding: 8px 16px; border: 1px solid #292524; border-radius: 999px; background: #facc15; color: #292524; font: 800 .85rem var(--font-sans); cursor: pointer; }
@@ -1398,3 +1424,47 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
   .hs-crown-tabs { width: min(300px, 100%); top: calc(-1 * (var(--hs-band-h) - var(--hs-band-peek)) - 56px); }
   .hs-crown-tabs .hs-crown-tab-content { min-height: 46px; flex-direction: column; gap: 1px; }
 }
+
+/* بطاقة واحدة بعرض مساحة التذكرة؛ التنقل يبقى بالأسهم والسحب. */
+.hs-crown-center { max-width: none; }
+.hs-crown-center .hs-crown-card { width: 100%; box-sizing: border-box; }
+.hs-crown-center .hs-crown-card:not([data-crown-offset="0"]) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hs-crown-center .hs-crown-card[data-crown-offset="0"]:hover {
+  transform: translate3d(var(--hs-drag-x, 0px), -2px, 0);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-teams {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(56px, .45fr) minmax(0, 1fr);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team {
+  font-size: clamp(.68rem, 1.4vw, .9rem);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest {
+  width: clamp(32px, 4vw, 48px);
+  height: clamp(32px, 4vw, 48px);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-result {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+}
+
+/* جسم البطاقة شفاف حتى تظهر أرض الملعب من خلفه. */
+.hs-crown-center .hs-crown-card { background: transparent; border: 0; }
+.hs-crown-center .hs-crown-card > :is(.hs-crown-match, .hs-crown-card-top) {
+  background: transparent;
+  color: #0b0b0f;
+}
+.hs-crown-center .hs-crown-league-name {
+  color: #0b0b0f;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, .8);
+}
+.hs-crown-center .hs-crown-match-team {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, .8);
+}
+
+/* إبراز شعار البطولة بألوانه الأصلية خلف محتوى الجسم الشفاف. */
+.hs-crown-center .hs-crown-card .hs-crown-match-art,
+.hs-crown-center .hs-crown-card .hs-crown-league-background { opacity: .72; }

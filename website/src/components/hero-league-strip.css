@@ -1635,6 +1635,12 @@ html[data-motion="off"] .hs-crown-card .hs-crown-slide-band--top { transition: n
   text-shadow: none;
   overflow-wrap: anywhere;
 }
+/* لا شريط خلف النتيجة النهائية؛ تبقى خانات الأرقام نفسها كما هي. */
+.hs-crown-card[data-crown-state="finished"] .hs-crown-match-result > strong:has(.hs-crown-match-score) {
+  background: transparent;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+}
 
 /* أزرار الأيام مستوحاة من ركن الإجراءات المستدير في بطاقة ilkhoeri:
    https://uiverse.io/ilkhoeri/curvy-dragonfly-6 */
@@ -1959,3 +1965,65 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-te
   html:not([data-motion="on"]) .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pitch { animation: none; }
 }
 html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pitch { animation: none !important; }
+
+/* إبراز شعار البطولة واسمه قبل المباراة وبعدها. */
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin {
+  flex-basis: 50px;
+  width: 50px;
+  height: 50px;
+}
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin-rotor::before { left: 23px; height: 50px; }
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin .league-carousel-badge { width: 100%; height: 100%; box-sizing: border-box; }
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin .league-carousel-fallback { width: 50%; height: 50%; }
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details :is(.hs-crown-slide-league, .hs-crown-drawer-league-name) { font-size: clamp(1.05rem, 2vw, 1.25rem); }
+
+/* الخيارات الإضافية والأيام أسفل شريط الرياضة؛ تبقى البطولات والمباراة في القائمة الجانبية. */
+.hs-crown-shell:not(.is-news-open) { grid-template-areas: "browser browser" "top-options top-options" "stage sidebar" "controls sidebar"; }
+.hs-crown-top-options {
+  grid-area: top-options; min-width: 0; display: flex; align-items: center; gap: 6px;
+  overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin;
+  padding: 7px; margin-bottom: 12px; border: 1px solid rgba(11,11,15,.1); border-radius: 14px; background: #fff;
+}
+.hs-crown-top-options .hs-crown-tabs, .hs-crown-top-options .hs-day-tabs {
+  position: static; transform: none; display: flex; flex: 0 0 auto; width: auto; max-width: none;
+  gap: 4px; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none;
+}
+.hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { flex: 0 0 auto; width: auto; min-height: 38px; }
+.hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content { flex-direction: row; min-height: 32px; padding-inline: 8px; gap: 5px; white-space: nowrap; font-size: .72rem; }
+.hs-crown-top-options .hs-day-clear { flex: 0 0 auto; white-space: nowrap; }
+.hs-crown-top-options .hs-day-warning { flex: 0 0 220px; margin: 0; }
+@media (max-width: 700px) {
+  .hs-crown-shell:not(.is-news-open) { grid-template-areas: "browser" "top-options" "stage" "controls" "sidebar"; }
+  .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content { font-size: .68rem; padding-inline: 7px; }
+}
+
+/* على الهاتف يحل زرا البطولات والمباراة محل عنوان شريط المتصفح فقط. */
+@media (max-width: 700px) {
+  .hs-crown-shell:not(.is-news-open) { grid-template-areas: "browser" "top-options" "stage" "controls"; }
+  .hs-crown-browser-title { visibility: hidden; }
+  .hs-crown-sidebar {
+    grid-area: browser;
+    z-index: 2;
+    align-self: start;
+    justify-self: stretch;
+    min-height: 48px;
+    box-sizing: border-box;
+    margin-inline: 58px 45px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+    justify-content: center;
+  }
+  .hs-crown-sidebar-heading { display: none; }
+  .hs-crown-sidebar .hs-crown-tabs { justify-content: center; overflow: visible; padding: 0; }
+  .hs-crown-sidebar .hs-crown-tabs > button { min-height: 34px; }
+  .hs-crown-sidebar .hs-crown-tabs .hs-crown-tab-content { min-height: 30px; }
+}
+
+/* التذكرة الأصلية للأخبار داخل المساحة الجانبية على الشاشات الكبيرة. */
+.hs-crown-sidebar-news { min-width: 0; width: 100%; }
+.hs-crown-sidebar-news .league-ticket-track { height: 265px; }
+.hs-crown-sidebar-news .league-ticket--in-track { min-width: 0; }

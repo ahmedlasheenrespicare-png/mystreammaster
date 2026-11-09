@@ -1366,6 +1366,7 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(band.locator('.hs-crown-slide-league, .hs-crown-slide-chip, .league-ticket-countdown')).toHaveCount(0);
     await expect(details.locator('.hs-crown-slide-chip')).toHaveText('لم تبدأ');
     await expect(details.locator('.league-ticket-countdown')).toBeVisible();
+    await expect(front.locator('.hs-crown-match-result > strong')).toHaveCSS('background-color', 'rgb(250, 249, 246)');
     // الظل للنص فقط؛ الدرجان يظلان شفافين بلا ظل صندوق.
     for (const drawer of [band, bottom]) {
       await expect(drawer).toHaveCSS('box-shadow', 'none');
@@ -1383,7 +1384,8 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(details.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
     const coin = details.locator('.hs-crown-slide-league .hs-crown-league-coin');
     await expect(coin).toBeVisible();
-    await expect(coin).toHaveCSS('width', '38px');
+    await expect(coin).toHaveCSS('width', '50px');
+    await expect(coin.locator('.league-carousel-badge').first()).toHaveCSS('width', '50px');
     await expect(details.locator('.ticket-flip__digit').first()).toHaveCSS('width', '15px');
     await expect(coin.locator('.league-carousel-badge')).toHaveCount(2);
     await expect(coin.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none'); // تقليل الحركة
@@ -1441,7 +1443,8 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(mark).toBeVisible();
     await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveText('الدوري الإسباني');
     await expect(mark.locator('.hs-crown-league-coin')).toBeVisible();
-    await expect(mark.locator('.hs-crown-league-coin')).toHaveCSS('width', '38px');
+    await expect(mark.locator('.hs-crown-league-coin')).toHaveCSS('width', '50px');
+    await expect(mark.locator('.league-carousel-badge').first()).toHaveCSS('width', '50px');
     await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveCSS('color', 'rgb(255, 255, 255)');
     expect(await mark.locator('.league-carousel-badge').count()).toBe(2);
     await expect(mark.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none');
@@ -1452,6 +1455,8 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     await expect(when.locator('.hs-crown-match-brands img').first()).toHaveCSS('width', '34px');
     await expect(front.locator('.hs-crown-match-score .ticket-flip__digit').first()).toHaveCSS('width', '19px');
     await expect(front.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
+    await expect(front.locator('.hs-crown-match-result > strong')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(front.locator('.hs-crown-match-result > strong')).toHaveCSS('color', 'rgb(255, 255, 255)');
     for (const width of [320, 390, 767, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       const above = (await details.boundingBox())!;
@@ -2710,15 +2715,23 @@ test('crown uses a guide-inspired frame while keeping its controls and news acce
   for (const width of [320, 390, 767, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     const bar = await browser.boundingBox();
-    const tabs = await strip.locator('.hs-crown-tabs').boundingBox();
+    const tabs = await strip.locator('.hs-crown-extra-tabs').boundingBox();
     const card = await strip.locator('[data-crown-offset="0"]').boundingBox();
     expect(bar).not.toBeNull(); expect(tabs).not.toBeNull(); expect(card).not.toBeNull();
     const sidebar = await strip.locator('.hs-crown-sidebar').boundingBox();
     expect(sidebar).not.toBeNull();
-    expect(tabs!.x).toBeGreaterThanOrEqual(sidebar!.x);
-    expect(tabs!.x + tabs!.width).toBeLessThanOrEqual(sidebar!.x + sidebar!.width + 1);
+    const top = (await strip.locator('.hs-crown-top-options').boundingBox())!;
+    expect(top.y).toBeGreaterThanOrEqual(bar!.y + bar!.height - 1);
+    expect(card!.y).toBeGreaterThanOrEqual(top.y + top.height - 1);
     if (width > 700) expect(sidebar!.x + sidebar!.width).toBeLessThanOrEqual(card!.x + 1);
-    else expect(sidebar!.y).toBeGreaterThan(card!.y + card!.height);
+    else {
+      expect(sidebar!.y).toBeGreaterThanOrEqual(bar!.y - 1);
+      expect(sidebar!.y + sidebar!.height).toBeLessThanOrEqual(bar!.y + bar!.height + 1);
+      await expect(browser.locator('.hs-crown-browser-title')).toHaveCSS('visibility', 'hidden');
+    }
+    const days = await strip.locator('.hs-day-tabs').boundingBox();
+    expect(days).not.toBeNull();
+    expect(Math.abs(days!.y - tabs!.y)).toBeLessThan(5);
     expect(card!.y).toBeGreaterThanOrEqual(bar!.y + bar!.height - 1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
@@ -2734,7 +2747,7 @@ test('mobile crown sidebar keeps compact controls accessible', async ({ page }) 
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const tabs = strip.locator('.hs-crown-tabs');
-  await expect(tabs).toHaveCSS('overflow-x', 'auto');
+  await expect(strip.locator('.hs-crown-top-options')).toHaveCSS('overflow-x', 'auto');
   const days = strip.locator('.hs-day-tabs');
   const dayButtons = days.getByRole('button');
   await expect(dayButtons).toHaveCount(4);
@@ -2809,4 +2822,24 @@ test('match pitch and stands enter together without motion when disabled', async
   await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'auto'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(pitch).toHaveCSS('animation-name', 'none');
+});
+
+test('news ticket moves into the desktop crown sidebar without duplication', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const ticket = page.locator('[data-home-news-ticket]');
+  await expect(ticket).toHaveCount(1);
+  await expect(strip.locator('.hs-crown-sidebar-news [data-home-news-ticket]')).toBeVisible();
+  const buttons = (await strip.locator('.hs-crown-sidebar .hs-crown-tabs').boundingBox())!;
+  const news = (await ticket.boundingBox())!;
+  expect(news.y).toBeGreaterThanOrEqual(buttons.y + buttons.height);
+  await strip.getByRole('button', { name: 'الأخبار', exact: true }).click();
+  await expect(strip.locator('.hs-crown-news-panel [data-home-news-ticket]')).toBeVisible();
+  await expect(ticket).toHaveCount(1);
+  await strip.getByRole('button', { name: 'العودة إلى البطولات' }).click();
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await expect(ticket).toHaveCount(1);
+  await expect(strip.locator('.hs-crown-sidebar-news')).toHaveCount(0);
+  await expect(ticket).toBeVisible();
 });

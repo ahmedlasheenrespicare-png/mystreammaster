@@ -316,6 +316,8 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
     { id: 'afc.champions', name: 'دوري أبطال آسيا للنخبة' },
     { id: 'eng.league_cup', name: 'كأس الرابطة الإنجليزية' },
     { id: 'eng.fa', name: 'كأس الاتحاد الإنجليزي' },
+    { id: 'tur.1', name: 'الدوري التركي' },
+    { id: 'uefa.nations', name: 'دوري الأمم الأوروبية' },
   ];
   for (const entry of added) {
     const found = LEAGUES.find((league) => league.id === entry.id);
@@ -333,9 +335,29 @@ test('البطولات المضافة مُسجّلة في مصدر واحد وم
   assert.ok(at('eng.1') < at('eng.league_cup'), 'كأس الرابطة يتبع دوري بلده');
   assert.ok(at('eng.league_cup') < at('eng.fa'), 'كأس الرابطة قبل كأس الاتحاد');
   assert.ok(at('eng.fa') < at('esp.1'), 'بطولات إنجلترا كتلة واحدة قبل بقية الدوريات');
-  /* القارية كتلة متتابعة بين المسابقات الأوروبية والمسابقات الدولية */
-  assert.deepEqual(ids.slice(at('caf.champions'), at('fifa.worldq.caf')), ['caf.champions', 'caf.confed', 'afc.champions']);
-  assert.ok(at('afc.champions') < at('fifa.worldq.caf'), 'القارية تسبق المسابقات الدولية');
+  /* القارية كتلة متتابعة بين المسابقات الأوروبية ومسابقات المنتخبات.
+     كان هذا التأكيد شريحة ثابتة من caf.champions إلى fifa.worldq.caf،
+     فلم يعد صالحاً بعد إدراج دوري الأمم بينهما: الشريحة تصير مشتملة عليه.
+     قياس الكتلة بترتيبها وتجاورها أصحّ من قياسها بموضعي طرفيها، لأنه يثبت
+     ما يُقصد فعلاً (القارية متجاورة بترتيبها) ويسمح بإضافة بطولة منتخبات
+     على حدّها. */
+  const CONTINENTAL = ['caf.champions', 'caf.confed', 'afc.champions'];
+  assert.deepEqual(
+    ids.filter((id) => CONTINENTAL.includes(id)),
+    CONTINENTAL,
+    'القارية كتلة واحدة بترتيبها',
+  );
+  const continentalAt = CONTINENTAL.map(at);
+  assert.deepEqual(
+    continentalAt,
+    [...continentalAt].sort((a, b) => a - b),
+    'القارية متجاورة بلا بطولة تفصلها',
+  );
+  assert.ok(at('uefa.europa.conf') < continentalAt[0], 'القارية تلي المسابقات الأوروبية');
+  /* دوري الأمم الأوروبية مسابقة منتخبات لا أندية: بعد الكتلة القارية مباشرة
+     وقبل التصفيات والوديات، فتتجاور مسابقات المنتخبات في الجدول. */
+  assert.ok(at('afc.champions') < at('uefa.nations'), 'دوري الأمم بعد الكتلة القارية');
+  assert.ok(at('uefa.nations') < at('fifa.worldq.caf'), 'دوري الأمم يسبق تصفيات كأس العالم');
   assert.equal(new Set(ids).size, ids.length, 'لا معرّف مكرر في قائمة البطولات');
 });
 

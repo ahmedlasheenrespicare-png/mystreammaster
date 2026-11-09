@@ -1184,6 +1184,14 @@ test('crown match content preserves live RTL scores and scheduled countdown from
   expect(await front.locator('.hs-crown-match-status').count()).toBe(0);
   await expect(front.locator('.hs-crown-match-team').first()).toContainText('ريال مدريد');
   await expect(front.locator('.hs-crown-match-team').last()).toContainText('فالنسيا');
+  await expect(front.locator('.hs-crown-match-team').first()).toHaveCSS('transform', 'matrix(1.16, 0, 0, 1.16, 0, 0)');
+  const crestShadow = await front.locator('.hs-crown-match-team').first().evaluate(el => {
+    const style = getComputedStyle(el, '::before');
+    return { content: style.content, radius: style.borderRadius, pointerEvents: style.pointerEvents };
+  });
+  expect(crestShadow.content).not.toBe('none');
+  expect(crestShadow.radius).toBe('50%');
+  expect(crestShadow.pointerEvents).toBe('none');
   await expect(front.locator('.hs-crown-match-team > strong').first()).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   for (const label of await front.locator('.hs-crown-match-result > strong').all()) {
     await expect(label).toHaveCSS('color', 'rgb(11, 11, 15)');
@@ -1584,7 +1592,7 @@ test('league background emblems preserve source colors and load eagerly on activ
     await expect(image).toHaveAttribute('loading', 'eager');
     const filter = await image.evaluate(el => getComputedStyle(el).filter);
     expect(filter).not.toMatch(/brightness\(0\)|invert\(|grayscale\(/);
-    await expect(background).toHaveCSS('opacity', '0.72');
+    await expect(background).toHaveCSS('opacity', '0.35');
     await expect(background.locator('.league-carousel-fallback')).toHaveCSS('visibility', 'hidden');
   }
   const originalLogo = strip.locator('[data-crown-card="eng.1"] .league-carousel-logo').first();
@@ -2028,10 +2036,7 @@ test('pitch and lighting are confined to the middle of match cards', async ({ pa
   await expect(upperPattern).toHaveCSS('background-color', 'rgb(0, 0, 0)');
   await expect(upperPattern).toHaveCSS('pointer-events', 'none');
   expect(await upperPattern.evaluate(el => getComputedStyle(el).backgroundSize)).toContain('20px 35px');
-  const scenes = upperPattern.locator('.hs-noodle-frame');
-  await expect.poll(() => scenes.count()).toBeGreaterThan(1);
-  await expect(scenes.first().locator('.boy')).toHaveCSS('animation-play-state', 'paused');
-  await expect(strip.locator('[data-crown-offset]:not([data-crown-offset="0"]) .hs-noodle-frame')).toHaveCount(0);
+  await expect(pitch.locator('.hs-noodle-frame')).toHaveCount(0);
   const pattern = pitch.locator('.hs-crown-pattern-band');
   await expect(pattern).toHaveCSS('background-repeat', 'repeat');
   await expect(pattern).toHaveCSS('background-size', '160px 100%');
@@ -2056,6 +2061,8 @@ test('pitch and lighting are confined to the middle of match cards', async ({ pa
   const background = await floor.evaluate(el => getComputedStyle(el).backgroundImage);
   expect(background).toContain('rgb(12, 103, 48)');
   expect(background).toContain('rgb(33, 139, 65)');
+  expect(background).toContain('at 24% 45%');
+  expect(background).toContain('at 76% 45%');
   expect(background).not.toContain('url(');
   expect(await floor.evaluate(el => getComputedStyle(el).transform)).toMatch(/^matrix3d\(/);
   await expect(pitch.locator('.hs-crown-pitch-line')).toHaveCSS('stroke', 'rgba(255, 255, 255, 0.88)');
@@ -2428,7 +2435,7 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
   }
   const cupLogo = '/images/competitions/fa-cup.webp';
-  await expect(strip.locator('[data-crown-offset="0"] [data-match-league-background="eng.fa"]')).toHaveCSS('opacity', '0.72');
+  await expect(strip.locator('[data-crown-offset="0"] [data-match-league-background="eng.fa"]')).toHaveCSS('opacity', '0.35');
   const matchLogo = strip.locator(`[data-crown-offset="0"] [data-match-league-background="eng.fa"] img[src="${cupLogo}"]`);
   await expect(matchLogo).toBeAttached();
   await expect.poll(() => matchLogo.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);

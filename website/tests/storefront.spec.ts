@@ -1338,6 +1338,15 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     expect(await front.locator('.hs-crown-match .hs-crown-match-status').count()).toBe(0);
     // والاسم والتاريخ بقيا في موضعهما: سطر الاسم في الأعلى، و«متى» في الأسفل.
     await expect(band.locator('.hs-crown-slide-league')).toContainText('الدوري الإسباني');
+    const coin = band.locator('.hs-crown-slide-league .hs-crown-league-coin');
+    await expect(coin).toBeVisible();
+    await expect(coin.locator('.league-carousel-badge')).toHaveCount(2);
+    await expect(coin.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none'); // تقليل الحركة
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => document.documentElement.removeAttribute('data-motion'));
+    await expect(coin.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'hs-crown-coin-turn');
+    await page.evaluate(() => document.documentElement.setAttribute('data-motion', 'off'));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(bottom.locator('.hs-crown-slide-when')).toBeVisible();
     await checkBottomLayout(bottom);
     await checkTopCenter(band);
@@ -1386,7 +1395,9 @@ test('crown drawer follows the match state: postponed wording, countdown above, 
     const mark = band.locator('.hs-crown-drawer-league');
     await expect(mark).toBeVisible();
     await expect(mark.locator('.hs-crown-drawer-league-name')).toHaveText('الدوري الإسباني');
-    expect(await mark.locator('.league-carousel-badge').count()).toBe(1);
+    await expect(mark.locator('.hs-crown-league-coin')).toBeVisible();
+    expect(await mark.locator('.league-carousel-badge').count()).toBe(2); // وجهان للعملة
+    await expect(mark.locator('.hs-crown-league-coin-rotor')).toHaveCSS('animation-name', 'none');
     expect(await band.locator('.hs-crown-slide-league').count()).toBe(0); // لا تكرار للاسم
     expect(await band.locator('.league-ticket-countdown').count()).toBe(0);
     await expect(front.locator('.hs-crown-match-score b').first()).toHaveText('3');
@@ -2178,7 +2189,7 @@ test('crown drawer tabs open source standings, stats and the selected match', as
   await page.goto('/');
   const strip = page.locator('[data-hero-league-strip]');
   const tabs = strip.locator('.hs-crown-tabs');
-  await expect(tabs.locator('button .hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(3);
+  await expect(tabs.locator('button .hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(4);
   const keys = await strip.locator('[data-crown-card]').evaluateAll(els => els.map(el => el.getAttribute('data-crown-card')));
   await selectCrownSlide(page, keys.indexOf('eng.1'));
   for (const width of [320, 390, 1440]) {
@@ -2209,4 +2220,47 @@ test('crown drawer tabs open source standings, stats and the selected match', as
   await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
   await tabs.getByRole('button', { name: 'المباراة' }).click();
   await expect(page.getByRole('dialog', { name: /عرض المواجهة/ })).toBeVisible();
+});
+
+test('news tab moves the existing home ticket into the crown and back', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.clock.setFixedTime(new Date('2026-11-08T12:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  await page.goto('/');
+  const strip = page.locator('[data-hero-league-strip]');
+  const ticket = page.locator('[data-home-news-ticket]');
+  await expect(ticket).toHaveCount(1);
+  await expect(page.locator('.hero-ticket-row [data-home-news-ticket]')).toBeVisible();
+  const initialHrefs = await ticket.locator('.league-ticket-slide a[href*="/news/"]').evaluateAll(els => els.map(el => el.getAttribute('href')));
+  expect(initialHrefs.length).toBeGreaterThan(0);
+  const selected = await strip.locator('[data-crown-offset="0"]').getAttribute('data-crown-card');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await strip.getByRole('button', { name: 'الأخبار', exact: true }).click();
+    await expect(ticket).toHaveCount(1);
+    await expect(strip.locator('[data-home-news-ticket]')).toBeVisible();
+    await expect(strip.locator('.hs-crown-grass')).toBeHidden();
+    await expect(strip.locator('.hs-crown-pitch')).toBeHidden();
+    await expect(strip.locator('.hs-crown-shell')).toHaveCSS('background-image', 'none');
+    await expect(page.locator('.hero-ticket-row [data-home-news-ticket]')).toHaveCount(0);
+    expect(await ticket.locator('.league-ticket-slide a[href*="/news/"]').evaluateAll(els => els.map(el => el.getAttribute('href')))).toEqual(initialHrefs);
+    await expect(strip.getByRole('button', { name: 'العودة إلى البطولات' })).toBeFocused();
+    const panel = strip.locator('.hs-crown-news-panel');
+    const panelBox = (await panel.boundingBox())!;
+    expect(panelBox.x).toBeGreaterThanOrEqual(0);
+    expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(width);
+    const dots = ticket.locator('.league-ticket-dot');
+    if (await dots.count() > 1) {
+      const first = await dots.evaluateAll(els => els.findIndex(el => el.getAttribute('aria-pressed') === 'true'));
+      await panel.getByRole('button', { name: 'الخبر التالي' }).click();
+      expect(await dots.evaluateAll(els => els.findIndex(el => el.getAttribute('aria-pressed') === 'true'))).not.toBe(first);
+    }
+    await strip.getByRole('button', { name: 'العودة إلى البطولات' }).click();
+    await expect(page.locator('.hero-ticket-row [data-home-news-ticket]')).toBeVisible();
+    await expect(strip.locator('.hs-crown-pitch')).toBeVisible();
+    await expect(strip.locator('.hs-crown-grass')).toBeVisible();
+    await expect(strip.locator('.hs-crown-shell')).not.toHaveCSS('background-image', 'none');
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', selected!);
+    await expect(strip.getByRole('button', { name: 'الأخبار', exact: true })).toBeFocused();
+  }
 });

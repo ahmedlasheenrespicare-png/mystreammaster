@@ -1057,6 +1057,10 @@ a.hs-crown-wing:hover {
   /* سطر مستقل بعرض الدرج كما في .lc-heading المرجعي: لو تركناه في عمود
      شبكي واحد مع الشارة صار الاسم «الدوري الإسبا…» */
   grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
   font-family: var(--font-display);
   font-size: 1.08rem;
   font-weight: 900;
@@ -1066,6 +1070,21 @@ a.hs-crown-wing:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.hs-crown-slide-league-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* دوران عملة ثلاثية الأبعاد مستوحى من black-rabbit-68 بواسطة JohnnyCSilva، Uiverse (MIT). */
+.hs-crown-league-coin { flex: 0 0 30px; width: 30px; height: 30px; perspective: 140px; }
+.hs-crown-league-coin-rotor { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; }
+.hs-crown-league-coin[data-active="true"] .hs-crown-league-coin-rotor { animation: hs-crown-coin-turn 7s linear infinite; }
+.hs-crown-league-coin-face { position: absolute; inset: 0; display: block; border-radius: 50%; backface-visibility: hidden; }
+.hs-crown-league-coin-front { transform: translateZ(2px); }
+.hs-crown-league-coin-back { transform: rotateY(180deg) translateZ(2px); }
+.hs-crown-league-coin-rotor::before { content: ""; position: absolute; left: 13px; top: 0; width: 4px; height: 30px; background: linear-gradient(#e7d19c, #74643f, #e7d19c); transform: rotateY(90deg); }
+.hs-crown-league-coin .league-carousel-badge:has(img[data-loaded="true"]) .league-carousel-fallback { visibility: hidden; }
+@keyframes hs-crown-coin-turn { to { transform: rotateY(360deg); } }
+@media (prefers-reduced-motion: reduce) { .hs-crown-league-coin[data-active="true"] .hs-crown-league-coin-rotor { animation: none; } }
+html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important; }
 
 .hs-crown-slide-chip {
   justify-self: end;
@@ -1337,3 +1356,18 @@ a.hs-crown-wing:hover {
   .hs-crown-tab-icon { flex-basis: 12px; width: 12px; height: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { .hs-crown-tabs button { transition: none; } }
+
+/* وضع الأخبار ينقل التذكرة الفعلية إلى الشريط، دون طبقة فوق الأزرار. */
+.hs-crown-tabs { width: 330px; }
+@media (max-width: 640px) { .hs-crown-tabs { width: min(280px, 100%); } }
+.hs-crown-shell.is-news-open { padding: 14px; background: transparent; }
+.hs-crown-shell.is-news-open > .hs-crown-grass,
+.hs-crown-shell.is-news-open > .hs-crown-pitch,
+.hs-crown-shell.is-news-open > .hs-crown-tint { display: none; }
+.hs-crown-news-panel { position: relative; z-index: 1; width: min(100%, 900px); min-width: 0; }
+.hs-crown-news-back { display: block; margin: 0 auto 12px; padding: 8px 16px; border: 1px solid #292524; border-radius: 999px; background: #facc15; color: #292524; font: 800 .85rem var(--font-sans); cursor: pointer; }
+.hs-crown-news-back:focus-visible { outline: 3px solid #292524; outline-offset: 3px; }
+.hs-crown-news-arrows { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; color: #17251a; font-weight: 800; }
+.hs-crown-news-arrows button { width: 36px; height: 36px; border: 1px solid #292524; border-radius: 50%; background: #fff; color: #292524; font-size: 24px; line-height: 1; cursor: pointer; }
+.hs-crown-news-arrows button:focus-visible { outline: 3px solid #292524; outline-offset: 2px; }
+.hs-crown-news-panel .league-ticket-carousel:has(.hs-crown-news-arrows) .league-ticket-dots { bottom: 56px; }

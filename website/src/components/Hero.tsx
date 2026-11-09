@@ -444,6 +444,7 @@ function isHomeSlotVisible(slot: HomeTicketSlot, nowMs: number): boolean {
 export default function Hero({ onOpenTrial }: HeroProps) {
   const [heroWord, setHeroWord] = useState(0);
   const [frontDevice, setFrontDevice] = useState<"phone" | "tv">("phone");
+  const [newsInCrown, setNewsInCrown] = useState(false);
 
   /* تدوير كلمة العنوان الرئيسي */
   useEffect(() => {
@@ -478,6 +479,9 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   visibleSlots.forEach((slot, index) => {
     if (slot.news) visibleOverrides[index] = <FeaturedNewsTicketSlide href={slot.news} />;
   });
+  const newsTicket = <div className="home-matches-ticket min-w-0" data-home-news-ticket>
+    <AllLeaguesTicket key={visibleSlots.length} hideBase clashes={visibleClashes} slideOverrides={visibleOverrides} showArrows={newsInCrown} />
+  </div>;
   return (
     <div id="hero" className="relative pt-[114px] md:pt-[132px] pb-16 md:pb-20 overflow-hidden bg-[#faf9f6]">
       {/* فقاعات الخلفية الملونة — ببارالاكس بطيء */}
@@ -497,21 +501,13 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
         <Reveal variant="up" delay={90} className="w-full">
-          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} />
+          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown ? newsTicket : null} />
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full">
           <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
             <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
-            <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
-              {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
-              <AllLeaguesTicket
-                key={visibleSlots.length}
-                hideBase
-                clashes={visibleClashes}
-                slideOverrides={visibleOverrides}
-              />
-            </div>
+            {!newsInCrown && <div className="order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">{newsTicket}</div>}
             {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
                 الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
           </div>

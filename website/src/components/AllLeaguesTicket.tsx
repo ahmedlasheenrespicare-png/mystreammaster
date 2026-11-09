@@ -337,7 +337,7 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES, hideBase = false }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[]; hideBase?: boolean } = {}) {
+export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES, hideBase = false, showArrows = false }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[]; hideBase?: boolean; showArrows?: boolean } = {}) {
   return (
     <LeagueTicketCarousel
       leagueId="matches"
@@ -345,6 +345,7 @@ export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASH
       clashes={clashes}
       slideOverrides={slideOverrides}
       hideBase={hideBase}
+      showArrows={showArrows}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand

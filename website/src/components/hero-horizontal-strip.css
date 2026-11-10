@@ -1,0 +1,190 @@
+/* ============================================================================
+   شريط البطولات الأفقي التجريبي —hero-horizontal-strip.css
+   تصميم منفصل عن التاج المداري ثلاثي الأبعاد الحالي (hero-league-strip.css).
+   لا يمسّ أي قاعدة من التصميم المعتمد، فقط adds طبقة جديدة للمقارنة.
+   يظهر أعلى أزرار "جدول الترتيب، إحصائيات، الأخبار" في شريط البطولات.
+   ============================================================================ */
+
+.hs-horizontal-strip {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 16px 0;
+  font-family: inherit;
+  background: #fff;
+  border: 1px solid rgba(216, 255, 62, 0.35);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 16px -8px rgba(11, 11, 15, 0.12);
+}
+
+.hs-horizontal-strip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.hs-horizontal-strip-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0b0b0f;
+  letter-spacing: -0.2px;
+  text-transform: uppercase;
+}
+
+.hs-horizontal-strip-count {
+  font-size: 11px;
+  color: #6b6b6b;
+  font-weight: 600;
+}
+
+.hs-horizontal-strip-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  padding: 6px 4px;
+  margin: 0 -4px;
+}
+
+.hs-horizontal-strip-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.hs-horizontal-strip-container::-webkit-scrollbar-track {
+  background: rgba(216, 255, 62, 0.15);
+  border-radius: 4px;
+}
+
+.hs-horizontal-strip-container::-webkit-scrollbar-thumb {
+  background: rgba(216, 255, 62, 0.5);
+  border-radius: 4px;
+}
+
+.hs-horizontal-strip-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 110px;
+  min-width: 110px;
+  padding: 9px 6px;
+  background: #faf9f6;
+  border: 1px solid rgba(216, 255, 62, 0.35);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  scroll-snap-align: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.hs-horizontal-strip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(11, 11, 15, 0.22);
+  border-color: var(--hs-card-glow, rgba(216, 255, 62, 0.55));
+  z-index: 2;
+  position: relative;
+}
+
+.hs-horizontal-strip-card:focus-visible {
+  outline: 2px solid var(--hs-card-glow, #d8ff3e);
+  outline-offset: 2px;
+}
+
+.hs-horizontal-strip-logo-wrap {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.hs-horizontal-strip-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.hs-horizontal-strip-logo-fallback {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #0b0b0f;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+.hs-horizontal-strip-name {
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  color: #0b0b0f;
+  line-height: 1.25;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.hs-horizontal-strip-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 0 4px;
+}
+
+.hs-horizontal-strip-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(216, 255, 62, 0.5);
+  background: #fff;
+  color: #0b0b0f;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  line-height: 1;
+  box-shadow: 0 2px 8px -4px rgba(11, 11, 15, 0.15);
+}
+
+.hs-horizontal-strip-arrow:hover {
+  background: #f0f0f0;
+  border-color: var(--hs-card-glow, rgba(216, 255, 62, 0.6));
+  transform: translateY(-1px);
+}
+
+.hs-horizontal-strip-arrow:active {
+  transform: scale(0.94);
+}
+
+.hs-horizontal-strip-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* وسائل تخفيف الحركة */
+@media (prefers-reduced-motion: reduce) {
+  .hs-horizontal-strip-card {
+    transition: none;
+  }
+  .hs-horizontal-strip-arrow {
+    transition: none;
+  }
+  .hs-horizontal-strip-container {
+    scroll-behavior: auto;
+  }
+}

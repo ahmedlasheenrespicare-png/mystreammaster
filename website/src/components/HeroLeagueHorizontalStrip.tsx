@@ -85,7 +85,7 @@ export function HeroLeagueHorizontalStrip({
   return (
     <section className="hs-horizontal-strip" aria-label="شريط البطولات الأفقي التجريبي">
       <div className="hs-horizontal-strip-header">
-        <span className="hs-horizontal-strip-title">البطولات المتاحة</span>
+        <span className="hs-horizontal-strip-title">البطولات</span>
         <span className="hs-horizontal-strip-count">{wanted.length} بطولة</span>
       </div>
 

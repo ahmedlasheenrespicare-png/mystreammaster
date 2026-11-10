@@ -5,10 +5,10 @@
    يظهر أعلى أزرار "جدول الترتيب، إحصائيات، الأخبار" في شريط البطولات.
    ============================================================================ */
 
-.hs-horizontal-strip {
+.hs-crown-shell > .hs-horizontal-strip {
   width: 100%;
   max-width: 100%;
-  margin: 0 0 12px 0;
+  margin: 0 0 12px 0 !important;
   font-family: inherit;
   background: #fff;
   border: 2px solid rgba(216, 255, 62, 0.5);

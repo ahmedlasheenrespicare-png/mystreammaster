@@ -16,7 +16,6 @@ type HomeTicketSlot = { clash: FeaturedClash; news?: string };
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import { HeroMatchesTicket } from "./HeroSideTickets";
 import HeroLeagueCrownStrip from "./HeroLeagueCrownStrip";
-import { HeroLeagueStatsTicker } from "./HeroLeagueStatsTicker";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -532,10 +531,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        {/* إحصائيات البطولات المتاحة تحت التذكرة — تظهر بالتتابع */}
-        <Reveal variant="up" delay={440} className="mt-6">
-          <HeroLeagueStatsTicker />
-        </Reveal>
+
 
         {/* Keep the semantic H1 accessible outside the illustrative button;
             its visual version now lives inside the television's welcome screen. */}

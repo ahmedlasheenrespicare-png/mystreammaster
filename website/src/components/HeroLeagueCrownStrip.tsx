@@ -19,6 +19,7 @@ import {
 import { dayInZone, shiftDay } from "../lib/matches.mjs";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { HeroLeagueHorizontalStrip } from "./HeroLeagueHorizontalStrip";
+import { HeroLeagueStatsTicker } from "./HeroLeagueStatsTicker";
 import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import { STANDINGS_LEAGUES } from "../lib/standings.mjs";
 import {
@@ -536,17 +537,20 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           <span className="hs-crown-browser-title">المباريات والبطولات</span>
           <span className="hs-crown-browser-badge">الرياضة</span>
         </div>
-        {/* شريط البطولات الأفقي التجريبي — فورياً أسفل شريط المتصفح العلوي */}
-        <HeroLeagueHorizontalStrip
-          clashes={clashes}
-          extraLeagues={extraLeagues}
-          selectedLeagueId={selectedLeagueId}
-          onLeagueSelect={(leagueId) => {
-            setSelectedLeagueId(leagueId);
-            setDayView(null);
-            setLeagueOnly(false);
-          }}
-        />
+        {/* حاوية الشريط الأفقي وإحصائيات البطولات — جنباً إلى جنب أسفل hs-crown-browser */}
+        <div className="hs-crown-horizontal-row">
+          <HeroLeagueHorizontalStrip
+            clashes={clashes}
+            extraLeagues={extraLeagues}
+            selectedLeagueId={selectedLeagueId}
+            onLeagueSelect={(leagueId) => {
+              setSelectedLeagueId(leagueId);
+              setDayView(null);
+              setLeagueOnly(false);
+            }}
+          />
+          <HeroLeagueStatsTicker />
+        </div>
         {selectedLeagueId && (
           <button
             type="button"

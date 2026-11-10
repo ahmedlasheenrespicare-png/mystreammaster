@@ -202,3 +202,66 @@
     scroll-behavior: auto;
   }
 }
+
+/* حاوية الشريط الأفقي وإحصائيات البطولات — جنباً إلى fianco */
+.hs-crown-horizontal-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.hs-crown-horizontal-row > .hs-horizontal-strip {
+  flex: 1 1 0;
+  margin: 0;
+  max-width: none;
+}
+
+.hs-crown-horizontal-row > .hs-league-stats-ticker {
+  flex: 0 0 210px;
+  width: 210px;
+  max-width: 210px;
+  padding: 12px 0 0 0;
+}
+
+/* على الجوال: مكدسين فوق بعض */
+@media (max-width: 900px) {
+  .hs-crown-horizontal-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hs-crown-horizontal-row > .hs-horizontal-strip {
+    flex: none;
+    width: 100%;
+    max-width: none;
+  }
+
+  .hs-crown-horizontal-row > .hs-league-stats-ticker {
+    flex: none;
+    width: 100%;
+    max-width: none;
+    padding: 10px 0 0 0;
+  }
+
+  .hs-stats-ticker-container {
+    height: 130px;
+  }
+
+  .hs-stats-ticker-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 100%;
+  }
+
+  .hs-stats-ticker-stat {
+    padding: 5px 4px;
+  }
+
+  .hs-stats-ticker-stat-value {
+    font-size: 11px;
+  }
+
+  .hs-stats-ticker-stat-unit {
+    font-size: 8px;
+  }
+}

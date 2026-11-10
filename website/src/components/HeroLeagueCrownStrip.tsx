@@ -352,6 +352,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const standingsMap = useLiveStandingsMap();
   const [dayView, setDayView] = useState<Day | null>(null);
   const [leagueOnly, setLeagueOnly] = useState(false);
+  const [selectedLeagueId, setSelectedLeagueId] = useState<string | null>(null);
   const [today, setToday] = useState(() => dayInZone(new Date(), "Africa/Cairo"));
   useEffect(() => {
     const check = () => setToday(dayInZone(new Date(), "Africa/Cairo"));
@@ -373,8 +374,20 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     if (dayView === "live") return match.state === "live";
     return dayInZone(new Date(match.date), "Africa/Cairo") === selectedDate;
   }) : matchItems;
+
+  /* تصفية المباريات حسب الدوري المحدد من الشريط الأفقي (عند الضغط على بطولة) */
+  const leagueFilteredMatches = selectedLeagueId
+    ? matchItems.filter(item => item.leagueId === selectedLeagueId)
+    : matchItems;
+
   const leagueCards = leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }));
-  const items = dayView ? filteredMatches : leagueOnly ? leagueCards : [...matchItems, ...leagueCards];
+  const items = dayView
+    ? filteredMatches
+    : leagueOnly
+      ? leagueCards
+      : selectedLeagueId
+        ? leagueFilteredMatches
+        : [...matchItems, ...leagueCards];
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
@@ -397,6 +410,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     sharedLeagueId = sharedSlideLeagues[0] ?? "";
     emitCrownChange();
   }, [slideKey]);
+
+  /* إعادة ضبط تصفية الدوري عند تغيير فلترة اليوم أو عرض البطولات فقط */
+  useEffect(() => {
+    setSelectedLeagueId(null);
+  }, [dayView, leagueOnly]);
 
   // تحديث بيانات الترتيب الحي (/standings.php) عند ظهور الشريط في نطاق الرؤية
   useEffect(() => {
@@ -519,7 +537,26 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           <span className="hs-crown-browser-badge">الرياضة</span>
         </div>
         {/* شريط البطولات الأفقي التجريبي — فورياً أسفل شريط المتصفح العلوي */}
-        <HeroLeagueHorizontalStrip clashes={clashes} extraLeagues={extraLeagues} />
+        <HeroLeagueHorizontalStrip
+          clashes={clashes}
+          extraLeagues={extraLeagues}
+          selectedLeagueId={selectedLeagueId}
+          onLeagueSelect={(leagueId) => {
+            setSelectedLeagueId(leagueId);
+            setDayView(null);
+            setLeagueOnly(false);
+          }}
+        />
+        {selectedLeagueId && (
+          <button
+            type="button"
+            className="hs-crown-clear-league-filter"
+            onClick={() => setSelectedLeagueId(null)}
+            aria-label="إلغاء تصفية الدوري وعرض جميع البطولات"
+          >
+            عرض جميع البطولات
+          </button>
+        )}
 
         <div
           className="hs-crown-center"

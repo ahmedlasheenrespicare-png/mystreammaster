@@ -1477,6 +1477,30 @@ html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important
 .hs-day-empty { position: relative; z-index: 1; max-width: 90%; color: #152518; font-weight: 800; text-align: center; }
 .hs-day-clear { position: relative; z-index: 1; border: 0; border-radius: 999px; padding: 5px 14px; background: #20281b; color: #fff; font: 800 .75rem var(--font-sans); cursor: pointer; }
 .hs-day-clear:focus-visible { outline: 2px dashed #20281b; outline-offset: 3px; }
+
+/* زر إلغاء تصفية الدوري المحدد من الشريط الأفقي */
+.hs-crown-clear-league-filter {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 14px;
+  background: #20281b;
+  color: #fff;
+  font: 800 .75rem var(--font-sans);
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hs-crown-clear-league-filter:hover {
+  background: #1a2015;
+}
+.hs-crown-clear-league-filter:focus-visible {
+  outline: 2px dashed #20281b;
+  outline-offset: 3px;
+}
 .hs-day-warning { position: relative; z-index: 1; margin: 0; color: #26341f; font-size: .75rem; font-weight: 800; }
 .hs-crown-tabs { width: 400px; }
 .hs-crown-tabs button[aria-pressed="true"] .hs-crown-tab-content { box-shadow: inset 0 0 0 3px #292524; }

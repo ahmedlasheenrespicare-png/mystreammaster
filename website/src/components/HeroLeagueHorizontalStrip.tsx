@@ -26,9 +26,13 @@ interface HorizontalLeagueItem {
 export function HeroLeagueHorizontalStrip({
   clashes = [],
   extraLeagues = [],
+  selectedLeagueId,
+  onLeagueSelect,
 }: {
   clashes?: Array<{ source?: string; eyebrow: string }>;
   extraLeagues?: readonly { id: string; name: string }[];
+  selectedLeagueId?: string | null;
+  onLeagueSelect?: (leagueId: string) => void;
 }) {
   const landings = leagueLandingsInPageOrder();
 
@@ -93,36 +97,52 @@ export function HeroLeagueHorizontalStrip({
           containerRef.current?.scrollBy({ left: e.deltaY, behavior: "smooth" });
         }}
       >
-        {wanted.map((item) => (
-          <a
-            key={item.leagueId}
-            href={`/matches/${item.slug}/`}
-            className="hs-horizontal-strip-card"
-            style={{
-              "--hs-card-glow": item.glow ?? "",
-              "--hs-card-split": item.split ?? "",
-            } as CSSProperties}
-          >
-            <span className="hs-horizontal-strip-logo-wrap">
-              {item.logo ? (
-                <img
-                  src={item.logo}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="hs-horizontal-strip-logo"
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <span className="hs-horizontal-strip-logo-fallback">
-                  {item.leagueId.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-            </span>
-            <span className="hs-horizontal-strip-name">{item.name}</span>
-          </a>
-        ))}
+        {wanted.map((item) => {
+          const isSelected = item.leagueId === selectedLeagueId;
+          const handleClick = (e: React.MouseEvent) => {
+            e.preventDefault();
+            onLeagueSelect?.(item.leagueId);
+          };
+          const handleKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              onLeagueSelect?.(item.leagueId);
+            }
+          };
+          return (
+            <button
+              key={item.leagueId}
+              type="button"
+              className={`hs-horizontal-strip-card${isSelected ? " hs-horizontal-strip-card--selected" : ""}`}
+              aria-pressed={isSelected}
+              onClick={handleClick}
+              onKeyDown={handleKeyDown}
+              style={{
+                "--hs-card-glow": item.glow ?? "",
+                "--hs-card-split": item.split ?? "",
+              } as CSSProperties}
+            >
+              <span className="hs-horizontal-strip-logo-wrap">
+                {item.logo ? (
+                  <img
+                    src={item.logo}
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="hs-horizontal-strip-logo"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span className="hs-horizontal-strip-logo-fallback">
+                    {item.leagueId.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
+              </span>
+              <span className="hs-horizontal-strip-name">{item.name}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="hs-horizontal-strip-nav">

@@ -203,7 +203,7 @@
   }
 }
 
-/* حاوية الشريط الأفقي وإحصائيات البطولات — جنباً إلى fianco */
+/* حاوية الشريط الأفقي وإحصائيات البطولات — جنباً إلى جنب */
 .hs-crown-horizontal-row {
   display: flex;
   gap: 12px;
@@ -214,6 +214,7 @@
 .hs-crown-horizontal-row > .hs-horizontal-strip {
   flex: 1 1 0;
   margin: 0;
+  width: auto;
   max-width: none;
 }
 

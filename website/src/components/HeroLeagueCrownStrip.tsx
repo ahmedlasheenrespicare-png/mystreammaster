@@ -537,20 +537,20 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           <span className="hs-crown-browser-title">المباريات والبطولات</span>
           <span className="hs-crown-browser-badge">الرياضة</span>
         </div>
-        {/* حاوية الشريط الأفقي وإحصائيات البطولات — جنباً إلى جنب أسفل hs-crown-browser */}
-        <div className="hs-crown-horizontal-row">
-          <HeroLeagueHorizontalStrip
-            clashes={clashes}
-            extraLeagues={extraLeagues}
-            selectedLeagueId={selectedLeagueId}
-            onLeagueSelect={(leagueId) => {
-              setSelectedLeagueId(leagueId);
-              setDayView(null);
-              setLeagueOnly(false);
-            }}
-          />
-          <HeroLeagueStatsTicker />
-        </div>
+        {/* شريط البطولات الأفقي التجريبي — فورياً أسفل شريط المتصفح العلوي */}
+        <HeroLeagueHorizontalStrip
+          clashes={clashes}
+          extraLeagues={extraLeagues}
+          selectedLeagueId={selectedLeagueId}
+          onLeagueSelect={(leagueId) => {
+            setSelectedLeagueId(leagueId);
+            setDayView(null);
+            setLeagueOnly(false);
+          }}
+        />
+
+        {/* إحصائيات البطولات المتاحة — أعلى بطاقات المواجهات مباشرة */}
+        <HeroLeagueStatsTicker />
         {selectedLeagueId && (
           <button
             type="button"

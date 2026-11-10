@@ -514,11 +514,11 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             على الكمبيوتر: المباريات يميناً بعرض 190px، والرئيسية تشغل
             بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
             يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
-        <Reveal variant="up" delay={90} className="w-full">
+        <Reveal variant="up" delay={90} className="w-full" initiallyVisible>
           <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} />
         </Reveal>
 
-        <Reveal variant="up" delay={140} className="w-full">
+        <Reveal variant="up" delay={140} className="w-full" initiallyVisible>
           {/* الشبكة تتغيّر مع ظهور تذكرة المباريات: بعمودها الأيسر (190px)
               حين تظهر، وبعمود واحد تمتلئه التذكرة الرئيسية حين تُخفى */}
           <div className={`hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:gap-0 ${HERO_MATCHES_TICKET_VISIBLE ? "lg:grid-cols-[190px_minmax(0,1fr)]" : "lg:grid-cols-1"}`}>
@@ -537,7 +537,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
             its visual version now lives inside the television's welcome screen. */}
         <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
 
-        <Reveal variant="up" delay={320} className="mt-6">
+        <Reveal variant="up" delay={320} className="mt-6" initiallyVisible>
           <div className="hero-phone-stage hero-phone-stage--laptop hero-phone-stage--retro" data-front-device={frontDevice} data-laptop-placement="left">
             <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
                   <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">

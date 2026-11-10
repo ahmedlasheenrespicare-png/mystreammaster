@@ -2,34 +2,41 @@
    شريط البطولات الأفقي التجريبي —hero-horizontal-strip.css
    تصميم منفصل عن التاج المداري ثلاثي الأبعاد الحالي (hero-league-strip.css).
    لا يمسّ أي قاعدة من التصميم المعتمد، فقط adds طبقة جديدة للمقارنة.
+   يظهر أعلى أزرار "جدول الترتيب، إحصائيات، الأخبار" في شريط البطولات.
    ============================================================================ */
 
 .hs-horizontal-strip {
   width: 100%;
   max-width: 100%;
-  margin: 8px 0 14px 0;
+  margin: 0 0 16px 0;
   font-family: inherit;
+  background: #fff;
+  border: 1px solid rgba(216, 255, 62, 0.35);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 16px -8px rgba(11, 11, 15, 0.12);
 }
 
 .hs-horizontal-strip-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 8px;
-  padding: 0 4px;
+  margin-bottom: 10px;
+  padding: 0 2px;
 }
 
 .hs-horizontal-strip-title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: #0b0b0f;
   letter-spacing: -0.2px;
+  text-transform: uppercase;
 }
 
 .hs-horizontal-strip-count {
   font-size: 11px;
   color: #6b6b6b;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .hs-horizontal-strip-container {
@@ -37,27 +44,36 @@
   gap: 10px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  padding: 4px 4px;
+  scrollbar-width: thin;
+  padding: 6px 4px;
   margin: 0 -4px;
-  /* تتيح التمرير بالعجلة الأفقية عبر onWheel في المكون */
 }
 
 .hs-horizontal-strip-container::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  height: 6px;
+}
+
+.hs-horizontal-strip-container::-webkit-scrollbar-track {
+  background: rgba(216, 255, 62, 0.15);
+  border-radius: 4px;
+}
+
+.hs-horizontal-strip-container::-webkit-scrollbar-thumb {
+  background: rgba(216, 255, 62, 0.5);
+  border-radius: 4px;
 }
 
 .hs-horizontal-strip-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  width: 114px;
-  min-width: 114px;
-  padding: 8px 6px;
+  gap: 7px;
+  width: 110px;
+  min-width: 110px;
+  padding: 9px 6px;
   background: #faf9f6;
-  border: 1px solid rgba(216, 255, 62, 0.4);
-  border-radius: 14px;
+  border: 1px solid rgba(216, 255, 62, 0.35);
+  border-radius: 12px;
   text-decoration: none;
   color: inherit;
   scroll-snap-align: center;
@@ -68,6 +84,8 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px -8px rgba(11, 11, 15, 0.22);
   border-color: var(--hs-card-glow, rgba(216, 255, 62, 0.55));
+  z-index: 2;
+  position: relative;
 }
 
 .hs-horizontal-strip-card:focus-visible {
@@ -76,8 +94,8 @@
 }
 
 .hs-horizontal-strip-logo-wrap {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,18 +105,18 @@
 }
 
 .hs-horizontal-strip-logo {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 
 .hs-horizontal-strip-logo-fallback {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   color: #0b0b0f;
   background: #f0f0f0;
@@ -107,7 +125,7 @@
 
 .hs-horizontal-strip-name {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   text-align: center;
   color: #0b0b0f;
   line-height: 1.25;
@@ -121,29 +139,32 @@
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
+  padding: 0 4px;
 }
 
 .hs-horizontal-strip-arrow {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid rgba(216, 255, 62, 0.5);
   background: #fff;
   color: #0b0b0f;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 900;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.18s ease;
   line-height: 1;
+  box-shadow: 0 2px 8px -4px rgba(11, 11, 15, 0.15);
 }
 
 .hs-horizontal-strip-arrow:hover {
   background: #f0f0f0;
   border-color: var(--hs-card-glow, rgba(216, 255, 62, 0.6));
+  transform: translateY(-1px);
 }
 
 .hs-horizontal-strip-arrow:active {

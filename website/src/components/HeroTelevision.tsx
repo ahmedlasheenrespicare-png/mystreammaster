@@ -54,12 +54,12 @@ export function HeroTelevision({ onActivate, headline }: { onActivate?: () => vo
             <span className="hero-tv-welcome-gallery">
               <span className="hero-tv-football-art">
                 <img src={to('images/players/esp-mbappe.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
-                <img src={to('images/players/eng-haaland-header.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={to('images/players/eng-haaland-header.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/esp-yamal.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/ger-kane.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/fra-dembele.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
               </span>
-            <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+            <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.webp')} alt="" loading="eager" fetchPriority="high" decoding="async" draggable={false} />
             </span>
             <span className="hero-tv-welcome-copy">
             <span className="hero-tv-eyebrow">عالمك على شاشة أكبر</span>

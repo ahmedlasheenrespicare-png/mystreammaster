@@ -7,14 +7,14 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 ========================================================================== */
 
 /* خطاف: هل دخل العنصر الشاشة؟ (مرة واحدة) */
-export function useInViewOnce<T extends HTMLElement>(threshold = 0.2) {
+export function useInViewOnce<T extends HTMLElement>(threshold = 0.2, initiallyVisible = false) {
   const ref = useRef<T | null>(null);
-  const [inView, setInView] = useState(false);
+  const [inView, setInView] = useState(initiallyVisible);
   const reducedMotion = useMotionReduced();
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || initiallyVisible) return;
     if (reducedMotion) {
       setInView(true);
       return;
@@ -30,7 +30,7 @@ export function useInViewOnce<T extends HTMLElement>(threshold = 0.2) {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold, reducedMotion]);
+  }, [threshold, reducedMotion, initiallyVisible]);
 
   return { ref, inView };
 }
@@ -48,6 +48,7 @@ export function Reveal({
   style,
   children,
   threshold = 0.2,
+  initiallyVisible = false,
 }: {
   variant?: "up" | "start" | "end" | "zoom" | "blur" | "clip" | "fade";
   delay?: number;
@@ -56,8 +57,10 @@ export function Reveal({
   style?: CSSProperties;
   children: ReactNode;
   threshold?: number;
+  /** Critical above-the-fold content must not wait for hydration/IntersectionObserver. */
+  initiallyVisible?: boolean;
 }) {
-  const { ref, inView } = useInViewOnce<HTMLDivElement>(threshold);
+  const { ref, inView } = useInViewOnce<HTMLDivElement>(threshold, initiallyVisible);
   return (
     <div
       ref={ref}

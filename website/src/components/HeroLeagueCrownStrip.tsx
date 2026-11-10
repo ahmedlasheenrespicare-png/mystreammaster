@@ -23,6 +23,7 @@ import { HeroLeagueStatsTicker } from "./HeroLeagueStatsTicker";
 import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import { STANDINGS_LEAGUES } from "../lib/standings.mjs";
 import {
+  ensureLiveLeagueStandings,
   refreshLiveLeaguesStandings,
   useLiveStandingsMap,
   type LiveLeagueRecord,
@@ -36,6 +37,7 @@ import "./hero-league-strip.css";
 
 const NO_EXTRA_LEAGUES: readonly { id: string; name: string }[] = [];
 const STANDINGS_LEAGUE_IDS = STANDINGS_LEAGUES.map((entry) => entry.id);
+const INITIAL_REFRESH_DELAY_MS = 2500;
 const REFRESH_MS = 5 * 60 * 1000;
 const STEP_INTERVAL_MS = 5000;
 
@@ -410,45 +412,62 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     setSelectedLeagueId(null);
   }, [dayView, leagueOnly]);
 
-  // تحديث بيانات الترتيب الحي (/standings.php) عند ظهور الشريط في نطاق الرؤية
+  // The SSR snapshot already fills the strip. Keep its bulk live refresh off the
+  // initial render path, then retain the existing five-minute refresh cadence.
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
     let cancelled = false;
-    let timer: ReturnType<typeof setInterval> | undefined;
+    let initialRefreshTimer: number | undefined;
+    let refreshInterval: number | undefined;
+    let loadListener: (() => void) | undefined;
+    let io: IntersectionObserver | undefined;
+
+    const refresh = () => {
+      if (cancelled) return;
+      void refreshLiveLeaguesStandings(STANDINGS_LEAGUE_IDS);
+      refreshInterval = window.setInterval(() => {
+        if (document.hidden) return;
+        void refreshLiveLeaguesStandings(STANDINGS_LEAGUE_IDS);
+      }, REFRESH_MS);
+    };
+
+    const scheduleRefreshAfterLoad = () => {
+      if (cancelled) return;
+      initialRefreshTimer = window.setTimeout(refresh, INITIAL_REFRESH_DELAY_MS);
+    };
 
     const start = () => {
       if (cancelled) return;
-      void refreshLiveLeaguesStandings(STANDINGS_LEAGUE_IDS);
-      timer = setInterval(() => {
-        if (typeof document !== "undefined" && document.hidden) return;
-        void refreshLiveLeaguesStandings(STANDINGS_LEAGUE_IDS);
-      }, REFRESH_MS);
+      if (document.readyState === "complete") {
+        scheduleRefreshAfterLoad();
+      } else {
+        loadListener = scheduleRefreshAfterLoad;
+        window.addEventListener("load", loadListener, { once: true });
+      }
     };
 
     if (typeof IntersectionObserver === "undefined") {
       start();
     } else {
-      const io = new IntersectionObserver(
+      io = new IntersectionObserver(
         (entries) => {
           if (entries.some((e) => e.isIntersecting)) {
-            io.disconnect();
+            io?.disconnect();
             start();
           }
         },
         { rootMargin: "200px" },
       );
       io.observe(el);
-      return () => {
-        cancelled = true;
-        io.disconnect();
-        if (timer) clearInterval(timer);
-      };
     }
 
     return () => {
       cancelled = true;
-      if (timer) clearInterval(timer);
+      io?.disconnect();
+      if (loadListener) window.removeEventListener("load", loadListener);
+      if (initialRefreshTimer !== undefined) window.clearTimeout(initialRefreshTimer);
+      if (refreshInterval !== undefined) window.clearInterval(refreshInterval);
     };
   }, []);
 
@@ -615,6 +634,9 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                   }
                   e.preventDefault();
                   e.currentTarget.focus({ preventScroll: true });
+                  if (item.clashIndex < 0 && STANDINGS_LEAGUE_IDS.includes(item.standingsKey)) {
+                    ensureLiveLeagueStandings(item.standingsKey);
+                  }
                   setSharedActiveIndex(idx);
                   setExpandedTab(null);
                   setExpandedKey(item.key);
@@ -670,6 +692,9 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
             {shellItem && ([['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
               <button key={tab} type="button" aria-haspopup="dialog" onPointerDown={event => event.stopPropagation()} onClick={event => {
                 event.stopPropagation();
+                if (STANDINGS_LEAGUE_IDS.includes(shellItem.standingsKey)) {
+                  ensureLiveLeagueStandings(shellItem.standingsKey);
+                }
                 setExpandedTab(tab);
                 setExpandedKey(shellItem.key);
               }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">

@@ -33,6 +33,14 @@ test('homepage critical hero uses immediate reveals and prioritized alpha-preser
     assert.match(tag, /\binitiallyVisible\b/, `critical hero wrapper ${index + 1} is visible in server HTML`);
   }
 
+  const badge = await readSource('../src/components/LeagueIconBadge.tsx');
+  const ticket = await readSource('../src/components/LeagueTicketCard.tsx');
+  const leagueIdentity = await readSource('../src/components/crown-league-identity.ts');
+  assert.match(badge, /fetchPriority=\{fetchPriority\}/);
+  assert.match(leagueIdentity, /'fifa\.friendly': 'https:\/\/a\.espncdn\.com\/i\/leaguelogos\/soccer\/500\/53\.png'/);
+  assert.match(ticket, /const prioritizeLeagueLogo = active \|\| \(parts && clash\.source === "fifa\.friendly"\)/);
+  assert.match(ticket, /eager=\{prioritizeLeagueLogo\}[\s\S]*?fetchPriority=\{prioritizeLeagueLogo \? "high" : undefined\}/);
+
   const television = await readSource('../src/components/HeroTelevision.tsx');
   assert.match(television, /eng-haaland-header\.webp/, 'hero uses the existing optimized, alpha-preserving Haaland asset');
   assert.match(television, /superman-batman-stark\.webp/);

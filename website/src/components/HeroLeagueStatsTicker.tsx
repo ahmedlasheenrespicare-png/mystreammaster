@@ -2,13 +2,15 @@
    إحصائيات البطولات المتاحة — أعلاه بطاقات المواجهات مباشرة
    ----------------------------------------------------------------------------
    كل إحصائية تظهر منفردة (أقوى هجوم → أقوى دفاع → المتصدر → إجمالي الأهداف)
-   مع شعار واسم البطولة في كل شريحة، والدوران التلقائي بينها.
+   مع شعار واسم البطولة وشعار النادي من المصدر في كل شريحة، والدوران التلقائي بينها.
    تصميم مطابق للدرج الأيمن (lc-top-twin-duel / lc-top-twin-goals / lc-grades-box).
    ============================================================================ */
 
 import { useMemo, useState, useEffect } from "react";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { useLiveStandingsMap } from "../lib/live-standings";
+import { providerTeamLogo } from "../lib/leader-logo.mjs";
+import { resolveApprovedTeamLogo } from "./StandingsRatesCard";
 import { CROWN_CUP_LOGOS } from "./crown-league-identity";
 import {
   GoldenBootMedalIcon,
@@ -31,13 +33,17 @@ interface LeagueStatItem {
   kind: StatKind;
   /* strongest attack / strongest defence */
   clubName: string | null;
+  clubTeamId: string | null;
   clubRate: number | null;
   clubUnitColor: "is-coral" | "is-emerald" | null;
   /* leader */
   leaderName: string | null;
+  leaderTeamId: string | null;
   leaderPoints: number | null;
   /* total goals */
   totalGoals: number | null;
+  /* provider per league for team logo lookup */
+  provider: string | null;
 }
 
 export function HeroLeagueStatsTicker() {
@@ -58,6 +64,7 @@ export function HeroLeagueStatsTicker() {
       const rates = record?.rates ?? null;
       const att = rates?.bestAttack?.[0];
       const def = rates?.bestDefence?.[0];
+      const provider = record?.table?.provider ?? "ESPN";
 
       const logo = CROWN_CUP_LOGOS[landing.leagueId] ?? null;
 
@@ -69,11 +76,14 @@ export function HeroLeagueStatsTicker() {
           logo,
           kind: "best-attack",
           clubName: att.name,
+          clubTeamId: att.teamId ?? null,
           clubRate: Number(att.attack),
           clubUnitColor: "is-coral",
           leaderName: null,
+          leaderTeamId: null,
           leaderPoints: null,
           totalGoals: null,
+          provider,
         });
       }
 
@@ -85,11 +95,14 @@ export function HeroLeagueStatsTicker() {
           logo,
           kind: "best-defence",
           clubName: def.name,
+          clubTeamId: def.teamId ?? null,
           clubRate: Number(def.defence),
           clubUnitColor: "is-emerald",
           leaderName: null,
+          leaderTeamId: null,
           leaderPoints: null,
           totalGoals: null,
+          provider,
         });
       }
 
@@ -101,11 +114,14 @@ export function HeroLeagueStatsTicker() {
           logo,
           kind: "leader",
           clubName: null,
+          clubTeamId: null,
           clubRate: null,
           clubUnitColor: null,
           leaderName: top.name,
+          leaderTeamId: top.teamId ?? null,
           leaderPoints: Number(top.points),
           totalGoals: null,
+          provider,
         });
       }
 
@@ -117,11 +133,14 @@ export function HeroLeagueStatsTicker() {
           logo,
           kind: "total-goals",
           clubName: null,
+          clubTeamId: null,
           clubRate: null,
           clubUnitColor: null,
           leaderName: null,
+          leaderTeamId: null,
           leaderPoints: null,
           totalGoals: rates.league.totalGoals,
+          provider,
         });
       }
     }
@@ -147,6 +166,18 @@ export function HeroLeagueStatsTicker() {
     leader: "المتصدر",
     "total-goals": "إجمالي الأهداف",
   };
+
+  /* جلب شعار النادي من المصدر: أولًا الشعار المحلي المعتمد، ثم شعار المزود (ESPN/Highlightly)، وإلا undefined (يُعرض الحروف الأولى كبديل) */
+  function clubLogo(name: string | null, teamId: string | null, provider: string | null): string | undefined {
+    if (!name) return undefined;
+    const local = resolveApprovedTeamLogo({ name, logo: null });
+    if (local) return local;
+    if (teamId && provider) {
+      const fromProvider = providerTeamLogo({ teamId, provider, logo: null });
+      if (fromProvider) return fromProvider;
+    }
+    return undefined;
+  }
 
   return (
     <section className="hs-league-stats-ticker" aria-label="إحصائيات البطولات المتاحة">
@@ -191,7 +222,11 @@ export function HeroLeagueStatsTicker() {
                   </div>
                   <div className="lc-top-club-row">
                     <span className="lc-top-club-crest" aria-hidden="true">
-                      {it.clubName.slice(0, 2).toUpperCase()}
+                      {(() => {
+                        const src = clubLogo(it.clubName, it.clubTeamId, it.provider);
+                        if (src) return <img src={src} alt="" className="lc-top-club-logo" loading="lazy" decoding="async" />;
+                        return it.clubName.slice(0, 2).toUpperCase();
+                      })()}
                     </span>
                     <span className="lc-top-metric-team">{it.clubName}</span>
                   </div>
@@ -215,7 +250,11 @@ export function HeroLeagueStatsTicker() {
                   </div>
                   <div className="lc-top-club-row">
                     <span className="lc-top-club-crest" aria-hidden="true">
-                      {it.clubName.slice(0, 2).toUpperCase()}
+                      {(() => {
+                        const src = clubLogo(it.clubName, it.clubTeamId, it.provider);
+                        if (src) return <img src={src} alt="" className="lc-top-club-logo" loading="lazy" decoding="async" />;
+                        return it.clubName.slice(0, 2).toUpperCase();
+                      })()}
                     </span>
                     <span className="lc-top-metric-team">{it.clubName}</span>
                   </div>
@@ -233,6 +272,13 @@ export function HeroLeagueStatsTicker() {
                     <span className="lc-grades-num-val">{it.leaderPoints}</span>
                     <small>نقطة</small>
                   </div>
+                </div>
+                <div className="lc-grades-club-crest">
+                  {(() => {
+                    const src = clubLogo(it.leaderName, it.leaderTeamId, it.provider);
+                    if (src) return <img src={src} alt="" className="lc-top-club-logo" loading="lazy" decoding="async" />;
+                    return it.leaderName.slice(0, 2).toUpperCase();
+                  })()}
                 </div>
               </div>
             )}

@@ -5,19 +5,39 @@
    "المباريات والبطولات" و "الرياضة".
    ============================================================================ */
 
-.hs-horizontal-strip {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 0 14px 0;
+.hs-crown-shell.hs-crown-shell--has-hstrip {
+  display: flex !important;
+  flex-direction: column !important;
+  padding-top: 0 !important;
+  padding-block-start: 0 !important;
+}
+
+.hs-crown-shell.hs-crown-shell--has-hstrip > .hs-crown-browser {
+  order: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.hs-crown-shell.hs-crown-shell--has-hstrip > .hs-horizontal-strip {
+  order: 1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 0 14px 0 !important;
+  padding-top: 0 !important;
+  padding-block-start: 0 !important;
   font-family: inherit;
   background: #fff;
   border: 2px solid rgba(216, 255, 62, 0.5);
   border-radius: 16px;
   padding: 12px 14px;
   box-shadow: 0 6px 20px -10px rgba(11, 11, 15, 0.15);
-  position: relative;
-  z-index: 10;
-  display: block;
+  position: relative !important;
+  z-index: 100 !important;
+  display: block !important;
+}
+
+.hs-crown-shell.hs-crown-shell--has-hstrip > .hs-crown-center {
+  order: 2 !important;
 }
 
 .hs-horizontal-strip-header {

@@ -705,9 +705,6 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           </div>
           {sidebarNews && newsTicket && <div className="hs-crown-sidebar-news" aria-label="تذكرة الأخبار">{newsTicket}</div>}
         </aside>
-        {/* شريط البطولات الأفقي التجريبي — أعلى أزرار جدول الترتيب / إحصائيات / الأخبار */}
-        <HeroLeagueHorizontalStrip clashes={clashes} extraLeagues={extraLeagues} />
-
         <div className="hs-crown-top-options" aria-label="خيارات إضافية للمباريات">
           <div className="hs-crown-tabs hs-crown-extra-tabs" role="group" aria-label="تفاصيل وأخبار">
             {shellItem && ([['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (

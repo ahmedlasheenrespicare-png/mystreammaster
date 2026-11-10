@@ -1,9 +1,9 @@
 /** ============================================================================
-   إحصائيات البطولات المتاحة تحت التذكرة — تظهر بالتتابع
+   إحصائيات البطولات المتاحة — أعلى بطاقات المواجهات مباشرة
    ----------------------------------------------------------------------------
-   هذا المكون يعرض إحصائيات كل بطولة متاحة واحدة تلو أخرى مع دوران تلقائي.
-   تُعرض الإحصائيات المتاحة فقط (المتصدر، أقوى هجوم، أقوى دفاع، إجمالي الأهداف).
-   يُrender في Hero.tsx أسفل صف التذكرة (hero-ticket-row).
+   تصميم مطابق للدرج الأيمن (lc-top-twin-duel / lc-top-twin-goals / lc-grades-box)
+   الموجود داخل بطاقة كل بطولة في التاج المداري.
+   تُعرض إحصائيات كل بطولة واحدة تلو الأخرى مع دوران تلقائي.
    ============================================================================ */
 
 import { useMemo, useState, useEffect } from "react";
@@ -38,7 +38,6 @@ export function HeroLeagueStatsTicker() {
       const record = liveMap[sKey];
       const entries = record?.table?.entries ?? [];
       const top = record?.leader ?? entries[0];
-
       const rates = record?.rates ?? null;
       const att = rates?.bestAttack?.[0];
       const def = rates?.bestDefence?.[0];
@@ -78,62 +77,99 @@ export function HeroLeagueStatsTicker() {
             key={it.leagueId}
             className={`hs-stats-ticker-slide${idx === activeIndex ? " active" : ""}`}
           >
-            {it.logo ? (
-              <img
-                src={it.logo}
-                alt=""
-                className="hs-stats-ticker-logo"
-                loading="lazy"
-                decoding="async"
-              />
-            ) : (
-              <span className="hs-stats-ticker-logo-fallback">
-                {it.leagueId.slice(0, 2).toUpperCase()}
-              </span>
-            )}
-            <h3 className="hs-stats-ticker-league-name">{it.name}</h3>
+            {/* شعار البطولة */}
+            <div className="hs-stats-ticker-badge">
+              {it.logo ? (
+                <img
+                  src={it.logo}
+                  alt=""
+                  className="hs-stats-ticker-logo"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span className="hs-stats-ticker-logo-fallback">
+                  {it.leagueId.slice(0, 2).toUpperCase()}
+                </span>
+              )}
+              <span className="hs-stats-ticker-league-name">{it.name}</span>
+            </div>
 
-            <div className="hs-stats-ticker-grid">
-              {it.leaderName && (
-                <div className="hs-stats-ticker-stat">
-                  <span className="hs-stats-ticker-stat-label">المتصدر</span>
-                  <span className="hs-stats-ticker-stat-value">{it.leaderName}</span>
-                  {it.leaderPoints !== null && (
-                    <span className="hs-stats-ticker-stat-unit">
-                      {it.leaderPoints} نقطة
-                    </span>
-                  )}
-                </div>
-              )}
-              {it.bestAttackName && it.bestAttackRate !== null && (
-                <div className="hs-stats-ticker-stat">
-                  <span className="hs-stats-ticker-stat-label">أقوى هجوم</span>
-                  <span className="hs-stats-ticker-stat-value">{it.bestAttackName}</span>
-                  <span className="hs-stats-ticker-stat-unit">
-                    {it.bestAttackRate.toFixed(2)} هدف/م
-                  </span>
-                </div>
-              )}
-              {it.bestDefenceName && it.bestDefenceRate !== null && (
-                <div className="hs-stats-ticker-stat">
-                  <span className="hs-stats-ticker-stat-label">أقوى دفاع</span>
-                  <span className="hs-stats-ticker-stat-value">{it.bestDefenceName}</span>
-                  <span className="hs-stats-ticker-stat-unit">
-                    {it.bestDefenceRate.toFixed(2)} هدف/م
-                  </span>
-                </div>
-              )}
-              {it.totalGoals !== null && (
-                <div className="hs-stats-ticker-stat">
-                  <span className="hs-stats-ticker-stat-label">إجمالي الأهداف</span>
-                  <span className="hs-stats-ticker-stat-value">
+            {/* الدرج العلوي: أقوى هجوم | أقوى دفاع (مثل lc-top-twin-duel) */}
+            <div className="lc-top-twin">
+              <div className="lc-top-twin-duel">
+                {it.bestAttackName && it.bestAttackRate != null && (
+                  <div className="lc-top-twin-side">
+                    <div className="lc-top-twin-head">
+                      <span className="lc-top-medal-icon" aria-hidden="true">⚽</span>
+                      <span className="lc-top-metric-label">أقوى هجوم</span>
+                    </div>
+                    <div className="lc-top-twin-val-row">
+                      <span className="lc-top-metric-val">
+                        {it.bestAttackRate.toFixed(2)}
+                      </span>
+                      <span className="lc-top-metric-unit is-coral">هدف/م</span>
+                    </div>
+                    <div className="lc-top-club-row">
+                      <span className="lc-top-club-crest" aria-hidden="true">
+                        {it.bestAttackName.slice(0, 2).toUpperCase()}
+                      </span>
+                      <span className="lc-top-metric-team">{it.bestAttackName}</span>
+                    </div>
+                  </div>
+                )}
+                <span className="lc-duel-diamond" aria-hidden="true">◆</span>
+                {it.bestDefenceName && it.bestDefenceRate != null && (
+                  <div className="lc-top-twin-side">
+                    <div className="lc-top-twin-head">
+                      <span className="lc-top-medal-icon" aria-hidden="true">🛡️</span>
+                      <span className="lc-top-metric-label">أقوى دفاع</span>
+                    </div>
+                    <div className="lc-top-twin-val-row">
+                      <span className="lc-top-metric-val">
+                        {it.bestDefenceRate.toFixed(2)}
+                      </span>
+                      <span className="lc-top-metric-unit is-emerald">هدف/م</span>
+                    </div>
+                    <div className="lc-top-club-row">
+                      <span className="lc-top-club-crest" aria-hidden="true">
+                        {it.bestDefenceName.slice(0, 2).toUpperCase()}
+                      </span>
+                      <span className="lc-top-metric-team">{it.bestDefenceName}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* إجمالي الأهداف (مثل lc-top-twin-goals) */}
+              {it.totalGoals != null && (
+                <div className="lc-top-twin-goals">
+                  <span className="lc-top-twin-net" aria-hidden="true">🥅</span>
+                  <span className="lc-top-twin-goals-label">إجمالي الأهداف</span>
+                  <span className="lc-top-twin-goals-val">
                     {it.totalGoals.toLocaleString("en-US")}
                   </span>
-                  <span className="hs-stats-ticker-stat-unit">هدفاً</span>
+                  <span className="lc-top-twin-goals-unit">هدفاً</span>
                 </div>
               )}
             </div>
 
+            {/* الدرج السفلي: المتصدر (مثل lc-grades-box) */}
+            {it.leaderName && it.leaderPoints != null && (
+              <div className="lc-grades-box">
+                <span className="lc-grades-icon" aria-hidden="true">👑</span>
+                <div className="lc-grades-copy">
+                  <span className="lc-grades-label">المتصدر</span>
+                  <div className="lc-grades-num">
+                    <span>{it.leaderName}</span>
+                    <span className="lc-grades-num-val">{it.leaderPoints}</span>
+                    <small>نقطة</small>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* نقاط التنقل */}
             <div className="hs-stats-ticker-dots">
               {items.map((_, dIdx) => (
                 <button

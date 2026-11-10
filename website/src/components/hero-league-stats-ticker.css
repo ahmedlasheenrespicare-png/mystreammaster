@@ -1,27 +1,27 @@
 /* ============================================================================
-   إحصائيات البطولات تحت التذكرة —hero-league-stats-ticker.css
-   تصميم متابع (ticker) يعرض بطاقة إحصائيات بطولة واحدة في كل مرة
-   مع دوران تلقائي وانتقال متدرج بينها.
+   إحصائيات البطولات أعلى بطاقات المواجهات —hero-league-stats-ticker.css
+   تصميم مطابق للدرج الأيمن في بطاقة كل بطولة (lc-top-twin-duel /
+   lc-top-twin-goals / lc-grades-box) مع دوران تلقائي بين البطولات.
    ============================================================================ */
 
 .hs-league-stats-ticker {
   width: 100%;
   max-width: 100%;
-  padding: 16px 0 24px 0;
+  padding: 8px 0 16px 0;
   font-family: inherit;
 }
 
 .hs-stats-ticker-container {
   position: relative;
-  height: 150px;
+  height: 164px;
   overflow: hidden;
   border-radius: 16px;
   background: #ffffff;
-  border: 1px solid rgba(216, 255, 62, 0.3);
+  border: 1px solid rgba(11, 11, 15, 0.1);
   box-shadow: 0 4px 16px -8px rgba(11, 11, 15, 0.12);
 }
 
-/* كل شريحة occupy المساحة بالكامل، فقط الشريحة النشطة ظاهرة */
+/* كل شريحة occupy المساحة بالكامل، فقط النشطة ظاهرة */
 .hs-stats-ticker-slide {
   position: absolute;
   inset: 0;
@@ -29,14 +29,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 14px 12px;
+  gap: 8px;
+  padding: 10px 10px 8px 10px;
   text-align: center;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.55s ease, transform 0.55s ease;
-  transform: translateY(8px);
+  transform: translateY(6px);
   pointer-events: none;
+  box-sizing: border-box;
 }
 
 .hs-stats-ticker-slide.active {
@@ -47,79 +48,288 @@
   z-index: 1;
 }
 
-.hs-stats-ticker-logo {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  border-radius: 10px;
-  background: #fff;
-  padding: 4px;
-  box-shadow: 0 2px 8px -4px rgba(11, 11, 15, 0.15);
-}
-
-.hs-stats-ticker-logo-fallback {
-  width: 44px;
-  height: 44px;
+/* شعار البطولة + اسمها (الأعلى) */
+.hs-stats-ticker-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.hs-stats-ticker-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  padding: 2px;
+  box-shadow: 0 2px 6px -4px rgba(11, 11, 15, 0.15);
+}
+
+.hs-stats-ticker-logo-fallback {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   background: #f0f0f0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   color: #0b0b0f;
 }
 
 .hs-stats-ticker-league-name {
-  font-size: 14px;
-  font-weight: 800;
-  color: #0b0b0f;
-  margin: 4px 0 0 0;
-  letter-spacing: -0.2px;
-}
-
-/* شبكة الإحصائيات: عمودان على الجوال، أكثر على الشاشات الكبيرة */
-.hs-stats-ticker-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
-  width: 100%;
-  max-width: 520px;
-  margin-top: 2px;
-}
-
-.hs-stats-ticker-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 7px 6px;
-  background: #faf9f6;
-  border-radius: 10px;
-  border: 1px solid rgba(216, 255, 62, 0.2);
-}
-
-.hs-stats-ticker-stat-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: #6b6b6b;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.hs-stats-ticker-stat-value {
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 800;
   color: #0b0b0f;
   line-height: 1.2;
 }
 
-.hs-stats-ticker-stat-unit {
-  font-size: 9px;
-  color: #6b6b6b;
+/* ===== الدرج العلوي: أقوى هجوم | أقوى دفاع | إجمالي الأهداف ===== */
+
+/* حاوية التوأم (مثل lc-top-twin) */
+.lc-top-twin {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 340px;
+}
+
+/* ديوال الهجوم والدفاع (مثل lc-top-twin-duel) */
+.lc-top-twin-duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+  align-items: start;
+  gap: 4px;
+  width: 100%;
+}
+
+/* كل جناح (مثل lc-top-twin-side) */
+.lc-top-twin-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* رأس الجناح: أيقونة + تسمية (مثل lc-top-twin-head) */
+.lc-top-twin-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.lc-top-medal-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
   line-height: 1;
 }
 
-/* نقاط التنقل أسفل البطاقة */
+/* تسمية القياس (مثل lc-top-metric-label) */
+.lc-top-metric-label {
+  color: #5b5850;
+  font-size: 0.57rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* صف القيمة + الوحدة (مثل lc-top-twin-val-row) */
+.lc-top-twin-val-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding-inline-start: 2px;
+}
+
+/* القيمة (مثل lc-top-metric-val) */
+.lc-top-metric-val {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.12;
+}
+
+/* الوحدة (مثل lc-top-metric-unit) */
+.lc-top-metric-unit {
+  font-family: var(--font-sans);
+  color: #2b4eff;
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.lc-top-metric-unit.is-coral { color: #c2410c; }
+.lc-top-metric-unit.is-emerald { color: #047857; }
+
+/* صفclub: شعار الفريق + اسم الفريق (مثل lc-top-club-row) */
+.lc-top-club-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 1px;
+}
+
+.lc-top-club-crest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #eef2f6);
+  border: 1px solid rgba(11, 11, 15, 0.12);
+  box-shadow: 0 1px 4px rgba(11, 11, 15, 0.1);
+  overflow: hidden;
+  font-size: 0.42rem;
+  font-weight: 900;
+  color: #244859;
+  line-height: 1;
+  text-align: center;
+}
+
+/* اسم الفريق (مثل lc-top-metric-team) */
+.lc-top-metric-team {
+  display: block;
+  min-width: 0;
+  flex: 1;
+  color: #1f2430;
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: start;
+  overflow-wrap: break-word;
+}
+
+/* فاصل الماسة بين الجناحين (مثل lc-duel-diamond) */
+.lc-duel-diamond {
+  width: 14px;
+  height: 44px;
+  align-self: center;
+  color: #b5ae9e;
+  font-size: 0.55rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* إجمالي الأهداف — شريط بيضاوي (مثل lc-top-twin-goals) */
+.lc-top-twin-goals {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 340px;
+  padding: 3.5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid #e5dfd0;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.lc-top-twin-net {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  line-height: 1;
+}
+
+.lc-top-twin-goals-label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: #5b5850;
+}
+
+.lc-top-twin-goals-val {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.79rem;
+  font-weight: 900;
+  color: #0b0b0f;
+}
+
+.lc-top-twin-goals-unit {
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+/* ===== الدرج السفلي: المتصدر (مثل lc-grades-box) ===== */
+
+.lc-grades-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: #faf9f6;
+  border: 1px solid rgba(216, 255, 62, 0.2);
+  border-radius: 10px;
+}
+
+.lc-grades-icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  line-height: 1;
+  font-size: 20px;
+}
+
+.lc-grades-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  min-width: 0;
+  line-height: 1.22;
+}
+
+.lc-grades-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #5b5850;
+}
+
+.lc-grades-num {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  margin-top: 1px;
+}
+
+.lc-grades-num-val {
+  font-size: 1.28rem;
+}
+
+.lc-grades-num small {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+/* ===== نقاط التنقل ===== */
+
 .hs-stats-ticker-dots {
   display: flex;
   justify-content: center;
@@ -157,28 +367,47 @@
 }
 
 @media (max-width: 640px) {
-  .hs-stats-ticker-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 100%;
+  .hs-stats-ticker-container {
+    height: 150px;
   }
 
-  .hs-stats-ticker-stat {
-    padding: 5px 4px;
+  .hs-stats-ticker-slide {
+    padding: 8px 8px 6px 8px;
+    gap: 6px;
   }
 
-  .hs-stats-ticker-stat-value {
-    font-size: 11px;
+  .lc-top-twin-duel {
+    gap: 2px;
   }
 
-  .hs-stats-ticker-stat-unit {
-    font-size: 8px;
+  .lc-duel-diamond {
+    height: 36px;
+    font-size: 0.5rem;
+  }
+
+  .lc-top-twin-goals {
+    max-width: 280px;
+    padding: 3px 6px;
+  }
+
+  .lc-grades-box {
+    max-width: 280px;
+    padding: 5px 8px;
+  }
+
+  .lc-grades-num {
+    font-size: 1rem;
+  }
+
+  .lc-grades-num-val {
+    font-size: 1.1rem;
+  }
+
+  .hs-stats-ticker-league-name {
+    font-size: 10px;
   }
 
   .hs-league-stats-ticker {
-    padding: 12px 0 18px 0;
-  }
-
-  .hs-stats-ticker-container {
-    height: 140px;
+    padding: 6px 0 12px 0;
   }
 }

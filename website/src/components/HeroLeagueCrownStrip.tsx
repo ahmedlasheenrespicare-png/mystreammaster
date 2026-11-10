@@ -486,7 +486,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
       data-has-matches={clashes.length > 0}
     >
       <div
-        className={`hs-crown-shell${dragging ? " is-dragging" : ""}${newsOpen ? " is-news-open" : ""}${clashes.length > 0 || extraLeagues.length > 0 ? " hs-crown-shell--has-hstrip" : ""}`}
+        className={`hs-crown-shell${dragging ? " is-dragging" : ""}${newsOpen ? " is-news-open" : ""}`}
         data-crown-league={shellItem?.leagueId ?? ""}
         style={{
           ...(dragX !== 0 ? { "--hs-drag-x": `${dragX}px` } : null),
@@ -518,8 +518,6 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           <span className="hs-crown-browser-badge">الرياضة</span>
         </div>
         {/* شريط البطولات الأفقي التجريبي — أعلى كروت المواجهات */}
-        <HeroLeagueHorizontalStrip clashes={clashes} extraLeagues={extraLeagues} />
-
         <div
           className="hs-crown-center"
           onPointerDown={(e) => {

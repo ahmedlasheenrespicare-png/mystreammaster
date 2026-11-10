@@ -18,7 +18,6 @@ import {
 } from "react";
 import { dayInZone, shiftDay } from "../lib/matches.mjs";
 import { leagueLandingsInPageOrder } from "../content/competitions";
-import { HeroLeagueHorizontalStrip } from "./HeroLeagueHorizontalStrip";
 import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import { STANDINGS_LEAGUES } from "../lib/standings.mjs";
 import {

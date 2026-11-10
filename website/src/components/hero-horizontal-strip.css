@@ -5,6 +5,11 @@
    يظهر أعلى أزرار "جدول الترتيب، إحصائيات، الأخبار" في شريط البطولات.
    ============================================================================ */
 
+.hs-crown-shell.hs-crown-shell--has-hstrip {
+  padding-top: 0 !important;
+  padding-block-start: 0 !important;
+}
+
 .hs-crown-shell.hs-crown-shell--has-hstrip:not(.is-news-open) {
   padding-top: 0 !important;
 }
@@ -13,6 +18,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0 0 12px 0 !important;
+  padding-top: 0 !important;
   font-family: inherit;
   background: #fff;
   border: 2px solid rgba(216, 255, 62, 0.5);
@@ -22,11 +28,17 @@
   position: relative;
   z-index: 50;
   display: block;
+  order: 1;
 }
 
 .hs-crown-shell > .hs-crown-browser {
   margin-top: 0 !important;
   padding-top: 0 !important;
+  order: 2;
+}
+
+.hs-crown-shell > .hs-crown-center {
+  order: 3;
 }
 
 .hs-horizontal-strip-header {

@@ -10,6 +10,12 @@ import { useMemo, useState, useEffect } from "react";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { useLiveStandingsMap } from "../lib/live-standings";
 import { CROWN_CUP_LOGOS } from "./crown-league-identity";
+import {
+  GoldenBootMedalIcon,
+  GuardianShieldMedalIcon,
+  GradesIcon,
+  GoalsNetBurstIcon,
+} from "./LeagueTopDrawerIcons";
 import "./hero-league-stats-ticker.css";
 
 type StatKind =
@@ -173,7 +179,10 @@ export function HeroLeagueStatsTicker() {
               <div className="lc-top-twin-duel">
                 <div className="lc-top-twin-side">
                   <div className="lc-top-twin-head">
-                    <span className="lc-top-medal-icon" aria-hidden="true">⚽</span>
+                    <GoldenBootMedalIcon
+                      className="lc-top-medal-icon"
+                      idSuffix={`boot-${it.leagueId}-${activeIndex}`}
+                    />
                     <span className="lc-top-metric-label">{kindLabels["best-attack"]}</span>
                   </div>
                   <div className="lc-top-twin-val-row">
@@ -194,7 +203,10 @@ export function HeroLeagueStatsTicker() {
               <div className="lc-top-twin-duel">
                 <div className="lc-top-twin-side">
                   <div className="lc-top-twin-head">
-                    <span className="lc-top-medal-icon" aria-hidden="true">🛡️</span>
+                    <GuardianShieldMedalIcon
+                      className="lc-top-medal-icon"
+                      idSuffix={`shield-${it.leagueId}-${activeIndex}`}
+                    />
                     <span className="lc-top-metric-label">{kindLabels["best-defence"]}</span>
                   </div>
                   <div className="lc-top-twin-val-row">
@@ -213,7 +225,7 @@ export function HeroLeagueStatsTicker() {
 
             {it.kind === "leader" && it.leaderName && it.leaderPoints != null && (
               <div className="lc-grades-box">
-                <span className="lc-grades-icon" aria-hidden="true">👑</span>
+                <GradesIcon />
                 <div className="lc-grades-copy">
                   <span className="lc-grades-label">{kindLabels.leader}</span>
                   <div className="lc-grades-num">
@@ -227,7 +239,7 @@ export function HeroLeagueStatsTicker() {
 
             {it.kind === "total-goals" && it.totalGoals != null && (
               <div className="lc-top-twin-goals">
-                <span className="lc-top-twin-net" aria-hidden="true">🥅</span>
+                <GoalsNetBurstIcon className="lc-top-twin-net" />
                 <span className="lc-top-twin-goals-label">{kindLabels["total-goals"]}</span>
                 <span className="lc-top-twin-goals-val">
                   {it.totalGoals.toLocaleString("en-US")}

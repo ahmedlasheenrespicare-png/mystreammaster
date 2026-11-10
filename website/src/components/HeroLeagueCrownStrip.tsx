@@ -513,14 +513,14 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }}>العودة إلى البطولات</button>
           {newsTicket}
         </div> : <>
-        {/* شريط البطولات الأفقي التجريبي — في أعلى الشريط فوق "الرياضة" */}
-        <HeroLeagueHorizontalStrip clashes={clashes} extraLeagues={extraLeagues} />
-
         <div className="hs-crown-browser" aria-label="شريط المباريات والبطولات">
           <span className="hs-crown-browser-dots" aria-hidden="true"><i /><i /><i /></span>
           <span className="hs-crown-browser-title">المباريات والبطولات</span>
           <span className="hs-crown-browser-badge">الرياضة</span>
         </div>
+        {/* شريط البطولات الأفقي التجريبي — أعلى كروت المواجهات */}
+        <HeroLeagueHorizontalStrip clashes={clashes} extraLeagues={extraLeagues} />
+
         <div
           className="hs-crown-center"
           onPointerDown={(e) => {

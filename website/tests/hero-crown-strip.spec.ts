@@ -66,6 +66,41 @@ test.describe('Hero 3D Crown tournament strip on home page (/)', () => {
     await expect.poll(() => decodeURI(page.url())).toContain('/matches/الدوري-الفرنسي/');
   });
 
+  test('defers the bulk standings refresh but still fetches when the user opens tournament details', async ({ page }) => {
+    const calls: string[] = [];
+    const now = new Date('2026-10-18T10:00:00Z');
+    await page.clock.install({ time: now });
+    await page.clock.pauseAt(now);
+    await page.route('**/standings.php*', async (route) => {
+      const url = new URL(route.request().url());
+      calls.push(url.searchParams.get('league') ?? '');
+      return route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false, code: 'UPSTREAM_UNAVAILABLE' }) });
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto('/');
+
+    const strip = page.locator('#hero [data-hero-league-strip="crown3d"]');
+    await expect(strip).toBeVisible();
+    const activeLeague = await strip.locator('.hs-crown-shell').getAttribute('data-crown-league');
+    const expectedStandingsLeague = activeLeague === 'sau.1' ? 'ksa.1' : activeLeague;
+    await page.clock.runFor(2499);
+    expect(calls, 'the initial snapshot should remain network-independent during the grace period').toEqual([]);
+
+    await strip.getByRole('button', { name: 'جدول الترتيب' }).click();
+    await expect(page.getByRole('dialog', { name: /جدول ترتيب/ })).toBeVisible();
+    await expect.poll(() => calls.length).toBe(1);
+    expect(calls[0]).toBe(expectedStandingsLeague);
+
+    await page.clock.runFor(1);
+    await expect.poll(() => new Set(calls).size).toBe(8);
+    const afterInitialRefresh = calls.length;
+
+    await page.clock.fastForward(299_999);
+    expect(calls.length, 'the five-minute refresh should not run early').toBe(afterInitialRefresh);
+    await page.clock.fastForward(1);
+    await expect.poll(() => calls.length).toBeGreaterThan(afterInitialRefresh);
+  });
+
   test('auto-steps every 5s when motion is allowed and preserves zero horizontal overflow on mobile', async ({ browser }) => {
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },

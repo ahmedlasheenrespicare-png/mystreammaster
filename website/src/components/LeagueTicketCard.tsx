@@ -803,6 +803,10 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
         : finished ? <CrownDrawerLeagueMark clash={clash} active={active} />
           : bandDetail ? bandStatus : null;
   const detailsOnPitch = (pre || finished) && inBand;
+  /* The hero strip is above the fold. Keep its current match logo out of the
+     native lazy-load queue; also prioritize the FIFA-friendly mark reported as
+     mobile LCP, even before live fixtures finish reordering the carousel. */
+  const prioritizeLeagueLogo = active || (parts && clash.source === "fifa.friendly");
   const pitchDetails = detailsOnPitch ? <div className="hs-crown-scheduled-details" aria-hidden="true">
     {pre && <span className="hs-crown-slide-league"><CrownLeagueCoin clash={clash} active={active} /><span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
     <span className="hs-crown-slide-chip">{stateLabel}</span>
@@ -811,7 +815,13 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
   const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
     {parts && <CrownPitchBackground />}
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
-      <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={132} eager={active} />
+      <LeagueIconBadge
+        leagueId={clash.source ?? "matches"}
+        iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]}
+        size={132}
+        eager={prioritizeLeagueLogo}
+        fetchPriority={prioritizeLeagueLogo ? "high" : undefined}
+      />
     </span>
     <div className="hs-crown-match-heading"><span>{crownLeagueName(clash.source, clash.eyebrow)}</span></div>
     {pitchDetails}

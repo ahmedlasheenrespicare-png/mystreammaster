@@ -802,6 +802,106 @@
         "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-23&limit=100&offset=0"
       },
       "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "1372051915",
+      "date": "2026-11-24T15:00:00.000Z",
+      "home": {
+        "id": "889228",
+        "name": "Smouha SC"
+      },
+      "away": {
+        "id": "13250854",
+        "name": "National Bank of Egypt"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": null,
+      "statistics": null,
+      "source": {
+        "provider": "Highlightly",
+        "leagueId": "199067",
+        "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-24&limit=100&offset=0"
+      },
+      "fetchedAt": "2026-11-10T11:14:15.047Z"
+    },
+    {
+      "id": "1372052766",
+      "date": "2026-11-24T15:00:00.000Z",
+      "home": {
+        "id": "6400304",
+        "name": "ZED FC"
+      },
+      "away": {
+        "id": "13387865",
+        "name": "Abu Qair Semad"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": null,
+      "statistics": null,
+      "source": {
+        "provider": "Highlightly",
+        "leagueId": "199067",
+        "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-24&limit=100&offset=0"
+      },
+      "fetchedAt": "2026-11-10T11:14:15.047Z"
+    },
+    {
+      "id": "1372053617",
+      "date": "2026-11-24T18:00:00.000Z",
+      "home": {
+        "id": "878165",
+        "name": "Al-Masry SC"
+      },
+      "away": {
+        "id": "15336655",
+        "name": "Asyut Petroleum"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": null,
+      "statistics": null,
+      "source": {
+        "provider": "Highlightly",
+        "leagueId": "199067",
+        "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-24&limit=100&offset=0"
+      },
+      "fetchedAt": "2026-11-10T11:14:15.047Z"
+    },
+    {
+      "id": "1372054468",
+      "date": "2026-11-24T18:00:00.000Z",
+      "home": {
+        "id": "890930",
+        "name": "Wadi Degla"
+      },
+      "away": {
+        "id": "1338556",
+        "name": "Al Ittihad"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": null,
+      "statistics": null,
+      "source": {
+        "provider": "Highlightly",
+        "leagueId": "199067",
+        "url": "https://soccer.highlightly.net/matches?leagueId=199067&date=2026-11-24&limit=100&offset=0"
+      },
+      "fetchedAt": "2026-11-10T11:14:15.047Z"
     }
   ]
 }

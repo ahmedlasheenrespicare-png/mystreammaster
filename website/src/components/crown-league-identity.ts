@@ -20,6 +20,14 @@ export const CROWN_CUP_LOGOS: Readonly<Record<string, string>> = {
   'uefa.nations': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2395.png',
   'fifa.friendly': 'https://a.espncdn.com/i/leaguelogos/soccer/500/53.png',
   'concacaf.nations.league': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2406.png',
+  /* دوريات الأندية التي أضيفت بشعارات ESPN 확인 */
+  'eng.1': 'https://a.espncdn.com/i/leaguelogos/soccer/500/23.png',
+  'uefa.champions': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2.png',
+  'sau.1': 'https://a.espncdn.com/i/leaguelogos/soccer/500/2488.png',
+  'esp.1': 'https://a.espncdn.com/i/leaguelogos/soccer/500/15.png',
+  'fra.1': 'https://a.espncdn.com/i/leaguelogos/soccer/500/9.png',
+  'ger.1': 'https://a.espncdn.com/i/leaguelogos/soccer/500/10.png',
+  'ita.1': 'https://a.espncdn.com/i/leaguelogos/soccer/500/12.png',
 };
 export function crownLeagueName(leagueId: string | undefined, fallback: string): string {
   return leagueId === 'eng.league_cup' ? 'كأس الرابطة الإنجليزي' : fallback;

@@ -1,4 +1,5 @@
 import type { FeaturedClash } from './LeagueTicketCard';
+import { dayInZone } from '../lib/matches.mjs';
 
 /* ==========================================================================
    شرائح مواجهات الشريط المتحرك — تحديد الأندية فقط
@@ -213,9 +214,22 @@ export const CROWN_LEAGUE_CARDS: readonly { id: string; name: string }[] = [
 const WEEKEND_DAYS = ['2026-11-07', '2026-11-08', '2026-11-09', '2026-11-11', '2026-11-12', '2026-11-13'];
 const clashKey = (clash: FeaturedClash) => `${clash.home.name}|${clash.away.name}`;
 export function novemberCrownClashes(previous: FeaturedClash[]): FeaturedClash[] {
-  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES, ...NOVEMBER_9_CROWN_CLASHES, ...NOVEMBER_11_CROWN_CLASHES, ...NOVEMBER_12_CROWN_CLASHES, ...NOVEMBER_13_CROWN_CLASHES];
+  /* تاريخ اليوم بتوقيت القاهرة — تُستبعد أي مباراة موعدها قبل اليوم
+     (أي المباريات المنتهية) من الظهور في الشريط المتحرك، باستثناء مباراة
+     برشلونة × أتلتيكو مدريد التي يُطلب إظهارها رغم انتهائها. */
+  const today = dayInZone(new Date(), 'Africa/Cairo');
+  const isFutureOrToday = (clash: FeaturedClash) => {
+    const d = clash.date ?? '';
+    return d >= today;
+  };
+  const isBarcaAtletico = (clash: FeaturedClash) =>
+    (clash.home.name === 'برشلونة' && clash.away.name === 'أتلتيكو مدريد') ||
+    (clash.home.name === 'أتلتيكو مدريد' && clash.away.name === 'برشلونة');
+
+  const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES, ...NOVEMBER_9_CROWN_CLASHES, ...NOVEMBER_11_CROWN_CLASHES, ...NOVEMBER_12_CROWN_CLASHES, ...NOVEMBER_13_CROWN_CLASHES]
+    .filter(clash => isFutureOrToday(clash) || isBarcaAtletico(clash));
   const seen = new Set(selected.map(clashKey));
   // أي مواجهة سابقة تحمل تاريخ اليوم أو الغد تُسمح بها، بلا تكرار لبطاقة موجودة.
-  const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? ''));
+  const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? '') && (isFutureOrToday(clash) || isBarcaAtletico(clash)));
   return [...selected, ...kept.filter(clash => !seen.has(clashKey(clash)))];
 }

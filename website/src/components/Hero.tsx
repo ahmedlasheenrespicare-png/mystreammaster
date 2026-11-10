@@ -531,7 +531,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        {/* Inline league statistics are hidden; available through crown-card fullscreen. */}
+
 
         {/* Keep the semantic H1 accessible outside the illustrative button;
             its visual version now lives inside the television's welcome screen. */}

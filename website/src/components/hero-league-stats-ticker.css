@@ -13,7 +13,7 @@
 
 .hs-stats-ticker-container {
   position: relative;
-  height: 164px;
+  height: 228px;
   overflow: hidden;
   border-radius: 16px;
   background: #ffffff;
@@ -28,9 +28,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
-  padding: 10px 10px 8px 10px;
+  padding: 12px 10px 10px 10px;
   text-align: center;
   opacity: 0;
   visibility: hidden;
@@ -402,11 +402,11 @@
 
 @media (max-width: 640px) {
   .hs-stats-ticker-container {
-    height: 150px;
+    height: 200px;
   }
 
   .hs-stats-ticker-slide {
-    padding: 8px 8px 6px 8px;
+    padding: 10px 8px 8px 8px;
     gap: 6px;
   }
 

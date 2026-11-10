@@ -13,7 +13,7 @@
 
 .hs-stats-ticker-container {
   position: relative;
-  height: 228px;
+  height: 252px;
   overflow: hidden;
   border-radius: 16px;
   background: #ffffff;
@@ -402,7 +402,7 @@
 
 @media (max-width: 640px) {
   .hs-stats-ticker-container {
-    height: 200px;
+    height: 220px;
   }
 
   .hs-stats-ticker-slide {

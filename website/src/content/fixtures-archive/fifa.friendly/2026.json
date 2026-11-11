@@ -2130,7 +2130,7 @@
     },
     {
       "id": "401931957",
-      "date": "2026-11-13T14:10:00.000Z",
+      "date": "2026-11-13T14:15:00.000Z",
       "home": {
         "id": "4397",
         "name": "United Arab Emirates"
@@ -2151,7 +2151,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
       },
-      "fetchedAt": "2026-11-08T10:24:41.240Z"
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
     },
     {
       "id": "401931476",
@@ -2354,6 +2354,31 @@
       "fetchedAt": "2026-10-31T09:40:14.239Z"
     },
     {
+      "id": "401933864",
+      "date": "2026-11-14T05:30:00.000Z",
+      "home": {
+        "id": "4863",
+        "name": "Tahiti"
+      },
+      "away": {
+        "id": "4884",
+        "name": "Cook Islands"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261114&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
       "id": "401930879",
       "date": "2026-11-14T06:00:00.000Z",
       "home": {
@@ -2504,6 +2529,31 @@
       "fetchedAt": "2026-11-10T11:14:15.047Z"
     },
     {
+      "id": "401933837",
+      "date": "2026-11-15T17:00:00.000Z",
+      "home": {
+        "id": "2664",
+        "name": "Suriname"
+      },
+      "away": {
+        "id": "6686",
+        "name": "Eswatini"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261115&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
       "id": "401914292",
       "date": "2026-11-16T18:00:00.000Z",
       "home": {
@@ -2527,6 +2577,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261116&limit=500"
       },
       "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401933879",
+      "date": "2026-11-17T05:30:00.000Z",
+      "home": {
+        "id": "4863",
+        "name": "Tahiti"
+      },
+      "away": {
+        "id": "4884",
+        "name": "Cook Islands"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fifa.friendly",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261117&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
     },
     {
       "id": "401930237",

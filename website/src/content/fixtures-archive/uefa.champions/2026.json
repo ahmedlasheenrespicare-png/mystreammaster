@@ -1577,6 +1577,231 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261124&limit=500"
       },
       "fetchedAt": "2026-11-10T11:14:15.047Z"
+    },
+    {
+      "id": "401915293",
+      "date": "2026-11-25T17:45:00.000Z",
+      "home": {
+        "id": "494",
+        "name": "Slavia Prague"
+      },
+      "away": {
+        "id": "102",
+        "name": "Villarreal"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915378",
+      "date": "2026-11-25T17:45:00.000Z",
+      "home": {
+        "id": "21922",
+        "name": "Sabah FK"
+      },
+      "away": {
+        "id": "83",
+        "name": "Barcelona"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915291",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "1068",
+        "name": "Atlético Madrid"
+      },
+      "away": {
+        "id": "510",
+        "name": "Viking FK"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915292",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "570",
+        "name": "Club Brugge"
+      },
+      "away": {
+        "id": "364",
+        "name": "Liverpool"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915373",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "2250",
+        "name": "Sporting CP"
+      },
+      "away": {
+        "id": "360",
+        "name": "Manchester United"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915374",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "160",
+        "name": "Paris Saint-Germain"
+      },
+      "away": {
+        "id": "104",
+        "name": "AS Roma"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915375",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "493",
+        "name": "Shakhtar Donetsk"
+      },
+      "away": {
+        "id": "436",
+        "name": "Fenerbahce"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915376",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "110",
+        "name": "Internazionale"
+      },
+      "away": {
+        "id": "134",
+        "name": "VfB Stuttgart"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
+    },
+    {
+      "id": "401915377",
+      "date": "2026-11-25T20:00:00.000Z",
+      "home": {
+        "id": "166",
+        "name": "Lille"
+      },
+      "away": {
+        "id": "132",
+        "name": "Bayern Munich"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "uefa.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard?dates=20261125&limit=500"
+      },
+      "fetchedAt": "2026-11-11T10:59:20.242Z"
     }
   ]
 }

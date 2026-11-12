@@ -649,7 +649,17 @@ test('ticket clash slides show the flip countdown in ticket spirit for scheduled
   );
   expect(flipSlideIndex).toBeGreaterThan(0);
   await homeCarousel.locator('button.league-ticket-dot').nth(flipSlideIndex).click();
-  const strip = homeCarousel.locator('.league-ticket-slide').nth(flipSlideIndex).locator(flipSelector);
+  const matchSlide = homeCarousel.locator('.league-ticket-slide').nth(flipSlideIndex);
+  const matchDate = matchSlide.locator('.league-ticket-match-date');
+  const expectedDate = await page.evaluate(() => new Intl.DateTimeFormat('ar-EG', {
+    timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  }).format(new Date('2026-10-15T12:00:00Z')));
+  await expect(matchDate).toHaveText(expectedDate);
+  const brandRowBox = await matchSlide.locator('.league-ticket-brands').boundingBox();
+  const dateBox = await matchDate.boundingBox();
+  expect(brandRowBox && dateBox).toBeTruthy();
+  expect(dateBox!.y).toBeGreaterThanOrEqual(brandRowBox!.y + brandRowBox!.height);
+  const strip = matchSlide.locator(flipSelector);
   await expect(strip).toBeVisible();
   /* أربع خلايا بترتيب عربي وبصيغة جمع المالك: أيام ← ساعات ← دقائق ← ثوانٍ */
   const labels = await strip.locator('.ticket-flip__label').allTextContents();

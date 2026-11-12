@@ -955,8 +955,46 @@ a.hs-crown-wing:hover {
 .hs-crown-match-team { display: flex; align-items: center; flex-direction: column; gap: 3px; font-size: 10px; line-height: 1.4; text-shadow: 0 1px 4px #000; }
 .hs-crown-match-team .league-ticket-crest { position: static; width: 27px; height: 27px; object-fit: contain; }
 .hs-crown-match-team .league-ticket-crest--mono { display: grid; place-items: center; font-size: 9px; }
-.hs-crown-match-result { display: flex; flex-direction: column; gap: 3px; font-size: 15px; }
-.hs-crown-match-result small { font-size: 8px; direction: ltr; }
+.hs-crown-match-result { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; font-size: 15px; }
+.hs-crown-match-result small { font-size: 8px; direction: rtl; }
+.hs-crown-match-state-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  color: #23323a;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  text-align: center;
+  white-space: nowrap;
+}
+.hs-crown-match-state-badge--live {
+  border-color: rgba(255,100,111,.45);
+  background: #a62d3b;
+  color: #fff;
+}
+.hs-crown-match-state-badge--finished {
+  border-color: rgba(32,49,58,.18);
+  background: #e9edf0;
+  color: #273843;
+}
+.hs-crown-match-state-badge--scheduled {
+  border-color: rgba(89,119,11,.26);
+  background: #d8ff3e;
+  color: #17210a;
+}
+.hs-crown-match-state-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.16);
+}
 .hs-crown-match-score { display: flex; align-items: center; justify-content: center; gap: 6px; direction: rtl; }
 .hs-crown-match-status { display: block; font-size: 8px; line-height: 1.5; }
 .hs-crown-match-status.is-live { color: #d8ff3e; }
@@ -3258,6 +3296,10 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
   font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
   letter-spacing: .04em;
 }
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-state-badge {
+  max-width: min(100%, 190px);
+  font: 900 10px/1.2 "Cairo", "Tajawal", sans-serif;
+}
 #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result > strong {
   display: flex;
   min-width: 112px;
@@ -3348,6 +3390,11 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
     height: clamp(48px, 14vw, 64px);
     padding: 8px;
     border-radius: 18px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-state-badge {
+    max-width: 100%;
+    padding: 3px 6px;
+    font-size: 8px;
   }
   #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result > strong {
     min-width: 76px;

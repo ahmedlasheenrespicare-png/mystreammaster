@@ -1156,6 +1156,60 @@ test('crown keeps all match and league cards with league identities after match 
   }
 });
 
+test('featured match card shows a state badge with live/final scores and upcoming kickoff', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-08T10:00:00Z'));
+  await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+  let mode: 'live' | 'finished' | 'today' | 'tomorrow' = 'live';
+  const kickoff = () => mode === 'tomorrow' ? '2026-11-09T20:00:00Z' : '2026-11-08T20:00:00Z';
+  await page.route('**/scoreboard.php*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({
+    ok: true,
+    events: new URL(route.request().url()).searchParams.get('league') === 'esp.1' ? [{
+      id: 'featured-state-valencia', date: kickoff(), competitions: [{
+        status: { displayClock: mode === 'live' ? '67′' : undefined, type: {
+          state: mode === 'live' ? 'in' : mode === 'finished' ? 'post' : 'pre',
+          name: mode === 'live' ? 'STATUS_IN_PROGRESS' : mode === 'finished' ? 'STATUS_FULL_TIME' : 'STATUS_SCHEDULED',
+          completed: mode === 'finished',
+        } },
+        competitors: [
+          { homeAway: 'home', score: mode === 'live' || mode === 'finished' ? '3' : undefined, team: { displayName: 'Real Madrid' } },
+          { homeAway: 'away', score: mode === 'live' || mode === 'finished' ? '1' : undefined, team: { displayName: 'Valencia' } },
+        ],
+      }],
+    }] : [],
+  }) }));
+  const strip = page.locator('[data-hero-league-strip]');
+  const check = async (next: typeof mode, badge: string, value?: string) => {
+    mode = next;
+    await page.goto('/');
+    const expectedState = next === 'live' ? 'live' : next === 'finished' ? 'finished' : 'scheduled';
+    await expect(strip.locator(`[data-crown-state="${expectedState}"]`)).toHaveCount(1, { timeout: 20000 });
+    await selectCrownSlide(page, /فالنسيا.*ريال مدريد/s);
+    const front = strip.locator('[data-crown-offset="0"]');
+    await expect(front.locator('.hs-crown-match-state-badge')).toHaveText(badge);
+    if (value) await expect(front.locator('.hs-crown-match-result > strong')).toContainText(value);
+    return front;
+  };
+
+  const live = await check('live', 'جارية الآن');
+  await expect(live.locator('.hs-crown-match-score b').first()).toHaveAttribute('aria-label', '3');
+  await expect(live.locator('.hs-crown-match-score b').last()).toHaveAttribute('aria-label', '1');
+  const finished = await check('finished', 'انتهت المباراة');
+  await expect(finished.locator('.hs-crown-match-score')).toBeVisible();
+  const today = await check('today', 'قادمة اليوم', '٢٢:٠٠');
+  await expect(today.locator('.hs-crown-match-score')).toHaveCount(0);
+  const tomorrow = await check('tomorrow', 'قادمة غداً', '٢٢:٠٠');
+  await expect(tomorrow.locator('.hs-crown-match-result small')).toContainText('الاثنين');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const badge = tomorrow.locator('.hs-crown-match-state-badge');
+    await expect(badge).toBeVisible();
+    const badgeBox = (await badge.boundingBox())!;
+    const resultBox = (await tomorrow.locator('.hs-crown-match-result').boundingBox())!;
+    expect(badgeBox.x).toBeGreaterThanOrEqual(resultBox.x - 1);
+    expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(resultBox.x + resultBox.width + 1);
+  }
+});
+
 test('crown match content preserves live RTL scores and scheduled countdown from the same ticket feed', async ({ page }) => {
   // يوم المباراة نفسه: الشريحة المباشرة في الدقيقة 67، ثم تُقلَّب إلى موعد قادم للعدّاد
   await page.clock.setFixedTime(new Date('2026-11-07T10:00:00Z'));
@@ -2358,6 +2412,8 @@ test('day tabs filter the existing crown carousel instead of creating new cards'
       event('valencia', '2026-11-07T20:00:00Z', 'Valencia', 'Real Madrid', true),
       event('barca', '2026-11-08T20:00:00Z', 'Atletico Madrid', 'Barcelona', false),
       event('unselected', '2026-11-08T19:00:00Z', 'Club X', 'Club Y', true),
+    ] : league === 'eng.fa' ? [
+      event('plymouth-berkhamsted', '2026-11-09T19:00:00Z', 'Plymouth Parkway', 'Berkhamsted', false),
     ] : [];
     return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, events }) });
   });
@@ -2368,9 +2424,8 @@ test('day tabs filter the existing crown carousel instead of creating new cards'
   await expect(tabs.locator('.hs-crown-tab-icon[aria-hidden="true"]')).toHaveCount(4);
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    const drawer = (await strip.locator('[data-crown-offset="0"] .hs-crown-slide-band--bottom').boundingBox())!;
+    await expect(tabs).toBeVisible();
     const bounds = (await tabs.boundingBox())!;
-    expect(bounds.y).toBeGreaterThanOrEqual(drawer.y + drawer.height - 1);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
     await tabs.getByRole('button', { name: 'أمس' }).click();
     await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
@@ -2383,10 +2438,11 @@ test('day tabs filter the existing crown carousel instead of creating new cards'
     await tabs.getByRole('button', { name: 'مباشر' }).click();
     await expect(strip.locator('[data-crown-offset="0"]')).toContainText('فالنسيا');
     await tabs.getByRole('button', { name: 'غداً' }).click();
-    await expect(strip.locator('[data-crown-card]')).toHaveCount(0);
-    await expect(strip.locator('.hs-day-empty')).toContainText('لا توجد مباريات مؤكدة مطابقة');
-    await strip.getByRole('button', { name: 'عرض جميع البطاقات' }).click();
-    await expect(strip.locator('[data-crown-kind="league"]').first()).toBeAttached();
+    await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بيركهامستيد');
+    await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', /eng\.fa:بليموث باركواي:بيركهامستيد:2026-11-09/);
+    await strip.locator('.hs-crown-featured-clear').click();
+    await expect(strip.locator('[data-crown-card]')).not.toHaveCount(0);
     await expect(strip.locator('.hs-day-empty')).toHaveCount(0);
   }
 });

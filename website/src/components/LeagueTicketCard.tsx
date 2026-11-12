@@ -627,7 +627,8 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
   const kick = match ? kickoff(match.date, CLASH_ZONE) : null;
   /* موعد المواجهة كما يظهر في صفحة المواعيد: وقت القاهرة دائماً، ويُسبَق
      بتاريخ اليوم العربي حين تكون المثبَّتة في يومٍ قادم لا اليوم نفسه */
-  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : null;
+  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date ?? null;
+  const matchDateLabel = matchDay ? dayLabel(matchDay, { weekday: "long", year: "numeric" }) : null;
   const isToday = matchDay != null && matchDay === dayInZone(new Date(), CLASH_ZONE);
   const kickLabel = kick && !isToday ? `${dayLabel(matchDay!, { weekday: "long" })} · ${kick}` : kick;
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
@@ -657,6 +658,15 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
         </span>
       ) : null}
       <TicketShell />
+      {matchDateLabel ? (
+        <time className="league-ticket-match-date" dir="rtl" dateTime={matchDay!} aria-label={`تاريخ المباراة: ${matchDateLabel}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M7 3v4M17 3v4M3 10h18" />
+          </svg>
+          <span>{matchDateLabel}</span>
+        </time>
+      ) : null}
       {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
           ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد. جهةٌ ذات
           تسلسل احتفال تُرسَم حاويةً طبقية (4 إطارات تتبدّل بشفافية
@@ -785,13 +795,18 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     : clash.date ? dayLabel(clash.date, { weekday: "long" }) : "قريباً";
   const timer = countdown ? <FlipCountdown countdown={countdown} /> : null;
   const marks = <span className="hs-crown-match-brands" aria-hidden="true">{CROWN_BRAND_MARKS.map(src => <img key={src} src={`/images/brand/${src}`} alt="" loading="lazy" />)}</span>;
-  const status = <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{match?.detail ?? "نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً"}</small>;
+  const status = live && match?.detail
+    ? <small className="hs-crown-match-status is-live">{match.detail}</small>
+    : match?.state === "other" && match.venue
+      ? <small className="hs-crown-match-status">{match.venue}</small>
+      : !match ? <small className="hs-crown-match-status">نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً</small> : null;
   /* على الشريحة الأمامية تعيش الصفوف المساندة داخل الدرجين — في نفس الكارت،
      لا نسخة مزدوجة. الشرائح الجانبية تحتفظ بجسمها الكامل كما هو اليوم. */
   const inBand = parts && active;
   /* نسخة الدرج العلوي وحدها: الشارة فيه بجوار السطر، فلو تُرك `detail` كما هو
      لقرأ الزائر «انتهت / انتهت». بلا معلومة إضافية لا يُعرض سطر خيال. */
   const bandDetail = crownBandDetail(match);
+  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date ?? null;
   const bandStatus = <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{bandDetail}</small>;
   /* مكان سطر التفصيل في الدرج العلوي بطلب المالك: قبل المباراة عدّاد البداية
      (نُقل من الدرج السفلي)، وأثناءها دقائق وثواني بنفس تصميمه، وبعدها ماركة
@@ -812,7 +827,20 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     <span className="hs-crown-slide-chip">{stateLabel}</span>
     {bandLine}
   </div> : null;
-  const resultCaption = score ? (live ? "النتيجة الآن" : "النتيجة النهائية") : match ? "موعد البداية" : "المواجهة القادمة";
+  const today = dayInZone(new Date(now), CLASH_ZONE);
+  const nextDay = shiftDay(today, 1);
+  const matchDateLabel = matchDay ? dayLabel(matchDay, { weekday: "long", year: "numeric" }) : null;
+  const matchStateBadge = live ? "جارية الآن"
+    : finished ? "انتهت المباراة"
+      : pre ? matchDay === today ? "قادمة اليوم" : matchDay === nextDay ? "قادمة غداً" : `قادمة ${dayLabel(matchDay!, { weekday: "long" })}`
+        : match?.state === "other" ? match.detail : match ? "موعد المباراة" : "بانتظار الموعد";
+  const resultCaption = score ? (live ? "النتيجة الآن" : "النتيجة النهائية")
+    : live ? "تفاصيل المباراة" : pre ? "موعد البداية" : finished ? "النتيجة" : match ? "حالة المباراة" : "المواجهة القادمة";
+  const resultValue = score
+    ? <span className="hs-crown-match-score"><CrownScoreDigits value={match.home.score!} /><span aria-hidden="true">:</span><CrownScoreDigits value={match.away.score!} /></span>
+    : live ? "النتيجة غير متاحة"
+      : pre ? kickoff(match!.date, CLASH_ZONE)
+        : finished ? "النتيجة غير متاحة" : match?.state === "other" ? "موعد متغيّر" : match ? match.detail : "قريباً";
   const core = <div className={`hs-crown-match hs-crown-match--scoreboard${parts ? " hs-crown-slide" : ""}`} dir="rtl" data-match-state={match?.state ?? "unconfirmed"}>
     {parts && <CrownPitchBackground />}
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
@@ -840,9 +868,13 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     <div className="hs-crown-match-teams">
       <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="home" />}</span>
       <span className="hs-crown-match-result">
+        <span className={`hs-crown-match-state-badge${live ? " hs-crown-match-state-badge--live" : finished ? " hs-crown-match-state-badge--finished" : pre ? " hs-crown-match-state-badge--scheduled" : ""}`} data-match-badge-state={match?.state ?? "unconfirmed"}>
+          {live && <span className="hs-crown-match-state-dot" aria-hidden="true" />}
+          {matchStateBadge}
+        </span>
         <span className="hs-crown-match-result-caption" aria-hidden="true">{resultCaption}</span>
-        <strong>{score ? <span className="hs-crown-match-score"><CrownScoreDigits value={match.home.score!} /><span aria-hidden="true">:</span><CrownScoreDigits value={match.away.score!} /></span> : match ? kickoff(match.date, CLASH_ZONE) : "قريباً"}</strong>
-        <small>{match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date}</small>
+        <strong>{resultValue}</strong>
+        <small>{matchDateLabel ?? (clash.date ? dayLabel(clash.date, { weekday: "long", year: "numeric" }) : "")}</small>
       </span>
       <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>
     </div>

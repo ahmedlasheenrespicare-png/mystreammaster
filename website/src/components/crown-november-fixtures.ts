@@ -1,5 +1,5 @@
 import type { FeaturedClash } from './LeagueTicketCard';
-import { dayInZone } from '../lib/matches.mjs';
+import { dayInZone, shiftDay } from '../lib/matches.mjs';
 
 /* ==========================================================================
    شرائح مواجهات الشريط المتحرك — تحديد الأندية فقط
@@ -222,14 +222,17 @@ export function novemberCrownClashes(previous: FeaturedClash[]): FeaturedClash[]
     const d = clash.date ?? '';
     return d >= today;
   };
+  const isYesterday = (clash: FeaturedClash) => clash.date === shiftDay(today, -1);
   const isBarcaAtletico = (clash: FeaturedClash) =>
     (clash.home.name === 'برشلونة' && clash.away.name === 'أتلتيكو مدريد') ||
     (clash.home.name === 'أتلتيكو مدريد' && clash.away.name === 'برشلونة');
 
   const selected = [...NOVEMBER_7_CROWN_CLASHES, ...NOVEMBER_8_CROWN_CLASHES, ...NOVEMBER_9_CROWN_CLASHES, ...NOVEMBER_11_CROWN_CLASHES, ...NOVEMBER_12_CROWN_CLASHES, ...NOVEMBER_13_CROWN_CLASHES]
-    .filter(clash => isFutureOrToday(clash) || isBarcaAtletico(clash));
+    /* احتفظ بمواجهات الأمس كي يعمل تبويب «أمس» بعد انتهائها؛ تُخفى
+       من العرض الافتراضي أدناه، باستثناء الكلاسيكو المثبّت. */
+    .filter(clash => isFutureOrToday(clash) || isYesterday(clash) || isBarcaAtletico(clash));
   const seen = new Set(selected.map(clashKey));
   // أي مواجهة سابقة تحمل تاريخ اليوم أو الغد تُسمح بها، بلا تكرار لبطاقة موجودة.
-  const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? '') && (isFutureOrToday(clash) || isBarcaAtletico(clash)));
+  const kept = previous.filter(clash => WEEKEND_DAYS.includes(clash.date ?? '') && (isFutureOrToday(clash) || isYesterday(clash) || isBarcaAtletico(clash)));
   return [...selected, ...kept.filter(clash => !seen.has(clashKey(clash)))];
 }

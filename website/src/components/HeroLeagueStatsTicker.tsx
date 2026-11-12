@@ -68,6 +68,7 @@ export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatc
   const selectedIndex = items.findIndex((entry) => entry.leagueId === selectedLeagueId);
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [matchExpanded, setMatchExpanded] = useState(false);
 
   useEffect(() => {
     setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
@@ -83,8 +84,13 @@ export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatc
   }, [items.length, paused]);
 
   const item = items[activeIndex] ?? items[0];
+  useEffect(() => {
+    setMatchExpanded(false);
+  }, [item?.leagueId]);
   if (!item) return null;
   const match = matchInfo.find((entry) => entry.leagueId === item.leagueId);
+  const matchDetailsId = `hs-league-match-details-${item.leagueId.replace(/[^a-z0-9_-]/gi, "-")}`;
+  const tournamentLogo = CROWN_CUP_LOGOS[item.leagueId] || item.logo;
 
   const teamLogo = (name: string | null, teamId: string | null) => {
     if (!name) return undefined;
@@ -160,19 +166,44 @@ export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatc
         <p className="hs-league-stats-empty">إحصائيات هذه البطولة غير متاحة حالياً</p>
       )}
       {match ? (
-        <div className="hs-league-stats-match">
-          <span className="hs-league-stats-match-label">مباراة البطولة</span>
-          <span className="hs-league-stats-match-teams">
-            {match.homeLogo && <img src={match.homeLogo} alt="" width={20} height={20} loading="lazy" decoding="async" />}
-            <strong>{match.homeName}</strong>
-            <i>VS</i>
-            {match.awayLogo && <img src={match.awayLogo} alt="" width={20} height={20} loading="lazy" decoding="async" />}
-            <strong>{match.awayName}</strong>
-          </span>
-          <span className={`hs-league-stats-match-state${match.scoreLabel ? " has-score" : ""}`}>
-            {match.scoreLabel ?? match.stateLabel}
-          </span>
-          <button type="button" onClick={() => onMatchInfoAction?.(match.key)}>معلومات المباراة</button>
+        <div className={`hs-league-stats-match${matchExpanded ? " is-expanded" : ""}`}>
+          <button
+            type="button"
+            className="hs-league-stats-match-toggle"
+            aria-expanded={matchExpanded}
+            aria-controls={matchDetailsId}
+            onClick={() => setMatchExpanded((expanded) => !expanded)}
+          >
+            <span className="hs-league-stats-match-league-logo" aria-hidden="true">
+              {tournamentLogo
+                ? <img src={tournamentLogo} alt="" width={32} height={32} loading="lazy" decoding="async" />
+                : <CrownLeagueTrophy leagueId={item.leagueId} />}
+            </span>
+            <span className="hs-league-stats-match-summary">
+              <span className="hs-league-stats-match-label">مباراة البطولة</span>
+              <strong><span>{match.homeName}</span><i aria-hidden="true">×</i><span>{match.awayName}</span></strong>
+            </span>
+            <span className={`hs-league-stats-match-state${match.scoreLabel ? " has-score" : ""}`}>
+              {match.scoreLabel ?? match.stateLabel}
+            </span>
+            <span className="hs-league-stats-match-toggle-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m7 10 5 5 5-5" /></svg>
+            </span>
+          </button>
+          <div id={matchDetailsId} className="hs-league-stats-match-details" hidden={!matchExpanded}>
+            <span className="hs-league-stats-match-teams">
+              {match.homeLogo && <img src={match.homeLogo} alt="" width={20} height={20} loading="lazy" decoding="async" />}
+              <strong>{match.homeName}</strong>
+              <i>VS</i>
+              {match.awayLogo && <img src={match.awayLogo} alt="" width={20} height={20} loading="lazy" decoding="async" />}
+              <strong>{match.awayName}</strong>
+            </span>
+            <span className="hs-league-stats-match-detail-state">{match.stateLabel}</span>
+            <button type="button" className="hs-league-stats-match-info" onClick={() => onMatchInfoAction?.(match.key)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+              معلومات المباراة
+            </button>
+          </div>
         </div>
       ) : (
         <div className="hs-league-stats-match hs-league-stats-match--empty">

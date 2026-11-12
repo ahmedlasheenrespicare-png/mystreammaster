@@ -366,6 +366,14 @@
   color: #d8ff3e;
 }
 #hero .hero-crown-strip .hs-horizontal-strip-league-action-buttons svg { width: 15px; height: 15px; }
+#hero .hero-crown-strip .hs-horizontal-strip-league-action-buttons button:first-child svg {
+  color: #3288ff;
+  filter: drop-shadow(0 1px 2px rgba(50,136,255,.25));
+}
+#hero .hero-crown-strip .hs-horizontal-strip-league-action-buttons button:last-child svg {
+  color: #b56bff;
+  filter: drop-shadow(0 1px 2px rgba(181,107,255,.25));
+}
 #hero .hero-crown-strip .hs-horizontal-strip-league-action-buttons button:focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
 @media (max-width: 600px) {
   #hero .hero-crown-strip .hs-horizontal-strip-league-actions { align-items: stretch; flex-direction: column; gap: 7px; padding: 9px; }

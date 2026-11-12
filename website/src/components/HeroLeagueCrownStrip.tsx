@@ -395,11 +395,25 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     if (dayView === "live") return match.state === "live";
     return dayInZone(new Date(match.date), "Africa/Cairo") === selectedDate;
   }) : matchItems;
+  /* أظهر مباريات اليوم والقادمة افتراضياً كما كان؛ أبقِ مباريات الأمس
+     ضمن مصدر التبويبات كي يمكن الوصول إليها عند اختيار «أمس»، من دون
+     إعادتها إلى العرض الافتراضي بعد انتهائها (إلا المباريات المباشرة
+     والكلاسيكو الذي يُعرض استثنائياً بطلب المالك). */
+  const defaultMatchItems = matchItems.filter(item => {
+    const clash = clashes[item.clashIndex];
+    if (!clash) return false;
+    const match = matches[item.clashIndex];
+    const isBarcaAtletico = (clash.home.name === "برشلونة" && clash.away.name === "أتلتيكو مدريد")
+      || (clash.home.name === "أتلتيكو مدريد" && clash.away.name === "برشلونة");
+    if (isBarcaAtletico || match?.state === "live") return true;
+    const matchDay = match ? dayInZone(new Date(match.date), "Africa/Cairo") : clash.date ?? today;
+    return matchDay >= today;
+  });
 
   /* تصفية المباريات حسب الدوري المحدد من الشريط الأفقي (عند الضغط على بطولة) */
   const leagueFilteredMatches = selectedLeagueId
-    ? matchItems.filter(item => item.leagueId === selectedLeagueId)
-    : matchItems;
+    ? defaultMatchItems.filter(item => item.leagueId === selectedLeagueId)
+    : defaultMatchItems;
 
   const leagueCards: CrownCarouselItem[] = leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }));
   const baseItems: CrownCarouselItem[] = dayView
@@ -408,7 +422,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
       ? leagueCards
       : selectedLeagueId
         ? leagueFilteredMatches
-        : matchItems;
+        : defaultMatchItems;
   const newsBase = matchItems[0] ?? leagueCards[0];
   const newsSlides: CrownCarouselItem[] = newsBase
     ? FEATURED_NEWS.map((news, newsIndex) => ({

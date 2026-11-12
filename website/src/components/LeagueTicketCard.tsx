@@ -812,7 +812,8 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
     <span className="hs-crown-slide-chip">{stateLabel}</span>
     {bandLine}
   </div> : null;
-  const core = <div className={`hs-crown-match${parts ? " hs-crown-slide" : ""}`} dir="rtl">
+  const resultCaption = score ? (live ? "النتيجة الآن" : "النتيجة النهائية") : match ? "موعد البداية" : "المواجهة القادمة";
+  const core = <div className={`hs-crown-match hs-crown-match--scoreboard${parts ? " hs-crown-slide" : ""}`} dir="rtl" data-match-state={match?.state ?? "unconfirmed"}>
     {parts && <CrownPitchBackground />}
     <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
       <LeagueIconBadge
@@ -823,11 +824,23 @@ export function CrownClashSlide({ clash, match, active = true, showEvents = fals
         fetchPriority={prioritizeLeagueLogo ? "high" : undefined}
       />
     </span>
-    <div className="hs-crown-match-heading"><span>{crownLeagueName(clash.source, clash.eyebrow)}</span></div>
+    <div className="hs-crown-match-heading">
+      <span className="hs-crown-match-league-badge">
+        <LeagueIconBadge
+          leagueId={clash.source ?? "matches"}
+          iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]}
+          size={28}
+          eager={prioritizeLeagueLogo}
+          fetchPriority={prioritizeLeagueLogo ? "high" : undefined}
+        />
+        <span>{crownLeagueName(clash.source, clash.eyebrow)}</span>
+      </span>
+    </div>
     {pitchDetails}
     <div className="hs-crown-match-teams">
       <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="home" />}</span>
       <span className="hs-crown-match-result">
+        <span className="hs-crown-match-result-caption" aria-hidden="true">{resultCaption}</span>
         <strong>{score ? <span className="hs-crown-match-score"><CrownScoreDigits value={match.home.score!} /><span aria-hidden="true">:</span><CrownScoreDigits value={match.away.score!} /></span> : match ? kickoff(match.date, CLASH_ZONE) : "قريباً"}</strong>
         <small>{match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date}</small>
       </span>

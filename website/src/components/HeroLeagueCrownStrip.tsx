@@ -437,8 +437,26 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const rootRef = useRef<HTMLElement | null>(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
   const dragStartRef = useRef<{ x: number; pointerId: number } | null>(null);
   const didDragRef = useRef(false);
+
+  // Keep the selected fixture tile in view as the main carousel advances.
+  useEffect(() => {
+    const picker = pickerRef.current;
+    const selected = picker?.querySelector<HTMLButtonElement>(".hs-crown-picker-card.is-active");
+    if (!picker || !selected) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      || document.documentElement.dataset.motion === "off";
+    const railBox = picker.getBoundingClientRect();
+    const tileBox = selected.getBoundingClientRect();
+    const delta = tileBox.left < railBox.left
+      ? tileBox.left - railBox.left
+      : tileBox.right > railBox.right
+        ? tileBox.right - railBox.right
+        : 0;
+    if (delta) picker.scrollBy({ left: delta, behavior: reducedMotion ? "auto" : "smooth" });
+  }, [active, slideKey]);
 
   // Register slide → league identity; statistics follow the parent even on a match slide.
   useEffect(() => {
@@ -796,7 +814,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               <span>{horizontalView === "news" ? "اختر الخبر" : "اختر المواجهة"}</span>
               <span dir="ltr">{String((active % items.length) + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span>
             </div>
-            <div className={`hs-crown-match-progress${horizontalView === "news" ? " is-news-picker" : ""}`} role="group" aria-label={horizontalView === "news" ? "اختيار خبر مميز" : "اختيار مباراة بارزة"}>
+            <div ref={pickerRef} className={`hs-crown-match-progress${horizontalView === "news" ? " is-news-picker" : ""}`} role="group" aria-label={horizontalView === "news" ? "اختيار خبر مميز" : "اختيار مباراة بارزة"}>
               {items.map((item, index) => {
                 const story = item.newsIndex === undefined ? null : FEATURED_NEWS[item.newsIndex];
                 const clash = item.clashIndex < 0 ? null : clashes[item.clashIndex];
@@ -807,7 +825,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                   <button
                     key={item.key}
                     type="button"
-                    className={`${index === active ? "is-active" : ""}${story ? " is-news" : ""}`}
+                    className={`hs-crown-picker-card${index === active ? " is-active" : ""}${story ? " is-news" : ""}`}
+                    data-picker-state={story ? undefined : match?.state ?? "unconfirmed"}
                     aria-label={story ? `الخبر ${item.newsIndex! + 1}: ${story.title}` : `المباراة ${index + 1}: ${clash?.home.name ?? "فريق"} ضد ${clash?.away.name ?? "فريق"}`}
                     aria-pressed={index === active}
                     onClick={() => setSharedActiveIndex(index)}

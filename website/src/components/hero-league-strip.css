@@ -3145,3 +3145,376 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
 @media (prefers-reduced-motion: reduce) {
   #hero .hero-crown-strip .hs-crown-featured-date-tools :is(.hs-day-tabs > button, .hs-crown-featured-clear) { transition: none; }
 }
+
+/* Match card refresh: a clean broadcast-style score board, replacing the
+   translucent pitch treatment on the selected homepage match. */
+#hero .hero-crown-strip .hs-crown-center:has(.hs-crown-card--match[data-crown-offset="0"]) {
+  height: 252px;
+}
+#hero .hero-crown-strip .hs-crown-center .hs-crown-card--match[data-crown-offset="0"] {
+  overflow: visible;
+  border: 1px solid rgba(19, 33, 44, .12);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 28px 60px -34px rgba(5, 18, 28, .6), 0 3px 12px rgba(5, 18, 28, .08);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard {
+  min-height: 252px;
+  justify-content: center;
+  gap: 15px;
+  padding: 22px clamp(18px, 4vw, 42px) 18px;
+  border: 0;
+  border-radius: 27px;
+  background: linear-gradient(145deg, #fff 0%, #f5f7f6 100%);
+  color: #14232d;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 6px;
+  border-radius: 27px 27px 0 0;
+  background: linear-gradient(90deg, #d8ff3e 0 26%, #13232d 26% 100%);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard::after {
+  content: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-art {
+  opacity: .035;
+  filter: grayscale(1);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-heading {
+  display: flex;
+  min-height: 24px;
+  color: #50606a;
+  font: 800 11px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 11px 3px 5px;
+  border: 1px solid rgba(19, 35, 45, .1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-league-badge > .league-carousel-badge {
+  flex: 0 0 auto;
+  border-color: rgba(19, 35, 45, .08);
+  border-radius: 50%;
+  background: #fff;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-league-badge > span:last-child {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #334a57;
+  font: 800 10px/1.25 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-teams {
+  width: min(100%, 760px);
+  grid-template-columns: minmax(0, 1fr) minmax(126px, .55fr) minmax(0, 1fr);
+  gap: clamp(12px, 4vw, 42px);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team {
+  gap: 8px;
+  color: #172832;
+  font: 800 clamp(14px, 1.8vw, 20px)/1.3 "Cairo", "Tajawal", sans-serif;
+  text-shadow: none;
+  transform: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team::before {
+  content: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest,
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest--mono {
+  width: clamp(56px, 7vw, 76px);
+  height: clamp(56px, 7vw, 76px);
+  padding: 11px;
+  border: 1px solid rgba(19, 35, 45, .09);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(18, 35, 45, .09);
+  object-fit: contain;
+  filter: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest--mono {
+  display: grid;
+  place-items: center;
+  color: #59700b;
+  font-size: 20px;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result {
+  align-items: center;
+  gap: 7px;
+  color: #14232d;
+  font: 900 clamp(22px, 3.2vw, 38px)/1 "Space Grotesk", "Cairo", sans-serif;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result-caption {
+  color: #77858d;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .04em;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result > strong {
+  display: flex;
+  min-width: 112px;
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  border: 1px solid rgba(19, 35, 45, .08);
+  border-radius: 18px;
+  background: #13232d;
+  color: #d8ff3e;
+  box-shadow: 0 8px 18px rgba(19, 35, 45, .16);
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result small {
+  display: block;
+  color: #7b898f;
+  font: 700 10px/1.3 "Cairo", "Tajawal", sans-serif;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-status {
+  max-width: min(100%, 620px);
+  color: #62727a;
+  font: 700 10px/1.45 "Cairo", "Tajawal", sans-serif;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-status.is-live {
+  color: #a42436;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match .league-ticket-countdown {
+  justify-content: center;
+  gap: 5px;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match .ticket-flip__digit {
+  border-radius: 6px;
+  background: #13232d;
+  color: #d8ff3e;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band {
+  border: 1px solid rgba(19, 35, 45, .08);
+  background: #13232d;
+  color: #fff;
+  text-shadow: none;
+  box-shadow: 0 14px 28px -18px rgba(7, 20, 29, .45);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--top {
+  border-radius: 0 0 0 20px;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--bottom {
+  border-radius: 0 0 20px 0;
+  background: #f1f4f2;
+  color: #172832;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band .hs-crown-slide-league,
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band .hs-crown-slide-when,
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band .hs-crown-drawer-league-name {
+  color: inherit;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-chip {
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"][data-crown-state="live"] .hs-crown-slide-chip {
+  background: #b4233d;
+  color: #fff;
+}
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-center:has(.hs-crown-card--match[data-crown-offset="0"]) {
+    height: 300px !important;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard {
+    min-height: 300px;
+    padding: 27px 14px 18px;
+    gap: 17px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-teams {
+    grid-template-columns: minmax(0, 1fr) 78px minmax(0, 1fr);
+    gap: 6px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team {
+    gap: 9px;
+    font-size: clamp(12px, 3.5vw, 16px);
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest,
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest--mono {
+    width: clamp(48px, 14vw, 64px);
+    height: clamp(48px, 14vw, 64px);
+    padding: 8px;
+    border-radius: 18px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result > strong {
+    min-width: 76px;
+    min-height: 50px;
+    padding: 6px 8px;
+    border-radius: 15px;
+    font-size: 22px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--top { padding-inline: 4px; }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--bottom { padding-inline: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] { transition: none; }
+}
+
+/* Match picker cards: compact fixture tiles that echo the new scoreboard. */
+#hero .hero-crown-strip .hs-crown-match-progress:not(.is-news-picker) {
+  direction: rtl;
+  justify-content: start;
+  grid-auto-columns: minmax(220px, 1fr);
+  scrollbar-color: rgba(19, 35, 45, .35) transparent;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) {
+  direction: rtl;
+  grid-template-columns: 28px minmax(0, 1fr) 8px;
+  grid-template-rows: 22px minmax(48px, 1fr);
+  align-content: center;
+  gap: 7px 8px;
+  min-height: 100px;
+  padding: 11px 12px;
+  border: 1px solid rgba(19, 35, 45, .12);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f2f5f3 100%);
+  color: #172832;
+  box-shadow: 0 5px 14px rgba(19, 35, 45, .055);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) span {
+  display: flex;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news):hover {
+  transform: translateY(-2px);
+  border-color: rgba(19, 35, 45, .3);
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(19, 35, 45, .1);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-index {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 8px;
+  background: #e9eeeb;
+  color: #52636b;
+  font: 800 9px/1 "Space Grotesk", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-league {
+  grid-column: 2;
+  grid-row: 1;
+  color: #75838a;
+  font: 800 9px/1.25 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-indicator {
+  display: block;
+  grid-column: 3;
+  grid-row: 1;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #aab5b0;
+  box-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-teams {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
+  gap: 5px;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side {
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side:last-child {
+  justify-content: center;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side img {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  border: 1px solid rgba(19, 35, 45, .08);
+  border-radius: 9px;
+  box-shadow: 0 2px 5px rgba(19, 35, 45, .08);
+  filter: none;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side strong {
+  width: 100%;
+  color: #172832;
+  font: 800 9px/1.25 "Cairo", "Tajawal", sans-serif;
+  text-align: center;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-teams i {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid rgba(19, 35, 45, .1);
+  border-radius: 50%;
+  background: #fff;
+  color: #7b8a90;
+  font-size: 7px;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active {
+  transform: translateY(-2px);
+  border-color: #13232d;
+  background: linear-gradient(145deg, #1a303d 0%, #10222d 100%);
+  color: #fff;
+  box-shadow: 0 12px 24px -12px rgba(19, 35, 45, .6), inset 0 0 0 1px rgba(216, 255, 62, .35);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-index {
+  background: #d8ff3e;
+  color: #13232d;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-league {
+  color: rgba(255, 255, 255, .68);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-side strong {
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-teams i {
+  border-color: rgba(216, 255, 62, .4);
+  background: rgba(216, 255, 62, .12);
+  color: #d8ff3e;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news)[data-picker-state="live"] .hs-crown-picker-indicator {
+  background: #e53950;
+  box-shadow: 0 0 0 4px rgba(229, 57, 80, .12);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news):focus-visible {
+  outline: 3px solid #d8ff3e;
+  outline-offset: 3px;
+}
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-progress:not(.is-news-picker) {
+    grid-auto-columns: minmax(230px, 74vw);
+  }
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) {
+    min-height: 98px;
+    padding: 10px;
+  }
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side img {
+    flex-basis: 26px;
+    width: 26px;
+    height: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) { transition: none; }
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news):hover { transform: none; }
+}

@@ -1,252 +1,183 @@
-/** ============================================================================
-   إحصائيات البطولات المتاحة — أعلاه بطاقات المواجهات مباشرة
-   ----------------------------------------------------------------------------
-   كل شريحة تمثل بطولة واحدة: شعار واسم البطولة في الأعلى، ثم أقوى هجوم
-   وأقوى دفاع في سطر واحد (جنباً إلى جنب مع فاصل ماسة)، ثم المتصدر،
-   ثم إجمالي الأهداف، كل إحصائية في سطر منفصل أسفل بعضها.
-   الدوران التلقائي بين البطولات كل 4 ثوانٍ.
-   تصميم مطابق للدرج الأيمن (lc-top-twin-duel / lc-top-twin-goals / lc-grades-box).
-   ============================================================================ */
-
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { useLiveStandingsMap } from "../lib/live-standings";
 import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import { resolveApprovedTeamLogo } from "./StandingsRatesCard";
 import { CROWN_CUP_LOGOS } from "./crown-league-identity";
-import {
-  GoldenBootMedalIcon,
-  GuardianShieldMedalIcon,
-  GradesIcon,
-  GoalsNetBurstIcon,
-} from "./LeagueTopDrawerIcons";
+import CrownLeagueTrophy from "./CrownLeagueTrophy";
 import "./hero-league-stats-ticker.css";
+
+export interface LeagueTickerMatchInfo {
+  key: string;
+  leagueId: string;
+  homeName: string;
+  awayName: string;
+  homeLogo: string;
+  awayLogo: string;
+  stateLabel: string;
+  scoreLabel: string | null;
+}
 
 interface LeagueStat {
   leagueId: string;
   name: string;
   logo: string | null;
   provider: string | null;
-  /* strongest attack */
   attackName: string | null;
   attackTeamId: string | null;
   attackRate: number | null;
-  /* strongest defence */
   defenceName: string | null;
   defenceTeamId: string | null;
   defenceRate: number | null;
-  /* leader */
   leaderName: string | null;
   leaderTeamId: string | null;
   leaderPoints: number | null;
-  /* total goals */
   totalGoals: number | null;
 }
 
-export function HeroLeagueStatsTicker() {
-  const landings = leagueLandingsInPageOrder();
+/** Compact league metrics docked directly beneath the tournament selector. */
+export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatchInfoAction }: { selectedLeagueId?: string | null; matchInfo?: LeagueTickerMatchInfo[]; onMatchInfoAction?: (matchKey: string) => void }) {
+  const landings = useMemo(() => leagueLandingsInPageOrder(), []);
   const liveMap = useLiveStandingsMap();
+  const items = useMemo<LeagueStat[]>(() => landings.map((landing) => {
+    const standingsKey = landing.standings?.leagueId ?? (landing.leagueId === "sau.1" ? "ksa.1" : landing.leagueId);
+    const record = liveMap[standingsKey];
+    const entries = record?.table?.entries ?? [];
+    const top = record?.leader ?? entries[0];
+    const rates = record?.rates ?? null;
+    const attack = rates?.bestAttack?.[0];
+    const defence = rates?.bestDefence?.[0];
+    return {
+      leagueId: landing.leagueId,
+      name: landing.shortName,
+      logo: CROWN_CUP_LOGOS[landing.leagueId] ?? null,
+      provider: record?.table?.provider ?? "ESPN",
+      attackName: attack?.name ?? null,
+      attackTeamId: attack?.teamId ?? null,
+      attackRate: attack?.attack != null ? Number(attack.attack) : null,
+      defenceName: defence?.name ?? null,
+      defenceTeamId: defence?.teamId ?? null,
+      defenceRate: defence?.defence != null ? Number(defence.defence) : null,
+      leaderName: top?.name ?? null,
+      leaderTeamId: top?.teamId ?? null,
+      leaderPoints: top?.points != null ? Number(top.points) : null,
+      totalGoals: rates && rates.rows.length > 0 && rates.league.totalGoals != null ? rates.league.totalGoals : null,
+    };
+  }), [landings, liveMap]);
+
+  const selectedIndex = items.findIndex((entry) => entry.leagueId === selectedLeagueId);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-  const items = useMemo<LeagueStat[]>(() => {
-    const result: LeagueStat[] = [];
-
-    for (const landing of landings) {
-      const sKey =
-        landing.standings?.leagueId ??
-        (landing.leagueId === "sau.1" ? "ksa.1" : landing.leagueId);
-      const record = liveMap[sKey];
-      const entries = record?.table?.entries ?? [];
-      const top = record?.leader ?? entries[0];
-      const rates = record?.rates ?? null;
-      const att = rates?.bestAttack?.[0];
-      const def = rates?.bestDefence?.[0];
-      const provider = record?.table?.provider ?? "ESPN";
-
-      const logo = CROWN_CUP_LOGOS[landing.leagueId] ?? null;
-
-      result.push({
-        leagueId: landing.leagueId,
-        name: landing.shortName,
-        logo,
-        provider,
-        attackName: att?.name ?? null,
-        attackTeamId: att?.teamId ?? null,
-        attackRate: att?.attack != null ? Number(att.attack) : null,
-        defenceName: def?.name ?? null,
-        defenceTeamId: def?.teamId ?? null,
-        defenceRate: def?.defence != null ? Number(def.defence) : null,
-        leaderName: top?.name ?? null,
-        leaderTeamId: top?.teamId ?? null,
-        leaderPoints: top?.points != null ? Number(top.points) : null,
-        totalGoals:
-          rates && rates.rows.length > 0 && rates.league.totalGoals != null
-            ? rates.league.totalGoals
-            : null,
-      });
-    }
-
-    return result;
-  }, [landings, liveMap]);
-
-  /* دوران تلقائي كل 4 ثوانٍ بين البطولات */
   useEffect(() => {
-    if (items.length < 2) return;
-    const timer = setInterval(() => {
-      setActiveIndex((i) => (i + 1) % items.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [items.length]);
+    setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
+  }, [selectedIndex]);
 
-  const item = items[activeIndex];
+  useEffect(() => {
+    if (paused || items.length < 2) return;
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      setActiveIndex((index) => (index + 1) % items.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [items.length, paused]);
+
+  const item = items[activeIndex] ?? items[0];
   if (!item) return null;
+  const match = matchInfo.find((entry) => entry.leagueId === item.leagueId);
 
-  /* جلب شعار النادي من المصدر: أولًا الشعار المحلي المعتمد، ثم شعار المزود (ESPN/Highlightly)، وإلا undefined (يُعرض الحروف الأولى كبديل) */
-  function clubLogo(name: string | null, teamId: string | null): string | undefined {
+  const teamLogo = (name: string | null, teamId: string | null) => {
     if (!name) return undefined;
-    const local = resolveApprovedTeamLogo({ name, logo: null });
-    if (local) return local;
-    if (teamId && item.provider) {
-      const fromProvider = providerTeamLogo({
-        teamId,
-        provider: item.provider,
-        logo: null,
-      });
-      if (fromProvider) return fromProvider;
-    }
-    return undefined;
-  }
+    return resolveApprovedTeamLogo({ name, logo: null }) ?? (teamId && item.provider
+      ? providerTeamLogo({ teamId, provider: item.provider, logo: null }) ?? undefined
+      : undefined);
+  };
 
-  function renderClubCrest(name: string | null, teamId: string | null) {
-    const src = clubLogo(name, teamId);
-    if (src) return <img src={src} alt="" className="lc-top-club-logo" loading="lazy" decoding="async" />;
-    return name ? name.slice(0, 2).toUpperCase() : null;
-  }
-
+  const hasAnyStats = item.leaderName || item.attackName || item.defenceName || item.totalGoals != null;
   return (
-    <section className="hs-league-stats-ticker" aria-label="إحصائيات البطولات المتاحة">
-      <div className="hs-stats-ticker-container">
-        {items.map((it, idx) => (
-          <div
-            key={it.leagueId}
-            className={`hs-stats-ticker-slide${idx === activeIndex ? " active" : ""}`}
-          >
-            {/* شعار البطولة واسمها في الأعلى */}
-            <div className="hs-stats-ticker-badge">
-              {it.logo ? (
-                <img
-                  src={it.logo}
-                  alt=""
-                  className="hs-stats-ticker-logo"
-                  loading="lazy"
-                  decoding="async"
-                />
-              ) : (
-                <span className="hs-stats-ticker-logo-fallback">
-                  {it.leagueId.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-              <span className="hs-stats-ticker-league-name">{it.name}</span>
-            </div>
-
-            {/* أقوى هجوم | أقوى دفاع — في سطر واحد جنباً إلى جنب */}
-            {(it.attackName && it.attackRate != null) ||
-            (it.defenceName && it.defenceRate != null) ? (
-              <div className="lc-top-twin-duel">
-                {it.attackName && it.attackRate != null && (
-                  <div className="lc-top-twin-side">
-                    <div className="lc-top-twin-head">
-                      <GoldenBootMedalIcon
-                        className="lc-top-medal-icon"
-                        idSuffix={`boot-${it.leagueId}-${activeIndex}`}
-                      />
-                      <span className="lc-top-metric-label">أقوى هجوم</span>
-                    </div>
-                    <div className="lc-top-twin-val-row">
-                      <span className="lc-top-metric-val">{it.attackRate.toFixed(2)}</span>
-                      <span className="lc-top-metric-unit is-coral">هدف/م</span>
-                    </div>
-                    <div className="lc-top-club-row">
-                      <span className="lc-top-club-crest" aria-hidden="true">
-                        {renderClubCrest(it.attackName, it.attackTeamId)}
-                      </span>
-                      <span className="lc-top-metric-team">{it.attackName}</span>
-                    </div>
-                  </div>
-                )}
-                {(it.attackName && it.attackRate != null) &&
-                (it.defenceName && it.defenceRate != null) && (
-                  <span className="lc-duel-diamond" aria-hidden="true">◆</span>
-                )}
-                {it.defenceName && it.defenceRate != null && (
-                  <div className="lc-top-twin-side">
-                    <div className="lc-top-twin-head">
-                      <GuardianShieldMedalIcon
-                        className="lc-top-medal-icon"
-                        idSuffix={`shield-${it.leagueId}-${activeIndex}`}
-                      />
-                      <span className="lc-top-metric-label">أقوى دفاع</span>
-                    </div>
-                    <div className="lc-top-twin-val-row">
-                      <span className="lc-top-metric-val">{it.defenceRate.toFixed(2)}</span>
-                      <span className="lc-top-metric-unit is-emerald">هدف/م</span>
-                    </div>
-                    <div className="lc-top-club-row">
-                      <span className="lc-top-club-crest" aria-hidden="true">
-                        {renderClubCrest(it.defenceName, it.defenceTeamId)}
-                      </span>
-                      <span className="lc-top-metric-team">{it.defenceName}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            {/* المتصدر — في سطر منفصل أسفل */}
-            {it.leaderName && it.leaderPoints != null && (
-              <div className="lc-grades-box">
-                <GradesIcon />
-                <div className="lc-grades-copy">
-                  <span className="lc-grades-label">المتصدر</span>
-                  <div className="lc-grades-num">
-                    <span>{it.leaderName}</span>
-                    <span className="lc-grades-num-val">{it.leaderPoints}</span>
-                    <small>نقطة</small>
-                  </div>
-                </div>
-                <div className="lc-grades-club-crest">
-                  {renderClubCrest(it.leaderName, it.leaderTeamId)}
-                </div>
-              </div>
-            )}
-
-            {/* إجمالي الأهداف — في سطر منفصل أسفل */}
-            {it.totalGoals != null && (
-              <div className="lc-top-twin-goals">
-                <GoalsNetBurstIcon className="lc-top-twin-net" />
-                <span className="lc-top-twin-goals-label">إجمالي الأهداف</span>
-                <span className="lc-top-twin-goals-val">
-                  {it.totalGoals.toLocaleString("en-US")}
-                </span>
-                <span className="lc-top-twin-goals-unit">هدفاً</span>
-              </div>
-            )}
-
-            {/* نقاط التنقل */}
-            <div className="hs-stats-ticker-dots">
-              {items.map((_, dIdx) => (
-                <button
-                  key={dIdx}
-                  className={`hs-stats-ticker-dot${dIdx === activeIndex ? " active" : ""}`}
-                  onClick={() => setActiveIndex(dIdx)}
-                  aria-label={`البطولة ${dIdx + 1}`}
-                  aria-pressed={dIdx === activeIndex}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+    <section
+      className="hs-league-stats-ticker"
+      aria-label={`مؤشرات البطولات — ${item.name} — تبديل تلقائي`}
+      dir="rtl"
+      onPointerEnter={(event) => { if (event.pointerType === "mouse") setPaused(true); }}
+      onPointerLeave={(event) => { if (event.pointerType === "mouse") setPaused(false); }}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}
+    >
+      <div className="hs-league-stats-heading">
+        <span className="hs-league-stats-pulse" aria-hidden="true" />
+        <span className="hs-league-stats-kicker">إحصائيات البطولة</span>
+        {(CROWN_CUP_LOGOS[item.leagueId] || item.logo) && (
+          <img
+            src={CROWN_CUP_LOGOS[item.leagueId] || item.logo || ""}
+            alt=""
+            aria-hidden="true"
+            className="hs-league-stats-logo"
+            loading="eager"
+            decoding="async"
+            data-league-logo={item.leagueId}
+          />
+        )}
+        <strong className="hs-league-stats-name">{item.name}</strong>
+        <span className="hs-stats-identity-trophy hs-league-stats-trophy">
+          <CrownLeagueTrophy leagueId={item.leagueId} />
+        </span>
       </div>
+      {hasAnyStats ? (
+        <div className="hs-league-stats-grid">
+          {item.leaderName && item.leaderPoints != null && (
+            <div className="hs-league-stat hs-league-stat--leader">
+              <span className="hs-league-stat-label">المتصدر</span>
+              <strong className="hs-league-stat-value">{item.leaderPoints.toLocaleString("en-US")}<small>نقطة</small></strong>
+              <span className="hs-league-stat-team">{teamLogo(item.leaderName, item.leaderTeamId) && <img src={teamLogo(item.leaderName, item.leaderTeamId)} alt="" loading="lazy" decoding="async" />}{item.leaderName}</span>
+            </div>
+          )}
+          {item.attackName && item.attackRate != null && (
+            <div className="hs-league-stat">
+              <span className="hs-league-stat-label">أقوى هجوم</span>
+              <strong className="hs-league-stat-value">{item.attackRate.toFixed(2)}<small>هدف/م</small></strong>
+              <span className="hs-league-stat-team">{teamLogo(item.attackName, item.attackTeamId) && <img src={teamLogo(item.attackName, item.attackTeamId)} alt="" loading="lazy" decoding="async" />}{item.attackName}</span>
+            </div>
+          )}
+          {item.defenceName && item.defenceRate != null && (
+            <div className="hs-league-stat">
+              <span className="hs-league-stat-label">أقوى دفاع</span>
+              <strong className="hs-league-stat-value">{item.defenceRate.toFixed(2)}<small>هدف/م</small></strong>
+              <span className="hs-league-stat-team">{teamLogo(item.defenceName, item.defenceTeamId) && <img src={teamLogo(item.defenceName, item.defenceTeamId)} alt="" loading="lazy" decoding="async" />}{item.defenceName}</span>
+            </div>
+          )}
+          {item.totalGoals != null && (
+            <div className="hs-league-stat hs-league-stat--goals">
+              <span className="hs-league-stat-label">أهداف البطولة</span>
+              <strong className="hs-league-stat-value">{item.totalGoals.toLocaleString("en-US")}<small>هدفاً</small></strong>
+              <span className="hs-league-stat-team">إجمالي الموسم</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="hs-league-stats-empty">إحصائيات هذه البطولة غير متاحة حالياً</p>
+      )}
+      {match ? (
+        <div className="hs-league-stats-match">
+          <span className="hs-league-stats-match-label">مباراة البطولة</span>
+          <span className="hs-league-stats-match-teams">
+            {match.homeLogo && <img src={match.homeLogo} alt="" loading="lazy" decoding="async" />}
+            <strong>{match.homeName}</strong>
+            <i>VS</i>
+            {match.awayLogo && <img src={match.awayLogo} alt="" loading="lazy" decoding="async" />}
+            <strong>{match.awayName}</strong>
+          </span>
+          <span className={`hs-league-stats-match-state${match.scoreLabel ? " has-score" : ""}`}>
+            {match.scoreLabel ?? match.stateLabel}
+          </span>
+          <button type="button" onClick={() => onMatchInfoAction?.(match.key)}>معلومات المباراة</button>
+        </div>
+      ) : (
+        <div className="hs-league-stats-match hs-league-stats-match--empty">
+          <span className="hs-league-stats-match-label">مباراة البطولة</span>
+          <span>لا توجد مواجهة بارزة مرتبطة بهذه البطولة حالياً</span>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,8 +1,8 @@
 import { novemberCrownClashes, CROWN_LEAGUE_CARDS } from './crown-november-fixtures';
 import { motionReduced } from "../lib/motion-preference";
 import { HeroLaptop } from "./HeroLaptop";
-import "./hero-title-holo.css";
 import { HeroPhone } from "./HeroPhone";
+import HomepageWebGLStage from "./HomepageWebGLStage";
 import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useState, type ReactElement } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
@@ -354,8 +354,8 @@ interface HeroProps {
 /* شرائح تذكرة الصفحة الرئيسية بالترتيب: كل شريحة مواجهة، وإن وُجد news فهي
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 7 أيام أو أقل، ولا تُعرض
    الشريحة بلا تاريخ، ثم تُخفى تلقائياً (انظر lib/ticket-recency) */
-/* بطاقات المباريات في تذكرة الرئيسية — مخفية مؤقتاً (طلب المالك) */
-const HOME_MATCH_CARDS_VISIBLE = false;
+/* بطاقات المباريات البارزة — أُعيد عرضها تحت شريط البطولات بطلب المالك. */
+const HOME_MATCH_CARDS_VISIBLE = true;
 
 /* تذكرة «مباريات أمس/اليوم/غد» (العمود الأيسر في صف التذاكر) — مخفية من
    الهيرو بطلب المالك. المكوّن وبياناته ومنطقه الحيّ باقية في
@@ -449,7 +449,7 @@ function isHomeSlotVisible(slot: HomeTicketSlot, nowMs: number): boolean {
 
 export default function Hero({ onOpenTrial }: HeroProps) {
   const [heroWord, setHeroWord] = useState(0);
-  const [frontDevice, setFrontDevice] = useState<"phone" | "tv">("phone");
+  const [frontDevice, setFrontDevice] = useState<"phone" | "tv" | "laptop">("phone");
   const [newsInCrown, setNewsInCrown] = useState(false);
   const [desktopNews, setDesktopNews] = useState(false);
   useEffect(() => {
@@ -510,77 +510,15 @@ export default function Hero({ onOpenTrial }: HeroProps) {
       <div className="max-w-[1200px] mx-auto px-5 text-center">
         {/* الشارة العلوية مخفية بناءً على طلب المالك. */}
 
-        {/* صف التذاكر في بداية الهيرو:
-            على الكمبيوتر: المباريات يميناً بعرض 190px، والرئيسية تشغل
-            بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
-            يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
-        <Reveal variant="up" delay={90} className="w-full" initiallyVisible>
-          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} />
-        </Reveal>
-
-        <Reveal variant="up" delay={140} className="w-full" initiallyVisible>
-          {/* الشبكة تتغيّر مع ظهور تذكرة المباريات: بعمودها الأيسر (190px)
-              حين تظهر، وبعمود واحد تمتلئه التذكرة الرئيسية حين تُخفى */}
-          <div className={`hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:gap-0 ${HERO_MATCHES_TICKET_VISIBLE ? "lg:grid-cols-[190px_minmax(0,1fr)]" : "lg:grid-cols-1"}`}>
-            {HERO_MATCHES_TICKET_VISIBLE && (
-              <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
-            )}
-            {!newsInCrown && !desktopNews && <div className={`min-w-0 ${HERO_MATCHES_TICKET_VISIBLE ? "order-2 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1" : "order-1 md:order-1 md:col-span-2 lg:col-span-1"}`}>{newsTicket}</div>}
-            {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
-                الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
-          </div>
-        </Reveal>
-
-
-
-        {/* Keep the semantic H1 accessible outside the illustrative button;
-            its visual version now lives inside the television's welcome screen. */}
-        <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
-
-        <Reveal variant="up" delay={320} className="mt-6" initiallyVisible>
-          <div className="hero-phone-stage hero-phone-stage--laptop hero-phone-stage--retro" data-front-device={frontDevice} data-laptop-placement="left">
-            <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
-                  <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
-                  <span className="hero-title-holo__stack">
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">{HERO_TITLE_WORDS[heroWord]}</span>
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">{HERO_TITLE_WORDS[heroWord]}</span>
-                    <span className="hero-title-holo__layer hero-title-holo__layer--front">{HERO_TITLE_WORDS[heroWord]}</span>
-                  </span>
-                </span>
- كل ما تحب</span>
-                  <span>بجودة                 <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
-                  <span className="hero-title-holo__stack">
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">4K</span>
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">4K</span>
-                    <span className="hero-title-holo__layer hero-title-holo__layer--front">4K</span>
-                  </span>
-                </span>{" "}
-</span>
-                  <span className="hero-tv-headline-tagline">وبلا تقطيع</span>
-                </span>} />
-            <HeroPhone onActivate={() => setFrontDevice("phone")} />
-            <HeroLaptop />
-            <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : "الجوال في المقدمة"}</span>
-          </div>
-        </Reveal>
-
-        {/* التقييم */}
-        <Reveal variant="up" delay={380} className="mt-4">
-          <div className="flex items-center justify-center gap-2">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <IconStar key={i} className="w-4 h-4 fill-[#0b0b0f] text-[#0b0b0f]" />
-              ))}
-            </div>
-            <p className="text-[14px] font-bold">
-              <span className="font-black">على شاشتك وجوالك</span>{" "}
-              <span className="text-black/50 font-medium">— ترفيه أينما كنت</span>
-            </p>
-          </div>
-        </Reveal>
+        <div className="hero-story-intro">
+          <h1 className="hero-story-title">
+            <span key={heroWord} className="hero-story-title__word">{HERO_TITLE_WORDS[heroWord]}</span>{" "}
+            كل ما تحب بجودة <span dir="ltr">4K</span> وبلا تقطيع
+          </h1>
+        </div>
 
         {/* الأزرار */}
-        <Reveal variant="up" delay={480} className="mt-8">
+        <Reveal variant="up" delay={160} className="mt-5">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={onOpenTrial}
@@ -597,6 +535,49 @@ export default function Hero({ onOpenTrial }: HeroProps) {
               </span>
               دليل المشاهدة الرسمية
             </a>
+          </div>
+        </Reveal>
+
+        <div className="hero-device-picker" role="group" aria-label="اختر جهاز العرض">
+          {([
+            ["tv", "شاشة التلفاز"],
+            ["phone", "الهاتف"],
+            ["laptop", "اللابتوب"],
+          ] as const).map(([device, label]) => (
+            <button
+              key={device}
+              type="button"
+              aria-pressed={frontDevice === device}
+              className={frontDevice === device ? "is-active" : ""}
+              onClick={() => setFrontDevice(device)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <Reveal variant="up" delay={320} className="mt-6" initiallyVisible>
+          <div className="hero-phone-stage hero-phone-stage--laptop hero-phone-stage--retro" data-front-device={frontDevice} data-laptop-placement="left">
+            <HomepageWebGLStage />
+            <HeroTelevision onActivate={() => setFrontDevice("tv")} />
+            <HeroPhone onActivate={() => setFrontDevice("phone")} />
+            <HeroLaptop onActivate={() => setFrontDevice("laptop")} />
+            <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : frontDevice === "laptop" ? "اللابتوب في المقدمة" : "الجوال في المقدمة"}</span>
+          </div>
+        </Reveal>
+
+        {/* التقييم */}
+        <Reveal variant="up" delay={380} className="mt-4">
+          <div className="flex items-center justify-center gap-2">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <IconStar key={i} className="w-4 h-4 fill-[#0b0b0f] text-[#0b0b0f]" />
+              ))}
+            </div>
+            <p className="text-[14px] font-bold">
+              <span className="font-black">على شاشتك وجوالك</span>{" "}
+              <span className="text-black/50 font-medium">— ترفيه أينما كنت</span>
+            </p>
           </div>
         </Reveal>
 
@@ -628,6 +609,24 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </Parallax>
 
           <div className="absolute -bottom-10 start-1/2 translate-x-1/2 w-[80%] h-16 bg-black/20 blur-[60px] -z-10" />
+        </Reveal>
+
+        {/* بطاقات المباريات والأخبار تأتي بعد عرض الخدمة حتى يبقى الوعد الرئيسي واضحاً. */}
+        <Reveal variant="up" delay={90} className="hero-matches-after-showcase w-full" initiallyVisible>
+          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} />
+        </Reveal>
+
+        <Reveal variant="up" delay={140} className="w-full" initiallyVisible>
+          {/* الشبكة تتغيّر مع ظهور تذكرة المباريات: بعمودها الأيسر (190px)
+              حين تظهر، وبعمود واحد تمتلئه التذكرة الرئيسية حين تُخفى */}
+          <div className={`hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:gap-0 ${HERO_MATCHES_TICKET_VISIBLE ? "lg:grid-cols-[190px_minmax(0,1fr)]" : "lg:grid-cols-1"}`}>
+            {HERO_MATCHES_TICKET_VISIBLE && (
+              <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
+            )}
+            {!newsInCrown && !desktopNews && <div data-home-news-below className={`min-w-0 ${HERO_MATCHES_TICKET_VISIBLE ? "order-2 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1" : "order-1 md:order-1 md:col-span-2 lg:col-span-1"}`}>{newsTicket}</div>}
+            {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
+                الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
+          </div>
         </Reveal>
       </div>
     </div>

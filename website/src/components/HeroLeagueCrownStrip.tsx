@@ -19,7 +19,9 @@ import {
 import { dayInZone, shiftDay } from "../lib/matches.mjs";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { HeroLeagueHorizontalStrip } from "./HeroLeagueHorizontalStrip";
-import { HeroLeagueStatsTicker } from "./HeroLeagueStatsTicker";
+import { FEATURED_NEWS } from "../content/featured-news";
+import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
+import type { LeagueTickerMatchInfo } from "./HeroLeagueStatsTicker";
 import { providerTeamLogo } from "../lib/leader-logo.mjs";
 import { STANDINGS_LEAGUES } from "../lib/standings.mjs";
 import {
@@ -140,6 +142,8 @@ interface HeroLeagueData {
   bestDefence: (ClubVisual & { rate: number }) | null;
   totalGoals: number | null;
 }
+
+type CrownCarouselItem = HeroLeagueData & { key: string; clashIndex: number; newsIndex?: number };
 
 function cleanInitials(name: string): string {
   const words = name
@@ -349,6 +353,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const [dayView, setDayView] = useState<Day | null>(null);
   const [leagueOnly, setLeagueOnly] = useState(false);
   const [selectedLeagueId, setSelectedLeagueId] = useState<string | null>(null);
+  const [horizontalView, setHorizontalView] = useState<"leagues" | "news">("leagues");
   const [today, setToday] = useState(() => dayInZone(new Date(), "Africa/Cairo"));
   useEffect(() => {
     const check = () => setToday(dayInZone(new Date(), "Africa/Cairo"));
@@ -357,10 +362,30 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", check); };
   }, []);
   const { matches, status: matchesStatus } = useClashesWithStatus("matches", clashes);
-  const matchItems = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
+  const matchItems: CrownCarouselItem[] = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
     const clash = clashes[index];
     const league = leagueItems.find(item => item.leagueId === clash.source);
     return league ? [{ ...league, key: `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : [];
+  });
+  const leagueTickerMatches: LeagueTickerMatchInfo[] = matchItems.map(item => {
+    const clash = clashes[item.clashIndex];
+    const match = matches[item.clashIndex];
+    const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
+    const hasScore = !!match && (match.state === "live" || match.state === "finished")
+      && match.home.score != null && match.away.score != null;
+    return {
+      key: item.key,
+      leagueId: item.leagueId,
+      homeName: clash.home.name,
+      awayName: clash.away.name,
+      homeLogo: clash.home.crest || (homeFirst ? match?.home.logo : match?.away.logo) || "",
+      awayLogo: clash.away.crest || (homeFirst ? match?.away.logo : match?.home.logo) || "",
+      stateLabel: match?.state === "live" ? "مباشرة الآن"
+        : match?.state === "finished" ? "انتهت المباراة"
+          : match?.state === "scheduled" ? "المباراة القادمة"
+            : match?.detail || "مواجهة مميزة",
+      scoreLabel: hasScore ? `${homeFirst ? match!.home.score : match!.away.score} : ${homeFirst ? match!.away.score : match!.home.score}` : null,
+    };
   });
   // Global priority: live → scheduled → finished → unconfirmed → league cards.
   const selectedDate = dayView && dayView !== "live" ? shiftDay(today, dayView === "yesterday" ? -1 : dayView === "tomorrow" ? 1 : 0) : null;
@@ -376,14 +401,27 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     ? matchItems.filter(item => item.leagueId === selectedLeagueId)
     : matchItems;
 
-  const leagueCards = leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }));
-  const items = dayView
+  const leagueCards: CrownCarouselItem[] = leagueItems.map(league => ({ ...league, key: league.leagueId, clashIndex: -1 }));
+  const baseItems: CrownCarouselItem[] = dayView
     ? filteredMatches
     : leagueOnly
       ? leagueCards
       : selectedLeagueId
         ? leagueFilteredMatches
-        : [...matchItems, ...leagueCards];
+        : matchItems;
+  const newsBase = matchItems[0] ?? leagueCards[0];
+  const newsSlides: CrownCarouselItem[] = newsBase
+    ? FEATURED_NEWS.map((news, newsIndex) => ({
+        ...newsBase,
+        key: `news-ticket:${news.href}`,
+        href: news.href,
+        shortName: news.category,
+        leagueId: "news",
+        clashIndex: -2,
+        newsIndex,
+      }))
+    : [];
+  const items: CrownCarouselItem[] = horizontalView === "news" ? newsSlides : baseItems;
   const slideKey = items.map(item => item.key).join("|");
   const interactionPause = useCrownInteractionPause();
   const { active, paused } = useSharedCrownState();
@@ -391,8 +429,11 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const shellItem = items[active] ?? items[0];
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const [expandedTab, setExpandedTab] = useState<"match" | "standings" | "stats" | null>(null);
-  const expandedItem = items.find(item => item.key === expandedKey);
-  const [autoplayStopped, setAutoplayStopped] = useState(false);
+  const expandedItem: CrownCarouselItem | undefined = items.find(item => item.key === expandedKey) ?? matchItems.find(item => item.key === expandedKey) ?? (() => {
+    const league = leagueItems.find(item => item.leagueId === expandedKey);
+    return league ? { ...league, key: league.leagueId, clashIndex: -1 } : undefined;
+  })();
+  const [autoplayStopped, setAutoplayStopped] = useState(true);
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const rootRef = useRef<HTMLElement | null>(null);
@@ -554,6 +595,25 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           clashes={clashes}
           extraLeagues={extraLeagues}
           selectedLeagueId={selectedLeagueId}
+          activeLeagueId={shellItem?.leagueId ?? null}
+          activeView={horizontalView}
+          onViewChange={setHorizontalView}
+          matchInfo={leagueTickerMatches}
+          onMatchInfoAction={(matchKey) => {
+            const targetMatch = matchItems.find(item => item.key === matchKey);
+            if (!targetMatch) return;
+            setExpandedTab("match");
+            setExpandedKey(targetMatch.key);
+          }}
+          onLeagueInfoAction={(tab) => {
+            const targetLeague = leagueItems.find(item => item.leagueId === (selectedLeagueId ?? shellItem?.leagueId)) ?? leagueItems[0];
+            if (!targetLeague) return;
+            if (tab === "standings" && STANDINGS_LEAGUE_IDS.includes(targetLeague.standingsKey)) {
+              ensureLiveLeagueStandings(targetLeague.standingsKey);
+            }
+            setExpandedTab(tab);
+            setExpandedKey(targetLeague.leagueId);
+          }}
           onLeagueSelect={(leagueId) => {
             setSelectedLeagueId(leagueId);
             setDayView(null);
@@ -561,8 +621,6 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }}
         />
 
-        {/* إحصائيات البطولات المتاحة — أعلى بطاقات المواجهات مباشرة */}
-        <HeroLeagueStatsTicker />
         {selectedLeagueId && (
           <button
             type="button"
@@ -574,6 +632,28 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           </button>
         )}
 
+        <div className="hs-crown-featured-heading">
+          <div className="hs-crown-featured-heading-main">
+            <span className="hs-crown-step-number" aria-hidden="true">02</span>
+            <div className="hs-crown-featured-title">
+              <small>{horizontalView === "news" ? "اختر تذكرة الخبر" : "اختر المحتوى"}</small>
+              <h3>{horizontalView === "news" ? "أخبار مميزة" : dayView ? (dayView === "live" ? "مباريات مباشرة" : "مباريات اليوم المختار") : leagueOnly ? "استكشف البطولات" : selectedLeagueId ? "مباريات البطولة المختارة" : "المباريات البارزة"}</h3>
+            </div>
+            <div className="hs-crown-featured-mode" role="group" aria-label="اختيار محتوى العرض">
+              <button type="button" aria-pressed={horizontalView === "leagues"} onClick={() => setHorizontalView("leagues")}>المباريات</button>
+              <button type="button" aria-pressed={horizontalView === "news"} onClick={() => setHorizontalView("news")}>الأخبار</button>
+            </div>
+            <span className="hs-crown-featured-count">{horizontalView === "news" ? `${items.length} أخبار مميزة` : leagueOnly ? `${items.length} بطولة` : `${items.filter(item => item.clashIndex >= 0).length} مواجهة`}</span>
+          </div>
+          {horizontalView === "leagues" && (
+            <div className="hs-crown-featured-date-tools">
+              <span className="hs-crown-featured-date-label">مواعيد المباريات</span>
+              <DayButtons selected={dayView} onSelect={day => { setSharedActiveIndex(0); setLeagueOnly(false); setDayView(day); }} />
+              {(dayView || leagueOnly) && <button type="button" className="hs-crown-featured-clear" onClick={() => { setSharedActiveIndex(0); setDayView(null); setLeagueOnly(false); }}>إظهار الكل</button>}
+              {dayView && matchesStatus === "stale" && <p className="hs-day-warning" role="status">بيانات غير محدثة حالياً</p>}
+            </div>
+          )}
+        </div>
         <div
           className="hs-crown-center"
           onPointerDown={(e) => {
@@ -598,10 +678,33 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           }}
           onPointerCancel={() => finishDrag(null)}
         >
-          {dayView && !items.length && <p className="hs-day-empty" role="status">{matchesStatus === "loading" ? "جارٍ تحديث المباريات…" : matchesStatus === "error" ? "تعذّر تحديث مباريات الشريط من المصدر." : "لا توجد مباريات مؤكدة مطابقة في الشريط لهذا الاختيار."}</p>}
+          {!items.length && <div className="hs-day-empty" role="status">
+            <p>{matchesStatus === "loading" ? "جارٍ تحديث المباريات…" : matchesStatus === "error" ? "تعذّر تحديث مباريات الشريط من المصدر." : dayView ? "لا توجد مباريات مؤكدة لهذا الاختيار حالياً." : selectedLeagueId ? "لا توجد مباريات بارزة لهذه البطولة حالياً." : "لا توجد مباريات بارزة متاحة حالياً."}</p>
+            <a href="/matches/">استكشف كل المباريات</a>
+          </div>}
           {items.map((item, idx) => {
             const offset = getOffset(idx);
             const isFront = offset === "0";
+            if (item.newsIndex !== undefined) {
+              const story = FEATURED_NEWS[item.newsIndex];
+              if (!story) return null;
+              return (
+                <div
+                  key={item.key}
+                  className="hs-crown-card hs-crown-card--match hs-crown-card--news"
+                  data-crown-card={item.key}
+                  data-crown-kind="news"
+                  data-crown-offset={offset}
+                  aria-hidden={!isFront}
+                  role="group"
+                  aria-label={`خبر مميز: ${story.title}`}
+                >
+                  <div className="hs-crown-match hs-crown-news-ticket-shell">
+                    <FeaturedNewsTicketSlide href={story.href} />
+                  </div>
+                </div>
+              );
+            }
             return (
               <a
                 key={item.key}
@@ -644,7 +747,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               >
                 {item.clashIndex >= 0 ? <>
                   <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
-                  <CrownClashSlide parts active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
+                  <CrownClashSlide active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
                   <span className="hs-crown-match-art hs-crown-league-background" data-league-card-background={item.leagueId} aria-hidden="true">
                     <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={132} eager={isFront} />
@@ -687,50 +790,94 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           </div>
           {sidebarNews && newsTicket && <div className="hs-crown-sidebar-news" aria-label="تذكرة الأخبار">{newsTicket}</div>}
         </aside>
-        <div className="hs-crown-top-options" aria-label="خيارات إضافية للمباريات">
-          <div className="hs-crown-tabs hs-crown-extra-tabs" role="group" aria-label="تفاصيل وأخبار">
-            {shellItem && ([['standings', 'جدول الترتيب'], ['stats', 'إحصائيات']] as const).map(([tab, label]) => (
-              <button key={tab} type="button" aria-haspopup="dialog" onPointerDown={event => event.stopPropagation()} onClick={event => {
-                event.stopPropagation();
-                if (STANDINGS_LEAGUE_IDS.includes(shellItem.standingsKey)) {
-                  ensureLiveLeagueStandings(shellItem.standingsKey);
-                }
-                setExpandedTab(tab);
-                setExpandedKey(shellItem.key);
-              }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-                {tab === 'standings' ? <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M9 4v16M3 14.5h18" /></> : <><path d="M4 20h16M6 17v-5h3v5M11 17V7h3v10M16 17v-8h3v8" /></>}
-              </svg><span>{label}</span></span></button>
-            ))}
-            {onNewsOpenChange && <button type="button" className="hs-crown-news-tab" onPointerDown={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); onNewsOpenChange(true); }}><span className="hs-crown-tab-content"><svg className="hs-crown-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4v4H7zM14 8h4M14 12h4M7 16h11"/></svg><span>الأخبار</span></span></button>}
+        {(!leagueOnly || horizontalView === "news") && items.length > 1 && (
+          <div className="hs-crown-match-picker">
+            <div className="hs-crown-match-picker-heading">
+              <span>{horizontalView === "news" ? "اختر الخبر" : "اختر المواجهة"}</span>
+              <span dir="ltr">{String((active % items.length) + 1).padStart(2, "0")} <i>/</i> {String(items.length).padStart(2, "0")}</span>
+            </div>
+            <div className={`hs-crown-match-progress${horizontalView === "news" ? " is-news-picker" : ""}`} role="group" aria-label={horizontalView === "news" ? "اختيار خبر مميز" : "اختيار مباراة بارزة"}>
+              {items.map((item, index) => {
+                const story = item.newsIndex === undefined ? null : FEATURED_NEWS[item.newsIndex];
+                const clash = item.clashIndex < 0 ? null : clashes[item.clashIndex];
+                const match = item.clashIndex < 0 ? null : matches[item.clashIndex];
+                const homeCrest = clash?.home.crest || match?.home.logo || "";
+                const awayCrest = clash?.away.crest || match?.away.logo || "";
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className={`${index === active ? "is-active" : ""}${story ? " is-news" : ""}`}
+                    aria-label={story ? `الخبر ${item.newsIndex! + 1}: ${story.title}` : `المباراة ${index + 1}: ${clash?.home.name ?? "فريق"} ضد ${clash?.away.name ?? "فريق"}`}
+                    aria-pressed={index === active}
+                    onClick={() => setSharedActiveIndex(index)}
+                  >
+                    <span className="hs-crown-picker-index" dir="ltr">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="hs-crown-picker-league">{story ? "خبر مميز" : item.shortName}</span>
+                    <span className={`hs-crown-picker-teams${story ? " hs-crown-picker-teams--news" : ""}`}>
+                      {story ? <strong>{story.title}</strong> : <>
+                        <span className="hs-crown-picker-side">
+                          {homeCrest && <img src={homeCrest} alt="" loading="lazy" decoding="async" />}
+                          <strong>{clash?.home.name ?? match?.home.name ?? "الفريق الأول"}</strong>
+                        </span>
+                        <i aria-hidden="true">VS</i>
+                        <span className="hs-crown-picker-side">
+                          {awayCrest && <img src={awayCrest} alt="" loading="lazy" decoding="async" />}
+                          <strong>{clash?.away.name ?? match?.away.name ?? "الفريق الثاني"}</strong>
+                        </span>
+                      </>}
+                    </span>
+                    <span className="hs-crown-picker-indicator" aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        <DayButtons selected={dayView} onSelect={day => { setSharedActiveIndex(0); setLeagueOnly(false); setDayView(day); }} />
-        {(dayView || leagueOnly) && <button type="button" className="hs-day-clear" onClick={() => { setSharedActiveIndex(0); setDayView(null); setLeagueOnly(false); }}>عرض جميع البطاقات</button>}
-        {dayView && matchesStatus === "stale" && <p className="hs-day-warning" role="status">تعذّر تحديث بعض بيانات المباريات؛ المعروض من آخر بيانات متاحة وقد لا يكون محدثاً.</p>}
-        </div>
-        <div className="hs-crown-controls">
-          <button type="button" className="hs-crown-autoplay" aria-pressed={autoplayStopped} onClick={() => setAutoplayStopped(value => !value)}>
-            {autoplayStopped ? "تشغيل الشريط" : "إيقاف الشريط"}
-          </button>
+        )}
+        <div className="hs-crown-controls" role="group" aria-label="التنقل بين المباريات البارزة">
           <button
             type="button"
-            className="hs-crown-arrow"
+            className="hs-crown-arrow hs-crown-arrow--next"
             onClick={() => step(1)}
-            aria-label="البطولة التالية في شريط الهيرو"
+            aria-label={leagueOnly ? "البطولة التالية" : "المباراة التالية"}
+            disabled={items.length < 2}
           >
-            ›
+            <span>التالي</span><span className="hs-crown-arrow-glyph" aria-hidden="true">‹</span>
           </button>
-          <span className="hs-crown-counter" dir="ltr" role="status" aria-live="off" aria-label={`الشريحة ${items.length ? active + 1 : 0} من ${items.length}`}>
-            {items.length ? (active % items.length) + 1 : 0}/{items.length}
-          </span>
+          <div className="hs-crown-controls-center">
+            <span className="hs-crown-counter" dir="ltr" role="status" aria-live="off" aria-label={`${leagueOnly ? "البطاقة" : "المباراة"} ${items.length ? active + 1 : 0} من ${items.length}`}>
+              {String(items.length ? (active % items.length) + 1 : 0).padStart(2, "0")}<i>/</i>{String(items.length).padStart(2, "0")}
+            </span>
+            <button type="button" className="hs-crown-autoplay" aria-pressed={autoplayStopped} onClick={() => setAutoplayStopped(value => !value)}>
+              <span className="hs-crown-autoplay-mark" aria-hidden="true">{autoplayStopped ? "▶" : "Ⅱ"}</span>
+              {autoplayStopped ? "تشغيل تلقائي" : "إيقاف تلقائي"}
+            </button>
+          </div>
           <button
             type="button"
-            className="hs-crown-arrow"
+            className="hs-crown-arrow hs-crown-arrow--prev"
             onClick={() => step(-1)}
-            aria-label="البطولة السابقة في شريط الهيرو"
+            aria-label={leagueOnly ? "البطولة السابقة" : "المباراة السابقة"}
+            disabled={items.length < 2}
           >
-            ‹
+            <span className="hs-crown-arrow-glyph" aria-hidden="true">›</span><span>السابق</span>
           </button>
         </div>
+        {shellItem?.clashIndex >= 0 && !leagueOnly && (
+          <div className="hs-crown-match-actions">
+            <button
+              type="button"
+              className="hs-crown-match-details"
+              onClick={() => {
+                setExpandedTab("match");
+                setExpandedKey(shellItem.key);
+              }}
+            >
+              تفاصيل المباراة
+            </button>
+            <a href="/matches/" className="hs-crown-match-all">كل المباريات</a>
+          </div>
+        )}
         </>}
       </div>
       {expandedItem && expandedTab === 'standings' && (

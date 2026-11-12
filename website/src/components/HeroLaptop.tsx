@@ -5,10 +5,10 @@ import './hero-laptop.css';
    https://uiverse.io/Ashon-G/kind-bat-54
    Scoped CSS illustration: assembly sequence, loading screen and keyboard.
    The loading bar is decorative, not an actual network status. */
-export function HeroLaptop() {
+export function HeroLaptop({ onActivate }: { onActivate?: () => void }) {
   const [replay, setReplay] = useState(0);
   return (
-    <button type="button" className="hero-laptop" data-hero-laptop="" aria-label="إعادة حركة نموذج اللابتوب" onClick={() => setReplay(value => value + 1)}>
+    <button type="button" className="hero-laptop" data-hero-laptop="" aria-label="إظهار اللابتوب في المقدمة وإعادة حركته" onClick={() => { onActivate?.(); setReplay(value => value + 1); }}>
       <span className="hero-laptop-model" key={replay} aria-hidden="true" dir="ltr">
         <span className="hero-laptop-lid">
           <span className="hero-laptop-display">

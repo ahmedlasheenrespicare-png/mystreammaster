@@ -113,6 +113,8 @@ export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatc
             alt=""
             aria-hidden="true"
             className="hs-league-stats-logo"
+            width={24}
+            height={24}
             loading="eager"
             decoding="async"
             data-league-logo={item.leagueId}
@@ -129,21 +131,21 @@ export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatc
             <div className="hs-league-stat hs-league-stat--leader">
               <span className="hs-league-stat-label">المتصدر</span>
               <strong className="hs-league-stat-value">{item.leaderPoints.toLocaleString("en-US")}<small>نقطة</small></strong>
-              <span className="hs-league-stat-team">{teamLogo(item.leaderName, item.leaderTeamId) && <img src={teamLogo(item.leaderName, item.leaderTeamId)} alt="" loading="lazy" decoding="async" />}{item.leaderName}</span>
+              <span className="hs-league-stat-team">{teamLogo(item.leaderName, item.leaderTeamId) && <img src={teamLogo(item.leaderName, item.leaderTeamId)} alt="" width={16} height={16} loading="lazy" decoding="async" />}{item.leaderName}</span>
             </div>
           )}
           {item.attackName && item.attackRate != null && (
             <div className="hs-league-stat">
               <span className="hs-league-stat-label">أقوى هجوم</span>
               <strong className="hs-league-stat-value">{item.attackRate.toFixed(2)}<small>هدف/م</small></strong>
-              <span className="hs-league-stat-team">{teamLogo(item.attackName, item.attackTeamId) && <img src={teamLogo(item.attackName, item.attackTeamId)} alt="" loading="lazy" decoding="async" />}{item.attackName}</span>
+              <span className="hs-league-stat-team">{teamLogo(item.attackName, item.attackTeamId) && <img src={teamLogo(item.attackName, item.attackTeamId)} alt="" width={16} height={16} loading="lazy" decoding="async" />}{item.attackName}</span>
             </div>
           )}
           {item.defenceName && item.defenceRate != null && (
             <div className="hs-league-stat">
               <span className="hs-league-stat-label">أقوى دفاع</span>
               <strong className="hs-league-stat-value">{item.defenceRate.toFixed(2)}<small>هدف/م</small></strong>
-              <span className="hs-league-stat-team">{teamLogo(item.defenceName, item.defenceTeamId) && <img src={teamLogo(item.defenceName, item.defenceTeamId)} alt="" loading="lazy" decoding="async" />}{item.defenceName}</span>
+              <span className="hs-league-stat-team">{teamLogo(item.defenceName, item.defenceTeamId) && <img src={teamLogo(item.defenceName, item.defenceTeamId)} alt="" width={16} height={16} loading="lazy" decoding="async" />}{item.defenceName}</span>
             </div>
           )}
           {item.totalGoals != null && (
@@ -161,10 +163,10 @@ export function HeroLeagueStatsTicker({ selectedLeagueId, matchInfo = [], onMatc
         <div className="hs-league-stats-match">
           <span className="hs-league-stats-match-label">مباراة البطولة</span>
           <span className="hs-league-stats-match-teams">
-            {match.homeLogo && <img src={match.homeLogo} alt="" loading="lazy" decoding="async" />}
+            {match.homeLogo && <img src={match.homeLogo} alt="" width={20} height={20} loading="lazy" decoding="async" />}
             <strong>{match.homeName}</strong>
             <i>VS</i>
-            {match.awayLogo && <img src={match.awayLogo} alt="" loading="lazy" decoding="async" />}
+            {match.awayLogo && <img src={match.awayLogo} alt="" width={20} height={20} loading="lazy" decoding="async" />}
             <strong>{match.awayName}</strong>
           </span>
           <span className={`hs-league-stats-match-state${match.scoreLabel ? " has-score" : ""}`}>

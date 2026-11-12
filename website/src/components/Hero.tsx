@@ -518,7 +518,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </div>
 
         {/* الأزرار */}
-        <Reveal variant="up" delay={160} className="mt-5">
+        <Reveal variant="up" delay={160} className="mt-5" initiallyVisible>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={onOpenTrial}
@@ -567,7 +567,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         </Reveal>
 
         {/* التقييم */}
-        <Reveal variant="up" delay={380} className="mt-4">
+        <Reveal variant="up" delay={380} className="mt-4" initiallyVisible>
           <div className="flex items-center justify-center gap-2">
             <div className="flex">
               {[...Array(5)].map((_, i) => (

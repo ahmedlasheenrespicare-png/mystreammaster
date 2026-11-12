@@ -817,12 +817,12 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                     <span className={`hs-crown-picker-teams${story ? " hs-crown-picker-teams--news" : ""}`}>
                       {story ? <strong>{story.title}</strong> : <>
                         <span className="hs-crown-picker-side">
-                          {homeCrest && <img src={homeCrest} alt="" loading="lazy" decoding="async" />}
+                          {homeCrest && <img src={homeCrest} alt="" width={24} height={24} loading="lazy" decoding="async" />}
                           <strong>{clash?.home.name ?? match?.home.name ?? "الفريق الأول"}</strong>
                         </span>
                         <i aria-hidden="true">VS</i>
                         <span className="hs-crown-picker-side">
-                          {awayCrest && <img src={awayCrest} alt="" loading="lazy" decoding="async" />}
+                          {awayCrest && <img src={awayCrest} alt="" width={24} height={24} loading="lazy" decoding="async" />}
                           <strong>{clash?.away.name ?? match?.away.name ?? "الفريق الثاني"}</strong>
                         </span>
                       </>}

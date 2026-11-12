@@ -48,7 +48,7 @@ const MAX_NEWS_SLIDES = 8;
 const ROTATE_MS = 4500;
 const MANUAL_PAUSE_MS = 15_000;
 
-type DayKey = "yesterday" | "today" | "tomorrow";
+export type DayKey = "yesterday" | "today" | "tomorrow";
 
 const DAY_TABS: ReadonlyArray<{ key: DayKey; label: string }> = [
   { key: "yesterday", label: "أمس" },
@@ -56,8 +56,8 @@ const DAY_TABS: ReadonlyArray<{ key: DayKey; label: string }> = [
   { key: "tomorrow", label: "غد" },
 ];
 
-type DayState = { status: "loading" | "ready" | "error"; matches: Match[] };
-type DayStates = Record<DayKey, DayState>;
+export type DayState = { status: "loading" | "ready" | "error"; matches: Match[] };
+export type DayStates = Record<DayKey, DayState>;
 
 const EMPTY_DAY: DayState = { status: "loading", matches: [] };
 
@@ -72,7 +72,7 @@ function rank(match: Match): number {
 /* جلب يوم واحد بكل بطولات LEAGUES — نفس نمط قسم «أخبار مميزة»:
    scoreboard.php، Promise.allSettled، وإلغاء بعد 15 ثانية. كل يوم يُجلب
    مرّة واحدة فقط، والبقية تُجلب في الخلفية بعد أول رسم */
-function useDayMatches(days: Record<DayKey, string>, active: DayKey): DayStates {
+export function useDayMatches(days: Record<DayKey, string>, active: DayKey): DayStates {
   const [states, setStates] = useState<DayStates>({ yesterday: EMPTY_DAY, today: EMPTY_DAY, tomorrow: EMPTY_DAY });
   const started = useRef(new Set<DayKey>());
   const controllers = useRef<AbortController[]>([]);
@@ -335,7 +335,7 @@ function DiagonalCrest({ team, small = false }: { team: MatchTeam; small?: boole
    تذكرة يمين التذكرة الرئيسية — مباريات أمس واليوم وغد
    التصميم المعتمد: الملصق القطري المزدوج + الشفرات المائلة (Diagonal Split Clash)
    -------------------------------------------------------------------------- */
-export function HeroMatchesTicket({ className = "" }: { className?: string }) {
+export function HeroMatchesTicket({ className = "", onDayMatchesChange }: { className?: string; onDayMatchesChange?: (states: DayStates) => void }) {
   const days = useMemo<Record<DayKey, string>>(() => {
     const today = dayInZone(new Date(), HOME_ZONE);
     return { yesterday: shiftDay(today, -1), today, tomorrow: shiftDay(today, 1) };
@@ -343,6 +343,7 @@ export function HeroMatchesTicket({ className = "" }: { className?: string }) {
 
   const [activeDay, setActiveDay] = useState<DayKey>("today");
   const states = useDayMatches(days, activeDay);
+  useEffect(() => { onDayMatchesChange?.(states); }, [states, onDayMatchesChange]);
 
   const day = states[activeDay];
   const slides = day.status === "ready" ? day.matches : [];

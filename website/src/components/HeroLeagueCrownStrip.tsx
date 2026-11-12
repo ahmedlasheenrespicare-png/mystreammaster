@@ -16,7 +16,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { dayInZone, shiftDay } from "../lib/matches.mjs";
+import { dayInZone, dayLabel, hasCompleteScore, kickoff, shiftDay } from "../lib/matches.mjs";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { HeroLeagueHorizontalStrip } from "./HeroLeagueHorizontalStrip";
 import { FEATURED_NEWS } from "../content/featured-news";
@@ -833,6 +833,19 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 const story = item.newsIndex === undefined ? null : FEATURED_NEWS[item.newsIndex];
                 const clash = item.clashIndex < 0 ? null : clashes[item.clashIndex];
                 const match = item.clashIndex < 0 ? null : matches[item.clashIndex];
+                const pickerDay = match ? dayInZone(new Date(match.date), "Africa/Cairo") : clash?.date ?? null;
+                const pickerToday = dayInZone(new Date(), "Africa/Cairo");
+                const pickerTomorrow = shiftDay(pickerToday, 1);
+                const pickerStatus = match?.state === "live" ? "جارية الآن"
+                  : match?.state === "finished" ? "انتهت المباراة"
+                    : match?.state === "scheduled" ? pickerDay === pickerToday ? "قادمة اليوم" : pickerDay === pickerTomorrow ? "قادمة غدًا" : pickerDay ? `قادمة ${dayLabel(pickerDay, { weekday: "long" })}` : "قادمة"
+                      : null;
+                const pickerScore = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score)
+                  ? `${match.home.score}–${match.away.score}`
+                  : null;
+                const pickerInfo = match?.state === "scheduled" && match.date
+                  ? kickoff(match.date, "Africa/Cairo")
+                  : pickerScore;
                 const homeCrest = clash?.home.crest || match?.home.logo || "";
                 const awayCrest = clash?.away.crest || match?.away.logo || "";
                 return (
@@ -841,7 +854,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                     type="button"
                     className={`hs-crown-picker-card${index === active ? " is-active" : ""}${story ? " is-news" : ""}`}
                     data-picker-state={story ? undefined : match?.state ?? "unconfirmed"}
-                    aria-label={story ? `الخبر ${item.newsIndex! + 1}: ${story.title}` : `المباراة ${index + 1}: ${clash?.home.name ?? "فريق"} ضد ${clash?.away.name ?? "فريق"}`}
+                    aria-label={story ? `الخبر ${item.newsIndex! + 1}: ${story.title}` : `المباراة ${index + 1}: ${clash?.home.name ?? "فريق"} ضد ${clash?.away.name ?? "فريق"}${pickerStatus ? `، ${pickerStatus}` : ""}${pickerInfo ? `، ${pickerScore ? `النتيجة ${pickerInfo}` : `وقت البداية ${pickerInfo}`}` : ""}`}
                     aria-pressed={index === active}
                     onClick={() => setSharedActiveIndex(index)}
                   >
@@ -860,6 +873,10 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                         </span>
                       </>}
                     </span>
+                    {!story && pickerStatus && <span className={`hs-crown-picker-status${match?.state === "live" ? " is-live" : ""}${match?.state === "finished" ? " is-finished" : ""}`}>
+                      <strong>{pickerStatus}</strong>
+                      {pickerInfo && <b dir="ltr">{pickerInfo}</b>}
+                    </span>}
                     <span className="hs-crown-picker-indicator" aria-hidden="true" />
                   </button>
                 );

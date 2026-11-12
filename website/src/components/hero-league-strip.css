@@ -3420,10 +3420,10 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
 #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) {
   direction: rtl;
   grid-template-columns: 28px minmax(0, 1fr) 8px;
-  grid-template-rows: 22px minmax(48px, 1fr);
+  grid-template-rows: 22px minmax(48px, 1fr) auto;
   align-content: center;
   gap: 7px 8px;
-  min-height: 100px;
+  min-height: 122px;
   padding: 11px 12px;
   border: 1px solid rgba(19, 35, 45, .12);
   border-radius: 18px;
@@ -3481,6 +3481,39 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
   grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
   gap: 5px;
 }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  color: #596a71;
+  font: 700 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: inherit;
+  font: inherit;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status strong::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #90a09b;
+  content: "";
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status.is-live strong { color: #c52840; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status.is-live strong::before { background: #e53950; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status.is-finished strong::before { background: #76867f; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status b {
+  color: #172832;
+  font: 800 10px/1 "Space Grotesk", "Cairo", sans-serif;
+}
 #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side {
   flex-direction: column;
   justify-content: center;
@@ -3534,6 +3567,10 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
 #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-side strong {
   color: #fff;
 }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status,
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status b { color: rgba(255, 255, 255, .82); }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status.is-live strong { color: #ff8794; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status.is-live strong::before { background: #ff6578; }
 #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-teams i {
   border-color: rgba(216, 255, 62, .4);
   background: rgba(216, 255, 62, .12);
@@ -3552,7 +3589,7 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
     grid-auto-columns: minmax(230px, 74vw);
   }
   #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) {
-    min-height: 98px;
+    min-height: 118px;
     padding: 10px;
   }
   #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side img {

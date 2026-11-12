@@ -1187,6 +1187,12 @@ test('featured match card shows a state badge with live/final scores and upcomin
     const front = strip.locator('[data-crown-offset="0"]');
     await expect(front.locator('.hs-crown-match-state-badge')).toHaveText(badge);
     if (value) await expect(front.locator('.hs-crown-match-result > strong')).toContainText(value);
+    const pickerCard = strip.getByRole('group', { name: 'اختيار مباراة بارزة' }).locator('.hs-crown-picker-card:not(.is-news)').filter({ hasText: 'فالنسيا' }).first();
+    await expect(pickerCard).toBeVisible();
+    await expect(pickerCard.locator('.hs-crown-picker-side strong')).toHaveCount(2);
+    await expect(pickerCard.locator('.hs-crown-picker-status strong')).toHaveText(next === 'tomorrow' ? 'قادمة غدًا' : badge);
+    if (next === 'live' || next === 'finished') await expect(pickerCard.locator('.hs-crown-picker-status b')).toHaveText('3–1');
+    if (next === 'today' || next === 'tomorrow') await expect(pickerCard.locator('.hs-crown-picker-status b')).toHaveText('٢٢:٠٠');
     return front;
   };
 

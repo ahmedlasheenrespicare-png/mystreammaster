@@ -8,6 +8,7 @@
      لمحركات البحث، والتنقّل السريع يتم باعتراض الضغط فقط
 ========================================================================== */
 
+import { flushSync } from "react-dom";
 import {
   createContext,
   useCallback,
@@ -127,9 +128,36 @@ export function RouterProvider({
     }
 
     const href = `${url.pathname}${url.search}${url.hash}`;
-    if (opts?.replace) history.replaceState(null, "", href);
-    else history.pushState(null, "", href);
-    setState(next);
+    const commitNavigation = () => {
+      if (opts?.replace) history.replaceState(null, "", href);
+      else history.pushState(null, "", href);
+      setState(next);
+    };
+
+    /* Transition is intentionally opt-in only when leaving the Arabic homepage.
+       Other routes keep the current instant SPA navigation behavior. */
+    const fromHomepage = normalizePath(window.location.pathname) === "/";
+    const reducedMotion =
+      document.documentElement.dataset.motion === "off" ||
+      (document.documentElement.dataset.motion !== "on" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const transitionDocument = document as Document & {
+      startViewTransition?: (callback: () => void) => { finished: Promise<unknown> };
+    };
+    if (fromHomepage && !reducedMotion && transitionDocument.startViewTransition) {
+      const root = document.documentElement;
+      root.classList.add("home-route-transition");
+      const clearTransition = () => root.classList.remove("home-route-transition");
+      try {
+        const transition = transitionDocument.startViewTransition(() => flushSync(commitNavigation));
+        void transition.finished.then(clearTransition, clearTransition);
+        window.setTimeout(clearTransition, 1100);
+      } catch {
+        clearTransition();
+        commitNavigation();
+      }
+      return;
+    }
+    commitNavigation();
   }, []);
 
   /* زر الرجوع/التقدم */

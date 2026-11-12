@@ -2078,3 +2078,1070 @@ html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pi
   height: min(132px, 90%);
   aspect-ratio: 1;
 }
+
+/* Quiet section label between tournament navigation and the highlighted match cards. */
+.hs-crown-featured-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(100%, 1120px);
+  margin: 8px auto -2px;
+  padding-inline: 4px;
+  color: #0b0b0f;
+}
+.hs-crown-featured-heading h3 {
+  margin: 0;
+  font: 900 14px/1.4 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: -.02em;
+}
+.hs-crown-featured-heading > span {
+  color: rgba(11,11,15,.48);
+  font: 700 10px/1.4 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .hs-crown-featured-heading { margin-top: 5px; }
+  .hs-crown-featured-heading h3 { font-size: 12px; }
+  .hs-crown-featured-heading > span { font-size: 9px; }
+}
+
+/* Clear previous/next controls for the match-only carousel. */
+.hs-crown-controls .hs-crown-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: auto;
+  min-width: 78px;
+  height: 32px;
+  padding: 0 10px;
+  font: 800 11px/1 "Cairo", "Tajawal", sans-serif;
+}
+.hs-crown-controls .hs-crown-arrow > span[aria-hidden="true"] { font-size: 15px; }
+.hs-crown-controls .hs-crown-arrow:disabled { opacity: .45; cursor: not-allowed; }
+.hs-crown-featured-heading { scroll-margin-top: 90px; }
+.hs-day-empty a {
+  display: inline-flex;
+  margin-top: 8px;
+  padding: 7px 12px;
+  border: 1px solid rgba(11,11,15,.15);
+  border-radius: 999px;
+  background: #fff;
+  color: #0b0b0f;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* Wide match showcase inspired by the reference product carousel:
+   one complete match fills the stage, with explicit navigation below it. */
+#hero .hero-crown-strip {
+  max-width: 1200px;
+  margin: clamp(30px, 5vw, 60px) auto 0;
+}
+#hero .hero-crown-strip .hs-crown-shell:not(.is-news-open) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: clamp(12px, 2.1vw, 24px);
+  border: 1px solid rgba(11,11,15,.09);
+  border-radius: clamp(20px, 3vw, 30px);
+  background: linear-gradient(150deg, #fff 0%, #faf9f6 70%, #f3f2ec 100%);
+  box-shadow: 0 26px 65px -46px rgba(11,11,15,.38), inset 0 1px 0 #fff;
+  overflow: visible;
+}
+#hero .hero-crown-strip .hs-crown-browser,
+#hero .hero-crown-strip .hs-crown-sidebar { display: none; }
+#hero .hero-crown-strip .hs-horizontal-strip { order: 1; margin-bottom: 18px; }
+#hero .hero-crown-strip .hs-crown-featured-heading { order: 2; width: 100%; margin: 0 auto 12px; }
+#hero .hero-crown-strip .hs-crown-center {
+  order: 3;
+  width: 100%;
+  max-width: none;
+  height: clamp(300px, 34vw, 410px) !important;
+  min-height: 300px;
+  margin: 0 !important;
+  padding: 0;
+  overflow: visible;
+  perspective: none;
+  cursor: default;
+}
+#hero .hero-crown-strip .hs-crown-center .hs-crown-card--match {
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px) scale(.99);
+  transition: opacity .32s ease, transform .42s cubic-bezier(.2,.75,.2,1), visibility .32s;
+}
+#hero .hero-crown-strip .hs-crown-center .hs-crown-card--match[data-crown-offset="0"] {
+  z-index: 2;
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  justify-content: center;
+  gap: clamp(14px, 3vw, 28px);
+  padding: clamp(22px, 4vw, 48px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(216,255,62,.15), transparent 52%),
+    linear-gradient(140deg, #11131b 0%, #202431 56%, #101217 100%);
+  color: #fff;
+  box-shadow: 0 24px 55px -32px rgba(11,11,15,.6), inset 0 1px 0 rgba(255,255,255,.1);
+}
+#hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 17px;
+  pointer-events: none;
+}
+#hero .hero-crown-strip .hs-crown-match-art { opacity: .12; }
+#hero .hero-crown-strip .hs-crown-match-art .league-carousel-badge,
+#hero .hero-crown-strip .hs-crown-match-art .league-carousel-logo { width: min(56vw, 440px); height: min(56vw, 440px); }
+#hero .hero-crown-strip .hs-crown-match-heading {
+  min-height: 0;
+  color: rgba(255,255,255,.68);
+  font: 800 clamp(12px, 1.5vw, 15px)/1.4 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .02em;
+}
+#hero .hero-crown-strip .hs-crown-match-teams {
+  width: min(100%, 900px);
+  grid-template-columns: minmax(0,1fr) minmax(90px,.42fr) minmax(0,1fr);
+  align-self: center;
+  gap: clamp(10px, 4vw, 48px);
+}
+#hero .hero-crown-strip .hs-crown-match-team {
+  gap: 12px;
+  color: #fff;
+  font-size: clamp(16px, 2.1vw, 25px);
+  line-height: 1.35;
+  text-shadow: 0 2px 10px rgba(0,0,0,.32);
+}
+#hero .hero-crown-strip .hs-crown-match-team strong { max-width: 100%; text-wrap: balance; }
+#hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest,
+#hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest--mono {
+  width: clamp(56px, 9vw, 96px);
+  height: clamp(56px, 9vw, 96px);
+  padding: 7px;
+  border-radius: 22px;
+  object-fit: contain;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  box-shadow: 0 12px 30px rgba(0,0,0,.2);
+}
+#hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest--mono { color: #d8ff3e; font-size: 20px; }
+#hero .hero-crown-strip .hs-crown-match-result { gap: 8px; color: #d8ff3e; font-size: clamp(24px, 4vw, 48px); }
+#hero .hero-crown-strip .hs-crown-match-result small { color: rgba(255,255,255,.62); font-size: clamp(11px, 1.4vw, 15px); }
+#hero .hero-crown-strip .hs-crown-match-status { color: rgba(255,255,255,.7); font-size: clamp(11px, 1.25vw, 14px); }
+#hero .hero-crown-strip .hs-crown-match-status.is-live { color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-match .league-ticket-countdown { gap: 7px; }
+#hero .hero-crown-strip .hs-crown-match .ticket-flip__digit { width: 22px; height: 34px; font-size: 22px; }
+#hero .hero-crown-strip .hs-crown-match .ticket-flip__txt { font-size: 22px; line-height: 34px; }
+#hero .hero-crown-strip .hs-crown-match-brands { height: auto; gap: 12px; }
+#hero .hero-crown-strip .hs-crown-match-brands img { width: 34px; max-height: 20px; }
+#hero .hero-crown-strip .hs-crown-card--match > .hs-crown-split { display: none; }
+#hero .hero-crown-strip .hs-crown-controls {
+  order: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px auto 0;
+  padding: 7px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.82);
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow {
+  min-width: 96px;
+  height: 38px;
+  border-color: rgba(11,11,15,.1);
+  border-radius: 999px;
+  background: #0b0b0f;
+  color: #fff;
+  font-size: 12px;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:hover:not(:disabled) { background: #252832; color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-counter { min-width: 48px; font-size: 12px; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay {
+  min-height: 34px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.58);
+  font: 700 10px/1.2 "Cairo", "Tajawal", sans-serif;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-top-options { order: 5; width: 100%; margin: 14px 0 0; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 6; margin-top: 12px; }
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 5; align-self: center; }
+#hero .hero-crown-strip .hs-day-empty {
+  order: 3;
+  width: 100%;
+  min-height: 180px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 22px;
+  background: linear-gradient(140deg, #fff, #f2f1ec);
+  color: rgba(11,11,15,.72);
+}
+@media (max-width: 680px) {
+  #hero .hero-crown-strip { margin-top: 30px; }
+  #hero .hero-crown-strip .hs-crown-shell:not(.is-news-open) { padding: 10px; border-radius: 20px; }
+  #hero .hero-crown-strip .hs-crown-center { height: 330px !important; min-height: 330px; }
+  #hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match { min-height: 330px; padding: 20px 14px; border-radius: 19px; gap: 14px; }
+  #hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match::after { inset: 9px; border-radius: 14px; }
+  #hero .hero-crown-strip .hs-crown-match-teams { grid-template-columns: minmax(0,1fr) 56px minmax(0,1fr); gap: 8px; }
+  #hero .hero-crown-strip .hs-crown-match-team { gap: 9px; font-size: clamp(12px, 3.4vw, 17px); }
+  #hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest,
+  #hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest--mono { width: clamp(48px, 15vw, 70px); height: clamp(48px, 15vw, 70px); padding: 5px; border-radius: 16px; }
+  #hero .hero-crown-strip .hs-crown-match-result { font-size: 24px; }
+  #hero .hero-crown-strip .hs-crown-controls { gap: 5px; margin-top: 12px; padding: 5px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow { min-width: 76px; height: 36px; padding-inline: 8px; font-size: 11px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay { max-width: 86px; font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-center .hs-crown-card--match { transition: none; }
+}
+
+/* Clear product-style action row beneath the selected match carousel. */
+#hero .hero-crown-strip .hs-crown-match-actions {
+  order: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 10px auto 0;
+}
+#hero .hero-crown-strip .hs-crown-match-details,
+#hero .hero-crown-strip .hs-crown-match-all {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: 1px solid rgba(11,11,15,.13);
+  border-radius: 999px;
+  font: 800 12px/1.2 "Cairo", "Tajawal", sans-serif;
+  text-decoration: none;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+#hero .hero-crown-strip .hs-crown-match-details {
+  border-color: #0b0b0f;
+  background: #0b0b0f;
+  color: #fff;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-match-details:hover { background: #222530; border-color: #222530; color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-match-all { background: rgba(255,255,255,.86); color: #0b0b0f; }
+#hero .hero-crown-strip .hs-crown-match-all:hover { background: #fff; border-color: rgba(11,11,15,.3); }
+#hero .hero-crown-strip .hs-crown-top-options { order: 6; }
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 6; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 7; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-actions { gap: 7px; margin-top: 8px; }
+  #hero .hero-crown-strip .hs-crown-match-details,
+  #hero .hero-crown-strip .hs-crown-match-all { min-height: 38px; padding-inline: 15px; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-details,
+  #hero .hero-crown-strip .hs-crown-match-all { transition: none; }
+}
+
+/* Direct model-style selection rail for the featured matches. */
+#hero .hero-crown-strip .hs-crown-match-progress {
+  order: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: min(100%, 620px);
+  margin: 14px auto 0;
+  padding: 0 8px;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button {
+  flex: 1 1 18px;
+  min-width: 12px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(11,11,15,.14);
+  transition: height .2s ease, background .2s ease;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:hover span { background: rgba(43,78,255,.5); }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active span {
+  height: 5px;
+  background: linear-gradient(90deg, #2b4eff, #d8ff3e);
+  box-shadow: 0 0 12px rgba(43,78,255,.2);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 1px;
+  border-radius: 5px;
+}
+#hero .hero-crown-strip .hs-crown-controls { order: 5; }
+#hero .hero-crown-strip .hs-crown-match-actions { order: 6; }
+#hero .hero-crown-strip .hs-crown-top-options,
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 7; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 8; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-progress { justify-content: flex-start; gap: 4px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+  #hero .hero-crown-strip .hs-crown-match-progress::-webkit-scrollbar { display: none; }
+  #hero .hero-crown-strip .hs-crown-match-progress button { flex: 0 0 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-progress button span { transition: none; }
+}
+
+/* Match chooser: a compact, numbered selector inspired by a premium product configurator. */
+#hero .hero-crown-strip .hs-crown-match-picker {
+  order: 4;
+  width: min(100%, 980px);
+  margin: 16px auto 0;
+}
+#hero .hero-crown-strip .hs-crown-match-picker-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 2px 8px;
+  color: rgba(11,11,15,.62);
+  font: 800 10px/1.3 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .05em;
+}
+#hero .hero-crown-strip .hs-crown-match-picker-heading > :last-child {
+  color: #0b0b0f;
+  font: 700 11px/1 "Space Grotesk", "Cairo", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-picker-heading i { margin: 0 4px; color: rgba(11,11,15,.35); font-style: normal; }
+#hero .hero-crown-strip .hs-crown-match-progress {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(180px, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 2px 2px 8px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(11,11,15,.24) transparent;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  gap: 7px 9px;
+  min-width: 0;
+  min-height: 74px;
+  padding: 11px 12px;
+  overflow: hidden;
+  border: 1px solid rgba(11,11,15,.11);
+  border-radius: 14px;
+  background: rgba(255,255,255,.74);
+  color: #0b0b0f;
+  text-align: start;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-picker-index {
+  grid-column: 1;
+  grid-row: 1;
+  color: rgba(11,11,15,.45);
+  font: 700 10px/1 "Space Grotesk", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-picker-league {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(11,11,15,.57);
+  font: 700 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-picker-teams {
+  grid-column: 1 / 4;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-picker-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-picker-side:last-child { justify-content: flex-end; }
+#hero .hero-crown-strip .hs-crown-picker-side img {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.12));
+}
+#hero .hero-crown-strip .hs-crown-picker-side strong {
+  overflow: hidden;
+  font: 800 10px/1.35 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-picker-teams i { color: rgba(11,11,15,.38); font: 700 8px/1 "Space Grotesk", sans-serif; font-style: normal; letter-spacing: .05em; }
+#hero .hero-crown-strip .hs-crown-picker-indicator {
+  grid-column: 3;
+  grid-row: 1;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(11,11,15,.16);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:hover { border-color: rgba(11,11,15,.32); background: #fff; }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+  box-shadow: 0 8px 22px -16px rgba(11,11,15,.6);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-index,
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-league { color: rgba(255,255,255,.64); }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-teams i { color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-indicator {
+  background: #d8ff3e;
+  box-shadow: 0 0 0 4px rgba(216,255,62,.13);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 2px;
+}
+#hero .hero-crown-strip .hs-crown-controls { order: 5; }
+#hero .hero-crown-strip .hs-crown-match-actions { order: 6; }
+#hero .hero-crown-strip .hs-crown-top-options,
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 7; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 8; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-picker { margin-top: 12px; }
+  #hero .hero-crown-strip .hs-crown-match-progress { grid-auto-columns: minmax(164px, 72vw); gap: 7px; }
+  #hero .hero-crown-strip .hs-crown-match-progress button { min-height: 68px; padding: 9px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-progress button { transition: none; }
+}
+
+/* Visually connect the league and match stages like a refined guided selector. */
+#hero .hero-crown-strip .hs-crown-featured-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+#hero .hero-crown-strip .hs-crown-step-number {
+  display: inline-grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(11,11,15,.16);
+  border-radius: 50%;
+  background: #d8ff3e;
+  color: #11131b;
+  font: 700 10px/1 "Space Grotesk", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-featured-title {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  text-align: start;
+}
+#hero .hero-crown-strip .hs-crown-featured-title small {
+  color: rgba(11,11,15,.48);
+  font: 700 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .04em;
+}
+#hero .hero-crown-strip .hs-crown-featured-title h3 { margin: 0; }
+#hero .hero-crown-strip .hs-crown-featured-count { margin-inline-start: auto; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-featured-heading { gap: 8px; }
+  #hero .hero-crown-strip .hs-crown-step-number { flex-basis: 27px; width: 27px; height: 27px; }
+}
+
+/* A split docking rail places the two directions at opposite ends of the match width. */
+#hero .hero-crown-strip .hs-crown-controls {
+  order: 5;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: clamp(10px, 2vw, 24px);
+  width: min(100%, 980px);
+  margin: 16px auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  direction: ltr;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  width: max-content;
+  min-width: 126px;
+  height: 48px;
+  padding: 5px 7px;
+  border: 1px solid rgba(11,11,15,.12);
+  border-radius: 999px;
+  background: #fff;
+  color: #11131b;
+  font: 800 11px/1 "Cairo", "Tajawal", sans-serif;
+  direction: rtl;
+  box-shadow: 0 8px 20px -18px rgba(11,11,15,.45);
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow--next { grid-column: 1; justify-self: start; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow--prev { grid-column: 3; justify-self: end; }
+#hero .hero-crown-strip .hs-crown-arrow-glyph {
+  display: inline-grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #11131b;
+  color: #d8ff3e;
+  font: 700 19px/1 "Cairo", sans-serif;
+  transition: background .18s ease, color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:hover:not(:disabled) {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+  box-shadow: 0 10px 22px -16px rgba(11,11,15,.72);
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:hover:not(:disabled) .hs-crown-arrow-glyph { background: #d8ff3e; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:disabled { opacity: .42; cursor: not-allowed; }
+#hero .hero-crown-strip .hs-crown-controls-center {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 112px;
+  direction: rtl;
+}
+#hero .hero-crown-strip .hs-crown-controls-center::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: #d8ff3e;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-counter {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  color: #11131b;
+  font: 700 15px/1 "Space Grotesk", "Cairo", sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-counter i { color: rgba(11,11,15,.34); font-size: 10px; font-style: normal; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 0 9px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.68);
+  color: rgba(11,11,15,.58);
+  font: 700 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-autoplay-mark { color: #11131b; font: 800 8px/1 Arial, sans-serif; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay:hover { border-color: rgba(11,11,15,.24); background: #fff; color: #11131b; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-controls { gap: 5px; margin-top: 12px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow { min-width: 0; height: 42px; gap: 5px; padding: 4px; font-size: 10px; }
+  #hero .hero-crown-strip .hs-crown-arrow-glyph { flex-basis: 32px; width: 32px; height: 32px; }
+  #hero .hero-crown-strip .hs-crown-controls-center { min-width: 88px; gap: 4px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-counter { font-size: 13px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay { min-height: 23px; padding-inline: 6px; font-size: 8px; }
+}
+@media (max-width: 390px) {
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:not(:disabled) { max-width: 92px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow span:not(.hs-crown-arrow-glyph) { font-size: 9px; }
+  #hero .hero-crown-strip .hs-crown-controls-center { min-width: 76px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow,
+  #hero .hero-crown-strip .hs-crown-arrow-glyph { transition: none; }
+}
+
+/* Second control deck: league intelligence and date filters become two intentional groups. */
+#hero .hero-crown-strip .hs-crown-top-options {
+  order: 7;
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  align-items: center;
+  gap: clamp(12px, 2vw, 22px);
+  width: min(100%, 980px);
+  margin: 18px auto 0;
+  padding: 14px clamp(12px, 2vw, 20px);
+  overflow: visible;
+  border: 1px solid rgba(11,11,15,.1);
+  border-radius: 18px;
+  background: linear-gradient(125deg, rgba(255,255,255,.94), rgba(246,245,239,.88));
+  box-shadow: 0 12px 28px -24px rgba(11,11,15,.45), inset 0 1px 0 #fff;
+}
+#hero .hero-crown-strip .hs-crown-option-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-option-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(11,11,15,.55);
+  font: 800 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .035em;
+}
+#hero .hero-crown-strip .hs-crown-option-label i {
+  display: inline-grid;
+  width: 19px;
+  height: 19px;
+  place-items: center;
+  border-radius: 50%;
+  background: #11131b;
+  color: #d8ff3e;
+  font: 700 8px/1 "Space Grotesk", sans-serif;
+  font-style: normal;
+}
+#hero .hero-crown-strip .hs-crown-option-divider {
+  align-self: stretch;
+  width: 1px;
+  min-height: 54px;
+  background: linear-gradient(transparent, rgba(11,11,15,.14), transparent);
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) {
+  position: static;
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  gap: 3px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 999px;
+  background: rgba(11,11,15,.035);
+  box-shadow: none;
+  transform: none;
+  scrollbar-width: none;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs)::-webkit-scrollbar { display: none; }
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 38px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.7);
+  box-shadow: none;
+  white-space: nowrap;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button:hover { background: #fff; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 29px;
+  padding: 0;
+  color: inherit;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-top-options .hs-crown-tab-icon {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: 50%;
+  background: rgba(11,11,15,.06);
+  color: inherit;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] .hs-crown-tab-icon {
+  background: #d8ff3e;
+  color: #11131b;
+}
+#hero .hero-crown-strip .hs-crown-day-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-tabs { flex: 1 1 auto; }
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-clear {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid rgba(11,11,15,.12);
+  border-radius: 999px;
+  background: #fff;
+  color: rgba(11,11,15,.64);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-clear:hover { border-color: #11131b; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-top-options .hs-day-tabs > button:last-child[aria-pressed="true"] {
+  border-color: #b4233d;
+  background: #b4233d;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-top-options .hs-day-tabs > button:last-child[aria-pressed="true"] .hs-crown-tab-icon { background: #fff; color: #b4233d; }
+#hero .hero-crown-strip .hs-crown-top-options .hs-day-warning {
+  flex: 0 0 auto;
+  margin: 0;
+  color: #9a4b1e;
+  font: 700 8px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button:focus-visible,
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-clear:focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
+@media (max-width: 760px) {
+  #hero .hero-crown-strip .hs-crown-top-options {
+    grid-template-columns: minmax(0,1fr);
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+  #hero .hero-crown-strip .hs-crown-option-group { gap: 6px; }
+  #hero .hero-crown-strip .hs-crown-option-divider { width: 100%; min-height: 1px; height: 1px; background: linear-gradient(90deg, transparent, rgba(11,11,15,.12), transparent); }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) { width: 100%; }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { flex: 1 0 auto; }
+}
+@media (max-width: 390px) {
+  #hero .hero-crown-strip .hs-crown-top-options { padding: 10px; }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { padding-inline: 7px; }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content { gap: 4px; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { transition: none; }
+}
+
+/* A featured editorial ticket shares the exact same carousel stage as match cards. */
+#hero .hero-crown-strip .hs-crown-card--news > .hs-crown-news-ticket-shell {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  background: #11131b;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-news-ticket-shell > .league-ticket {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  border: 0;
+  border-radius: inherit;
+}
+#hero .hero-crown-strip .hs-crown-news-ticket-shell > .league-ticket > a { border-radius: inherit; }
+#hero .hero-crown-strip .hs-crown-card--news .league-ticket-ray { opacity: .22; }
+#hero .hero-crown-strip .hs-crown-card--news .league-ticket-line { opacity: .3; }
+#hero .hero-crown-strip .hs-crown-card--news .league-ticket-bg { border-radius: inherit; }
+#hero .hero-crown-strip .hs-crown-match-picker .hs-crown-picker-teams--news {
+  grid-template-columns: minmax(0,1fr);
+  grid-column: 1 / 4;
+  gap: 0;
+}
+#hero .hero-crown-strip .hs-crown-match-picker .hs-crown-picker-teams--news strong {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.is-news .hs-crown-picker-indicator { border-radius: 2px; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-card--news > .hs-crown-news-ticket-shell { min-height: 330px; border-radius: 19px; }
+}
+
+/* Shared content switch keeps the match stage and its tournament/news rail in sync. */
+#hero .hero-crown-strip .hs-crown-featured-mode {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: auto;
+  padding: 3px;
+  border: 1px solid rgba(11,11,15,.1);
+  border-radius: 999px;
+  background: rgba(11,11,15,.045);
+}
+#hero .hero-crown-strip .hs-crown-featured-mode button {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.62);
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-featured-mode button[aria-pressed="true"] {
+  background: #11131b;
+  color: #d8ff3e;
+  box-shadow: 0 2px 8px rgba(11,11,15,.14);
+}
+#hero .hero-crown-strip .hs-crown-featured-mode button:focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-featured-heading { flex-wrap: wrap; }
+  #hero .hero-crown-strip .hs-crown-featured-mode { margin-inline-start: auto; }
+  #hero .hero-crown-strip .hs-crown-featured-mode button { min-height: 27px; padding-inline: 9px; font-size: 8px; }
+  #hero .hero-crown-strip .hs-crown-featured-count { flex-basis: 100%; text-align: end; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-featured-mode button { transition: none; }
+}
+
+/* In news mode, keep every story in one intentional horizontal picker rail. */
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 236px);
+  grid-template-columns: none;
+  justify-content: start;
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  padding: 3px 2px 9px;
+  scroll-snap-type: inline mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(11,11,15,.3) transparent;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button {
+  min-width: 0;
+  min-height: 78px;
+  scroll-snap-align: start;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button.is-news {
+  border-color: rgba(11,11,15,.1);
+  background: linear-gradient(145deg, #fff, #f3f1e9);
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button.is-news.is-active {
+  border-color: #11131b;
+  background: #11131b;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker .hs-crown-picker-index {
+  display: inline-grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(11,11,15,.07);
+  color: #11131b;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button.is-active .hs-crown-picker-index {
+  background: #d8ff3e;
+  color: #11131b;
+}
+@media (max-width: 600px) {
+  #hero .hero-crown-strip .hs-crown-match-progress.is-news-picker { grid-auto-columns: minmax(190px, 76vw); }
+  #hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button { min-height: 76px; padding: 8px; }
+}
+
+/* Hide the legacy standalone news ticket beneath the showcase on mobile; news now lives inside the shared featured-content switch. */
+@media (max-width: 700px) {
+  #hero [data-home-news-below] { display: none !important; }
+}
+
+/* Date shortcuts sit inside the featured-match header instead of a detached options panel. */
+#hero .hero-crown-strip .hs-crown-featured-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+}
+#hero .hero-crown-strip .hs-crown-featured-heading-main {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.64);
+}
+#hero .hero-crown-strip .hs-crown-featured-date-label {
+  flex: 0 0 auto;
+  color: rgba(11,11,15,.52);
+  font: 800 9px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs {
+  position: static;
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 3px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid rgba(11,11,15,.09);
+  border-radius: 999px;
+  background: rgba(11,11,15,.04);
+  box-shadow: none;
+  transform: none;
+  scrollbar-width: none;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs::-webkit-scrollbar { display: none; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 34px;
+  padding: 2px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.67);
+  box-shadow: none;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button:hover { background: #fff; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button[aria-pressed="true"] {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs .hs-crown-tab-content {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 0;
+  color: inherit;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-crown-tab-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgba(11,11,15,.06);
+  color: inherit;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button[aria-pressed="true"] .hs-crown-tab-icon { background: #d8ff3e; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button:last-child[aria-pressed="true"] { border-color: #b4233d; background: #b4233d; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button:last-child[aria-pressed="true"] .hs-crown-tab-icon { background: #fff; color: #b4233d; }
+#hero .hero-crown-strip .hs-crown-featured-clear {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(11,11,15,.12);
+  border-radius: 999px;
+  background: #fff;
+  color: rgba(11,11,15,.68);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-featured-clear:hover { border-color: #11131b; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-warning { flex: 0 0 auto; margin: 0; font-size: 8px; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools :is(.hs-day-tabs > button, .hs-crown-featured-clear):focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-featured-heading-main { flex-wrap: wrap; gap: 8px; }
+  #hero .hero-crown-strip .hs-crown-featured-count { flex-basis: auto; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools { gap: 6px; padding: 7px; }
+  #hero .hero-crown-strip .hs-crown-featured-date-label { flex-basis: 100%; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs { width: 100%; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button { flex: 1 0 auto; padding-inline: 7px; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools .hs-crown-tab-content { gap: 3px; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-featured-date-tools :is(.hs-day-tabs > button, .hs-crown-featured-clear) { transition: none; }
+}

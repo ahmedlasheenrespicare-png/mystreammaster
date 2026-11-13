@@ -2450,6 +2450,7 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
       'esp.1': [['Elche', 'Real Betis', '2026-11-08T13:00:00Z']],
       'ger.1': [['FC Cologne', 'Bayer Leverkusen', '2026-11-08T14:30:00Z']],
       'fifa.friendly': [['United States', 'Argentina', '2026-11-08T18:00:00Z']],
+      'egy.1': [['Al Ahly', 'Zamalek SC', '2026-11-08T18:00:00Z']],
       'eng.fa': [['Plymouth Parkway', 'Berkhamsted', '2026-11-09T19:30:00Z']],
     };
     const events = (pairs[league ?? ''] ?? []).map(([home, away, date], i) => ({ id: `${league}-${i}`, date,
@@ -2463,8 +2464,8 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
   const strip = page.locator('[data-hero-league-strip]');
   await expect(strip.locator('[data-crown-state="scheduled"]')).toHaveCount(1, { timeout: 20000 });
   await strip.locator('.hs-day-tabs').getByRole('button', { name: 'أمس' }).click();
-  await expect(strip.locator('[data-crown-card]')).toHaveCount(5);
-  for (const team of ['برايتون', 'برينتفورد', 'إيبسويتش تاون', 'بورنموث', 'إلتشي', 'ريال بيتيس', 'كولن', 'باير ليفركوزن', 'الولايات المتحدة', 'الأرجنتين']) {
+  await expect(strip.locator('[data-crown-card]')).toHaveCount(6);
+  for (const team of ['برايتون', 'برينتفورد', 'إيبسويتش تاون', 'بورنموث', 'إلتشي', 'ريال بيتيس', 'كولن', 'باير ليفركوزن', 'الولايات المتحدة', 'الأرجنتين', 'الأهلي', 'الزمالك']) {
     await expect(strip.locator('[data-crown-card]').filter({ hasText: team })).toHaveCount(1);
   }
   await strip.locator('.hs-day-tabs').getByRole('button', { name: 'اليوم' }).click();

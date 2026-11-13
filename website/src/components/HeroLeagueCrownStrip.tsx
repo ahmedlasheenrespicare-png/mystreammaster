@@ -6,6 +6,7 @@ import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
 import { CrownClashSlide, clashSummary, useClashesWithStatus, type FeaturedClash } from "./LeagueTicketCard";
 import { motionReduced } from "../lib/motion-preference";
 import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
+import { arabicTeamName, normalizeTeamAlias } from "../content/team-names-ar";
 import { TicketImage } from "./TicketImage";
 import {
   useEffect,
@@ -146,41 +147,16 @@ interface HeroLeagueData {
 
 type CrownCarouselItem = HeroLeagueData & { key: string; clashIndex: number; newsIndex?: number };
 
-function normalizeTeamAlias(value: string): string {
-  return value.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").trim();
-}
-
-function arabicizeUnknownTeamName(name: string): string {
-  if (/[\u0600-\u06ff]/.test(name)) return name;
-  const key = normalizeTeamAlias(name);
-  const known: Record<string, string> = {
-    "brighton hove albion": "برايتون", "brighton": "برايتون", "brentford": "برينتفورد", "ipswich town": "إيبسويتش تاون", "ipswich": "إيبسويتش تاون",
-    "afc bournemouth": "بورنموث", "bournemouth": "بورنموث", "plymouth parkway": "بليموث باركواي", "real madrid": "ريال مدريد", "real betis": "ريال بيتيس", "barcelona": "برشلونة",
-    "united states": "الولايات المتحدة", "usa": "الولايات المتحدة", "argentina": "الأرجنتين", "brazil": "البرازيل", "canada": "كندا", "mexico": "المكسيك",
-    "spain": "إسبانيا", "france": "فرنسا", "germany": "ألمانيا", "italy": "إيطاليا", "portugal": "البرتغال", "england": "إنجلترا",
-    "morocco": "المغرب", "egypt": "مصر", "saudi arabia": "السعودية", "japan": "اليابان", "south korea": "كوريا الجنوبية", "korea republic": "كوريا الجنوبية",
-    "uruguay": "أوروغواي", "colombia": "كولومبيا", "chile": "تشيلي", "netherlands": "هولندا", "belgium": "بلجيكا", "switzerland": "سويسرا", "australia": "أستراليا",
-    "atletico madrid": "أتلتيكو مدريد", "valencia": "فالنسيا", "manchester city": "مانشستر سيتي", "manchester united": "مانشستر يونايتد",
-    "liverpool": "ليفربول", "arsenal": "أرسنال", "chelsea": "تشيلسي", "tottenham hotspur": "توتنهام هوتسبير", "tottenham": "توتنهام",
-    "bayern munich": "بايرن ميونخ", "borussia dortmund": "بوروسيا دورتموند", "elche": "إلتشي", "fc cologne": "كولن", "cologne": "كولن", "bayer leverkusen": "باير ليفركوزن",
-    "berkhamsted": "بيركهامستيد", "club x": "كلوب إكس", "club y": "كلوب واي",
-  };
-  // لا نُنشئ تهجئة صوتية تخمينية؛ الاسم المعروف يُترجم من القاموس، وغير
-  // المعروف يبقى كما أرسله المصدر إلى أن تتوفر له تسمية عربية موثوقة.
-  return known[key] ?? name;
-}
-
 function localizedTeamName(name: string, league: string, candidates: FeaturedClash[]): string {
-  if (/[\u0600-\u06ff]/.test(name)) return name;
   const key = normalizeTeamAlias(name);
   const teams = candidates.filter(clash => clash.source === league).flatMap(clash => [clash.home, clash.away]);
   const exact = teams.find(team => [team.name, ...team.tokens].some(alias => normalizeTeamAlias(alias) === key));
-  if (exact) return exact.name;
+  if (exact) return arabicTeamName(exact.name);
   const partial = teams.find(team => team.tokens.some(alias => {
     const token = normalizeTeamAlias(alias);
     return token.length >= 5 && (key.includes(token) || token.includes(key));
   }));
-  return partial?.name ?? arabicizeUnknownTeamName(name);
+  return arabicTeamName(partial?.name ?? name);
 }
 
 function sourceMatchClash(match: Match, candidates: FeaturedClash[]): FeaturedClash {

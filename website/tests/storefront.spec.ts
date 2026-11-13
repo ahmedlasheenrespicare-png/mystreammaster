@@ -2374,17 +2374,17 @@ test('day tabs filter the existing crown carousel instead of creating new cards'
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
     await tabs.getByRole('button', { name: 'أمس' }).click();
     await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
-    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('Valencia');
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('فالنسيا');
     await expect(strip.locator('[data-crown-kind="league"]')).toHaveCount(0);
     await tabs.getByRole('button', { name: 'اليوم' }).click();
     await expect(strip.locator('[data-crown-card]')).toHaveCount(2);
-    await expect(strip.locator('[data-crown-card]').filter({ hasText: /Barcelona|برشلونة/ })).toHaveCount(1);
-    await expect(strip.locator('[data-crown-card]').filter({ hasText: 'Club X' })).toHaveCount(1);
+    await expect(strip.locator('[data-crown-card]').filter({ hasText: 'برشلونة' })).toHaveCount(1);
+    await expect(strip.locator('[data-crown-card]').filter({ hasText: 'كلوب إكس' })).toHaveCount(1);
     await tabs.getByRole('button', { name: 'مباشر' }).click();
     await expect(strip.locator('[data-crown-offset="0"]')).toContainText('فالنسيا');
     await tabs.getByRole('button', { name: 'غداً' }).click();
     await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
-    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('Berkhamsted');
+    await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بيركهامستيد');
     await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-card', 'source:eng.fa:plymouth-berkhamsted');
     await strip.locator('.hs-crown-featured-clear').click();
     await expect(strip.locator('[data-crown-card]')).not.toHaveCount(0);
@@ -2463,11 +2463,13 @@ test('new source-confirmed fixtures appear in the existing day-filtered crown', 
   await expect(strip.locator('[data-crown-state="scheduled"]')).toHaveCount(1, { timeout: 20000 });
   await strip.locator('.hs-day-tabs').getByRole('button', { name: 'أمس' }).click();
   await expect(strip.locator('[data-crown-card]')).toHaveCount(4);
-  for (const team of ['Brighton', 'Ipswich', 'Elche', 'Cologne']) await expect(strip.locator('[data-crown-card]').filter({ hasText: team })).toHaveCount(1);
+  for (const team of ['برايتون', 'برينتفورد', 'إيبسويتش تاون', 'بورنموث', 'إلتشي', 'ريال بيتيس', 'كولن', 'باير ليفركوزن']) {
+    await expect(strip.locator('[data-crown-card]').filter({ hasText: team })).toHaveCount(1);
+  }
   await strip.locator('.hs-day-tabs').getByRole('button', { name: 'اليوم' }).click();
   await expect(strip.locator('[data-crown-card]')).toHaveCount(1);
-  await expect(strip.locator('[data-crown-offset="0"]')).toContainText('Plymouth Parkway');
-  await expect(strip.locator('[data-crown-offset="0"]')).toContainText('Berkhamsted');
+  await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بليموث باركواي');
+  await expect(strip.locator('[data-crown-offset="0"]')).toContainText('بيركهامستيد');
   await expect(strip.locator('[data-crown-offset="0"]')).toHaveAttribute('data-crown-state', 'scheduled');
   const cupLogo = '/images/competitions/fa-cup.webp';
   await expect(strip.locator('[data-crown-offset="0"] [data-match-league-background="eng.fa"]')).toHaveCSS('opacity', '0.035');

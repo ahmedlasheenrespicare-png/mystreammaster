@@ -146,13 +146,55 @@ interface HeroLeagueData {
 
 type CrownCarouselItem = HeroLeagueData & { key: string; clashIndex: number; newsIndex?: number };
 
-function sourceMatchClash(match: Match): FeaturedClash {
-  const side = (team: Match["home"]) => ({
-    name: team.name,
-    crest: team.logo ?? "",
-    mono: teamInitials(team.name),
-    tokens: [team.name.toLowerCase()],
-  });
+function normalizeTeamAlias(value: string): string {
+  return value.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\u0600-\u06ff]+/g, " ").trim();
+}
+
+function arabicizeUnknownTeamName(name: string): string {
+  if (/[\u0600-\u06ff]/.test(name)) return name;
+  const key = normalizeTeamAlias(name);
+  const known: Record<string, string> = {
+    "brighton hove albion": "برايتون", "brighton": "برايتون", "brentford": "برينتفورد", "ipswich town": "إيبسويتش تاون", "ipswich": "إيبسويتش تاون",
+    "afc bournemouth": "بورنموث", "bournemouth": "بورنموث", "plymouth parkway": "بليموث باركواي", "real madrid": "ريال مدريد", "real betis": "ريال بيتيس", "barcelona": "برشلونة",
+    "atletico madrid": "أتلتيكو مدريد", "valencia": "فالنسيا", "manchester city": "مانشستر سيتي", "manchester united": "مانشستر يونايتد",
+    "liverpool": "ليفربول", "arsenal": "أرسنال", "chelsea": "تشيلسي", "tottenham hotspur": "توتنهام هوتسبير", "tottenham": "توتنهام",
+    "bayern munich": "بايرن ميونخ", "borussia dortmund": "بوروسيا دورتموند", "elche": "إلتشي", "fc cologne": "كولن", "cologne": "كولن", "bayer leverkusen": "باير ليفركوزن",
+    "berkhamsted": "بيركهامستيد", "club x": "كلوب إكس", "club y": "كلوب واي",
+  };
+  if (known[key]) return known[key];
+  const replacements: Array<[RegExp, string]> = [
+    [/sch/g, "ش"], [/tch|ch/g, "تش"], [/sh/g, "ش"], [/th/g, "ث"], [/ph/g, "ف"], [/gh/g, "غ"], [/kh/g, "خ"],
+    [/oo|ou/g, "و"], [/ee|ea/g, "ي"], [/ai|ay/g, "ي"], [/ck/g, "ك"], [/qu/g, "ك"], [/c(?=[eiy])/g, "س"],
+    [/a/g, "ا"], [/b/g, "ب"], [/c/g, "ك"], [/d/g, "د"], [/e/g, "ي"], [/f/g, "ف"], [/g/g, "غ"], [/h/g, "ه"],
+    [/i/g, "ي"], [/j/g, "ج"], [/k/g, "ك"], [/l/g, "ل"], [/m/g, "م"], [/n/g, "ن"], [/o/g, "و"], [/p/g, "ب"],
+    [/q/g, "ق"], [/r/g, "ر"], [/s/g, "س"], [/t/g, "ت"], [/u/g, "و"], [/v/g, "ف"], [/w/g, "و"], [/x/g, "كس"], [/y/g, "ي"], [/z/g, "ز"],
+  ];
+  return replacements.reduce((value, [pattern, replacement]) => value.replace(pattern, replacement), key).replace(/\s+/g, " ");
+}
+
+function localizedTeamName(name: string, league: string, candidates: FeaturedClash[]): string {
+  if (/[\u0600-\u06ff]/.test(name)) return name;
+  const key = normalizeTeamAlias(name);
+  const teams = candidates.filter(clash => clash.source === league).flatMap(clash => [clash.home, clash.away]);
+  const exact = teams.find(team => [team.name, ...team.tokens].some(alias => normalizeTeamAlias(alias) === key));
+  if (exact) return exact.name;
+  const partial = teams.find(team => team.tokens.some(alias => {
+    const token = normalizeTeamAlias(alias);
+    return token.length >= 5 && (key.includes(token) || token.includes(key));
+  }));
+  return partial?.name ?? arabicizeUnknownTeamName(name);
+}
+
+function sourceMatchClash(match: Match, candidates: FeaturedClash[]): FeaturedClash {
+  const side = (team: Match["home"]) => {
+    const name = localizedTeamName(team.name, match.league, candidates);
+    return {
+      name,
+      crest: team.logo ?? "",
+      mono: teamInitials(name),
+      tokens: [team.name.toLowerCase(), name.toLowerCase()],
+    };
+  };
   return {
     eyebrow: LEAGUES.find(league => league.id === match.league)?.name ?? match.league,
     home: side(match.home),
@@ -382,7 +424,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   const useSourceDay = dayView !== null && dayView !== "live";
   const sourceDayState = useSourceDay ? sourceDayMatches?.[dayView as DayKey] ?? null : null;
   const sourceFixtures = sourceDayState?.status === "ready" ? sourceDayState.matches : [];
-  const displayClashes = useSourceDay ? sourceFixtures.map(sourceMatchClash) : clashes;
+  const displayClashes = useSourceDay ? sourceFixtures.map(match => sourceMatchClash(match, clashes)) : clashes;
   const displayMatches = useSourceDay ? sourceFixtures : featuredMatches;
   const matchItems: CrownCarouselItem[] = orderCrownMatches(displayClashes.map((_, index) => displayMatches[index])).flatMap(index => {
     const clash = displayClashes[index];

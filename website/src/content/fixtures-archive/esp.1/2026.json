@@ -2437,6 +2437,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261123&limit=500"
       },
       "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401882791",
+      "date": "2026-11-27T20:00:00.000Z",
+      "home": {
+        "id": "1538",
+        "name": "Levante"
+      },
+      "away": {
+        "id": "87",
+        "name": "Racing Santander"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261127&limit=500"
+      },
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     }
   ]
 }

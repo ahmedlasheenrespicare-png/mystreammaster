@@ -2015,10 +2015,10 @@
         "name": "Russia"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 3
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -2026,7 +2026,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261112&limit=500"
       },
-      "fetchedAt": "2026-11-04T10:56:52.373Z"
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     },
     {
       "id": "401933115",
@@ -2040,10 +2040,10 @@
         "name": "Suriname"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -2051,7 +2051,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261112&limit=500"
       },
-      "fetchedAt": "2026-11-04T10:56:52.373Z"
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     },
     {
       "id": "401931296",
@@ -2065,10 +2065,10 @@
         "name": "Eswatini"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -2076,7 +2076,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261112&limit=500"
       },
-      "fetchedAt": "2026-10-29T09:59:31.298Z"
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     },
     {
       "id": "401916338",
@@ -2105,7 +2105,7 @@
     },
     {
       "id": "401931957",
-      "date": "2026-11-13T14:15:00.000Z",
+      "date": "2026-11-13T14:10:00.000Z",
       "home": {
         "id": "4397",
         "name": "United Arab Emirates"
@@ -2126,7 +2126,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261113&limit=500"
       },
-      "fetchedAt": "2026-11-11T10:59:20.242Z"
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     },
     {
       "id": "401931476",

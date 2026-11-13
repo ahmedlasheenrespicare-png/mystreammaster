@@ -2171,6 +2171,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261122&limit=500"
       },
       "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401884720",
+      "date": "2026-11-27T19:30:00.000Z",
+      "home": {
+        "id": "137",
+        "name": "Werder Bremen"
+      },
+      "away": {
+        "id": "268",
+        "name": "Borussia Mönchengladbach"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ger.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard?dates=20261127&limit=500"
+      },
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     }
   ]
 }

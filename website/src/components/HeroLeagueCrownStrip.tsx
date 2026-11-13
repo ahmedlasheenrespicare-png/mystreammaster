@@ -156,20 +156,18 @@ function arabicizeUnknownTeamName(name: string): string {
   const known: Record<string, string> = {
     "brighton hove albion": "برايتون", "brighton": "برايتون", "brentford": "برينتفورد", "ipswich town": "إيبسويتش تاون", "ipswich": "إيبسويتش تاون",
     "afc bournemouth": "بورنموث", "bournemouth": "بورنموث", "plymouth parkway": "بليموث باركواي", "real madrid": "ريال مدريد", "real betis": "ريال بيتيس", "barcelona": "برشلونة",
+    "united states": "الولايات المتحدة", "usa": "الولايات المتحدة", "argentina": "الأرجنتين", "brazil": "البرازيل", "canada": "كندا", "mexico": "المكسيك",
+    "spain": "إسبانيا", "france": "فرنسا", "germany": "ألمانيا", "italy": "إيطاليا", "portugal": "البرتغال", "england": "إنجلترا",
+    "morocco": "المغرب", "egypt": "مصر", "saudi arabia": "السعودية", "japan": "اليابان", "south korea": "كوريا الجنوبية", "korea republic": "كوريا الجنوبية",
+    "uruguay": "أوروغواي", "colombia": "كولومبيا", "chile": "تشيلي", "netherlands": "هولندا", "belgium": "بلجيكا", "switzerland": "سويسرا", "australia": "أستراليا",
     "atletico madrid": "أتلتيكو مدريد", "valencia": "فالنسيا", "manchester city": "مانشستر سيتي", "manchester united": "مانشستر يونايتد",
     "liverpool": "ليفربول", "arsenal": "أرسنال", "chelsea": "تشيلسي", "tottenham hotspur": "توتنهام هوتسبير", "tottenham": "توتنهام",
     "bayern munich": "بايرن ميونخ", "borussia dortmund": "بوروسيا دورتموند", "elche": "إلتشي", "fc cologne": "كولن", "cologne": "كولن", "bayer leverkusen": "باير ليفركوزن",
     "berkhamsted": "بيركهامستيد", "club x": "كلوب إكس", "club y": "كلوب واي",
   };
-  if (known[key]) return known[key];
-  const replacements: Array<[RegExp, string]> = [
-    [/sch/g, "ش"], [/tch|ch/g, "تش"], [/sh/g, "ش"], [/th/g, "ث"], [/ph/g, "ف"], [/gh/g, "غ"], [/kh/g, "خ"],
-    [/oo|ou/g, "و"], [/ee|ea/g, "ي"], [/ai|ay/g, "ي"], [/ck/g, "ك"], [/qu/g, "ك"], [/c(?=[eiy])/g, "س"],
-    [/a/g, "ا"], [/b/g, "ب"], [/c/g, "ك"], [/d/g, "د"], [/e/g, "ي"], [/f/g, "ف"], [/g/g, "غ"], [/h/g, "ه"],
-    [/i/g, "ي"], [/j/g, "ج"], [/k/g, "ك"], [/l/g, "ل"], [/m/g, "م"], [/n/g, "ن"], [/o/g, "و"], [/p/g, "ب"],
-    [/q/g, "ق"], [/r/g, "ر"], [/s/g, "س"], [/t/g, "ت"], [/u/g, "و"], [/v/g, "ف"], [/w/g, "و"], [/x/g, "كس"], [/y/g, "ي"], [/z/g, "ز"],
-  ];
-  return replacements.reduce((value, [pattern, replacement]) => value.replace(pattern, replacement), key).replace(/\s+/g, " ");
+  // لا نُنشئ تهجئة صوتية تخمينية؛ الاسم المعروف يُترجم من القاموس، وغير
+  // المعروف يبقى كما أرسله المصدر إلى أن تتوفر له تسمية عربية موثوقة.
+  return known[key] ?? name;
 }
 
 function localizedTeamName(name: string, league: string, candidates: FeaturedClash[]): string {

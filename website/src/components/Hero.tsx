@@ -4,7 +4,7 @@ import { HeroLaptop } from "./HeroLaptop";
 import { HeroPhone } from "./HeroPhone";
 import HomepageWebGLStage from "./HomepageWebGLStage";
 import { HeroTelevision } from "./HeroTelevision";
-import { useEffect, useState, type ReactElement } from "react";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
 import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket, { AL_SADD_AL_AHLI_CLASH, NEWCASTLE_EVERTON_CLASH, ATLETICO_BAYERN_UCL_CLASH, BARCELONA_VILLA_UCL_CLASH, MAN_UTD_ROMA_UCL_CLASH, BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
@@ -14,7 +14,8 @@ import { isWithinTicketWindow } from "../lib/ticket-recency";
 
 type HomeTicketSlot = { clash: FeaturedClash; news?: string };
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
-import { HeroMatchesTicket } from "./HeroSideTickets";
+import { HeroMatchesTicket, useDayMatches, type DayKey } from "./HeroSideTickets";
+import { dayInZone, shiftDay } from "../lib/matches.mjs";
 import HeroLeagueCrownStrip from "./HeroLeagueCrownStrip";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
@@ -354,13 +355,11 @@ interface HeroProps {
 /* شرائح تذكرة الصفحة الرئيسية بالترتيب: كل شريحة مواجهة، وإن وُجد news فهي
    شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 7 أيام أو أقل، ولا تُعرض
    الشريحة بلا تاريخ، ثم تُخفى تلقائياً (انظر lib/ticket-recency) */
-/* بطاقات المباريات البارزة — أُعيد عرضها تحت شريط البطولات بطلب المالك. */
+/* بطاقات المباريات أسفل شريط البطولات تبقى ظاهرة؛ شريط المباريات البارزة مخفي حالياً بطلب المالك. */
 const HOME_MATCH_CARDS_VISIBLE = true;
+const HOME_FEATURED_MATCH_STRIP_VISIBLE = true;
 
-/* تذكرة «مباريات أمس/اليوم/غد» (العمود الأيسر في صف التذاكر) — مخفية من
-   الهيرو بطلب المالك. المكوّن وبياناته ومنطقه الحيّ باقية في
-   HeroSideTickets.tsx بلا حذف؛ ولإرجاعها يكفي ضبط هذا الثابت على true
-   فيعود العمود الأيسر (190px) وتُضبط الشبكة تلقائياً. */
+/* تذكرة مباريات أمس/اليوم/غد مخفية حالياً من الصفحة الرئيسية بطلب المالك. */
 const HERO_MATCHES_TICKET_VISIBLE = false;
 
 /* الحد الأقصى لعدد شرائح التذكرة الظاهرة في الصفحة الرئيسية (طلب المالك).
@@ -452,6 +451,11 @@ export default function Hero({ onOpenTrial }: HeroProps) {
   const [frontDevice, setFrontDevice] = useState<"phone" | "tv" | "laptop">("phone");
   const [newsInCrown, setNewsInCrown] = useState(false);
   const [desktopNews, setDesktopNews] = useState(false);
+  const sourceDays = useMemo<Record<DayKey, string>>(() => {
+    const today = dayInZone(new Date(), "Africa/Cairo");
+    return { yesterday: shiftDay(today, -1), today, tomorrow: shiftDay(today, 1) };
+  }, []);
+  const sourceDayMatches = useDayMatches(sourceDays, "today");
   useEffect(() => {
     const query = window.matchMedia("(min-width: 701px)");
     const update = () => setDesktopNews(query.matches);
@@ -613,7 +617,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
 
         {/* بطاقات المباريات والأخبار تأتي بعد عرض الخدمة حتى يبقى الوعد الرئيسي واضحاً. */}
         <Reveal variant="up" delay={90} className="hero-matches-after-showcase w-full" initiallyVisible>
-          <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} />
+          {HOME_FEATURED_MATCH_STRIP_VISIBLE && <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} sourceDayMatches={sourceDayMatches} />}
         </Reveal>
 
         <Reveal variant="up" delay={140} className="w-full" initiallyVisible>

@@ -16,7 +16,8 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { dayInZone, dayLabel, hasCompleteScore, kickoff, shiftDay } from "../lib/matches.mjs";
+import { LEAGUES, dayInZone, dayLabel, hasCompleteScore, kickoff, shiftDay, type Match } from "../lib/matches.mjs";
+import type { DayKey, DayStates } from "./HeroSideTickets";
 import { leagueLandingsInPageOrder } from "../content/competitions";
 import { HeroLeagueHorizontalStrip } from "./HeroLeagueHorizontalStrip";
 import { FEATURED_NEWS } from "../content/featured-news";
@@ -144,6 +145,22 @@ interface HeroLeagueData {
 }
 
 type CrownCarouselItem = HeroLeagueData & { key: string; clashIndex: number; newsIndex?: number };
+
+function sourceMatchClash(match: Match): FeaturedClash {
+  const side = (team: Match["home"]) => ({
+    name: team.name,
+    crest: team.logo ?? "",
+    mono: teamInitials(team.name),
+    tokens: [team.name.toLowerCase()],
+  });
+  return {
+    eyebrow: LEAGUES.find(league => league.id === match.league)?.name ?? match.league,
+    home: side(match.home),
+    away: side(match.away),
+    source: match.league,
+    date: dayInZone(new Date(match.date), "Africa/Cairo"),
+  };
+}
 
 function cleanInitials(name: string): string {
   const words = name
@@ -347,7 +364,7 @@ function withClashLeagues(items: HeroLeagueData[], clashes: FeaturedClash[], ext
 /* ==========================================================================
    1) شريط التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو
 ========================================================================== */
-export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES, newsOpen = false, onNewsOpenChange, newsTicket, sidebarNews = false }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[]; newsOpen?: boolean; onNewsOpenChange?: (open: boolean) => void; newsTicket?: ReactNode; sidebarNews?: boolean } = {}) {
+export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeagues = NO_EXTRA_LEAGUES, newsOpen = false, onNewsOpenChange, newsTicket, sidebarNews = false, sourceDayMatches = null }: { clashes?: FeaturedClash[]; extraLeagues?: readonly { id: string; name: string }[]; newsOpen?: boolean; onNewsOpenChange?: (open: boolean) => void; newsTicket?: ReactNode; sidebarNews?: boolean; sourceDayMatches?: DayStates | null } = {}) {
   const leagueItems = withClashLeagues(useHeroLeagueItems(), clashes, extraLeagues);
   const standingsMap = useLiveStandingsMap();
   const [dayView, setDayView] = useState<Day | null>(null);
@@ -361,15 +378,21 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
     document.addEventListener("visibilitychange", check);
     return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", check); };
   }, []);
-  const { matches, status: matchesStatus } = useClashesWithStatus("matches", clashes);
-  const matchItems: CrownCarouselItem[] = orderCrownMatches(clashes.map((_, index) => matches[index])).flatMap(index => {
-    const clash = clashes[index];
-    const league = leagueItems.find(item => item.leagueId === clash.source);
-    return league ? [{ ...league, key: `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : [];
+  const { matches: featuredMatches, status: matchesStatus } = useClashesWithStatus("matches", clashes);
+  const useSourceDay = dayView !== null && dayView !== "live";
+  const sourceDayState = useSourceDay ? sourceDayMatches?.[dayView as DayKey] ?? null : null;
+  const sourceFixtures = sourceDayState?.status === "ready" ? sourceDayState.matches : [];
+  const displayClashes = useSourceDay ? sourceFixtures.map(sourceMatchClash) : clashes;
+  const displayMatches = useSourceDay ? sourceFixtures : featuredMatches;
+  const matchItems: CrownCarouselItem[] = orderCrownMatches(displayClashes.map((_, index) => displayMatches[index])).flatMap(index => {
+    const clash = displayClashes[index];
+    const league = leagueItems.find(item => item.leagueId === clash.source)
+      ?? withClashLeagues([], [clash], LEAGUES.map(entry => ({ id: entry.id, name: entry.name }))).find(item => item.leagueId === clash.source);
+    return league ? [{ ...league, key: useSourceDay ? `source:${displayMatches[index]?.id ?? index}` : `${league.leagueId}:${clash.home.name}:${clash.away.name}:${clash.date ?? ""}`, clashIndex: index }] : [];
   });
   const leagueTickerMatches: LeagueTickerMatchInfo[] = matchItems.map(item => {
-    const clash = clashes[item.clashIndex];
-    const match = matches[item.clashIndex];
+    const clash = displayClashes[item.clashIndex];
+    const match = displayMatches[item.clashIndex];
     const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
     const hasScore = !!match && (match.state === "live" || match.state === "finished")
       && match.home.score != null && match.away.score != null;
@@ -390,19 +413,16 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
   // Global priority: live → scheduled → finished → unconfirmed → league cards.
   const selectedDate = dayView && dayView !== "live" ? shiftDay(today, dayView === "yesterday" ? -1 : dayView === "tomorrow" ? 1 : 0) : null;
   const filteredMatches = dayView ? matchItems.filter(item => {
-    const match = matches[item.clashIndex];
+    const match = displayMatches[item.clashIndex];
     if (!match) return false;
     if (dayView === "live") return match.state === "live";
     return dayInZone(new Date(match.date), "Africa/Cairo") === selectedDate;
   }) : matchItems;
-  /* أظهر مباريات اليوم والقادمة افتراضياً كما كان؛ أبقِ مباريات الأمس
-     ضمن مصدر التبويبات كي يمكن الوصول إليها عند اختيار «أمس»، من دون
-     إعادتها إلى العرض الافتراضي بعد انتهائها (إلا المباريات المباشرة
-     والكلاسيكو الذي يُعرض استثنائياً بطلب المالك). */
+  /* التبويب الافتراضي يحتفظ بالمواجهات البارزة؛ تبويبات الأيام تعرض كل مباراة مؤكدة من المصدر */
   const defaultMatchItems = matchItems.filter(item => {
-    const clash = clashes[item.clashIndex];
+    const clash = displayClashes[item.clashIndex];
     if (!clash) return false;
-    const match = matches[item.clashIndex];
+    const match = displayMatches[item.clashIndex];
     const isBarcaAtletico = (clash.home.name === "برشلونة" && clash.away.name === "أتلتيكو مدريد")
       || (clash.home.name === "أتلتيكو مدريد" && clash.away.name === "برشلونة");
     if (isBarcaAtletico || match?.state === "live") return true;
@@ -682,7 +702,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
               <span className="hs-crown-featured-date-label">مواعيد المباريات</span>
               <DayButtons selected={dayView} onSelect={day => { setSharedActiveIndex(0); setLeagueOnly(false); setDayView(day); }} />
               {(dayView || leagueOnly) && <button type="button" className="hs-crown-featured-clear" onClick={() => { setSharedActiveIndex(0); setDayView(null); setLeagueOnly(false); }}>إظهار الكل</button>}
-              {dayView && matchesStatus === "stale" && <p className="hs-day-warning" role="status">بيانات غير محدثة حالياً</p>}
+              {dayView && (useSourceDay ? sourceDayState?.status === "error" : matchesStatus === "stale") && <p className="hs-day-warning" role="status">تعذّر تحديث بيانات هذا اليوم من المصدر.</p>}
             </div>
           )}
         </div>
@@ -711,7 +731,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
           onPointerCancel={() => finishDrag(null)}
         >
           {!items.length && <div className="hs-day-empty" role="status">
-            <p>{matchesStatus === "loading" ? "جارٍ تحديث المباريات…" : matchesStatus === "error" ? "تعذّر تحديث مباريات الشريط من المصدر." : dayView ? "لا توجد مباريات مؤكدة لهذا الاختيار حالياً." : selectedLeagueId ? "لا توجد مباريات بارزة لهذه البطولة حالياً." : "لا توجد مباريات بارزة متاحة حالياً."}</p>
+            <p>{useSourceDay && (!sourceDayState || sourceDayState.status === "loading") ? "جارٍ تحديث مباريات اليوم المختار من المصدر…" : useSourceDay && sourceDayState?.status === "error" ? "تعذّر تحديث مباريات اليوم المختار من المصدر." : matchesStatus === "loading" ? "جارٍ تحديث المباريات…" : matchesStatus === "error" ? "تعذّر تحديث مباريات الشريط من المصدر." : dayView ? "لا توجد مباريات مؤكدة لهذا الاختيار حالياً." : selectedLeagueId ? "لا توجد مباريات بارزة لهذه البطولة حالياً." : "لا توجد مباريات بارزة متاحة حالياً."}</p>
             <a href="/matches/">استكشف كل المباريات</a>
           </div>}
           {items.map((item, idx) => {
@@ -745,7 +765,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 data-crown-card={item.key}
                 data-crown-league={item.leagueId}
                 data-crown-kind={item.clashIndex >= 0 ? "match" : "league"}
-                data-crown-state={item.clashIndex >= 0 ? matches[item.clashIndex]?.state ?? "unconfirmed" : undefined}
+                data-crown-state={item.clashIndex >= 0 ? displayMatches[item.clashIndex]?.state ?? "unconfirmed" : undefined}
                 data-crown-offset={offset}
                 draggable={false}
                 role="button"
@@ -778,8 +798,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
                 }}
               >
                 {item.clashIndex >= 0 ? <>
-                  <span className="sr-only">{clashSummary(matches[item.clashIndex] ?? null, clashes[item.clashIndex])}</span>
-                  <CrownClashSlide active={isFront && !expandedKey} clash={clashes[item.clashIndex]} match={matches[item.clashIndex] ?? null} />
+                  <span className="sr-only">{clashSummary(displayMatches[item.clashIndex] ?? null, displayClashes[item.clashIndex])}</span>
+                  <CrownClashSlide active={isFront && !expandedKey} clash={displayClashes[item.clashIndex]} match={displayMatches[item.clashIndex] ?? null} />
                 </> : <span className="hs-crown-card-top">
                   <span className="hs-crown-match-art hs-crown-league-background" data-league-card-background={item.leagueId} aria-hidden="true">
                     <LeagueIconBadge leagueId={item.leagueId} iconSrc={CROWN_CUP_LOGOS[item.leagueId]} size={132} eager={isFront} />
@@ -831,8 +851,8 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
             <div ref={pickerRef} className={`hs-crown-match-progress${horizontalView === "news" ? " is-news-picker" : ""}`} role="group" aria-label={horizontalView === "news" ? "اختيار خبر مميز" : "اختيار مباراة بارزة"}>
               {items.map((item, index) => {
                 const story = item.newsIndex === undefined ? null : FEATURED_NEWS[item.newsIndex];
-                const clash = item.clashIndex < 0 ? null : clashes[item.clashIndex];
-                const match = item.clashIndex < 0 ? null : matches[item.clashIndex];
+                const clash = item.clashIndex < 0 ? null : displayClashes[item.clashIndex];
+                const match = item.clashIndex < 0 ? null : displayMatches[item.clashIndex];
                 const pickerDay = match ? dayInZone(new Date(match.date), "Africa/Cairo") : clash?.date ?? null;
                 const pickerToday = dayInZone(new Date(), "Africa/Cairo");
                 const pickerTomorrow = shiftDay(pickerToday, 1);
@@ -946,7 +966,7 @@ export default function HeroLeagueCrownStrip({ clashes = NO_CLASHES, extraLeague
         </CrownFullscreen>
       )}
       {expandedItem && expandedItem.clashIndex >= 0 && (expandedTab === 'match' || expandedTab === null) && (
-        <CrownMatchFullscreen glow={expandedItem.stageGlow} clash={clashes[expandedItem.clashIndex]} match={matches[expandedItem.clashIndex] ?? null} onClose={() => setExpandedKey(null)} />
+        <CrownMatchFullscreen glow={expandedItem.stageGlow} clash={displayClashes[expandedItem.clashIndex]} match={displayMatches[expandedItem.clashIndex] ?? null} onClose={() => setExpandedKey(null)} />
       )}
     </section>
   );

@@ -1,0 +1,37 @@
+import { test, expect } from '@playwright/test';
+
+test('homepage preview shares site motion preference and applies it immediately', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 850 }, reducedMotion: 'no-preference' });
+  const page = await context.newPage();
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/home-preview/');
+  const select = page.getByLabel('حركات الموقع');
+  await expect(select).toHaveValue('on');
+  await select.selectOption('off');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced', 'true');
+  await expect(page.locator('.hero .scene.is-on')).toHaveCount(4);
+  const transitionOff = await page.locator('.hero-action-row a').first().evaluate(el => getComputedStyle(el).transitionDuration);
+  expect(parseFloat(transitionOff)).toBeLessThan(0.001);
+  const stat = await page.locator('.hero-stat.is-current').textContent();
+  await page.waitForTimeout(2600);
+  await expect(page.locator('.hero-stat.is-current')).toHaveText(stat!);
+  await page.reload();
+  await expect(select).toHaveValue('off');
+  await select.selectOption('on');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced', 'false');
+  const transitionOn = await page.locator('.hero-action-row a').first().evaluate(el => getComputedStyle(el).transitionDuration);
+  expect(parseFloat(transitionOn)).toBeGreaterThan(0.1);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await select.selectOption('auto');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced', 'true');
+  await select.selectOption('on');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced', 'false');
+  const other = await context.newPage();
+  await other.goto('/home-preview/');
+  await other.getByLabel('حركات الموقع').selectOption('off');
+  await expect(select).toHaveValue('off');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced', 'true');
+  expect(errors).toEqual([]);
+  await context.close();
+});

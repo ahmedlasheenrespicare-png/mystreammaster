@@ -32,6 +32,7 @@ const SITE = 'https://streammasterstore.com';
 
 const NOINDEX = new Set([
   '404.html',
+  'home-preview/index.html', // مسودة مستقلة غير مفهرسة وليست صفحة إنتاجية
   'offline.html',
   'live-free.html',
   'player.html',

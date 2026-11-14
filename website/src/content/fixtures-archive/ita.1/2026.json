@@ -4237,6 +4237,81 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261127&limit=500"
       },
       "fetchedAt": "2026-11-13T11:00:02.719Z"
+    },
+    {
+      "id": "401875081",
+      "date": "2026-11-28T14:00:00.000Z",
+      "home": {
+        "id": "4057",
+        "name": "Frosinone"
+      },
+      "away": {
+        "id": "115",
+        "name": "Parma"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261128&limit=500"
+      },
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
+    },
+    {
+      "id": "401874826",
+      "date": "2026-11-28T17:00:00.000Z",
+      "home": {
+        "id": "239",
+        "name": "Torino"
+      },
+      "away": {
+        "id": "112",
+        "name": "Lazio"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261128&limit=500"
+      },
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
+    },
+    {
+      "id": "401874977",
+      "date": "2026-11-28T19:45:00.000Z",
+      "home": {
+        "id": "110",
+        "name": "Internazionale"
+      },
+      "away": {
+        "id": "3263",
+        "name": "Genoa"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261128&limit=500"
+      },
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     }
   ]
 }

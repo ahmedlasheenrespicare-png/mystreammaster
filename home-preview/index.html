@@ -1227,7 +1227,7 @@ html .server-slide .server-card-head img{width:92px;height:70px;object-fit:conta
 
 
 /* ظهور واختفاء بطيئان مرتبطان بالتمرير في القسمين المستقلين. */
-.path-sequence{height:550svh}.server-sequence{height:700svh}
+.path-sequence{height:100svh}.server-sequence{height:700svh}
 html .path-sequence .path-card.is-active{opacity:var(--card-in,0);transform:translateX(calc((1 - var(--card-in,0)) * -45%)) perspective(850px) rotateY(calc((1 - var(--card-in,0)) * 60deg)) scale(calc(.75 + .25 * var(--card-in,0)));transition:transform .1s linear,opacity .1s linear}
 html .path-sequence .path-card.is-exiting{opacity:calc(1 - var(--card-exit,0));transform:translateX(calc(var(--card-exit,0) * 45%)) perspective(850px) rotateY(calc(var(--card-exit,0) * -60deg)) scale(calc(1 - .25 * var(--card-exit,0)));transition:transform .1s linear,opacity .1s linear;pointer-events:none;z-index:1}
 html .server-sequence .server-slide.is-active{opacity:var(--card-in,0);transform:translateX(calc((1 - var(--card-in,0)) * -112%)) scale(calc(.64 + .36 * var(--card-spring,0)));filter:blur(calc((1 - var(--card-in,0)) * 3px));transition:transform .1s linear,opacity .1s linear,filter .1s linear}
@@ -1617,8 +1617,8 @@ html[data-theme] .path-sequence .path-stage:has(.path-external-cta:is(:hover,:fo
 html[data-theme] .path-sequence .path-stage:has(.path-external-cta:is(:hover,:focus-visible)) .path-stage-inner > .path-card:nth-child(3).is-active::before{opacity:.85}
 @media print{html[data-theme] .path-sequence .path-stage:has(.path-external-cta:is(:hover,:focus-visible)) .path-stage-inner > .path-card.is-active::before{background:linear-gradient(125deg,#697784 0%,#b2bdc5 35%,#75818c 65%,#adb8bf 100%);opacity:.48}html[data-theme] .path-sequence .path-stage:has(.path-external-cta:is(:hover,:focus-visible)) .path-stage-inner > .path-card:nth-child(3).is-active::before{opacity:.60}}
 /* خلفية الخيار ٥ المثبتة لقسمي الهيرو والمسارات. */
-html[data-theme="light"] :is(.path-section,.hero-pin){background:linear-gradient(135deg,transparent 42%,#e0ede9 42% 42.12%,transparent 42.12% 57%,#e4eaf2 57% 57.12%,transparent 57.12%),linear-gradient(145deg,#fff,#f2f8f6,#fff);background-size:100% 100svh;background-repeat:repeat-y}
-html[data-theme="dark"] :is(.path-section,.hero-pin){background:linear-gradient(135deg,transparent 42%,#496056 42% 42.12%,transparent 42.12% 57%,#455769 57% 57.12%,transparent 57.12%),linear-gradient(145deg,#111813,#1d2924,#111817);background-size:100% 100svh;background-repeat:repeat-y}
+html[data-theme="light"] :is(.path-section,.hero-pin,.path-hero-dialog){background:linear-gradient(135deg,transparent 42%,#e0ede9 42% 42.12%,transparent 42.12% 57%,#e4eaf2 57% 57.12%,transparent 57.12%),linear-gradient(145deg,#fff,#f2f8f6,#fff);background-size:100% 100svh;background-repeat:repeat-y}
+html[data-theme="dark"] :is(.path-section,.hero-pin,.path-hero-dialog){background:linear-gradient(135deg,transparent 42%,#496056 42% 42.12%,transparent 42.12% 57%,#455769 57% 57.12%,transparent 57.12%),linear-gradient(145deg,#111813,#1d2924,#111817);background-size:100% 100svh;background-repeat:repeat-y}
 /* كروت المسارات غير النشطة لا تظهر أثناء التمرير، حتى في مرحلة الخروج. */
 @media screen{html[data-theme] .path-sequence .path-stage-inner > .path-card:not(.is-active){visibility:hidden!important;opacity:0!important;pointer-events:none!important;animation:none!important;transition:none!important}}
 /* الجزء العلوي ومحتواه يدخلان من خارج يسار الشاشة مع التمرير. */
@@ -1811,7 +1811,6 @@ html[data-theme] .path-sequence.is-hero-preview .path-card.is-active{--upper-ent
 html[data-theme] .path-sequence.is-hero-preview .path-external-price{translate:calc((1 - var(--preview-upper,0)) * -100vw) 0!important}
 html[data-theme] .path-sequence.is-hero-preview .path-external-cta{translate:calc((1 - var(--preview-lower,0)) * 100vw) calc((1 - var(--preview-lower,0)) * 100svh)!important}
 /* دخول المسارات الثلاثة — الاقتراب ٢ والتوسع ٣ مثبتان. */
-.path-section:has(.path-demo-active){touch-action:pan-x pinch-zoom}
 .path-sequence.path-demo-active .path-stage > :is(.path-stage-inner,.path-external-price,.path-external-cta,.path-server-foot,.path-logo-connector){visibility:hidden!important;pointer-events:none!important}
 .path-demo-layer{position:absolute;inset:0;z-index:9;pointer-events:none;overflow:hidden}
 .path-demo-unit{position:absolute;width:300px;height:430px;left:50%;top:50%;margin-left:-150px;margin-top:-215px;opacity:0;transform-origin:center center;will-change:transform,opacity;pointer-events:none}
@@ -1829,6 +1828,32 @@ html[data-theme] .path-sequence .path-demo-unit .path-card.is-active > *{transla
 .path-demo-cta{position:absolute;inset:0;z-index:7;display:flex;align-items:flex-end;justify-content:flex-start;gap:6px;padding:0 14px 12px;border-radius:48px 48px 48px 48px / 24px 24px 60px 60px;background:linear-gradient(135deg,#cde9d2,#c6e2f5,#ded5f0);color:#122019;font-size:12px;font-weight:700;line-height:1.3;text-decoration:none;clip-path:polygon(100% 64.93%,100% 100%,12.93% 100%);pointer-events:none}
 .path-demo-cta img{width:25px;height:20px;object-fit:contain}.path-demo-layer.is-done .path-demo-cta{pointer-events:auto}
 @media print{.path-demo-layer{display:none!important}}
+/* شاشة مستقلة لزر الهيرو. */
+.path-hero-dialog{position:fixed;inset:0;z-index:10000;background:var(--ink);color:var(--cream);overflow:auto;overscroll-behavior:contain}
+/* شعارات الجدارية الأصلية داخل المساحة المائلة، خلف محتوى الشاشة. */
+.path-hero-brand-window{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.path-hero-brand-strip{position:absolute;left:50%;top:50%;width:max(200vw,200svh);height:clamp(58px,calc((100vw + 100svh)*.106),230px);transform:translate(-50%,-50%) rotate(-45deg);display:flex;align-items:center;overflow:hidden;direction:ltr}
+.path-hero-brand-track{display:flex;width:max-content;will-change:transform}
+.path-hero-brand-group{display:flex;align-items:center;flex:none;gap:16px;padding-right:16px}
+.path-hero-brand-item{display:flex;align-items:center;justify-content:center;width:92px;height:54px;flex:none;border-radius:12px;background:rgba(255,255,255,.68);box-shadow:0 2px 8px #263d3020}
+.path-hero-brand-item img{max-width:74px;max-height:38px;object-fit:contain;opacity:.76}
+html[data-theme="dark"] .path-hero-brand-item{background:rgba(255,255,255,.84)}
+.path-hero-dialog .path-sequence{position:relative;z-index:1}
+.path-hero-dialog[hidden]{display:none}.path-hero-dialog .path-sequence{height:auto;min-height:100svh}.path-hero-dialog .path-stage{position:relative;top:auto;min-height:100svh;height:100svh}
+.path-hero-dialog .path-demo-layer{overflow:visible}.path-hero-dialog .path-demo-unit{opacity:1;top:calc(50% - 35px)}.path-hero-dialog .path-demo-cta{pointer-events:auto}
+html[data-theme] .path-hero-dialog .path-server-foot{z-index:20;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:initial;grid-auto-columns:auto;width:min(96%,370px);padding:4px;overflow:visible}
+.path-hero-dialog .path-mini-card{min-width:0}.path-hero-dialog .path-mini-card:not([aria-current="true"]){opacity:.65;filter:none}
+.path-hero-dialog .path-logo-connector{visibility:visible}
+/* توحيد ألوان الجزء الأوسط مع ألوان الجزأين العلوي والسفلي في الشاشة المستقلة. */
+html[data-theme] .path-hero-dialog .path-stage-inner > .path-card.is-active{--path-band-gradient:linear-gradient(135deg,#cde9d2 0%,#c6e2f5 50%,#ded5f0 100%)}
+/* لون شعار الكارت النشط يتغير فقط عند الوقوف على جزء الاشتراك. */
+html[data-theme] .path-hero-dialog .path-demo-unit:has(.path-demo-cta:is(:hover,:focus-visible)) .path-stage-inner > .path-card.is-active::before{background:linear-gradient(125deg,#245ca2,#55aee7,#2468bd);opacity:.85}
+
+
+.path-hero-dialog .path-demo-unit .path-card.is-active{padding:18px}.path-hero-dialog .path-demo-unit .path-card.is-active h3,.path-hero-dialog .path-demo-unit .path-card .path-spec-label{font-size:22px}.path-hero-dialog .path-demo-unit .path-card.is-active .path-price{display:none}
+.path-hero-back{position:absolute;z-index:20;top:16px;right:16px;padding:7px 14px;font:inherit;font-size:13px;border:1px solid var(--line-strong);border-radius:999px;background:var(--ink-2);color:var(--cream);cursor:pointer}.path-hero-back:focus-visible{outline:2px solid #75a4c0;outline-offset:3px}
+@media print{.path-hero-dialog{display:none!important}}
+
 
 /* لا يظهر رابط الصفحة الحالية ولا أداة الحركات في المسودة؛ يبقى تفضيل الموقع مشتركاً. */
 .live-link,.motion-settings{display:none!important}
@@ -2258,29 +2283,7 @@ window.addEventListener('scroll',request,{passive:true});window.addEventListener
 /* دخول قسم البطولات من مركز الشاشة عند اختياره من الهيرو فقط. */
 (function(){var link=document.querySelector('.hero-league-card'),section=document.getElementById('league-strip'),stage=section.querySelector('.league-stage'),title=document.getElementById('league-strip-title'),animation=null;window.addEventListener('sm-motion-change',function(){if(window.draftMotionReduced()&&animation){animation.cancel();animation=null}});link.addEventListener('click',function(event){if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();if(animation){animation.cancel();animation=null}var top=window.scrollY+section.getBoundingClientRect().top;window.scrollTo({top:top,behavior:'instant'});if(location.hash!=='#league-strip')history.pushState(null,'','#league-strip');title.focus({preventScroll:true});if(window.draftMotionReduced())return;animation=stage.animate([{clipPath:'inset(49% 49% 49% 49% round 20px)',transform:'scale(.9)',opacity:.15},{clipPath:'inset(0% 0% 0% 0% round 0px)',transform:'scale(1)',opacity:1}],{duration:850,easing:'cubic-bezier(.22,1,.36,1)'});animation.onfinish=function(){animation=null}})})();
 </script>
-<script>
-/* استعراض دخول أول مسار عند اختياره من الهيرو دون حجز التمرير. */
-(function(){
-  var link=document.querySelector('.hero-path-link'),seq=document.querySelector('.path-sequence'),stage=seq.querySelector('.path-stage'),heading=stage.querySelector('.path-stage-heading h2');
-  var frame=0, running=false;
-  function stop(){if(frame)cancelAnimationFrame(frame);frame=0;running=false;seq.classList.remove('is-hero-preview');['--preview-upper','--preview-band','--preview-lower'].forEach(function(prop){seq.style.removeProperty(prop)})}
-  function target(fraction){var span=Math.max(0,seq.offsetHeight-stage.offsetHeight);return window.scrollY+seq.getBoundingClientRect().top+span*fraction/3}
-  function update(progress){var clamp=function(x){return Math.max(0,Math.min(1,x))},smooth=function(x){x=clamp(x);return x*x*(3-2*x)};seq.style.setProperty('--preview-upper',smooth(progress*3).toFixed(4));seq.style.setProperty('--preview-band',smooth(progress*3-1).toFixed(4));seq.style.setProperty('--preview-lower',smooth(progress*3-2).toFixed(4));window.scrollTo({top:target(.855*progress),behavior:'instant'})}
-  link.addEventListener('click',function(e){
-    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-    e.preventDefault();stop();if(location.hash!=='#path-section')history.pushState(null,'','#path-section');
-    if(window.draftMotionReduced()){window.scrollTo({top:target(.855),behavior:'instant'});heading.focus({preventScroll:true});return}
-    seq.classList.add('is-hero-preview');running=true;update(0);heading.focus({preventScroll:true});
-    var previous=0,elapsed=0;
-    function tick(now){if(!running)return;if(previous)elapsed+=Math.min(now-previous,64);previous=now;var p=Math.min(1,elapsed/3000);update(p);if(p<1)frame=requestAnimationFrame(tick);else{frame=0;requestAnimationFrame(function(){if(running)stop()})}}
-    frame=requestAnimationFrame(tick);
-  });
-  ['wheel','touchstart','pointerdown'].forEach(function(type){window.addEventListener(type,function(){if(running)stop()},{passive:true})});
-  window.addEventListener('keydown',function(e){if(running&&['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].indexOf(e.key)>=0)stop()});
-  window.addEventListener('sm-motion-change',function(){if(running&&window.draftMotionReduced()){window.scrollTo({top:target(.855),behavior:'instant'});stop()}});
-  window.addEventListener('resize',function(){if(running)stop()});
-})();
-</script>
+
 <script>
 (function(){var row=document.querySelector('.hero-action-row'),items=[row.querySelector('.hero-league-card'),row.querySelector('.btn-primary'),row.querySelector('.btn-ghost'),row.querySelector('.hero-path-link')],current=1,pending=false;
 function dimensions(){var width=Math.min(150,Math.max(100,Math.floor(row.clientWidth*.34))),edge=Math.max(0,(row.clientWidth-width)/2);row.style.setProperty('--hero-action-card-width',width+'px');row.style.setProperty('--hero-action-edge',edge+'px')}
@@ -2496,7 +2499,7 @@ function schedule(){last=performance.now();if(!pending)pending=requestAnimationF
 /* دخول متتابع مثبت للكروت الثلاثة عند الوصول بالتمرير. */
 (function(){
   var seq=document.querySelector('.path-sequence'),stage=seq.querySelector('.path-stage'),original=stage.querySelector('.path-stage-inner'),source=Array.from(original.children),heroLink=document.querySelector('.hero-path-link');
-  var layer=document.createElement('div'),units=[],seen=false,heroNavigation=false,heroEntered=false,run=0,animations=[],activeIndex=1,layoutBig=1,layoutStep=0,lastHorizontalWheel=0,extraRun=0;
+  var layer=document.createElement('div'),units=[],seen=false,run=0,animations=[],activeIndex=1,layoutBig=1,layoutStep=0,lastHorizontalWheel=0,extraRun=0;
   layer.className='path-demo-layer';layer.dataset.lockedMotion='2';layer.setAttribute('aria-label','معاينة ترتيب بطاقات المسارات');layer.hidden=true;stage.appendChild(layer);
   source.forEach(function(card,index){
     var unit=document.createElement('div'),holder=document.createElement('div');unit.className='path-demo-unit';unit.dataset.pathIndex=String(index);holder.className='path-stage-inner';
@@ -2505,6 +2508,56 @@ function schedule(){last=performance.now();if(!pending)pending=requestAnimationF
     var cta=card.querySelector('.path-primary').cloneNode(true);cta.className='path-demo-cta';cta.tabIndex=-1;
     unit.append(holder,price,cta);layer.appendChild(unit);units.push(unit);
   });
+  var dialog=document.createElement('div');dialog.className='path-hero-dialog';dialog.hidden=true;dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','اختر مسارك');dialog.innerHTML='<div class="path-sequence"><div class="path-stage"><button type="button" class="path-hero-back">رجوع</button><div class="path-demo-layer is-done"></div></div></div>';
+  var brandWindow=document.createElement('div');brandWindow.className='path-hero-brand-window';brandWindow.setAttribute('aria-hidden','true');var brandStrip=document.createElement('div'),brandTrack=document.createElement('div');brandStrip.className='path-hero-brand-strip';brandTrack.className='path-hero-brand-track';
+  var brandFiles=['bein','ssc','alkass','adsports','mbc','shahid','rotana','osn','netflix','appletv','paramount','hbo','natgeo','discovery','cartoon'];
+  for(var n=0;n<8;n++){var group=document.createElement('div');group.className='path-hero-brand-group';brandFiles.forEach(function(name){var tile=document.createElement('span'),img=document.createElement('img');tile.className='path-hero-brand-item';img.src='../images/logos/'+name+'.png';img.alt='';img.decoding='async';tile.appendChild(img);group.appendChild(tile)});brandTrack.appendChild(group)}brandStrip.appendChild(brandTrack);brandWindow.appendChild(brandStrip);dialog.prepend(brandWindow);
+  var brandOffset=0,brandAnimation=null;
+  function moveBrandTrack(delta){
+    var width=brandTrack.firstElementChild.offsetWidth;if(!width||!delta||window.draftMotionReduced())return;
+    if(brandAnimation){var current=new DOMMatrixReadOnly(getComputedStyle(brandTrack).transform).m41;brandAnimation.cancel();brandAnimation=null;brandOffset=((-current)%width+width)%width}
+    var start=-2*width-brandOffset,end=start+(delta>0?-width/2:width/2);brandTrack.style.transform='translateX('+start+'px)';
+    var currentAnimation=brandTrack.animate([{transform:'translateX('+start+'px)'},{transform:'translateX('+end+'px)'}],{duration:1800,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});brandAnimation=currentAnimation;
+    currentAnimation.finished.then(function(){if(brandAnimation!==currentAnimation)return;brandOffset=((-end)%width+width)%width;brandTrack.style.transform='translateX('+(-2*width-brandOffset)+'px)';brandAnimation=null;currentAnimation.cancel()}).catch(function(){});
+  }
+  function brandRunCleanup(){brandOffset=0;brandTrack.style.transform=''}
+  var back=dialog.querySelector('.path-hero-back'),dialogStage=dialog.querySelector('.path-stage'),dialogLayer=dialog.querySelector('.path-demo-layer'),dialogUnits=units.map(function(u){return u.cloneNode(true)}),dialogAnimations=[],previousOverflow='',dialogIndex=0,dialogWheelAt=0,dialogTouch=null,dialogRun=0;
+  var dialogFoot=stage.querySelector('.path-server-foot').cloneNode(true),dialogButtons=Array.from(dialogFoot.querySelectorAll('.path-mini-card')),dialogLine=stage.querySelector('.path-logo-connector').cloneNode(true);dialogStage.append(dialogLine,dialogFoot);dialogUnits.forEach(function(u){dialogLayer.appendChild(u)});
+  dialogFoot.querySelectorAll('img').forEach(function(img){img.style.removeProperty('--logo-motion-progress')});
+  function dialogScale(){return Math.max(.1,Math.min(1,(window.innerWidth-36)/300,(window.innerHeight-180)/430))}
+  function drawDialogLine(){var card=dialogUnits[dialogIndex].getBoundingClientRect(),button=dialogButtons[dialogIndex].getBoundingClientRect(),rect=dialogStage.getBoundingClientRect(),gap=button.top-card.bottom;if(gap<4){dialogLine.style.visibility='hidden';return}dialogLine.style.visibility='visible';dialogLine.setAttribute('viewBox','0 0 '+rect.width+' '+rect.height);var x1=card.left+card.width/2-rect.left,y1=card.bottom-rect.top,x2=button.left+button.width/2-rect.left,y2=button.top-rect.top;dialogLine.querySelector('path').setAttribute('d','M '+x1+' '+y1+' C '+(x1+24)+' '+(y1+gap*.35)+' '+(x2+24)+' '+(y2-gap*.35)+' '+x2+' '+y2)}
+  function selectDialog(index,animate){
+    index=Math.max(0,Math.min(dialogUnits.length-1,index));dialogRun++;dialogAnimations.forEach(function(a){a.cancel()});dialogAnimations=[];dialogIndex=index;
+    dialogUnits.forEach(function(unit,i){var selected=i===index;unit.querySelector('.path-card.is-active').classList.remove('is-settled');unit.hidden=!selected;unit.setAttribute('aria-hidden',String(!selected));unit.style.opacity='1';unit.style.transform=position(0,dialogScale());unit.style.zIndex='10';unit.querySelector('.path-demo-cta').tabIndex=selected?0:-1;
+      unit.querySelectorAll('.path-top,.path-upper-piece,.path-demo-price,.path-gap-backdrop,.path-upper-frame,.path-why,.path-specs,.path-actions,.path-demo-cta').forEach(function(el){el.style.opacity='1';el.style.translate='none'});
+      if(selected){var card=unit.querySelector('.path-card.is-active'),cx=card.clientWidth/2,cy=card.clientHeight/2;card.querySelectorAll('.path-gap-backdrop,.path-upper-frame,.path-why,.path-specs,.path-actions').forEach(function(el){el.style.setProperty('--band-pivot-x',(cx-el.offsetLeft)+'px');el.style.setProperty('--band-pivot-y',(cy-el.offsetTop)+'px')})}
+      dialogButtons[i].setAttribute('aria-pressed',String(selected));if(selected)dialogButtons[i].setAttribute('aria-current','true');else dialogButtons[i].removeAttribute('aria-current');
+    });
+    if(animate&&!window.draftMotionReduced())animateDialogEntry(index);
+    requestAnimationFrame(drawDialogLine);
+  }
+  function openDialog(e){
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();
+    previousOverflow=document.documentElement.style.overflow;document.documentElement.style.overflow='hidden';document.body.appendChild(dialog);dialog.hidden=false;selectDialog(0,false);
+    back.focus({preventScroll:true});if(!window.draftMotionReduced())animateDialogEntry(0);
+  }
+  function animateDialogEntry(index){
+    var unit=dialogUnits[index],card=unit.querySelector('.path-card.is-active'),token=dialogRun;
+    unit.dataset.entryPhase='upper';
+    function effect(el,frames,delay){var a=el.animate(frames,{duration:700,delay:delay,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});dialogAnimations.push(a);return a}
+    unit.querySelectorAll('.path-top,.path-upper-piece,.path-demo-price').forEach(function(el){effect(el,[{opacity:0,transform:'translateX(-100vw)'},{opacity:1,transform:'none'}],0)});
+    unit.querySelectorAll('.path-gap-backdrop,.path-upper-frame,.path-why,.path-specs,.path-actions').forEach(function(el){effect(el,[{opacity:0,transform:'scale(2)'},{opacity:1,transform:'none'}],700)});
+    var lower=effect(unit.querySelector('.path-demo-cta'),[{opacity:0,transform:'translate(100vw,100vh)'},{opacity:1,transform:'none'}],1400);
+    lower.finished.then(function(){if(token!==dialogRun||dialog.hidden||dialogIndex!==index)return;unit.dataset.entryPhase='settled';card.classList.remove('is-settled');void card.offsetWidth;card.classList.add('is-settled')}).catch(function(){});
+  }
+  function closeDialog(){if(dialog.hidden)return;if(brandAnimation){brandAnimation.cancel();brandAnimation=null}brandRunCleanup();dialogRun++;dialogAnimations.forEach(function(a){a.cancel()});dialogAnimations=[];dialog.hidden=true;dialog.remove();document.documentElement.style.overflow=previousOverflow;window.scrollTo({top:document.getElementById('hero').getBoundingClientRect().top+window.scrollY,behavior:'instant'});heroLink.focus({preventScroll:true})}
+  heroLink.addEventListener('click',openDialog);back.addEventListener('click',closeDialog);
+  dialogFoot.addEventListener('click',function(e){var item=e.target.closest('.path-mini-card'),index=dialogButtons.indexOf(item);if(index>=0){moveBrandTrack(index-dialogIndex||1);selectDialog(index,true)}});
+  dialog.addEventListener('wheel',function(e){if(e.ctrlKey||e.metaKey)return;var delta=Math.abs(e.deltaY)>=Math.abs(e.deltaX)?e.deltaY:e.deltaX;if(!delta)return;e.preventDefault();var now=performance.now();if(now-dialogWheelAt>500){moveBrandTrack(delta);selectDialog(dialogIndex+(delta>0?1:-1),true);dialogWheelAt=now}},{passive:false});
+  dialog.addEventListener('touchstart',function(e){dialogTouch=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY,lastX:e.touches[0].clientX,lastY:e.touches[0].clientY}:null},{passive:true});
+  dialog.addEventListener('touchend',function(e){if(!dialogTouch||!e.changedTouches.length)return;var dx=e.changedTouches[0].clientX-dialogTouch.x,dy=e.changedTouches[0].clientY-dialogTouch.y;dialogTouch=null;var delta=Math.abs(dy)>=Math.abs(dx)?dy:dx;if(Math.abs(delta)>45){moveBrandTrack(-delta);selectDialog(dialogIndex+(delta<0?1:-1),true)}},{passive:true});
+  window.addEventListener('resize',function(){if(!dialog.hidden)selectDialog(dialogIndex,false)});
+  dialog.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();closeDialog()}else if(e.key==='Tab'){var targets=Array.from(dialog.querySelectorAll('button,a[href]')).filter(function(el){return el.tabIndex>=0&&el.getClientRects().length});if(!targets.length)return;var i=targets.indexOf(document.activeElement),next=e.shiftKey?(i<=0?targets.length-1:i-1):(i<0||i===targets.length-1?0:i+1);e.preventDefault();targets[next].focus()}else if(['ArrowDown','ArrowUp'].indexOf(e.key)>=0){e.preventDefault();selectDialog(dialogIndex+(e.key==='ArrowDown'?1:-1),true)}});
   function cancel(){run++;extraRun++;delete layer.dataset.extraEffect;animations.forEach(function(a){a.cancel()});animations=[];layer.classList.remove('is-done');units.forEach(function(unit){unit.getAnimations().forEach(function(a){a.cancel()});unit.querySelector('.path-demo-cta').tabIndex=-1})}
   function position(x,scale,extra){return 'translate('+x+'px,0px) scale('+scale+') '+(extra||'')}
   /* نحسب خط الفصل من مقاس نسخة المعاينة نفسها، كما في الكارت الأصلي. */
@@ -2575,18 +2628,17 @@ function schedule(){last=performance.now();if(!pending)pending=requestAnimationF
     layer.dataset.demoPhase='center';units.forEach(function(unit,i){unit.style.zIndex=i===1?'30':'10'});await Promise.all(units.map(function(unit,i){var from=i===0?step:i===1?shift:0,fromScale=i===2?big:sideScale,toScale=i===1?big:sideScale;return animation(unit,[{transform:position(from,fromScale)},{transform:position((1-i)*step,toScale)}],{duration:800,easing:easing})}));
     if(token!==run)return;layer.dataset.demoPhase='done';layer.classList.add('is-done');showActive(false);playExtraSequence();
   }
-  /* زر الهيرو يحتفظ بدخول الكارت الأول السابق؛ دخول الثلاثة يبدأ عند التمرير فقط. */
-  heroLink.addEventListener('click',function(e){if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;heroNavigation=true;heroEntered=false;seen=true;cancel();seq.classList.remove('path-demo-active');layer.hidden=true},true);
-  var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.intersectionRatio>=.75){if(heroNavigation){heroEntered=true;return}if(!seen){seen=true;play()}}else if(!e.isIntersecting){if(heroNavigation&&!heroEntered)return;heroNavigation=false;heroEntered=false;seen=false;if(!layer.hidden){cancel();seq.classList.remove('path-demo-active');layer.hidden=true}}})},{threshold:[0,.75]});observer.observe(stage);
-  window.addEventListener('resize',function(){if(!layer.hidden)play()});window.addEventListener('sm-motion-change',function(){if(!layer.hidden)play()});
-  /* في مسار التمرير وحده: تمريرة جديدة تغادر القسم في اتجاهها، حتى أثناء الاستعراض. */
-  var lastWheel=0,touchStart=null,nextSection=document.getElementById('server-comparison'),previousSection=document.getElementById('league-strip');
-  function scrollPreviewActive(){return !heroNavigation&&!layer.hidden&&seq.classList.contains('path-demo-active')}
-  function leavePath(direction){var target=direction>0?nextSection:previousSection;cancel();seen=false;seq.classList.remove('path-demo-active');layer.hidden=true;window.scrollTo({top:window.scrollY+target.getBoundingClientRect().top,behavior:'instant'})}
-  window.addEventListener('wheel',function(e){var now=performance.now(),pause=now-lastWheel;lastWheel=now;if(!scrollPreviewActive()||e.defaultPrevented||e.ctrlKey||e.metaKey)return;if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&e.deltaX){if(layer.classList.contains('is-done')){e.preventDefault();if(now-lastHorizontalWheel>300){moveCards(e.deltaX>0?-1:1);lastHorizontalWheel=now}}return}if(!e.deltaY)return;/* دفعات عجلة التمريرة التي أدخلت القسم ليست طلب خروج جديداً. */if(pause<200)return;e.preventDefault();leavePath(e.deltaY>0?1:-1)},{passive:false});
-  window.addEventListener('touchstart',function(e){touchStart=scrollPreviewActive()&&e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null},{passive:true});
-  window.addEventListener('touchmove',function(e){if(!touchStart||e.touches.length!==1||!scrollPreviewActive())return;var dx=e.touches[0].clientX-touchStart.x,dy=e.touches[0].clientY-touchStart.y;if(Math.abs(dy)>8&&Math.abs(dy)>Math.abs(dx)*1.3){if(e.cancelable)e.preventDefault();if(Math.abs(dy)>45){touchStart=null;leavePath(dy<0?1:-1)}}},{passive:false});
-  window.addEventListener('touchend',function(e){if(!touchStart||!e.changedTouches.length)return;var dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;touchStart=null;if(!scrollPreviewActive())return;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3&&layer.classList.contains('is-done')){if(e.cancelable)e.preventDefault();moveCards(dx<0?-1:1)}else if(Math.abs(dy)>45&&Math.abs(dy)>Math.abs(dx)*1.3){if(e.cancelable)e.preventDefault();leavePath(dy<0?1:-1)}},{passive:false});
+  /* دخول القسم مرة واحدة؛ يبقى الاستعراض حياً عند مغادرة موضعه والعودة. */
+  var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.intersectionRatio>=.75&&!seen){seen=true;play()}})},{threshold:[0,.75]});observer.observe(stage);
+  window.addEventListener('resize',function(){if(!layer.hidden&&layer.classList.contains('is-done')){extraRun++;var w=stage.clientWidth,h=stage.clientHeight;layoutBig=Math.min(1,(w-(w<600?90:35))/300,(h-160)/430);layoutStep=Math.max(0,Math.min((w-300*layoutBig*.68)/2-6,150*layoutBig+75*layoutBig*.68));alignPieces();showActive(false);if(!window.draftMotionReduced())playExtraSequence()}});
+  window.addEventListener('sm-motion-change',function(){if(!layer.hidden){if(!layer.classList.contains('is-done')){play();return}extraRun++;showActive(false);if(!window.draftMotionReduced())playExtraSequence()}});
+  /* التمرير الرأسي طبيعي؛ التنقل الأفقي خاص بنسخ الاستعراض فقط. */
+  var touchStart=null;
+  function scrollPreviewActive(){return !layer.hidden&&seq.classList.contains('path-demo-active')}
+  function stageOnScreen(){var r=stage.getBoundingClientRect();return dialog.hidden&&r.bottom>0&&r.top<innerHeight}
+  window.addEventListener('wheel',function(e){if(!scrollPreviewActive()||!stageOnScreen()||e.defaultPrevented||e.ctrlKey||e.metaKey)return;if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&e.deltaX&&layer.classList.contains('is-done')){e.preventDefault();var now=performance.now();if(now-lastHorizontalWheel>300){moveCards(e.deltaX>0?-1:1);lastHorizontalWheel=now}}},{passive:false});
+  window.addEventListener('touchstart',function(e){touchStart=scrollPreviewActive()&&stageOnScreen()&&e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null},{passive:true});
+  window.addEventListener('touchend',function(e){if(!touchStart||!e.changedTouches.length)return;var dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;touchStart=null;if(scrollPreviewActive()&&Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3&&layer.classList.contains('is-done'))moveCards(dx<0?-1:1)},{passive:true});
   window.addEventListener('touchcancel',function(){touchStart=null},{passive:true});
 })();
 </script>

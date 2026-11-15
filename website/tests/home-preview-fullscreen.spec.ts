@@ -5,12 +5,12 @@ for (const viewport of [{width:390,height:500},{width:390,height:850},{width:128
     await page.goto('/home-preview/');
     await expect(page.locator('.hero')).toHaveCSS('height', `${viewport.height}px`);
     for (const [section, stage] of [['#hero','.hero-pin'],['#league-strip','.league-stage'],['#path-section','.path-stage'],['#server-comparison','.server-stage'],['#setup-draft','.setup-stage']]) {
-      const box = await page.locator(stage).boundingBox();
+      const box = await page.locator(section).locator(stage).boundingBox();
       expect(box).not.toBeNull();
       expect(Math.abs(box!.height - viewport.height)).toBeLessThan(2);
-      await page.locator(stage).evaluate(el => window.scrollTo({top: window.scrollY + el.getBoundingClientRect().top + 20, behavior:'instant'}));
+      await page.locator(section).locator(stage).evaluate(el => window.scrollTo({top: window.scrollY + el.getBoundingClientRect().top + 20, behavior:'instant'}));
       await page.waitForTimeout(100);
-      const pinned = await page.locator(stage).boundingBox();
+      const pinned = await page.locator(section).locator(stage).boundingBox();
       if (section !== '#hero') expect(Math.abs(pinned!.y)).toBeLessThan(2);
     }
     expect(await page.locator('.review').evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(viewport.height);

@@ -6,7 +6,7 @@
   <meta name="description" content="معاينة مستقلة لتصميم ستريم ماستر قيد التطوير.">
   <link rel="icon" href="/favicon.ico">
 
-  <script src="./assets/motion-settings.js?v=2edd6d63e61fd44b"></script>
+  <script src="./assets/motion-settings.js?v=fab561909ed1769d"></script>
   <!-- Assets -->
   <link href="./assets/css" rel="stylesheet">
   <link rel="stylesheet" href="./assets/loader.css">
@@ -16,7 +16,7 @@
 
   
 
-  <script type="module" crossorigin="" src="./assets/main-D5MQsYQ6.js?v=2edd6d63e61fd44b"></script>
+  <script type="module" crossorigin="" src="./assets/main-D5MQsYQ6.js?v=fab561909ed1769d"></script>
   <link rel="modulepreload" crossorigin="" href="./assets/modulepreload-polyfill-YP0FEG5d.js">
   <link rel="stylesheet" crossorigin="" href="./assets/main-CS-w4MMY.css">
 <meta name="referrer" content="strict-origin-when-cross-origin"><meta name="aj-signature-2025" content="abhishekjha.me|mtoe4" data-w="aj"><style>/* aj:wm */ html::after{content:'aj-me';position:fixed;left:-9999px;top:-9999px;pointer-events:none;}</style><style>/* ── خطوط الشعار الأصلي (Tajawal / Cairo) ─────── */
@@ -54,6 +54,7 @@ a:hover .sm-crab39__tile,a:focus-visible .sm-crab39__tile{box-shadow:0 6px 14px 
 
 /* محتوى الهيرو العربي داخل تصميم المرجع */
 @font-face{font-family:SMHero;src:url(/_assets/redesign/tajawal-arabic-900-normal-MgmkhdPX.woff2) format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:SMHeroAccent;src:url(/_assets/redesign/amiri-arabic-400-italic-DBzvBWX2.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
 .ban__oval .sm-hero-info{width:auto;max-width:40%;display:grid;grid-template-columns:auto auto;gap:0;left:2%;top:5%;font:700 11px/1.5 SMTajawal,Tajawal,sans-serif;color:#280822;background:#fff9;border:1px solid #28082226;letter-spacing:0;text-align:center}
 .sm-hero-info span{padding:7px 10px;white-space:nowrap}.sm-hero-info span:first-child{grid-column:1/-1;border-bottom:1px solid #28082226}.sm-hero-info span:nth-child(2){border-left:1px solid #28082226}
 .ban__oval .ban__oval__btn{text-decoration:none;cursor:pointer}.ban__oval .ban__oval__btn p{font-family:SMTajawal,Tajawal,sans-serif;font-weight:700;letter-spacing:0}
@@ -61,9 +62,98 @@ a:hover .sm-crab39__tile,a:focus-visible .sm-crab39__tile{box-shadow:0 6px 14px 
 .ban__title.sm-hero-copy{font-family:SMHero,Tajawal,sans-serif;font-size:clamp(40px,9vw,130px);line-height:1.2;letter-spacing:0;text-transform:none}.sm-hero-copy h1{font:inherit;margin:0}.sm-hero-copy h1 span{display:inline-block}.sm-hero-copy p{font:700 clamp(16px,1.5vw,21px)/2 SMTajawal,Tajawal,sans-serif;max-width:760px;margin:45px auto 0;letter-spacing:0;color:#fff;padding-inline:16px}
 @media(max-width:600px){.ban__oval .sm-hero-info{left:5%;top:5%;max-width:90%;font-size:10px}.sm-hero-info span{padding:5px 8px}.ban__title.sm-hero-copy{font-size:clamp(34px,10vw,60px);line-height:1.3}.sm-hero-copy p{font-size:15px;margin-top:25px}}
 
+/* Banner: preserve the reference oval and flower, restoring its atmospheric
+   layers and editorial, oversized title for Arabic text. */
+.ban:before{top:20%;height:80%;background:linear-gradient(180deg,transparent 0%,#28082218 15%,#280822 76%,#280822 100%)!important}
+.ban:after{display:none}
+.ban .clouds-1,.ban .clouds-2,.ban .clouds-3{background-image:url(./assets/hero-clouds.svg);background-size:1500px 1000px;opacity:.52;mask-image:linear-gradient(to bottom,transparent,#000 15%,#000 65%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 15%,#000 65%,transparent)}
+.ban .clouds-1{background-image:url(./assets/hero-clouds-soft.webp);background-size:1568px 1000px;opacity:.75;animation:smHeroClouds 45s linear infinite}
+@keyframes smHeroClouds{to{background-position:-1568px 0}}
+.ban .clouds-2{filter:none;top:90px;opacity:.32;background-size:1200px 1000px}
+.ban .clouds-3{top:180px;opacity:.22;background-size:1800px 1000px}
+.ban__oval:before{content:none}.sm-hero-stamp{position:absolute;right:2%;top:5%;width:clamp(38px,5vw,70px);height:clamp(26px,3vw,44px);z-index:7;display:grid;place-items:center;border:1px solid #28082235;color:#280822}.sm-hero-stamp:before,.sm-hero-stamp:after{content:"";position:absolute;left:0;right:0;height:1px;background:#28082235}.sm-hero-stamp:before{top:33%}.sm-hero-stamp:after{bottom:33%}.sm-hero-stamp svg{width:13px;height:13px;position:relative;z-index:1}
+.ban__oval:after{content:"";width:clamp(60px,7vw,105px);height:3px;background:linear-gradient(to right,#280822 0 82%,transparent 82% 86%,#280822 86% 88%,transparent 88% 91%,#280822 91% 93%,transparent 93% 96%,#280822 96% 98%,transparent 98%);opacity:1;transform:none}
+.ban__oval .sm-hero-info{max-width:none;width:clamp(170px,15vw,220px);grid-template-columns:1fr 1fr;background:transparent;color:#280822;border:1px solid #28082240;font-size:clamp(10px,.78vw,12px)}
+.sm-hero-info span{padding:9px 7px}.sm-hero-info span:first-child{border-color:#28082240}.sm-hero-info span:nth-child(2){border-color:#28082240}
+.ban__oval .ban__oval__btn span:before{content:"↓";color:#fff;font:400 27px/50px sans-serif;inset:0;text-align:center;transform:none}
+.ban__oval .ban__oval__btn span:after{content:none}.ban__oval .ban__oval__btn:hover span:before{transform:translateY(4px)}
+.ban__desc{z-index:7}.ban__desc span{font-size:clamp(12px,1vw,15px);padding-left:2.5em}.ban__desc .ban__desc__content{animation-duration:30s}@media(hover:hover){.ban__desc:hover .ban__desc__content{animation-play-state:paused}}
+.ban__title.sm-hero-copy{padding:5vw 0 2vw;font-size:clamp(58px,13.5vw,195px);line-height:1.05}
+.sm-hero-copy h1{display:flex;align-items:center;flex-direction:column;gap:.03em}
+.sm-hero-copy h1 .sm-hero-line{display:block;max-width:100%;white-space:nowrap}
+.sm-hero-copy h1 .sm-hero-quality{font:900 .95em/.95 system-ui,sans-serif;letter-spacing:-.08em;color:#fff}
+.sm-hero-copy p{max-width:650px;font-size:clamp(15px,1.2vw,18px);line-height:1.9;margin:2.5em auto 0;color:#fff}
+.ban__title:before,.ban__title:after{content:"";width:clamp(70px,8vw,120px);height:clamp(24px,2.7vw,40px);background:url(./assets/hero-motif.svg) center/contain no-repeat;bottom:12%;transform:none;opacity:.8}
+.ban__title:before{left:2%}.ban__title:after{right:2%}
+:where(html[data-motion-reduced="true"]) .ban,:where(html[data-motion-reduced="true"]) .ban .clouds-1,:where(html[data-motion-reduced="true"]) .ban .clouds-2,:where(html[data-motion-reduced="true"]) .ban .clouds-3,:where(html[data-motion-reduced="true"]) .ban__desc__content{animation:none!important}
+/* Reference infobox: two offset outlined rows, compressed to a single strip on phones. */
+.ban__oval .sm-hero-info{direction:ltr;grid-template-columns:38px 1fr 38px;grid-template-rows:38px 55px;gap:0;width:clamp(190px,18vw,262px);border:0;line-height:1.3}
+.sm-hero-info span{display:grid;place-items:center;padding:4px;border:1px solid #28082248;direction:rtl;white-space:nowrap}
+.sm-hero-info .sm-hero-info__main{grid-column:1/3;grid-row:1;border-bottom:0}.sm-hero-info .sm-hero-info__star{grid-column:3;grid-row:1;border-bottom:0;border-left:0;font-size:15px}
+.sm-hero-info .sm-hero-info__mark{grid-column:1;grid-row:2;direction:ltr;writing-mode:vertical-rl;font:800 11px/1 system-ui,sans-serif}
+.sm-hero-info .sm-hero-info__detail{grid-column:2/4;grid-row:2;display:flex;justify-content:center;gap:.5em;border-left:0}.sm-hero-info b{font-weight:400;opacity:.65}
+.sm-hero-info .sm-hero-info__mobile{display:none}
+.sm-hero-copy h1 .sm-hero-line{position:relative}
+.sm-hero-copy .sm-hero-verb{transition:opacity .3s ease,transform .3s ease}.sm-hero-copy .sm-hero-verb.is-changing{opacity:0;transform:translateY(.12em)}
+:where(html[data-motion-reduced="true"]) .sm-hero-copy .sm-hero-verb{transition:none;opacity:1;transform:none}
+.sm-hero-copy h1 .sm-hero-line[data-accent]::after{content:attr(data-accent);position:absolute;top:55%;left:50%;z-index:1;transform:translate(-50%,-40%) rotate(-5deg);font:italic 400 clamp(34px,5.5vw,78px)/1.25 SMHeroAccent,serif;white-space:nowrap;color:#e36d96;pointer-events:none;transition:opacity .7s ease,filter .7s ease,transform .7s ease;transition-delay:.25s}
+.sm-hero-copy h1 .sm-hero-line.sm-hero-pending[data-accent]::after{opacity:0;filter:blur(8px);transform:translate(-50%,-25%) rotate(-5deg)}
+:where(html[data-motion-reduced="true"]) .sm-hero-copy h1 .sm-hero-line[data-accent]::after{transition:none;filter:none;opacity:1}
+@media(max-width:1023px){.sm-hero-stamp{display:none}}
+@media(max-width:599px){
+ .ban__oval .sm-hero-info{direction:ltr;grid-template-columns:minmax(0,1fr) 30px;grid-template-rows:29px;width:min(290px,90%);font-size:9px}
+ .sm-hero-info .sm-hero-info__main,.sm-hero-info .sm-hero-info__mark,.sm-hero-info .sm-hero-info__detail{display:none}
+ .sm-hero-info .sm-hero-info__mobile{display:flex;grid-column:1;grid-row:1;align-items:center;justify-content:center;gap:.45em;border:1px solid #28082248;direction:rtl}
+ .sm-hero-info .sm-hero-info__star{grid-column:2;grid-row:1;border:1px solid #28082248;border-left:0}
+ .sm-hero-copy h1 .sm-hero-line[data-accent]::after{top:100%;font-size:clamp(19px,5vw,25px);transform:translate(-50%,-32%) rotate(-5deg)}
+}
+/* The reference introduces its headline line by line as it enters view. */
+.sm-hero-copy h1 .sm-hero-line{transition:opacity .85s cubic-bezier(.22,1,.36,1),transform 1.05s cubic-bezier(.22,1,.36,1);transition-delay:var(--hero-delay,0ms);will-change:transform,opacity}
+.sm-hero-copy h1 .sm-hero-line:nth-child(2){--hero-delay:100ms}.sm-hero-copy h1 .sm-hero-line:nth-child(3){--hero-delay:200ms}.sm-hero-copy h1 .sm-hero-line:nth-child(4){--hero-delay:300ms}.sm-hero-copy h1 .sm-hero-line:nth-child(5){--hero-delay:400ms}
+.sm-hero-copy h1 .sm-hero-line:not(.sm-hero-pending){transform:translateY(var(--hero-drift,0px))}
+.sm-hero-copy h1 .sm-hero-line.sm-hero-pending{opacity:0;transform:translateY(.22em)}
+:where(html[data-motion-reduced="true"]) .sm-hero-copy h1 .sm-hero-line{transition:none;opacity:1;transform:none}
+.ban__oval .ban__oval__btn:focus-visible{outline:3px solid #280822;outline-offset:5px}
+.ban__desc bdi{unicode-bidi:isolate;padding-inline:clamp(12px,2.5vw,38px)}.ban__desc .sm-hero-separator{display:inline-block;padding:0 .4em;opacity:.7}
+@media(max-width:599px){
+ .ban__oval:after{bottom:5%;left:5%;width:52px}.ban__title.sm-hero-copy{font-size:clamp(46px,14vw,78px);padding:12vw 0 5vw;line-height:1.12}
+ .sm-hero-copy h1{gap:.38em}.sm-hero-copy p{font-size:15px;margin:2em auto 0;max-width:340px}.ban__title:before,.ban__title:after{bottom:4%;width:52px;height:18px;opacity:.7}
+}
+
 /* محتوى قسم التعريف دون تغيير بنية المرجع */
 .sm-about{font-family:SMTajawal,Tajawal,sans-serif;letter-spacing:0}.sm-about .abt__top__text p{font-family:SMTajawal,Tajawal,sans-serif;letter-spacing:0}.sm-about .abt__top__text div p{font-family:SMHero,Tajawal,sans-serif;letter-spacing:0}.sm-about .abt__who .abt__who__text p{font-family:SMTajawal,Tajawal,sans-serif;line-height:1.7;letter-spacing:0}.sm-about .small_title{font-family:SMTajawal,Tajawal,sans-serif;letter-spacing:0}.sm-about .abt__who .abt__who__text>div .flip-card img{object-fit:contain;background:#203829;padding:18px;box-sizing:border-box}.sm-about .abt__who .abt__who__text>div .flip-card img.back{background:#e5eacb}.sm-about .flip-card:focus-visible{outline:3px solid #fff;outline-offset:4px}.sm-about-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;background:#20392d;color:#f3f8ec}.sm-about-placeholder span{font:700 12px sans-serif;letter-spacing:.12em}.sm-about-placeholder strong{font:900 clamp(30px,5vw,70px)/1.5 SMHero,Tajawal,sans-serif}.sm-about-placeholder small{font:700 clamp(12px,1.3vw,17px) SMTajawal,Tajawal,sans-serif}.sm-about .abt__what .abt__what__title h3{font-family:SMHero,Tajawal,sans-serif;line-height:1.2;font-size:clamp(48px,11vw,150px);letter-spacing:0}.sm-about .abt__what .abt__what__title h3>div:after{content:none}.sm-about .abt__what .abt__what__title>div>div p,.sm-about .abt__what .abt__what__content p,.sm-about .abt__what .arrow_btn p{font-family:SMTajawal,Tajawal,sans-serif;line-height:1.8;letter-spacing:0}.sm-about .abt__what .abt__what__content p{font-size:clamp(19px,3vw,42px)}
-.abt__video .video-play-fallback{position:absolute;z-index:3;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#280822;border:0;border-radius:999px;padding:12px 20px;font:700 14px SMTajawal,Tajawal,sans-serif;box-shadow:0 4px 22px #0006;cursor:pointer}.abt__video .video-play-fallback[hidden]{display:none}.abt__video video{background:#111}.abt__video .video-play-fallback:focus-visible{outline:3px solid #8be9bd;outline-offset:4px}
+/* About: the reference's quiet three-part monogram and editorial portrait. */
+@font-face{font-family:SMMonogram;src:url(/_assets/redesign/amiri-latin-400-italic-BrffukqG.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
+.sm-about .abt__top__text{gap:clamp(20px,4vw,64px)}
+.sm-about .abt__top__text>p{line-height:1.8;letter-spacing:0;opacity:.74}
+.sm-about .abt__top__text div{flex:0 0 auto;min-width:clamp(150px,17vw,245px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,1.2vw,18px);padding:clamp(18px,2.2vw,32px);border-color:#fff3}
+.sm-about .abt__top__text div p{font:italic 400 clamp(76px,8vw,120px)/.95 SMMonogram,serif;letter-spacing:-.07em;color:#e880a1;padding:0 .12em}
+.sm-about .abt__top__text div img{margin:0;width:18px}
+.sm-about .abt__who .abt__who__text p{font-family:SMHeroAccent,Amiri,serif;font-weight:400;line-height:1.65;letter-spacing:0;color:#ffffffa8;font-size:clamp(28px,3.1vw,48px);max-width:800px;margin:auto;padding:24px 0}
+.sm-about .abt__who .abt__who__text p span{color:#fff}
+.sm-about .abt__who .abt__who__text>div .flip-card{display:block;padding:0;border:0;background:transparent;appearance:none;-webkit-appearance:none;touch-action:manipulation}
+.sm-about .abt__who .abt__who__text>div .flip-card img{object-fit:cover;object-position:center;background:#280822;padding:0}
+.sm-about .abt__who .abt__who__text>div .flip-card img.back{background:#280822}
+.sm-about .flip-card:focus-visible{outline:2px solid #ed9ab1;outline-offset:6px}
+.sm-about .sm-about__flip-hint{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%);white-space:nowrap;color:#ffffffa8;font:700 11px/1.4 SMTajawal,Tajawal,sans-serif;letter-spacing:0;pointer-events:none}
+.sm-about .abt__who .a-text{transition:opacity .8s cubic-bezier(.22,1,.36,1),transform 1s cubic-bezier(.22,1,.36,1)}
+.sm-about .abt__who .flip-card{transition:opacity .8s ease}
+.sm-about .abt__who .sm-about-reveal-pending{opacity:0}
+.sm-about .abt__who .a-text.sm-about-reveal-pending{transform:translateY(30px)}
+:where(html[data-motion-reduced="true"]) .sm-about .abt__who .a-text,:where(html[data-motion-reduced="true"]) .sm-about .abt__who .flip-card{transition:none;opacity:1;transform:none}
+
+:where(html[data-motion-reduced="true"]) .sm-about .abt__top__text img{animation:none!important}
+:where(html[data-motion-reduced="true"]) .sm-about .flip-card img{transition:none!important}
+@media(max-width:599px){
+ .sm-about .abt__top__text{justify-content:center;padding:26px 20px 0}
+ .sm-about .abt__top__text>p{display:none}
+ .sm-about .abt__top__text div{min-width:150px}
+ .sm-about .abt__top__text div p{font-size:80px}
+ .sm-about .abt__who .abt__who__text{margin-top:18vw}
+ .sm-about .abt__who .abt__who__text p{font-size:clamp(27px,7.4vw,34px);padding:22px 4%;line-height:1.55}
+ .sm-about .abt__who .abt__who__text>div .flip-card{width:min(200px,60vw)}
+}
+.abt__video .video-play-fallback{position:absolute;z-index:3;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#280822;border:0;border-radius:999px;padding:12px 20px;font:700 14px SMTajawal,Tajawal,sans-serif;box-shadow:0 4px 22px #0006;cursor:pointer}.abt__video .video-play-fallback[hidden]{display:none}.abt__video.is-playing .video-play-fallback{top:auto;left:auto;right:24px;bottom:24px;transform:none;background:#280822cc;color:white;font-size:12px;padding:10px 16px;box-shadow:none}.abt__video.is-playing .video-play-fallback:hover{background:#280822}.abt__video video{background:#111}.abt__video .video-play-fallback:focus-visible{outline:3px solid #8be9bd;outline-offset:4px}
 /* Server cards retain the reference's project-scroll animation. */
 .sm-servers{background:#013300;color:#fff;padding:clamp(70px,9vw,140px) 0 80px;isolation:isolate}
 .sm-servers .float{font-family:SMTajawal,Tajawal,sans-serif;letter-spacing:0;text-align:center;white-space:nowrap;opacity:.045}
@@ -795,24 +885,25 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         </div>
         <div class="ban__oval">
           <div class="ban__oval__3d">
-            <img class="ban__oval__bg --mobile" src="./assets/oval_mobile_top.svg" alt="Abhishek">
-            <img class="ban__oval__bg --tablet --top" src="./assets/oval_desktop_top.svg" alt="Jha">
+            <img class="ban__oval__bg --mobile" src="./assets/oval_mobile_top.svg" alt="">
+            <img class="ban__oval__bg --tablet --top" src="./assets/oval_desktop_top.svg" alt="">
             <canvas id="bannerCanvas" data-engine="three.js r172" width="3078" height="3654"></canvas>
-            <img class="ban__oval__bg --tablet --bottom" src="./assets/oval_desktop_bot.svg" alt="Is">
-            <img class="ban__oval__bg --mobile --bottom" src="./assets/oval_mobile_bot.svg" alt="a designer">
+            <img class="ban__oval__bg --tablet --bottom" src="./assets/oval_desktop_bot.svg" alt="">
+            <img class="ban__oval__bg --mobile --bottom" src="./assets/oval_mobile_bot.svg" alt="">
           </div>
           <div class="plus-motif"><span></span><span></span></div>
-          <div class="ban__oval__box sm-hero-info" dir="rtl" lang="ar" aria-label="معلومات الخدمة">
-            <span>الموسم ٢٠٢٦</span><span>تفعيل فوري</span><span>دعم بالعربية</span>
+          <div class="sm-hero-stamp" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor"/><circle cx="8" cy="8" r="2.5" stroke="currentColor"/><path d="M8 0v3M8 13v3M0 8h3M13 8h3" stroke="currentColor" stroke-width=".7"/></svg></div>
+          <div class="ban__oval__box sm-hero-info" dir="rtl" lang="ar" aria-label="ترفيه بلا حدود، تفعيل فوري ودعم بالعربية">
+            <span class="sm-hero-info__main" aria-hidden="true">ترفيه بلا حدود</span><span class="sm-hero-info__star" aria-hidden="true">✦</span><span class="sm-hero-info__mark" dir="ltr" aria-hidden="true">4K</span><span class="sm-hero-info__detail" aria-hidden="true">تفعيل فوري <b>✦</b> دعم بالعربية</span><span class="sm-hero-info__mobile" aria-hidden="true">ترفيه بلا حدود <b>✦</b> تفعيل فوري ودعم بالعربية</span>
           </div>
           <a class="arrow_btn ban__oval__btn" href="#sm-hero-copy" aria-label="مرّر للاستكشاف"><p>مرّر للاستكشاف</p><span aria-hidden="true"></span></a>
         </div>
         <div class="ban__desc" aria-label="أرقام الخدمة"><div class="ban__desc__content" dir="rtl" lang="ar">
-          <span>+15,000 قناة حية &nbsp; ✦ &nbsp; 99.9% ثبات في قمة المباريات &nbsp; ✦ &nbsp; 4 سيرفرات: نوفا وإيستار وموكا وX &nbsp; ✦ &nbsp; +50,000 فيلم ومسلسل تتجدد يومياً &nbsp; ✦ &nbsp; تفعيل فوري في 5 دقائق &nbsp; ✦ &nbsp;</span>
-          <span aria-hidden="true">+15,000 قناة حية &nbsp; ✦ &nbsp; 99.9% ثبات في قمة المباريات &nbsp; ✦ &nbsp; 4 سيرفرات: نوفا وإيستار وموكا وX &nbsp; ✦ &nbsp; +50,000 فيلم ومسلسل تتجدد يومياً &nbsp; ✦ &nbsp; تفعيل فوري في 5 دقائق &nbsp; ✦ &nbsp;</span>
+          <span><bdi>أكثر من 15,000 قناة حية</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>ثبات 99.9% في قمة المباريات</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>4 سيرفرات: نوفا وإيستار وموكا وX</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>أكثر من 50,000 فيلم ومسلسل</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>تفعيل فوري في 5 دقائق</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i></span>
+          <span aria-hidden="true"><bdi>أكثر من 15,000 قناة حية</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>ثبات 99.9% في قمة المباريات</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>4 سيرفرات: نوفا وإيستار وموكا وX</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>أكثر من 50,000 فيلم ومسلسل</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>تفعيل فوري في 5 دقائق</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i></span>
         </div></div>
         <div class="ban__title sm-hero-copy" id="sm-hero-copy" dir="rtl" lang="ar">
-          <h1>شاهِد<br>كل ما تحب بجودة<br><span dir="ltr">4K</span><br>وبلا تقطيع</h1>
+          <h1 aria-label="شاهِد كل ما تحب بجودة 4K وبلا تقطيع"><span class="sm-hero-line" data-accent="عالمك"><span class="sm-hero-verb" aria-hidden="true">شاهِد</span></span><span class="sm-hero-line" data-accent="بلا حدود">كل ما تحب</span><span class="sm-hero-line">بجودة</span><span class="sm-hero-line sm-hero-quality" dir="ltr" data-accent="وضوح">4K</span><span class="sm-hero-line" data-accent="كل لحظة">وبلا تقطيع</span></h1>
           <p>استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.</p>
         </div>
       </div>
@@ -827,14 +918,14 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         </div>
         <div class="abt__who"><div class="abt__who__text">
           <h2 class="small_title">عن ستريم ماستر</h2>
-          <p class="a-text">استكشف خيارات المشاهدة، <span>واطّلع على تفاصيل الخدمة</span> ومتطلبات التشغيل.</p>
+          <p class="a-text">على شاشتك وجوالك، <span>ترفيه أينما كنت</span> ومشاهدة تناسب يومك.</p>
           <div><div class="plus-motif"><span></span><span></span></div>
-            <div class="flip-card" tabindex="0" role="button" aria-label="اقلب بطاقة السيرفرات"><img class="front" src="/images/brand/nova-ticket.webp" alt="نوفا"><img class="back" src="/images/brand/istar-ticket.webp" alt="إيستار"></div>
+            <button class="flip-card" type="button" aria-label="اقلب بطاقة المشاهدة" aria-pressed="false"><img class="front" src="/images/hero/slide-devices.webp" alt=""><img class="back" src="/images/hero/slide-cinema.webp" alt=""><small class="sm-about__flip-hint" aria-hidden="true">↻ &nbsp; اضغط لتبديل الصورة</small></button>
             <span></span><div class="plus-motif"><span></span><span></span></div>
           </div>
-          <p class="a-text">اختر الباقة المناسبة لك <span>وشاهِد كل ما تحب بجودة 4K.</span></p>
+          <p class="a-text">اختر الباقة المناسبة لك <span>وشاهِد كل ما تحب بجودة <bdi dir="ltr">4K</bdi>.</span></p>
         </div></div>
-        <div class="abt__video"><video src="./assets/images/video-streammaster-final-v80.mp4?v=1" autoplay muted loop playsinline preload="auto" poster="./assets/images/streammaster-photos-poster.jpg" aria-label="فيديو توضيحي لستريم ماستر">متصفحك لا يدعم عرض الفيديو.</video><button class="video-play-fallback" type="button" aria-label="تشغيل الفيديو">▶ تشغيل الفيديو</button><svg width="0" height="0" aria-hidden="true"><defs><clippath id="initialClipPath" clipPathUnits="objectBoundingBox"><path d="M0 0.156C0 0.156 0.139 0 0.5 0C0.861 0 1 0.156 1 0.156V1H0V0.156Z"></path></clippath></defs></svg></div>
+        <div class="abt__video"><video src="./assets/images/video-streammaster-hd-1080.mp4?v=1" muted loop playsinline preload="metadata" poster="./assets/images/streammaster-photos-poster.jpg" aria-label="فيديو توضيحي لستريم ماستر">متصفحك لا يدعم عرض الفيديو.</video><button class="video-play-fallback" type="button" aria-label="تشغيل فيديو ستريم ماستر">▶ تشغيل الفيديو</button><svg width="0" height="0" aria-hidden="true"><defs><clippath id="initialClipPath" clipPathUnits="objectBoundingBox"><path d="M0 0.156C0 0.156 0.139 0 0.5 0C0.861 0 1 0.156 1 0.156V1H0V0.156Z"></path></clippath></defs></svg></div>
         <div class="abt__what">
           <div class="abt__what__title"><div>
             <h2 class="small_title --mobile --black">خيارات المشاهدة</h2>
@@ -1200,4 +1291,4 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
 
 <!-- Cloudflare Pages Analytics --><!-- Cloudflare Pages Analytics -->
 
-<canvas class="noise-overlay" width="3420" height="1934"></canvas><script>(function(){const menu=document.querySelector('.nav__menu-btn');function sync(){const open=menu.classList.contains('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة')}new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});})();</script><script>document.querySelector('.sm-about .flip-card').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();this.click()}});</script><script>(function(){const video=document.querySelector('.abt__video video');const play=document.querySelector('.video-play-fallback');video.addEventListener('playing',()=>{play.hidden=true});video.addEventListener('pause',()=>{play.hidden=false});video.addEventListener('error',()=>{play.hidden=false;video.controls=true});play.addEventListener('click',()=>{video.muted=true;video.play().catch(()=>{video.controls=true;play.textContent='تعذّر التشغيل — افتح الفيديو مباشرة';play.onclick=()=>window.open('./assets/images/video-streammaster-final-v80.mp4','_blank','noopener')})});const obs=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){const attempt=video.play();if(attempt&&attempt.catch)attempt.catch(()=>{video.controls=true})}},{threshold:.2});obs.observe(video);if(new URLSearchParams(location.search).get('showvideo')==='1'){let tries=0;const timer=setInterval(()=>{const loader=document.querySelector('.loader');if((loader&&getComputedStyle(loader).display==='none')||++tries>50){clearInterval(timer);setTimeout(()=>{const box=video.getBoundingClientRect();window.scrollTo({top:window.scrollY+box.top-window.innerHeight*.2,behavior:'auto'});},4000);}},200)}})();</script><script>(function(){if(window.smMotion.matches){document.querySelector('.sm-journey__frame')?.removeAttribute('data-speed')}const visual=document.querySelector('.sm-journey__visual');if(!visual)return;if(!('IntersectionObserver' in window)){visual.classList.add('is-visible');return}const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){visual.classList.add('is-visible');observer.disconnect()}},{threshold:.2});observer.observe(visual)})();</script><script src="./assets/sports-intro.js?v=2edd6d63e61fd44b"></script><script src="./assets/sports-gallery.js?v=2edd6d63e61fd44b"></script><script type="module" src="./assets/sports-stats.js?v=2edd6d63e61fd44b"></script><script type="module" src="./assets/featured-matches.js?v=2edd6d63e61fd44b"></script><script src="./assets/blog-rail.js?v=2edd6d63e61fd44b"></script><script src="./assets/mobile-motion.js?v=2edd6d63e61fd44b"></script><script src="./assets/contact-footer.js?v=2edd6d63e61fd44b"></script></body></html>
+<canvas class="noise-overlay" width="3420" height="1934"></canvas><script>(function(){const menu=document.querySelector('.nav__menu-btn');function sync(){const open=menu.classList.contains('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة')}new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});})();</script><script>(function(){const card=document.querySelector('.sm-about .flip-card');card.addEventListener('click',()=>{const flipped=card.classList.toggle('flipped');card.setAttribute('aria-pressed',String(flipped))})})();</script><script src="./assets/about-video.js?v=fab561909ed1769d"></script><script>(function(){if(window.smMotion.matches){document.querySelector('.sm-journey__frame')?.removeAttribute('data-speed')}const visual=document.querySelector('.sm-journey__visual');if(!visual)return;if(!('IntersectionObserver' in window)){visual.classList.add('is-visible');return}const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){visual.classList.add('is-visible');observer.disconnect()}},{threshold:.2});observer.observe(visual)})();</script><script src="./assets/about-motion.js?v=fab561909ed1769d"></script><script src="./assets/hero-motion.js?v=fab561909ed1769d"></script><script src="./assets/sports-intro.js?v=fab561909ed1769d"></script><script src="./assets/sports-gallery.js?v=fab561909ed1769d"></script><script type="module" src="./assets/sports-stats.js?v=fab561909ed1769d"></script><script type="module" src="./assets/featured-matches.js?v=fab561909ed1769d"></script><script src="./assets/blog-rail.js?v=fab561909ed1769d"></script><script src="./assets/mobile-motion.js?v=fab561909ed1769d"></script><script src="./assets/contact-footer.js?v=fab561909ed1769d"></script></body></html>

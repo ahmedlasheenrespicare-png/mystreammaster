@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 // Hash the complete reference dependency graph, and use the same version on
 // entry points, imported modules and the fallback snapshot. Normalize existing
 // versions first so repeated builds are stable.
-const entries = ['main-D5MQsYQ6.js','motion-settings.js','sports-intro.js','sports-gallery.js','sports-stats.js','featured-matches.js','blog-rail.js','mobile-motion.js','contact-footer.js'];
+const entries = ['main-D5MQsYQ6.js','motion-settings.js','hero-motion.js','about-motion.js','about-video.js','sports-intro.js','sports-gallery.js','sports-stats.js','featured-matches.js','blog-rail.js','mobile-motion.js','contact-footer.js'];
 const modules = ['standings.js','fixtures-archive.js','leader-logo.js','matches.js','scoreboard-incidents.js','team-names-ar.js','standings-snapshot.json'];
 const names = [...entries, ...modules];
 const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

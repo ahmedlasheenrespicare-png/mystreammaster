@@ -60,7 +60,7 @@ for (const width of [390, 1280]) {
       if (tab === 'live') await expect(page.locator('.sm-match')).toHaveAttribute('data-state','live');
     }
     expect(new Set(scoreboardRequests.filter(v=>v.startsWith('eng.1:'))).size).toBe(3);
-    expect(scoreboardRequests.some(v=>v.startsWith('egy.1:'))).toBe(true);
+    await expect.poll(()=>scoreboardRequests.some(v=>v.startsWith('egy.1:'))).toBe(true);
   });
 }
 
@@ -103,4 +103,30 @@ test('each of the eight selected leagues updates from the standings proxy', asyn
     await expect(page.locator('.sm-leagues__stat-source')).toContainText('آخر قراءة');
   }
   expect(new Set(requested)).toEqual(new Set(ids));
+});
+
+test('matches appear progressively while other leagues are slow', async ({ page }) => {
+  await page.route('**/scoreboard.php?*', async route => {
+    const url=new URL(route.request().url()), league=url.searchParams.get('league');
+    const start=url.searchParams.get('dates')!.split('-')[0];
+    const d=new Date(`${start.slice(0,4)}-${start.slice(4,6)}-${start.slice(6,8)}T12:00:00Z`);d.setUTCDate(d.getUTCDate()+1);
+    const day=d.toISOString().slice(0,10).replaceAll('-','');
+    if(league!=='eng.1') await new Promise(resolve=>setTimeout(resolve,7000));
+    await route.fulfill({json:{events:league==='eng.1'?[event('quick',day,false)]:[]}}).catch(()=>{});
+  });
+  await prepare(page);await page.locator('#featured-matches').scrollIntoViewIfNeeded();
+  await expect(page.locator('.sm-match')).toHaveCount(1,{timeout:5000});
+  await expect(page.locator('.sm-matches__status')).toContainText('جارٍ تحديث');
+});
+
+test('live standings can load before a slow saved snapshot', async ({ page }) => {
+  await page.route('**/standings-snapshot.json*',async route=>{await new Promise(resolve=>setTimeout(resolve,7000));await route.fulfill({json:snapshot}).catch(()=>{})});
+  await page.route('**/standings.php?*',async route=>{
+    const league=new URL(route.request().url()).searchParams.get('league');
+    const data=structuredClone(snapshot.tables.find((t:{league:string})=>t.league===league));
+    data.fetchedAt='2027-01-01T00:00:00.000Z';data.entries[0].name='Fast Live Leader';
+    await route.fulfill({json:data});
+  });
+  await prepare(page);await page.locator('.sm-leagues__stage').scrollIntoViewIfNeeded();
+  await expect(page.locator('[data-stat="leader"] strong')).toContainText('Fast Live Leader',{timeout:5000});
 });

@@ -1,7 +1,7 @@
 /* Same standings validation and rates calculation used by the live homepage. */
-import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js';
-import {standingsRates} from './fixtures-archive.js';
-import {providerTeamLogo} from './leader-logo.js';
+import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=2edd6d63e61fd44b';
+import {standingsRates} from './fixtures-archive.js?v=2edd6d63e61fd44b';
+import {providerTeamLogo} from './leader-logo.js?v=2edd6d63e61fd44b';
 
 const section=document.querySelector('.sm-leagues');
 if (section) {
@@ -32,7 +32,7 @@ if (section) {
     section.querySelector('.sm-leagues__stat-source').textContent=(record.live?(record.stale?'بيانات قديمة':'آخر قراءة'):'لقطة محفوظة')+' · '+date+' · '+table.provider+' · معدلات الأهداف لكل مباراة';
   }
   async function refresh(i){
-    const id=ids[i];if(!visible||!snapshotReady||document.hidden||inFlight.has(id)||Date.now()-(requested.get(id)||0)<120000)return;inFlight.add(id);requested.set(id,Date.now());
+    const id=ids[i];if(!visible||document.hidden||inFlight.has(id)||Date.now()-(requested.get(id)||0)<120000)return;inFlight.add(id);requested.set(id,Date.now());
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
     try{
       const response=await fetch(standingsUrl(id),{signal:controller.signal,cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}});
@@ -52,9 +52,9 @@ if (section) {
   setInterval(()=>refresh(active),120000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(active)});
   try{
-    const response=await fetch(new URL('./standings-snapshot.json',import.meta.url));
+    const response=await fetch(new URL('./standings-snapshot.json?v=2edd6d63e61fd44b',import.meta.url));
     if(!response.ok)throw new Error('SNAPSHOT_UNAVAILABLE');
     const snapshot=await response.json();
-    for(const id of ids){try{records[id]={table:leagueStandingsByLeague(snapshot,id),live:false,stale:true}}catch(_){}}
+    for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),current=records[id]?.table;if(!current||(table.season>=current.season&&Date.parse(table.fetchedAt)>Date.parse(current.fetchedAt)))records[id]={table,live:false,stale:true}}catch(_){}}
   }catch(_){}finally{snapshotReady=true;render();refresh(active)}
 }

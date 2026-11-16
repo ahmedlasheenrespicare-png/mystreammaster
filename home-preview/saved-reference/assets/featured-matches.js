@@ -1,6 +1,6 @@
 /* The same scoreboard proxy, parser, leagues and Cairo-day filtering as the homepage. */
-import {LEAGUES,dayInZone,dayLabel,shiftDay,kickoff,scoreboardUrl,readScoreboardResponse,matchesForDay,hasCompleteScore} from './matches.js';
-import {arabicTeamName} from './team-names-ar.js';
+import {LEAGUES,dayInZone,dayLabel,shiftDay,kickoff,scoreboardUrl,readScoreboardResponse,matchesForDay,hasCompleteScore} from './matches.js?v=2edd6d63e61fd44b';
+import {arabicTeamName} from './team-names-ar.js?v=2edd6d63e61fd44b';
 const root=document.querySelector('.sm-matches');
 if(root){
  const tabs=Array.from(root.querySelectorAll('[data-day]')),rail=root.querySelector('.sm-matches__rail'),status=root.querySelector('.sm-matches__status'),retry=root.querySelector('.sm-matches__retry'),dateLabel=root.querySelector('.sm-matches__date'),arrows=root.querySelector('.sm-matches__arrows');
@@ -25,42 +25,58 @@ if(root){
   bottom.append(text('span',match.state==='live'?'is-live':'',match.state==='live'?match.detail:match.state==='finished'?'النتيجة النهائية':match.state==='other'?match.detail:'موعد البداية'),text('span','',kickoff(match.date,zone)+' · القاهرة'));
   card.append(art,number,top,teams,bottom);return card;
  }
- async function load(day,force=false){
-  const saved=cache.get(day);if(!force&&saved&&Date.now()-saved.loadedAt<60000)return saved;
-  if(pending.has(day))return pending.get(day);
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
-  const promise=(async()=>{
-   const results=await Promise.allSettled(LEAGUES.map(async league=>{
-    const response=await fetch(scoreboardUrl(league.id,day),{signal:controller.signal,cache:'no-store'});
-    return readScoreboardResponse(response,league);
-   }));
-   const matches=[],seen=new Set();let failed=0,stale=0;
-   for(const r of results){if(r.status!=='fulfilled'){failed++;continue}if(r.value.stale)stale++;for(const match of matchesForDay(r.value.matches,day,zone)){if(!seen.has(match.id)){seen.add(match.id);matches.push(match)}}}
-   const rank=m=>m.state==='live'?0:m.state==='scheduled'?1:2;
-   matches.sort((a,b)=>rank(a)-rank(b)||Date.parse(a.date)-Date.parse(b.date)||a.id.localeCompare(b.id));
-   const record={matches,failed,stale,loadedAt:Date.now()};cache.set(day,record);return record;
-  })().finally(()=>{clearTimeout(timer);pending.delete(day)});pending.set(day,promise);return promise;
+ async function load(day,force=false,onProgress){
+  const saved=cache.get(day);if(!force&&saved&&Date.now()-saved.loadedAt<60000){onProgress(saved,true);return saved}
+  const existing=pending.get(day);
+  if(existing){existing.subscribers.add(onProgress);try{return await existing.promise}finally{existing.subscribers.delete(onProgress)}}
+  const subscribers=new Set([onProgress]),matches=[],seen=new Set();let failed=0,stale=0,done=0,next=0;
+  const rank=m=>m.state==='live'?0:m.state==='scheduled'?1:2;
+  function progress(){
+   const ordered=matches.slice().sort((a,b)=>rank(a)-rank(b)||Date.parse(a.date)-Date.parse(b.date)||a.id.localeCompare(b.id));
+   const record={matches:ordered,failed,stale,loadedAt:Date.now()};
+   subscribers.forEach(fn=>fn(record,done===LEAGUES.length));return record;
+  }
+  async function worker(){
+   while(next<LEAGUES.length){
+    const league=LEAGUES[next++],controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+    try{
+     const response=await fetch(scoreboardUrl(league.id,day),{signal:controller.signal,cache:'no-store'});
+     const result=await readScoreboardResponse(response,league);if(result.stale)stale++;
+     for(const match of matchesForDay(result.matches,day,zone))if(!seen.has(match.id)){seen.add(match.id);matches.push(match)}
+    }catch(_){failed++}finally{clearTimeout(timer);done++;progress()}
+   }
+  }
+  const task={subscribers,promise:null};
+  task.promise=(async()=>{await Promise.all(Array.from({length:6},worker));const record=progress();cache.set(day,record);return record})().finally(()=>pending.delete(day));
+  pending.set(day,task);try{return await task.promise}finally{subscribers.delete(onProgress)}
  }
  function updateArrows(){
   const range=Math.max(0,rail.scrollWidth-rail.clientWidth),position=Math.max(0,-rail.scrollLeft);
   root.querySelector('[data-direction=previous]').disabled=position<=1;
   root.querySelector('[data-direction=next]').disabled=position>=range-1;
  }
- function fill(matches){rail.replaceChildren(...matches.map(tile));rail.scrollLeft=0;arrows.hidden=false;requestAnimationFrame(updateArrows)}
+ let renderedView='',signature='';
+ function fill(matches){const next=JSON.stringify(matches);if(next===signature)return;signature=next;const position=rail.scrollLeft;rail.replaceChildren(...matches.map(tile));rail.scrollLeft=position;arrows.hidden=!matches.length;requestAnimationFrame(updateArrows)}
  async function render(force=false){
-  const current=++run,day=selectedDay(),view=selected;
+  const current=++run,day=selectedDay(),view=selected,key=day+':'+view;
   dateLabel.textContent=dayLabel(day,{weekday:'long',year:'numeric'})+' · توقيت القاهرة';
   tabs.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.day===view)));
-  rail.replaceChildren();arrows.hidden=true;retry.hidden=true;
+  if(key!==renderedView){renderedView=key;signature='';rail.replaceChildren();rail.scrollLeft=0;arrows.hidden=true}
+  retry.hidden=true;
   if(!visible){status.textContent='تظهر المباريات عند الوصول إلى القسم.';return}
   status.textContent='جارٍ تحديث المباريات من المصدر…';
-  const data=await load(day,force);if(current!==run)return;
-  if(data.failed===LEAGUES.length){status.textContent='تعذّر تحميل المباريات من المصدر حالياً. يرجى المحاولة مجدداً أو زيارة صفحة المباريات.';retry.hidden=false;return}
-  const matches=view==='live'?data.matches.filter(m=>m.state==='live'):data.matches;
-  retry.hidden=!(data.failed||data.stale);
-  const warning=data.failed||data.stale?'بعض البطولات تعذّر تحديثها أو بياناتها قديمة.':'';
-  if(!matches.length){status.textContent=(view==='live'?'لا توجد مباريات مباشرة مؤكدة حالياً.':'لا توجد مباريات مؤكدة لهذا اليوم.')+(warning?' '+warning:'');return}
-  status.textContent=warning;fill(matches);
+  function show(data,complete){
+   if(current!==run)return;
+   const items=view==='live'?data.matches.filter(m=>m.state==='live'):data.matches;
+   if(items.length)fill(items);
+   else if(complete){rail.replaceChildren();signature='';arrows.hidden=true}
+   if(!complete){status.textContent='جارٍ تحديث المباريات من المصدر…';return}
+   if(data.failed===LEAGUES.length){status.textContent='تعذّر تحميل المباريات من المصدر حالياً. يرجى المحاولة مجدداً أو زيارة صفحة المباريات.';retry.hidden=false;return}
+   retry.hidden=!(data.failed||data.stale);
+   const warning=data.failed||data.stale?'بعض البطولات تعذّر تحديثها أو بياناتها قديمة.':'';
+   status.textContent=items.length?warning:(view==='live'?'لا توجد مباريات مباشرة مؤكدة حالياً.':'لا توجد مباريات مؤكدة لهذا اليوم.')+(warning?' '+warning:'');
+  }
+  await load(day,force,show);
  }
  tabs.forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.day;render()}));
  retry.addEventListener('click',()=>render(true));

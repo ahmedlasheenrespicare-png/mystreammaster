@@ -43,8 +43,19 @@ for (const width of [320,390]) {
   await expect(page.locator('.sm-blog__motion')).toBeVisible();
   await page.emulateMedia({reducedMotion:'reduce'});
   await expect.poll(()=>page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+  await expect(page.locator('.sm-blog__motion')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced','false');
+  await expect(page.locator('.sm-footer__track')).not.toHaveCSS('animation-name','none');
+  await setting.selectOption('auto');
   await expect(page.locator('.sm-blog__motion')).toBeHidden({timeout:10000});
+  await expect(page.locator('.sm-footer__track')).toHaveCSS('animation-name','none');
   await expect.poll(()=>first.evaluate(e=>e.style.getPropertyValue('--mobile-project-scale'))).toBe('');
+  await setting.selectOption('off');
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced','true');
+  await setting.selectOption('auto');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-reduced','false');
+  await expect(page.locator('.sm-blog__motion')).toBeVisible();
   await context.close();
  });
 }

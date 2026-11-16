@@ -18,6 +18,7 @@ import { assertAdsAllowed } from './ads-guard.mjs';
 import { optimizeHtmlImages } from './html-images.mjs';
 import { syncReferenceSources } from './sync-reference-sources.mjs';
 import { versionReferenceAssets } from './version-reference-assets.mjs';
+import { syncReferencePaths } from './sync-reference-paths.mjs';
 
 /* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — الصفحات المفهرسة
    فقط، وتحوّل المخالفات المانعة إلى فشل بناء عند SEO_STRICT=1. */
@@ -35,6 +36,7 @@ const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const root = path.dirname(website);
 // Publish the same standings snapshot and parser sources as the homepage.
 await syncReferenceSources(website, path.join(root, 'home-preview/saved-reference/assets'));
+await syncReferencePaths(website, path.join(root, 'home-preview/saved-reference'));
 await versionReferenceAssets(path.join(root, 'home-preview/saved-reference'));
 async function files(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });

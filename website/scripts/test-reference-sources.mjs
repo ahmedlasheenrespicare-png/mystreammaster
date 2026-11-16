@@ -43,3 +43,32 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(!html.includes(`sports-stats.js?v=${first}`));
   } finally { await fs.rm(dir,{recursive:true,force:true}) }
 });
+
+test('reference path prices and specifications track canonical homepage plans', async () => {
+  const {loadHomepagePlans,applyReferencePlanFields}=await import('./sync-reference-paths.mjs');
+  const plans=await loadHomepagePlans(website);
+  const html=await fs.readFile(path.join(website,'../home-preview/saved-reference/index.html'),'utf8');
+  assert.equal(applyReferencePlanFields(html,plans),html,'committed preview matches homepage values');
+  const changed=structuredClone(plans);changed.find(p=>p.serverCode==='nova').prices['12'].USD=99;
+  const updated=applyReferencePlanFields(html,changed);
+  assert.match(updated,/data-path-field="nova\.price">\$99/);
+  assert.equal((updated.match(/data-path-field="nova\.price">\$99/g)||[]).length,2);
+});
+
+test('reference server cards track annual homepage pricing and specifications', async () => {
+  const {loadHomepagePlans,applyReferenceServerFields}=await import('./sync-reference-paths.mjs');
+  const plans=await loadHomepagePlans(website);
+  const html=await fs.readFile(path.join(website,'../home-preview/saved-reference/index.html'),'utf8');
+  assert.equal(applyReferenceServerFields(html,plans),html);
+  const section=html.match(/<section[^>]*id="works"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section);
+  assert.doesNotMatch(section,/المزود/);
+  assert.equal((section.match(/القنوات المعلنة/g)||[]).length,4);
+  assert.equal((section.match(/تشمل المواصفات المعلنة لهذا السيرفر/g)||[]).length,4);
+  const changed=structuredClone(plans),moka=changed.find(p=>p.serverCode==='moka');
+  moka.prices['12'].USD=99;moka.channelsCount='+99,000 قناة حية';moka.description='وصف جديد من الرئيسية';
+  const updated=applyReferenceServerFields(html,changed);
+  assert.match(updated,/data-server-field="moka\.price">\$99/);
+  assert.match(updated,/data-server-field="moka\.channels"><span class="sm-server__count" aria-hidden="true">\+99,000/);
+  assert.match(updated,/data-server-field="moka\.description">وصف جديد من الرئيسية/);
+});

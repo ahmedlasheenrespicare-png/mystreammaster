@@ -1,13 +1,13 @@
 /* Same standings validation and rates calculation used by the live homepage. */
-import {validateStandings, leagueStandingsByLeague} from './standings.mjs';
-import {standingsRates} from './fixtures-archive.mjs';
-import {providerTeamLogo} from './leader-logo.mjs';
+import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js';
+import {standingsRates} from './fixtures-archive.js';
+import {providerTeamLogo} from './leader-logo.js';
 
 const section=document.querySelector('.sm-leagues');
 if (section) {
   const buttons=Array.from(section.querySelectorAll('.sm-leagues__mini button'));
   const ids=['uefa.champions','eng.1','fra.1','esp.1','ger.1','ita.1','ksa.1','egy.1'];
-  const records={}, requested=new Set();
+  const records={}, requested=new Map(), inFlight=new Set();
   let active=0, visible=false, snapshotReady=false;
   const fmt=new Intl.NumberFormat('ar-EG');
   function writeStat(key, team, value) {
@@ -32,23 +32,25 @@ if (section) {
     section.querySelector('.sm-leagues__stat-source').textContent=(record.live?(record.stale?'بيانات قديمة':'آخر قراءة'):'لقطة محفوظة')+' · '+date+' · '+table.provider+' · معدلات الأهداف لكل مباراة';
   }
   async function refresh(i){
-    const id=ids[i];if(!visible||!snapshotReady||requested.has(id))return;requested.add(id);
+    const id=ids[i];if(!visible||!snapshotReady||document.hidden||inFlight.has(id)||Date.now()-(requested.get(id)||0)<120000)return;inFlight.add(id);requested.set(id,Date.now());
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
     try{
-      const response=await fetch('/standings.php?league='+encodeURIComponent(id),{signal:controller.signal,cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}});
+      const response=await fetch(standingsUrl(id),{signal:controller.signal,cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}});
       if(!response.ok)throw new Error('UNAVAILABLE');
       const table=validateStandings(await response.json(),id),old=records[id]?.table;
       if(!old||(table.season>=old.season&&Date.parse(table.fetchedAt)>=Date.parse(old.fetchedAt))){
         records[id]={table,live:true,stale:table.stale||response.headers.get('X-Standings-Cache')==='STALE'};
         if(i===active)render();
       }
-    }catch(_){}finally{clearTimeout(timer)}
+    }catch(_){}finally{clearTimeout(timer);inFlight.delete(id)}
   }
   function sync(){const i=buttons.findIndex(b=>b.getAttribute('aria-pressed')==='true');if(i<0)return;active=i;render();refresh(i)}
   const observer=new MutationObserver(sync);buttons.forEach(b=>observer.observe(b,{attributes:true,attributeFilter:['aria-pressed']}));
   if('IntersectionObserver' in window){new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){visible=true;refresh(active)}},{rootMargin:'300px'}).observe(section.querySelector('.sm-leagues__stage'))}
   else visible=true;
   sync();
+  setInterval(()=>refresh(active),120000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(active)});
   try{
     const response=await fetch(new URL('./standings-snapshot.json',import.meta.url));
     if(!response.ok)throw new Error('SNAPSHOT_UNAVAILABLE');

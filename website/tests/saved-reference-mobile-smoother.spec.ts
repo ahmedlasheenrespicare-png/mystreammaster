@@ -48,3 +48,26 @@ test('actual reference scroll engine switches mobile smoothing with the setting'
  expect(errors).toEqual([]);
  await context.close();
 });
+
+for(const mobile of [true,false]) test(`hero scrolling settles promptly with reference motion ${mobile?'on touch':'on desktop'}`,async({browser})=>{
+ const context=await browser.newContext({viewport:{width:mobile?390:1280,height:780},hasTouch:mobile,isMobile:mobile,reducedMotion:'no-preference'});
+ const page=await context.newPage();
+ await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','on'));
+ await page.route('**/main-D5MQsYQ6.js*',route=>route.fulfill({status:200,contentType:'text/javascript',body:source}));
+ await page.route('https://**',route=>route.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ await page.addStyleTag({content:'.loader,.nav,canvas{display:none!important}'});
+ await expect(page.locator('#smooth-wrapper')).toHaveCSS('position','fixed');
+ await page.evaluate(()=>window.scrollTo(0,600));
+ await expect.poll(()=>page.evaluate(()=>{const transform=getComputedStyle(document.querySelector('#smooth-content')!).transform;return Math.abs(scrollY+(transform==='none'?0:new DOMMatrixReadOnly(transform).m42))}),{timeout:1500}).toBeLessThan(45);
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await expect.poll(()=>page.evaluate(()=>{const transform=getComputedStyle(document.querySelector('#smooth-content')!).transform;return Math.abs(scrollY+(transform==='none'?0:new DOMMatrixReadOnly(transform).m42))}),{timeout:1500}).toBeLessThan(45);
+ await context.close();
+});
+
+test('footer WebGL rendering and texture work are gated by visibility',()=>{
+ const original=fs.readFileSync(path.resolve('../home-preview/saved-reference/assets/main-D5MQsYQ6.js'),'utf8');
+ expect(original).toContain('observe(t):smFooterVisible=!0');
+ expect(original).toContain('smFooterVisible&&!document.hidden&&(l(),c.needsUpdate=!0)');
+ expect(original).toContain('smFooterVisible&&!document.hidden&&(c.update(),e.render(n,i))');
+});

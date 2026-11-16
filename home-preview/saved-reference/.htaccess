@@ -1,0 +1,7 @@
+# This preview is updated independently of the main storefront. Revalidate its
+# HTML and unversioned fallbacks; versioned assets can still be cached safely.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

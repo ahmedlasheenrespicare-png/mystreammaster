@@ -6,7 +6,7 @@
   <meta name="description" content="معاينة مستقلة لتصميم ستريم ماستر قيد التطوير.">
   <link rel="icon" href="/favicon.ico">
 
-  <script src="./assets/motion-settings.js?v=bd0712ce1daa40f5"></script>
+  <script src="./assets/motion-settings.js?v=715fc934bd0fcc45"></script>
   <!-- Assets -->
   <link href="./assets/css" rel="stylesheet">
   <link rel="stylesheet" href="./assets/loader.css">
@@ -16,7 +16,7 @@
 
   
 
-  <script type="module" crossorigin="" src="./assets/main-D5MQsYQ6.js?v=bd0712ce1daa40f5"></script>
+  <script type="module" crossorigin="" src="./assets/main-D5MQsYQ6.js?v=715fc934bd0fcc45"></script>
   <link rel="modulepreload" crossorigin="" href="./assets/modulepreload-polyfill-YP0FEG5d.js">
   <link rel="stylesheet" crossorigin="" href="./assets/main-CS-w4MMY.css">
 <meta name="referrer" content="strict-origin-when-cross-origin"><meta name="aj-signature-2025" content="abhishekjha.me|mtoe4" data-w="aj"><style>/* aj:wm */ html::after{content:'aj-me';position:fixed;left:-9999px;top:-9999px;pointer-events:none;}</style><style>/* ── خطوط الشعار الأصلي (Tajawal / Cairo) ─────── */
@@ -1093,6 +1093,35 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
 @media(max-width:600px){.sm-quick-action svg{width:17px;height:17px}.sm-quick-action__caption{font-size:8px}.sm-quick-actions{right:max(8px,env(safe-area-inset-right))}}
 :where(html[data-motion-reduced="true"]) .sm-quick-action:before{transition:none}
 :where(html[data-motion-reduced="true"]) .sm-quick-action:hover:before,:where(html[data-motion-reduced="true"]) .sm-quick-action:focus-visible:before{transform:none}
+
+/* Restore the reference's decorative stars and arrow geometry at every size.
+   The bundled reference CSS originally points at a missing small-title image. */
+.sm-about .small_title:before,.sm-about .small_title:after,.sm-sports .small_title:before,.sm-sports .small_title:after{background-image:url(./assets/aster-rose.svg);background-size:contain;background-position:center}
+.sm-path__aster img{display:block;opacity:1}
+.sm-path__trial .sm-reference-arrow,.sm-path__buy-arrow .sm-reference-arrow{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+@media(max-width:599px){
+ .ban__oval .ban__oval__btn{display:flex;position:absolute;right:0;bottom:3%;z-index:8;align-items:center;scale:.8;transform-origin:bottom right}
+ .ban__oval .ban__oval__btn p{white-space:nowrap}
+}
+
+/* Match timing follows the card's fine rules and warm reference palette. */
+.sm-match__timing{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid #ffffff24;min-height:58px}
+.sm-match__timing[hidden]{display:none}.sm-match__timing-label{color:#f4c7a3;font-size:11px;font-weight:700;white-space:nowrap}
+.sm-match__countdown{display:flex;direction:rtl;align-items:center;gap:6px;color:#fff;font-size:12px}.sm-match__countdown-cell{display:grid;justify-items:center;min-width:34px;padding:4px 5px;border:1px solid #ffffff35;background:#ffffff0b;line-height:1.2}.sm-match__countdown-cell b{font:700 16px/1.2 SMTajawal,Tajawal,sans-serif;font-variant-numeric:tabular-nums}.sm-match__countdown-cell small{font-size:9px;color:#f4c7a3}.sm-match__live-clock{direction:ltr;color:#ffb3c2;font:700 19px/1.2 SMTajawal,Tajawal,sans-serif;unicode-bidi:plaintext}
+@media(max-width:700px){.sm-match__timing{gap:6px}.sm-match__countdown{gap:4px}.sm-match__countdown-cell{min-width:31px;padding:4px}}
+
+/* Consistent vector arrows across buttons and section links, independent of
+   the phone's installed fonts; retain each section's existing colours/layout. */
+.sm-arrow-icon{display:inline-flex;align-items:center;justify-content:center;width:1.15em;height:1.15em;vertical-align:middle;flex:none;line-height:1}
+.sm-reference-arrow{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sm-servers .sm-server__round .sm-arrow-icon{display:flex;width:27px;height:27px}
+.sm-matches__arrows button,.sm-blog__controls button[data-blog-direction]{display:inline-grid;place-items:center}
+.sm-matches__arrows .sm-reference-arrow--nav,.sm-blog__controls .sm-reference-arrow--nav{width:21px;height:21px}
+.ban__oval .ban__oval__btn span{display:grid;place-items:center}
+.ban__oval .ban__oval__btn span:before,.ban__oval .ban__oval__btn span:after{content:none}
+.ban__oval .ban__oval__btn .sm-reference-arrow--down{width:23px;height:23px;color:#fff;transition:transform .3s}
+.ban__oval .ban__oval__btn:hover .sm-reference-arrow--down,.ban__oval .ban__oval__btn:focus-visible .sm-reference-arrow--down{transform:translateY(3px)}
+:where(html[data-motion-reduced="true"]) .ban__oval .ban__oval__btn .sm-reference-arrow--down{transition:none;transform:none}
 </style></head>
 
 <body>
@@ -1155,7 +1184,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
     <div class="nav__contact" dir="rtl">
       <span><span>دعم بالعربية</span></span>
       <span><span><a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب</a></span></span>
-      <span><span><a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">اطلب التفعيل ↗</a></span></span>
+      <span><span><a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">اطلب التفعيل <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></span></span>
     </div>
 
     <button type="button" class="nav__menu-btn" aria-label="فتح القائمة" aria-expanded="false" aria-controls="sm-menu">
@@ -1205,7 +1234,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
           <div class="ban__oval__box sm-hero-info" dir="rtl" lang="ar" aria-label="ترفيه بلا حدود، تفعيل فوري ودعم بالعربية">
             <span class="sm-hero-info__main" aria-hidden="true">ترفيه بلا حدود</span><span class="sm-hero-info__star" aria-hidden="true">✦</span><span class="sm-hero-info__mark" dir="ltr" aria-hidden="true">4K</span><span class="sm-hero-info__detail" aria-hidden="true">تفعيل فوري <b>✦</b> دعم بالعربية</span><span class="sm-hero-info__mobile" aria-hidden="true">ترفيه بلا حدود <b>✦</b> تفعيل فوري ودعم بالعربية</span>
           </div>
-          <a class="arrow_btn ban__oval__btn" href="#sm-hero-copy" aria-label="مرّر للاستكشاف"><p>مرّر للاستكشاف</p><span aria-hidden="true"></span></a>
+          <a class="arrow_btn ban__oval__btn" href="#sm-hero-copy" aria-label="مرّر للاستكشاف"><p>مرّر للاستكشاف</p><span aria-hidden="true"><svg class="sm-reference-arrow sm-reference-arrow--down" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v17M5 13l7 7 7-7"/></svg></span></a>
         </div>
         <div class="ban__desc" aria-label="أرقام الخدمة"><div class="ban__desc__content" dir="rtl" lang="ar">
           <span><bdi>أكثر من 15,000 قناة حية</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>ثبات 99.9% في قمة المباريات</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>4 سيرفرات: نوفا وإيستار وموكا وX</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>أكثر من 50,000 فيلم ومسلسل</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>تفعيل فوري في 5 دقائق</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i></span>
@@ -1240,23 +1269,23 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         </div></div>
         <div class="abt__video"><video src="./assets/images/video-streammaster-hd-1080.mp4?v=1" muted loop playsinline preload="metadata" poster="./assets/images/streammaster-photos-poster.jpg" aria-label="فيديو توضيحي لستريم ماستر">متصفحك لا يدعم عرض الفيديو.</video><button class="video-play-fallback" type="button" aria-label="تشغيل فيديو ستريم ماستر">▶ تشغيل الفيديو</button><svg width="0" height="0" aria-hidden="true"><defs><clippath id="initialClipPath" clipPathUnits="objectBoundingBox"><path d="M0 0.156C0 0.156 0.139 0 0.5 0C0.861 0 1 0.156 1 0.156V1H0V0.156Z"></path></clippath></defs></svg></div>
         <section class="abt__what sm-path" id="path-section" aria-labelledby="sm-path-title">
- <div class="sm-path__heading"><div class="sm-path__headline"><p class="sm-path__eyebrow">خيارات المشاهدة</p><h2 id="sm-path-title"><span>اختر</span><span>مسارك</span></h2><span class="sm-path__script" aria-hidden="true">على مزاجك</span><div class="sm-path__meta"><p>ثلاث طرق للبدء</p><p>كلها بسنة كاملة</p></div></div><div class="sm-path__aster" aria-hidden="true"><img src="./assets/aster.svg" alt=""><img src="./assets/aster.svg" alt=""><img src="./assets/aster.svg" alt=""></div></div>
- <div class="sm-path__intro"><div><p class="sm-path__intro-label">اختر مسارك</p><p>اختر ما يناسب مشاهدتك، وجرّب الخدمة قبل الدفع.</p></div><a class="sm-path__trial" href="/trial/"><span class="sm-path__trial-label"><strong>فحص تجريبي مجاني</strong><small>٦ ساعات — قبل الدفع</small></span><b aria-hidden="true">↗</b></a></div>
+ <div class="sm-path__heading"><div class="sm-path__headline"><p class="sm-path__eyebrow">خيارات المشاهدة</p><h2 id="sm-path-title"><span>اختر</span><span>مسارك</span></h2><span class="sm-path__script" aria-hidden="true">على مزاجك</span><div class="sm-path__meta"><p>ثلاث طرق للبدء</p><p>كلها بسنة كاملة</p></div></div><div class="sm-path__aster" aria-hidden="true"><img src="./assets/aster-rose.svg" alt=""><img src="./assets/aster-rose.svg" alt=""><img src="./assets/aster-rose.svg" alt=""></div></div>
+ <div class="sm-path__intro"><div><p class="sm-path__intro-label">اختر مسارك</p><p>اختر ما يناسب مشاهدتك، وجرّب الخدمة قبل الدفع.</p></div><a class="sm-path__trial" href="/trial/"><span class="sm-path__trial-label"><strong>فحص تجريبي مجاني</strong><small>٦ ساعات — قبل الدفع</small></span><b aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></b></a></div>
  <div class="sm-path__choices-heading"><span>ثلاثة مسارات، بداية واحدة</span><span dir="ltr" aria-hidden="true">01 — 03</span></div>
  <div class="sm-path__grid"><details class="sm-path__card sm-path__card--nova" data-path="nova" open>
   <summary><span class="sm-path__number">01 <i>✳</i></span><span class="sm-path__summary"><small>لمن يتابع المباريات</small><strong>أشاهد المباريات</strong><span class="sm-path__provider">سيرفر نوفا</span></span><span class="sm-path__price"><bdi dir="ltr" data-path-field="nova.price">$25</bdi><small>/ سنة</small></span><span class="sm-path__toggle" aria-hidden="true"></span></summary>
   <div class="sm-path__body"><p>الأكثر طلباً وقت القمم — سيرفرات احتياطية لدى المزود.</p><dl><div><dt>القنوات</dt><dd data-path-field="nova.channels">+15,000 قناة حية</dd></div><div><dt>الجودة</dt><dd data-path-field="nova.quality">8K / 4K / FHD / HD</dd></div><div><dt>مكتبة VOD</dt><dd data-path-field="nova.vod">+50,000 فيلم ومسلسل</dd></div></dl>
-  <a class="sm-path__buy" href="/nova/"><span class="sm-path__buy-box"><img src="/images/brand/nova-ticket.webp" alt="" loading="lazy"><span class="sm-path__buy-label">اشترك في نوفا <bdi dir="ltr" data-path-field="nova.price">$25</bdi></span></span><span class="sm-path__buy-arrow" aria-hidden="true">↗</span></a><a class="sm-path__compare" href="/#pricing">مقارنة كل الباقات ↗</a></div>
+  <a class="sm-path__buy" href="/nova/"><span class="sm-path__buy-box"><img src="/images/brand/nova-ticket.webp" alt="" loading="lazy"><span class="sm-path__buy-label">اشترك في نوفا <bdi dir="ltr" data-path-field="nova.price">$25</bdi></span></span><span class="sm-path__buy-arrow" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-path__compare" href="/#pricing">مقارنة كل الباقات <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></div>
  </details><details class="sm-path__card sm-path__card--istar" data-path="istar" open>
   <summary><span class="sm-path__number">02 <i>✳</i></span><span class="sm-path__summary"><small>لمن يريد أفلاماً ومسلسلات</small><strong>ترفيه وأفلام</strong><span class="sm-path__provider">سيرفر إيستار</span></span><span class="sm-path__price"><bdi dir="ltr" data-path-field="istar.price">$35</bdi><small>/ سنة</small></span><span class="sm-path__toggle" aria-hidden="true"></span></summary>
   <div class="sm-path__body"><p>باقة الترفيه الشاملة — مكتبة VOD ضخمة تتجدد يومياً.</p><dl><div><dt>القنوات</dt><dd data-path-field="istar.channels">+14,000 قناة حية</dd></div><div><dt>الجودة</dt><dd data-path-field="istar.quality">4K / FHD / HD</dd></div><div><dt>مكتبة VOD</dt><dd data-path-field="istar.vod">+50,000 فيلم ومسلسل</dd></div></dl>
-  <a class="sm-path__buy" href="/istar/"><span class="sm-path__buy-box"><img src="/images/brand/istar-ticket.webp" alt="" loading="lazy"><span class="sm-path__buy-label">اشترك في إيستار <bdi dir="ltr" data-path-field="istar.price">$35</bdi></span></span><span class="sm-path__buy-arrow" aria-hidden="true">↗</span></a><a class="sm-path__compare" href="/#pricing">مقارنة كل الباقات ↗</a></div>
+  <a class="sm-path__buy" href="/istar/"><span class="sm-path__buy-box"><img src="/images/brand/istar-ticket.webp" alt="" loading="lazy"><span class="sm-path__buy-label">اشترك في إيستار <bdi dir="ltr" data-path-field="istar.price">$35</bdi></span></span><span class="sm-path__buy-arrow" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-path__compare" href="/#pricing">مقارنة كل الباقات <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></div>
  </details><details class="sm-path__card sm-path__card--x" data-path="x" open>
   <summary><span class="sm-path__number">03 <i>✳</i></span><span class="sm-path__summary"><small>لمن يريد أقل تكلفة</small><strong>أقل ميزانية</strong><span class="sm-path__provider">سيرفر X</span></span><span class="sm-path__price"><bdi dir="ltr" data-path-field="x.price">$20</bdi><small>/ سنة</small></span><span class="sm-path__toggle" aria-hidden="true"></span></summary>
   <div class="sm-path__body"><p>نفس القنوات بجودة تصل 8K — أرخص باقة سنة كاملة.</p><dl><div><dt>القنوات</dt><dd data-path-field="x.channels">+15,000 قناة حية</dd></div><div><dt>الجودة</dt><dd data-path-field="x.quality">8K / 4K / FHD / HD</dd></div><div><dt>مكتبة VOD</dt><dd data-path-field="x.vod">+50,000 فيلم ومسلسل</dd></div></dl>
-  <a class="sm-path__buy" href="/x/"><span class="sm-path__buy-box"><img src="/images/brand/xtv-mark.webp" alt="" loading="lazy"><span class="sm-path__buy-label">اشترك في X <bdi dir="ltr" data-path-field="x.price">$20</bdi></span></span><span class="sm-path__buy-arrow" aria-hidden="true">↗</span></a><a class="sm-path__compare" href="/#pricing">مقارنة كل الباقات ↗</a></div>
+  <a class="sm-path__buy" href="/x/"><span class="sm-path__buy-box"><img src="/images/brand/xtv-mark.webp" alt="" loading="lazy"><span class="sm-path__buy-label">اشترك في X <bdi dir="ltr" data-path-field="x.price">$20</bdi></span></span><span class="sm-path__buy-arrow" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-path__compare" href="/#pricing">مقارنة كل الباقات <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></div>
  </details></div>
- <p class="sm-path__note">سيرفر موكا متاح أيضاً للمشاهدة الثقيلة — <a href="/moka/">تفاصيل باقة موكا ↗</a></p><p class="sm-path__disclaimer">المواصفات المعلنة قد تتغير حسب التوفر. المحتوى المشفّر يُشاهد باشتراكه الرسمي.</p>
+ <p class="sm-path__note">سيرفر موكا متاح أيضاً للمشاهدة الثقيلة — <a href="/moka/">تفاصيل باقة موكا <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></p><p class="sm-path__disclaimer">المواصفات المعلنة قد تتغير حسب التوفر. المحتوى المشفّر يُشاهد باشتراكه الرسمي.</p>
 </section>
       </section>
       <!-- ABOUT END -->
@@ -1268,48 +1297,48 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         <article class="project sm-server sm-server--nova">
           <div class="project__content sm-server__card">
             <img class="sm-server__image" src="/images/brand/nova-ticket.png" alt="" aria-hidden="true" loading="eager">
-            <a class="project__cta sm-server__round" href="/nova/" aria-label="تفاصيل سيرفر نوفا"><span aria-hidden="true">↗</span><small>تفاصيل</small></a>
+            <a class="project__cta sm-server__round" href="/nova/" aria-label="تفاصيل سيرفر نوفا"><span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span><small>تفاصيل</small></a>
             <div class="sm-server__body">
               <div class="sm-server__top"><div class="sm-server__label"><span class="sm-server__index" aria-label="السيرفر 1 من ٤">01 <span aria-hidden="true">/ 04</span></span><span class="sm-server__eyebrow">الأكثر طلباً للمباريات</span></div><img class="sm-server__logo" src="/images/brand/nova-ticket.png" alt="شعار نوفا" loading="lazy"></div>
               <h3 class="sm-server__name">نوفا</h3><p class="sm-server__service">تفعيل وربط تقني · سنة كاملة</p><p class="sm-server__description" data-server-field="nova.description">تشمل المواصفات المعلنة لهذا السيرفر ثباتاً مرتفعاً وقت ضغط المباريات وتعدداً في مصادر البث لكل قناة.</p>
               <dl class="sm-server__specs"><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="m8 3 4 3 4-3M8 21h8"/></svg><span>القنوات المعلنة</span></dt><dd dir="ltr" data-server-field="nova.channels"><span class="sm-server__count" aria-hidden="true">+15,000</span><span class="sm-server__sr-only">+15,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 8h4M3 16h4M17 8h4M17 16h4"/><path d="m10 9 4 3-4 3z"/></svg><span>الأفلام والمسلسلات</span></dt><dd dir="ltr" data-server-field="nova.vod"><span class="sm-server__count" aria-hidden="true">+50,000</span><span class="sm-server__sr-only">+50,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6zM19 16v4M17 18h4"/></svg><span>الجودة المعلنة</span></dt><dd dir="ltr" data-server-field="nova.quality"><span class="sm-server__quality-tag">8K</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">4K</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">FHD</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">HD</span></dd></div></dl>
-              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="nova.price">$25</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/nova/">تفاصيل وتفعيل <span aria-hidden="true">↗</span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
+              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="nova.price">$25</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/nova/">تفاصيل وتفعيل <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
             </div>
           </div>
         </article>
         <article class="project sm-server sm-server--istar">
           <div class="project__content sm-server__card">
             <img class="sm-server__image" src="/images/brand/istar-ticket.png" alt="" aria-hidden="true" loading="eager">
-            <a class="project__cta sm-server__round" href="/istar/" aria-label="تفاصيل سيرفر إيستار برو"><span aria-hidden="true">↗</span><small>تفاصيل</small></a>
+            <a class="project__cta sm-server__round" href="/istar/" aria-label="تفاصيل سيرفر إيستار برو"><span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span><small>تفاصيل</small></a>
             <div class="sm-server__body">
               <div class="sm-server__top"><div class="sm-server__label"><span class="sm-server__index" aria-label="السيرفر 2 من ٤">02 <span aria-hidden="true">/ 04</span></span><span class="sm-server__eyebrow">للأفلام والمسلسلات</span></div><img class="sm-server__logo" src="/images/brand/istar-ticket.png" alt="شعار إيستار برو" loading="lazy"></div>
               <h3 class="sm-server__name">إيستار برو</h3><p class="sm-server__service">تفعيل وربط تقني · سنة كاملة</p><p class="sm-server__description" data-server-field="istar.description">تشمل المواصفات المعلنة لهذا السيرفر توازناً بين التصنيفات الرياضية والمكتبة الترفيهية مع سرعة تشغيل جيدة.</p>
               <dl class="sm-server__specs"><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="m8 3 4 3 4-3M8 21h8"/></svg><span>القنوات المعلنة</span></dt><dd dir="ltr" data-server-field="istar.channels"><span class="sm-server__count" aria-hidden="true">+14,000</span><span class="sm-server__sr-only">+14,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 8h4M3 16h4M17 8h4M17 16h4"/><path d="m10 9 4 3-4 3z"/></svg><span>الأفلام والمسلسلات</span></dt><dd dir="ltr" data-server-field="istar.vod"><span class="sm-server__count" aria-hidden="true">+50,000</span><span class="sm-server__sr-only">+50,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6zM19 16v4M17 18h4"/></svg><span>الجودة المعلنة</span></dt><dd dir="ltr" data-server-field="istar.quality"><span class="sm-server__quality-tag">4K</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">FHD</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">HD</span></dd></div></dl>
-              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="istar.price">$35</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/istar/">تفاصيل وتفعيل <span aria-hidden="true">↗</span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
+              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="istar.price">$35</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/istar/">تفاصيل وتفعيل <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
             </div>
           </div>
         </article>
         <article class="project sm-server sm-server--moka">
           <div class="project__content sm-server__card">
             <img class="sm-server__image" src="/images/brand/moka-ticket.png" alt="" aria-hidden="true" loading="eager">
-            <a class="project__cta sm-server__round" href="/moka/" aria-label="تفاصيل سيرفر موكا"><span aria-hidden="true">↗</span><small>تفاصيل</small></a>
+            <a class="project__cta sm-server__round" href="/moka/" aria-label="تفاصيل سيرفر موكا"><span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span><small>تفاصيل</small></a>
             <div class="sm-server__body">
               <div class="sm-server__top"><div class="sm-server__label"><span class="sm-server__index" aria-label="السيرفر 3 من ٤">03 <span aria-hidden="true">/ 04</span></span><span class="sm-server__eyebrow">للمشاهدة الطويلة</span></div><img class="sm-server__logo" src="/images/brand/moka-ticket.png" alt="شعار موكا" loading="lazy"></div>
               <h3 class="sm-server__name">موكا</h3><p class="sm-server__service">تفعيل وربط تقني · سنة كاملة</p><p class="sm-server__description" data-server-field="moka.description">تشمل المواصفات المعلنة لهذا السيرفر تحمّلاً للمشاهدة الطويلة وقنوات بجودات متعددة تناسب السرعات المنخفضة.</p>
               <dl class="sm-server__specs"><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="m8 3 4 3 4-3M8 21h8"/></svg><span>القنوات المعلنة</span></dt><dd dir="ltr" data-server-field="moka.channels"><span class="sm-server__count" aria-hidden="true">+11,000</span><span class="sm-server__sr-only">+11,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 8h4M3 16h4M17 8h4M17 16h4"/><path d="m10 9 4 3-4 3z"/></svg><span>الأفلام والمسلسلات</span></dt><dd dir="ltr" data-server-field="moka.vod"><span class="sm-server__count" aria-hidden="true">+35,000</span><span class="sm-server__sr-only">+35,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6zM19 16v4M17 18h4"/></svg><span>الجودة المعلنة</span></dt><dd dir="ltr" data-server-field="moka.quality"><span class="sm-server__quality-tag">4K</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">FHD</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">HD</span></dd></div></dl>
-              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="moka.price">$45</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/moka/">تفاصيل وتفعيل <span aria-hidden="true">↗</span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
+              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="moka.price">$45</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/moka/">تفاصيل وتفعيل <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
             </div>
           </div>
         </article>
         <article class="project sm-server sm-server--x">
           <div class="project__content sm-server__card">
             <img class="sm-server__image" src="/images/brand/xtv-mark.png" alt="" aria-hidden="true" loading="eager">
-            <a class="project__cta sm-server__round" href="/x/" aria-label="تفاصيل سيرفر X"><span aria-hidden="true">↗</span><small>تفاصيل</small></a>
+            <a class="project__cta sm-server__round" href="/x/" aria-label="تفاصيل سيرفر X"><span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span><small>تفاصيل</small></a>
             <div class="sm-server__body">
               <div class="sm-server__top"><div class="sm-server__label"><span class="sm-server__index" aria-label="السيرفر 4 من ٤">04 <span aria-hidden="true">/ 04</span></span><span class="sm-server__eyebrow">اختيار اقتصادي</span></div><img class="sm-server__logo" src="/images/brand/xtv-mark.png" alt="شعار X" loading="lazy"></div>
               <h3 class="sm-server__name">X</h3><p class="sm-server__service">تفعيل وربط تقني · سنة كاملة</p><p class="sm-server__description" data-server-field="x.description">تشمل المواصفات المعلنة لهذا السيرفر ثباتاً مرتفعاً وقت ضغط المباريات وتعدداً في مصادر البث لكل قناة.</p>
               <dl class="sm-server__specs"><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="m8 3 4 3 4-3M8 21h8"/></svg><span>القنوات المعلنة</span></dt><dd dir="ltr" data-server-field="x.channels"><span class="sm-server__count" aria-hidden="true">+15,000</span><span class="sm-server__sr-only">+15,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 8h4M3 16h4M17 8h4M17 16h4"/><path d="m10 9 4 3-4 3z"/></svg><span>الأفلام والمسلسلات</span></dt><dd dir="ltr" data-server-field="x.vod"><span class="sm-server__count" aria-hidden="true">+50,000</span><span class="sm-server__sr-only">+50,000</span></dd></div><div><dt><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6zM19 16v4M17 18h4"/></svg><span>الجودة المعلنة</span></dt><dd dir="ltr" data-server-field="x.quality"><span class="sm-server__quality-tag">8K</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">4K</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">FHD</span><span class="sm-server__quality-separator"> / </span><span class="sm-server__quality-tag">HD</span></dd></div></dl>
-              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="x.price">$20</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/x/">تفاصيل وتفعيل <span aria-hidden="true">↗</span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
+              <div class="sm-server__bottom"><p class="sm-server__price"><small>السعر السنوي</small><strong dir="ltr" data-server-field="x.price">$20</strong><span> / سنة</span></p><div class="sm-server__actions"><a href="/x/">تفاصيل وتفعيل <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-server__trial" href="/trial/">جرّب ٦ ساعات مجاناً</a></div></div>
             </div>
           </div>
         </article>
@@ -1328,7 +1357,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
             <li><span aria-hidden="true">02</span><div><strong>اختر سيرفرك</strong><p>قارن الباقات واختر الأنسب لك.</p></div></li>
             <li><span aria-hidden="true">03</span><div><strong>نساعدك في الإعداد</strong><p>تفعيل وربط تقني للمشغّل، مع دعم بالعربية.</p></div></li>
           </ol>
-          <div class="sm-journey__closing"><img src="./assets/motif(1).svg" alt="" aria-hidden="true"><a class="sm-journey__cta" href="/trial/">اطلب التجربة المجانية <span aria-hidden="true">↗</span></a></div>
+          <div class="sm-journey__closing"><img src="./assets/motif(1).svg" alt="" aria-hidden="true"><a class="sm-journey__cta" href="/trial/">اطلب التجربة المجانية <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></div>
         </div>
         <div class="phil__img sm-journey__visual">
           <div class="sm-journey__frame" data-speed="1.08"><img src="/images/hero/slide-devices.jpg" alt="تلفاز في غرفة معيشة يعرض مباراة" loading="lazy"></div>
@@ -1351,7 +1380,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
           </div>
         </div>
         <p class="sm-sports__note">استكشف البطولات ومواعيد المباريات. المحتوى المشفّر يُشاهد باشتراكه الرسمي.</p>
-        <a class="sm-sports__link" href="/matches/">استكشف المباريات <span aria-hidden="true">↗</span></a>
+        <a class="sm-sports__link" href="/matches/">استكشف المباريات <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
       </section>
       <section id="league-strip" class="sm-leagues" dir="rtl" lang="ar" aria-labelledby="sm-leagues-title">
         <div class="sm-leagues__stage">
@@ -1365,35 +1394,35 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
           <div class="sm-leagues__cards">
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#12436b,#081c35);--card-border:#6fc7f2" data-accent="#6fc7f2">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/2.png" alt="" loading="lazy"><span>أوروبا</span></div>
-              <h3>دوري أبطال أوروبا</h3><a href="/matches/دوري-أبطال-أوروبا/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>دوري أبطال أوروبا</h3><a href="/matches/دوري-أبطال-أوروبا/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#543876,#20142f);--card-border:#caa8f1" data-accent="#caa8f1">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/23.png" alt="" loading="lazy"><span>إنجلترا</span></div>
-              <h3>الدوري الإنجليزي</h3><a href="/matches/الدوري-الإنجليزي/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري الإنجليزي</h3><a href="/matches/الدوري-الإنجليزي/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#a94d30,#421d16);--card-border:#ffb79c" data-accent="#ffb79c">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/9.png" alt="" loading="lazy"><span>فرنسا</span></div>
-              <h3>الدوري الفرنسي</h3><a href="/matches/الدوري-الفرنسي/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري الفرنسي</h3><a href="/matches/الدوري-الفرنسي/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#f6dc9c,#c9983f);--card-border:#eccb74" data-accent="#eccb74">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/15.png" alt="" loading="lazy"><span>إسبانيا</span></div>
-              <h3>الدوري الإسباني</h3><a href="/matches/الدوري-الإسباني/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري الإسباني</h3><a href="/matches/الدوري-الإسباني/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#6d2341,#270e20);--card-border:#f19eb7" data-accent="#f19eb7">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/10.png" alt="" loading="lazy"><span>ألمانيا</span></div>
-              <h3>الدوري الألماني</h3><a href="/matches/الدوري-الألماني/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري الألماني</h3><a href="/matches/الدوري-الألماني/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#167bc1,#073366);--card-border:#8ed7ff" data-accent="#8ed7ff">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/12.png" alt="" loading="lazy"><span>إيطاليا</span></div>
-              <h3>الدوري الإيطالي</h3><a href="/matches/الدوري-الإيطالي/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري الإيطالي</h3><a href="/matches/الدوري-الإيطالي/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#16814e,#06402c);--card-border:#97e7b7" data-accent="#97e7b7">
               <div class="sm-leagues__image" aria-hidden="true"><img src="https://a.espncdn.com/i/leaguelogos/soccer/500/2488.png" alt="" loading="lazy"><span>السعودية</span></div>
-              <h3>الدوري السعودي</h3><a href="/matches/الدوري-السعودي/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري السعودي</h3><a href="/matches/الدوري-السعودي/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
             <article class="sm-leagues__card" style="--card-bg:linear-gradient(145deg,#343637,#111314);--card-border:#cfb570" data-accent="#cfb570">
               <div class="sm-leagues__image" aria-hidden="true"><img src="/images/competitions/egyptian-premier-league.webp" alt="" loading="lazy"><span>مصر</span></div>
-              <h3>الدوري المصري</h3><a href="/matches/الدوري-المصري/">تفاصيل البطولة <span aria-hidden="true">↗</span></a>
+              <h3>الدوري المصري</h3><a href="/matches/الدوري-المصري/">تفاصيل البطولة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
             </article>
           </div>
           <div class="sm-leagues__stats" aria-label="إحصائيات البطولة المختارة">
@@ -1434,8 +1463,8 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         <button type="button" class="sm-matches__retry" hidden>إعادة المحاولة</button>
         <div class="sm-matches__rail" aria-label="بطاقات المباريات"></div>
         <div class="sm-matches__bottom">
-          <div class="sm-matches__arrows" aria-label="التنقل بين المباريات"><button type="button" data-direction="previous" aria-label="المباريات السابقة">→</button><button type="button" data-direction="next" aria-label="المباريات التالية">←</button></div>
-          <a href="/matches/">استكشف كل المباريات <span aria-hidden="true">↗</span></a>
+          <div class="sm-matches__arrows" aria-label="التنقل بين المباريات"><button type="button" data-direction="previous" aria-label="المباريات السابقة"><svg class="sm-reference-arrow sm-reference-arrow--nav" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button><button type="button" data-direction="next" aria-label="المباريات التالية"><svg class="sm-reference-arrow sm-reference-arrow--nav" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button></div>
+          <a href="/matches/">استكشف كل المباريات <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
         </div>
         <noscript><p>لتحميل المباريات اختر <a href="/matches/">صفحة المباريات</a> أو فعّل JavaScript.</p></noscript>
       </section>
@@ -1453,7 +1482,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/video-resolution-hd-fhd-4k/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-resolution-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">4K</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 01</span><img class="sm-blog__preview" src="/images/og/blog-video-resolution.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>الجودة</span><span>5 دقائق قراءة</span><span aria-hidden="true">01</span></div>
-                  <h3>دقة الصورة: HD وFHD و4K وأيها يناسب شاشتك؟</h3><p>شرح مبسّط للفرق بين دقات الصورة الشائعة (HD وFHD و4K)، ومتى يظهر الفرق فعلياً حسب حجم الشاشة والمسافة منها.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>دقة الصورة: HD وFHD و4K وأيها يناسب شاشتك؟</h3><p>شرح مبسّط للفرق بين دقات الصورة الشائعة (HD وFHD و4K)، ومتى يظهر الفرق فعلياً حسب حجم الشاشة والمسافة منها.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
@@ -1461,7 +1490,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/internet-speed-for-video-streaming/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-speed-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">Mbps</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 02</span><img class="sm-blog__preview" src="/images/og/blog-internet-speed.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>الجودة</span><span>6 دقائق قراءة</span><span aria-hidden="true">02</span></div>
-                  <h3>سرعة الإنترنت المطلوبة لمشاهدة الفيديو: كم تحتاج لكل جودة؟</h3><p>أرقام تقريبية للسرعة التي تحتاجها لكل مستوى جودة، وطريقة قياس سرعتك الفعلية في أوقات الذروة.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>سرعة الإنترنت المطلوبة لمشاهدة الفيديو: كم تحتاج لكل جودة؟</h3><p>أرقام تقريبية للسرعة التي تحتاجها لكل مستوى جودة، وطريقة قياس سرعتك الفعلية في أوقات الذروة.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
@@ -1469,7 +1498,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/hdr-and-frame-rate-explained/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-hdr-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">HDR</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 03</span><img class="sm-blog__preview" src="/images/og/blog-hdr-frame-rate.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>الجودة</span><span>5 دقائق قراءة</span><span aria-hidden="true">03</span></div>
-                  <h3>HDR وعدد الإطارات: ماذا يغيّران في الصورة؟</h3><p>شرح لمصطلحي HDR وعدد الإطارات في الثانية (fps)، وما الذي يضيفانه إلى الصورة، ومتى يكونان مفيدين فعلاً.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>HDR وعدد الإطارات: ماذا يغيّران في الصورة؟</h3><p>شرح لمصطلحي HDR وعدد الإطارات في الثانية (fps)، وما الذي يضيفانه إلى الصورة، ومتى يكونان مفيدين فعلاً.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
@@ -1477,7 +1506,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/android-tv-boxes-buying-guide/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-tvbox-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">TV</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 04</span><img class="sm-blog__preview" src="/images/og/blog-android-tv-boxes.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>الأجهزة</span><span>6 دقائق قراءة</span><span aria-hidden="true">04</span></div>
-                  <h3>Android TV وصناديق البث: كيف تختار جهازاً موثوقاً؟</h3><p>معايير عملية لاختيار صندوق Android TV أو جهاز بث آمن، وأهم العلامات التي تدل على جهاز غير موثوق.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>Android TV وصناديق البث: كيف تختار جهازاً موثوقاً؟</h3><p>معايير عملية لاختيار صندوق Android TV أو جهاز بث آمن، وأهم العلامات التي تدل على جهاز غير موثوق.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
@@ -1485,7 +1514,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/phone-and-computer-viewing-setup/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-devices-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">شاشة</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 05</span><img class="sm-blog__preview" src="/images/og/blog-phone-computer-setup.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>الأجهزة</span><span>5 دقائق قراءة</span><span aria-hidden="true">05</span></div>
-                  <h3>الهاتف والكمبيوتر: إعدادات أساسية لمشاهدة أفضل وبطارية أطول</h3><p>خطوات عملية لتحسين تجربة مشاهدة الفيديو على الهاتف والكمبيوتر، تشمل التحديثات والشبكة واستهلاك البطارية.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>الهاتف والكمبيوتر: إعدادات أساسية لمشاهدة أفضل وبطارية أطول</h3><p>خطوات عملية لتحسين تجربة مشاهدة الفيديو على الهاتف والكمبيوتر، تشمل التحديثات والشبكة واستهلاك البطارية.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
@@ -1493,7 +1522,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/risks-of-unverified-apps/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-security-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">أمان</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 06</span><img class="sm-blog__preview" src="/images/og/blog-risks-of-unverified-apps.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>الأمان</span><span>6 دقائق قراءة</span><span aria-hidden="true">06</span></div>
-                  <h3>التطبيقات غير الموثوقة: لماذا تشكّل خطراً على جهازك وبياناتك؟</h3><p>أبرز مخاطر تثبيت التطبيقات من مصادر غير رسمية، وعلامات التحذير، وخطوات عملية إذا كنت قد ثبّتّ تطبيقاً مشبوهاً.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>التطبيقات غير الموثوقة: لماذا تشكّل خطراً على جهازك وبياناتك؟</h3><p>أبرز مخاطر تثبيت التطبيقات من مصادر غير رسمية، وعلامات التحذير، وخطوات عملية إذا كنت قد ثبّتّ تطبيقاً مشبوهاً.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
@@ -1501,15 +1530,15 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
               <a class="sm-blog__card-link" href="/blog/what-is-unlicensed-streaming/">
                 <div class="sm-blog__art has-poster"><img class="sm-blog__poster" src="./assets/images/blog-rights-art.jpg" alt="" loading="lazy" decoding="async"><span class="sm-blog__ornament" aria-hidden="true"><i></i><i></i><i></i></span><span class="sm-blog__graphic" aria-hidden="true">حقوق</span><span class="sm-blog__art-index" aria-hidden="true">STREAM MASTER / 07</span><img class="sm-blog__preview" src="/images/og/blog-what-is-unlicensed-streaming.png" alt="" loading="lazy" decoding="async"></div>
                 <div class="sm-blog__body"><div class="sm-blog__meta"><span>القانون</span><span>6 دقائق قراءة</span><span aria-hidden="true">07</span></div>
-                  <h3>ما معنى بث محتوى بدون ترخيص؟</h3><p>شرح مبسّط لمفهوم الترخيص في الأفلام والمسلسلات والبث الرياضي، ولماذا يؤثر بث المحتوى دون إذن على أصحاب الحقوق والمشاهدين.</p><span class="sm-blog__read">اقرأ المقال <span aria-hidden="true">↗</span></span>
+                  <h3>ما معنى بث محتوى بدون ترخيص؟</h3><p>شرح مبسّط لمفهوم الترخيص في الأفلام والمسلسلات والبث الرياضي، ولماذا يؤثر بث المحتوى دون إذن على أصحاب الحقوق والمشاهدين.</p><span class="sm-blog__read">اقرأ المقال <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></span>
                 </div>
               </a>
             </article>
         </div>
         <div class="sm-blog__ruler" aria-hidden="true"><span></span></div>
         <div class="sm-blog__bottom">
-          <div class="sm-blog__controls" role="group" aria-label="التنقل بين المقالات"><button class="sm-blog__motion" type="button" aria-pressed="true" hidden>إيقاف الحركة</button><button type="button" data-blog-direction="previous" aria-label="المقالات السابقة">→</button><button type="button" data-blog-direction="next" aria-label="المقالات التالية">←</button></div>
-          <a class="sm-blog__all" href="/blog/">كل المقالات <span aria-hidden="true">↗</span></a>
+          <div class="sm-blog__controls" role="group" aria-label="التنقل بين المقالات"><button class="sm-blog__motion" type="button" aria-pressed="true" hidden>إيقاف الحركة</button><button type="button" data-blog-direction="previous" aria-label="المقالات السابقة"><svg class="sm-reference-arrow sm-reference-arrow--nav" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button><button type="button" data-blog-direction="next" aria-label="المقالات التالية"><svg class="sm-reference-arrow sm-reference-arrow--nav" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button></div>
+          <a class="sm-blog__all" href="/blog/">كل المقالات <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
         </div>
       </section>
       <!-- BLOG END -->
@@ -1557,7 +1586,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
             <summary><span class="sm-faq__num" aria-hidden="true">08</span><span class="sm-faq__question">ما الفرق بين سيرفر نوفا وإيستار برو وموكا وX؟</span><span class="sm-faq__plus" aria-hidden="true"></span></summary>
             <div class="sm-faq__answer"><p>سيرفر نوفا هو الأنسب للمباريات والرياضة ويدعم حتى 3 أجهزة، وتُعرض باقة X حالياً بمواصفات ومزايا مماثلة لنوفا. سيرفر إيستار برو متوازن للأفلام والمسلسلات والترفيه العائلي، وسيرفر موكا اقتصادي في استهلاك البيانات ويعمل جيداً على السرعات المحدودة. المواصفات الفنية لكل سيرفر يعلنها المزود الخارجي، وتشمل خدمتنا التفعيل والربط التقني وإعداد المشغّل والدعم الفني.</p></div>
           </details>
-          <div class="sm-faq__bottom"><p>هل لديك سؤال آخر؟</p><a href="/faq/">تصفّح كل الأسئلة <span aria-hidden="true">↗</span></a></div>
+          <div class="sm-faq__bottom"><p>هل لديك سؤال آخر؟</p><a href="/faq/">تصفّح كل الأسئلة <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></div>
         </div>
       </section>
       <!-- FAQ END -->
@@ -1570,8 +1599,8 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         <h2 id="sm-contact-title">خلّينا نبدأ<br><span>المشاهدة</span></h2>
         <p class="sm-contact__intro">استفسر عن السيرفرات أو اطلب تجربتك المجانية، وفريق الدعم يساعدك في خطوات الإعداد.</p>
         <div class="sm-contact__actions">
-          <a class="sm-contact__primary" href="https://wa.me/201090415657?text=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%20%D8%B3%D8%AA%D8%B1%D9%8A%D9%85%20%D9%85%D8%A7%D8%B3%D8%AA%D8%B1%D8%8C%20%D9%84%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب <span aria-hidden="true">↗</span></a>
-          <a class="sm-contact__secondary" href="/trial/">اطلب تجربة مجانية <span aria-hidden="true">↗</span></a>
+          <a class="sm-contact__primary" href="https://wa.me/201090415657?text=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%20%D8%B3%D8%AA%D8%B1%D9%8A%D9%85%20%D9%85%D8%A7%D8%B3%D8%AA%D8%B1%D8%8C%20%D9%84%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
+          <a class="sm-contact__secondary" href="/trial/">اطلب تجربة مجانية <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a>
         </div>
         <div class="foot__img sm-contact__visual" aria-hidden="true">
           <img class="wave" src="./assets/wave.svg" alt="">
@@ -1589,7 +1618,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
             <button class="sm-footer__motion" type="button" aria-pressed="true">إيقاف الحركة</button>
           </div>
           <div class="sm-footer__main">
-            <div class="sm-footer__brand"><a href="#top">ستريم ماستر <span aria-hidden="true">↗</span></a><p>خدمات الربط التقني والدعم لاشتراكات وسيرفرات المزودين.</p><a class="sm-footer__email" href="mailto:support@streammasterstore.com">support@streammasterstore.com ↗</a><a class="sm-footer__email" href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer" dir="ltr">+20 109 041 5657 ↗</a></div>
+            <div class="sm-footer__brand"><a href="#top">ستريم ماستر <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><p>خدمات الربط التقني والدعم لاشتراكات وسيرفرات المزودين.</p><a class="sm-footer__email" href="mailto:support@streammasterstore.com">support@streammasterstore.com <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a><a class="sm-footer__email" href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer" dir="ltr">+20 109 041 5657 <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></div>
             <nav class="sm-footer__nav" aria-label="روابط التذييل">
               <div><h3>استكشف</h3><a href="#works">السيرفرات</a><a href="/matches/">المباريات</a><a href="/channels/">القنوات</a><a href="/blog/">المقالات</a><a href="/faq/">الأسئلة الشائعة</a></div>
               <div><h3>السيرفرات</h3><a href="/nova/">نوفا</a><a href="/istar/">إيستار</a><a href="/moka/">موكا</a><a href="/x/">X</a><a href="/trial/">تجربة مجانية</a></div>
@@ -1614,4 +1643,4 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
 </nav>
 <!-- Cloudflare Pages Analytics --><!-- Cloudflare Pages Analytics -->
 
-<canvas class="noise-overlay" width="3420" height="1934"></canvas><script>(function(){const menu=document.querySelector('.nav__menu-btn');function sync(){const open=menu.classList.contains('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة')}new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});})();</script><script src="./assets/about-devices.js?v=bd0712ce1daa40f5"></script><script src="./assets/about-video.js?v=bd0712ce1daa40f5"></script><script>(function(){if(window.smMotion.matches){document.querySelector('.sm-journey__frame')?.removeAttribute('data-speed')}const visual=document.querySelector('.sm-journey__visual');if(!visual)return;if(!('IntersectionObserver' in window)){visual.classList.add('is-visible');return}const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){visual.classList.add('is-visible');observer.disconnect()}},{threshold:.2});observer.observe(visual)})();</script><script src="./assets/about-motion.js?v=bd0712ce1daa40f5"></script><script src="./assets/server-counters.js?v=bd0712ce1daa40f5"></script><script src="./assets/server-reveal.js?v=bd0712ce1daa40f5"></script><script src="./assets/path-section.js?v=bd0712ce1daa40f5"></script><script src="./assets/hero-motion.js?v=bd0712ce1daa40f5"></script><script src="./assets/sports-intro.js?v=bd0712ce1daa40f5"></script><script src="./assets/sports-gallery.js?v=bd0712ce1daa40f5"></script><script type="module" src="./assets/sports-stats.js?v=bd0712ce1daa40f5"></script><script type="module" src="./assets/featured-matches.js?v=bd0712ce1daa40f5"></script><script src="./assets/blog-rail.js?v=bd0712ce1daa40f5"></script><script src="./assets/mobile-motion.js?v=bd0712ce1daa40f5"></script><script src="./assets/contact-footer.js?v=bd0712ce1daa40f5"></script></body></html>
+<canvas class="noise-overlay" width="3420" height="1934"></canvas><script>(function(){const menu=document.querySelector('.nav__menu-btn');function sync(){const open=menu.classList.contains('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة')}new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});})();</script><script src="./assets/about-devices.js?v=715fc934bd0fcc45"></script><script src="./assets/about-video.js?v=715fc934bd0fcc45"></script><script>(function(){if(window.smMotion.matches){document.querySelector('.sm-journey__frame')?.removeAttribute('data-speed')}const visual=document.querySelector('.sm-journey__visual');if(!visual)return;if(!('IntersectionObserver' in window)){visual.classList.add('is-visible');return}const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){visual.classList.add('is-visible');observer.disconnect()}},{threshold:.2});observer.observe(visual)})();</script><script src="./assets/about-motion.js?v=715fc934bd0fcc45"></script><script src="./assets/server-counters.js?v=715fc934bd0fcc45"></script><script src="./assets/server-reveal.js?v=715fc934bd0fcc45"></script><script src="./assets/path-section.js?v=715fc934bd0fcc45"></script><script src="./assets/hero-motion.js?v=715fc934bd0fcc45"></script><script src="./assets/sports-intro.js?v=715fc934bd0fcc45"></script><script src="./assets/sports-gallery.js?v=715fc934bd0fcc45"></script><script type="module" src="./assets/sports-stats.js?v=715fc934bd0fcc45"></script><script type="module" src="./assets/featured-matches.js?v=715fc934bd0fcc45"></script><script src="./assets/blog-rail.js?v=715fc934bd0fcc45"></script><script src="./assets/mobile-motion.js?v=715fc934bd0fcc45"></script><script src="./assets/contact-footer.js?v=715fc934bd0fcc45"></script></body></html>

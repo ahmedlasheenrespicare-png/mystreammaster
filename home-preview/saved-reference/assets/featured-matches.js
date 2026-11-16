@@ -1,6 +1,6 @@
 /* The same scoreboard proxy, parser, leagues and Cairo-day filtering as the homepage. */
-import {LEAGUES,dayInZone,dayLabel,shiftDay,kickoff,scoreboardUrl,readScoreboardResponse,matchesForDay,hasCompleteScore} from './matches.js?v=bd0712ce1daa40f5';
-import {arabicTeamName} from './team-names-ar.js?v=bd0712ce1daa40f5';
+import {LEAGUES,dayInZone,dayLabel,shiftDay,kickoff,scoreboardUrl,readScoreboardResponse,matchesForDay,hasCompleteScore} from './matches.js?v=715fc934bd0fcc45';
+import {arabicTeamName} from './team-names-ar.js?v=715fc934bd0fcc45';
 const root=document.querySelector('.sm-matches');
 if(root){
  const tabs=Array.from(root.querySelectorAll('[data-day]')),rail=root.querySelector('.sm-matches__rail'),status=root.querySelector('.sm-matches__status'),retry=root.querySelector('.sm-matches__retry'),dateLabel=root.querySelector('.sm-matches__date'),arrows=root.querySelector('.sm-matches__arrows');
@@ -23,8 +23,25 @@ if(root){
   teams.append(side(match.home),center,side(match.away));
   const bottom=text('div','sm-match__time','');
   bottom.append(text('span',match.state==='live'?'is-live':'',match.state==='live'?match.detail:match.state==='finished'?'النتيجة النهائية':match.state==='other'?match.detail:'موعد البداية'),text('span','',kickoff(match.date,zone)+' · القاهرة'));
-  card.append(art,number,top,teams,bottom);return card;
+  const timing=text('div','sm-match__timing','');
+  if(match.state==='scheduled'){
+   timing.dataset.kickoff=match.date;
+   timing.append(text('span','sm-match__timing-label','الوقت المتبقي'),text('div','sm-match__countdown',''));
+   updateCountdown(timing,Date.now());
+  }else if(match.state==='live'){
+   timing.append(text('span','sm-match__timing-label','وقت المباراة'),text('span','sm-match__live-clock',match.detail||'مباشر'));
+  }else timing.hidden=true;
+  card.append(art,number,top,teams,timing,bottom);return card;
  }
+ function updateCountdown(timing,now){
+  const remaining=Date.parse(timing.dataset.kickoff)-now,box=timing.querySelector('.sm-match__countdown');
+  if(!Number.isFinite(remaining)||remaining<=0){box.textContent='بانتظار تأكيد البداية';return}
+  const total=Math.floor(remaining/1000),days=Math.floor(total/86400);
+  const units=[...(days?[['أيام',days]]:[]),['ساعات',Math.floor(total%86400/3600)],['دقائق',Math.floor(total%3600/60)],['ثوانٍ',total%60]];
+  const digits=n=>String(n).padStart(2,'0').replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[Number(d)]);
+  box.replaceChildren(...units.map(([label,value])=>{const cell=text('span','sm-match__countdown-cell','');cell.append(text('b','',digits(value)),text('small','',label));return cell}));
+ }
+ function tick(){if(!visible||document.hidden)return;const now=Date.now();rail.querySelectorAll('[data-kickoff]').forEach(el=>updateCountdown(el,now))}
  async function load(day,force=false,onProgress){
   const saved=cache.get(day);if(!force&&saved&&Date.now()-saved.loadedAt<60000){onProgress(saved,true);return saved}
   const existing=pending.get(day);
@@ -83,7 +100,9 @@ if(root){
  root.querySelectorAll('[data-direction]').forEach(button=>button.addEventListener('click',()=>{const card=rail.querySelector('.sm-match');if(!card)return;const distance=card.getBoundingClientRect().width+(parseFloat(getComputedStyle(rail).gap)||0);rail.scrollBy({left:button.dataset.direction==='next'?-distance:distance,behavior:window.smMotion.matches?'auto':'smooth'})}));
  rail.addEventListener('scroll',updateArrows,{passive:true});window.addEventListener('resize',updateArrows);
  if('IntersectionObserver' in window)new IntersectionObserver(entries=>{const was=visible;visible=entries.some(e=>e.isIntersecting);if(visible&&!was)render()},{rootMargin:'200px'}).observe(root);else{visible=true;render()}
+ setInterval(tick,1000);
  setInterval(()=>{if(visible&&!document.hidden)render(true)},60000);
+ document.addEventListener('visibilitychange',tick);
  if(location.hash==='#featured-matches'){
   let moved=false;
   const cancel=()=>{moved=true};

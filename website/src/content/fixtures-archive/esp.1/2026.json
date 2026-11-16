@@ -2662,6 +2662,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261129&limit=500"
       },
       "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401882792",
+      "date": "2026-11-30T20:00:00.000Z",
+      "home": {
+        "id": "88",
+        "name": "Espanyol"
+      },
+      "away": {
+        "id": "2922",
+        "name": "Getafe"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261130&limit=500"
+      },
+      "fetchedAt": "2026-11-16T11:20:43.500Z"
     }
   ]
 }

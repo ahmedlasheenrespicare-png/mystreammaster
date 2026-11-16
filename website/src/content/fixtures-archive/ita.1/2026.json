@@ -4412,6 +4412,56 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261129&limit=500"
       },
       "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401875095",
+      "date": "2026-11-30T17:30:00.000Z",
+      "home": {
+        "id": "113",
+        "name": "Lecce"
+      },
+      "away": {
+        "id": "105",
+        "name": "Atalanta"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261130&limit=500"
+      },
+      "fetchedAt": "2026-11-16T11:20:43.500Z"
+    },
+    {
+      "id": "401875019",
+      "date": "2026-11-30T19:45:00.000Z",
+      "home": {
+        "id": "2925",
+        "name": "Cagliari"
+      },
+      "away": {
+        "id": "103",
+        "name": "AC Milan"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261130&limit=500"
+      },
+      "fetchedAt": "2026-11-16T11:20:43.500Z"
     }
   ]
 }

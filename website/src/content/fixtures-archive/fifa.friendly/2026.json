@@ -2540,10 +2540,10 @@
         "name": "Eswatini"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
       "statistics": null,
       "source": {
@@ -2551,7 +2551,7 @@
         "leagueId": "fifa.friendly",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.friendly/scoreboard?dates=20261115&limit=500"
       },
-      "fetchedAt": "2026-11-11T10:59:20.242Z"
+      "fetchedAt": "2026-11-16T11:20:43.500Z"
     },
     {
       "id": "401914292",

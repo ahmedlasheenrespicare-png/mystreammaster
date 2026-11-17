@@ -6,8 +6,8 @@ import { createHash } from 'node:crypto';
 // Hash the complete reference dependency graph, and use the same version on
 // entry points, imported modules and the fallback snapshot. Normalize existing
 // versions first so repeated builds are stable.
-const entries = ['cinema-showcase.js','cinema-showcase.css','main-D5MQsYQ6.js','motion-settings.js','hero-motion.js','about-motion.js','about-devices.js','about-video.js','path-section.js','server-reveal.js','server-counters.js','sports-intro.js','sports-gallery.js','sports-stats.js','featured-matches.js','blog-rail.js','mobile-motion.js','contact-footer.js'];
-const modules = ['standings.js','fixtures-archive.js','leader-logo.js','matches.js','scoreboard-incidents.js','team-names-ar.js','standings-snapshot.json'];
+const entries = ['league-panels.js','league-panels.css','cinema-showcase.js','cinema-showcase.css','main-D5MQsYQ6.js','motion-settings.js','hero-motion.js','about-motion.js','about-devices.js','about-video.js','path-section.js','server-reveal.js','server-counters.js','sports-intro.js','sports-gallery.js','sports-stats.js','featured-matches.js','blog-rail.js','mobile-motion.js','contact-footer.js'];
+const modules = ['standings.js','fixtures-archive.js','leader-logo.js','matches.js','scoreboard-incidents.js','team-names-ar.js','standings-snapshot.json','league-archive-eng.1.json','league-archive-esp.1.json','league-archive-ita.1.json','league-archive-ger.1.json','league-archive-fra.1.json','league-archive-egy.1.json','league-archive-uefa.champions.json'];
 const images = ['hero-video.mp4','hero-video-poster.jpg','cinema-1.jpg','cinema-2.jpg','cinema-3.jpg','cinema-4.jpg','cinema-5.jpg','path-sport.jpg','path-cinema.jpg','path-value.jpg','path-sport-2.jpg','path-cinema-2.jpg','path-value-2.jpg','path-sport-3.jpg','path-sport-4.jpg','path-cinema-3.jpg','path-cinema-4.jpg','path-value-3.jpg','path-value-4.jpg'];
 const names = [...entries, ...modules, ...images];
 const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -29,7 +29,7 @@ export async function versionReferenceAssets(reference) {
   for (const [name, data] of contents) digest.update(name).update(data);
   const hash = digest.digest('hex').slice(0, 16);
   await fs.writeFile(htmlPath, version(html, [...entries,...images], hash));
-  for (const name of ['sports-stats.js', 'featured-matches.js', 'matches.js']) {
+  for (const name of ['sports-stats.js', 'featured-matches.js', 'matches.js', 'league-panels.js']) {
     await fs.writeFile(path.join(reference, 'assets', name), version(contents.get(name), modules, hash));
   }
   return hash;

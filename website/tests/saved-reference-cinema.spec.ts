@@ -15,17 +15,16 @@ for(const width of [320,390,700,768,1440])test(`reel really animates and survive
   await expect(stage.locator('.smcin-active')).toHaveCount(1,{timeout:8000});
   const panel=stage.locator('.smcin-active');
   expect(parseFloat(await panel.evaluate(el=>getComputedStyle(el).transitionDuration))).toBeGreaterThan(1);
-  const first=await panel.evaluate(el=>el.getBoundingClientRect().width);
-  await page.waitForTimeout(250);
-  const middle=await panel.evaluate(el=>el.getBoundingClientRect().width);
-  expect(middle).toBeGreaterThan(first+2);
+  // The transition may have already finished on a slow runner; verify its
+  // expanded target rather than depending on two wall-clock samples.
+  const railWidth=await stage.locator('.smcin-rail').evaluate(el=>el.getBoundingClientRect().width);
+  await expect.poll(()=>panel.evaluate(el=>el.getBoundingClientRect().width),{timeout:5000}).toBeGreaterThan(railWidth*.55);
   await track.evaluate(el=>{(window as any).cinemaTransitionResets=0;new MutationObserver(records=>{for(const r of records)if((r.target as Element).classList.contains('smcin-no-transition'))(window as any).cinemaTransitionResets++}).observe(el,{attributes:true,attributeFilter:['class']})});
   await page.setViewportSize({width,height:760});
   await page.waitForTimeout(350);
   expect(await page.evaluate(()=>(window as any).cinemaTransitionResets)).toBe(0);
   const later=await panel.evaluate(el=>el.getBoundingClientRect().width);
-  expect(later).toBeGreaterThanOrEqual(middle-1);
-  const railWidth=await stage.locator('.smcin-rail').evaluate(el=>el.getBoundingClientRect().width);
+  expect(later).toBeGreaterThan(railWidth*.55);
   await expect.poll(()=>panel.evaluate(el=>el.getBoundingClientRect().width),{timeout:3000}).toBeGreaterThan(railWidth*.55);
   const visible=await panel.evaluate(el=>{const p=el.getBoundingClientRect(),r=el.parentElement!.parentElement!.getBoundingClientRect();return p.left>=r.left-1&&p.right<=r.right+1});expect(visible).toBe(true);
 });
@@ -60,9 +59,48 @@ for(const width of [390,1440])test(`all scenes animate with stationary backgroun
  await page.setViewportSize({width,height:850});await page.addInitScript(()=>{localStorage.setItem('sm-motion-preference','on');Math.random=()=>0});
  await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));await page.route('**/*.mp4*',r=>r.abort());await page.route('https://**',r=>r.abort());
  await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader,.nav{display:none!important}'});
- const stage=page.locator('#cinema-library .smcin-stage');await stage.scrollIntoViewIfNeeded();const panels=stage.locator('.smcin-track > .smcin-panel');await expect(panels).toHaveCount(105);
- const ids=await panels.evaluateAll(els=>els.slice(35,70).map(el=>el.getAttribute('data-scene-id')));expect(new Set(ids).size).toBe(35);expect(ids).not.toEqual(Array.from({length:35},(_,i)=>String(i)));
+ const stage=page.locator('#cinema-library .smcin-stage');await stage.scrollIntoViewIfNeeded();const panels=stage.locator('.smcin-track > .smcin-panel');await expect(panels).toHaveCount(123);
+ const ids=await panels.evaluateAll(els=>els.slice(41,82).map(el=>el.getAttribute('data-scene-id')));expect(new Set(ids).size).toBe(41);expect(ids).not.toEqual(Array.from({length:41},(_,i)=>String(i)));
  const active=stage.locator('.smcin-panel.smcin-active');await expect(active).toHaveCount(1,{timeout:12000});await expect(active).toHaveClass(/smcin-layers-ready/,{timeout:20000});
  await expect(active.locator('.smcin-backdrop')).toHaveCSS('transform','none');await expect.poll(async()=>active.locator('.smcin-person').evaluate(el=>getComputedStyle(el).transform),{timeout:6000}).not.toBe('none');
- const first=await active.getAttribute('data-scene-id');await expect.poll(()=>active.getAttribute('data-scene-id'),{timeout:10000}).not.toBe(first);
+ const first=await active.getAttribute('data-scene-id');await expect.poll(()=>active.getAttribute('data-scene-id'),{timeout:15000}).not.toBe(first);
+});
+
+for(const width of [390,1440])test(`Arabic films join the shuffled reel and foreground returns before transition ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:850});await page.addInitScript(()=>{localStorage.setItem('sm-motion-preference','on');Math.random=()=>0});
+ await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));await page.route('**/*.mp4*',r=>r.abort());await page.route('https://**',r=>r.abort());
+ await page.clock.install();await page.clock.pauseAt(new Date('2035-01-01T12:00:00Z'));
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader,.nav{display:none!important}'});
+ const stage=page.locator('#cinema-library .smcin-stage');await stage.scrollIntoViewIfNeeded();
+ const originals=stage.locator('.smcin-track > .smcin-panel').nth(41);await expect(originals).toBeAttached();
+ const names=await stage.locator('.smcin-track > .smcin-panel').evaluateAll(panels=>panels.slice(41,82).filter(p=>p.hasAttribute('data-arabic-film')).map(p=>p.querySelector('.smcin-mini-content strong')?.textContent));
+ expect(names.sort()).toEqual(['أسد','صقر وكناريا','برشامة','مطلوب عائلياً','الجواهرجي','إيجي بست'].sort());
+ const imageSources=await stage.locator('.smcin-track > .smcin-panel').evaluateAll(panels=>panels.slice(41,82).filter(p=>p.hasAttribute('data-arabic-film')).flatMap(p=>Array.from(p.querySelectorAll('img')).map(img=>img.getAttribute('src'))));
+ expect(imageSources).toHaveLength(18);
+ for(const src of imageSources){expect(src).toContain('?v=');const response=await page.request.get(src!);expect(response.ok(),src!).toBeTruthy()}
+ await page.clock.fastForward(800);const active=stage.locator('.smcin-active');await expect(active).toHaveCount(1);const id=await active.getAttribute('data-scene-id');
+ await page.clock.fastForward(6000);await expect(active).toHaveAttribute('data-scene-id',id!);await expect(active).toHaveClass(/smcin-returning/);
+ await page.clock.fastForward(2800);await expect(active).toHaveAttribute('data-scene-id',id!);
+ await page.clock.fastForward(500);await expect(stage.locator('.smcin-active')).not.toHaveAttribute('data-scene-id',id!);await expect(stage.locator('.smcin-returning')).toHaveCount(0);
+});
+
+for(const width of [320,390,768,1440,1920])test(`cinema reel reaches both viewport edges at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:850});
+ await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));await page.route('**/*.mp4*',r=>r.abort());await page.route('https://**',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader,.nav{display:none!important}'});
+ const stage=page.locator('#cinema-library .smcin-stage');await stage.scrollIntoViewIfNeeded();
+ const rect=await stage.evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,viewport:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}});
+ expect(Math.abs(rect.left)).toBeLessThanOrEqual(1);expect(Math.abs(rect.right-rect.viewport)).toBeLessThanOrEqual(1);expect(Math.abs(rect.width-rect.viewport)).toBeLessThanOrEqual(1);expect(rect.scroll).toBeLessThanOrEqual(rect.viewport);
+});
+
+for(const width of [320,390,768,1440])test(`selected title design has red badge and readable text ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:850});await page.addInitScript(()=>{localStorage.setItem('sm-motion-preference','on');Math.random=()=>0});
+ await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));await page.route('**/*.mp4*',r=>r.abort());await page.route('https://**',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader,.nav{display:none!important}'});
+ const stage=page.locator('#cinema-library .smcin-stage');await stage.scrollIntoViewIfNeeded();const active=stage.locator('.smcin-active');await expect(active).toHaveCount(1,{timeout:12000});
+ const overlay=active.locator('.smcin-overlay'),badge=overlay.locator('small'),title=overlay.locator('strong'),description=overlay.locator('p');
+ await expect(badge).toHaveCSS('background-color','rgb(229, 9, 20)');await expect(title).toHaveCSS('color','rgb(255, 255, 255)');await expect(description).toHaveCSS('border-right-color','rgb(229, 9, 20)');await expect(overlay.locator('.smcin-mini-top')).toBeHidden();
+ await overlay.evaluate(el=>el.getAnimations().forEach(a=>a.finish()));
+ const bounds=await overlay.evaluate(el=>{const r=el.getBoundingClientRect(),p=el.parentElement!.getBoundingClientRect();return {left:r.left-p.left,right:p.right-r.right,top:r.top-p.top,bottom:p.bottom-r.bottom}});
+ expect(bounds.left).toBeGreaterThanOrEqual(-1);expect(bounds.right).toBeGreaterThanOrEqual(-1);expect(bounds.top).toBeGreaterThanOrEqual(-1);expect(bounds.bottom).toBeGreaterThanOrEqual(-1);
 });

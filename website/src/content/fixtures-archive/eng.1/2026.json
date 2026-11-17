@@ -4102,6 +4102,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261129&limit=500"
       },
       "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401879221",
+      "date": "2026-12-01T20:00:00.000Z",
+      "home": {
+        "id": "388",
+        "name": "Coventry City"
+      },
+      "away": {
+        "id": "373",
+        "name": "Ipswich Town"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261201&limit=500"
+      },
+      "fetchedAt": "2026-11-17T11:53:37.174Z"
     }
   ]
 }

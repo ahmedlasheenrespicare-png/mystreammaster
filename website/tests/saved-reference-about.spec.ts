@@ -39,7 +39,7 @@ for(const width of [320,390,768,1440])test(`about devices preserve the reference
  await page.locator('#sm-motion-setting').evaluate((el:HTMLSelectElement)=>{el.value='off';el.dispatchEvent(new Event('change',{bubbles:true}))});
  await expect(buttons.nth(0).locator('.sm-device__turn')).toHaveCSS('transition-duration','0s');
  await expect(page.locator('.sm-about .a-text.sm-about-reveal-pending')).toHaveCount(0);
- await expect(page.locator('.abt__video video')).toHaveAttribute('src',/video-streammaster-hd-1080/);
+ await expect(page.locator('.abt__video video')).toHaveAttribute('data-src',/video-streammaster-hd-1080/);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
  expect(errors).toEqual([]);await context.close();
 });

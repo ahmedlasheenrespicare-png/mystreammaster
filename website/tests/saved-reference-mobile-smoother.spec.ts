@@ -5,7 +5,7 @@ import path from 'node:path';
 // Run the actual scroll engine, with only WebGL and canvas noise removed so
 // headless CI can test scrolling independently of GPU availability.
 let source=fs.readFileSync(path.resolve('../home-preview/saved-reference/assets/main-D5MQsYQ6.js'),'utf8');
-let start=source.indexOf(',function(t){var e;const n=.0015'),end=source.indexOf(';const Ay=document.querySelectorAll',start);
+let start=source.indexOf(',function(t){var e;let smMobile='),end=source.indexOf(';const Ay=document.querySelectorAll',start);
 if(start<0||end<0)throw new Error('Reference WebGL block not found');
 source=source.slice(0,start)+source.slice(end);
 start=source.indexOf('window.addEventListener("load",()=>{My()&&function({patternSize:');end=source.indexOf('document.addEventListener("DOMContentLoaded",()=>{const t=document.title',start);
@@ -56,18 +56,25 @@ for(const mobile of [true,false]) test(`hero scrolling settles promptly with ref
  await page.route('**/main-D5MQsYQ6.js*',route=>route.fulfill({status:200,contentType:'text/javascript',body:source}));
  await page.route('https://**',route=>route.abort());
  await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
- await page.addStyleTag({content:'.loader,.nav,canvas{display:none!important}'});
+ await page.addStyleTag({content:'.nav,canvas{display:none!important}'});
+ await expect(page.locator('.loader')).toBeHidden({timeout:20000});
+ // The captured loader is already hidden, but its preload timeline still runs.
+ await expect(page.locator('.progress .number').first()).toHaveText('100%',{timeout:20000});
+ await page.waitForTimeout(2500);
  await expect(page.locator('#smooth-wrapper')).toHaveCSS('position','fixed');
  await page.evaluate(()=>window.scrollTo(0,600));
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:3000}).toBeGreaterThan(500);
  await expect.poll(()=>page.evaluate(()=>{const transform=getComputedStyle(document.querySelector('#smooth-content')!).transform;return Math.abs(scrollY+(transform==='none'?0:new DOMMatrixReadOnly(transform).m42))}),{timeout:1500}).toBeLessThan(45);
  await page.evaluate(()=>window.scrollTo(0,0));
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:3000}).toBeLessThan(10);
  await expect.poll(()=>page.evaluate(()=>{const transform=getComputedStyle(document.querySelector('#smooth-content')!).transform;return Math.abs(scrollY+(transform==='none'?0:new DOMMatrixReadOnly(transform).m42))}),{timeout:1500}).toBeLessThan(45);
  await context.close();
 });
 
 test('footer WebGL rendering and texture work are gated by visibility',()=>{
  const original=fs.readFileSync(path.resolve('../home-preview/saved-reference/assets/main-D5MQsYQ6.js'),'utf8');
- expect(original).toContain('observe(t):smFooterVisible=!0');
- expect(original).toContain('smFooterVisible&&!document.hidden&&(l(),c.needsUpdate=!0)');
- expect(original).toContain('smFooterVisible&&!document.hidden&&(c.update(),e.render(n,i))');
+ expect(original).toContain('smObserver.observe(smTarget)');
+ expect(original).toContain('!smFooterFrame&&smFooterVisible&&!document.hidden');
+ expect(original).toContain('if(smFooterFrame=0,!smFooterVisible||document.hidden)return');
+ expect(original).toContain('smUpdateTexture(),c.update(),e.render(n,i)');
 });

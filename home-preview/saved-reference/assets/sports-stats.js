@@ -1,7 +1,7 @@
 /* Same standings validation and rates calculation used by the live homepage. */
-import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=8fdf6896ee525621';
-import {standingsRates} from './fixtures-archive.js?v=8fdf6896ee525621';
-import {providerTeamLogo} from './leader-logo.js?v=8fdf6896ee525621';
+import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=33bbed29d0bd93e1';
+import {standingsRates} from './fixtures-archive.js?v=33bbed29d0bd93e1';
+import {providerTeamLogo} from './leader-logo.js?v=33bbed29d0bd93e1';
 
 const section=document.querySelector('.sm-leagues');
 if (section) {
@@ -17,8 +17,8 @@ if (section) {
       const url=providerTeamLogo({teamId:team.teamId,provider:records[ids[active]]?.table.provider,logo:null});
       if(url){const img=document.createElement('img');img.className='sm-leagues__crest';img.alt='';img.loading='lazy';img.src=url;img.addEventListener('error',()=>img.remove());title.append(img)}
       const name=document.createElement('bdi');name.dir='auto';name.textContent=team.name;title.append(name);
-    } else title.textContent=key==='goals'&&value!=null?fmt.format(value):'غير متاح';
-    box.querySelector('small').textContent=key==='leader'&&value!=null?fmt.format(value)+' نقطة':(key==='attack'||key==='defence')&&value!=null?value.toFixed(2)+' هدف/مباراة':key==='goals'&&value!=null?'هدفاً':'';
+    } else title.textContent=key==='goals'&&value!=null?fmt.format(value):'لا تتوفر بيانات';
+    box.querySelector('small').textContent=key==='leader'&&value!=null?fmt.format(value)+' نقطة':(key==='attack'||key==='defence')&&value!=null?value.toFixed(2)+' هدف/مباراة':key==='goals'&&value!=null?'هدفاً':(team&&value==null?'لا تتوفر بيانات':'');
   }
   function render(){
     const record=records[ids[active]],table=record?.table;
@@ -52,7 +52,7 @@ if (section) {
   setInterval(()=>refresh(active),120000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(active)});
   try{
-    const response=await fetch(new URL('./standings-snapshot.json?v=8fdf6896ee525621',import.meta.url));
+    const response=await fetch(new URL('./standings-snapshot.json?v=33bbed29d0bd93e1',import.meta.url));
     if(!response.ok)throw new Error('SNAPSHOT_UNAVAILABLE');
     const snapshot=await response.json();
     for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),current=records[id]?.table;if(!current||(table.season>=current.season&&Date.parse(table.fetchedAt)>Date.parse(current.fetchedAt)))records[id]={table,live:false,stale:true}}catch(_){}}

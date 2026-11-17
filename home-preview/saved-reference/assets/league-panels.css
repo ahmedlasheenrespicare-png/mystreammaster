@@ -1,0 +1,108 @@
+.sm-leagues .table-panel{background:#fff9ed;color:#392921;border:1px solid #bb8954;box-shadow:0 14px 35px #7847191a;padding:clamp(16px,2.5vw,28px);width:min(100%,850px);margin:16px auto}
+.sm-leagues .panel-head{display:flex;justify-content:space-between;gap:15px;align-items:start;margin-bottom:14px}
+.sm-leagues .panel-head h3{font-size:clamp(20px,3vw,30px);line-height:1.3;margin:0;color:#392315}
+.sm-leagues .panel-head p{font-size:12px;margin:5px 0 0;color:#8b6d56}
+.sm-leagues .close{border:1px solid #b6987d;background:transparent;color:#4d3020;padding:7px 13px;white-space:nowrap;font-size:13px}
+.sm-leagues .table-wrap{overflow:auto;max-height:360px;overscroll-behavior:contain;scrollbar-color:#b68c65 #f5e7d5}
+.sm-leagues .table-wrap:focus-visible{outline:2px solid #9a673e}
+.sm-leagues .table-panel table{border-collapse:collapse;width:100%;min-width:540px;text-align:center;font-size:13px}
+.sm-leagues .table-panel th,.sm-leagues .table-panel td{padding:11px 8px;border-bottom:1px solid #ead8c4;white-space:nowrap}
+.sm-leagues .table-panel th{position:sticky;top:0;background:#f2e4d3;font-size:11px;color:#805c3e;z-index:1}
+.sm-leagues .table-panel td:nth-child(2),.sm-leagues .table-panel th:nth-child(2){text-align:right;min-width:155px}
+.sm-leagues .table-panel td:nth-child(2){font-weight:700}
+.sm-leagues .table-panel td:last-child{font-weight:900;color:#7f3b00}
+.sm-leagues .table-note{font-size:11px;color:#806b59;line-height:1.7;margin:12px 0 0}
+.sm-leagues .empty{text-align:center;padding:35px 10px}
+.sm-leagues .match-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.sm-leagues .match-tabs button,.sm-leagues .match-retry{border:1px solid #bc9572;background:transparent;color:#603c25;padding:9px 16px;font-weight:700;min-height:42px}
+.sm-leagues .match-tabs button[aria-pressed=true]{background:#713904;color:#fff;border-color:#713904}
+.sm-leagues .match-date{font-size:12px;color:#806b59;margin:0 0 12px}
+.sm-leagues .match-list{display:grid;gap:8px;max-height:390px;overflow:auto;overscroll-behavior:contain}
+.sm-leagues .match-row{border:1px solid #e9d5bf;background:#fffdf8;display:grid;grid-template-columns:minmax(0,1fr) minmax(75px,auto) minmax(0,1fr);gap:10px;align-items:center;padding:12px}
+.sm-leagues .match-team{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;text-align:center;font-size:13px;font-weight:700}
+.sm-leagues .match-team img,.sm-leagues .match-team .crest-fallback{width:30px;height:30px;object-fit:contain;flex:none}
+.sm-leagues .match-team bdi{overflow-wrap:anywhere}
+.sm-leagues .match-score{text-align:center;font-weight:900;direction:ltr;font-size:18px}
+.sm-leagues .match-score small{display:block;direction:rtl;font-weight:400;font-size:11px;color:#856c59;margin-top:4px}
+.sm-leagues .match-status{font-size:13px;line-height:1.8;color:#795d46;margin:12px 0}
+.sm-leagues .match-retry{font-size:12px}
+.sm-leagues .match-retry[hidden]{display:none}
+.sm-leagues .leaders{display:flex;gap:7px;overflow-x:auto;padding:4px 2px 12px;scrollbar-color:#b68c65 transparent}
+.sm-leagues .leader-chip{flex:0 0 auto;max-width:230px;border:1px solid #dbc1a5;background:#f6eadb;color:#613c24;padding:8px 10px;font-size:11px;white-space:normal;text-align:right}
+.sm-leagues .leader-chip[aria-pressed=true]{background:#704521;color:white}
+.sm-leagues .team-cell{display:inline-flex;align-items:center;gap:8px;text-align:right;white-space:normal;min-width:170px}
+.sm-leagues .crest{width:24px;height:24px;object-fit:contain;flex:none}
+.sm-leagues .crest-fallback{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#e9dac9;color:#68492e;font:700 9px Tajawal;flex:none}
+.sm-leagues .table-panel .rates-table{min-width:1250px}
+.sm-leagues .table-panel .rates-table th:nth-child(2),.sm-leagues .table-panel .rates-table td:nth-child(2){text-align:center;min-width:0}
+.sm-leagues .table-panel .rates-table th:first-child,.sm-leagues .table-panel .rates-table td:first-child{text-align:right;min-width:210px}
+.sm-leagues .sort-button{border:0;background:none;color:inherit;font-weight:900;white-space:nowrap;padding:0;min-height:32px}
+.sm-leagues .sort-button small{display:block;font-size:10px;font-weight:400;direction:ltr}
+.sm-leagues .analysis-intro{font-size:12px;line-height:1.7;color:#806b59;margin:0 0 12px}
+.sm-leagues .table-panel tfoot{background:#f6eadb;font-weight:700}
+.sm-leagues .table-panel tfoot th{position:static;text-align:right}
+.sm-leagues .rates-table td:last-child{font-weight:400}
+/* Panel opens in place of the artwork, without breaking the scroll-driven gallery. */
+.sm-leagues .sm-leagues__actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;position:relative;z-index:2;max-width:100%}
+.sm-leagues .sm-leagues__actions a,.sm-leagues .sm-leagues__actions button{cursor:pointer;color:inherit;font:700 11px/1.3 SMTajawal,Tajawal,sans-serif;letter-spacing:0;border:1px solid currentColor;background:#0005;text-decoration:none;padding:6px 8px;min-height:34px;white-space:nowrap}
+.sm-leagues .sm-leagues__card:nth-child(4) .sm-leagues__actions a,.sm-leagues .sm-leagues__card:nth-child(4) .sm-leagues__actions button{background:#fff8;color:#351e18}
+.sm-leagues .sm-leagues__actions a:hover,.sm-leagues .sm-leagues__actions button:hover,.sm-leagues .sm-leagues__actions button:focus-visible{background:#fff;color:#38212c}
+.sm-leagues .sm-leagues__actions button:focus-visible,.sm-leagues .close:focus-visible,.sm-leagues .sort-button:focus-visible,.sm-leagues .match-tabs button:focus-visible{outline:3px solid #7f3b00;outline-offset:2px}
+.sm-leagues.sm-leagues--panel-open .sm-leagues__cards,.sm-leagues.sm-leagues--panel-open .sm-leagues__stats{display:none!important}
+.sm-leagues .replace-view[hidden]{display:none!important}
+.sm-leagues.sm-leagues--panel-open .sm-leagues__stage{height:100svh;min-height:0;justify-content:center;overflow:hidden}
+.sm-leagues.sm-leagues--panel-open .replace-view{display:flex;flex:1 1 auto;min-height:0;width:min(100%,1050px);align-items:stretch;justify-content:center}
+.sm-leagues .replace-view .table-panel{display:flex;flex-direction:column;min-height:0;width:min(100%,850px);margin:0;padding:clamp(10px,1.5vw,20px)}
+.sm-leagues .replace-view .table-wrap,.sm-leagues .replace-view .match-list{flex:1 1 auto;min-height:0;max-height:none}
+.sm-leagues .replace-view .table-panel>.matches-panel{display:flex;flex-direction:column;min-height:0;flex:1 1 auto}
+.sm-leagues .table-panel .panel-head h3{font:900 clamp(17px,2vw,26px)/1.3 SMTajawal,Tajawal,sans-serif}
+.sm-leagues .table-panel button{cursor:pointer;font-family:SMTajawal,Tajawal,sans-serif}
+.sm-leagues .table-panel table{display:table;max-width:none}
+.sm-leagues .table-panel .table-note{margin:7px 0 0;flex:none}
+.sm-leagues .table-panel .panel-head{flex:none;margin-bottom:8px}
+.sm-leagues .table-panel .leaders{flex:none}
+.sm-leagues .table-panel .team-cell{vertical-align:middle}
+.sm-leagues .table-panel .match-tabs{flex:none}
+.sm-leagues .table-panel .match-status{flex:none}
+@media(max-width:700px){.sm-leagues .sm-leagues__actions{gap:3px}.sm-leagues .sm-leagues__actions a,.sm-leagues .sm-leagues__actions button{font-size:10px;min-height:30px;padding:4px 6px}.sm-leagues .sm-leagues__card .sm-leagues__image{inset:24% 25% 34%}.sm-leagues.sm-leagues--panel-open .sm-leagues__stage{padding:62px 4vw 10px;gap:5px}.sm-leagues.sm-leagues--panel-open .sm-leagues__top h2{font-size:clamp(24px,7vw,35px)}.sm-leagues.sm-leagues--panel-open .sm-leagues__top>img,.sm-leagues.sm-leagues--panel-open .sm-leagues__hint{display:none}.sm-leagues .table-panel .match-row{gap:5px;padding:10px 5px;grid-template-columns:minmax(0,1fr) 65px minmax(0,1fr)}.sm-leagues .table-panel .match-team{font-size:11px;flex-direction:column;gap:4px}.sm-leagues .table-panel .match-score{font-size:15px}.sm-leagues .table-panel .match-tabs button{flex:1;padding:8px}}
+@media(max-height:650px){.sm-leagues.sm-leagues--panel-open .sm-leagues__stage{padding-top:50px;gap:4px}.sm-leagues.sm-leagues--panel-open .sm-leagues__top>img,.sm-leagues.sm-leagues--panel-open .sm-leagues__hint{display:none}.sm-leagues.sm-leagues--panel-open .sm-leagues__top h2{font-size:25px}.sm-leagues .table-panel .leaders{max-height:40px}}
+.sm-leagues.sm-leagues--panel-open .sm-leagues__top,.sm-leagues.sm-leagues--panel-open .sm-leagues__mini,.sm-leagues.sm-leagues--panel-open .sm-leagues__hint{flex-shrink:0}
+/* Adopted competition card design. */
+.sm-leagues.is-ready .sm-leagues__card:not([hidden]){animation:smLeagueAdoptedRise 1s cubic-bezier(.2,.75,.25,1) both}
+.sm-leagues.is-ready .sm-leagues__card:not([hidden]) h3{animation:none;margin-top:34px}
+@keyframes smLeagueAdoptedRise{from{opacity:0;transform:translateY(60px) scale(.82)}to{opacity:1;transform:translateY(0) scale(1)}}
+:where(html[data-motion-reduced="true"]) .sm-leagues.is-ready .sm-leagues__card:not([hidden]){animation:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion-reduced="false"]) .sm-leagues.is-ready .sm-leagues__card:not([hidden]){animation:none}}
+.sm-leagues.is-ready .sm-leagues__neighbour:not([hidden]){position:absolute;top:0;bottom:0;width:100%;display:flex;flex-direction:column;align-items:center;padding:18px;border:1px solid #aa6b35;border-radius:0;background:#f5dab0!important;color:#774420!important;transform:scale(.92);cursor:pointer;font:700 clamp(16px,1.7vw,23px)/1.4 SMTajawal,Tajawal,sans-serif;transition:background-color .25s,transform .25s}
+.sm-leagues.is-ready .sm-leagues__neighbour:hover,.sm-leagues.is-ready .sm-leagues__neighbour:focus-visible{background:#f9e5c6!important;transform:scale(.96)}
+.sm-leagues__neighbour.is-previous{right:calc(100% + 16px)}.sm-leagues__neighbour.is-next{left:calc(100% + 16px)}
+.sm-leagues.is-ready .sm-leagues__neighbour .sm-leagues__image{position:absolute;inset:23% 24%;background:transparent;opacity:.8;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);min-width:0;min-height:0}
+.sm-leagues.is-ready .sm-leagues__neighbour .sm-leagues__image img{min-width:0;min-height:0;max-width:100%;max-height:100%;object-fit:contain}
+.sm-leagues.is-ready .sm-leagues__neighbour-title{position:relative;z-index:1}
+.sm-leagues.is-ready .sm-leagues__neighbour:after{content:'عرض البطولة ↗';position:absolute;bottom:20px;font:700 12px SMTajawal,Tajawal,sans-serif;opacity:.8}
+.sm-leagues .sm-leagues__mini button[aria-pressed=true]{outline:none;background:#fff2d6;color:#68360d;box-shadow:inset 0 0 0 2px #9a571c,0 3px 0 #b77c41;border-radius:8px}
+.sm-leagues .sm-leagues__mini button[aria-pressed=true] .sm-leagues__image{background:#f5d9a7}
+.sm-leagues .sm-leagues__stat{--stat-ink:#875a21;--stat-edge:#b97b08;--icon-color:#ba7b08}
+.sm-leagues .sm-leagues__stat[data-stat=attack]{--stat-ink:#9b4234;--stat-edge:#c85f4c;--icon-color:#d05242}
+.sm-leagues .sm-leagues__stat[data-stat=defence]{--stat-ink:#286886;--stat-edge:#4589a7;--icon-color:#287ea9}
+.sm-leagues .sm-leagues__stat[data-stat=goals]{--stat-ink:#347044;--stat-edge:#639665;--icon-color:#398c58}
+.sm-leagues .sm-leagues__stat .league-stat-icon{--icon-detail:#fff;display:block;flex:none;width:26px;height:26px;color:var(--icon-color);margin:0 auto 7px}
+.sm-leagues .sm-leagues__stat small:not(:empty),.sm-leagues .sm-leagues__stat[data-stat=goals] strong{display:inline-flex;align-items:center;justify-content:center;min-height:24px;margin-top:4px;padding:3px 9px;color:var(--stat-ink);border-inline:1.5px solid var(--stat-edge);font-weight:800;line-height:1.15;white-space:nowrap}
+.sm-leagues .sm-leagues__stat[data-stat=goals] small:not(:empty){border:0;padding:0;min-height:0;color:#713904}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__image{inset:37% 20% 21%;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);min-width:0;min-height:0}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__image img{display:block;width:85%;height:85%;max-width:100%;max-height:100%;min-width:0;min-height:0;object-fit:contain;object-position:center}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions{position:absolute;inset:0;transform:none;width:100%;max-width:none;display:flex;flex-wrap:nowrap;align-items:flex-end;justify-content:center;gap:4px;padding:0 5px 10px;pointer-events:none;z-index:4}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a{position:absolute;top:8px;left:8px;transform:none;pointer-events:auto;border:0;border-radius:0;background:transparent;box-shadow:none}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a .sm-arrow-icon{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;margin-inline-start:4px;border:1px solid currentColor;border-radius:50%;vertical-align:middle;transition:transform .2s,background-color .2s}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a .sm-arrow-icon svg{width:12px;height:12px}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a:hover,.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a:focus-visible{background:transparent;color:inherit}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a:hover .sm-arrow-icon,.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a:focus-visible .sm-arrow-icon{transform:translate(2px,-2px);background:#ffffff30}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions button[data-view]{position:relative;right:auto;bottom:auto;display:inline-flex;align-items:center;justify-content:center;width:auto;min-width:0;min-height:30px;padding:3px 7px;font:800 10px/1.15 SMTajawal,Tajawal,sans-serif;gap:3px;white-space:nowrap;pointer-events:auto;background:var(--extra-pale);color:var(--extra-color);border:1px solid var(--extra-color);border-radius:999px;transition:filter .2s,transform .2s}
+.sm-leagues .sm-leagues__actions button[data-view=standings]{--extra-color:#9b5609;--extra-pale:#fff2d7}.sm-leagues .sm-leagues__actions button[data-view=rates]{--extra-color:#176b81;--extra-pale:#e2f3f4}.sm-leagues .sm-leagues__actions button[data-view=matches]{--extra-color:#2c754b;--extra-pale:#e6f3e3}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions button[data-view]::before{content:'';position:absolute;inset:-7px 0}
+.sm-leagues .sm-leagues__actions button[data-view] .action-icon{width:13px;height:13px;flex:none;color:var(--extra-color)}.sm-leagues .sm-leagues__actions .icon-solid{display:none}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions button[data-view]:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions button[data-view][aria-expanded=true]{background:var(--extra-color);color:#fff;box-shadow:0 0 0 2px #fff}.sm-leagues .sm-leagues__actions button[data-view][aria-expanded=true] .action-icon{color:#fff}
+.sm-leagues .panel-head .active-view-indicator{display:inline-flex;border-radius:999px;padding:4px 10px;margin-bottom:5px;color:#fff;background:#275c3c;font:800 11px/1.3 SMTajawal,Tajawal,sans-serif}.sm-leagues .panel-head .active-view-indicator[data-kind=standings]{background:#71400e}.sm-leagues .panel-head .active-view-indicator[data-kind=rates]{background:#205d71}
+@media(max-width:700px){.sm-leagues.is-ready .sm-leagues__neighbour:not([hidden]){width:70%;padding:8px;font-size:clamp(10px,3vw,14px)}.sm-leagues__neighbour.is-previous{right:calc(100% + 7px)}.sm-leagues__neighbour.is-next{left:calc(100% + 7px)}.sm-leagues.is-ready .sm-leagues__neighbour:after{font-size:9px;bottom:9px}.sm-leagues .sm-leagues__stat .league-stat-icon{width:23px;height:23px;margin-bottom:4px}.sm-leagues .sm-leagues__stat small:not(:empty),.sm-leagues .sm-leagues__stat[data-stat=goals] strong{min-height:23px;padding:3px 7px;font-size:10px;margin-top:3px}.sm-leagues .sm-leagues__stat[data-stat=goals] small:not(:empty){padding:0;min-height:0}.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions{gap:3px;padding:0 3px 6px}.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a{top:6px;left:6px;font-size:9px;padding:4px 6px;min-height:27px}.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions button[data-view]{padding:3px 5px;font-size:9px;min-height:30px;gap:2px}.sm-leagues .sm-leagues__actions button[data-view] .action-icon{width:12px;height:12px}}
+@media(prefers-reduced-motion:reduce){.sm-leagues.is-ready .sm-leagues__neighbour,.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a .sm-arrow-icon{transition:none}}

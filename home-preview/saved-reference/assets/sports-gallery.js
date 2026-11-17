@@ -47,7 +47,7 @@
   raf=0; const rect=section.getBoundingClientRect(); const span=Math.max(1,section.offsetHeight-stage.offsetHeight);
   const offset=Math.max(0,Math.min(span,-rect.top));
   stage.style.transform='translate3d(0,'+offset.toFixed(2)+'px,0)';
-  select(Math.min(cards.length-1,Math.floor((offset/span)*cards.length)));
+  if(!section.classList.contains('sm-leagues--panel-open'))select(Math.min(cards.length-1,Math.floor((offset/span)*cards.length)));
   const changed=lastTop===null||Math.abs(rect.top-lastTop)>.15;lastTop=rect.top;
   if(changed)frames=120;else frames--;
   if(frames>0 && rect.top<innerHeight && rect.bottom>0)raf=requestAnimationFrame(update);
@@ -58,7 +58,8 @@
   const top=window.scrollY+section.getBoundingClientRect().top+span*((i+.15)/cards.length);
   window.scrollTo({top,behavior:motion.matches?'auto':'smooth'});schedule();
  }
- buttons.forEach((button,i)=>button.addEventListener('click',()=>go(i)));
+ buttons.forEach((button,i)=>button.addEventListener('click',()=>section.classList.contains('sm-leagues--panel-open')?select(i):go(i)));
+ window.smLeagueGallery={select,go,getSelected:()=>selected};
  strip.addEventListener('wheel',event=>{
   if(event.ctrlKey||event.metaKey||Math.abs(event.deltaX)>=Math.abs(event.deltaY)||!event.deltaY)return;
   const max=strip.scrollWidth-strip.clientWidth;if(max<=0)return;

@@ -18,17 +18,9 @@ for(const width of [320,390,768,1024,1200,1440])test(`server cards retain their 
   if(width<=700 && code==='istar'){const heading=card.locator('.sm-server__name');await expect(heading).toHaveCSS('white-space','nowrap');expect(await heading.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);}
   await expect(card.locator('.sm-server__shade')).toHaveCount(0);await expect(logo).toHaveAttribute('src',new RegExp(code==='x'?'xtv-mark':`${code}-ticket`));
   await expect(logo).toHaveCSS('opacity','1');await logo.scrollIntoViewIfNeeded();await expect.poll(()=>logo.evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBe(true);
-  if(width<1200){
-   const ordered=await card.evaluate(el=>{const image=el.querySelector('.sm-server__image')!.getBoundingClientRect(),name=el.querySelector('.sm-server__name')!.getBoundingClientRect(),label=el.querySelector('.sm-server__top')!.getBoundingClientRect();return image.top<name.top&&name.bottom<=label.top+1});
-   expect(ordered).toBe(true);
-  }
-  if(width>=1200){
-   const imageBox=await logo.boundingBox(),specBox=await card.locator('.sm-server__specs').boundingBox();
-   expect(imageBox!.x+imageBox!.width).toBeLessThanOrEqual(specBox!.x+1);
-   const round=await card.locator('.sm-server__round').boundingBox(),actions=await card.locator('.sm-server__actions').boundingBox();
-   const overlap=round!.x<actions!.x+actions!.width&&round!.x+round!.width>actions!.x&&round!.y<actions!.y+actions!.height&&round!.y+round!.height>actions!.y;
-   expect(overlap).toBe(false);
-  }
+  const positions=await card.evaluate(el=>{const box=(sel:string)=>el.querySelector(sel)!.getBoundingClientRect();const logo=box('.sm-server__image'),name=box('.sm-server__name'),price=box('.sm-server__price'),label=box('.sm-server__label'),spec=box('.sm-server__specs');const overlaps=(a:DOMRect,b:DOMRect)=>a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1;return {clear:!overlaps(logo,label)&&!overlaps(logo,name)&&!overlaps(logo,price)&&!overlaps(name,price),order:label.bottom<=name.top+1&&name.bottom<=spec.top+1&&price.bottom<=spec.top+1}});
+  expect(positions.clear).toBe(true);expect(positions.order).toBe(true);
+  if(width>=1024){const round=await card.locator('.sm-server__round').boundingBox(),actions=await card.locator('.sm-server__actions').boundingBox();const overlap=round!.x<actions!.x+actions!.width&&round!.x+round!.width>actions!.x&&round!.y<actions!.y+actions!.height&&round!.y+round!.height>actions!.y;expect(overlap).toBe(false);await expect(card.locator('.sm-server__round .sm-arrow-icon')).toHaveCSS('width','27px')}
   for(const value of await card.locator('.sm-server__specs dd').all())expect(await value.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
   {
    const difference=await card.evaluate(el=>{const counts=el.querySelectorAll('.sm-server__count');return Math.abs(counts[0].getBoundingClientRect().top-counts[1].getBoundingClientRect().top)});

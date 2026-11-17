@@ -12,6 +12,8 @@
   button.setAttribute('aria-label',failed?'فتح فيديو ستريم ماستر مباشرة':playing?'إيقاف فيديو ستريم ماستر':'تشغيل فيديو ستريم ماستر');
  }
  function attempt(){
+  // Do not fetch or decode this off-screen video until it is needed.
+  if(!video.getAttribute('src')&&video.dataset.src)video.src=video.dataset.src;
   video.muted=true;
   const result=video.play();
   if(result&&typeof result.catch==='function')result.catch(()=>{update()});

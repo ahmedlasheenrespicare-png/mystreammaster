@@ -30,6 +30,7 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(html.includes(`sports-stats.js?v=${first}`));
     assert.ok(html.includes(`featured-matches.js?v=${first}`));
     assert.ok(html.includes(`mobile-motion.js?v=${first}`));
+    assert.ok(html.includes(`hero-video-mobile.mp4?v=${first}`));
     const stats=await fs.readFile(path.join(dir,'assets/sports-stats.js'),'utf8');
     assert.ok(stats.includes(`standings.js?v=${first}`));
     assert.ok(stats.includes(`standings-snapshot.json?v=${first}`));
@@ -43,7 +44,10 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(!html.includes(`sports-stats.js?v=${first}`));
     assert.ok(html.includes(`path-sport.jpg?v=${next}`));
     await fs.appendFile(path.join(dir,'assets/path-sport.jpg'),Buffer.from([0]));
-    assert.notEqual(await versionReferenceAssets(dir),next,'image changes invalidate the reference cache');
+    const imageHash=await versionReferenceAssets(dir);
+    assert.notEqual(imageHash,next,'image changes invalidate the reference cache');
+    await fs.appendFile(path.join(dir,'assets/hero-video-mobile.mp4'),Buffer.from([0]));
+    assert.notEqual(await versionReferenceAssets(dir),imageHash,'mobile video changes invalidate the reference cache');
   } finally { await fs.rm(dir,{recursive:true,force:true}) }
 });
 

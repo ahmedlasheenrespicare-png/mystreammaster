@@ -75,7 +75,7 @@ for(const width of [390,1440])test(`Arabic films join the shuffled reel and fore
  const originals=stage.locator('.smcin-track > .smcin-panel').nth(41);await expect(originals).toBeAttached();
  const names=await stage.locator('.smcin-track > .smcin-panel').evaluateAll(panels=>panels.slice(41,82).filter(p=>p.hasAttribute('data-arabic-film')).map(p=>p.querySelector('.smcin-mini-content strong')?.textContent));
  expect(names.sort()).toEqual(['أسد','صقر وكناريا','برشامة','مطلوب عائلياً','الجواهرجي','إيجي بست'].sort());
- const imageSources=await stage.locator('.smcin-track > .smcin-panel').evaluateAll(panels=>panels.slice(41,82).filter(p=>p.hasAttribute('data-arabic-film')).flatMap(p=>Array.from(p.querySelectorAll('img')).map(img=>img.getAttribute('src'))));
+ const imageSources=await stage.locator('.smcin-track > .smcin-panel').evaluateAll(panels=>panels.slice(41,82).filter(p=>p.hasAttribute('data-arabic-film')).flatMap(p=>Array.from(p.querySelectorAll('img')).map(img=>img.getAttribute('src')||img.getAttribute('data-src'))));
  expect(imageSources).toHaveLength(18);
  for(const src of imageSources){expect(src).toContain('?v=');const response=await page.request.get(src!);expect(response.ok(),src!).toBeTruthy()}
  await page.clock.fastForward(800);const active=stage.locator('.smcin-active');await expect(active).toHaveCount(1);const id=await active.getAttribute('data-scene-id');

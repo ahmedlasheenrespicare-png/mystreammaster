@@ -37,6 +37,10 @@ const NOINDEX = new Set([
   'home-preview/inactive-league-options/index.html', // معاينة خيارات التصميم غير مفهرسة
   'home-preview/standings-options/index.html', // معاينة خيارات الترتيب غير مفهرسة
   'home-preview/cinema-library-preview/index.html', // معاينة مكتبة الأفلام والمسلسلات غير مفهرسة
+  'home-preview/arabic-films-preview/index.html', // معاينة الأفلام العربية غير مفهرسة
+  'home-preview/cinema-frame-preview/index.html', // خيارات إطار المكتبة غير مفهرسة
+  'home-preview/cinema-frame-preview/reel.html', // مشغل خيارات الإطار غير مفهرس
+  'home-preview/hero-flower-preview/index.html', // تجربة فيديو الهيرو خلف الوردة غير مفهرسة
   'home-preview/hero-video-preview/index.html', // معاينة فيديو الهيرو غير مفهرسة
   'offline.html',
   'live-free.html',

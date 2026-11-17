@@ -36,6 +36,8 @@ const NOINDEX = new Set([
   'home-preview/saved-reference/index.html', // معاينة مستقلة قيد التطوير وليست صفحة مفهرسة
   'home-preview/inactive-league-options/index.html', // معاينة خيارات التصميم غير مفهرسة
   'home-preview/standings-options/index.html', // معاينة خيارات الترتيب غير مفهرسة
+  'home-preview/cinema-library-preview/index.html', // معاينة مكتبة الأفلام والمسلسلات غير مفهرسة
+  'home-preview/hero-video-preview/index.html', // معاينة فيديو الهيرو غير مفهرسة
   'offline.html',
   'live-free.html',
   'player.html',

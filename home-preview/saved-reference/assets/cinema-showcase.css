@@ -86,3 +86,13 @@
 
 /* A vector avoids platform emoji rendering changing the flower color on phones. */
 .sm-cinema .smcin-mini-top i{display:inline-flex;flex:none;width:12px;height:12px;color:#f0c578}.sm-cinema .smcin-mini-top i svg{display:block;width:100%;height:100%}
+
+/* Layered foreground: smooth, restrained push-in while the rebuilt background stays still. */
+.sm-cinema .smcin-track.smcin-enhanced .smcin-panel img.smcin-backdrop,.sm-cinema .smcin-track.smcin-enhanced .smcin-panel img.smcin-person{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;opacity:0;transform:none;filter:none;transition:opacity .5s ease}
+.sm-cinema .smcin-track.smcin-enhanced .smcin-panel.smcin-active > img:first-child,.sm-cinema .smcin-track.smcin-enhanced .smcin-panel.smcin-active img.smcin-backdrop,.sm-cinema .smcin-track.smcin-enhanced .smcin-panel.smcin-active img.smcin-person{object-position:50% 68%}
+.sm-cinema .smcin-track.smcin-enhanced .smcin-panel img.smcin-backdrop{z-index:0}
+.sm-cinema .smcin-track.smcin-enhanced .smcin-panel img.smcin-person{z-index:1;transform-origin:50% 58%;transition:opacity .35s ease,transform 3s cubic-bezier(.22,1,.36,1)}
+.sm-cinema .smcin-track.smcin-enhanced .smcin-panel.smcin-active.smcin-layers-ready img.smcin-backdrop,.sm-cinema .smcin-track.smcin-enhanced .smcin-panel.smcin-active.smcin-layers-ready img.smcin-person{opacity:1}
+.sm-cinema .smcin-track.smcin-enhanced .smcin-panel.smcin-active.smcin-layers-ready img.smcin-person{transform:scale(1.27);transition-delay:0s,.45s}
+:where(html[data-motion-reduced="true"]) .sm-cinema .smcin-panel img.smcin-person{transition:none!important;transform:none!important}
+@media(prefers-reduced-motion:reduce){html:not([data-motion-reduced="false"]) .sm-cinema .smcin-panel img.smcin-person{transition:none!important;transform:none!important}}

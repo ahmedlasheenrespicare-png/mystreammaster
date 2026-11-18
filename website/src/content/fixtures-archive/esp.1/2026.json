@@ -2687,6 +2687,56 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261130&limit=500"
       },
       "fetchedAt": "2026-11-16T11:20:43.500Z"
+    },
+    {
+      "id": "401882698",
+      "date": "2026-12-02T18:00:00.000Z",
+      "home": {
+        "id": "89",
+        "name": "Real Sociedad"
+      },
+      "away": {
+        "id": "86",
+        "name": "Real Madrid"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261202&limit=500"
+      },
+      "fetchedAt": "2026-11-18T11:43:51.719Z"
+    },
+    {
+      "id": "401882700",
+      "date": "2026-12-02T20:30:00.000Z",
+      "home": {
+        "id": "83",
+        "name": "Barcelona"
+      },
+      "away": {
+        "id": "1068",
+        "name": "Atlético Madrid"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261202&limit=500"
+      },
+      "fetchedAt": "2026-11-18T11:43:51.719Z"
     }
   ]
 }

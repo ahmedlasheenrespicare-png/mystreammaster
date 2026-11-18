@@ -41,6 +41,7 @@ const NOINDEX = new Set([
   'home-preview/cinema-frame-preview/index.html', // خيارات إطار المكتبة غير مفهرسة
   'home-preview/cinema-frame-preview/reel.html', // مشغل خيارات الإطار غير مفهرس
   'home-preview/hero-flower-preview/index.html', // تجربة فيديو الهيرو خلف الوردة غير مفهرسة
+  'home-preview/video-controls-preview/index.html', // معاينة التحكم غير مفهرسة
   'home-preview/hero-video-preview/index.html', // معاينة فيديو الهيرو غير مفهرسة
   'offline.html',
   'live-free.html',

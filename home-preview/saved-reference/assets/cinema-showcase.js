@@ -55,5 +55,15 @@ document.querySelectorAll('#cinema-library .smcin-track > .smcin-panel').forEach
   if(index>=length*2)resetCopy();index++;phase='feature';mark();layout();timer=setTimeout(tick,6000);
  }
  function sync(){stop();if(!playing||!visible||document.hidden)return;timer=setTimeout(tick,phase==='returning'?returnDuration:focused?6000:700)}
- reduced.addEventListener?.('change',()=>{if(reduced.matches===lastReduced)return;lastReduced=reduced.matches;playing=!reduced.matches;if(reduced.matches){panels.forEach(panel=>panel.classList.remove('smcin-returning'));index=length;phase='wide-reel';focused=false;mark();layout(false)}sync()});document.addEventListener('visibilitychange',sync);const resize=()=>{if(Math.abs(rail.clientWidth-lastWidth)>1)layout(false)};if('ResizeObserver'in window)new ResizeObserver(resize).observe(rail);else window.addEventListener('resize',resize,{passive:true});if('IntersectionObserver'in window)new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;prepare();sync()},{threshold:.2}).observe(stage);else{visible=true;prepare();sync()}layout(false);
+ const touch=stage.querySelector('.preview-touch--cinema'),controls=stage.querySelector('.preview-controls--cinema');let resumeTimer=0;
+ function pauseTemporarily(){
+  playing=false;stop();panels.forEach(p=>p.classList.remove('smcin-returning'));phase='feature';focused=true;mark();layout();controls.hidden=false;controls.classList.add('is-visible');
+  clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>{controls.classList.remove('is-visible');controls.hidden=true;playing=!reduced.matches;sync()},5000);
+ }
+ touch.addEventListener('click',pauseTemporarily);
+ function step(direction){pauseTemporarily();index+=direction;if(index<length){index+=length;layout(false)}else if(index>=length*2){index-=length;layout(false)}mark();layout()}
+ root.querySelectorAll('[data-cinema-step]').forEach(button=>button.addEventListener('click',()=>step(Number(button.dataset.cinemaStep))));
+ window.smDisplaySwipe(stage,step);
+
+ reduced.addEventListener?.('change',()=>{if(reduced.matches===lastReduced)return;lastReduced=reduced.matches;playing=!reduced.matches;if(reduced.matches){panels.forEach(panel=>panel.classList.remove('smcin-returning'));index=length;phase='wide-reel';focused=false;mark();layout(false)}clearTimeout(resumeTimer);controls.classList.remove('is-visible');controls.hidden=true;sync()});document.addEventListener('visibilitychange',sync);const resize=()=>{if(Math.abs(rail.clientWidth-lastWidth)>1)layout(false)};if('ResizeObserver'in window)new ResizeObserver(resize).observe(rail);else window.addEventListener('resize',resize,{passive:true});if('IntersectionObserver'in window)new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;prepare();sync()},{threshold:.2}).observe(stage);else{visible=true;prepare();sync()}layout(false);
 })();

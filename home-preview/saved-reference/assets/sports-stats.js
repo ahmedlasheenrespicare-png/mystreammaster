@@ -1,7 +1,7 @@
 /* Same standings validation and rates calculation used by the live homepage. */
-import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=d4e1781b6a5687ca';
-import {standingsRates} from './fixtures-archive.js?v=d4e1781b6a5687ca';
-import {providerTeamLogo} from './leader-logo.js?v=d4e1781b6a5687ca';
+import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=cf1cbd5c091227a7';
+import {standingsRates} from './fixtures-archive.js?v=cf1cbd5c091227a7';
+import {providerTeamLogo} from './leader-logo.js?v=cf1cbd5c091227a7';
 
 const section=document.querySelector('.sm-leagues');
 if (section) {
@@ -52,7 +52,7 @@ if (section) {
   setInterval(()=>refresh(active),120000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(active)});
   try{
-    const response=await fetch(new URL('./standings-snapshot.json?v=d4e1781b6a5687ca',import.meta.url));
+    const response=await fetch(new URL('./standings-snapshot.json?v=cf1cbd5c091227a7',import.meta.url));
     if(!response.ok)throw new Error('SNAPSHOT_UNAVAILABLE');
     const snapshot=await response.json();
     for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),current=records[id]?.table;if(!current||(table.season>=current.season&&Date.parse(table.fetchedAt)>Date.parse(current.fetchedAt)))records[id]={table,live:false,stale:true}}catch(_){}}

@@ -94,3 +94,28 @@ test('reference server cards track annual homepage pricing and specifications', 
   assert.match(updated,/data-server-field="moka\.channels"><span class="sm-server__count" aria-hidden="true">\+99,000/);
   assert.match(updated,/data-server-field="moka\.description">وصف جديد من الرئيسية/);
 });
+
+test('league world is self-contained in the approved reference and versioned', async () => {
+  const reference=path.resolve(website,'../home-preview/saved-reference');
+  const html=await fs.readFile(path.join(reference,'index.html'),'utf8');
+  const entry=await fs.readFile(path.join(reference,'assets/league-world-entry.js'),'utf8');
+  const world=await fs.readFile(path.join(reference,'assets/league-world/world.html'),'utf8');
+  assert.match(html,/class="world-launch"/);
+  assert.match(html,/assets\/league-world-entry\.js/);
+  assert.match(entry,/saved-reference\/assets\/league-world\/world\.html/);
+  assert.doesNotMatch(world,/league-world-preview\/kota/);
+  assert.match(world,/name="robots" content="noindex, nofollow"/);
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'sm-league-world-version-'));
+  try{
+    await fs.cp(reference,dir,{recursive:true});
+    const {versionReferenceAssets}=await import('./version-reference-assets.mjs');
+    const first=await versionReferenceAssets(dir);
+    const generated=await fs.readFile(path.join(dir,'assets/league-world/world.html'),'utf8');
+    assert.ok(generated.includes(`world-motion.js?v=${first}`));
+    assert.ok(generated.includes(`league-panels.css?v=${first}`));
+    assert.ok((await fs.readFile(path.join(dir,'assets/league-world/league-overlay.js'),'utf8')).includes(`league-panels.js?v=${first}`));
+    assert.ok((await fs.readFile(path.join(dir,'assets/league-world-entry.js'),'utf8')).includes(`world.html?v=${first}`));
+    await fs.appendFile(path.join(dir,'assets/league-world/world-motion.js'),'\n// test change\n');
+    assert.notEqual(await versionReferenceAssets(dir),first);
+  }finally{await fs.rm(dir,{recursive:true,force:true})}
+});

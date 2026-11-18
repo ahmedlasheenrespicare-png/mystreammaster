@@ -1,0 +1,91 @@
+/* Original implementation for the Stream Master league preview. */
+@font-face{font-family:WorldArabic;src:url('/_assets/redesign/tajawal-arabic-900-normal-MgmkhdPX.woff2') format('woff2');font-weight:900;font-display:swap}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#1d1a2a}button{font:inherit}
+.world{position:fixed;inset:0;overflow:hidden;touch-action:none;isolation:isolate;background:radial-gradient(ellipse at 8% -6%,#735182 0%,transparent 43%),radial-gradient(ellipse at 12% 112%,#0b999b 0%,transparent 39%),radial-gradient(ellipse at 96% 94%,#555997 0%,transparent 49%),linear-gradient(145deg,#9a98a1,#95959d 58%,#838a9c)}
+.world .huge-heading{position:absolute;top:47%;left:50%;transform:translate(-50%,-50%);width:max-content;margin:0;color:#fff;opacity:.14;font:900 clamp(70px,12vw,180px)/1.1 WorldArabic,Tajawal,sans-serif;white-space:nowrap;pointer-events:none;user-select:none}
+.world .go-back{position:fixed;top:20px;right:20px;z-index:30;min-height:44px;padding:9px 16px;border:1px solid #fff;border-radius:50px;background:rgba(32,20,38,.82);color:white;box-shadow:0 5px 20px #17102340;cursor:pointer;font:900 15px/1.2 WorldArabic,Tajawal,sans-serif}
+.world .go-back:focus-visible,.world .explore-button:focus-visible{outline:3px solid white;outline-offset:4px}
+.world .cards{position:absolute;inset:0;transform:translate3d(var(--pan-x,0px),var(--pan-y,0px),0);will-change:transform;user-select:none;cursor:grab}.world.is-dragging .cards{cursor:grabbing}
+.card{--width:245px;--height:379px;--gap:16px;--large-radius:32px;position:relative;width:var(--width);height:var(--height);perspective:1000px;font-family:WorldArabic,Tajawal,sans-serif}
+.world .cards>.card{position:absolute;left:var(--card-x);top:var(--card-y);cursor:pointer}
+.card__transform,.card-values__inner,.card-values__content{position:absolute;inset:0}
+.card__transform{transform-style:preserve-3d;transition:transform .35s ease;transform:perspective(1000px) rotateX(calc(var(--y,0) * -10deg)) rotateY(calc(var(--x,0) * 10deg))}
+.card-values__inner{border-radius:var(--large-radius);overflow:hidden;background:linear-gradient(155deg,var(--top),color-mix(in srgb,var(--top) 38%,#c2bdc2));box-shadow:0 8px 30px #22213918}
+.card-values__content{z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding:var(--gap);direction:rtl;color:white}
+.card-values__top{display:flex;justify-content:space-between;font:900 17px/1.2 WorldArabic,Tajawal,sans-serif}
+.card-values__bottom{text-align:right}.card-values__values{font:900 clamp(20px,3vw,37px)/1.3 WorldArabic,Tajawal,sans-serif;overflow-wrap:anywhere}
+.logo-wrap{position:absolute;inset:20% 17% 30%;display:grid;place-items:center;padding:10px;background:rgba(255,255,255,.88);border:1px solid #ffffffaa;border-radius:22px;box-shadow:0 8px 22px #16122628}
+.logo-wrap img{width:100%;height:100%;object-fit:contain}.logo-wrap .fallback{font:900 70px WorldArabic,sans-serif;color:#51435c}.back{display:none}
+.explore-button{position:relative;z-index:4;min-height:44px;margin-top:10px;padding:8px 15px;border:1px solid #ffffffc7;border-radius:50px;background:rgba(24,17,32,.7);color:white;cursor:pointer;font:900 15px/1.15 WorldArabic,Tajawal,sans-serif}
+.world .cards .card-values__top,.world .cards .card-values__bottom{text-shadow:0 2px 7px #10102080}
+.world .shapes{position:absolute;inset:0;pointer-events:none}.world .shape{position:absolute;width:42px;height:42px;opacity:.88}.world .shape img{width:100%;height:100%;object-fit:contain;animation:world-spin 32s linear infinite}.world .shape-trophy img{animation:none}
+.world .card-decor-ball{position:absolute;width:30%;height:auto;right:-13%;bottom:4%;z-index:0;pointer-events:none;animation:world-spin 32s linear infinite;filter:drop-shadow(0 8px 12px #0005)}
+@keyframes world-spin{to{transform:rotate(360deg)}}
+@media(max-width:1024px){.world .shapes,.world .card-decor-ball{display:none}}
+@media(max-width:750px){.world .cards .card-values__top{font-size:14px}.world .cards .card-values__values{font-size:23px}.world .cards .card-values__content{padding:15px}.world .cards .explore-button{font-size:14px;min-height:44px}.world .cards .logo-wrap{inset:18% 15% 31%}}
+@media(prefers-reduced-motion:reduce){.world .shape img,.world .card-decor-ball{animation:none}.card__transform{transition:none}}
+/* Original two-sided card: the front and back remain separate accessible faces. */
+.world .card-values__inner,.world .cards .back{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.world .cards .card.is-flipped .card__transform{transform:perspective(1000px) rotateY(180deg)}
+.world .cards .card.is-flipped .card-decor-ball{opacity:.5}
+.world .cards .back{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;padding:13px;border-radius:var(--large-radius);overflow:hidden;background:linear-gradient(150deg,var(--top),var(--bottom));color:#fff;transform:rotateY(180deg);box-shadow:0 12px 30px #16132638;font-family:WorldArabic,Tajawal,sans-serif}
+.world .card-back__head{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:14px;line-height:1.2}
+.world .card-flip-return{flex:none;width:30px;height:30px;display:grid;place-items:center;border:1px solid #ffffff80;border-radius:50%;background:#ffffff1a;color:#fff;cursor:pointer;font:900 18px/1 WorldArabic,sans-serif}
+.world .card-back__stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:5px;flex:1;min-height:0}
+.world .card-back__stats>div{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:3px;min-width:0;padding:7px;border-radius:11px;background:#ffffff1d;border:1px solid #ffffff26}
+.world .card-back__stats span{font-size:10px;line-height:1.15;color:#ffffffc9}.world .card-back__stats strong{font:900 11px/1.2 WorldArabic,Tajawal,sans-serif;overflow-wrap:anywhere;max-width:100%;direction:auto}.world .card-back__stats small{font:700 9px/1.2 WorldArabic,Tajawal,sans-serif;color:#fff0c5}
+.world .card-back__source{margin:0;font:700 9px/1.35 WorldArabic,Tajawal,sans-serif;color:#ffffffd6}
+.world .card-open-details{align-self:stretch;flex:none;min-height:36px;border:1px solid #ffffffa6;border-radius:11px;background:#fff;color:#2a2031;font:900 12px/1.2 WorldArabic,Tajawal,sans-serif;cursor:pointer}
+.world .card-open-details:focus-visible,.world .card-flip-return:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.world .cards .card__transform{transition:none}}
+/* Emblems replace visible team names while retaining accessible image descriptions. */
+.world .card-back__stats>div{align-items:center;text-align:center}
+.world .card-back__stats .card-stat-crest{display:grid;place-items:center;width:34px;height:34px;flex:none;padding:3px;border-radius:10px;background:#fffffff0;color:#49394e;font:700 8px/1.15 WorldArabic,Tajawal,sans-serif}
+.world .card-back__stats .card-stat-crest img{display:block;width:100%;height:100%;object-fit:contain}
+/* Editorial stat face, inspired by the site's existing four-metric section. */
+.world .cards .back{gap:5px;padding:13px 14px;background:linear-gradient(150deg,#fbf0db,#ecd3ab);color:#633710;box-shadow:0 14px 30px #27202745}
+.world .card-back__head{padding-bottom:7px;border-bottom:1px solid #9f653344;color:#60350e}
+.world .card-flip-return{border-color:#814c2f66;background:#fff9;color:#6c3e20}
+.world .card-back__stats{gap:0;grid-template-rows:repeat(2,minmax(0,1fr))}
+.world .card-back__stats>div{gap:2px;padding:4px 3px;border:0;border-radius:0;background:transparent;justify-content:center}
+.world .card-back__stats>div:nth-child(odd){border-inline-end:1px solid #ac743b55}
+.world .card-back__stats>div:nth-child(-n+2){border-bottom:1px solid #ac743b55}
+.world .card-stat-icon{display:block;width:17px;height:17px;flex:none;fill:#b4811e}
+.world .card-back__stats [data-stat=attack] .card-stat-icon{fill:#d4514c}.world .card-back__stats [data-stat=defence] .card-stat-icon{fill:#298eb4}.world .card-back__stats [data-stat=goals] .card-stat-icon{fill:#318f68}
+.world .card-back__stats span{color:#765434;font-size:10px;font-weight:700}
+.world .card-back__stats strong{color:#633710;font-size:14px}.world .card-back__stats small{color:#855029;font-size:9px}
+.world .card-back__stats .card-stat-crest{width:26px;height:26px;padding:1px;border-radius:0;background:transparent;color:#68462e}
+.world .card-back__source{border-top:1px solid #a36f3a3d;padding-top:4px;color:#79563b;font-size:9px}
+.world .card-open-details{background:#2f1928;border-color:#5e3a37;color:#fff9ec;min-height:34px}
+.world .card-open-details:focus-visible,.world .card-flip-return:focus-visible{outline-color:#6e3517}
+/* Back-face layout reimagines the reference's small image, coloured labels,
+   open vertical information and round flip control, without its assets. */
+.world .cards .back{padding:14px;gap:5px;background:radial-gradient(circle at 100% 0%,#f7e1f4 0%,transparent 38%),linear-gradient(155deg,#fff,#f1e9f0);color:#272132}
+.world .card-back__head{border:0;padding:0 0 3px;align-items:flex-start;color:#2f2534}
+.world .card-back__identity{display:flex;align-items:center;gap:8px;min-width:0;font:900 12px/1.2 WorldArabic,Tajawal,sans-serif}
+.world .card-back__identity img{width:36px;height:36px;object-fit:contain;padding:3px;border-radius:10px;background:#fff;box-shadow:0 3px 12px #48284416}
+.world .card-flip-return{width:38px;height:38px;border:1px solid #ddbdd4;background:#fff9;color:#b6328b}
+.world .card-back__stats{display:flex;flex-direction:column;justify-content:space-evenly;gap:0;min-height:0}
+.world .card-back__stats>div,.world .card-back__stats>div:nth-child(odd),.world .card-back__stats>div:nth-child(-n+2){display:grid;grid-template-columns:minmax(0,1fr) 27px minmax(0,auto);align-items:center;justify-items:start;column-gap:5px;min-height:0;padding:4px 1px;border:0;background:none;text-align:right}
+.world .card-back__stats>div+div{border-top:1px solid #b68ca026}
+.world .card-stat-icon{display:none}
+.world .card-back__stats span{color:#a52480;font:900 10px/1.2 WorldArabic,Tajawal,sans-serif}
+.world .card-back__stats strong{font:900 12px/1.2 WorldArabic,Tajawal,sans-serif;color:#2e2535}
+.world .card-back__stats .card-stat-crest{width:26px;height:26px;justify-self:center}
+.world .card-back__stats small{color:#483746;font:700 9px/1.25 WorldArabic,Tajawal,sans-serif;white-space:nowrap}
+.world .card-back__source{padding:3px 0 0;border-top:1px solid #b68ca040;color:#645665;font:700 9px/1.3 WorldArabic,Tajawal,sans-serif}
+.world .card-open-details{min-height:35px;background:#392139;border:1px solid #392139;color:white;border-radius:50px}
+.world .card-open-details:focus-visible,.world .card-flip-return:focus-visible{outline-color:#a52480}
+/* Bring the selected card forward before turning it over. */
+.world .cards>.card{transition:transform .52s cubic-bezier(.22,.68,0,1),filter .3s;transform:translate3d(var(--center-x,0px),var(--center-y,0px),0)}
+.world .cards>.card.is-centered{z-index:20}
+.world.has-centered-card .cards>.card:not(.is-centered){filter:brightness(.7);pointer-events:none}
+@media(prefers-reduced-motion:reduce){.world .cards>.card{transition:none}}
+.world .cards>.card.is-centered.is-flipped{transform:translate3d(var(--center-x,0px),var(--center-y,0px),0) scale(var(--selected-scale,1.3))}
+/* A custom animated rotation cue, separate from the accessible action button. */
+.world .cards .flip-hint{position:absolute;right:14px;bottom:14px;z-index:3;width:39px;height:39px;display:grid;place-items:center;border-radius:50%;background:#ffffffdf;color:#a72586;box-shadow:0 4px 12px #26122730;pointer-events:none;text-shadow:none}
+.world .cards .flip-hint svg{width:24px;height:24px;animation:flip-cue 3s ease-in-out infinite}
+.world .cards .card-values__bottom .explore-button{margin-right:48px}
+@keyframes flip-cue{0%,20%,100%{transform:rotate(0)}45%,60%{transform:rotate(180deg)}}
+@media(prefers-reduced-motion:reduce){.world .cards .flip-hint svg{animation:none}}
+.world .cards .explore-button.flip-hint{position:absolute;right:14px;bottom:14px;width:44px;height:44px;min-height:44px;margin:0;padding:0;display:grid;place-items:center;border:0;border-radius:50%;background:#ffffffdf;color:#a72586;pointer-events:auto}

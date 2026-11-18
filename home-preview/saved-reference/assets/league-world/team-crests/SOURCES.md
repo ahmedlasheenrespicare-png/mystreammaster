@@ -1,0 +1,75 @@
+# Preview team crest sources
+
+Team logos were taken from https://github.com/luukhopman/football-logos (current `logos/` directory), matched by team name against the site snapshot. Club crests remain their respective owners’ property; verify rights and branding before publishing.
+
+- Paris Saint-Germain: `logos/France - Ligue 1/Paris Saint-Germain.png`
+- Barcelona: `logos/Spain - LaLiga/FC Barcelona.png`
+- Aston Villa: `logos/England - Premier League/Aston Villa.png`
+- VfB Stuttgart: `logos/Germany - Bundesliga/VfB Stuttgart.png`
+- Liverpool: `logos/England - Premier League/Liverpool FC.png`
+- Sporting CP: `logos/Portugal - Liga Portugal/Sporting CP.png`
+- Arsenal: `logos/England - Premier League/Arsenal FC.png`
+- Real Madrid: `logos/Spain - LaLiga/Real Madrid.png`
+- Bayern Munich: `logos/Germany - Bundesliga/Bayern Munich.png`
+- Shakhtar Donetsk: `logos/Ukraine - Premier Liga/Shakhtar Donetsk.png`
+- Manchester United: `logos/England - Premier League/Manchester United.png`
+- Villarreal: `logos/Spain - LaLiga/Villarreal CF.png`
+- Manchester City: `logos/England - Premier League/Manchester City.png`
+- Borussia Dortmund: `logos/Germany - Bundesliga/Borussia Dortmund.png`
+- AEK Athens: `logos/Greece - Super League 1/AEK Athens.png`
+- RB Leipzig: `logos/Germany - Bundesliga/RB Leipzig.png`
+- Feyenoord Rotterdam: `logos/Netherlands - Eredivisie/Feyenoord Rotterdam.png`
+- AS Roma: `logos/Italy - Serie A/AS Roma.png`
+- PSV Eindhoven: `logos/Netherlands - Eredivisie/PSV Eindhoven.png`
+- VIKING FK: `logos/Norway - Eliteserien/Viking FK.png`
+- Fenerbahce: `logos/Türkiye - Süper Lig/Fenerbahce.png`
+- FC Porto: `logos/Portugal - Liga Portugal/FC Porto.png`
+- Napoli: `logos/Italy - Serie A/SSC Napoli.png`
+- Galatasaray: `logos/Türkiye - Süper Lig/Galatasaray.png`
+- Brighton & Hove Albion: `logos/England - Premier League/Brighton & Hove Albion.png`
+- Chelsea: `logos/England - Premier League/Chelsea FC.png`
+- Brentford: `logos/England - Premier League/Brentford FC.png`
+- Everton: `logos/England - Premier League/Everton FC.png`
+- Leeds United: `logos/England - Premier League/Leeds United.png`
+- Hull City: `logos/England - Premier League/Hull City.png`
+- Ipswich Town: `logos/England - Premier League/Ipswich Town.png`
+- Newcastle United: `logos/England - Premier League/Newcastle United.png`
+- Crystal Palace: `logos/England - Premier League/Crystal Palace.png`
+- Coventry City: `logos/England - Premier League/Coventry City.png`
+- Nottingham Forest: `logos/England - Premier League/Nottingham Forest.png`
+- Sunderland: `logos/England - Premier League/Sunderland AFC.png`
+- AFC Bournemouth: `logos/England - Premier League/AFC Bournemouth.png`
+- Tottenham Hotspur: `logos/England - Premier League/Tottenham Hotspur.png`
+- Fulham: `logos/England - Premier League/Fulham FC.png`
+- AS Monaco: `logos/France - Ligue 1/AS Monaco.png`
+- Stade Rennais: `logos/France - Ligue 1/Stade Rennais FC.png`
+- Paris FC: `logos/France - Ligue 1/Paris FC.png`
+- Toulouse: `logos/France - Ligue 1/FC Toulouse.png`
+- Lorient: `logos/France - Ligue 1/FC Lorient.png`
+- Le Mans: `logos/France - Ligue 1/Le Mans FC.png`
+- AJ Auxerre: `logos/France - Ligue 1/AJ Auxerre.png`
+- Le Havre AC: `logos/France - Ligue 1/Le Havre AC.png`
+- Sevilla: `logos/Spain - LaLiga/Sevilla FC.png`
+- Real Sociedad: `logos/Spain - LaLiga/Real Sociedad.png`
+- Rayo Vallecano: `logos/Spain - LaLiga/Rayo Vallecano.png`
+- Getafe: `logos/Spain - LaLiga/Getafe CF.png`
+- Racing Santander: `logos/Spain - LaLiga/Racing Santander.png`
+- Elche: `logos/Spain - LaLiga/Elche CF.png`
+- Valencia: `logos/Spain - LaLiga/Valencia CF.png`
+- Málaga: `logos/Spain - LaLiga/Málaga CF.png`
+- SC Freiburg: `logos/Germany - Bundesliga/SC Freiburg.png`
+- FC Augsburg: `logos/Germany - Bundesliga/FC Augsburg.png`
+- Eintracht Frankfurt: `logos/Germany - Bundesliga/Eintracht Frankfurt.png`
+- Schalke 04: `logos/Germany - Bundesliga/FC Schalke 04.png`
+- SC Paderborn 07: `logos/Germany - Bundesliga/SC Paderborn 07.png`
+- 1. FC Union Berlin: `logos/Germany - Bundesliga/1.FC Union Berlin.png`
+- Borussia Mönchengladbach: `logos/Germany - Bundesliga/Borussia Mönchengladbach.png`
+- AC Milan: `logos/Italy - Serie A/AC Milan.png`
+- Juventus: `logos/Italy - Serie A/Juventus FC.png`
+- Torino: `logos/Italy - Serie A/Torino FC.png`
+- Monza: `logos/Italy - Serie A/AC Monza.png`
+- Venezia: `logos/Italy - Serie A/Venezia FC.png`
+
+- Lille: `logos/France - Ligue 1/LOSC Lille.png`
+- Celta Vigo: `logos/Spain - LaLiga/Celta de Vigo.png`
+- Al Hilal: https://en.logodownload.org/al-hilal-sfc-logo/ — club mark, verify rights before publishing.

@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 test('preview serves video with a seekable MP4 response',async({request})=>{
- const url='/home-preview/saved-reference/assets/images/video-streammaster-hd-1080.mp4';
+ const url='/home-preview/saved-reference/assets/images/video-streammaster-hero-montage-1080.mp4';
  const head=await request.head(url);expect(head.status()).toBe(200);expect(head.headers()['content-type']).toBe('video/mp4');expect(head.headers()['accept-ranges']).toBe('bytes');
  const range=await request.get(url,{headers:{Range:'bytes=0-31'}});expect(range.status()).toBe(206);expect(range.headers()['content-range']).toMatch(/^bytes 0-31\/\d+$/);expect((await range.body()).length).toBe(32);
  const invalid=await request.get(url,{headers:{Range:'bytes=999999999-'}});expect(invalid.status()).toBe(416);
@@ -44,5 +44,7 @@ test('1080p video loads and plays in the browser',async({browser})=>{
  const video=page.locator('.abt__video video');await video.scrollIntoViewIfNeeded();
  await expect.poll(()=>video.evaluate((element:HTMLVideoElement)=>[element.videoWidth,element.videoHeight]),{timeout:15000}).toEqual([1920,1080]);
  await expect.poll(()=>video.evaluate((element:HTMLVideoElement)=>element.currentTime),{timeout:15000}).toBeGreaterThan(0);
+ await expect.poll(()=>video.evaluate((element:HTMLVideoElement)=>element.duration),{timeout:15000}).toBeGreaterThan(140);
+ await video.evaluate((element:HTMLVideoElement)=>{element.currentTime=75});await expect.poll(()=>video.evaluate((element:HTMLVideoElement)=>element.currentTime),{timeout:15000}).toBeGreaterThan(75);
  await context.close();
 });

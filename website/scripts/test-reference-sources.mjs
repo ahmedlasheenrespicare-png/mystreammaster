@@ -30,7 +30,8 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(html.includes(`sports-stats.js?v=${first}`));
     assert.ok(html.includes(`featured-matches.js?v=${first}`));
     assert.ok(html.includes(`mobile-motion.js?v=${first}`));
-    assert.ok(html.includes(`hero-video-mobile.mp4?v=${first}`));
+    assert.ok(html.includes(`rose-strip.js?v=${first}`));
+    assert.ok(html.includes(`video-streammaster-hero-montage-1080.mp4?v=${first}`));
     const stats=await fs.readFile(path.join(dir,'assets/sports-stats.js'),'utf8');
     assert.ok(stats.includes(`standings.js?v=${first}`));
     assert.ok(stats.includes(`standings-snapshot.json?v=${first}`));

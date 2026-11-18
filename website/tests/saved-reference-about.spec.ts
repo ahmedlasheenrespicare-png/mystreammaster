@@ -5,7 +5,7 @@ import path from 'node:path';
 // Keep the reference interaction and scroll engine, but remove WebGL scenes
 // and noise for repeatable layout and keyboard tests on headless CI.
 let source=fs.readFileSync(path.resolve('../home-preview/saved-reference/assets/main-D5MQsYQ6.js'),'utf8');
-let start=source.indexOf(',function(t){var e;const n=.0015'),end=source.indexOf(';const Ay=document.querySelectorAll',start);
+let start=source.indexOf(',function(t){var e;let smMobile=window.innerWidth<=1023;const n=.0015'),end=source.indexOf(';const Ay=document.querySelectorAll',start);
 if(start<0||end<0)throw new Error('Reference WebGL block not found');
 source=source.slice(0,start)+source.slice(end);
 start=source.indexOf('window.addEventListener("load",()=>{My()&&function({patternSize:');end=source.indexOf('document.addEventListener("DOMContentLoaded",()=>{const t=document.title',start);
@@ -39,7 +39,7 @@ for(const width of [320,390,768,1440])test(`about devices preserve the reference
  await page.locator('#sm-motion-setting').evaluate((el:HTMLSelectElement)=>{el.value='off';el.dispatchEvent(new Event('change',{bubbles:true}))});
  await expect(buttons.nth(0).locator('.sm-device__turn')).toHaveCSS('transition-duration','0s');
  await expect(page.locator('.sm-about .a-text.sm-about-reveal-pending')).toHaveCount(0);
- await expect(page.locator('.abt__video video')).toHaveAttribute('data-src',/video-streammaster-hd-1080/);
+ await expect(page.locator('.abt__video video')).toHaveAttribute('data-src',/video-streammaster-hero-montage-1080/);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
  expect(errors).toEqual([]);await context.close();
 });

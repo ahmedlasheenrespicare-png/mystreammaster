@@ -1,6 +1,6 @@
 /* The same scoreboard proxy, parser, leagues and Cairo-day filtering as the homepage. */
-import {LEAGUES,dayInZone,dayLabel,shiftDay,kickoff,scoreboardUrl,readScoreboardResponse,matchesForDay,hasCompleteScore} from './matches.js?v=cf1cbd5c091227a7';
-import {arabicTeamName} from './team-names-ar.js?v=cf1cbd5c091227a7';
+import {LEAGUES,dayInZone,dayLabel,shiftDay,kickoff,scoreboardUrl,readScoreboardResponse,matchesForDay,hasCompleteScore} from './matches.js?v=048badd1f2166a04';
+import {arabicTeamName} from './team-names-ar.js?v=048badd1f2166a04';
 const root=document.querySelector('.sm-matches');
 if(root){
  const tabs=Array.from(root.querySelectorAll('[data-day]')),rail=root.querySelector('.sm-matches__rail'),status=root.querySelector('.sm-matches__status'),retry=root.querySelector('.sm-matches__retry'),dateLabel=root.querySelector('.sm-matches__date'),arrows=root.querySelector('.sm-matches__arrows');

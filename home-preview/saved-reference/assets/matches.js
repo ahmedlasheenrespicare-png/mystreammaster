@@ -1,4 +1,4 @@
-import { scoreboardIncidents } from "./scoreboard-incidents.js?v=cf1cbd5c091227a7";
+import { scoreboardIncidents } from "./scoreboard-incidents.js?v=048badd1f2166a04";
 // Public scoreboard via same-origin PHP proxy: no API secrets, fabricated fixtures, or inferred live scores.
 /* ترتيب القائمة هو ترتيب العرض نفسه: أقسام جدول المواعيد وخيارات التصفية
    تُبنى منه مباشرة بلا قائمة ثانية. ويجب أن يطابق `ALLOWED_LEAGUES` في

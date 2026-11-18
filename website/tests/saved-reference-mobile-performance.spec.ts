@@ -22,7 +22,7 @@ test('secondary video is not fetched until it is visible or deliberately played'
  await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));await page.route('**/*.mp4*',r=>r.abort());await page.route('https://**',r=>r.abort());
  await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader,.nav{display:none!important}'});
  const video=page.locator('.abt__video video');await expect(video).not.toHaveAttribute('src',/./);await expect(video).toHaveAttribute('preload','none');
- await video.scrollIntoViewIfNeeded();await expect(video).toHaveAttribute('src',/video-streammaster-hd-1080/);
+ await video.scrollIntoViewIfNeeded();await expect(video).toHaveAttribute('src',/video-streammaster-hero-montage-1080/);
 });
 
 test('hidden footer WebGL assets do not download even when scrolling to the footer',async({page})=>{

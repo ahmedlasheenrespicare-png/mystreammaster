@@ -7,8 +7,9 @@
  function reset(){if(frame)cancelAnimationFrame(frame);frame=0;section.classList.remove('is-enhanced');view?.style.removeProperty('transform');footerAccent?.style.removeProperty('--sm-accent-y');items.forEach(item=>{delete item.dataset.current;item.querySelectorAll('.steps__body,.steps__body>*').forEach(el=>{el.style.removeProperty('opacity');el.style.removeProperty('transform')});item.querySelector('a')?.removeAttribute('tabindex')});dots.forEach(dot=>dot.classList.remove('is-current'));backgrounds.forEach(scene=>scene.style.removeProperty('opacity'));shapes.forEach(shape=>shape.style.removeProperty('transform'));current=-1}
  function update(){
   frame=0;if(!visible||document.hidden||motion.matches)return;
-  const rect=section.getBoundingClientRect(),travel=Math.max(1,section.offsetHeight-innerHeight);
-  view.style.transform=`translate3d(0,${clamp(-rect.top,0,travel).toFixed(1)}px,0)`;
+  const rect=section.getBoundingClientRect(),travel=Math.max(1,section.offsetHeight-view.offsetHeight);
+  if(!matchMedia('(pointer: coarse) and (max-width: 1023px)').matches)view.style.transform=`translate3d(0,${clamp(-rect.top,0,travel).toFixed(1)}px,0)`;
+  else view.style.removeProperty('transform');
   const value=(-rect.top+innerHeight/2)/(travel/items.length),whole=Math.floor(value);
   const raw=clamp(value,0,items.length+1),eased=clamp(whole+cubic(value-whole),0,items.length+1);
   if(footerAccent)footerAccent.style.setProperty('--sm-accent-y',`${(Math.sin(raw*Math.PI/2)*14).toFixed(1)}px`);

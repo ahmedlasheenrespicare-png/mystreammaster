@@ -34,3 +34,26 @@ test('ribbons run in the about section with the original desktop scroll engine',
  await expect(scene.locator('.rose-strip__track')).toHaveCSS('animation-play-state','running',{timeout:30000});
  await expect(scene.locator('.hero-brand-track').first()).toHaveCSS('animation-play-state','running');
 });
+
+test('the reel follows scroll in both directions and pauses offscreen',async({browser})=>{
+ test.setTimeout(90000);
+ const context=await browser.newContext({viewport:{width:390,height:900},isMobile:true,hasTouch:true});
+ await context.addInitScript(()=>localStorage.setItem('sm-motion-preference','on'));
+ const page=await context.newPage();await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.loader')).toBeHidden({timeout:60000});
+ const scene=page.locator('.about-ribbons-scene');
+ const position=async(top:number)=>{await scene.evaluate((el,y)=>window.scrollTo({top:window.scrollY+el.getBoundingClientRect().top-y,behavior:'instant'}),top);await page.waitForTimeout(1200);return Number(await scene.getAttribute('data-reel-progress'))};
+ const first=await position(700),down=await position(100),up=await position(700);
+ expect(down).toBeGreaterThan(first+.2);expect(up).toBeLessThan(down-.2);
+ await position(100);
+ const card=scene.locator('.rose-strip__card').first();
+ await expect(card.locator('img')).toHaveCSS('object-fit','contain');
+ await expect(scene.locator('.rose-strip__track')).toHaveCSS('opacity','0.85');
+ await expect(scene.locator('.hero-brand-row').first()).toHaveCSS('opacity','0.58');
+ await expect.poll(()=>scene.locator('.rose-strip__card[style*="poster-background"]').count()).toBeGreaterThan(0);
+ await page.locator('#works').evaluate(el=>el.scrollIntoView({behavior:'instant'}));
+ await expect(scene.locator('.rose-strip__track')).toHaveCSS('animation-play-state','paused');
+ await expect(scene.locator('.hero-brand-track').first()).toHaveCSS('animation-play-state','paused');
+ await context.close();
+});

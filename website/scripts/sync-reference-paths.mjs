@@ -20,7 +20,7 @@ export function applyReferencePlanFields(html,plans) {
     for(const [field,value] of Object.entries(fields)){
       const pattern=new RegExp(`(<[^>]+data-path-field="${code}\\.${field}"[^>]*>)[^<]*(</[^>]+>)`,'g');
       let count=0;html=html.replace(pattern,(_,start,end)=>{count++;return start+escape(value)+end});
-      if(count!==(field==='price'?2:1))throw new Error(`Missing reference path field: ${code}.${field}`);
+      if(count!==1)throw new Error(`Missing reference path field: ${code}.${field}`);
     }
   }
   const codes=['nova','istar','x'];

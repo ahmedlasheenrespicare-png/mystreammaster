@@ -30,6 +30,7 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(html.includes(`sports-stats.js?v=${first}`));
     assert.ok(html.includes(`featured-matches.js?v=${first}`));
     assert.ok(html.includes(`mobile-motion.js?v=${first}`));
+    for(const name of ['path-fan.js','path-fan.css','heading-accents.js','heading-accents.css','simple-steps/steps.js','simple-steps/steps.css'])assert.ok(html.includes(`${name}?v=${first}`));
     assert.ok(html.includes(`rose-strip.js?v=${first}`));
     assert.ok(html.includes(`video-streammaster-hero-montage-1080.mp4?v=${first}`));
     const stats=await fs.readFile(path.join(dir,'assets/sports-stats.js'),'utf8');
@@ -37,6 +38,13 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(stats.includes(`standings-snapshot.json?v=${first}`));
     const matches=await fs.readFile(path.join(dir,'assets/matches.js'),'utf8');
     assert.ok(matches.includes(`scoreboard-incidents.js?v=${first}`));
+    let current=first;
+    for(const name of ['path-fan.js','path-fan.css','heading-accents.js','heading-accents.css','simple-steps/steps.js','simple-steps/steps.css','simple-steps/icons/trial.svg','simple-steps/icons/server.svg','simple-steps/icons/setup.svg','simple-steps/icons/watch.svg']) {
+      await fs.appendFile(path.join(dir,'assets',name),'\n');
+      const changed=await versionReferenceAssets(dir);
+      assert.notEqual(changed,current,`${name} invalidates the reference cache`);
+      current=changed;
+    }
     await fs.appendFile(path.join(dir,'assets/standings.js'),'\n// changed\n');
     const next=await versionReferenceAssets(dir);
     assert.notEqual(next,first);
@@ -60,7 +68,7 @@ test('reference path prices and specifications track canonical homepage plans', 
   const changed=structuredClone(plans);changed.find(p=>p.serverCode==='nova').prices['12'].USD=99;
   const updated=applyReferencePlanFields(html,changed);
   assert.match(updated,/data-path-field="nova\.price">\$99/);
-  assert.equal((updated.match(/data-path-field="nova\.price">\$99/g)||[]).length,2);
+  assert.equal((updated.match(/data-path-field="nova\.price">\$99/g)||[]).length,1);
   const clean=value=>value.replace(/[\u2066-\u2069]/g,'');
   assert.match(clean(html),/data-path-shared-channels>أكثر من 14,000 قناة حية<\/dd>/);
   assert.match(clean(html),/data-path-shared-quality>حتى 4K حسب الباقة<\/dd>/);

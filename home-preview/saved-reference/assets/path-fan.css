@@ -1,0 +1,55 @@
+/* Scoped to the viewing-path section; other home sections keep their own styles. */
+#path-section .sm-fan-zone{padding:clamp(100px,12vw,170px) 0 80px;position:relative}
+#path-section .sm-fan{display:flex;align-items:center;justify-content:center;gap:12px;direction:rtl;outline:none;position:relative}
+#path-section .sm-fan-wrap{position:relative;flex:0 0 30%;min-width:0;transform:translate(var(--wrap-x,0%),var(--wrap-y,0px))}
+#path-section .sm-fan-wrap:nth-child(2){z-index:2}
+#path-section .sm-fan-card{position:relative;isolation:isolate;aspect-ratio:4/5.15;overflow:hidden;border:1px solid #fff8;border-radius:12px;background:#2b1525;box-shadow:0 20px 45px #381b2938;color:#fff;transform:none;transition:transform 1.5s cubic-bezier(.65,0,.35,1)}
+#path-section .sm-fan-card>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+#path-section .sm-fan-card::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#18071520 0%,#1b0a1945 30%,#220a1bea 84%,#220a1bf7 100%)}
+#path-section .sm-fan-content{height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(20px,2.2vw,32px);padding-top:40%;text-align:right}
+#path-section .sm-fan-tag{color:#f1cddc;font-size:13px;font-weight:900;margin:0 0 12px;line-height:1.5}
+#path-section .sm-fan-card h3{font-size:clamp(26px,2.7vw,40px);line-height:1.2;font-weight:900;margin:0 0 12px;color:#fff}
+#path-section .sm-fan-desc{font-size:clamp(14px,1.25vw,17px);line-height:1.75;color:#fff;max-width:320px;margin:0}
+#path-section .sm-fan-bottom{display:flex;align-items:end;justify-content:space-between;gap:10px}
+#path-section .sm-fan-price{display:grid;gap:4px}
+#path-section .sm-fan-price span{font-size:12px;color:#e6cbd8}
+#path-section .sm-fan-price strong{font-size:29px;line-height:1;font-weight:900;color:#fff}
+#path-section .sm-fan-bottom a{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #ffffffa8;border-radius:999px;background:#fff;color:#34132d;text-decoration:none;padding:10px 12px;font-size:13px;font-weight:900;line-height:1.25;white-space:nowrap}
+#path-section .sm-fan-bottom a img{width:25px;height:25px;object-fit:contain;position:static;flex:none}
+#path-section .sm-fan-bottom a:hover{background:#f8d9e6}
+#path-section .sm-fan-bottom a:focus-visible,#path-section .sm-fan-controls button:focus-visible,#path-section .sm-fan:focus-visible{outline:3px solid #ed87b0;outline-offset:3px}
+html.sm-fan-motion #path-section .sm-fan-wrap:nth-child(1) .sm-fan-card{transform:translate(var(--x),var(--y)) rotate(var(--r));--x:-30%;--y:70px;--r:3deg}
+html.sm-fan-motion #path-section .sm-fan-wrap:nth-child(2) .sm-fan-card{transform:translate(var(--x),var(--y)) rotate(var(--r));--x:0%;--y:100px;--r:-1deg}
+html.sm-fan-motion #path-section .sm-fan-wrap:nth-child(3) .sm-fan-card{transform:translate(var(--x),var(--y)) rotate(var(--r));--x:30%;--y:70px;--r:-3deg}
+html.sm-fan-motion #path-section .sm-fan.is-revealed .sm-fan-wrap:nth-child(1) .sm-fan-card{--x:3%;--y:-10px;--r:5deg}
+html.sm-fan-motion #path-section .sm-fan.is-revealed .sm-fan-wrap:nth-child(2) .sm-fan-card{--x:0%;--y:0px;--r:-3deg}
+html.sm-fan-motion #path-section .sm-fan.is-revealed .sm-fan-wrap:nth-child(3) .sm-fan-card{--x:-3%;--y:-10px;--r:-5deg}
+#path-section .sm-fan-controls{display:none}
+@media(min-width:1024px) and (max-width:1100px){#path-section .sm-fan-wrap{flex-basis:32%}#path-section .sm-fan-bottom{align-items:start;flex-direction:column}#path-section .sm-fan-content{padding:20px;padding-top:30%}#path-section .sm-fan-bottom a{font-size:12px}}
+@media(max-width:1023px){
+ #path-section .sm-fan-zone{padding:45px 0 65px;margin:0 -20px}
+ #path-section .sm-fan{justify-content:flex-start;gap:16px;padding:30px 10vw 35px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;scrollbar-width:none;touch-action:pan-x pan-y}
+ #path-section .sm-fan::-webkit-scrollbar{display:none}
+ #path-section .sm-fan-wrap{flex:0 0 min(80vw,420px);scroll-snap-align:center;transform:none!important}
+ #path-section .sm-fan-card,#path-section .sm-fan.is-revealed .sm-fan-card{transform:none;aspect-ratio:4/5.2;min-height:390px}
+ #path-section .sm-fan-content{padding:25px;padding-top:clamp(85px,30vw,130px)}
+ #path-section .sm-fan-card h3{font-size:clamp(28px,8vw,36px)}#path-section .sm-fan-desc{font-size:15px}
+ #path-section .sm-fan-controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:8px auto 0}
+ #path-section .sm-fan-controls button{border:1px solid #d6bac4;background:transparent;color:#5a304a;width:34px;height:34px;border-radius:50%;font-size:18px;display:grid;place-items:center;padding:0;cursor:pointer}
+ #path-section .sm-fan-dots{display:flex;gap:6px;direction:rtl}
+ #path-section .sm-fan-dots span{width:6px;height:6px;border-radius:50%;background:#d5bdc6}
+ #path-section .sm-fan-dots .active{background:#8a4b6d}
+ #path-section .sm-fan-swipe{font-size:12px;color:#9b7b89;margin-right:5px}
+ html.sm-fan-motion #path-section .sm-fan-wrap:nth-child(1) .sm-fan-card{transform:translateX(calc(-100% - 16px)) rotate(5deg)}
+ html.sm-fan-motion #path-section .sm-fan-wrap:nth-child(2) .sm-fan-card{transform:translateY(12px) rotate(-2deg)}
+ html.sm-fan-motion #path-section .sm-fan-wrap:nth-child(3) .sm-fan-card{transform:translateX(calc(100% + 16px)) rotate(-5deg)}
+ html.sm-fan-motion #path-section .sm-fan.is-revealed .sm-fan-wrap:nth-child(1) .sm-fan-card{transform:rotate(3deg)}
+ html.sm-fan-motion #path-section .sm-fan.is-revealed .sm-fan-wrap:nth-child(2) .sm-fan-card{transform:translateY(0) rotate(0)}
+ html.sm-fan-motion #path-section .sm-fan.is-revealed .sm-fan-wrap:nth-child(3) .sm-fan-card{transform:rotate(-3deg)}
+}
+html[data-motion-reduced="true"] #path-section .sm-fan-card,html[data-motion-reduced="true"].sm-fan-motion #path-section .sm-fan-wrap .sm-fan-card{transition:none;transform:none!important}
+html[data-motion-reduced="true"] #path-section .sm-fan-wrap{transform:none!important}
+/* The trial action follows the cards, rather than sharing the description row. */
+#path-section .sm-path__intro{margin-bottom:0}
+#path-section .sm-path__trial-after-fan{display:flex;justify-content:flex-start;margin:0 0 clamp(50px,6vw,90px)}
+@media(max-width:1023px){#path-section .sm-path__trial-after-fan{justify-content:center;margin-bottom:55px}}

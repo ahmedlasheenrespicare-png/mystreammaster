@@ -19,6 +19,9 @@
 .steps__footer>span:first-child{font:italic 700 clamp(26px,2.6vw,36px)/1.2 StepsAccent,serif;color:#a74369;text-shadow:0 1px 0 rgba(255,255,255,.85)}.steps__counter{direction:ltr;font-variant-numeric:tabular-nums}.steps__dots{display:flex;gap:6px;direction:ltr}.steps__dots i{display:block;width:6px;height:6px;border-radius:50%;background:#e2d5d7;transition:background-color .2s,transform .2s}.steps__dots i.is-current{background:#ae7186;transform:scale(1.35)}
 /* Native sticky keeps the preview editable and matches scroll progress on touch and desktop. */
 .steps.is-enhanced{height:480svh;overflow:clip}.steps.is-enhanced .steps__view{position:relative;top:0;height:100svh;min-height:0;overflow:hidden}.steps.is-enhanced .steps__item{opacity:1;pointer-events:none}.steps.is-enhanced .steps__item[data-current="true"]{pointer-events:auto}.steps.is-enhanced .steps__body>*{opacity:0}
+/* Native sticky tracks touch scrolling on the compositor without waiting for JS.
+   Desktop retains the transform pin required by its smooth-scroll wrapper. */
+@media (pointer:coarse) and (max-width:1023px){.steps.is-enhanced .steps__view{position:sticky;top:0;overflow:clip}}
 @media(max-width:600px){.steps__view{padding:84px 6vw 70px}.steps__item h2{font-size:clamp(40px,11.7vw,66px);line-height:1.3;letter-spacing:-.03em}.steps__number{font-size:11px}.steps__details p{font-size:16px}.steps__header{top:24px}.steps__header .steps__header-title{font-size:14px}.steps__footer{bottom:24px}.steps__footer>span:first-child{font-size:27px}}
 @media(max-height:540px){.steps__header{top:10px}.steps__header p,.steps__header span,.steps__number,.steps__details small{display:none}.steps__footer{bottom:10px}.steps__item h2{font-size:clamp(30px,8vw,65px)}}
 /* With motion disabled or scripts unavailable, all steps remain visible. */

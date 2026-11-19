@@ -69,20 +69,7 @@ test('reference path prices and specifications track canonical homepage plans', 
   const updated=applyReferencePlanFields(html,changed);
   assert.match(updated,/data-path-field="nova\.price">\$99/);
   assert.equal((updated.match(/data-path-field="nova\.price">\$99/g)||[]).length,1);
-  const clean=value=>value.replace(/[\u2066-\u2069]/g,'');
-  assert.match(clean(html),/data-path-shared-channels>أكثر من 14,000 قناة حية<\/dd>/);
-  assert.match(clean(html),/data-path-shared-quality>حتى 4K حسب الباقة<\/dd>/);
-  assert.match(clean(html),/data-path-shared-vod>أكثر من 50,000 فيلم ومسلسل<\/dd>/);
-  changed.find(p=>p.serverCode==='istar').vodCount='+60,000 فيلم ومسلسل';
-  assert.match(clean(applyReferencePlanFields(html,changed)),/data-path-shared-vod>أكثر من 50,000 فيلم ومسلسل<\/dd>/);
-  const same=structuredClone(plans);for(const code of ['nova','istar','x'])same.find(p=>p.serverCode===code).vodCount='+70,000 فيلم ومسلسل';
-  assert.match(clean(applyReferencePlanFields(html,same)),/data-path-shared-vod>أكثر من 70,000 فيلم ومسلسل<\/dd>/);
-  changed.find(p=>p.serverCode==='nova').channelsCount='+9,000 قناة حية';
-  assert.match(clean(applyReferencePlanFields(html,changed)),/data-path-shared-channels>أكثر من 9,000 قناة حية<\/dd>/);
-  for(const code of ['nova','istar','x'])changed.find(p=>p.serverCode===code).quality='HD';
-  assert.match(clean(applyReferencePlanFields(html,changed)),/data-path-shared-quality>حتى HD حسب الباقة<\/dd>/);
-  changed.find(p=>p.serverCode==='x').channelsCount='غير محدد';
-  assert.match(clean(applyReferencePlanFields(html,changed)),/data-path-shared-channels>تختلف حسب الباقة<\/dd>/);
+  assert.doesNotMatch(html,/data-path-shared-(channels|quality|vod)/);
 });
 
 test('reference server cards track annual homepage pricing and specifications', async () => {

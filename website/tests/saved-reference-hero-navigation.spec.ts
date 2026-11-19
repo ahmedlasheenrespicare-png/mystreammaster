@@ -12,7 +12,7 @@ for (const width of [320,390,768,1440,2560]) test(`about ribbons and header fit 
  const rows=page.locator('.hero-brand-row');await expect(rows).toHaveCount(2);
  await expect.poll(()=>page.locator('.hero-brand-card img').evaluateAll(els=>els.every(e=>(e as HTMLImageElement).complete&&(e as HTMLImageElement).naturalWidth>0)),{timeout:30000}).toBe(true);
  const sizes=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth, rows:[...document.querySelectorAll<HTMLElement>('.hero-brand-row')].map(row=>({width:row.offsetWidth,group:(row.querySelector('.hero-brand-group') as HTMLElement).offsetWidth,opacity:getComputedStyle(row).opacity})),gap:getComputedStyle(document.querySelector('.rose-strip__perspective')!).gap}));
- expect(sizes.overflow).toBe(false);for(const row of sizes.rows){expect(row.group).toBeGreaterThanOrEqual(row.width);expect(row.opacity).toBe('0.36')};if(width<=600)expect(sizes.gap).toBe('22px');
+ expect(sizes.overflow).toBe(false);for(const row of sizes.rows){expect(row.group).toBeGreaterThanOrEqual(row.width);expect(row.opacity).toBe('0.58')};if(width<=600)expect(sizes.gap).toBe('22px');
  await page.locator('.about-ribbons-scene').scrollIntoViewIfNeeded();
  await expect(page.locator('.hero-brand-track').first()).toHaveCSS('animation-play-state','running');
  await expect(page.locator('.hero-wordband__track').first()).toHaveCSS('animation-name','hero-wordband-scroll');

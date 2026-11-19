@@ -1362,37 +1362,37 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .flow-servers .league-carousel-track,
-  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-inner,
-  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-scene,
-  .flow-servers .league-carousel-dot,
-  .flow-servers .league-carousel-item,
-  .flow-servers .lc-card-front,
-  .flow-servers .lc-top-drawer,
-  .flow-servers .league-carousel-item[data-ring-pos="front"] .lc-top-drawer,
-  .flow-servers .lc-outline,
-  .flow-servers .lc-trophy-wrap,
-  .flow-servers .lc-detail,
-  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-detail,
-  .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-detail,
-  .flow-servers .lc-medals,
-  .flow-servers .league-carousel-item[data-ring-pos="front"] .lc-medals {
+@media all {
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-track,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-inner,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-scene,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-dot,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item,
+  html[data-motion-reduced="true"] .flow-servers .lc-card-front,
+  html[data-motion-reduced="true"] .flow-servers .lc-top-drawer,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item[data-ring-pos="front"] .lc-top-drawer,
+  html[data-motion-reduced="true"] .flow-servers .lc-outline,
+  html[data-motion-reduced="true"] .flow-servers .lc-trophy-wrap,
+  html[data-motion-reduced="true"] .flow-servers .lc-detail,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .lc-detail,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-detail,
+  html[data-motion-reduced="true"] .flow-servers .lc-medals,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item[data-ring-pos="front"] .lc-medals {
     transition: none;
     transition-delay: 0s;
   }
 
-  .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active::after {
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active::after {
     animation: none;
     transform: scaleX(1);
   }
 
-  .flow-servers .league-carousel-item:not([data-ring-pos]):hover,
-  .flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible,
-  .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:hover .lc-card-front,
-  .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:focus-visible .lc-card-front,
-  .flow-servers .league-carousel-item:hover .lc-trophy-wrap,
-  .flow-servers .league-carousel-item:focus-visible .lc-trophy-wrap {
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:not([data-ring-pos]):hover,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:hover .lc-card-front,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:focus-visible .lc-card-front,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:hover .lc-trophy-wrap,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:focus-visible .lc-trophy-wrap {
     transform: none;
   }
 }

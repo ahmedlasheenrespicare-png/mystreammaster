@@ -1,0 +1,16 @@
+/* Expand details in the active card, without a separate panel or modal. */
+.flow-servers .preview .server-spec-more{margin:9px 0 10px;text-align:right;border-top:1px solid #d9d2cc;border-bottom:1px solid #d9d2cc;color:#352334}
+.flow-servers .preview .server-spec-more summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:42px;font:700 12px FlowCairo,Arial,sans-serif}
+.flow-servers .preview .server-spec-more summary::-webkit-details-marker{display:none}
+.flow-servers .preview .server-spec-more summary:focus-visible{outline:2px solid #7b4a69;outline-offset:3px}
+.flow-servers .preview .server-spec-more summary span{font:20px Arial;transition:transform .25s}
+.flow-servers .preview .server-spec-more[open] summary span{transform:rotate(45deg)}
+.flow-servers .preview .server-spec-content dl{margin:0}.flow-servers .preview .server-spec-content dl>div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #e5dfdb;font:700 11px/1.55 FlowCairo,Arial,sans-serif}.flow-servers .preview .server-spec-content dt{color:#6a5963}.flow-servers .preview .server-spec-content dd{margin:0;color:#352334;text-align:left;max-width:45%}.flow-servers .preview .server-spec-content p{font:700 10px/1.6 FlowCairo,Arial,sans-serif;color:#847480;margin:10px 0}
+.flow-servers .preview.has-expanded-specs.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:910px}
+@media(max-width:640px){.flow-servers .preview.has-expanded-specs.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:820px}.flow-servers .preview .server-spec-content dl>div{font-size:10px}.flow-servers .preview .server-spec-more summary{font-size:11px}}
+
+.flow-servers .preview .server-spec-more[open] .server-spec-content{animation:specs-appear .3s ease-out both}@keyframes specs-appear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}html[data-motion-reduced="true"] .flow-servers .preview .server-spec-content{animation:none!important}html[data-motion-reduced="true"] .flow-servers .preview .server-spec-more summary span{transition:none}
+/* Reserve room for the new disclosure even while it is closed. */
+.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:665px}
+@media(max-width:640px){.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:555px}}
+@media(max-width:640px){.flow-servers .preview .server-spec-content dl>div{font-size:11px}}

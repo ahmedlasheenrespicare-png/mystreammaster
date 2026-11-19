@@ -53,7 +53,6 @@
  const cards=[...(stage?.querySelectorAll('.sm-journey__steps li')||[])],progressBar=stage?.querySelector('.sm-journey__meter'),progressNumber=stage?.querySelector('[data-journey-progress]');
  if(!stage||!view||!content||!ghost||!progressBar||!progressNumber||!motion||cards.length!==4)return;
  let visible=false,frame=0,wakeTimer=0,active=false,lastY=NaN,lastProgress=-1,centres=null,ghostY=NaN,ghostTime=0,lastGhost='',lastPath='';
- const touchQuery=matchMedia('(max-width: 1023px) and (pointer: coarse)'),nativeTouch=()=>touchQuery.matches;
  let lastInteraction=performance.now(),previewStep=null,nextPreview=0,pinned=false;
  const idleDelay=2500,stepDuration=3000;
  function interrupt(){previewStep=null;nextPreview=0;lastInteraction=performance.now()}
@@ -86,8 +85,7 @@
    const sx=n.right-v.left+4,sy=n.top-v.top+n.height/2,edge=Math.min(v.width-5,c.right-v.left+8),ey=c.top-v.top+c.height/2,ex=Math.min(v.width-5,c.right-v.left+1);
    const path=stage.dataset.pointer==='curve'?`M ${sx} ${sy} Q ${edge} ${sy} ${edge} ${sy+Math.min(22,(ey-sy)/2)} L ${edge} ${ey-6} Q ${edge} ${ey} ${ex} ${ey}`:`M ${sx} ${sy} H ${edge} V ${ey} H ${ex}`;if(path!==lastPath){pointerPath.setAttribute('d',path);lastPath=path}
   }
-  if(!nativeTouch()){frame=requestAnimationFrame(update);return}
-  // On native touch scrolling, wake on movement or an idle-preview deadline;
+  // Wake on native or smoothed scrolling, or an idle-preview deadline;
   // keep frames running only while the handwritten accent is settling.
   clearTimeout(wakeTimer);wakeTimer=0;
   if(Math.abs(target-ghostY)>.15)frame=requestAnimationFrame(update);
@@ -107,11 +105,11 @@
  }
  if('IntersectionObserver' in window)new IntersectionObserver(entries=>{visible=entries.some(e=>e.isIntersecting);stage.dataset.inView=String(visible);sync()},{rootMargin:'100px'}).observe(stage);else {visible=true;stage.dataset.inView='true'}
  window.addEventListener('resize',configure,{passive:true});document.fonts?.ready.then(configure);
- function interact(event){if(active&&visible&&pinned){if(event?.target instanceof Element&&event.target.closest('.sm-journey__step-link'))return;interrupt();if(nativeTouch())sync()}}
+ function interact(event){if(active&&visible&&pinned){if(event?.target instanceof Element&&event.target.closest('.sm-journey__step-link'))return;interrupt();sync()}}
  document.addEventListener('wheel',interact,{passive:true});document.addEventListener('touchstart',interact,{passive:true});document.addEventListener('pointerdown',interact,{passive:true});
- stage.addEventListener('focusin',()=>{lastInteraction=performance.now();if(nativeTouch())sync()});stage.addEventListener('focusout',()=>{lastInteraction=performance.now();if(nativeTouch())sync()});
- window.addEventListener('scroll',()=>{if(nativeTouch())sync()},{passive:true});
+ stage.addEventListener('focusin',()=>{lastInteraction=performance.now();sync()});stage.addEventListener('focusout',()=>{lastInteraction=performance.now();sync()});
+ window.addEventListener('scroll',sync,{passive:true});window.addEventListener('sm-smooth-scroll',sync);
  document.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))interact()});
  const pointerPath=stage.querySelector('.sm-journey__pointer-path');
- touchQuery.addEventListener?.('change',sync);motion.addEventListener('change',configure);document.addEventListener('visibilitychange',sync);configure();
+ motion.addEventListener('change',configure);document.addEventListener('visibilitychange',sync);configure();
 })();

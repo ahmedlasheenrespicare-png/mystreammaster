@@ -23,31 +23,6 @@ export function applyReferencePlanFields(html,plans) {
       if(count!==1)throw new Error(`Missing reference path field: ${code}.${field}`);
     }
   }
-  const codes=['nova','istar','x'];
-  const selected=codes.map(code=>plans.find(item=>item.serverCode===code));
-  // General statements must remain true for every path, even if plans diverge.
-  function minimumCount(key,unit){
-    const values=selected.map(plan=>String(plan[key]).match(/^\s*(\+)?([\d,]+)/));
-    if(values.some(value=>!value))return 'تختلف حسب الباقة';
-    const minimum=Math.min(...values.map(value=>Number(value[2].replaceAll(',',''))));
-    if(!Number.isSafeInteger(minimum))return 'تختلف حسب الباقة';
-    const greater=values.every(value=>value[1]);
-    return `${greater?'أكثر من':'تبدأ من'} \u2066${minimum.toLocaleString('en-US')}\u2069 ${unit}`;
-  }
-  // The general section intentionally caps the advertised headline at 4K.
-  const qualityOrder=['4K','FHD','HD','SD'];
-  const qualities=selected.map(plan=>String(plan.quality).split('/').map(q=>q.trim().toUpperCase()));
-  const best=qualityOrder.find(quality=>qualities.some(items=>items.includes(quality)));
-  const shared={
-    channels:minimumCount('channelsCount','قناة حية'),
-    vod:minimumCount('vodCount','فيلم ومسلسل'),
-    quality:best?`حتى \u2066${best}\u2069 حسب الباقة`:'تختلف حسب الباقة',
-  };
-  for(const [field,value] of Object.entries(shared)){
-    const pattern=new RegExp(`(<dd\\s+data-path-shared-${field}>)[^<]*(<\\/dd>)`,'g');
-    let count=0;html=html.replace(pattern,(_,start,end)=>{count++;return start+escape(value)+end});
-    if(count!==1)throw new Error(`Missing shared path field: ${field}`);
-  }
   return html;
 }
 // Keep provider claims clearly attributed to the published specifications,

@@ -63,3 +63,5 @@
 .steps:not(.is-enhanced) .steps__item{padding:32px 12px;border-radius:18px;background:linear-gradient(140deg,#f4e8e5,#fcfaf6 65%);display:flex;flex-direction:column;gap:12px}
 .steps:not(.is-enhanced) .steps__item:before{content:"";display:block;width:76px;height:76px;background:center/contain no-repeat;flex:none}
 .steps:not(.is-enhanced) .steps__item:nth-child(1):before{background-image:url('icons/trial.svg')}.steps:not(.is-enhanced) .steps__item:nth-child(2):before{background-image:url('icons/server.svg')}.steps:not(.is-enhanced) .steps__item:nth-child(3):before{background-image:url('icons/setup.svg')}.steps:not(.is-enhanced) .steps__item:nth-child(4):before{background-image:url('icons/watch.svg')}
+/* Vector arrows are independent of the device's font and cannot shrink away. */
+.steps .steps__details a .steps__action-arrow{display:block;flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

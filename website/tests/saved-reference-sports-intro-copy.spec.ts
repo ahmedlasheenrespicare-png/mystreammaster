@@ -1,0 +1,34 @@
+import {test,expect} from '@playwright/test';
+for(const width of [390,1440])test(`sports intro keeps its heading and removes only the requested copy and link at ${width}px`,async({browser})=>{
+ const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+ const page=await context.newPage();await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ const section=page.locator('#services');
+ await expect(section.locator('#sports-title')).toContainText('المباريات');
+ await expect(section.locator('#sports-title')).toContainText('البطولات');
+ await expect(section.locator('#sports-title')).toContainText('الدوريات');
+ await expect(section.locator('.sm-sports__note')).toHaveText('استكشف البطولات ومواعيد المباريات.');
+ await expect(section).not.toContainText('المحتوى المشفّر');
+ await expect(section.locator('.sm-sports__link')).toHaveCount(0);
+ await expect(page.locator('#league-strip')).toHaveCount(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await context.close();
+});
+for(const width of [320,390,768,1440,2560])test(`sports world keeps connected sections, backgrounds and controls at ${width}px`,async({browser})=>{
+ const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+ const page=await context.newPage();await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','off'));
+ if(width>=600)await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));
+ await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader,.nav{display:none!important}'});
+ const region=page.getByRole('region',{name:'عالم الرياضة'});
+ await expect(region.locator(':scope > section')).toHaveCount(3);
+ const geometry=await region.evaluate(el=>[...el.querySelectorAll<HTMLElement>(':scope > section')].map(s=>{const r=s.getBoundingClientRect();return{id:s.id,top:r.top,bottom:r.bottom,bg:getComputedStyle(s).backgroundColor}}));
+ expect(geometry.map(s=>s.id)).toEqual(['services','league-strip','featured-matches']);
+ expect(geometry.map(s=>s.bg)).toEqual(['rgb(255, 255, 255)','rgb(239, 204, 146)','rgb(255, 255, 255)']);
+ expect(Math.abs(geometry[1].top-geometry[0].bottom)).toBeLessThan(2);expect(Math.abs(geometry[2].top-geometry[1].bottom)).toBeLessThan(2);
+ await expect(region.locator('#league-strip .sm-leagues__mini button')).toHaveCount(8);
+ await expect(region.locator('#featured-matches .sm-matches__tabs button')).toHaveCount(4);
+ await expect(region.locator('.sm-matches__stadium')).toHaveCount(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await context.close();
+});

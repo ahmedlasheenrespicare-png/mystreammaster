@@ -10,7 +10,7 @@ for (const width of [320,390,768,1440]) {
   await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
   await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
   await page.addStyleTag({content:'.loader{display:none!important}'});
-  const root=page.locator('#works .preview'),link=page.locator('.sm-path__compare--shared');
+  const root=page.locator('#works .preview'),link=page.locator('.steps__details a[href="#servers-compare"]');
   await link.scrollIntoViewIfNeeded();await link.click();
   await expect(page).toHaveURL(/#servers-compare$/);
   await expect(root.locator('.server-spec-more[open]')).toHaveCount(4);
@@ -33,14 +33,14 @@ test('comparison hash opens every card on arrival',async({page})=>{
  await expect(page.locator('#works .server-spec-more[open]')).toHaveCount(4);
 });
 
-for (const destination of ['path', 'steps', 'direct']) {
+for (const destination of ['steps', 'direct']) {
  test(`real desktop scroll engine reaches comparison from ${destination}`, async ({page}) => {
   test.setTimeout(120000);
   await page.route('https://**',r=>r.abort());
   await page.route('**/*.mp4*',r=>r.abort());
   await page.goto('/home-preview/saved-reference/'+(destination==='direct'?'#servers-compare':''),{waitUntil:'domcontentloaded'});
   if(destination!=='direct') {
-   const link=destination==='path'?'.sm-path__compare--shared':'.steps__details a[href="#servers-compare"]';
+   const link='.steps__details a[href="#servers-compare"]';
    await page.locator(link).evaluate((el:HTMLElement)=>el.click());
   }
   const root=page.locator('#works .preview');

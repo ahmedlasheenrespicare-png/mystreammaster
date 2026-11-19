@@ -1,7 +1,7 @@
 /* Use the same verified source and calculations as the league section. */
-import {validateStandings,leagueStandingsByLeague,standingsUrl} from '/home-preview/saved-reference/assets/standings.js?v=4095aca42404c097';
-import {standingsRates} from '/home-preview/saved-reference/assets/fixtures-archive.js?v=4095aca42404c097';
-import {providerTeamLogo} from '/home-preview/saved-reference/assets/leader-logo.js?v=4095aca42404c097';
+import {validateStandings,leagueStandingsByLeague,standingsUrl} from '/home-preview/saved-reference/assets/standings.js?v=b8df2934c40c8350';
+import {standingsRates} from '/home-preview/saved-reference/assets/fixtures-archive.js?v=b8df2934c40c8350';
+import {providerTeamLogo} from '/home-preview/saved-reference/assets/leader-logo.js?v=b8df2934c40c8350';
 const ids=['uefa.champions','eng.1','fra.1','esp.1','ger.1','ita.1','ksa.1','egy.1'];
 const cards=[...document.querySelectorAll('.world .cards > .card')],records=new Map(),pending=new Set(),requested=new Map();
 const fmt=new Intl.NumberFormat('ar-EG');let snapshotReady=false;
@@ -28,4 +28,4 @@ async function refresh(i){
 window.refreshLeagueCard=refresh;
 function refreshVisibleCard(){if(document.hidden)return;const i=cards.findIndex(card=>card.classList.contains('is-flipped'));if(i>=0)refresh(i)}
 setInterval(refreshVisibleCard,120000);document.addEventListener('visibilitychange',refreshVisibleCard);
-try{const response=await fetch('/home-preview/saved-reference/assets/standings-snapshot.json?v=4095aca42404c097');if(!response.ok)throw Error('unavailable');const snapshot=await response.json();for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),old=records.get(id)?.table;if(!old||(table.season>=old.season&&Date.parse(table.fetchedAt)>Date.parse(old.fetchedAt)))records.set(id,{table,live:false,stale:true})}catch{}}}catch{}finally{snapshotReady=true;cards.forEach((card,i)=>{render(i);if(card.classList.contains('is-flipped'))refresh(i)})}
+try{const response=await fetch('/home-preview/saved-reference/assets/standings-snapshot.json?v=b8df2934c40c8350');if(!response.ok)throw Error('unavailable');const snapshot=await response.json();for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),old=records.get(id)?.table;if(!old||(table.season>=old.season&&Date.parse(table.fetchedAt)>Date.parse(old.fetchedAt)))records.set(id,{table,live:false,stale:true})}catch{}}}catch{}finally{snapshotReady=true;cards.forEach((card,i)=>{render(i);if(card.classList.contains('is-flipped'))refresh(i)})}

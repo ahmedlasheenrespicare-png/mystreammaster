@@ -49,7 +49,7 @@ for (const width of [390, 1280]) {
     await prepare(page);
     await page.locator('.sm-leagues__stage').scrollIntoViewIfNeeded();
     await expect(page.locator('[data-stat="leader"] strong')).toContainText('Live Source Leader');
-    await expect(page.locator('.sm-leagues__stat-source')).toContainText('آخر قراءة');
+    await expect(page.locator('.sm-leagues__stat-source')).toHaveCount(0);
     for (const key of ['leader', 'attack', 'defence', 'goals']) await expect(page.locator(`[data-stat="${key}"] strong`)).not.toHaveText('غير متاح');
     expect(standingsRequests).toContain('uefa.champions');
     await page.locator('#featured-matches').scrollIntoViewIfNeeded();
@@ -71,7 +71,7 @@ test('proxy failure keeps documented standings snapshot and offers match retry w
   await prepare(page);
   await page.locator('.sm-leagues__stage').scrollIntoViewIfNeeded();
   await expect(page.locator('[data-stat="leader"] strong')).toContainText(snapshot.tables[0].entries[0].name);
-  await expect(page.locator('.sm-leagues__stat-source')).toContainText('لقطة محفوظة');
+  await expect(page.locator('.sm-leagues__stat-source')).toHaveCount(0);
   await page.locator('#featured-matches').scrollIntoViewIfNeeded();
   await expect(page.locator('.sm-matches__retry')).toBeVisible({ timeout: 20000 });
   await expect(page.locator('.sm-match')).toHaveCount(0);
@@ -100,7 +100,7 @@ test('each of the eight selected leagues updates from the standings proxy', asyn
       buttons.forEach((button, n) => button.setAttribute('aria-pressed', String(n === index)));
     }, i);
     await expect(page.locator('[data-stat="leader"] strong')).toContainText(`Live ${ids[i]}`);
-    await expect(page.locator('.sm-leagues__stat-source')).toContainText('آخر قراءة');
+    await expect(page.locator('.sm-leagues__stat-source')).toHaveCount(0);
   }
   expect(new Set(requested)).toEqual(new Set(ids));
 });

@@ -58,3 +58,16 @@ test('mobile smooth scrolling uses native touch while the motion setting stays e
  await expect(page.locator('.sm-journey__stage')).toHaveAttribute('data-scroll-active','true');
  await context.close();
 });
+
+test('desktop journey keeps its idle preview and reacts to scrolling after resting',async({browser})=>{
+ test.setTimeout(30000);const context=await browser.newContext({viewport:{width:1440,height:1000}});const page=await context.newPage();await setup(page);
+ const stage=page.locator('.sm-journey__stage'),cards=stage.locator('.sm-journey__steps li');await expect(stage).toHaveAttribute('data-scroll-active','true');
+ async function go(fraction:number){await stage.evaluate((el,f)=>{const view=el.querySelector('.sm-journey__stage-view')!,r=el.getBoundingClientRect();scrollTo(0,scrollY+r.top+(r.height-view.getBoundingClientRect().height)*f)},fraction)}
+ await go(.4);await expect(cards.nth(1)).toHaveAttribute('data-current','true');
+ await page.waitForTimeout(1000);await page.evaluate(()=>{(window as any).scrollFrames.journey=0});await page.waitForTimeout(650);
+ expect(await page.evaluate(()=>(window as any).scrollFrames.journey)).toBeLessThanOrEqual(3);
+ await expect(cards.nth(0)).toHaveAttribute('data-current','true',{timeout:3500});
+ await expect(cards.nth(1)).toHaveAttribute('data-current','true',{timeout:4500});
+ await go(.6);await expect(cards.nth(2)).toHaveAttribute('data-current','true');
+ await go(.12);await expect(cards.nth(0)).toHaveAttribute('data-current','true');await context.close();
+});

@@ -24,7 +24,6 @@
  const heading=document.querySelector('.sm-path__heading'),script=heading?.querySelector('.sm-path__script'),motion=window.smMotion;
  if(!heading||!script||!motion)return;
  let inView=false,frame=0,lastY=NaN;
- const touchQuery=matchMedia('(max-width: 1023px) and (pointer: coarse)'),nativeTouch=()=>touchQuery.matches;
  function draw(){
   frame=0;if(!inView||motion.matches||document.hidden)return;
   const rect=heading.getBoundingClientRect(),viewport=window.innerHeight||1;
@@ -32,12 +31,12 @@
   const distance=Math.min(110,rect.height*.24);
   const y=Math.round(progress*distance*10)/10;
   if(y!==lastY){script.style.setProperty('--sm-path-script-y',`${y}px`);lastY=y}
-  if(!nativeTouch())frame=requestAnimationFrame(draw);
  }
  function sync(){if(!inView||motion.matches||document.hidden){if(frame)cancelAnimationFrame(frame);frame=0;if(motion.matches){script.style.removeProperty('--sm-path-script-y');lastY=NaN}return}if(!frame)frame=requestAnimationFrame(draw)}
  if('IntersectionObserver' in window)new IntersectionObserver(entries=>{inView=entries.some(entry=>entry.isIntersecting);sync()},{rootMargin:'100px'}).observe(heading);else inView=true;
- window.addEventListener('scroll',()=>{if(nativeTouch()&&inView&&!motion.matches&&!document.hidden&&!frame)frame=requestAnimationFrame(draw)},{passive:true});
- window.addEventListener('resize',sync,{passive:true});touchQuery.addEventListener?.('change',sync);
+ window.addEventListener('scroll',sync,{passive:true});
+ window.addEventListener('sm-smooth-scroll',sync);
+ window.addEventListener('resize',sync,{passive:true});
  motion.addEventListener('change',sync);document.addEventListener('visibilitychange',sync);sync();
 })();
 

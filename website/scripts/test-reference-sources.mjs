@@ -30,7 +30,7 @@ test('reference asset versions change when dependencies change and are stable ac
     assert.ok(html.includes(`sports-stats.js?v=${first}`));
     assert.ok(html.includes(`featured-matches.js?v=${first}`));
     assert.ok(html.includes(`mobile-motion.js?v=${first}`));
-    for(const name of ['path-fan.js','path-fan.css','heading-accents.js','heading-accents.css','simple-steps/steps.js','simple-steps/steps.css'])assert.ok(html.includes(`${name}?v=${first}`));
+    for(const name of ['path-fan.js','path-fan.css','heading-accents.js','heading-accents.css','simple-steps/steps.js','simple-steps/steps.css','featured-stadium.js','featured-stadium.css','featured-stadium.jpg','featured-stadium.mp4'])assert.ok(html.includes(`${name}?v=${first}`));
     assert.ok(html.includes(`rose-strip.js?v=${first}`));
     assert.ok(html.includes(`video-streammaster-hero-montage-1080.mp4?v=${first}`));
     const stats=await fs.readFile(path.join(dir,'assets/sports-stats.js'),'utf8');
@@ -39,7 +39,7 @@ test('reference asset versions change when dependencies change and are stable ac
     const matches=await fs.readFile(path.join(dir,'assets/matches.js'),'utf8');
     assert.ok(matches.includes(`scoreboard-incidents.js?v=${first}`));
     let current=first;
-    for(const name of ['path-fan.js','path-fan.css','heading-accents.js','heading-accents.css','simple-steps/steps.js','simple-steps/steps.css','simple-steps/icons/trial.svg','simple-steps/icons/server.svg','simple-steps/icons/setup.svg','simple-steps/icons/watch.svg']) {
+    for(const name of ['path-fan.js','path-fan.css','heading-accents.js','heading-accents.css','simple-steps/steps.js','simple-steps/steps.css','simple-steps/icons/trial.svg','simple-steps/icons/server.svg','simple-steps/icons/setup.svg','simple-steps/icons/watch.svg','featured-stadium.js','featured-stadium.css','featured-stadium.jpg','featured-stadium.mp4']) {
       await fs.appendFile(path.join(dir,'assets',name),'\n');
       const changed=await versionReferenceAssets(dir);
       assert.notEqual(changed,current,`${name} invalidates the reference cache`);
@@ -119,6 +119,7 @@ test('league world is self-contained in the approved reference and versioned', a
     const {versionReferenceAssets}=await import('./version-reference-assets.mjs');
     const first=await versionReferenceAssets(dir);
     const generated=await fs.readFile(path.join(dir,'assets/league-world/world.html'),'utf8');
+    assert.ok(generated.includes(`featured-stadium-static.png?v=${first}`));
     assert.ok(generated.includes(`world-motion.js?v=${first}`));
     assert.ok(generated.includes(`motion-settings.js?v=${first}`));
     assert.ok(generated.includes(`league-panels.css?v=${first}`));

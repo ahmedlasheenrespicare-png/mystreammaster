@@ -1,0 +1,7 @@
+/* The playing surface is confined to the title and the space below it. */
+.sm-sports__ball-stage{position:relative;padding-bottom:clamp(130px,15vw,200px)}
+.sm-sports__balls{position:absolute;inset:0;z-index:5;overflow:hidden;touch-action:pan-y;direction:ltr}
+.sm-sports__balls canvas{display:block;width:100%;height:100%;pointer-events:none}
+.sm-sports__balls::after{content:"";position:absolute;bottom:16px;left:0;right:0;border-bottom:1px solid #28082255;pointer-events:none}
+.sm-sports.service>.sm-sports__note{margin-top:20px}
+@media(max-width:700px){.sm-sports__ball-stage{padding-bottom:140px}.sm-sports.service>.sm-sports__note{margin-top:20px}}

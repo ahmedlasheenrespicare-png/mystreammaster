@@ -194,3 +194,18 @@ html[data-motion-reduced="true"] .league-overlay.is-open .league-overlay__backgr
 .league-overlay.is-open .league-overlay__tabs button:nth-child(3){animation-delay:.08s}
 @keyframes league-strip-enter{from{opacity:0;transform:translateX(min(75vw,500px)) rotate(3deg)}to{opacity:1;transform:translateX(0) rotate(0)}}
 html[data-motion-reduced="true"] .league-overlay.is-open .league-overlay__tabs button{animation:none}
+
+/* The approved stadium is a single static image beneath the three destinations. */
+.league-overlay__stadium{width:min(100%,380px);margin:20px auto 6px;pointer-events:none}.league-overlay__stadium img{display:block;width:100%;height:auto;object-fit:contain}
+@media(max-width:750px){.league-overlay__stadium{width:min(85%,300px);margin:15px auto 8px}}
+/* Make room for the illustration within the original mobile page height. */
+@media(max-width:750px){
+ .league-overlay .league-overlay__card .card{--width:min(32vw,115px)}
+ .league-overlay .league-overlay__tabs{margin:10px auto 12px}
+ .league-overlay .league-overlay__tabs button{aspect-ratio:1.55}
+ .league-overlay__stadium{width:min(58%,180px);margin:4px auto}
+}
+@media(max-width:350px){
+ .league-overlay .league-overlay__card .card{--width:min(29vw,100px)}
+ .league-overlay__stadium{width:min(55%,160px)}
+}

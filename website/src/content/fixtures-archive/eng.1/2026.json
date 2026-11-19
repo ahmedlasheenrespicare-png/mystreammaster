@@ -4327,6 +4327,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261202&limit=500"
       },
       "fetchedAt": "2026-11-18T11:43:51.719Z"
+    },
+    {
+      "id": "401878749",
+      "date": "2026-12-03T20:00:00.000Z",
+      "home": {
+        "id": "367",
+        "name": "Tottenham Hotspur"
+      },
+      "away": {
+        "id": "370",
+        "name": "Fulham"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261203&limit=500"
+      },
+      "fetchedAt": "2026-11-19T11:41:16.579Z"
     }
   ]
 }

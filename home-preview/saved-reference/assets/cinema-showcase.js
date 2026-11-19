@@ -25,19 +25,24 @@ document.querySelectorAll('#cinema-library .smcin-track > .smcin-panel').forEach
  track.classList.add('smcin-enhanced');const left=original.map(el=>el.cloneNode(true)),right=original.map(el=>el.cloneNode(true));left.reverse().forEach(el=>track.prepend(el));right.forEach(el=>track.append(el));const panels=[...track.children],length=original.length;
  // Reveal composited layers only after both files are usable; a failed file leaves the original image intact.
  panels.forEach(panel=>{const parts=[...panel.querySelectorAll('img.smcin-backdrop,img.smcin-person')];if(parts.length!==2)return;const update=()=>panel.classList.toggle('smcin-layers-ready',parts.every(img=>img.complete&&img.naturalWidth>0));parts.forEach(img=>{img.addEventListener('load',update);img.addEventListener('error',update)});update()});
- let visible=false,playing=!reduced.matches,lastReduced=reduced.matches,timer=0,index=length,phase='wide-reel',focused=false,lastWidth=0;
+ let visible=false,playing=!reduced.matches,lastReduced=reduced.matches,timer=0,deadline=0,remaining=0,index=length,phase='wide-reel',focused=false,lastWidth=0;
  function metrics(){const width=rail.clientWidth,gap=Math.max(3,width*.012),tile=(width-gap*4)/5,feature=width*.60;return {width,gap,tile,feature}}
  function layout(animate=true){const {width,gap,tile,feature}=metrics();lastWidth=width;track.style.setProperty('--gap',`${gap}px`);track.style.setProperty('--tile',`${tile}px`);track.style.setProperty('--feature',`${feature}px`);const focal=width*(focused?.42:.5);const shift=focal-(index*(tile+gap)+(focused?feature:tile)/2);if(!animate)track.classList.add('smcin-no-transition');track.style.setProperty('--shift',`${shift}px`);if(!animate){void track.offsetWidth;track.classList.remove('smcin-no-transition')}}
- function stop(){clearTimeout(timer);timer=0}
+ function stop(preserve=false){
+  if(timer&&preserve)remaining=Math.max(0,deadline-performance.now());
+  else if(!preserve)remaining=0;
+  clearTimeout(timer);timer=0;deadline=0;
+ }
+ function scheduleTick(delay){remaining=0;deadline=performance.now()+delay;timer=setTimeout(tick,delay)}
  // Only the five visible strips and a small look-ahead need decoded posters.
  // Full-resolution character layers are limited to the current and next scene.
  function prepare(){
   panels.forEach((panel,n)=>{
-   const near=visible&&Math.abs(n-index)<=4,featured=visible&&!reduced.matches&&(n===index||n===index+1);
+   const near=Math.abs(n-index)<=4,featured=!reduced.matches&&(n===index||n===index+1);
    const poster=panel.querySelector('img:not(.smcin-backdrop):not(.smcin-person)');
-   if(poster){if(near&&!poster.hasAttribute('src')&&poster.dataset.src)poster.src=poster.dataset.src;else if(!near&&poster.hasAttribute('src'))poster.removeAttribute('src')}
+   if(poster){if(visible&&near&&!poster.hasAttribute('src')&&poster.dataset.src)poster.src=poster.dataset.src;else if(!near&&poster.hasAttribute('src'))poster.removeAttribute('src')}
    panel.querySelectorAll('img.smcin-backdrop,img.smcin-person').forEach(img=>{
-    if(featured&&!img.hasAttribute('src')&&img.dataset.src)img.src=img.dataset.src;
+    if(visible&&featured&&!img.hasAttribute('src')&&img.dataset.src)img.src=img.dataset.src;
     else if(!featured&&img.hasAttribute('src'))img.removeAttribute('src');
    });
    if(!featured)panel.classList.remove('smcin-layers-ready');
@@ -48,13 +53,23 @@ document.querySelectorAll('#cinema-library .smcin-track > .smcin-panel').forEach
  // Return characters to their starting position before advancing the reel.
  const returnDuration=3100;
  function tick(){
-  timer=0;if(!playing||!visible||document.hidden)return;
-  if(!focused){focused=true;phase='feature';mark();layout();timer=setTimeout(tick,6000);return}
-  if(phase!=='returning'){phase='returning';panels[index].classList.add('smcin-returning');timer=setTimeout(tick,returnDuration);return}
+  timer=0;deadline=0;remaining=0;if(!playing||!visible||document.hidden)return;
+  if(!focused){focused=true;phase='feature';mark();layout();scheduleTick(6000);return}
+  if(phase!=='returning'){phase='returning';panels[index].classList.add('smcin-returning');scheduleTick(returnDuration);return}
   panels[index].classList.remove('smcin-returning');
-  if(index>=length*2)resetCopy();index++;phase='feature';mark();layout();timer=setTimeout(tick,6000);
+  if(index>=length*2)resetCopy();index++;phase='feature';mark();layout();scheduleTick(6000);
  }
- function sync(){stop();if(!playing||!visible||document.hidden)return;timer=setTimeout(tick,phase==='returning'?returnDuration:focused?6000:700)}
+ // Preserve the exact visual position of in-flight CSS transitions as well as the timer.
+ let pausedAnimations=[];
+ function sync(){
+  stop(true);
+  if(!visible||document.hidden){
+   if(stage.getAnimations)stage.getAnimations({subtree:true}).forEach(animation=>{if(animation.playState==='running'){animation.pause();pausedAnimations.push(animation)}});
+   return;
+  }
+  pausedAnimations.forEach(animation=>{if(animation.playState==='paused')animation.play()});pausedAnimations=[];
+  if(!playing)return;scheduleTick(remaining||(phase==='returning'?returnDuration:focused?6000:700));
+ }
  const touch=stage.querySelector('.preview-touch--cinema'),controls=stage.querySelector('.preview-controls--cinema');let resumeTimer=0;
  function pauseTemporarily(){
   playing=false;stop();panels.forEach(p=>p.classList.remove('smcin-returning'));phase='feature';focused=true;mark();layout();controls.hidden=false;controls.classList.add('is-visible');

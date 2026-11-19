@@ -2,7 +2,7 @@
 (()=>{
  const world=document.querySelector('.world'),plane=world.querySelector('.cards');
  const cards=[...plane.querySelectorAll(':scope > .card')],shapes=[...plane.querySelectorAll('.shape')];
- const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const reduced=window.smMotion||matchMedia('(prefers-reduced-motion: reduce)');
  const engine={overlayOpen:false,stopScroll:false};let x=0,y=0,targetX=0,targetY=0,minX=0,minY=0,frame=0,drag=null,lastTime=0,lastInput=performance.now(),selectedCard=null,flipTimer=0;
  const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
  function layout(){

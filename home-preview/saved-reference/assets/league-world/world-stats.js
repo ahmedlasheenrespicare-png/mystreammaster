@@ -1,7 +1,7 @@
 /* Use the same verified source and calculations as the league section. */
-import {validateStandings,leagueStandingsByLeague,standingsUrl} from '/home-preview/saved-reference/assets/standings.js?v=048badd1f2166a04';
-import {standingsRates} from '/home-preview/saved-reference/assets/fixtures-archive.js?v=048badd1f2166a04';
-import {providerTeamLogo} from '/home-preview/saved-reference/assets/leader-logo.js?v=048badd1f2166a04';
+import {validateStandings,leagueStandingsByLeague,standingsUrl} from '/home-preview/saved-reference/assets/standings.js?v=4095aca42404c097';
+import {standingsRates} from '/home-preview/saved-reference/assets/fixtures-archive.js?v=4095aca42404c097';
+import {providerTeamLogo} from '/home-preview/saved-reference/assets/leader-logo.js?v=4095aca42404c097';
 const ids=['uefa.champions','eng.1','fra.1','esp.1','ger.1','ita.1','ksa.1','egy.1'];
 const cards=[...document.querySelectorAll('.world .cards > .card')],records=new Map(),pending=new Set(),requested=new Map();
 const fmt=new Intl.NumberFormat('ar-EG');let snapshotReady=false;
@@ -14,12 +14,11 @@ function showCrest(container,team,provider){
 }
 
 function render(i){
- const card=cards[i],record=records.get(ids[i]);if(!card)return;const status=card.querySelector('.card-back__source');
+ const card=cards[i],record=records.get(ids[i]);if(!card)return;
  const write=(key,team,value)=>{const box=card.querySelector('[data-stat="'+key+'"]'),name=box.querySelector('strong'),detail=box.querySelector('small');if(team)showCrest(name,team,record?.table.provider);else{name.removeAttribute('aria-label');name.classList.remove('card-stat-crest');name.textContent=key==='goals'&&typeof value==='number'?fmt.format(value):'غير متاح';name.dir='rtl'}detail.textContent=key==='leader'&&value!=null?fmt.format(value)+' نقطة':(key==='attack'||key==='defence')&&value!=null?value.toFixed(2)+' هدف/مباراة':key==='goals'&&value!=null?'هدفًا':''};
- if(!record){if(snapshotReady){for(const key of ['leader','attack','defence','goals'])write(key,null,null);status.textContent='البيانات غير متاحة حاليًا'}return}
+ if(!record){if(snapshotReady){for(const key of ['leader','attack','defence','goals'])write(key,null,null)}return}
  const table=record.table,rates=standingsRates(table.entries),leader=table.entries.find(t=>t.rank===1),attack=rates.bestAttack[0],defence=rates.bestDefence[0];
  write('leader',leader,leader?.points);write('attack',attack,attack?.attack);write('defence',defence,defence?.defence);write('goals',null,rates.rows.length?rates.league.totalGoals:null);
- const date=new Intl.DateTimeFormat('ar-EG',{day:'numeric',month:'short',year:'numeric',timeZone:'Africa/Cairo'}).format(new Date(table.fetchedAt));status.textContent=(record.stale?'بيانات قديمة':record.live?'آخر قراءة':'لقطة محفوظة')+' · '+date+' · '+table.provider;
 }
 async function refresh(i){
  if(!Number.isInteger(i)||i<0||i>=ids.length)return;render(i);const id=ids[i];if(pending.has(id)||Date.now()-(requested.get(id)||0)<120000)return;requested.set(id,Date.now());pending.add(id);
@@ -29,4 +28,4 @@ async function refresh(i){
 window.refreshLeagueCard=refresh;
 function refreshVisibleCard(){if(document.hidden)return;const i=cards.findIndex(card=>card.classList.contains('is-flipped'));if(i>=0)refresh(i)}
 setInterval(refreshVisibleCard,120000);document.addEventListener('visibilitychange',refreshVisibleCard);
-try{const response=await fetch('/home-preview/saved-reference/assets/standings-snapshot.json?v=048badd1f2166a04');if(!response.ok)throw Error('unavailable');const snapshot=await response.json();for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),old=records.get(id)?.table;if(!old||(table.season>=old.season&&Date.parse(table.fetchedAt)>Date.parse(old.fetchedAt)))records.set(id,{table,live:false,stale:true})}catch{}}}catch{}finally{snapshotReady=true;cards.forEach((card,i)=>{render(i);if(card.classList.contains('is-flipped'))refresh(i)})}
+try{const response=await fetch('/home-preview/saved-reference/assets/standings-snapshot.json?v=4095aca42404c097');if(!response.ok)throw Error('unavailable');const snapshot=await response.json();for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),old=records.get(id)?.table;if(!old||(table.season>=old.season&&Date.parse(table.fetchedAt)>Date.parse(old.fetchedAt)))records.set(id,{table,live:false,stale:true})}catch{}}}catch{}finally{snapshotReady=true;cards.forEach((card,i)=>{render(i);if(card.classList.contains('is-flipped'))refresh(i)})}

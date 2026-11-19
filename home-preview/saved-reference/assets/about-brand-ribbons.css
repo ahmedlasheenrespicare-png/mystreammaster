@@ -1,0 +1,14 @@
+/* Three-row reel behind the about introduction. */
+.sm-about .about-ribbons-scene{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(440px,42vw,620px);display:flex;align-items:center}
+.sm-about .about-ribbons-scene .rose-strip{top:0;left:50%;width:100vw;height:100%;z-index:0;opacity:1}
+.sm-about .about-ribbons-scene .rose-strip__track{opacity:.32}
+.sm-about .about-ribbons-scene .hero-brand-row{opacity:.36}
+.sm-about .about-ribbons-scene::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#280822bd 0%,#28082237 32%,#28082240 65%,#280822e8 100%)}
+.sm-about .about-ribbons-scene .abt__top__text{position:relative;z-index:2;width:100%;padding:28px 4vw;box-sizing:border-box;text-shadow:0 2px 14px #280822,0 1px 5px #280822}
+.sm-about .about-ribbons-scene .abt__top__text>p{opacity:1;color:#fff8fa;max-width:250px}
+@media(max-width:700px){
+ .sm-about .about-ribbons-scene{min-height:420px}
+ .sm-about .about-ribbons-scene .abt__top__text{flex-direction:column;justify-content:center;gap:14px;padding:28px 22px}
+ .sm-about .about-ribbons-scene .abt__top__text>p{display:block;font-size:12px;line-height:1.6;text-align:center;margin:0}
+}
+.sm-about .about-ribbons-scene .rose-strip{direction:ltr}

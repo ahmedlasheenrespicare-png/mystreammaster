@@ -18,3 +18,26 @@ test('mobile footer reaches the bottom with the original scrolling engine', asyn
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await context.close();
 });
+
+for (const width of [390,1440]) test(`footer wordmark rises and reverses with scrolling at ${width}px`,async({browser})=>{
+ test.setTimeout(90000);
+ const context=await browser.newContext({viewport:{width,height:900},isMobile:width<600,hasTouch:width<600});
+ await context.addInitScript(()=>localStorage.setItem('sm-motion-preference','on'));
+ const page=await context.newPage();
+ if(width>=600)await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));
+ await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ const stage=page.locator('.sm-contact .sm-footer__cta'), brand=page.locator('.footer-background-brand');
+ const place=async(top:number)=>{await stage.evaluate((el,top)=>window.scrollTo(0,window.scrollY+el.getBoundingClientRect().top-top),top);};
+ const rise=()=>brand.evaluate(el=>parseFloat(el.style.getPropertyValue('--brand-rise')));
+ await place(850);await expect.poll(rise,{timeout:20000}).toBeGreaterThan(60);
+ await expect.poll(()=>brand.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeLessThan(.25);
+ await place(300);await expect.poll(rise,{timeout:20000}).toBeLessThan(1);
+ await expect.poll(()=>brand.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.99);
+ await place(850);await expect.poll(rise,{timeout:20000}).toBeGreaterThan(60);
+ await expect.poll(()=>brand.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeLessThan(.25);
+ await page.evaluate(()=>{const select=document.querySelector<HTMLSelectElement>('#sm-motion-setting')!;select.value='off';select.dispatchEvent(new Event('change'))});
+ await expect.poll(()=>brand.evaluate(el=>el.style.getPropertyValue('--brand-rise'))).toBe('');
+ await expect(brand).toHaveCSS('opacity','1');
+ await context.close();
+});

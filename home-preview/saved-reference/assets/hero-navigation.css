@@ -1,0 +1,15 @@
+/* Navigation experiment, scoped to the independent preview. */
+/* Preserve the original numbered columns and their individual scroll animations. */
+.nav{transition:transform .32s ease}
+.nav.is-scrolled-away:not(:has(:focus-visible)){transform:translateY(-120%)}
+html[data-motion-reduced="true"] .nav{transition:none}
+.nav__menu .content{position:absolute;right:0;top:0;width:min(90vw,430px);height:100%;height:100dvh;overflow-y:auto;overscroll-behavior:contain;padding:clamp(80px,12vh,110px) 24px 30px;transform:translateX(105%);background:#f5ece8;color:#280822;box-sizing:border-box}
+.nav__menu.open .content{transform:translateX(0)}
+.nav__menu .content .preview-menu-title{display:flex;justify-content:space-between;align-items:center;color:#9a6079;font:800 12px/1.5 SMTajawal,Tajawal,sans-serif;margin:0 0 13px;padding:0 2px 13px;border-bottom:1px solid #dac5cd}
+.nav__menu .content .preview-menu-title span{font-size:17px;color:#d07997}
+.nav__menu .links{display:block;margin:0;padding:0}
+.nav__menu .links li,.nav__menu .links li:nth-child(n){margin:0;padding:0;width:100%;overflow:visible}
+.nav__menu .links li a,.nav__menu .links li:nth-child(n) a{display:flex;align-items:center;justify-content:space-between;width:100%;box-sizing:border-box;margin:0;padding:10px 2px;border-bottom:1px solid #e4d6d9;font:800 clamp(15px,4.2vw,19px)/1.35 SMTajawal,Tajawal,sans-serif;color:#280822;transform:none;transition:color .2s}
+.nav__menu .links li a:after{content:none}.nav__menu .links li a:hover{color:#b55176}
+.nav__menu .links .preview-menu-compare a{font-size:14px;color:#a35676;padding-inline-start:18px}
+html[data-motion-reduced="true"] .nav__menu .content{transition:none}

@@ -1,0 +1,34 @@
+/* Preview only: two logo ribbons flanking the original poster strip. */
+.rose-strip{opacity:1}
+.rose-strip__perspective{display:flex;flex-direction:column;gap:clamp(8px,1vw,15px)}
+.rose-strip__track{opacity:.65}
+.hero-brand-row{width:200vw;margin-left:-50vw;overflow:hidden;direction:ltr;pointer-events:none;opacity:.72}
+.hero-brand-track{display:flex;width:max-content;animation:hero-brand-marquee var(--brand-duration,60s) linear infinite;animation-play-state:paused}
+.hero-brand-row--platforms .hero-brand-track{animation-direction:reverse}
+.rose-strip.is-visible .hero-brand-track{animation-play-state:running;will-change:transform}
+.hero-brand-group{display:flex;gap:clamp(8px,1vw,15px);padding-right:clamp(8px,1vw,15px)}
+.hero-brand-card{width:clamp(82px,8vw,122px);height:clamp(39px,4vw,59px);display:flex;align-items:center;justify-content:center;flex:none;padding:8px 12px;border-radius:10px;background:#fff;box-shadow:0 5px 20px #190b152c}
+.hero-brand-card--dark{background:#17131a}
+.hero-brand-card img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+@keyframes hero-brand-marquee{to{transform:translateX(-50%)}}
+html[data-motion-reduced="true"] .hero-brand-track{animation:none}
+@media(max-width:600px){.hero-brand-card{width:80px;height:38px;padding:7px 10px;border-radius:8px}.rose-strip__perspective{gap:22px}}
+/* WordBand-inspired preview: two contrasting rows, original service claims. */
+.ban .ban__desc.hero-wordband{width:110%;margin:14px -5% 0;padding:clamp(17px,2.5vw,34px) 0;background:#0b0b0f;transform:rotate(-1deg);color:#fff;overflow:hidden}
+.hero-wordband__row{overflow:hidden;direction:ltr}
+.hero-wordband__row+.hero-wordband__row{margin-top:clamp(5px,.8vw,12px)}
+.hero-wordband__track{display:flex;width:max-content;animation:hero-wordband-scroll var(--word-duration,60s) linear infinite;animation-play-state:paused}
+.hero-wordband.is-visible .hero-wordband__track{animation-play-state:running;will-change:transform}
+.hero-wordband__row--lime .hero-wordband__track{animation-direction:reverse}
+.hero-wordband__group{display:flex;align-items:baseline;flex:none}
+.ban .hero-wordband .hero-wordband__item{display:block;white-space:nowrap;direction:rtl;padding:0 clamp(15px,2.5vw,35px);font:900 clamp(38px,6.8vw,100px)/1.18 SMTajawal,Tajawal,sans-serif;letter-spacing:-.035em;word-spacing:normal}
+.hero-wordband__row--outline .hero-wordband__item{color:transparent;-webkit-text-stroke:1.5px #fff}
+.hero-wordband__row--lime .hero-wordband__item{color:#d8ff3e}
+@keyframes hero-wordband-scroll{to{transform:translateX(-50%)}}
+html[data-motion-reduced="true"] .hero-wordband__track{animation:none}
+@media(hover:hover){.hero-wordband:hover .hero-wordband__track{animation-play-state:paused}}
+/* Adapt the reference's two-row treatment to the saved page's plum and rose palette. */
+.ban .ban__desc.hero-wordband{background:#280822;padding:clamp(20px,2.5vw,34px) 0;border-block:1px solid rgba(243,223,232,.18)}
+.ban .hero-wordband .hero-wordband__item{font-size:clamp(32px,5.2vw,76px);line-height:1.28;letter-spacing:0;padding-inline:clamp(14px,2.2vw,32px)}
+.hero-wordband__row--outline .hero-wordband__item{color:transparent;-webkit-text-stroke:1px rgba(255,244,239,.8)}
+.hero-wordband__row--lime .hero-wordband__item{color:#e68aa6}

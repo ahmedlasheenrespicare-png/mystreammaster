@@ -1423,8 +1423,10 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
 <link rel="stylesheet" href="./assets/sports-balls.css?v=2">
 <link rel="stylesheet" href="./assets/about-fold.css?v=1">
 <link rel="stylesheet" href="./assets/footer-advanced.css?v=1">
-<link rel="stylesheet" href="./assets/mountain-contact.css?v=2">
+<link rel="stylesheet" href="./assets/mountain-contact.css?v=brand-3">
 <link rel="stylesheet" href="./assets/server-specifications.css?v=mobile-motion-2">
+<link rel="stylesheet" href="./assets/hero-brands.css?v=1">
+<link rel="stylesheet" href="./assets/hero-navigation.css?v=1">
 </head>
 
 <body>
@@ -1475,19 +1477,21 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
     <div class="nav__logo"><a href="/home-preview/index.html" aria-label="ستريم ماستر — الصفحة الرئيسية"><span class="sm-crab39" dir="rtl" aria-hidden="true"><span class="sm-crab39__row"><span class="sm-crab39__word"><span class="sm-crab39__tile"><sup class="sm-crab39__sup">4K</sup><span class="sm-crab39__sym">ست</span></span><span class="sm-crab39__rest">ريم</span></span><span class="sm-crab39__word"><span class="sm-crab39__tile"><sup class="sm-crab39__sup">99</sup><span class="sm-crab39__sym">ما</span></span><span class="sm-crab39__rest">ستر</span></span></span><span class="sm-crab39__sub" dir="ltr">Stream Master Pro</span></span></a></div>
 
     <div class="nav__links" dir="rtl">
-      <span><span>① <a href="#league-strip">البطولات</a></span></span>
-      <span><span>② <a href="#path-section">اختر مسارك</a></span></span>
-      <span><span>③ <a href="#works">السيرفرات</a></span></span>
+      <span><span>① <a href="#league-strip" data-nav-section>البطولات</a></span></span>
+      <span><span>② <a href="#cinema-library" data-nav-section>الأفلام والمسلسلات</a></span></span>
+      <span><span>③ <a href="#path-section" data-nav-section>اختر مسارك</a></span></span>
+      <span><span>④ <a href="#works" data-nav-section>السيرفرات</a></span></span>
     </div>
     <div class="nav__socials" dir="rtl">
       <span><span>① <a href="/nova/">نوفا</a></span></span>
       <span><span>② <a href="/istar/">إيستار</a></span></span>
-      <span><span>③ <a href="/x/">X</a></span></span>
+      <span><span>③ <a href="/moka/">موكا</a></span></span>
+      <span><span>④ <a href="/x/">X</a></span></span>
     </div>
     <div class="nav__contact" dir="rtl">
       <span><span>دعم بالعربية</span></span>
       <span><span><a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب</a></span></span>
-      <span><span><a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">اطلب التفعيل <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></span></span>
+      <span><span><a href="/trial/">جرّب مجانًا <span class="sm-arrow-icon" aria-hidden="true"><svg class="sm-reference-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M7 5h12v12"/></svg></span></a></span></span>
     </div>
 
     <button type="button" class="nav__menu-btn" aria-label="فتح القائمة" aria-expanded="false" aria-controls="sm-menu">
@@ -1500,15 +1504,20 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
 
   <div class="nav__menu" id="sm-menu">
     <div class="bg"></div>
-    <div class="content">
-      <ul class="links" dir="rtl">
-        <li><a data-num="①" href="#league-strip">البطولات</a></li>
-        <li><a data-num="②" href="#path-section">اختر مسارك</a></li>
-        <li><a data-num="③" href="#works">السيرفرات</a></li>
+    <div class="content" dir="rtl" aria-label="قائمة أقسام الصفحة">
+      <p class="preview-menu-title">اكتشف ستريم ماستر <span>✦</span></p>
+      <ul class="links">
+        <li><a href="#about" data-nav-section>عن ستريم ماستر</a></li>
+        <li><a href="#services" data-nav-section>عالم الرياضة والبطولات</a></li>
+        <li><a href="#featured-matches" data-nav-section>المباريات البارزة</a></li>
+        <li><a href="#cinema-library" data-nav-section>الأفلام والمسلسلات</a></li>
+        <li><a href="#path-section" data-nav-section>اختر مسارك</a></li>
+        <li><a href="#works" data-nav-section>اختر سيرفرك</a></li>
+        <li class="preview-menu-compare"><a href="#servers-compare">قارن السيرفرات <span aria-hidden="true">↗</span></a></li>
+        <li><a href="#faq" data-nav-section>الأسئلة الشائعة</a></li>
+        <li><a href="#blog-teaser" data-nav-section>المقالات</a></li>
+        <li><a href="#contact" data-nav-section>تواصل معنا</a></li>
       </ul>
-      <div><p>✦✦</p><p>ستريم ماستر برو</p><p>✦✦</p></div>
-      <a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">اطلب التفعيل</a>
-      <ul class="socials"></ul>
     </div>
   </div>
   <!-- NAV END -->
@@ -1525,7 +1534,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
           <div class="clouds-3"></div>
         </div>
         <div class="ban__oval">
-          <div class="rose-strip" aria-hidden="true"><div class="rose-strip__perspective"><div class="rose-strip__track"><div class="rose-strip__group"></div><div class="rose-strip__group"></div></div></div></div>
+          <div class="rose-strip" aria-hidden="true"><div class="rose-strip__perspective"><div class="hero-brand-row hero-brand-row--channels"><div class="hero-brand-track"></div></div><div class="rose-strip__track"><div class="rose-strip__group"></div><div class="rose-strip__group"></div></div><div class="hero-brand-row hero-brand-row--platforms"><div class="hero-brand-track"></div></div></div></div>
           <div class="ban__oval__3d">
             <img class="ban__oval__bg --mobile" src="./assets/oval_mobile_top.svg" alt="">
             <img class="ban__oval__bg --tablet --top" src="./assets/oval_desktop_top.svg" alt="">
@@ -1543,10 +1552,10 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
           <p>استكشف خيارات المشاهدة، واطّلع على تفاصيل الخدمة ومتطلبات التشغيل قبل اختيار الباقة المناسبة لك.</p>
         </div>
         <div class="hero-flower-spacer" aria-hidden="true"></div>
-        <div class="ban__desc" aria-label="أرقام الخدمة"><div class="ban__desc__content" dir="rtl" lang="ar">
-          <span><bdi>أكثر من 15,000 قناة حية</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>ثبات 99.9% في قمة المباريات</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>4 سيرفرات: نوفا وإيستار وموكا وX</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>أكثر من 50,000 فيلم ومسلسل</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>تفعيل فوري في 5 دقائق</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i></span>
-          <span aria-hidden="true"><bdi>أكثر من 15,000 قناة حية</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>ثبات 99.9% في قمة المباريات</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>4 سيرفرات: نوفا وإيستار وموكا وX</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>أكثر من 50,000 فيلم ومسلسل</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i><bdi>تفعيل فوري في 5 دقائق</bdi><i class="sm-hero-separator" aria-hidden="true">✦</i></span>
-        </div></div>
+        <div class="ban__desc hero-wordband" role="region" aria-label="أرقام الخدمة: أكثر من ١٥ ألف قناة، وأكثر من ٥٠ ألف فيلم ومسلسل، ثبات ٩٩٫٩٪ في قمة المباريات، تفعيل فوري في ٥ دقائق، وأربعة سيرفرات">
+          <div class="hero-wordband__row hero-wordband__row--outline" aria-hidden="true"><div class="hero-wordband__track" data-words="stats"></div></div>
+          <div class="hero-wordband__row hero-wordband__row--lime" aria-hidden="true"><div class="hero-wordband__track" data-words="service"></div></div>
+        </div>
         <script>
         (function(){
           const title=document.querySelector('#sm-hero-copy'), spacer=document.querySelector('.hero-flower-spacer'), oval=document.querySelector('.ban__oval');
@@ -1944,7 +1953,7 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
         <h2 id="sm-contact-title">خلّينا نبدأ<br><span>المشاهدة</span></h2>
         <p class="sm-contact__intro">استفسر عن السيرفرات أو اطلب تجربتك المجانية، وفريق الدعم يساعدك في خطوات الإعداد.</p>
         <div class="sm-footer mountain-cta" aria-label="التواصل">
-          <div class="sm-footer__cta"><div class="footer-hand" aria-hidden="true"><img src="./assets/footer-hand-rose.png?v=1" alt="" loading="lazy" decoding="async"></div>
+          <div class="sm-footer__cta"><div class="footer-background-brand" aria-hidden="true" dir="rtl">ستريم ماستر<sup>®</sup></div><div class="footer-hand" aria-hidden="true"><img src="./assets/footer-hand-rose.png?v=1" alt="" loading="lazy" decoding="async"></div>
             <a class="sm-footer__marquee" href="https://wa.me/201090415657?text=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%20%D8%B3%D8%AA%D8%B1%D9%8A%D9%85%20%D9%85%D8%A7%D8%B3%D8%AA%D8%B1%D8%8C%20%D9%84%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" rel="noopener noreferrer" aria-label="تواصل معنا عبر واتساب">
               <span class="sm-footer__track"><span>تواصل معنا <i aria-hidden="true"><svg class="sm-flower-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93 4.93 19.07" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></i> تواصل معنا <i aria-hidden="true"><svg class="sm-flower-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93 4.93 19.07" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></i></span><span aria-hidden="true">تواصل معنا <i aria-hidden="true"><svg class="sm-flower-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93 4.93 19.07" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></i> تواصل معنا <i aria-hidden="true"><svg class="sm-flower-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93 4.93 19.07" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></i></span></span>
             </a>
@@ -1984,4 +1993,4 @@ html[data-motion-reduced="true"] .sm-blog__card-link:hover .sm-blog__art.has-pos
 </nav>
 <!-- Cloudflare Pages Analytics --><!-- Cloudflare Pages Analytics -->
 
-<canvas class="noise-overlay" width="3420" height="1934"></canvas><script>(function(){const menu=document.querySelector('.nav__menu-btn');function sync(){const open=menu.classList.contains('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة')}new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});})();</script><script src="./assets/about-devices.js?v=d4b0b8f1a7008aee"></script><script src="./assets/about-video.js?v=d4b0b8f1a7008aee"></script><script>(function(){if(window.smMotion.matches){document.querySelector('.sm-journey__frame')?.removeAttribute('data-speed')}const visual=document.querySelector('.sm-journey__visual');if(!visual)return;if(!('IntersectionObserver' in window)){visual.classList.add('is-visible');return}const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){visual.classList.add('is-visible');observer.disconnect()}},{threshold:.2});observer.observe(visual)})();</script><script src="./assets/about-motion.js?v=d4b0b8f1a7008aee"></script><script src="./assets/server-counters.js?v=d4b0b8f1a7008aee"></script><script src="./assets/server-reveal.js?v=d4b0b8f1a7008aee"></script><script src="./assets/display-swipe.js?v=d4b0b8f1a7008aee"></script><script src="./assets/cinema-showcase.js?v=d4b0b8f1a7008aee"></script><script src="./assets/path-section.js?v=steps-mobile-1"></script><script src="./assets/path-fan.js?v=2"></script><script src="./assets/hero-motion.js?v=d4b0b8f1a7008aee"></script><script src="./assets/sports-intro.js?v=d4b0b8f1a7008aee"></script><script src="./assets/sports-balls.js?v=3" defer></script><script type="module" src="./assets/league-panels.js?v=d4b0b8f1a7008aee"></script><script src="./assets/sports-gallery.js?v=d4b0b8f1a7008aee"></script><script src="./assets/league-selector.js?v=d4b0b8f1a7008aee" defer></script><script type="module" src="./assets/sports-stats.js?v=d4b0b8f1a7008aee"></script><script type="module" src="./assets/featured-matches.js?v=d4b0b8f1a7008aee"></script><script src="./assets/blog-rail.js?v=d4b0b8f1a7008aee"></script><script src="./assets/mobile-motion.js?v=d4b0b8f1a7008aee"></script><script src="./assets/contact-footer.js?v=d4b0b8f1a7008aee"></script><script src="./assets/rose-strip.js?v=d4b0b8f1a7008aee"></script><script src="./assets/server-league-cards.js?v=mobile-motion-2" defer></script><iframe id="explore-world" class="league-world-frame" title="عالم البطولات" hidden></iframe><script src="./assets/league-world-entry.js?v=d4b0b8f1a7008aee" defer></script><script src="./assets/simple-steps/steps.js?v=touch-sticky-1"></script><script src="./assets/heading-accents.js?v=1"></script><script src="./assets/featured-stadium.js?v=1" defer></script><script src="./assets/about-fold.js?v=1" defer></script></body></html>
+<canvas class="noise-overlay" width="3420" height="1934"></canvas><script>(function(){const menu=document.querySelector('.nav__menu-btn');function sync(){const open=menu.classList.contains('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة')}new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});})();</script><script src="./assets/about-devices.js?v=d4b0b8f1a7008aee"></script><script src="./assets/about-video.js?v=d4b0b8f1a7008aee"></script><script>(function(){if(window.smMotion.matches){document.querySelector('.sm-journey__frame')?.removeAttribute('data-speed')}const visual=document.querySelector('.sm-journey__visual');if(!visual)return;if(!('IntersectionObserver' in window)){visual.classList.add('is-visible');return}const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){visual.classList.add('is-visible');observer.disconnect()}},{threshold:.2});observer.observe(visual)})();</script><script src="./assets/about-motion.js?v=d4b0b8f1a7008aee"></script><script src="./assets/server-counters.js?v=d4b0b8f1a7008aee"></script><script src="./assets/server-reveal.js?v=d4b0b8f1a7008aee"></script><script src="./assets/display-swipe.js?v=d4b0b8f1a7008aee"></script><script src="./assets/cinema-showcase.js?v=d4b0b8f1a7008aee"></script><script src="./assets/path-section.js?v=steps-mobile-1"></script><script src="./assets/path-fan.js?v=2"></script><script src="./assets/hero-motion.js?v=d4b0b8f1a7008aee"></script><script src="./assets/sports-intro.js?v=d4b0b8f1a7008aee"></script><script src="./assets/sports-balls.js?v=3" defer></script><script type="module" src="./assets/league-panels.js?v=d4b0b8f1a7008aee"></script><script src="./assets/sports-gallery.js?v=d4b0b8f1a7008aee"></script><script src="./assets/league-selector.js?v=d4b0b8f1a7008aee" defer></script><script type="module" src="./assets/sports-stats.js?v=d4b0b8f1a7008aee"></script><script type="module" src="./assets/featured-matches.js?v=d4b0b8f1a7008aee"></script><script src="./assets/blog-rail.js?v=d4b0b8f1a7008aee"></script><script src="./assets/mobile-motion.js?v=d4b0b8f1a7008aee"></script><script src="./assets/contact-footer.js?v=d4b0b8f1a7008aee"></script><script src="./assets/footer-brand-motion.js?v=2" defer></script><script src="./assets/rose-strip.js?v=d4b0b8f1a7008aee"></script><script src="./assets/hero-brands.js?v=1"></script><script src="./assets/hero-wordband.js?v=1"></script><script src="./assets/hero-navigation.js?v=1" defer></script><script src="./assets/server-league-cards.js?v=mobile-motion-2" defer></script><iframe id="explore-world" class="league-world-frame" title="عالم البطولات" hidden></iframe><script src="./assets/league-world-entry.js?v=d4b0b8f1a7008aee" defer></script><script src="./assets/simple-steps/steps.js?v=touch-sticky-1"></script><script src="./assets/heading-accents.js?v=1"></script><script src="./assets/featured-stadium.js?v=1" defer></script><script src="./assets/about-fold.js?v=1" defer></script></body></html>

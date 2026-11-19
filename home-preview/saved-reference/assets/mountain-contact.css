@@ -84,3 +84,11 @@ html[data-motion-reduced="true"] .mountain-footer-reveal{bottom:auto}
    blank area below the footer. Keep its full height in document flow. */
 .mountain-footer-reveal{position:relative;bottom:auto}
 @media(max-width:599px){.mountain-footer-reveal .sm-footer__settings,.mountain-footer-reveal .sm-footer__copy{padding-inline-start:60px}}
+/* Give the larger landscape enough vertical room to keep the contact scene
+   behind the hills without hiding the lettering. */
+@media (min-width:1200px){
+ .sm-contact .mountain-cta .sm-footer__cta{height:calc(33.333vw + 205px);min-height:0}
+ .sm-contact .mountain-cta .footer-hand{top:15px;bottom:auto;height:475px}
+ .sm-contact .mountain-cta .sm-footer__marquee{top:calc(250px - 50%)}
+ .sm-contact .mountain-cta .footer-contact-circle{top:250px}
+}

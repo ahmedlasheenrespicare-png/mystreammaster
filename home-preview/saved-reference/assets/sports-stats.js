@@ -1,14 +1,14 @@
 /* Same standings validation and rates calculation used by the live homepage. */
-import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=4095aca42404c097';
-import {standingsRates} from './fixtures-archive.js?v=4095aca42404c097';
-import {providerTeamLogo} from './leader-logo.js?v=4095aca42404c097';
+import {validateStandings, leagueStandingsByLeague, standingsUrl} from './standings.js?v=b8df2934c40c8350';
+import {standingsRates} from './fixtures-archive.js?v=b8df2934c40c8350';
+import {providerTeamLogo} from './leader-logo.js?v=b8df2934c40c8350';
 
 const section=document.querySelector('.sm-leagues');
 if (section) {
   const buttons=Array.from(section.querySelectorAll('.sm-leagues__mini button'));
   const ids=['uefa.champions','eng.1','fra.1','esp.1','ger.1','ita.1','ksa.1','egy.1'];
   const records={}, requested=new Map(), inFlight=new Set();
-  let active=0, visible=false, snapshotReady=false;
+  let active=0, visible=false;
   const fmt=new Intl.NumberFormat('ar-EG');
   function writeStat(key, team, value) {
     const box=section.querySelector('[data-stat="'+key+'"]');
@@ -22,14 +22,13 @@ if (section) {
   }
   function render(){
     const record=records[ids[active]],table=record?.table;
-    if(!table){['leader','attack','defence','goals'].forEach(k=>writeStat(k,null,null));section.querySelector('.sm-leagues__stat-source').textContent=snapshotReady?'الإحصائيات غير متاحة حالياً':'جارٍ تحميل الإحصائيات';return}
+    if(!table){['leader','attack','defence','goals'].forEach(k=>writeStat(k,null,null));return}
     const rates=standingsRates(table.entries),leader=table.entries.find(e=>e.rank===1),attack=rates.bestAttack[0],defence=rates.bestDefence[0];
     writeStat('leader',leader,leader?.points);
     writeStat('attack',attack,attack?.attack);
     writeStat('defence',defence,defence?.defence);
     writeStat('goals',null,rates.rows.length?rates.league.totalGoals:null);
-    const date=new Intl.DateTimeFormat('ar-EG',{day:'numeric',month:'long',year:'numeric',timeZone:'Africa/Cairo'}).format(new Date(table.fetchedAt));
-    section.querySelector('.sm-leagues__stat-source').textContent=(record.live?(record.stale?'بيانات قديمة':'آخر قراءة'):'لقطة محفوظة')+' · '+date+' · '+table.provider+' · معدلات الأهداف لكل مباراة';
+
   }
   async function refresh(i){
     const id=ids[i];if(!visible||document.hidden||inFlight.has(id)||Date.now()-(requested.get(id)||0)<120000)return;inFlight.add(id);requested.set(id,Date.now());
@@ -52,9 +51,9 @@ if (section) {
   setInterval(()=>refresh(active),120000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(active)});
   try{
-    const response=await fetch(new URL('./standings-snapshot.json?v=4095aca42404c097',import.meta.url));
+    const response=await fetch(new URL('./standings-snapshot.json?v=b8df2934c40c8350',import.meta.url));
     if(!response.ok)throw new Error('SNAPSHOT_UNAVAILABLE');
     const snapshot=await response.json();
     for(const id of ids){try{const table=leagueStandingsByLeague(snapshot,id),current=records[id]?.table;if(!current||(table.season>=current.season&&Date.parse(table.fetchedAt)>Date.parse(current.fetchedAt)))records[id]={table,live:false,stale:true}}catch(_){}}
-  }catch(_){}finally{snapshotReady=true;render();refresh(active)}
+  }catch(_){}finally{render();refresh(active)}
 }

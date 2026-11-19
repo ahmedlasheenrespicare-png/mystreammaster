@@ -3,7 +3,7 @@
  const world=document.querySelector('.world'),plane=world.querySelector('.cards');
  const cards=[...plane.querySelectorAll(':scope > .card')],shapes=[...plane.querySelectorAll('.shape')];
  const reduced=window.smMotion||matchMedia('(prefers-reduced-motion: reduce)');
- const engine={overlayOpen:false,stopScroll:false};let x=0,y=0,targetX=0,targetY=0,minX=0,minY=0,frame=0,drag=null,lastTime=0,lastInput=performance.now(),selectedCard=null,flipTimer=0;
+ const engine={overlayOpen:false,stopScroll:false};let x=0,y=0,targetX=0,targetY=0,minX=0,minY=0,frame=0,drag=null,lastTime=0,lastInput=performance.now(),selectedCard=null,flipTimer=0,focusTimer=0;
  const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
  function layout(){
   const w=innerWidth,h=innerHeight,mobile=w<=750,cw=mobile?216:clamp(w*.205,220,290),ch=cw*1.547;
@@ -35,13 +35,13 @@
   card.style.setProperty('--center-y',(oldY+innerHeight/2-(r.top+r.height/2))+'px');
  }
  function flip(card,back,focus=true){
-  clearTimeout(flipTimer);
+  clearTimeout(flipTimer);clearTimeout(focusTimer);
   const front=card.querySelector('.card-values__inner'),reverse=card.querySelector('.back'),button=front.querySelector('.explore-button');
   if(back){
    selectedCard=card;targetX=x;targetY=y;card.style.setProperty('--x','0');card.style.setProperty('--y','0');
    center(card);card.classList.add('is-centered');world.classList.add('has-centered-card');
    window.refreshLeagueCard?.(Number(card.dataset.id));
-   flipTimer=setTimeout(()=>{if(selectedCard!==card)return;card.classList.add('is-flipped');front.inert=true;reverse.inert=false;button.setAttribute('aria-expanded','true');if(focus)reverse.querySelector('.card-open-details').focus({preventScroll:true})},reduced.matches?0:520);
+   flipTimer=setTimeout(()=>{if(selectedCard!==card)return;card.classList.add('is-flipped');front.inert=true;reverse.inert=false;button.setAttribute('aria-expanded','true');if(focus)focusTimer=setTimeout(()=>{if(selectedCard===card&&card.classList.contains('is-flipped'))reverse.querySelector('.card-open-details').focus({preventScroll:true})},reduced.matches?0:400)},reduced.matches?0:520);
   }else{
    card.classList.remove('is-flipped');front.inert=false;reverse.inert=true;button.setAttribute('aria-expanded','false');
    flipTimer=setTimeout(()=>{card.classList.remove('is-centered');card.style.removeProperty('--center-x');card.style.removeProperty('--center-y');card.style.removeProperty('--selected-scale');world.classList.remove('has-centered-card');selectedCard=null;lastInput=performance.now();if(focus)button.focus({preventScroll:true})},reduced.matches?0:350);

@@ -97,3 +97,15 @@ html[data-motion-reduced="true"] .world .cards .flip-hint svg{animation:none}
 .world .go-back,.world .card-open-details{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .world .world-arrow{display:block;flex:none;width:16px;height:16px}
 .world .card-flip-return .world-arrow{width:21px;height:21px}
+/* Isolate the two faces for mobile compositors, including WebKit. Visibility
+   changes near the halfway point as a fallback when backface culling is flattened. */
+.world .cards .card-values__inner,.world .cards .back{
+ backface-visibility:hidden;-webkit-backface-visibility:hidden;
+ transition:visibility 0s linear .12s;
+}
+.world .cards .card-values__inner{transform:translateZ(1px);visibility:visible}
+.world .cards .back{transform:rotateY(180deg) translateZ(1px);visibility:hidden}
+.world .cards .card.is-flipped .card-values__inner{visibility:hidden}
+.world .cards .card.is-flipped .back{visibility:visible}
+html[data-motion-reduced="true"] .world .cards .card-values__inner,
+html[data-motion-reduced="true"] .world .cards .back{transition:none}

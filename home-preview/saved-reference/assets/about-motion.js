@@ -52,13 +52,14 @@
  const stage=document.querySelector('.sm-journey__stage'),view=stage?.querySelector('.sm-journey__stage-view'),content=stage?.querySelector('.sm-journey__stage-content'),ghost=stage?.querySelector('.sm-journey__script'),motion=window.smMotion;
  const cards=[...(stage?.querySelectorAll('.sm-journey__steps li')||[])],progressBar=stage?.querySelector('.sm-journey__meter'),progressNumber=stage?.querySelector('[data-journey-progress]');
  if(!stage||!view||!content||!ghost||!progressBar||!progressNumber||!motion||cards.length!==4)return;
- let visible=false,frame=0,active=false,lastY=NaN,lastProgress=-1,centres=null,ghostY=NaN,ghostTime=0;
+ let visible=false,frame=0,wakeTimer=0,active=false,lastY=NaN,lastProgress=-1,centres=null,ghostY=NaN,ghostTime=0,lastGhost='',lastPath='';
+ const touchQuery=matchMedia('(max-width: 1023px) and (pointer: coarse)'),nativeTouch=()=>touchQuery.matches;
  let lastInteraction=performance.now(),previewStep=null,nextPreview=0,pinned=false;
  const idleDelay=2500,stepDuration=3000;
  function interrupt(){previewStep=null;nextPreview=0;lastInteraction=performance.now()}
  function startPreview(){previewStep=0;nextPreview=performance.now()+stepDuration}
  function reset(){
-  if(frame)cancelAnimationFrame(frame);frame=0;active=false;lastY=NaN;lastProgress=-1;centres=null;
+  if(frame)cancelAnimationFrame(frame);clearTimeout(wakeTimer);wakeTimer=0;frame=0;active=false;lastY=NaN;lastProgress=-1;centres=null;lastGhost='';lastPath='';
   delete stage.dataset.scrollActive;interrupt();pinned=false;view.style.removeProperty('transform');ghost.style.removeProperty('--journey-ghost-y');progressBar.style.removeProperty('--journey-progress');progressBar.setAttribute('aria-valuenow','1');progressBar.setAttribute('aria-valuetext','الخطوة ١ من ٤');progressNumber.textContent='١';ghostY=NaN;ghostTime=0;cards.forEach(card=>{delete card.dataset.revealed;delete card.dataset.current;card.querySelector('.sm-journey__step-link')?.removeAttribute('tabindex')});
  }
  function update(){
@@ -79,15 +80,23 @@
   if(!centres){const list=stage.querySelector('.sm-journey__steps');centres=cards.map(card=>list.offsetTop+card.offsetTop+card.offsetHeight/2)}
   const target=centres[state],elapsed=ghostTime?Math.min(now-ghostTime,50):16.67;ghostTime=now;
   ghostY=Number.isFinite(ghostY)?ghostY+(target-ghostY)*(1-Math.exp(-elapsed/180)):target;
-  ghost.style.setProperty('--journey-ghost-y',ghostY.toFixed(1)+'px');
+  const renderedGhost=ghostY.toFixed(1)+'px';if(renderedGhost!==lastGhost){ghost.style.setProperty('--journey-ghost-y',renderedGhost);lastGhost=renderedGhost}
   if(pointerPath&&stage.dataset.pointer&&stage.dataset.pointer!=='none'){
    const v=view.getBoundingClientRect(),n=progressBar.querySelector('span').getBoundingClientRect(),c=cards[state].getBoundingClientRect();
    const sx=n.right-v.left+4,sy=n.top-v.top+n.height/2,edge=Math.min(v.width-5,c.right-v.left+8),ey=c.top-v.top+c.height/2,ex=Math.min(v.width-5,c.right-v.left+1);
-   pointerPath.setAttribute('d',stage.dataset.pointer==='curve'?`M ${sx} ${sy} Q ${edge} ${sy} ${edge} ${sy+Math.min(22,(ey-sy)/2)} L ${edge} ${ey-6} Q ${edge} ${ey} ${ex} ${ey}`:`M ${sx} ${sy} H ${edge} V ${ey} H ${ex}`);
+   const path=stage.dataset.pointer==='curve'?`M ${sx} ${sy} Q ${edge} ${sy} ${edge} ${sy+Math.min(22,(ey-sy)/2)} L ${edge} ${ey-6} Q ${edge} ${ey} ${ex} ${ey}`:`M ${sx} ${sy} H ${edge} V ${ey} H ${ex}`;if(path!==lastPath){pointerPath.setAttribute('d',path);lastPath=path}
   }
-  frame=requestAnimationFrame(update);
+  if(!nativeTouch()){frame=requestAnimationFrame(update);return}
+  // On native touch scrolling, wake on movement or an idle-preview deadline;
+  // keep frames running only while the handwritten accent is settling.
+  clearTimeout(wakeTimer);wakeTimer=0;
+  if(Math.abs(target-ghostY)>.15)frame=requestAnimationFrame(update);
+  if(pinned&&!stage.contains(document.activeElement)){
+   const due=previewStep===null?lastInteraction+idleDelay:nextPreview;
+   wakeTimer=setTimeout(sync,Math.max(16,due-now));
+  }
  }
- function sync(){if(!active||motion.matches||document.hidden||!visible){if(frame)cancelAnimationFrame(frame);frame=0;if(document.hidden||!visible)interrupt();return}if(!frame)frame=requestAnimationFrame(update)}
+ function sync(){if(!active||motion.matches||document.hidden||!visible){if(frame)cancelAnimationFrame(frame);frame=0;clearTimeout(wakeTimer);wakeTimer=0;if(document.hidden||!visible)interrupt();return}if(!frame)frame=requestAnimationFrame(update)}
  function configure(){
   reset();if(motion.matches)return;
   stage.dataset.scrollActive='true';
@@ -98,10 +107,11 @@
  }
  if('IntersectionObserver' in window)new IntersectionObserver(entries=>{visible=entries.some(e=>e.isIntersecting);stage.dataset.inView=String(visible);sync()},{rootMargin:'100px'}).observe(stage);else {visible=true;stage.dataset.inView='true'}
  window.addEventListener('resize',configure,{passive:true});document.fonts?.ready.then(configure);
- function interact(event){if(active&&visible&&pinned){if(event?.target instanceof Element&&event.target.closest('.sm-journey__step-link'))return;interrupt()}}
+ function interact(event){if(active&&visible&&pinned){if(event?.target instanceof Element&&event.target.closest('.sm-journey__step-link'))return;interrupt();if(nativeTouch())sync()}}
  document.addEventListener('wheel',interact,{passive:true});document.addEventListener('touchstart',interact,{passive:true});document.addEventListener('pointerdown',interact,{passive:true});
- stage.addEventListener('focusin',()=>{lastInteraction=performance.now()});stage.addEventListener('focusout',()=>{lastInteraction=performance.now()});
+ stage.addEventListener('focusin',()=>{lastInteraction=performance.now();if(nativeTouch())sync()});stage.addEventListener('focusout',()=>{lastInteraction=performance.now();if(nativeTouch())sync()});
+ window.addEventListener('scroll',()=>{if(nativeTouch())sync()},{passive:true});
  document.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))interact()});
  const pointerPath=stage.querySelector('.sm-journey__pointer-path');
- motion.addEventListener('change',configure);document.addEventListener('visibilitychange',sync);configure();
+ touchQuery.addEventListener?.('change',sync);motion.addEventListener('change',configure);document.addEventListener('visibilitychange',sync);configure();
 })();

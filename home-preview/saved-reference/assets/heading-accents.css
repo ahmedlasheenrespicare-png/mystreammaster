@@ -1,0 +1,5 @@
+/* Independent translate preserves each accent's existing rotation and layout. */
+.flow-intro__script,.steps-intro__script,.sm-cinema .smcin-script,.sm-matches__script,.steps__footer>span:first-child{translate:0 var(--sm-accent-y,0px)}
+:where(html[data-motion-reduced="true"]) :is(.flow-intro__script,.steps-intro__script,.sm-cinema .smcin-script,.sm-matches__script,.steps__footer>span:first-child){translate:none}
+/* Keep the server title inside the narrowest phone screens. */
+@media(max-width:380px){.flow-intro h2{font-size:clamp(68px,22vw,83px)}}

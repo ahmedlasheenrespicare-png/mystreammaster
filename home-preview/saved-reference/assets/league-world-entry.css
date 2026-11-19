@@ -3,3 +3,4 @@
 @media(max-width:700px){.sm-leagues__stage .sm-leagues__top .world-launch{right:1%;bottom:-1px;min-height:44px;font-size:12px;padding:6px 8px 6px 13px;gap:7px}.world-launch span{width:28px;height:28px}}
 @media(max-height:650px){.sm-leagues__stage .sm-leagues__top{padding-bottom:43px}.sm-leagues__stage .sm-leagues__top .world-launch{bottom:0}.sm-leagues__stage .sm-leagues__count{bottom:12px}}
 @media(prefers-reduced-motion:reduce){.sm-leagues__stage .sm-leagues__top .world-launch{transition:none}.sm-leagues__stage .sm-leagues__top .world-launch:hover{transform:none}}
+.world-launch .world-launch__arrow{display:block;width:16px;height:16px;flex:none}

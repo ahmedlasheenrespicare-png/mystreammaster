@@ -112,6 +112,7 @@ test('league world is self-contained in the approved reference and versioned', a
     const first=await versionReferenceAssets(dir);
     const generated=await fs.readFile(path.join(dir,'assets/league-world/world.html'),'utf8');
     assert.ok(generated.includes(`world-motion.js?v=${first}`));
+    assert.ok(generated.includes(`motion-settings.js?v=${first}`));
     assert.ok(generated.includes(`league-panels.css?v=${first}`));
     assert.ok((await fs.readFile(path.join(dir,'assets/league-world/league-overlay.js'),'utf8')).includes(`league-panels.js?v=${first}`));
     assert.ok((await fs.readFile(path.join(dir,'assets/league-world-entry.js'),'utf8')).includes(`world.html?v=${first}`));

@@ -1,7 +1,6 @@
-/* Scroll-linked competition gallery, scoped to this preview. */
+/* Click-driven competition gallery, scoped to this preview. */
 (function(){
  const section=document.querySelector('.sm-leagues'); if(!section) return;
- const stage=section.querySelector('.sm-leagues__stage');
  const cards=Array.from(section.querySelectorAll('.sm-leagues__card'));
  const strip=section.querySelector('.sm-leagues__mini');
  const buttons=Array.from(strip.querySelectorAll('button'));
@@ -16,20 +15,95 @@
   const img=document.createElement('img'); img.alt=''; const fallback=document.createElement('span');
   image.append(img,fallback);button.append(title,image);rail.append(button);
   img.addEventListener('error',()=>image.classList.add('is-failed'));
-  button.addEventListener('click',()=>go(Number(button.dataset.index)));
+  button.addEventListener('click',()=>go(Number(button.dataset.index),direction));
   return {button,title,img,image,fallback,direction};
  });
- let selected=-1, raf=0, frames=0, lastTop=null;
+ let selected=-1, directionHint=0;
+ function animateSwap(oldIndex,newIndex,direction){
+  if(oldIndex<0 || motion.matches)return;
+  rail.querySelectorAll('.league-transition-ghost,.league-transition-logo').forEach(el=>el.remove());
+  cards.forEach(card=>{card.getAnimations().forEach(a=>a.cancel());card.querySelector('.sm-leagues__image img')?.getAnimations().forEach(a=>a.cancel())});
+  neighbours.forEach(({button})=>button.getAnimations().forEach(a=>a.cancel()));
+  const incomingSide=neighbours.find(n=>n.direction===direction);
+  const outgoingSide=neighbours.find(n=>n.direction===-direction);
+  const railRect=rail.getBoundingClientRect(), cardRect=cards[newIndex].getBoundingClientRect();
+  const sideRect=incomingSide.button.getBoundingClientRect();
+  if(!railRect.width || !sideRect.width)return;
+  const centerLogo=cards[newIndex].querySelector('.sm-leagues__image img').getBoundingClientRect();
+  const inLogo=incomingSide.img.getBoundingClientRect(),outLogo=outgoingSide.img.getBoundingClientRect();
+  const options={duration:1100,easing:'cubic-bezier(.215,.61,.355,1)',fill:'both'};
+  const outgoing=cards[oldIndex].cloneNode(true);
+  outgoing.hidden=false;outgoing.inert=true;outgoing.setAttribute('aria-hidden','true');
+  outgoing.classList.add('league-transition-ghost');outgoing.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+  rail.append(outgoing);
+  const exit=outgoing.animate([
+   {opacity:1,offset:0},
+   {opacity:0,offset:.45},
+   {opacity:0,offset:1}
+  ],options);
+  exit.onfinish=()=>outgoing.remove();exit.oncancel=()=>outgoing.remove();
+  cards[newIndex].animate([
+   {opacity:0,offset:0},
+   {opacity:0,offset:.58},
+   {opacity:1,offset:1}
+  ],options);
+  // The reference crossfades the detailed central object and its quieter side image
+  // while both travel together. Move the selected emblem as its own visual layer.
+  function movingLogo(index,from,to,entering){
+   const logo=document.createElement('img');logo.className='league-transition-logo';logo.alt='';logo.setAttribute('aria-hidden','true');
+   logo.src=cards[index].querySelector('.sm-leagues__image img').src;
+   const fx=from.left+from.width/2-railRect.left,fy=from.top+from.height/2-railRect.top;
+   const tx=to.left+to.width/2-railRect.left,ty=to.top+to.height/2-railRect.top;
+   const size=Math.max(1,from.width),endScale=Math.max(.1,to.width/size);
+   Object.assign(logo.style,{left:(fx-size/2)+'px',top:(fy-size/2)+'px',width:size+'px',height:size+'px'});rail.append(logo);
+   const anim=logo.animate([
+    {transform:'translate(0,0) scale(1)',opacity:entering?.52:0,offset:0},
+    {opacity:entering?.98:.32,offset:.68},
+    {transform:`translate(${tx-fx}px,${ty-fy}px) scale(${endScale})`,opacity:entering?0:.52,offset:1}
+   ],options);
+   anim.onfinish=()=>logo.remove();anim.oncancel=()=>logo.remove();
+  }
+  if(centerLogo.width&&inLogo.width&&outLogo.width){movingLogo(newIndex,inLogo,centerLogo,true);movingLogo(oldIndex,centerLogo,outLogo,false)}
+  incomingSide.button.animate([{opacity:0},{opacity:.52}],options);
+  outgoingSide.button.animate([{opacity:0,offset:0},{opacity:0,offset:.65},{opacity:.52,offset:1}],options);
+ }
+
+ function transitionStats(){
+  if(motion.matches)return;
+  const stats=[...section.querySelectorAll('.sm-leagues__stat')];
+  stats.forEach(stat=>{
+   stat.querySelectorAll('.stat-transition-old').forEach(el=>el.remove());
+   [...stat.children].forEach(child=>child.getAnimations().forEach(a=>a.cancel()));
+   const old=stat.cloneNode(true);old.classList.add('stat-transition-old');old.setAttribute('aria-hidden','true');old.inert=true;
+   stat.append(old);
+   const fade=old.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-5px)'}],{duration:200,easing:'ease-in',fill:'forwards'});
+   fade.onfinish=()=>old.remove();fade.oncancel=()=>old.remove();
+  });
+  // The statistics module updates values in a mutation-observer microtask.
+  stats.forEach((stat,index)=>[...stat.children].filter(child=>!child.classList.contains('stat-transition-old')).forEach(child=>{
+   child.animate([{opacity:0,transform:'translateY(6px)'},{opacity:0,transform:'translateY(6px)',offset:.35},{opacity:1,transform:'translateY(0)'}],{duration:500,delay:index*55,easing:'ease-out'});
+  }));
+ }
+
  function select(i){
   i=Math.max(0,Math.min(cards.length-1,i)); if(i===selected)return;
+  const oldIndex=selected; const direction=directionHint || (i>selected?1:-1);
+  if(oldIndex>=0){
+   transitionStats();
+   rail.classList.remove('is-switching');void rail.offsetWidth;
+   if(!motion.matches)rail.classList.add('is-switching');
+  }
   section.style.setProperty('--league-enter-x', i>selected?'24px':'-24px');
   section.style.setProperty('--league-progress', String(i/(cards.length-1))); selected=i;
   cards.forEach((card,n)=>{const on=n===i;card.hidden=!on;card.inert=!on;card.setAttribute('aria-hidden',String(!on));});
   buttons.forEach((button,n)=>{button.setAttribute('aria-pressed',String(n===i));if(n===i)button.setAttribute('aria-current','true');else button.removeAttribute('aria-current');});
   section.style.setProperty('--league-accent',cards[i].dataset.accent);
+  // Keep the beige base; only a faint wash uses each existing card's colour.
+  const cardColour=cards[i].style.getPropertyValue('--card-bg').match(/#[0-9a-f]{6}/i);
+  if(cardColour)section.style.setProperty('--league-ambient',cardColour[0]+'18');
   section.querySelector('.sm-leagues__count').textContent=String(i+1).padStart(2,'0')+' / 08';
   neighbours.forEach(({button,title,img,image,fallback,direction})=>{
-   const index=i===0&&direction<0?2:i===cards.length-1&&direction>0?cards.length-3:i+direction; button.hidden=index<0||index>=cards.length; button.dataset.index=String(index);
+   const index=(i+direction+cards.length)%cards.length; button.hidden=index<0||index>=cards.length; button.dataset.index=String(index);
    if(button.hidden)return;
    const card=cards[index], name=card.querySelector('h3').textContent;
    button.style.background=card.style.getPropertyValue('--card-bg');
@@ -39,34 +113,40 @@
    image.classList.remove('is-failed');img.src=card.querySelector('img').src;
    if(img.complete&&!img.naturalWidth)image.classList.add('is-failed');
   });
+  animateSwap(oldIndex,i,direction);
   const bounds=strip.getBoundingClientRect(), active=buttons[i].getBoundingClientRect();
-  if(active.left<bounds.left) strip.scrollLeft+=active.left-bounds.left-4;
-  else if(active.right>bounds.right) strip.scrollLeft+=active.right-bounds.right+4;
+  // Scroll only the strip itself, never the page. Centering also handles RTL and rapid changes.
+  if(strip.scrollWidth>strip.clientWidth){
+   const delta=(active.left+active.right-bounds.left-bounds.right)/2;
+   strip.scrollTo({left:strip.scrollLeft+delta,behavior:motion.matches?'instant':'smooth'});
+  }
  }
- function update(){
-  raf=0; const rect=section.getBoundingClientRect(); const span=Math.max(1,section.offsetHeight-stage.offsetHeight);
-  const offset=Math.max(0,Math.min(span,-rect.top));
-  stage.style.transform='translate3d(0,'+offset.toFixed(2)+'px,0)';
-  if(!section.classList.contains('sm-leagues--panel-open'))select(Math.min(cards.length-1,Math.floor((offset/span)*cards.length)));
-  const changed=lastTop===null||Math.abs(rect.top-lastTop)>.15;lastTop=rect.top;
-  if(changed)frames=120;else frames--;
-  if(frames>0 && rect.top<innerHeight && rect.bottom>0)raf=requestAnimationFrame(update);
- }
- function schedule(){frames=120;if(!raf)raf=requestAnimationFrame(update)}
- function go(i){
-  const span=Math.max(0,section.offsetHeight-stage.offsetHeight);
-  const top=window.scrollY+section.getBoundingClientRect().top+span*((i+.15)/cards.length);
-  window.scrollTo({top,behavior:motion.matches?'auto':'smooth'});schedule();
+ function go(i,direction=0){
+  directionHint=direction || (i===selected+1 || (selected===cards.length-1 && i===0)?1:-1);
+  select(i);directionHint=0;
  }
  buttons.forEach((button,i)=>button.addEventListener('click',()=>section.classList.contains('sm-leagues--panel-open')?select(i):go(i)));
  window.smLeagueGallery={select,go,getSelected:()=>selected};
- strip.addEventListener('wheel',event=>{
-  if(event.ctrlKey||event.metaKey||Math.abs(event.deltaX)>=Math.abs(event.deltaY)||!event.deltaY)return;
-  const max=strip.scrollWidth-strip.clientWidth;if(max<=0)return;
-  const delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?strip.clientWidth:1);
-  const before=strip.scrollLeft;strip.scrollLeft+=getComputedStyle(strip).direction==='rtl'?-delta:delta;
-  if(strip.scrollLeft!==before)event.preventDefault();
- },{passive:false});
+ // Horizontal swipes belong to the selector; vertical gestures remain native page scrolling.
+ let gesture=null, suppressClick=false;
+ rail.addEventListener('pointerdown',event=>{
+  if(!event.isPrimary || (event.pointerType==='mouse' && event.button!==0))return;
+  const control=event.target.closest('button,a');
+  if(control&&!control.classList.contains('sm-leagues__neighbour'))return;
+  gesture={id:event.pointerId,x:event.clientX,y:event.clientY};
+ });
+ window.addEventListener('pointerup',event=>{
+  if(!gesture || event.pointerId!==gesture.id)return;
+  const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;gesture=null;
+  if(Math.abs(dx)<55 || Math.abs(dx)<Math.abs(dy)*1.3)return;
+  suppressClick=true;setTimeout(()=>{suppressClick=false},500);
+  const direction=dx<0?1:-1;
+  go((selected+direction+cards.length)%cards.length,direction);
+ });
+ window.addEventListener('pointercancel',event=>{if(gesture?.id===event.pointerId)gesture=null});
+ rail.addEventListener('click',event=>{if(suppressClick){event.preventDefault();event.stopImmediatePropagation();suppressClick=false}},true);
+ rail.addEventListener('dragstart',event=>event.preventDefault());
+
  section.querySelectorAll('img').forEach(img=>{const fail=()=>img.closest('.sm-leagues__image')?.classList.add('is-failed');img.addEventListener('error',fail);if(img.complete&&!img.naturalWidth)fail()});
- section.classList.add('is-ready');select(0);window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
+ section.classList.add('is-ready');select(0);
 })();

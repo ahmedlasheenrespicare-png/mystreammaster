@@ -28,13 +28,14 @@
  .league-overlay__tabs button{min-height:44px;padding:8px 5px;font-size:13px}
  .league-overlay__note{font-size:11px;line-height:1.5;margin:8px 0}
 }
-@media(prefers-reduced-motion:reduce){.world .shape img,.world .js-hover-heading{animation:none!important}.world .cards .card{transition:none!important}}
+html[data-motion-reduced="true"] .world .shape img,html[data-motion-reduced="true"] .world .js-hover-heading{animation:none!important}html[data-motion-reduced="true"] .world .cards .card{transition:none!important}
 /* Decorative illustrated balls follow their own league card, never block its controls. */
 .world .cards .card-decor-ball{position:absolute;width:30%;height:auto;right:-13%;bottom:4%;z-index:0;pointer-events:none;animation:world-spin 32s linear infinite;filter:drop-shadow(0 8px 12px #0005)}
 @media(max-width:1024px){.world .cards .card-decor-ball{display:none}}
-@media(prefers-reduced-motion:reduce){.world .cards .card-decor-ball{animation:none}}
+html[data-motion-reduced="true"] .world .cards .card-decor-ball{animation:none}
 /* World cards keep labels below the logo on both compact and large screens. */
 .world .cards .card-values__values{font-size:clamp(18px,1.9vw,23px);line-height:1.25;white-space:nowrap}
 .world .cards .card-values__top{font-size:13px}
 .world .cards .explore-button{min-height:42px;font-size:12px;padding:7px 12px;margin-top:8px}
 @media(max-width:750px){.world .cards .card-values__content{padding:14px}.world .cards .card-values__values{font-size:19px}.world .cards .card-values__top{font-size:12px}.world .cards .explore-button{min-height:42px;font-size:12px;padding:7px 12px}}
+@media(max-width:750px){.world .cards .card-decor-ball{display:block}}

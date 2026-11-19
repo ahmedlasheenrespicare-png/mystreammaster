@@ -1480,3 +1480,6 @@
 @media(max-width:640px){.flow-servers{padding-top:50px}.flow-intro p{margin-top:18px}.flow-servers .preview .lc-ring-scene{height:480px}.flow-servers .preview .actions a{min-height:44px;font-size:11px}.flow-servers .preview .lc-detail{padding-bottom:12px}}
 .flow-servers .preview .stat-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}@media(max-width:640px){.flow-servers .preview .stat-icon svg{width:17px;height:17px}}
 .flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-inner{top:145px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:565px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-orbit{top:250px}@media(max-width:640px){.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-inner{top:110px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:445px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-orbit{top:195px}}
+/* Vector arrows stay crisp and independent of font coverage on phones. */
+.flow-servers .league-carousel-nav svg{display:block;width:20px;height:20px;flex:none}
+.flow-servers .actions .server-action-arrow{display:block;width:14px;height:14px;flex:none;margin-inline-start:4px}

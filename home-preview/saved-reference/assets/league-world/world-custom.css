@@ -23,7 +23,7 @@
 @keyframes world-spin{to{transform:rotate(360deg)}}
 @media(max-width:1024px){.world .shapes,.world .card-decor-ball{display:none}}
 @media(max-width:750px){.world .cards .card-values__top{font-size:14px}.world .cards .card-values__values{font-size:23px}.world .cards .card-values__content{padding:15px}.world .cards .explore-button{font-size:14px;min-height:44px}.world .cards .logo-wrap{inset:18% 15% 31%}}
-@media(prefers-reduced-motion:reduce){.world .shape img,.world .card-decor-ball{animation:none}.card__transform{transition:none}}
+html[data-motion-reduced="true"] .world .shape img,html[data-motion-reduced="true"] .world .card-decor-ball{animation:none}html[data-motion-reduced="true"] .card__transform{transition:none}
 /* Original two-sided card: the front and back remain separate accessible faces. */
 .world .card-values__inner,.world .cards .back{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .world .cards .card.is-flipped .card__transform{transform:perspective(1000px) rotateY(180deg)}
@@ -37,7 +37,7 @@
 .world .card-back__source{margin:0;font:700 9px/1.35 WorldArabic,Tajawal,sans-serif;color:#ffffffd6}
 .world .card-open-details{align-self:stretch;flex:none;min-height:36px;border:1px solid #ffffffa6;border-radius:11px;background:#fff;color:#2a2031;font:900 12px/1.2 WorldArabic,Tajawal,sans-serif;cursor:pointer}
 .world .card-open-details:focus-visible,.world .card-flip-return:focus-visible{outline:3px solid #fff;outline-offset:2px}
-@media(prefers-reduced-motion:reduce){.world .cards .card__transform{transition:none}}
+html[data-motion-reduced="true"] .world .cards .card__transform{transition:none}
 /* Emblems replace visible team names while retaining accessible image descriptions. */
 .world .card-back__stats>div{align-items:center;text-align:center}
 .world .card-back__stats .card-stat-crest{display:grid;place-items:center;width:34px;height:34px;flex:none;padding:3px;border-radius:10px;background:#fffffff0;color:#49394e;font:700 8px/1.15 WorldArabic,Tajawal,sans-serif}
@@ -80,12 +80,20 @@
 .world .cards>.card{transition:transform .52s cubic-bezier(.22,.68,0,1),filter .3s;transform:translate3d(var(--center-x,0px),var(--center-y,0px),0)}
 .world .cards>.card.is-centered{z-index:20}
 .world.has-centered-card .cards>.card:not(.is-centered){filter:brightness(.7);pointer-events:none}
-@media(prefers-reduced-motion:reduce){.world .cards>.card{transition:none}}
+html[data-motion-reduced="true"] .world .cards>.card{transition:none}
 .world .cards>.card.is-centered.is-flipped{transform:translate3d(var(--center-x,0px),var(--center-y,0px),0) scale(var(--selected-scale,1.3))}
 /* A custom animated rotation cue, separate from the accessible action button. */
 .world .cards .flip-hint{position:absolute;right:14px;bottom:14px;z-index:3;width:39px;height:39px;display:grid;place-items:center;border-radius:50%;background:#ffffffdf;color:#a72586;box-shadow:0 4px 12px #26122730;pointer-events:none;text-shadow:none}
 .world .cards .flip-hint svg{width:24px;height:24px;animation:flip-cue 3s ease-in-out infinite}
 .world .cards .card-values__bottom .explore-button{margin-right:48px}
 @keyframes flip-cue{0%,20%,100%{transform:rotate(0)}45%,60%{transform:rotate(180deg)}}
-@media(prefers-reduced-motion:reduce){.world .cards .flip-hint svg{animation:none}}
+html[data-motion-reduced="true"] .world .cards .flip-hint svg{animation:none}
 .world .cards .explore-button.flip-hint{position:absolute;right:14px;bottom:14px;width:44px;height:44px;min-height:44px;margin:0;padding:0;display:grid;place-items:center;border:0;border-radius:50%;background:#ffffffdf;color:#a72586;pointer-events:auto}
+/* Keep the three stat columns independent, even with long numbers or fallback crests. */
+.world .card-back__stats>div,.world .card-back__stats>div:nth-child(odd),.world .card-back__stats>div:nth-child(-n+2){grid-template-columns:minmax(0,1fr) 27px minmax(0,1.08fr);gap:4px}
+.world .card-back__stats span,.world .card-back__stats strong,.world .card-back__stats small{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.world .card-back__stats small{white-space:normal;line-height:1.3}
+@media(max-width:750px){.world .shapes,.world .card-decor-ball{display:block}.world .card-back__stats span{font-size:9px}.world .card-back__stats small{font-size:9px}}
+.world .go-back,.world .card-open-details{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.world .world-arrow{display:block;flex:none;width:16px;height:16px}
+.world .card-flip-return .world-arrow{width:21px;height:21px}

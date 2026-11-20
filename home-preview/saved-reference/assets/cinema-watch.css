@@ -1,0 +1,8 @@
+/* Match the featured-matches WhatsApp action while retaining the cinema layout. */
+.sm-cinema .smcin-watch-wrap{display:flex;justify-content:center;position:relative;margin:clamp(24px,4vw,44px) auto 0;padding:0 5vw;z-index:2}
+.sm-cinema .smcin-watch{display:flex;align-items:stretch;gap:0;width:min(100%,360px);color:#280822;text-align:right;text-decoration:none}
+.sm-cinema .smcin-watch__label{display:flex;flex:1;flex-direction:column;justify-content:center;gap:3px;min-width:0;min-height:58px;padding:10px 20px;border:1px solid #28082238;box-sizing:border-box;box-shadow:inset 0 0 #280822;transition:box-shadow .7s cubic-bezier(.075,.82,.165,1),color .5s}
+.sm-cinema .smcin-watch__label strong{font:800 13px/1.5 SMTajawal,Tajawal,sans-serif}.sm-cinema .smcin-watch__label small{font:700 11px/1.4 SMTajawal,Tajawal,sans-serif;color:#806b79}
+.sm-cinema .smcin-watch b{width:58px;height:58px;flex:none;display:grid;place-items:center;border-radius:50%;background:#280822;color:#fff;transition:transform .3s ease}.sm-cinema .smcin-watch b svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sm-cinema .smcin-watch:is(:hover,:focus-visible) .smcin-watch__label{box-shadow:inset 0 -110px #280822;color:#fff}.sm-cinema .smcin-watch:is(:hover,:focus-visible) small{color:#efdbe5}.sm-cinema .smcin-watch:is(:hover,:focus-visible) b{transform:rotate(45deg)}.sm-cinema .smcin-watch:focus-visible{outline:2px solid #e06c8f;outline-offset:4px}
+html[data-motion-reduced=true] .smcin-watch__label,html[data-motion-reduced=true] .smcin-watch b{transition:none}

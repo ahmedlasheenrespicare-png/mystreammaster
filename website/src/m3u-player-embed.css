@@ -1,0 +1,18 @@
+@font-face{font-family:SMHero;src:url('/_assets/redesign/tajawal-arabic-900-normal-MgmkhdPX.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:SMTajawal;src:url('/_assets/redesign/tajawal-arabic-700-normal-D2-eand5.woff2') format('woff2');font-weight:700;font-display:swap}
+html,body,#root{margin:0;width:100%;min-width:0;overflow-x:hidden}
+/* Keep the established dark playback screen; style only the upload state. */
+#xtream[data-player-phase="form"],#xtream[data-player-phase="loading"]{background:#e3d0cf;color:#280822;padding:clamp(72px,8vw,120px) 0 clamp(70px,8vw,110px);font-family:SMTajawal,Tajawal,sans-serif}
+#xtream[data-player-phase="form"]>.absolute,#xtream[data-player-phase="loading"]>.absolute{display:none}
+#xtream[data-player-phase="form"] h2,#xtream[data-player-phase="loading"] h2{font:900 clamp(44px,7vw,100px)/1.22 SMHero,Tajawal,sans-serif;letter-spacing:0;color:#280822;text-wrap:balance}
+#xtream[data-player-phase="form"] h2 span,#xtream[data-player-phase="loading"] h2 span{display:inline-block;color:#a34e70;font-size:.72em;letter-spacing:-.04em}
+#xtream[data-player-phase="form"] .rv>p:first-child,#xtream[data-player-phase="loading"] .rv>p:first-child{color:#a34e70;letter-spacing:0;font:700 13px/1.5 SMTajawal,Tajawal,sans-serif}
+#xtream[data-player-phase="form"] .rv>p:first-child span,#xtream[data-player-phase="loading"] .rv>p:first-child span{background:#a34e70}
+#xtream[data-player-phase="form"] .rv>p:last-child,#xtream[data-player-phase="loading"] .rv>p:last-child{color:#6e4c5d;font:700 14px/1.9 SMTajawal,Tajawal,sans-serif;max-width:630px;margin:20px auto 0}
+#xtream .sm-player-form{background:#f9f3f1;border:1px solid #ba9ca9;border-radius:0;box-shadow:none;padding:clamp(22px,3vw,36px);color:#280822}
+#xtream .sm-player-upload{display:flex;align-items:center;justify-content:center;gap:12px;min-height:62px;width:100%;border:1px solid #280822;background:#280822;color:#fff;font:700 16px/1.5 SMTajawal,Tajawal,sans-serif;cursor:pointer;transition:background .25s,color .25s}
+#xtream .sm-player-upload svg{width:20px;height:20px;flex:none}#xtream .sm-player-upload:hover{background:#873f60;border-color:#873f60}#xtream .sm-player-upload:focus-visible{outline:3px solid #a34e70;outline-offset:4px}
+#xtream .sm-player-form [data-testid="player-legal-note"]{border:0;border-top:1px solid #dbc8cd;background:transparent;border-radius:0;padding:20px 0 0;color:#684e5d;font:700 12px/1.9 SMTajawal,Tajawal,sans-serif}
+#xtream .sm-player-form [data-testid="player-legal-note"] strong{color:#280822;font-weight:900;margin-bottom:5px}
+@media(max-width:600px){#xtream[data-player-phase="form"],#xtream[data-player-phase="loading"]{padding:72px 0}#xtream[data-player-phase="form"] h2,#xtream[data-player-phase="loading"] h2{font-size:clamp(42px,10vw,56px)}#xtream .sm-player-form{padding:22px}}
+html[data-motion-reduced=true] #xtream .sm-player-upload{transition:none}

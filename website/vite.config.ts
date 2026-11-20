@@ -14,7 +14,7 @@ export default defineConfig({
   build: {
     assetsDir: '_assets/redesign',
     rollupOptions: isSsr ? {} : {
-      input: { main: path.resolve('index.html'), m3uPlayer: path.resolve('m3u-player.html') },
+      input: { main: path.resolve('index.html'), m3uPlayer: path.resolve('m3u-player.html'), xtreamPlayer: path.resolve('xtream-player.html') },
       output: {
         manualChunks(id) {
           if (id.includes('/node_modules/react-dom/')) return 'vendor-react-dom';

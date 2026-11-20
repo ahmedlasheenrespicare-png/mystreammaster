@@ -314,4 +314,5 @@ await fs.writeFile(path.join(root, 'sitemap-index.xml'), `<?xml version="1.0" en
   }
 }
 
+await import('./publish-reference-home.mjs');
 console.log(`Published redesigned storefront and ${count} retained pages. Backend/admin/data were not replaced.`);

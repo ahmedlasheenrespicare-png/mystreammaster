@@ -1,0 +1,11 @@
+/* Independent experiment: shorten only the boundaries between these sections. */
+#cinema-library .smcin-works{padding-bottom:clamp(35px,4vw,55px)}
+#path-section.sm-path{padding-top:clamp(48px,5vw,70px);padding-bottom:clamp(35px,4vw,55px)}
+#works.flow-servers{padding-top:clamp(35px,4vw,55px)}
+@media(max-width:700px){#cinema-library .smcin-works{padding-bottom:32px}#path-section.sm-path{padding-top:42px;padding-bottom:35px}#works.flow-servers{padding-top:36px}}
+/* Entry motion affects section content only, not backgrounds or scroll position. */
+html:not([data-motion-reduced="true"]) .flow-entry{translate:var(--entry-x,0px) var(--entry-y,0px);opacity:var(--entry-opacity,1);rotate:var(--entry-rotate,0deg);transition:translate 180ms ease-out,rotate 180ms ease-out,opacity 180ms ease-out}
+html:not([data-motion-reduced="true"]) .flow-entry:focus-within{translate:none;rotate:none;opacity:1}
+
+/* Keep the entering elements within the page without changing section layout. */
+html{overflow-x:clip}

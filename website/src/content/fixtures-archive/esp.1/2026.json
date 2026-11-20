@@ -2737,6 +2737,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261202&limit=500"
       },
       "fetchedAt": "2026-11-18T11:43:51.719Z"
+    },
+    {
+      "id": "401882786",
+      "date": "2026-12-04T20:00:00.000Z",
+      "home": {
+        "id": "96",
+        "name": "Alavés"
+      },
+      "away": {
+        "id": "88",
+        "name": "Espanyol"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "esp.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard?dates=20261204&limit=500"
+      },
+      "fetchedAt": "2026-11-20T11:41:30.531Z"
     }
   ]
 }

@@ -1,6 +1,6 @@
 (function(){
  const band=document.querySelector('.hero-wordband');if(!band)return;
- const words={stats:['أكثر من ١٥٬٠٠٠ قناة','أكثر من ٥٠٬٠٠٠ فيلم ومسلسل','ثبات ٩٩٫٩٪ في قمة المباريات'],service:['تفعيل فوري في ٥ دقائق','٤ سيرفرات: نوفا وإيستار وموكا و X']};
+ const words={stats:['أكثر من ١٥٬٠٠٠ قناة','أكثر من ٥٠٬٠٠٠ فيلم ومسلسل','استفسر عن أداء السيرفر'],service:['مساعدة في التفعيل والإعداد','٤ سيرفرات: نوفا وإيستار وموكا و X']};
  function prepare(){
   band.querySelectorAll('.hero-wordband__track').forEach(track=>{
    let group=track.firstElementChild;

@@ -61,3 +61,30 @@ test('English preview is a reproducible, independently addressable noindex docum
   assert.equal(en('#sm-language').attr('href'), '/home-preview/saved-reference/');
   assert.equal($('#sm-language').attr('href'), '/home-preview/saved-reference/en/');
 });
+
+test('both reference documents keep their directly referenced preview assets available', async () => {
+  const base = new URL('../../', import.meta.url);
+  const cases = [
+    { html: await fs.readFile(reference, 'utf8'), url: 'https://preview.invalid/home-preview/saved-reference/' },
+    { html: await fs.readFile(new URL('../../home-preview/saved-reference/en/index.html', import.meta.url), 'utf8'), url: 'https://preview.invalid/home-preview/saved-reference/en/' },
+  ];
+  for (const { html, url } of cases) {
+    const doc = load(html);
+    const paths = new Set();
+    doc('[src], [href], [poster], [data-src]').each((_, element) => {
+      for (const name of ['src', 'href', 'poster', 'data-src']) {
+        const value = doc(element).attr(name);
+        if (!value) continue;
+        let target;
+        try { target = new URL(value, url); } catch { continue; }
+        if (target.origin !== 'https://preview.invalid' || !target.pathname.startsWith('/home-preview/saved-reference/assets/')) continue;
+        paths.add(decodeURIComponent(target.pathname));
+      }
+    });
+    assert.ok(paths.size > 50, `${url}: expected to find direct preview assets`);
+    for (const asset of paths) {
+      const file = new URL('.' + asset, base);
+      assert.ok((await fs.stat(file).catch(() => null))?.isFile(), `${url}: missing asset ${asset}`);
+    }
+  }
+});

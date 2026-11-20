@@ -261,8 +261,8 @@
   .wp-section{margin-top:48px}
 }
 @media (prefers-reduced-motion:reduce){
-  .wp-scene{animation:none}
-  .wp-btn:hover{transform:none}
+  html:not([data-motion="on"]) .wp-scene{animation:none}
+  html:not([data-motion="on"]) .wp-btn:hover{transform:none}
 }
 </style>
 </head>

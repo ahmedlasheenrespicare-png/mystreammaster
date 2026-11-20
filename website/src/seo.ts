@@ -395,7 +395,7 @@ export function getSeo(path: string): SeoMeta {
     const canonical = absolute("servers");
     return {
       ...base,
-      title: `السيرفرات والباقات | ${BRAND_NAME}`,
+      title: `مقارنة السيرفرات والباقات | ${BRAND_NAME}`,
       description:
         "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
       canonical,
@@ -403,7 +403,7 @@ export function getSeo(path: string): SeoMeta {
       jsonLd: [
         webPageLd({
           canonical,
-          name: `السيرفرات والباقات | ${BRAND_NAME}`,
+          name: `مقارنة السيرفرات والباقات | ${BRAND_NAME}`,
           description:
             "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
         }),
@@ -425,14 +425,14 @@ export function getSeo(path: string): SeoMeta {
       "أكثر من 25 إجابة مفصلة عن التفعيل والربط التقني وإعداد المشغلات: استلام بيانات الاشتراك، الدفع وحالات الاسترجاع، الأجهزة المدعومة، والتجديد والترقية بين نوفا وإيستار وموكا وX.";
     return {
       ...base,
-      title: `الأسئلة الشائعة | ${BRAND_NAME}`,
+      title: `أسئلة تفعيل IPTV والمشغلات | ${BRAND_NAME}`,
       description,
       canonical,
       ogImageAlt: `الأسئلة الشائعة — ${BRAND_NAME}`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `الأسئلة الشائعة | ${BRAND_NAME}`,
+          name: `أسئلة تفعيل IPTV والمشغلات | ${BRAND_NAME}`,
           description,
           mainEntityId: `${canonical}#faq`,
         }),
@@ -855,17 +855,18 @@ export function getSeo(path: string): SeoMeta {
     const cheapest = plan.prices["12"].USD;
     const nameOnly = plan.serverName.split("(")[0].trim();
     const canonical = absolute(`${plan.serverCode}/`);
+    const title = plan.serverCode === "x" ? `${nameOnly} — باقة تفعيل وربط تقني | ${BRAND_NAME}` : `باقة ${nameOnly.replace(/^سيرفر\s+/, "")} — تفعيل وربط تقني | ${BRAND_NAME}`;
     const description = `${plan.description} خدمتنا هي التفعيل والربط التقني والدعم الفني — تبدأ من ${cheapest} دولار سنوياً.`;
     return {
       ...base,
-      title: `${nameOnly} — باقة تفعيل وربط تقني | ${BRAND_NAME}`,
+      title,
       description,
       canonical,
       ogImageAlt: `${nameOnly} — باقة تفعيل وربط تقني من ${BRAND_NAME}`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `${nameOnly} — باقة تفعيل وربط تقني | ${BRAND_NAME}`,
+          name: title,
           description,
           mainEntityId: `${canonical}#product`,
         }),
@@ -906,7 +907,7 @@ export function getSeo(path: string): SeoMeta {
   /* ===== صفحة القنوات ===== */
   if (clean === "/channels") {
     const canonical = absolute("channels/");
-    const title = "فهرس القنوات لدى المزوّدين وروابط الجهات الرسمية";
+    const title = "دليل القنوات لدى المزوّدين وروابط الجهات الرسمية";
     const description =
       "فهرس وصفي لأسماء وتصنيفات القنوات التي يدرجها مزودون خارجيون، مع صفحات مستقلة لروابط الجهات الرسمية. لا يتضمن الفهرس روابط بث؛ تفاصيل المحتوى والتوفر لدى كل جهة.";
     return {
@@ -973,7 +974,7 @@ export function getSeo(path: string): SeoMeta {
         imageAlt: "قنوات الأطفال — دليل روابط الجهات الرسمية",
       },
       music: {
-        title: "قنوات الموسيقى وروابط الجهات الرسمية في دليل المشاهدة",
+        title: "القنوات الموسيقية وروابط الجهات الرسمية في دليل المشاهدة",
         description: "قائمة الجهات الموسيقية وروابط مواقعها الأصلية لمعرفة طرق الاستماع أو المشاهدة والتوفر؛ لا يشغّل الموقع الموسيقى ولا يستضيفها أو يعيد بثها. تفقّد موقع الجهة.",
         imageAlt: "القنوات الموسيقية — دليل المشاهدة الرسمية",
       },
@@ -1040,14 +1041,14 @@ export function getSeo(path: string): SeoMeta {
       "دلائل عملية: كيف تختبر ثبات السيرفر، وطريقة تشغيل الاشتراك على شاشات سامسونج وLG، وكيف تختار السيرفر المناسب لسرعتك.";
     return {
       ...base,
-      title: `مقالات ودلائل تشغيل الـ IPTV | ${BRAND_NAME}`,
+      title: `أدلة تشغيل IPTV ومقالات المشاهدة | ${BRAND_NAME}`,
       description,
       canonical,
       ogImageAlt: `مدونة ${BRAND_NAME} — مقالات ودلائل تشغيل`,
       jsonLd: [
         webPageLd({
           canonical,
-          name: `مقالات ودلائل تشغيل الـ IPTV | ${BRAND_NAME}`,
+          name: `أدلة تشغيل IPTV ومقالات المشاهدة | ${BRAND_NAME}`,
           description,
           mainEntityId: `${canonical}#blog`,
         }),

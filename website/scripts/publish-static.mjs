@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
-import { header, footer } from './legacy-shell.mjs';
 import { renderFixtureCharts } from '../public/_assets/fixture-charts.js';
 import { renderFixtureStandings } from '../public/_assets/fixture-standings.js';
 import { renderFixtureLineups } from './render-fixture-lineups.mjs';
@@ -11,7 +10,7 @@ import { renderGalatasarayBarcelonaReport } from './render-galatasaray-barcelona
 import { renderRomaMadridReport } from './render-roma-madrid.mjs';
 import { renderMatchAnalysis } from './render-match-analysis.mjs';
 import { applyLegacyAnalysisSeo } from './apply-legacy-analysis-seo.mjs';
-import { getLegacyAnalysisSeo } from '../dist-ssr/entry-server.js';
+import { getLegacyAnalysisSeo, renderUnifiedHeader, renderUnifiedFooter } from '../dist-ssr/entry-server.js';
 import { keywordsFor, hasKeywordEntry } from '../src/keywords.mjs';
 import { assertKeywordInTitle, assertTitleLength, noteBrandInTitle } from './seo-guard.mjs';
 import { assertAdsAllowed } from './ads-guard.mjs';
@@ -126,6 +125,14 @@ function stripAdsense($, relative) {
 
 async function publishStandalone(file, relative) {
   const $ = load(await fs.readFile(file, 'utf8'));
+  // The private player keeps its own stage, iframe and controls. Only the
+  // surrounding navigation is shared; fullscreen still targets the stage.
+  if (relative === 'player.html') {
+    $('body').prepend(renderUnifiedHeader('/player.html'));
+    $('.pp-note').after(renderUnifiedFooter());
+    $('.pp-brand').remove(); // The unified header already contains the brand.
+    $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261112b"><link rel="stylesheet" href="/_assets/unified-shell.css"><script src="/_assets/unified-shell.js" defer></script>');
+  }
   applyBrandIcons($);
   stripAdsense($, relative);
   const destination = path.join(root, relative);
@@ -213,8 +220,10 @@ for (const file of await files(path.join(website, 'legacy'))) {
      نص المقال مكرّرة لعنوان الصفحة) يُخفَض إلى h2 — كان الخفض الشامل
      يترك مقالات المدونة بلا أي h1. */
   content.find('h1').each((i, el) => { if (i > 0) el.tagName = 'h2'; });
+  const shellPath = '/' + relative.replace(/(^|\/)index\.html$/, '$1').replace(/\/+$/, '');
   $('body').empty().attr('class', `sm-page${relative === 'live-free.html' ? ' sm-player' : ''}`)
-    .append(header).append(content).append(footer).append(scripts);
+    .append('<a class="sm-skip" href="#main-content">تخطي إلى المحتوى</a>')
+    .append(renderUnifiedHeader(shellPath)).append(content).append(renderUnifiedFooter()).append(scripts);
   // Decorative legacy effects can obscure the new UI, so they stay stripped.
   // AdSense (googlesyndication) used to be stripped here too, which removed the
   // loader script from every legacy page and left the <ins> markup inert — no ad
@@ -223,13 +232,17 @@ for (const file of await files(path.join(website, 'legacy'))) {
   // which these pages do not load, so it is dead weight that only costs a request.
   $('script').each((_, el) => {
     const script = $(el);
-    if (/3d-effects|ampproject/.test((script.attr('src') || '') + script.text())) script.remove();
+    const text = script.text();
+    // The original Astro mobile menu was removed with the old header. Its
+    // Escape handler dereferences the missing menu and must not be retained.
+    if (/3d-effects|ampproject/.test((script.attr('src') || '') + text) ||
+        (text.includes('document.getElementById("mobile-menu-toggle")') && text.includes('document.getElementById("mobile-menu")'))) script.remove();
   });
   $('link[href*="3d-effects"], link[href*="pricing-minimal"], link[href*="fonts.googleapis"], link[href*="fonts.gstatic"]').remove();
   // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.
-  if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#faf9f6');
+  if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#f5ece8');
   applyBrandIcons($);
-  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261028a"><script src="/_assets/storefront.js?v=20261028a" defer></script>');
+  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261112b"><link rel="stylesheet" href="/_assets/unified-shell.css"><script src="/_assets/storefront.js?v=20261028a" defer></script><script src="/_assets/unified-shell.js" defer></script>');
 
   /* فحص SEO للصفحة القديمة بصيغتها النهائية: نحوّل مسار الملف إلى مسار تطبيع
      (about/index.html → /about، watch-legal.html → /watch-legal.html) ثم

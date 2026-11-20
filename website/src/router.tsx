@@ -118,6 +118,14 @@ export function RouterProvider({
     }
     const next = { path: normalizePath(url.pathname), search: url.search };
     const currentPath = normalizePath(window.location.pathname);
+    // The approved Arabic and English homepages are standalone documents,
+    // not React routes. Rendering the old React home here would bring the
+    // previous design back when navigating from an inner page.
+    if (next.path === "/" || next.path === "/en") {
+      if (opts?.replace) window.location.replace(url.href);
+      else window.location.assign(url.href);
+      return;
+    }
     /* لا يمكن إلغاء تنفيذ AdSense بعد تحميله بمجرد تبديل مكوّن React.
        عبور حدود السياسة يفتح المستند المسبق الصحيح بدلاً من الاحتفاظ بإعلانات
        الصفحة السابقة؛ والانتقال العكسي يعيد تحميل المُحمِّل عند الحاجة. */
@@ -178,7 +186,7 @@ export function RouterProvider({
     const onPop = () => {
       const location = currentLocation();
       /* حماية رجوع/تقدّم تاريخ ناتج عن جلسة قديمة أو pushState خارجي. */
-      if (isAdFreeRoute(location.path) !== documentAdFree.current) {
+      if (location.path === "/" || location.path === "/en" || isAdFreeRoute(location.path) !== documentAdFree.current) {
         window.location.reload();
         return;
       }

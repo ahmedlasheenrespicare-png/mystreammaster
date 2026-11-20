@@ -7,6 +7,7 @@ import { landingRoutes } from "./content/competitions";
 import { PRICING_PLANS } from "./data";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { matchCenterRouteIds } from "./content/match-center.mjs";
+import { UnifiedHeader, UnifiedFooter } from "./components/UnifiedShell";
 
 const ssrArchiveModules = import.meta.glob("./content/fixtures-archive/*/*.json", { eager: true, import: "default" });
 (globalThis as { __SM_SSR_ARCHIVES__?: unknown[] }).__SM_SSR_ARCHIVES__ = Object.values(ssrArchiveModules);
@@ -42,6 +43,10 @@ export function renderTree(path: string) {
 export function renderPage(path: string): { html: string; seo: SeoMeta } {
   return { html: renderToString(renderTree(path)), seo: getSeo(path) };
 }
+
+// The static-page publisher uses the same shell markup as the React app.
+export function renderUnifiedHeader(path: string): string { return renderToString(<UnifiedHeader path={path} />); }
+export function renderUnifiedFooter(): string { return renderToString(<UnifiedFooter staticPage />); }
 
 // Build-only exports: legacy pages share the central SEO and identity sources.
 export { getSeo, getLegacyAnalysisSeo } from "./seo";

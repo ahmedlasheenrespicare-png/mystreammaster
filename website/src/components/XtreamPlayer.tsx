@@ -2685,13 +2685,13 @@ function XtreamPlayerInner({ m3uOnly = false }: { m3uOnly?: boolean }) {
                         {visibleLiveStreams.length.toLocaleString("en-US")} قناة معروضة
                         {search || selectedCat || tab !== "all" ? " (مفلترة)" : ""}
                       </span>
-                      <button
+                      {!m3uOnly && <button
                         type="button"
                         onClick={addAccount}
                         className="text-[11px] font-black text-[#2b4eff] hover:underline cursor-pointer"
                       >
                         + إضافة حساب آخر
-                      </button>
+                      </button>}
                     </div>
                   </>
                 )}

@@ -1,0 +1,31 @@
+import { test, expect } from '@playwright/test';
+for(const width of [320,390,768,1440]) test(`reference cart and currency at ${width}px`,async({browser})=>{
+ const context=await browser.newContext({viewport:{width,height:800},reducedMotion:'reduce'}),page=await context.newPage();
+ await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','off'));await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.loader')).toBeHidden({timeout:60000});
+ await page.locator('#sm-currency').selectOption('EGP');
+ await expect(page.locator('.league-carousel-item[data-index="0"] .price')).toContainText('1,189.81');
+ await page.evaluate(()=>{ const el=document.querySelector('#works')!; (window as any).smScrollToSection ? (window as any).smScrollToSection(el) : el.scrollIntoView() }); await page.waitForTimeout(2500);
+ await page.locator('.league-carousel-item[data-ring-pos="front"] .sm-cart-add').click();
+ await expect(page.locator('#sm-cart-dialog')).toBeVisible();await expect(page.locator('.sm-cart-item')).toHaveCount(1);
+ await expect(page.locator('.sm-cart-checkout')).toHaveAttribute('href',/wa\.me\/201090415657/);
+ await page.locator('.sm-cart-close').click();await page.reload({waitUntil:'domcontentloaded'});
+ await expect(page.locator('#sm-cart-count')).toHaveText('1');await expect(page.locator('#sm-currency')).toHaveValue('EGP');
+ await page.evaluate(()=>{window.scrollTo(0,0)});await page.waitForTimeout(1000);await page.locator('.sm-cart-open').click();await page.locator('.sm-cart-remove').click();await expect(page.locator('#sm-cart-count')).toHaveText('0');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);await context.close();
+});
+for(const width of [320, 1440]) test(`cart quantities update totals and persist at ${width}px`,async({browser})=>{
+ const context=await browser.newContext({viewport:{width,height:800},reducedMotion:'reduce'}),page=await context.newPage();
+ await page.addInitScript(()=>{localStorage.setItem('sm-motion-preference','off');if(!sessionStorage.getItem('cart-seeded')){localStorage.setItem('stream-master-cart',JSON.stringify([{id:'nova-12m',quantity:2},{id:'old-moka',plan:{id:'plan-moka'},months:'12',currency:'USD'}]));sessionStorage.setItem('cart-seeded','1')};});
+ await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await expect(page.locator('.loader')).toBeHidden({timeout:60000});
+ await page.locator('.sm-cart-open').click();const nova=page.locator('.sm-cart-item[data-plan="nova"]');
+ await expect(nova.locator('.sm-cart-quantity-value')).toHaveText('2');await expect(page.locator('#sm-cart-count')).toHaveText('3');await expect(page.locator('.sm-cart-total')).toContainText('95');
+ await nova.locator('.sm-cart-plus').click();await expect(nova.locator('.sm-cart-quantity-value')).toHaveText('3');await expect(page.locator('.sm-cart-total')).toContainText('120');
+ expect(decodeURIComponent((await page.locator('.sm-cart-checkout').getAttribute('href'))!)).toContain('3 × 25 $ = 75 $');
+ await nova.locator('.sm-cart-minus').click();await expect(nova.locator('.sm-cart-quantity-value')).toHaveText('2');await nova.locator('.sm-cart-minus').click();await expect(nova.locator('.sm-cart-minus')).toBeDisabled();
+ await page.locator('.sm-cart-close').click();await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('.loader')).toBeHidden({timeout:60000});await page.locator('.sm-cart-open').click();await expect(nova.locator('.sm-cart-quantity-value')).toHaveText('1');
+ await nova.locator('.sm-cart-remove').click();await expect(page.locator('#sm-cart-count')).toHaveText('1');await expect(page.locator('.sm-cart-total')).toContainText('45');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);await context.close();
+});

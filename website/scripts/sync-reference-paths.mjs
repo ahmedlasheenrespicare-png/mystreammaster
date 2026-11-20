@@ -61,4 +61,5 @@ export async function syncReferencePaths(website,reference){
   const html=await fs.readFile(filename,'utf8');
   const plans=await loadHomepagePlans(website);
   await fs.writeFile(filename,applyReferenceServerFields(applyReferencePlanFields(html,plans),plans));
+  await fs.writeFile(path.join(reference,'assets/cart-catalog.js'), 'window.smCartCatalog='+JSON.stringify(plans.map(({id,serverCode,serverName,prices})=>({id,serverCode,serverName,prices})))+';\n');
 }

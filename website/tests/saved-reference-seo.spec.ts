@@ -1,0 +1,6 @@
+import {test,expect} from '@playwright/test';
+for(const javaScriptEnabled of [false,true])test(`reference preview remains noindex and Arabic by default; JS=${javaScriptEnabled}`,async({browser})=>{
+ const context=await browser.newContext({javaScriptEnabled});const page=await context.newPage();await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('html')).toHaveAttribute('lang','ar');await expect(page.locator('meta[name="robots"]')).toHaveCount(1);await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content',/noindex/i);await expect(page.locator('h1')).toHaveCount(1);await expect(page.locator('meta[name="viewport"]')).not.toHaveAttribute('content',/maximum-scale|user-scalable\s*=\s*no/i);await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+ const invalid=await page.evaluate(()=>Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')).map(a=>a.getAttribute('href')!).filter(href=>href.length>1&&!document.getElementById(decodeURIComponent(href.slice(1)))));expect(invalid).toEqual([]);expect(await page.locator('img:not([alt])').count()).toBe(0);await context.close();
+});

@@ -19,6 +19,7 @@ import { optimizeHtmlImages } from './html-images.mjs';
 import { syncReferenceSources } from './sync-reference-sources.mjs';
 import { versionReferenceAssets } from './version-reference-assets.mjs';
 import { syncReferencePaths } from './sync-reference-paths.mjs';
+import { generateReferenceEnglish } from './generate-reference-english.mjs';
 
 /* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — الصفحات المفهرسة
    فقط، وتحوّل المخالفات المانعة إلى فشل بناء عند SEO_STRICT=1. */
@@ -38,6 +39,7 @@ const root = path.dirname(website);
 await syncReferenceSources(website, path.join(root, 'home-preview/saved-reference/assets'));
 await syncReferencePaths(website, path.join(root, 'home-preview/saved-reference'));
 await versionReferenceAssets(path.join(root, 'home-preview/saved-reference'));
+await generateReferenceEnglish(path.join(root, 'home-preview/saved-reference'));
 async function files(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   return (await Promise.all(entries.map(e => e.isDirectory() ? files(path.join(dir, e.name)) : path.join(dir, e.name)))).flat();

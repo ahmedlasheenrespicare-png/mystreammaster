@@ -60,7 +60,7 @@ export default function PlanPage({
   };
 
   return (
-    <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-20">
+    <div className="bg-[#faf9f6] pt-[114px] md:pt-[132px] pb-20">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="text-[12.5px] font-bold text-black/40 mb-5" aria-label="مسار التصفح">
           <a href={to("")} className="hover:text-black transition">الرئيسية</a>
@@ -163,7 +163,7 @@ export default function PlanPage({
           </div>
 
           {/* بطاقة الشراء */}
-          <Reveal variant="up" className="lg:col-span-5 lg:sticky lg:top-32">
+          <Reveal variant="up" className="lg:col-span-5 lg:sticky lg:top-[92px]">
             <div className="rounded-[28px] bg-[#0b0b0f] text-white p-6 sm:p-7 grain overflow-hidden relative">
               <div className="absolute -top-24 -end-24 z-0 w-72 h-72 bg-[#2b4eff]/50 blur-[90px] rounded-full pointer-events-none" />
               <img
@@ -258,10 +258,10 @@ export default function PlanPage({
 
                 <ul className="mt-5 space-y-2 text-[12.5px] font-bold text-white/60">
                   <li className="flex items-center gap-2">
-                    <IconShieldCheck className="w-4 h-4 text-[#3effe0]" /> تفعيل فوري خلال 5 دقائق
+                    <IconShieldCheck className="w-4 h-4 text-[#3effe0]" /> اسأل عن موعد التفعيل
                   </li>
                   <li className="flex items-center gap-2">
-                    <IconStar className="w-4 h-4 text-[#d8ff3e]" /> دعم فني 24/7 وضمان طوال المدة
+                    <IconStar className="w-4 h-4 text-[#d8ff3e]" /> تواصل مع الدعم وراجع سياسة الاسترجاع
                   </li>
                   <li className="flex items-center gap-2">
                     <IconZap className="w-4 h-4 text-[#ff5c4d]" /> تقنية المزود: {plan.antiFreeze}

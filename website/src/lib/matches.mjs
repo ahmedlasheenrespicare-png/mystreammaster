@@ -1,14 +1,46 @@
+import { scoreboardIncidents } from "./scoreboard-incidents.mjs";
 // Public scoreboard via same-origin PHP proxy: no API secrets, fabricated fixtures, or inferred live scores.
+/* ترتيب القائمة هو ترتيب العرض نفسه: أقسام جدول المواعيد وخيارات التصفية
+   تُبنى منه مباشرة بلا قائمة ثانية. ويجب أن يطابق `ALLOWED_LEAGUES` في
+   scoreboard.php عنصراً بعنصر وبنفس الترتيب — يحرس المطابقة اختبار
+   «scoreboard.php whitelist» في scripts/test-matches.mjs.
+   الترتيب يجمع بطولات البلد الواحد معاً: كأسا إنجلترا يتبعان دوريها مباشرة.
+   البطولات المضافة (القارية caf.* و afc.* والكؤوس الإنجليزية eng.fa و
+   eng.league_cup) مثبتة بمسبار مسجّل في
+   `website/docs/matches-probe-report.json`: المعرّف كما يردّده المصدر نفسه
+   وعيّنة مباريات فعلية، لا الاكتفاء بتطابق ما أرسلناه. وإن توقّف المصدر عن
+   خدمة معرّف، تظهر البطولة برسالة «تعذر تحديث…» ورمز تشخيص صريح بدل جدول
+   فارغ صامت. */
 export const LEAGUES = [
   { id: 'eng.1', name: 'الدوري الإنجليزي' },
+  { id: 'eng.league_cup', name: 'كأس الرابطة الإنجليزية' },
+  { id: 'eng.fa', name: 'كأس الاتحاد الإنجليزي' },
   { id: 'esp.1', name: 'الدوري الإسباني' },
   { id: 'ita.1', name: 'الدوري الإيطالي' },
   { id: 'ger.1', name: 'الدوري الألماني' },
   { id: 'fra.1', name: 'الدوري الفرنسي' },
   { id: 'sau.1', name: 'الدوري السعودي' },
   { id: 'egy.1', name: 'الدوري المصري' },
+  /* كأس الرابطة المصرية تتبع دوريها مباشرة — ومصدرها TheSportsDB لا ESPN،
+     فهي مُسجّلة في ROUND_LEAGUES بـ php-lib/sportsdb_source.php أيضاً. */
+  { id: 'egy.league_cup', name: 'كأس الرابطة المصرية' },
+  { id: 'tur.1', name: 'الدوري التركي' },
   { id: 'uefa.champions', name: 'دوري أبطال أوروبا' },
   { id: 'uefa.europa', name: 'الدوري الأوروبي' },
+  { id: 'uefa.europa.conf', name: 'دوري المؤتمر الأوروبي' },
+  { id: 'caf.champions', name: 'دوري أبطال أفريقيا' },
+  { id: 'caf.confed', name: 'كأس الكونفدرالية الأفريقية' },
+  { id: 'afc.champions', name: 'دوري أبطال آسيا للنخبة' },
+  /* دوري الأمم مسابقة منتخبات لا أندية، فوُضع على حدّ الكتلة القارية مباشرة
+     قبل مسابقات المنتخبات الدولية (التصفيات والوديات) لا داخل مجموعة بطولات
+     الأندية الأوروبية. */
+  { id: 'uefa.nations', name: 'دوري الأمم الأوروبية' },
+  /* دوري أمم كونكاكاف نظيرُه الأوروبي في الاسم والنوع: مسابقة منتخبات
+     بصيغة دوري، فجاء بعده مباشرة ليقترن دوريّا الأمم في الجدول. */
+  { id: 'concacaf.nations.league', name: 'دوري أمم كونكاكاف' },
+  /* تصفيات أمم أفريقيا مسابقة منتخبات كدوري الأمم، فوُضعت معها، ومجاورةً
+     لتصفيات كأس العالم الأفريقية حتى تتجاور مسابقات القارّة الواحدة. */
+  { id: 'caf.nations_qual', name: 'تصفيات كأس أمم أفريقيا' },
   { id: 'fifa.worldq.caf', name: 'تصفيات كأس العالم — أفريقيا' },
   { id: 'fifa.worldq.uefa', name: 'تصفيات كأس العالم — أوروبا' },
   { id: 'fifa.friendly', name: 'مباريات دولية ودية' },
@@ -59,6 +91,25 @@ export const DIAGNOSTIC_LABELS = {
   REQUEST_TIMEOUT: 'انتهت مهلة الطلب من المتصفح (15 ثانية)',
   NETWORK_ERROR: 'تعذر الوصول إلى خادم الموقع أو قُطع الاتصال',
 };
+
+/** Morocco changed its legal time in September 2026 (IANA tzdb 2026c).
+ * For instants after the change, a device with older tzdata might still use
+ * UTC+1. Do not silently substitute UTC for Casablanca: that would corrupt
+ * historical results and mask future changes. Surface a warning and let the
+ * visitor choose UTC explicitly if their device needs an update.
+ * https://www.timeanddate.com/news/time/morocco-abolish-dst.html
+ */
+export function moroccoTimeZoneWarning(zone, date = new Date()) {
+  if (zone !== 'Africa/Casablanca') return false;
+  const instant = new Date(date);
+  // The legal change was at 02:00 local summer time, i.e. 01:00 UTC.
+  if (!Number.isFinite(instant.getTime()) || instant < new Date('2026-09-20T01:00:00Z')) return false;
+  // Probe the requested instant, not just one autumn date: old tzdata might
+  // coincidentally report UTC+0 during its predicted Ramadan interval.
+  const zoneHour = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' }).format(instant);
+  const utcHour = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', hour: '2-digit', hourCycle: 'h23' }).format(instant);
+  return zoneHour !== utcHour;
+}
 
 export function dayInZone(date, zone) {
   const parts = new Intl.DateTimeFormat('en-US', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
@@ -192,7 +243,7 @@ export function parseScoreboard(data, league) {
     const state = special ? 'other' : type?.completed === true ? 'finished' : type?.state === 'in' ? 'live' : 'scheduled';
     const specialLabels = { STATUS_POSTPONED: 'مؤجلة', STATUS_CANCELED: 'ملغاة', STATUS_CANCELLED: 'ملغاة', STATUS_SUSPENDED: 'متوقفة', STATUS_DELAYED: 'متأخرة', STATUS_ABANDONED: 'أُلغيت بعد بدايتها' };
     const detail = state === 'live' ? String(status?.displayClock || type?.shortDetail || 'مباشر') : state === 'other' ? specialLabels[type?.name] || 'تغيّر موعد المباراة' : state === 'finished' ? 'انتهت' : 'لم تبدأ';
-    return [{ id, league: league.id, date, home, away, state, detail, venue: String(competition?.venue?.fullName || '') }];
+    return [{ id, league: league.id, date, home, away, state, detail, venue: String(competition?.venue?.fullName || ''), incidents: scoreboardIncidents(competition) }];
   });
 }
 export function matchesForDay(matches, day, zone) {

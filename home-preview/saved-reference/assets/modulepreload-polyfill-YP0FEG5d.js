@@ -1,0 +1,1 @@
+/* Native modulepreload support in modern browsers. */

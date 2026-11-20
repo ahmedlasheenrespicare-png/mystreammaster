@@ -7,11 +7,6 @@
 export const BRAND_NAME = "ستريم ماستر برو";
 export const BRAND_EN = "Stream Master Pro";
 
-/* التواصل */
-export const WHATSAPP_NUMBER = "201098950879";
-/* رقم التواصل الحالي للموقع — لا يُستبدل برقم الموقع المرجعي. */
-export const WHATSAPP_DISPLAY = "+20 109 895 0879";
-
 /* وسيط البث (Cloudflare Worker) */
 export const PROXY_BASE = "https://serverproject.ahmedlasheenrespicare.workers.dev";
 
@@ -22,11 +17,17 @@ export const PROXY_BASE = "https://serverproject.ahmedlasheenrespicare.workers.d
 /* النطاق والهوية المشتقة منه تأتي من src/site.mjs — وحدة JS خالصة تصلح
    للاستيراد من تطبيق React ومن سكربتات البناء في Node معاً، فيبقى مصدر
    النطاق والبريد واحداً في كل المشروع (راجع التعليق هناك). */
-import { SITE_HOST, SITE_URL, SUPPORT_EMAIL } from "./site.mjs";
+import {
+  SITE_HOST,
+  SITE_URL,
+  SUPPORT_EMAIL,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_NUMBER,
+} from "./site.mjs";
 
-/* يُعاد تصديرها من هنا لأن config.ts هو مصدر الهوية المعتمد للمكوّنات،
-   بينما تبقى القيمة نفسها معرّفة مرة واحدة في site.mjs. */
-export { SITE_HOST, SITE_URL, SUPPORT_EMAIL };
+/* يُعاد تصدير الهوية وبيانات التواصل من هنا للمكوّنات، مع إبقاء قيمها
+   معرّفة مرة واحدة في site.mjs ليستطيع تطبيق React وسكربتات Node استخدامها. */
+export { SITE_HOST, SITE_URL, SUPPORT_EMAIL, WHATSAPP_DISPLAY, WHATSAPP_NUMBER };
 
 /* مسار النشر: "/" محلياً و "/serverproject/" على GitHub Pages */
 export const BASE = import.meta.env.BASE_URL || "/";

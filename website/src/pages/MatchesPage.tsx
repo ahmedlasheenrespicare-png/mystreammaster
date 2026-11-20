@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, hasCompleteScore, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
+import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, hasCompleteScore, kickoff, matchesForDay, moroccoTimeZoneWarning, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
 import { matchCenterLink } from '../lib/match-center-link';
 import { leagueLandingsInPageOrder } from '../content/competitions';
 import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
 import AllLeaguesTicket from '../components/AllLeaguesTicket';
-import LeagueStatsCarousel from '../components/LeagueStatsCarousel';
 import './matches.css';
 
 /* البند 3: «إضافة رابط مركز المباراة إلى البطاقة في صفحة المواعيد القائمة —
@@ -142,30 +141,27 @@ export default function MatchesPage() {
         <div><p className="matches-eyebrow"><span aria-hidden="true"><FootballIcon /></span> كل مباراة، في وقتها</p><h1 id="matches-title">مواعيد <span>المباريات</span></h1><p className="matches-intro">الأسبوع الماضي، اليوم، والأسبوع القادم — بتوقيتك.</p></div>
       </header>
 
-      {/* التذكرة الجامعة — كل أيقونات البطولات بنفس تصميم تذكرة البطولة */}
+      {/* التذكرة الجامعة — كل أيقونات البطولات بنفس تصميم تذكرة البطولة
+          ------------------------------------------------------------------
+          بطلب المالك (2026-10-28): إخفاء شرائح القمم الخمس، وتبقى الشريحة
+          الأولى «كل البطولات الكبرى» وحدها في صفحة المواعيد.
+          الإخفاء لا يحذف شيئاً: مواجهات القمم (INDEX_CLASHES) وشرائحها
+          ومنطقها الحيّ في AllLeaguesTicket.tsx كما هي، وهيرو الرئيسية
+          (Hero.tsx يمرّر قممه صراحةً) لا يتأثر. ولإرجاع الخمس يكفي حذف
+          الوسم clashes={[]} من السطر أدناه فتعود القائمة الافتراضية
+          INDEX_CLASHES بلا أي تعديل آخر. */}
       <div className="matches-hero-ticket">
-        <AllLeaguesTicket />
+        <AllLeaguesTicket clashes={[]} />
       </div>
 
       {/* القائمة تُبنى من مصدر واحد (LEAGUE_PAGE_ORDER) فلا تنشأ قائمة ثانية
-          تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا. */}
+          تتباعد عنه؛ وبطولة جديدة تُدرج في موضعها بلا تعديل هنا.
+          وتتضمّن كل بطاقة قائمتها المنسدلة العلوية لإحصائيات البطولة (أقوى هجوم،
+          أقوى دفاع، إجمالي الأهداف) والمنسدلة السفلية لبيانات المتصدّر. */}
       <LeagueLinksCarousel
-        title="صفحات البطولات"
         items={leagueLandingsInPageOrder().map((landing) => ({
           href: `/matches/${landing.slug}/`,
           label: landing.shortName,
-          leagueId: landing.leagueId,
-          standingsLeagueId: landing.standings?.leagueId ?? null,
-        }))}
-      />
-
-      {/* كروت الإحصائيات بنفس نمط الشريط الذي يعلوها: كرت مختصر لكل بطولة
-          (أقوى هجوم، أقوى دفاع، إجمالي الأهداف) من جدول الترتيب المتحقق منه
-          نفسه الذي تقرأه صفحة البطولة — لا أرقام محسوبة محلياً بلا مصدر. */}
-      <LeagueStatsCarousel
-        items={leagueLandingsInPageOrder().map((landing) => ({
-          href: `/matches/${landing.slug}/`,
-          name: landing.shortName,
           leagueId: landing.leagueId,
           standingsLeagueId: landing.standings?.leagueId ?? null,
         }))}
@@ -185,7 +181,7 @@ export default function MatchesPage() {
           <span className={`update-indicator ${online ? 'active' : ''}`} aria-hidden="true" />
           <div className="matches-status-text"><strong>{online ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف مؤقتًا — لا يوجد اتصال'}</strong><small>{updated ? `آخر بيانات: ${kickoff(updated, zone)} — ${selectedZoneName}` : 'في انتظار بيانات المصدر'}{loading && updated ? ' · جارٍ التحديث' : ''}</small></div>
         </div>
-        <label className="matches-field"><span className="matches-field-label">المنطقة الزمنية</span><select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select></label>
+        <label className="matches-field"><span className="matches-field-label">المنطقة الزمنية</span><select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select>{moroccoTimeZoneWarning(zone) && <small role="status">قد تكون بيانات توقيت المغرب في جهازك قديمة؛ حدّث الجهاز أو اختر UTC للمواعيد الحالية، وتحقّق من الموعد لدى المصدر.</small>}</label>
         <label className="matches-field"><span className="matches-field-label">البطولة</span><select value={league} onChange={e => setLeague(e.target.value)}><option value="all">كل البطولات المتاحة</option>{LEAGUES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>
         <label className="matches-field matches-search"><span className="matches-field-label">ابحث عن فريق</span><input type="search" placeholder="اسم الفريق…" value={query} onChange={e => setQuery(e.target.value)} /></label>
         <button className="matches-refresh" disabled={loading || !online} onClick={() => refreshNow.current()}>{loading ? 'جارٍ التحديث…' : '↻ تحديث الآن'}</button>

@@ -1,0 +1,378 @@
+/* Integrated statistics dock: follows the highlighted tournament instead of rotating independently. */
+.hs-league-stats-ticker {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 8px;
+  padding: 11px 13px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 15px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(216,255,62,.14), transparent 35%),
+    linear-gradient(120deg, #171922, #101116);
+  color: #fff;
+  font-family: inherit;
+}
+.hs-league-stats-heading {
+  display: grid;
+  grid-template-columns: 7px auto auto 28px;
+  align-items: center;
+  gap: 6px 7px;
+  min-width: 112px;
+  max-width: 180px;
+  padding-inline-end: 13px;
+  border-inline-end: 1px solid rgba(255,255,255,.14);
+}
+.hs-league-stats-pulse {
+  grid-row: 1 / 3;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d8ff3e;
+  box-shadow: 0 0 0 4px rgba(216,255,62,.1);
+}
+.hs-league-stats-kicker {
+  grid-column: 2 / 5;
+  grid-row: 1;
+  color: rgba(255,255,255,.58);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .04em;
+}
+.hs-league-stats-logo {
+  grid-column: 2;
+  grid-row: 2;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+.hs-league-stats-name {
+  grid-column: 3;
+  grid-row: 2;
+  min-width: 0;
+  overflow: hidden;
+  color: #fff;
+  font: 800 10px/1.25 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hs-league-stats-trophy {
+  grid-column: 4;
+  grid-row: 2;
+  width: 26px;
+  height: 26px;
+  flex-basis: 26px;
+  opacity: .95;
+}
+.hs-league-stats-trophy .lc-trophy-wrap { filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+.hs-league-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  align-items: stretch;
+  min-width: 0;
+}
+.hs-league-stat {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 3px 6px;
+  min-width: 0;
+  padding-inline: 10px;
+  border-inline-start: 1px solid rgba(255,255,255,.11);
+}
+.hs-league-stat:first-child { border-inline-start: 0; }
+.hs-league-stat-label {
+  grid-column: 1 / 3;
+  overflow: hidden;
+  color: rgba(255,255,255,.57);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hs-league-stat-value {
+  grid-column: 1;
+  color: #d8ff3e;
+  font: 700 clamp(12px, 1.5vw, 16px)/1.1 "Space Grotesk", "Cairo", sans-serif;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.hs-league-stat-value small {
+  margin-inline-start: 4px;
+  color: rgba(255,255,255,.58);
+  font: 600 7px/1.2 "Cairo", "Tajawal", sans-serif;
+}
+.hs-league-stat-team {
+  grid-column: 2;
+  grid-row: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(255,255,255,.82);
+  font: 700 8px/1.3 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hs-league-stat-team img {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+.hs-league-stat--goals .hs-league-stat-team { color: rgba(255,255,255,.52); }
+.hs-league-stats-empty {
+  margin: 0;
+  color: rgba(255,255,255,.64);
+  font: 700 10px/1.5 "Cairo", "Tajawal", sans-serif;
+}
+@media (max-width: 760px) {
+  .hs-league-stats-ticker {
+    grid-template-columns: minmax(0,1fr);
+    gap: 8px;
+    padding: 10px;
+  }
+  .hs-league-stats-heading {
+    grid-template-columns: 7px auto auto minmax(0,1fr) 24px;
+    justify-content: start;
+    max-width: none;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+  .hs-league-stats-pulse { grid-row: 1; }
+  .hs-league-stats-kicker { grid-column: 2 / 6; grid-row: 1; }
+  .hs-league-stats-logo { grid-column: 3; grid-row: 2; width: 22px; height: 22px; }
+  .hs-league-stats-name { grid-column: 4; grid-row: 2; }
+  .hs-league-stats-trophy { grid-column: 5; grid-row: 2; width: 23px; height: 23px; flex-basis: 23px; }
+  .hs-league-stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .hs-league-stat { min-height: 54px; padding: 5px 8px; border-inline-start: 0; }
+  .hs-league-stat:nth-child(even) { border-inline-start: 1px solid rgba(255,255,255,.11); }
+  .hs-league-stat:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.11); }
+}
+@media (max-width: 380px) {
+  .hs-league-stats-grid { grid-template-columns: minmax(0,1fr); }
+  .hs-league-stat:nth-child(even) { border-inline-start: 0; }
+  .hs-league-stat:nth-child(n+2) { border-top: 1px solid rgba(255,255,255,.11); }
+  .hs-league-stat { min-height: 46px; }
+}
+
+.hs-league-stats-match {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255,255,255,.14);
+}
+.hs-league-stats-match-toggle {
+  display: grid;
+  grid-template-columns: 38px minmax(0,1fr) auto 30px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,.055);
+  color: #fff;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease;
+}
+.hs-league-stats-match-toggle:hover,
+.hs-league-stats-match.is-expanded .hs-league-stats-match-toggle {
+  border-color: rgba(216,255,62,.38);
+  background: rgba(255,255,255,.09);
+}
+.hs-league-stats-match-toggle:focus-visible,
+.hs-league-stats-match-info:focus-visible {
+  outline: 2px solid #d8ff3e;
+  outline-offset: 2px;
+}
+.hs-league-stats-match-league-logo {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 3px 9px rgba(0,0,0,.2);
+}
+.hs-league-stats-match-league-logo img {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  object-fit: contain;
+}
+.hs-league-stats-match-league-logo .lc-trophy-wrap { width: 28px; height: 28px; }
+.hs-league-stats-match-summary {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.hs-league-stats-match-label {
+  color: rgba(255,255,255,.55);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+}
+.hs-league-stats-match-summary > strong {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font: 800 9px/1.25 "Cairo", "Tajawal", sans-serif;
+}
+.hs-league-stats-match-summary > strong > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hs-league-stats-match-summary i {
+  color: #d8ff3e;
+  font: 800 10px/1 "Space Grotesk", sans-serif;
+  font-style: normal;
+}
+.hs-league-stats-match-state {
+  padding: 5px 9px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.72);
+  font: 700 8px/1.1 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+.hs-league-stats-match-state.has-score {
+  border-color: rgba(216,255,62,.26);
+  background: rgba(216,255,62,.1);
+  color: #d8ff3e;
+  font: 800 11px/1 "Space Grotesk", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.hs-league-stats-match-toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: rgba(61,153,255,.14);
+  color: #61adff;
+  transition: transform .18s ease, background .18s ease, color .18s ease;
+}
+.hs-league-stats-match-toggle-icon svg { width: 16px; height: 16px; }
+.hs-league-stats-match.is-expanded .hs-league-stats-match-toggle-icon {
+  transform: rotate(180deg);
+  background: rgba(216,255,62,.14);
+  color: #d8ff3e;
+}
+.hs-league-stats-match-details {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+  padding: 10px 8px 1px;
+  animation: hs-match-details-open .2s ease both;
+}
+.hs-league-stats-match-details[hidden] { display: none; }
+@keyframes hs-match-details-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hs-league-stats-match-teams {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #fff;
+}
+.hs-league-stats-match-teams img {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+.hs-league-stats-match-teams strong {
+  max-width: 140px;
+  overflow: hidden;
+  font: 800 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hs-league-stats-match-teams i {
+  color: #d8ff3e;
+  font: 700 7px/1 "Space Grotesk", sans-serif;
+  font-style: normal;
+}
+.hs-league-stats-match-detail-state {
+  color: rgba(255,255,255,.62);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+.hs-league-stats-match-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(90,170,255,.4);
+  border-radius: 999px;
+  background: rgba(61,153,255,.12);
+  color: #86c2ff;
+  font: 800 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, border-color .16s ease;
+}
+.hs-league-stats-match-info svg { width: 15px; height: 15px; color: #5aaaff; }
+.hs-league-stats-match-info:hover {
+  border-color: rgba(90,170,255,.75);
+  background: rgba(61,153,255,.22);
+  color: #fff;
+}
+.hs-league-stats-match--empty {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  gap: 8px;
+  align-items: center;
+  color: rgba(255,255,255,.58);
+  font: 700 8px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+.hs-league-stats-match--empty .hs-league-stats-match-label { color: rgba(255,255,255,.58); }
+@media (max-width: 760px) {
+  .hs-league-stats-match-toggle {
+    grid-template-columns: 34px minmax(0,1fr) auto 28px;
+    gap: 7px;
+    padding: 7px;
+  }
+  .hs-league-stats-match-league-logo { width: 32px; height: 32px; }
+  .hs-league-stats-match-details { grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
+  .hs-league-stats-match-teams { grid-column: 1 / -1; }
+  .hs-league-stats-match-detail-state { grid-column: 1; }
+  .hs-league-stats-match-info { grid-column: 2; grid-row: 2; }
+  .hs-league-stats-match-teams strong { max-width: 110px; }
+}
+@media (max-width: 380px) {
+  .hs-league-stats-match-teams { gap: 4px; }
+  .hs-league-stats-match-teams strong { max-width: 78px; font-size: 8px; }
+  .hs-league-stats-match-teams img { flex-basis: 18px; width: 18px; height: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hs-league-stats-match-toggle,
+  .hs-league-stats-match-info,
+  .hs-league-stats-match-toggle-icon { transition: none; }
+  .hs-league-stats-match-details { animation: none; }
+}

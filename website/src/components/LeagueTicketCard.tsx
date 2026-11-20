@@ -1,8 +1,16 @@
+import CrownPitchBackground from "./CrownPitchBackground";
+import { CROWN_CUP_LOGOS, crownLeagueName } from "./crown-league-identity";
+import { useMotionReduced } from "./useMotionReduced";
+import { motionReduced } from "../lib/motion-preference";
+import { LEAGUE_TICKET_PLAYERS } from "../content/league-ticket-players";
 import { useTicketSwipe } from "./useTicketSwipe";
 import { TicketImage } from "./TicketImage";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { IconPlay } from "./Icons";
+import { trackHomeEvent } from "../lib/analytics";
+import { FEATURED_NEWS } from "../content/featured-news";
+import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
 import {
   dayInZone,
   hasCompleteScore,
@@ -12,6 +20,7 @@ import {
   dayLabel,
   type Match,
 } from "../lib/matches.mjs";
+import { crownBandDetail, crownLiveClock, crownStateLabel } from "../lib/crown-status.mjs";
 import "./league-ticket.css";
 
 /* ==========================================================================
@@ -51,8 +60,9 @@ export interface FeaturedClash {
   eyebrow: string;
   home: ClashTeamSide;
   away: ClashTeamSide;
-  homePlayer: string;
-  awayPlayer: string;
+  /* صور اللاعبين اختيارية: بطاقة المواجهة بلا صور تُعرض بالشعارين فقط */
+  homePlayer?: string;
+  awayPlayer?: string;
   /* تسلسل احتفال متحرك (فليب-بوك 8 إطارات ثابتة بلا خلفية، محاذاة
      موحّدة 1280×1600): إن حُدِّد لجهةٍ عُرض بدل الصورة الساكنة كطبقات
      تتبدّل بشفافية CSS — تشبه الفيديو بثماني صور، وتتجمد على إطار
@@ -71,6 +81,8 @@ export interface FeaturedClash {
      بصفحة «مواعيد المباريات» يُثبَّت صراحةً على بطولة المواجهة فيُرسَم
      أيقونتها الصحيحة وتُجلَب مواعيدها من نافذتها هي دون سواها */
   source?: string;
+  /* تاريخ المواجهة بصيغة YYYY-MM-DD: تُخفى البطاقة تلقائياً بعد 15 يوماً */
+  date?: string;
 }
 
 /* ── المواجهات المميّزة — شرائح القمم لكل بطولة بترتيب عرضها بعد
@@ -99,11 +111,12 @@ const celebrationClass = (src: string): string =>
 const TicketSeqPlayer = ({ cssClass, frames, video }: { cssClass: string; frames: string[]; video?: string }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoOn, setVideoOn] = useState(false);
+  const reducedMotion = useMotionReduced();
   useEffect(() => {
     if (!video) return;
     const v = videoRef.current;
     if (!v) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) { v.pause(); setVideoOn(false); return; }
     const ua = navigator.userAgent;
     if (/iPad|iPhone|iPod/.test(ua)) return;
     if (/safari/i.test(ua) && !/chrome|chromium|edg|opr/i.test(ua)) return;
@@ -119,8 +132,8 @@ const TicketSeqPlayer = ({ cssClass, frames, video }: { cssClass: string; frames
     };
     if (v.readyState >= 3) show();
     else v.addEventListener("canplay", show, { once: true });
-    return () => v.removeEventListener("canplay", show);
-  }, [video]);
+    return () => { v.removeEventListener("canplay", show); v.pause(); };
+  }, [video, reducedMotion]);
   return (
     <span className={`${cssClass}${videoOn ? " league-ticket-player--video-on" : ""}`} data-player-src={frames[frames.length - 1]} aria-hidden="true">
       {frames.map((src, i) => (
@@ -298,9 +311,9 @@ function selectClash(list: Match[], clash: FeaturedClash): Match | null {
    مغذِّية (نافذتان: أسبوع للوراء + أسبوع للأمام)، ولكل مواجهة
    اختيارها الخاص من قائمة بطولتها هي دون سواها: تغذية واحدة كما كان
    في تذاكر البطولات، وعدّة تغذيات في التذكرة الجامعة بصفحة المواعيد */
-function useClashes(leagueId: string, clashes: FeaturedClash[]) {
-  const [matches, setMatches] = useState<(Match | null)[]>(() => clashes.map(() => null));
-  const clashesKey = clashes.map(c => `${c.source ?? leagueId}:${c.eyebrow}:${c.home.name}:${c.away.name}`).join("|");
+export function useClashesWithStatus(leagueId: string, clashes: FeaturedClash[]) {
+  const clashesKey = clashes.map(c => `${c.source ?? leagueId}:${c.eyebrow}:${c.home.name}:${c.away.name}:${c.date ?? ""}`).join("|");
+  const [resolved, setResolved] = useState<{ key: string; matches: (Match | null)[]; status: "ready" | "stale" | "error" }>({ key: "", matches: [], status: "error" });
   useEffect(() => {
     let alive = true;
     const controller = new AbortController();
@@ -316,6 +329,7 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
         const dayCompact = compact(day);
         const fromCompact = compact(shiftDay(day, -WINDOW_DAYS));
         const toCompact = compact(shiftDay(day, WINDOW_DAYS));
+        let stale = false;
         const feeds = await Promise.all(sources.map(async source => {
           const urls = [
             `/scoreboard.php?league=${encodeURIComponent(source)}&dates=${fromCompact}-${dayCompact}`,
@@ -325,6 +339,7 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
           const list: Match[] = [];
           for (const response of responses) {
             const result = await readScoreboardResponse(response, { id: source, name: source });
+            if (result.stale) stale = true;
             list.push(...(result.matches as Match[]));
           }
           /* اليوم مشترك بين النافذتين — إزالة التكرار */
@@ -333,9 +348,11 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
         }));
         if (!alive) return;
         const bySource = new Map(sources.map((source, i) => [source, feeds[i]]));
-        setMatches(clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)));
+        setResolved({ key: clashesKey, matches: clashes.map(clash => selectClash(bySource.get(clash.source ?? leagueId) ?? [], clash)), status: stale ? "stale" : "ready" });
       } catch {
-        /* الصمت مقصود: بطاقة الانتظار هي حالة الفشل المصمّمة */
+        if (alive) setResolved(prev => prev.key === clashesKey && prev.matches.some(Boolean)
+          ? { ...prev, status: "stale" }
+          : { key: clashesKey, matches: clashes.map(() => null), status: "error" });
       }
     };
     load();
@@ -347,7 +364,11 @@ function useClashes(leagueId: string, clashes: FeaturedClash[]) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagueId, clashesKey]);
-  return matches;
+  return resolved.key === clashesKey ? resolved : { key: clashesKey, matches: clashes.map(() => null), status: "loading" as const };
+}
+
+export function useClashes(leagueId: string, clashes: FeaturedClash[]) {
+  return useClashesWithStatus(leagueId, clashes).matches;
 }
 
 /* ── نبضة ثانية واحدة لعداد البداية فقط (لا تكلفة عند عدم الحاجة) ── */
@@ -355,6 +376,7 @@ function useNow(active: boolean) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!active) return;
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, [active]);
@@ -367,6 +389,13 @@ function useNow(active: boolean) {
    بحروفه بأمان عند إسقاطه على بطاقات الفليب */
 const AR_DIGITS: Readonly<Record<string, string>> = { "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤", "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩" };
 const toArabicDigits = (western: string) => western.replace(/\d/g, (d) => AR_DIGITS[d]);
+
+/* دقائق:ثوانٍ داخل العدّاد المنقلب نفسه: تُبنى الوحدات بشكل splitCountdown حتى
+   يبقى التصميم — الخلية والرقم المشرقي وصفّ الجمع — من مصدر واحد لا من نسخة ثانية. */
+function flipClockUnits(minutes: number, seconds: number) {
+  const two = (n: number) => toArabicDigits(String(n).padStart(2, "0"));
+  return { days: 0, hours: two(0), minutes: two(minutes), seconds: two(seconds) };
+}
 
 function splitCountdown(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -553,10 +582,21 @@ function FlipDigit({ value }: { value: string }) {
   );
 }
 
-export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof splitCountdown> }) {
-  /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفياً:
-     أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه) */
-  const cells: { label: string; value: string }[] = [
+function CrownScoreDigits({ value }: { value: number }) {
+  const text = String(value);
+  return <b aria-label={text}><span className="ticket-flip__pair" aria-hidden="true">
+    {Array.from(text).map((digit, index) => <FlipDigit key={index} value={digit} />)}
+  </span></b>;
+}
+
+export function FlipCountdown({ countdown, cells = "auto" }: { countdown: ReturnType<typeof splitCountdown>; cells?: "auto" | "minute-seconds" }) {
+  /* خلايا العدّاد بصيغة الجمع كما صاغها المالك حرفيًا:
+     أيام ← ساعات ← دقائق ← ثوانٍ، والأرقام تحتها مشرقية (انظر أعلاه).
+     `minute-seconds` يحتفظ بنفس الخلية والرقم والصف بخانتين فقط، لعدّاد
+     المباراة الجارية داخل الدرج العلوي بطلب المالك — تصميم واحد لا نسخة منه. */
+  const list: { label: string; value: string }[] = cells === "minute-seconds"
+    ? [{ label: "دقائق", value: countdown.minutes }, { label: "ثوانٍ", value: countdown.seconds }]
+    : [
     ...(countdown.days > 0 ? [{ label: "أيام", value: toArabicDigits(String(countdown.days).padStart(2, "0")) }] : []),
     { label: "ساعات", value: countdown.hours },
     { label: "دقائق", value: countdown.minutes },
@@ -564,7 +604,7 @@ export function FlipCountdown({ countdown }: { countdown: ReturnType<typeof spli
   ];
   return (
     <div className="league-ticket-countdown ticket-flip" role="presentation">
-      {cells.map((cell) => (
+      {list.map((cell) => (
         <span key={cell.label} className="ticket-flip__group">
           <span className="ticket-flip__pair">
             {cell.value.split("").map((digit, i) => (
@@ -587,7 +627,8 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
   const kick = match ? kickoff(match.date, CLASH_ZONE) : null;
   /* موعد المواجهة كما يظهر في صفحة المواعيد: وقت القاهرة دائماً، ويُسبَق
      بتاريخ اليوم العربي حين تكون المثبَّتة في يومٍ قادم لا اليوم نفسه */
-  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : null;
+  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date ?? null;
+  const matchDateLabel = matchDay ? dayLabel(matchDay, { weekday: "long", year: "numeric" }) : null;
   const isToday = matchDay != null && matchDay === dayInZone(new Date(), CLASH_ZONE);
   const kickLabel = kick && !isToday ? `${dayLabel(matchDay!, { weekday: "long" })} · ${kick}` : kick;
   const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
@@ -617,6 +658,15 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
         </span>
       ) : null}
       <TicketShell />
+      {matchDateLabel ? (
+        <time className="league-ticket-match-date" dir="rtl" dateTime={matchDay!} aria-label={`تاريخ المباراة: ${matchDateLabel}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M7 3v4M17 3v4M3 10h18" />
+          </svg>
+          <span>{matchDateLabel}</span>
+        </time>
+      ) : null}
       {/* اللاعبان بقاعدة التذكرة نفسها — كل لاعب يلتصق بجانب فريقه حين
           ينعكس ترتيب الضيافة عن الترتيب الافتراضي للإعداد. جهةٌ ذات
           تسلسل احتفال تُرسَم حاويةً طبقية (4 إطارات تتبدّل بشفافية
@@ -624,12 +674,12 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
       {leftSequence ? (
         <TicketSeqPlayer cssClass="league-ticket-player league-ticket-player--left league-ticket-player--celebrate league-ticket-player--seq" frames={leftSequence} video={leftSequenceVideo} />
       ) : (
-        <TicketImage className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+        leftPlayer ? <TicketImage className={`league-ticket-player league-ticket-player--left${celebrationClass(leftPlayer)}`} src={leftPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" /> : null
       )}
       {rightSequence ? (
         <TicketSeqPlayer cssClass="league-ticket-player league-ticket-player--right league-ticket-player--celebrate league-ticket-player--seq" frames={rightSequence} video={rightSequenceVideo} />
       ) : (
-        <TicketImage className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" />
+        rightPlayer ? <TicketImage className={`league-ticket-player league-ticket-player--right${celebrationClass(rightPlayer)}`} src={rightPlayer} alt="" aria-hidden="true" loading="eager" decoding="async" /> : null
       )}
       {/* قمم التذاكر الجامعة (matches) تحمل الثلاثية المتوسّطة أيضاً —
           بحزمة «الكل» للتذكرة الأم لا ببطولة المواجهة الواردة التي
@@ -679,8 +729,188 @@ function ClashSlide({ match, clash, leagueId, showWordmark = false, underBrands 
   );
 }
 
+/** Compact strip layout; same match selection, status, score direction and countdown as the ticket. */
+function CrownTeamIncidents({ match, side }: { match: Match | null; side: 'home' | 'away' }) {
+  const events = match?.incidents?.filter(event => event.side === side) ?? [];
+  if (!events.length) return null;
+  const names = { goal: 'هدف', yellow: 'بطاقة صفراء', red: 'بطاقة حمراء' };
+  return <span className="crown-team-incidents" role="list" aria-label={side === 'home' ? 'أحداث الفريق المضيف المتاحة' : 'أحداث الفريق الضيف المتاحة'}>
+    {events.map(event => <span className="crown-team-incident" key={event.id} role="listitem" data-incident-kind={event.kind}>
+      <span className={`crown-incident-icon crown-incident-icon--${event.kind}`} aria-hidden="true">{event.kind === 'goal' ? '⚽' : ''}</span>
+      <span className="sr-only">{event.ownGoal && event.kind === 'goal' ? 'هدف عكسي' : names[event.kind]}</span>
+      <span className="crown-incident-player">{event.player}</span><bdi className="crown-incident-minute" dir="ltr">{event.minute}</bdi>
+    </span>)}
+  </span>;
+}
+
+/* `parts` = وضع الشرائح الثلاثي (شريط البطولات المتحرك فقط): درج كريمي فوق الجسم الداكن
+   وحته، مثل شرائح «أسفل التذكرة» في صفحة المواعيد. الفول-سكرين والتذكرة الجامعة
+   يمرّان بلا parts فتبقى بنيتيهما كما هي حرفيًا. */
+const CROWN_BRAND_MARKS = ["nova-ticket.png", "xtv-ticket.png", "istar-ticket.png", "moka-ticket.png"];
+
+/* ماركة الدوري داخل الدرج بعد صافرة النهاية: نفس شارة الشعار المستخدمة في
+   الشريط (وبديلها المحايد حين لا شعار موثّق) مع اسم البطولة كما يُعرَّض في
+   الجسم — لا صورة تُخترع ولا اسم يُحرَّف. */
+function CrownLeagueCoin({ clash, active }: { clash: FeaturedClash; active: boolean }) {
+  const badge = () => <LeagueIconBadge leagueId={clash.source ?? "matches"} iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]} size={30} eager={active} />;
+  return <span className="hs-crown-league-coin" data-active={active} aria-hidden="true">
+    <span className="hs-crown-league-coin-rotor">
+      <span className="hs-crown-league-coin-face hs-crown-league-coin-front">{badge()}</span>
+      <span className="hs-crown-league-coin-face hs-crown-league-coin-back">{badge()}</span>
+    </span>
+  </span>;
+}
+
+function CrownDrawerLeagueMark({ clash, active }: { clash: FeaturedClash; active: boolean }) {
+  return (
+    <span className="hs-crown-drawer-league">
+      <CrownLeagueCoin clash={clash} active={active} />
+      <span className="hs-crown-drawer-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span>
+    </span>
+  );
+}
+
+export function CrownClashSlide({ clash, match, active = true, showEvents = false, parts = false }: { clash: FeaturedClash; match: Match | null; active?: boolean; showEvents?: boolean; parts?: boolean }) {
+  const pre = match?.state === "scheduled";
+  const live = match?.state === "live";
+  const finished = match?.state === "finished";
+  /* نبضة الثانية مطلوبة للموعد القادم (عدّاد البداية) وللمباراة الجارية (دقائق وثوانٍ) معًا، ولا تُشغَّل لغيرهما */
+  const now = useNow((pre || live) && active);
+  const countdown = match && pre ? splitCountdown(new Date(match.date).getTime() - now) : null;
+  const liveClock = match && live ? crownLiveClock(match.detail, now - Date.parse(match.date)) : null;
+  const homeFirst = !match || clash.home.tokens.some(token => match.home.name.toLowerCase().includes(token));
+  const orderedSides = homeFirst ? [clash.home, clash.away] : [clash.away, clash.home];
+  // Prefer the live source badge when this newly selected team has no local art.
+  const sides = orderedSides.map((side, index) => ({ ...side,
+    crest: side.crest || (index === 0 ? match?.home.logo : match?.away.logo) || '',
+  }));
+  const score = match && (match.state === "live" || match.state === "finished") && hasCompleteScore(match.home.score, match.away.score);
+  /* الشارة والتفصيل من lib/crown-status.mjs (قابلان للاختبار في Node): حالة
+     `other` — تأجيل/إلغاء/إيقاف كما يرسلها الفيڈ — لها لفظ المصدر نفسه بدل أن
+     تُلقَّم في «لم تبدأ»، وسطر الدرج لا يُعاد حين يوازي الشارة. */
+  const stateLabel = crownStateLabel(match);
+  const when = match
+    ? `${dayInZone(new Date(match.date), CLASH_ZONE)} · ${kickoff(match.date, CLASH_ZONE)}`
+    /* الشرائح غير المؤكّدة: تاريخ المواجهة نفسه بصيغة مقروءة بدل ISO الخام */
+    : clash.date ? dayLabel(clash.date, { weekday: "long" }) : "قريباً";
+  const timer = countdown ? <FlipCountdown countdown={countdown} /> : null;
+  const marks = <span className="hs-crown-match-brands" aria-hidden="true">{CROWN_BRAND_MARKS.map(src => <img key={src} src={`/images/brand/${src}`} alt="" loading="lazy" />)}</span>;
+  const status = live && match?.detail
+    ? <small className="hs-crown-match-status is-live">{match.detail}</small>
+    : match?.state === "other" && match.venue
+      ? <small className="hs-crown-match-status">{match.venue}</small>
+      : !match ? <small className="hs-crown-match-status">نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم تظهر هنا من لوحة المواعيد فوراً</small> : null;
+  /* على الشريحة الأمامية تعيش الصفوف المساندة داخل الدرجين — في نفس الكارت،
+     لا نسخة مزدوجة. الشرائح الجانبية تحتفظ بجسمها الكامل كما هو اليوم. */
+  const inBand = parts && active;
+  /* نسخة الدرج العلوي وحدها: الشارة فيه بجوار السطر، فلو تُرك `detail` كما هو
+     لقرأ الزائر «انتهت / انتهت». بلا معلومة إضافية لا يُعرض سطر خيال. */
+  const bandDetail = crownBandDetail(match);
+  const matchDay = match ? dayInZone(new Date(match.date), CLASH_ZONE) : clash.date ?? null;
+  const bandStatus = <small className={`hs-crown-match-status${match?.state === "live" ? " is-live" : ""}`}>{bandDetail}</small>;
+  /* مكان سطر التفصيل في الدرج العلوي بطلب المالك: قبل المباراة عدّاد البداية
+     (نُقل من الدرج السفلي)، وأثناءها دقائق وثواني بنفس تصميمه، وبعدها ماركة
+     الدوري. وحين لا مدخل في لوحة المواعيد تبقى الجملة التعريفية، ومع حالة
+     «مؤجَّلة/ملغاة» يبقى نص المصدر أو ملعبه — لا يُختلَق توقيت لم يحدث. */
+  const bandLine = !inBand ? null
+    : countdown ? <FlipCountdown countdown={countdown} />
+      : liveClock ? <FlipCountdown countdown={flipClockUnits(liveClock.minutes, liveClock.seconds)} cells="minute-seconds" />
+        : finished ? <CrownDrawerLeagueMark clash={clash} active={active} />
+          : bandDetail ? bandStatus : null;
+  const detailsOnPitch = (pre || finished) && inBand;
+  /* The hero strip is above the fold. Keep its current match logo out of the
+     native lazy-load queue; also prioritize the FIFA-friendly mark reported as
+     mobile LCP, even before live fixtures finish reordering the carousel. */
+  const prioritizeLeagueLogo = active || (parts && clash.source === "fifa.friendly");
+  const pitchDetails = detailsOnPitch ? <div className="hs-crown-scheduled-details" aria-hidden="true">
+    {pre && <span className="hs-crown-slide-league"><CrownLeagueCoin clash={clash} active={active} /><span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
+    <span className="hs-crown-slide-chip">{stateLabel}</span>
+    {bandLine}
+  </div> : null;
+  const today = dayInZone(new Date(now), CLASH_ZONE);
+  const nextDay = shiftDay(today, 1);
+  const matchDateLabel = matchDay ? dayLabel(matchDay, { weekday: "long", year: "numeric" }) : null;
+  const matchStateBadge = live ? "جارية الآن"
+    : finished ? "انتهت المباراة"
+      : pre ? matchDay === today ? "قادمة اليوم" : matchDay === nextDay ? "قادمة غداً" : `قادمة ${dayLabel(matchDay!, { weekday: "long" })}`
+        : match?.state === "other" ? match.detail : match ? "موعد المباراة" : "بانتظار الموعد";
+  const resultCaption = score ? (live ? "النتيجة الآن" : "النتيجة النهائية")
+    : live ? "تفاصيل المباراة" : pre ? "موعد البداية" : finished ? "النتيجة" : match ? "حالة المباراة" : "المواجهة القادمة";
+  const resultValue = score
+    ? <span className="hs-crown-match-score"><CrownScoreDigits value={match.home.score!} /><span aria-hidden="true">:</span><CrownScoreDigits value={match.away.score!} /></span>
+    : live ? "النتيجة غير متاحة"
+      : pre ? kickoff(match!.date, CLASH_ZONE)
+        : finished ? "النتيجة غير متاحة" : match?.state === "other" ? "موعد متغيّر" : match ? match.detail : "قريباً";
+  const core = <div className={`hs-crown-match hs-crown-match--scoreboard${parts ? " hs-crown-slide" : ""}`} dir="rtl" data-match-state={match?.state ?? "unconfirmed"}>
+    {parts && <CrownPitchBackground />}
+    <span className="hs-crown-match-art" data-match-league-background={clash.source ?? "matches"} aria-hidden="true">
+      <LeagueIconBadge
+        leagueId={clash.source ?? "matches"}
+        iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]}
+        size={132}
+        eager={prioritizeLeagueLogo}
+        fetchPriority={prioritizeLeagueLogo ? "high" : undefined}
+      />
+    </span>
+    <div className="hs-crown-match-heading">
+      <span className="hs-crown-match-league-badge">
+        <LeagueIconBadge
+          leagueId={clash.source ?? "matches"}
+          iconSrc={CROWN_CUP_LOGOS[clash.source ?? ""]}
+          size={28}
+          eager={prioritizeLeagueLogo}
+          fetchPriority={prioritizeLeagueLogo ? "high" : undefined}
+        />
+        <span>{crownLeagueName(clash.source, clash.eyebrow)}</span>
+      </span>
+    </div>
+    {pitchDetails}
+    <div className="hs-crown-match-teams">
+      <span className="hs-crown-match-team"><TeamCrest src={sides[0].crest} monogram={sides[0].mono} /><strong>{sides[0].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="home" />}</span>
+      <span className="hs-crown-match-result">
+        <span className={`hs-crown-match-state-badge${live ? " hs-crown-match-state-badge--live" : finished ? " hs-crown-match-state-badge--finished" : pre ? " hs-crown-match-state-badge--scheduled" : ""}`} data-match-badge-state={match?.state ?? "unconfirmed"}>
+          {live && <span className="hs-crown-match-state-dot" aria-hidden="true" />}
+          {matchStateBadge}
+        </span>
+        <span className="hs-crown-match-result-caption" aria-hidden="true">{resultCaption}</span>
+        <strong>{resultValue}</strong>
+        <small>{matchDateLabel ?? (clash.date ? dayLabel(clash.date, { weekday: "long", year: "numeric" }) : "")}</small>
+      </span>
+      <span className="hs-crown-match-team"><TeamCrest src={sides[1].crest} monogram={sides[1].mono} /><strong>{sides[1].name}</strong>{showEvents && <CrownTeamIncidents match={match} side="away" />}</span>
+    </div>
+    {detailsOnPitch && <div className="hs-crown-scheduled-when" aria-hidden="true">{marks}</div>}
+    {!inBand && status}
+    {!inBand && timer}
+    {!inBand && marks}
+  </div>;
+  if (!parts) return core;
+  /* الدرجان خارج الجسم، مقاس موضعهما كما في شريحة «أسفل التذكرة»: العلوي يبرز
+     فوق الـoutline بـ115px والسفلي يتأخر 17px داخله ثم يهبط 80px تحته. */
+  return <>
+    {core}
+    <span
+      className="hs-crown-slide-band hs-crown-slide-band--top"
+      data-crown-part="state"
+      aria-hidden="true"
+    >
+      {/* بعد النهاية تنتقل الاسم إلى داخل ماركة الدوري، فلا يُطبع الاسم مرتين */}
+      {!detailsOnPitch && <>
+        {finished ? null : <span className="hs-crown-slide-league">{pre && <CrownLeagueCoin clash={clash} active={active} />}<span className="hs-crown-slide-league-name">{crownLeagueName(clash.source, clash.eyebrow)}</span></span>}
+        <span className={`hs-crown-slide-chip${live ? " is-live" : ""}`}>{stateLabel}</span>
+        {bandLine}
+      </>}
+    </span>
+    <span className="hs-crown-slide-band hs-crown-slide-band--bottom" data-crown-part="when" aria-hidden="true">
+      {!detailsOnPitch && <>
+        <span className="hs-crown-slide-when">{when}</span>
+        {inBand ? marks : null}
+      </>}
+    </span>
+  </>;
+}
+
 /* نص مقروء لقارئ الشاشة يلخّص حالة المواجهة — التذكرة نفسها زخرفية */
-function clashSummary(match: Match | null, clash: FeaturedClash): string {
+export function clashSummary(match: Match | null, clash: FeaturedClash): string {
   const pairing = `${clash.home.name} و${clash.away.name}`;
   if (!match) return `بطاقة ${clash.eyebrow} بين ${pairing}: تُعرض نتائج الأسبوع المنقضي ومواعيد الأسبوع القادم من لوحة المواعيد نفسها بمجرد توفّرها.`;
   if (match.state === "scheduled") {
@@ -703,12 +933,17 @@ function clashSummary(match: Match | null, clash: FeaturedClash): string {
    5 ثوانٍ مع وقفة إنسانية كاملة. الشريحة الأساسية تصميمها الافتراضي
    تصميم تذكرة البطولة، وتستطيع التذكرة الجامعة في صفحة «مواعيد
    المباريات» تمرير أساسها الخاص (صف أيقونات البطولات وصورة النجوم) */
-export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false }: {
+export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, base, showNovaBrand = false, slideOverrides, clashRibbon = false, extraSlides = [], hideBase = false, showArrows = false }: {
   leagueId: string;
   name: string;
   clashes: FeaturedClash[];
   basePlayers: ReactElement[];
   base?: ReactElement;
+  /* شرائح إضافية تُركَّب بعد الأساسية وبعد شرائح القمم — تستقبل صفحة
+     البطولة بطاقات الأخبار التي تخصّها من تذكرة الصفحة الرئيسية، لكل
+     شريحة مفتاحها ونصّها المقروء في نقطة التنقّل وعقدة العرض نفسها.
+     الترتيب المطلوب: الأساسية أولاً ثم هذه (بطلب المالك 2026-10-28). */
+  extraSlides?: { key: string; label: string; node: ReactElement }[];
   /* محتوى بديل لشريحة قمة بفهرسها (0 = أول قمة بعد الأساس) — يبقى داخل
      المنزلقة نفسها بالحركة والنقاط والإيقاف دون تغيير شيء آخر */
   slideOverrides?: Partial<Record<number, ReactElement>>;
@@ -717,12 +952,20 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   showNovaBrand?: boolean;
   /* شريط الزاوية باسم المواجهة بدل السطر التوضيحي (تذكرة الصفحة الرئيسية) */
   clashRibbon?: boolean;
+  /* إخفاء شريحة الأساس (النظرة العامة) من الدورة: تبدأ الدورة من أول شريحة
+     مواجهة أو خبر. لا يُخفى الأساس إن لم توجد أي شريحة أخرى */
+  hideBase?: boolean;
+  showArrows?: boolean;
 }) {
   const matches = useClashes(leagueId, clashes);
-  const [active, setActive] = useState(0);
+  const baseHidden = hideBase && clashes.length + extraSlides.length > 0;
+  const first = baseHidden ? 1 : 0;
+  const [active, setActive] = useState(first);
   const [auto, setAuto] = useState(false);
   const pauseUntil = useRef(0);
-  const count = 1 + clashes.length;
+  const count = (baseHidden ? 0 : 1) + clashes.length + extraSlides.length;
+  /* تلتف الدورة داخل الشرائح الظاهرة فقط (تتخطى الأساس عند إخفائه) */
+  const wrap = (n: number) => first + ((((n - first) % count) + count) % count);
 
   /* التبديل التلقائي كل 5 ثوانٍ — يعمل دائماً (جوالاً وسطح مكتب) ولا
      يُوقفه تفضيل تقليل الحركة: ذلك التفضيل يُسقط حركة الانزلاق وحدها
@@ -731,13 +974,13 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
      متاح دوماً بالمؤشر والتركيز والنقاط، وأي إيقاف يتراجع بعد 15 ثانية */
   useEffect(() => {
     const timer = window.setInterval(() => {
-      if (document.hidden) return;
+      if (document.hidden || motionReduced()) return;
       if (Date.now() < pauseUntil.current) return;
       if (!auto) return;
-      setActive(prev => (prev + 1) % count);
+      setActive(prev => wrap(prev + 1));
     }, ROTATE_MS);
     return () => window.clearInterval(timer);
-  }, [auto, count]);
+  }, [auto, count, first]);
 
   /* بدء الحركة بعد أول إطار كامل (تهيئة ضوء القالب والشريط) */
   useEffect(() => {
@@ -746,11 +989,19 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
   }, []);
 
   const go = (index: number) => {
+    trackHomeEvent("hero_ticket_slide_select", {
+      slide_index: index,
+      slide_kind: index === 0
+        ? "overview"
+        : index > clashes.length
+          ? "news"
+          : slideOverrides?.[index - 1] ? "news" : "match",
+    });
     pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
     setActive(index);
   };
 
-  const swipe = useTicketSwipe(delta => go((active + delta + count) % count));
+  const swipe = useTicketSwipe(delta => go(wrap(active + delta)));
 
   /* مفتاح الشريحة يجمع الحاجب بأسماء الفريقين — قد تتقاسم قمّتان
      الحاجب نفسه («قمة الجولة») في البطولة الواحدة */
@@ -761,11 +1012,17 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
       key: clashKey(clash, i),
       label: `بطاقة ${clash.eyebrow} — ${clash.home.name} × ${clash.away.name}`,
     })),
+    /* الشرائح المأخوذة من تذكرة الرئيسية: نصّ النقطة يصف الخبر نفسه */
+    ...extraSlides.map(slide => ({ key: slide.key, label: slide.label })),
   ];
 
   return (
+    /* data-slide-count: عدد الشرائح الفعلي — تقرؤه الأنماط لإخفاء نقاط
+       التنقّل حين تكون الشريحة واحدة (لا تنقّل لتدلّ عليه)، مع إبقاء
+       النقاط في DOM لقارئ الشاشة وحرّاس الواجهة */
     <div
       className="league-ticket-carousel"
+      data-slide-count={count}
       onPointerEnter={event => {
         /* الإيقاف بالتحويم للمؤشر فقط — لمسة الجوال لا توقف الدورة */
         if (event.pointerType === "mouse") pauseUntil.current = Date.now() + MANUAL_PAUSE_MS;
@@ -776,6 +1033,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
         <p key={clashKey(clash, i)} className="visually-hidden">{clashSummary(matches[i] ?? null, clash)}</p>
       ))}
       <div className="league-ticket-track" aria-hidden="true" {...swipe} style={{ touchAction: "pan-y pinch-zoom" }}>
+        {!baseHidden && (
         <div className={`league-ticket-slide${active === 0 ? " is-active" : ""}`}>
           {base ?? (
             <div className="league-ticket league-ticket--in-track">
@@ -799,6 +1057,7 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
             </div>
           )}
         </div>
+        )}
         {clashes.map((clash, i) => (
           <div key={clashKey(clash, i)} className={`league-ticket-slide${active === i + 1 ? " is-active" : ""}`}>
             {slideOverrides?.[i] ?? (
@@ -809,9 +1068,22 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
             )}
           </div>
         ))}
+        {extraSlides.map((slide, i) => (
+          <div
+            key={slide.key}
+            className={`league-ticket-slide${active === 1 + clashes.length + i ? " is-active" : ""}`}
+          >
+            {slide.node}
+          </div>
+        ))}
       </div>
+      {showArrows && count > 1 && <div className="hs-crown-news-arrows" aria-label="التنقل بين الأخبار">
+        <button type="button" aria-label="الخبر السابق" onClick={() => go(wrap(active - 1))}>‹</button>
+        <span dir="ltr">{active - first + 1}/{count}</span>
+        <button type="button" aria-label="الخبر التالي" onClick={() => go(wrap(active + 1))}>›</button>
+      </div>}
       <div className="league-ticket-dots">
-        {slides.map((slide, i) => (
+        {slides.map((slide, i) => baseHidden && i === 0 ? null : (
           <button
             key={slide.key}
             type="button"
@@ -829,56 +1101,135 @@ export function LeagueTicketCarousel({ leagueId, name, clashes, basePlayers, bas
 /* اللاعبون لبقية البطولات — مواضعهم الفيزيائية كما وُثّقت أول مرة */
 const PLAYER_MAP: Record<string, ReactElement | ReactElement[]> = {
   "eng.1": [
-    <TicketImage key="a" className="league-ticket-player" src="/images/players/epl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/eng-szoboszlai.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player" src={LEAGUE_TICKET_PLAYERS["eng.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["eng.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "esp.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--right" src="/images/players/esp-mbappe.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--left" src="/images/players/esp-yamal.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["esp.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["esp.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "fra.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/fra-dembele.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/fra-gouiri.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["fra.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["fra.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "ger.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/ger-kane.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/ger-olise.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["ger.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["ger.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "ita.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/ita-lautaro.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/ita-dybala.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["ita.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["ita.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "egy.1": [
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/egy-ashour.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/egy-elsaid.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["egy.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["egy.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
   "sau.1": [
     /* فيليكس يساراً + الدوسري يميناً — الثنائي الثامن الذي يُكمل خريطة
        نجوم البطولات الثماني كاملة، بنفس الصفة الزخرفية والمواضع
        الفيزيائية الصريحة */
-    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src="/images/players/sau-felix.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src="/images/players/sau-dawsari.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="a" className="league-ticket-player league-ticket-player--left" src={LEAGUE_TICKET_PLAYERS["sau.1"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+    <TicketImage key="b" className="league-ticket-player league-ticket-player--right" src={LEAGUE_TICKET_PLAYERS["sau.1"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
   ],
 };
 
 /* أبطال أوروبا: ميسي في خلفية التكوين خلف رونالدو أعلى يسار التذكرة — يُرسَم
    قبل رونالدو فيتراكب الثاني فوقه (نفس ز-index والأحدث ضمن DOM يعلو) */
 const UCL_BASE_PLAYERS = [
-  <TicketImage key="back" className="league-ticket-player league-ticket-player--back" src="/images/players/ucl-messi.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
-  <TicketImage key="star" className="league-ticket-player" src="/images/players/ucl-star.png" alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  <TicketImage key="back" className="league-ticket-player league-ticket-player--back" src={LEAGUE_TICKET_PLAYERS["uefa.champions"][0]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
+  <TicketImage key="star" className="league-ticket-player" src={LEAGUE_TICKET_PLAYERS["uefa.champions"][1]} alt="" aria-hidden="true" loading="eager" decoding="async" />,
 ];
 
+/* ── بطولات أُخفيت شرائح قممها بطلب المالك (2026-10-28) ─────────────────
+   تبقى الشريحة الأولى (تذكرة البطولة) وحدها، وتُسقَط شرائح «قمة الجولة»
+   عند الرسم — بلا حذف: المواجهات وتصاميمها ومنطقها الحيّ في
+   FEATURED_CLASHES باقٍ كما هو، والتذكرة الجامعة في هيرو الرئيسية تقرأ
+   قممها من INDEX_CLASHES فلا تتأثر. ولإرجاع شرائح بطولةٍ يكفي حذف
+   معرّفها من هذه القائمة. */
+export const HIDDEN_CLASH_LEAGUES = new Set<string>(["eng.1", "esp.1", "uefa.champions"]);
+
+/* ── بطاقات أخبار تذكرة الصفحة الرئيسية موزَّعةً على صفحات بطولاتها ──────
+   بطلب المالك (2026-10-28): «خُذ من تذكرة الرئيسية الشرائح التي تناسب كل
+   صفحة بطولة». المصدر الواحد هو FEATURED_NEWS في content/featured-news.ts
+   (لا نسخة ثانية من النصوص)، والتصنيف هو ما يحدّد البطولة. الترتيب هنا
+   هو ترتيب ظهورها في تذكرة الرئيسية نفسه فلا يتبدّل ترتيب الصفحة عن
+   الرئيسية. واستكمالاً بنطلب المالك (2026-10-30): نسخ الشرائح الباقية
+   ذات التصنيف القابل للتوزيع فأصبحت روشن والمصري منزلقتين ببطاقتهما.
+   الشرائح التي لا صفحة بطولة لها (كأس الرابطة، التركي، الكرة الذهبية،
+   دوري أبطال آسيا) تبقى في الرئيسية وحدها. */
+const LEAGUE_NEWS_HREFS: Record<string, string[]> = {
+  /* دوري روشن — بطاقة واحدة (السعودي: أيقونة المباريات sau.1 لا الترتيب ksa.1) */
+  "sau.1": [
+    "news/saudi-league-round-12-2026/",
+  ],
+  /* الدوري المصري — بطاقة واحدة */
+  "egy.1": [
+    "news/egyptian-league-matchday-8-2026/",
+  ],
+  /* الدوري الإنجليزي — 5 بطاقات */
+  "eng.1": [
+    "news/carrick-fernandes-talks-2026/",
+    "news/liverpool-brighton-live/",
+    "news/man-utd-bournemouth-live/",
+    "news/tottenham-chelsea-2-0/",
+    "news/man-city-aston-villa/",
+  ],
+  /* الدوري الإسباني — 5 بطاقات */
+  "esp.1": [
+    "news/mbappe-china-sponsors-2026/",
+    "news/barcelona-alvarez-fine-2026/",
+    "news/clasico-post-match-reactions-2026/",
+    "news/clasico-first-half-2026/",
+    "news/clasico-preview-absences-predictions/",
+  ],
+  /* الدوري الألماني — 3 بطاقات */
+  "ger.1": [
+    "news/bundesliga-bayern-freiburg-2026/",
+    "news/bundesliga-dortmund-frankfurt-2026/",
+    "news/bundesliga-kompany-hospitalized-2026/",
+  ],
+  /* الدوري الفرنسي — بطاقتان */
+  "fra.1": ["news/psg-lyon-2-0/", "news/psg-lyon-tonight/"],
+  /* دوري أبطال أوروبا — بطاقتان */
+  "uefa.champions": ["news/bayern-arsenal-2-2/", "news/psg-barcelona-4-2/"],
+  /* الدوري الإيطالي — بطاقة واحدة */
+  "ita.1": ["news/inter-fiorentina-2-1/"],
+};
+
+/* شرائح الأخبار لعقدة المنزلقة: مفتاح ثابت لكل شريحة، ونصّ النقطة من
+   تصنيف الخبر وعنوانه — يُقرأ في قارئ الشاشة بلا اسم فريق مُخترع */
+function leagueNewsSlides(leagueId: string): { key: string; label: string; node: ReactElement }[] {
+  const hrefs = LEAGUE_NEWS_HREFS[leagueId] ?? [];
+  return hrefs.flatMap(href => {
+    const item = FEATURED_NEWS.find(news => news.href === href);
+    if (!item) return [];
+    return [{
+      key: `news-${href}`,
+      label: `${item.category} — ${item.title}`,
+      node: <FeaturedNewsTicketSlide href={href} />,
+    }];
+  });
+}
+
 export default function LeagueTicketCard({ leagueId, name }: { leagueId: string; name: string }) {
-  const clashes = FEATURED_CLASHES[leagueId];
-  if (clashes && clashes.length > 0) {
-    const basePlayers = leagueId === "uefa.champions"
-      ? UCL_BASE_PLAYERS
-      : (PLAYER_MAP[leagueId] ?? []);
+  const clashes = FEATURED_CLASHES[leagueId] ?? [];
+  /* القمم المخفية تبقى في FEATURED_CLASHES ولا تُرسَم، والأخبار تُضاف
+     بعدها — فصفحة البطولة تحمل: الأساسية أولاً ثم بطاقات أخبارها */
+  const visibleClashes = HIDDEN_CLASH_LEAGUES.has(leagueId) ? [] : clashes;
+  const newsSlides = leagueNewsSlides(leagueId);
+  const basePlayers = leagueId === "uefa.champions"
+    ? UCL_BASE_PLAYERS
+    : (PLAYER_MAP[leagueId] ?? []);
+  /* منزلقة متى وُجد ما يتنقّل إليه: قمم ظاهرة أو شرائح أخبار. البطولة
+     التي لا أخبار لها ولا قمم (السعودي والمصري اليوم) تبقى تذكرتها
+     الساكنة كما هي بلا تغيير. */
+  if (visibleClashes.length > 0 || newsSlides.length > 0) {
     return (
       <LeagueTicketCarousel
         leagueId={leagueId}
         name={name}
-        clashes={clashes}
+        clashes={visibleClashes}
+        extraSlides={newsSlides}
         basePlayers={Array.isArray(basePlayers) ? basePlayers : [basePlayers]}
       />
     );

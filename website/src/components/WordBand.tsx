@@ -31,7 +31,7 @@ export default function WordBand() {
               key={i}
               className="font-display font-black italic text-[72px] md:text-[110px] leading-none tracking-tight text-[#d8ff3e] whitespace-nowrap px-6"
             >
-              تفعيل فوري • دعم 24/7
+              إرشادات تفعيل • دعم فني
             </span>
           ))}
         </div>

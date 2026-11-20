@@ -1,10 +1,12 @@
+import type { ScoreboardIncident } from "./scoreboard-incidents.mjs";
 export interface League { id: string; name: string }
 export interface MatchTeam { name: string; score: number | null; logo?: string }
-export interface Match { id: string; league: string; date: string; home: MatchTeam; away: MatchTeam; state: 'live' | 'scheduled' | 'finished' | 'other'; detail: string; venue: string }
+export interface Match { id: string; league: string; date: string; home: MatchTeam; away: MatchTeam; state: 'live' | 'scheduled' | 'finished' | 'other'; detail: string; venue: string; incidents?: ScoreboardIncident[] }
 export interface ScoreboardResult { id: string; matches: Match[]; updated: string; cache: 'HIT' | 'MISS' | 'STALE'; stale: boolean; diagnostic?: string }
 export const LEAGUES: League[];
 export const TIME_ZONES: { id: string; name: string }[];
 export const DIAGNOSTIC_LABELS: Record<string, string>;
+export function moroccoTimeZoneWarning(zone: string, date?: Date | string | number): boolean;
 export function dayInZone(date: Date, zone: string): string;
 export function shiftDay(day: string, offset: number): string;
 export function weekDays(today: string): string[];

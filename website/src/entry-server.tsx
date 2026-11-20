@@ -44,5 +44,6 @@ export function renderPage(path: string): { html: string; seo: SeoMeta } {
 }
 
 // Build-only exports: legacy pages share the central SEO and identity sources.
-export { getLegacyAnalysisSeo } from "./seo";
+export { getSeo, getLegacyAnalysisSeo } from "./seo";
 export { BRAND_NAME, SITE_URL } from "./config";
+export { AVAILABLE_DURATIONS, PRICING_PLANS } from "./data";

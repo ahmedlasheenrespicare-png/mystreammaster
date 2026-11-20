@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { IconCart, IconChat, IconClose } from "./Icons";
 import { useDialogA11y } from "./useDialogA11y";
 import { CURRENCIES, getWhatsAppUrl, PricingPlan } from "../data";
+import { to } from "../config";
 
 export interface CartItem {
   id: string;
@@ -175,7 +176,7 @@ export default function CartModal({
             <p className="text-[11.5px] text-black/50 text-center leading-relaxed">
               بإرسال هذا الطلب، فإنك تقرّ باطلاعك وموافقتك على{" "}
               <a
-                href="https://arena.ai/terms/"
+                href={to("terms/")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-bold text-[#2b4eff] underline underline-offset-2"
@@ -184,7 +185,7 @@ export default function CartModal({
               </a>{" "}
               و
               <a
-                href="https://arena.ai/refund/"
+                href={to("refund/")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-bold text-[#2b4eff] underline underline-offset-2"

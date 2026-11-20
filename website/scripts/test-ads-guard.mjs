@@ -19,6 +19,7 @@ const NO_ADS = [
   'predictions/index.html',
   'live-free.html',
   'player.html',
+  'admin-dashboard/private/_dashboard.html',
 ];
 
 test('حارس AdSense: يرفض الإعلانات على صفحة نصّها أقل من الحد', () => {
@@ -49,7 +50,14 @@ test('الصفحات المستثناة فعلياً في الشجرة المن�
   }
 });
 
-test('كل صفحة إعلانية منشورة تتجاوز حدّ الكلمات (286 صفحة على الأقل)', async () => {
+test('لوحة الإدارة الخاصة بلا إعلانات مع بقاء قياس GA4', async () => {
+  const html = await fs.readFile(new URL('admin-dashboard/private/_dashboard.html', root), 'utf8');
+  assert.equal(hasAdLoader(html), false);
+  assert.doesNotMatch(html, /amp-auto-ads/i);
+  assert.match(html, /G-N7VT67MW57/);
+});
+
+test('عينات صفحات مُحمِّل الإعلانات تتجاوز العتبة الداخلية للطول', async () => {
   const pages = [
     'index.html',
     'blog/رسيفر-iptv/index.html',

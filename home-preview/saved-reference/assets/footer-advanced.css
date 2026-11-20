@@ -1,0 +1,18 @@
+/* Contact artwork and marquee use the existing Stream Master footer palette. */
+.sm-footer{background:#280822;color:#f9e9ed}
+.sm-footer .sm-footer__cta{position:relative;height:min(80svh,690px);min-height:460px;padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.footer-hand{position:absolute;inset:3% 26% 2%;z-index:0;display:flex;justify-content:center;pointer-events:none;overflow:hidden}
+.footer-hand img{display:block;width:100%;height:100%;object-fit:contain;animation:sm-footer-hand 7s ease-in-out infinite alternate}
+.sm-footer .sm-footer__marquee{width:100%;position:relative;z-index:1;color:#f3dbe3}
+.sm-footer .sm-footer__track>span{font-size:clamp(52px,7vw,100px);gap:24px;padding-right:24px}
+.footer-contact-circle{position:absolute;z-index:3;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(110px,12vw,160px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#f3dbe3;color:#280822;text-decoration:none;transition:background .3s,color .3s}
+.footer-contact-circle svg{width:30px;height:30px}.footer-contact-circle:hover,.footer-contact-circle:focus-visible{background:#e880a1;color:#280822}
+.sm-footer .sm-footer__motion{position:absolute;bottom:12px;right:5vw;z-index:4;margin:0}
+.sm-footer .sm-footer__main{margin-top:clamp(36px,6vw,75px)}
+@keyframes sm-footer-hand{from{transform:rotate(-2deg)}to{transform:rotate(2deg) translateY(-2%)}}
+.sm-footer.is-offscreen .footer-hand img,.sm-footer.is-paused .footer-hand img{animation-play-state:paused}
+html[data-motion-reduced="true"] .footer-hand img{animation:none}
+@media(max-width:700px){.sm-footer .sm-footer__cta{height:65svh;min-height:440px}.footer-hand{inset:5% 5% 4%}.sm-footer .sm-footer__track>span{font-size:clamp(46px,12vw,68px);gap:18px;padding-right:18px}.sm-footer .sm-footer__main{margin-top:40px}}
+/* The legacy footer parallax translates the whole container outside its own
+   clipped parent on desktop; keep the new contact area in normal flow. */
+.sm-footer .footer-container{transform:none!important}

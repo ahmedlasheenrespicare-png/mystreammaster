@@ -56,54 +56,62 @@ test('the matches hub renders the league carousel with all eight landing links i
 });
 
 test('league icons load lazily with dimensions and empty alt, and no league ships a broken image', () => {
-  /* الشارة عنصر واحد (LeagueIconBadge) يخدم الشريطين — يُفحَص كل شريط وحده */
-  for (const bar of ['.matches-league-links.league-carousel', '.league-carousel.league-stats']) {
-    const scope = matchesPage(bar);
-    const images = scope.find('img.league-carousel-logo');
-    assert.equal(images.length, 7, `${bar}: سبع بطولات لها شعار موثّق لدى المصدر (الدوري المصري بلا شعار موثّق)`);
-    for (const image of images.toArray()) {
-      const $img = matchesPage(image);
-      assert.match($img.attr('src'), ICON_HOST);
-      assert.equal($img.attr('alt'), '', 'الأيقونة زخرفية: النص الظاهر بجانبها يكفي');
-      assert.equal($img.attr('loading'), 'lazy');
-      assert.equal($img.attr('decoding'), 'async');
-      assert.ok(Number($img.attr('width')) > 0 && Number($img.attr('height')) > 0, 'أبعاد معلومة تمنع قفز التخطيط');
-    }
-    /* البديل المحايد مرسوم في كل بطاقة — يظهر وحده حين لا يتوفّر شعار */
-    assert.equal(scope.find('.league-carousel-badge').length, 8, bar);
-    assert.equal(scope.find('.league-carousel-fallback').length, 8, bar);
+  const scope = matchesPage('.matches-league-links.league-carousel');
+  const images = scope.find('img.league-carousel-logo');
+  assert.equal(images.length, 7, 'سبع بطولات لها شعار موثّق لدى المصدر (الدوري المصري بلا شعار موثّق)');
+  for (const image of images.toArray()) {
+    const $img = matchesPage(image);
+    assert.match($img.attr('src'), ICON_HOST);
+    assert.equal($img.attr('alt'), '', 'الأيقونة زخرفية: النص الظاهر بجانبها يكفي');
+    assert.equal($img.attr('loading'), 'lazy');
+    assert.equal($img.attr('decoding'), 'async');
+    assert.ok(Number($img.attr('width')) > 0 && Number($img.attr('height')) > 0, 'أبعاد معلومة تمنع قفز التخطيط');
   }
+  /* البديل المحايد مرسوم في كل بطاقة — يظهر وحده حين لا يتوفّر شعار */
+  assert.equal(scope.find('.league-carousel-badge').length, 8);
+  assert.equal(scope.find('.league-carousel-fallback').length, 8);
 });
 
-test('the matches hub renders the league stats bar with prerendered numbers for every league', () => {
-  const bar = matchesPage('.league-carousel.league-stats');
-  assert.equal(bar.length, 1, 'شريط إحصائيات البطولات موجود في HTML المُسبق رسمه');
+test('the matches hub merges the three league stats into each card upper dropdown and removes the duplicate bar below', () => {
+  assert.equal(matchesPage('.league-carousel.league-stats').length, 0, 'أُخفي شريط الإحصائيات المنفصل أسفل الحلقة لمنع التكرار');
+  assert.equal(matchesPage('.lc-proposals-lab').length, 0, 'أُزيل معمل المقترحات المؤقت بعد اعتماد المقترح (د)');
+  const bar = matchesPage('.matches-league-links.league-carousel');
+  assert.equal(bar.length, 1, 'حلقة البطولات موجودة في HTML المُسبق رسمه');
   assert.equal(bar.attr('aria-roledescription'), 'carousel');
   /* لا طلب يُطلَق من HTML نفسه: الجلب حيّ عند بلوغ القسم، لا عند تحميل الصفحة */
   assert.equal(bar.attr('data-fetched'), 'false');
-  const cards = bar.find('.league-stats-card');
-  assert.equal(cards.length, 8, 'كرت لكل بطولة');
+  const cards = bar.find('.league-carousel-item');
+  assert.equal(cards.length, 8, 'بطاقة لكل بطولة');
   const ids = cards.toArray().map((card) => matchesPage(card).attr('data-league'));
   assert.deepEqual(ids, ['uefa.champions', 'eng.1', 'fra.1', 'esp.1', 'ger.1', 'ita.1', 'ksa.1', 'egy.1']);
-  /* كل كرت يفتح صفحة بطولته — الشريط مدخل تنقّل لا لوحة أرقام مغلقة */
-  for (const card of cards.toArray()) {
-    assert.match(matchesPage(card).find('a.league-stats-link').attr('href'), /^\/matches\/[^/]+\/$/);
+  assert.equal(bar.find('.lc-top-drawer.lc-top-drawer--twin').length, 8, 'المقترح (د) مفعّل في المنسدلة العلوية لكل بطاقة');
+  /* أيقونات الفرق مرسومة في جناحَي أقوى هجوم وأقوى دفاع لكل بطاقة (2 × 8 = 16) */
+  assert.equal(bar.find('.lc-top-drawer .lc-top-club-crest').length, 16, 'أيقونة فريق لكل جناح هجومي ودفاعي');
+  assert.equal(bar.find('.lc-top-drawer img.lc-top-club-logo').length, 16, 'صورة شعار الفريق مرسومة من المصدر المعتمد');
+  const LIVE = /^https:\/\/a\.espncdn\.com\/i\/teamlogos\/soccer\/500\/[1-9]\d{0,11}\.png$/;
+  const HIGHLIGHTLY = /^https:\/\/highlightly\.net\/soccer\/images\/teams\/[1-9]\d{0,11}\.png$/;
+  for (const logoEl of bar.find('.lc-top-drawer img.lc-top-club-logo').toArray()) {
+    const img = matchesPage(logoEl);
+    const src = img.attr('src') || '';
+    if (/^https?:/.test(src)) {
+      assert.match(src, new RegExp(`${LIVE.source}|${HIGHLIGHTLY.source}`), `مضيف شعار فريق غير معتمد في المنسدلة العلوية: ${src}`);
+    } else {
+      assert.match(src, /^\/images\/teams\/[a-z0-9-]+-club-badge\.webp$/, `مسار محلي غير معتمد في المنسدلة العلوية: ${src}`);
+    }
+    assert.equal(img.attr('alt'), '');
+    assert.equal(img.attr('aria-hidden'), 'true');
+    assert.equal(img.attr('loading'), 'lazy');
+    assert.equal(img.attr('draggable'), 'false');
   }
-  /* الأرقام من لقطة البناء المراجَعة: ثلاثة مقاييس لكل كرت، ولا مقياس فارغ */
-  const values = bar.find('[data-stat-value]');
+  /* الأرقام من لقطة البناء المراجَعة: ثلاثة مقاييس في المنسدلة العلوية لكل كرت، ولا مقياس فارغ */
+  const values = bar.find('.lc-top-drawer [data-stat-value]');
   assert.equal(values.length, 24);
   assert.equal(values.filter((_, el) => matchesPage(el).text().trim() === 'غير متاح').length, 0);
   for (const metric of ['best-attack', 'best-defence', 'total-goals']) {
-    assert.equal(bar.find(`[data-stat-metric="${metric}"]`).length, 8, `مقياس ${metric} في كل كرت`);
+    assert.equal(bar.find(`.lc-top-drawer [data-stat-metric="${metric}"]`).length, 8, `مقياس ${metric} في المنسدلة العلوية لكل كرت`);
   }
-  /* لا سطر قراءة تحت الكرت: الكرت مختصر يعرض المقاييس وحدها، وحالة القراءة
-     (قديمة/فاشلة) محمولة في خاصية على الكرت لا في نص ظاهر. */
-  assert.equal(bar.find('.league-stats-foot').length, 0);
   assert.doesNotMatch(bar.text(), /آخر قراءة|جارٍ قراءة الترتيب|بيانات قديمة/);
-  assert.equal(bar.find('.league-stats-card[data-stat-stale]').length, 8);
-  /* نفس أدوات تنقّل شريط الروابط: سهمان ومؤشر نقطي واحد قبل القياس */
-  assert.equal(bar.find('.league-carousel-nav').length, 2);
-  assert.equal(bar.find('.league-carousel-dot').length, 1);
+  assert.equal(bar.find('.league-carousel-item[data-stat-stale]').length, 8);
 });
 
 test('leader banners take crests from the live match-card source, with local then initials fallback', async () => {
@@ -182,6 +190,21 @@ test('leader banners take crests from the live match-card source, with local the
       const src = matchesPage(image).attr('src') || '';
       if (/^(?:https?:)?\/\//.test(src)) assert.match(src, new RegExp(`${LIVE.source}|${HIGHLIGHTLY.source}`), `${key}: مصدر خارجي غير معتمد: ${src}`);
     }
+
+    /* تشريح بطاقة القالب المعتمد (sohoning/ugly-horse-87):
+       • الكأس بلا مسار النجمة القديم، وشعار البطولة (LeagueIconBadge) يتوسّطها.
+       • اسم البطولة بلا علامة 1st، والخط الفاصل، والدرج السفلي بنقاط المتصدّر الموثّقة. */
+    assert.equal(scope.find('.lc-trophy-svg').length, 1, `${key}: الكأس مرسومة`);
+    assert.equal(scope.find('.lc-trophy-svg path[fill="#FFF2A0"]').length, 0, `${key}: النجمة أُزيلت ليحلّ شعار البطولة مكانها`);
+    assert.equal(scope.find('.lc-trophy-emblem .league-carousel-badge').length, 1, `${key}: شعار البطولة في موضع النجمة فوق الكأس`);
+    assert.equal(scope.find('.lc-rank').length, 0, `${key}: أُزيلت علامة 1st من البطاقة`);
+    assert.doesNotMatch(scope.text(), /1st/, `${key}: لا نص 1st داخل البطاقة`);
+    assert.equal(scope.find('.lc-split-line').length, 1, `${key}: الخط الفاصل المضيء`);
+    assert.equal(scope.find('.lc-detail [data-leader-points]').text(), `${leader.points}نقطة`, `${key}: نقاط المتصدّر من لقطة الترتيب`);
+    const gd = leader.goalDifference > 0 ? `+${leader.goalDifference}` : String(leader.goalDifference);
+    assert.equal(scope.find('.lc-detail [data-leader-meta]').text(), `لعب ${leader.played} · فارق ${gd}`, `${key}: لعب وفارق أهداف المتصدّر`);
+    assert.equal(scope.find('.lc-grades-icon').length, 1, `${key}: أيقونة الأعمدة في الدرج السفلي`);
+    assert.equal(scope.find('.lc-medals').length, 1, `${key}: الميدالية في الدرج السفلي`);
   }
   assert.equal(cards.find('.league-carousel-leader-logo').length, 8);
 });

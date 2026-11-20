@@ -2895,18 +2895,29 @@
         "name": "Lazio"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 6
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 42.1,
+          "shots": 9,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 57.9,
+          "shots": 16,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261027&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-28T09:41:45.061Z"
     },
     {
       "id": "401874780",
@@ -2920,18 +2931,29 @@
         "name": "Cagliari"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 4,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 61780,
+      "statistics": {
+        "home": {
+          "possession": 60.7,
+          "shots": 20,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 39.3,
+          "shots": 19,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261027&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-28T09:41:45.061Z"
     },
     {
       "id": "401874786",
@@ -2945,18 +2967,29 @@
         "name": "Como"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 3
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 21160,
+      "statistics": {
+        "home": {
+          "possession": 27.6,
+          "shots": 11,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 72.4,
+          "shots": 18,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261027&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-28T09:41:45.061Z"
     },
     {
       "id": "401874773",
@@ -2970,18 +3003,29 @@
         "name": "Internazionale"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 2
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 34.8,
+          "shots": 12,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 65.2,
+          "shots": 16,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261028&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "401874965",
@@ -2995,18 +3039,29 @@
         "name": "Udinese"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 41.8,
+          "shots": 8,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 58.2,
+          "shots": 20,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261028&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "401874993",
@@ -3020,18 +3075,29 @@
         "name": "Bologna"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 4
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 66.4,
+          "shots": 8,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 33.6,
+          "shots": 9,
+          "passAccuracy": 0.8
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261028&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "401874799",
@@ -3045,18 +3111,29 @@
         "name": "Napoli"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 4
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 34.8,
+          "shots": 12,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 65.2,
+          "shots": 16,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261028&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "401874988",
@@ -3070,18 +3147,29 @@
         "name": "Juventus"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 36.6,
+          "shots": 14,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 63.4,
+          "shots": 17,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261028&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-29T09:59:31.298Z"
     },
     {
       "id": "401874976",
@@ -3095,18 +3183,29 @@
         "name": "Lecce"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 5,
+        "away": 1
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 59.6,
+          "shots": 26,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 40.4,
+          "shots": 15,
+          "passAccuracy": 0.6
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261029&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "401874969",
@@ -3120,18 +3219,29 @@
         "name": "Atalanta"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 2
       },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
+      "status": "finished",
+      "attendance": 20351,
+      "statistics": {
+        "home": {
+          "possession": 50.2,
+          "shots": 26,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 49.8,
+          "shots": 10,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261029&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-30T10:02:53.684Z"
     },
     {
       "id": "401874798",
@@ -3145,6 +3255,726 @@
         "name": "Monza"
       },
       "score": {
+        "home": 2,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 59.4,
+          "shots": 10,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 40.6,
+          "shots": 6,
+          "passAccuracy": 0.7
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
+      },
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
+    },
+    {
+      "id": "401874990",
+      "date": "2026-10-31T17:00:00.000Z",
+      "home": {
+        "id": "118",
+        "name": "Udinese"
+      },
+      "away": {
+        "id": "104",
+        "name": "AS Roma"
+      },
+      "score": {
+        "home": 2,
+        "away": 5
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 45.9,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 54.1,
+          "shots": 14,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
+      },
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
+    },
+    {
+      "id": "401874795",
+      "date": "2026-10-31T19:45:00.000Z",
+      "home": {
+        "id": "103",
+        "name": "AC Milan"
+      },
+      "away": {
+        "id": "110",
+        "name": "Internazionale"
+      },
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 43.1,
+          "shots": 7,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 56.9,
+          "shots": 19,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
+      },
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
+    },
+    {
+      "id": "401875002",
+      "date": "2026-11-01T11:30:00.000Z",
+      "home": {
+        "id": "2572",
+        "name": "Como"
+      },
+      "away": {
+        "id": "17530",
+        "name": "Venezia"
+      },
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 65.7,
+          "shots": 19,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 34.3,
+          "shots": 7,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401874782",
+      "date": "2026-11-01T14:00:00.000Z",
+      "home": {
+        "id": "4057",
+        "name": "Frosinone"
+      },
+      "away": {
+        "id": "239",
+        "name": "Torino"
+      },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 45.6,
+          "shots": 20,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 54.4,
+          "shots": 12,
+          "passAccuracy": 0.7
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401874983",
+      "date": "2026-11-01T14:00:00.000Z",
+      "home": {
+        "id": "112",
+        "name": "Lazio"
+      },
+      "away": {
+        "id": "2925",
+        "name": "Cagliari"
+      },
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 73.7,
+          "shots": 11,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 26.3,
+          "shots": 9,
+          "passAccuracy": 0.7
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401874968",
+      "date": "2026-11-01T17:00:00.000Z",
+      "home": {
+        "id": "113",
+        "name": "Lecce"
+      },
+      "away": {
+        "id": "3263",
+        "name": "Genoa"
+      },
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 52.9,
+          "shots": 18,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 47.1,
+          "shots": 13,
+          "passAccuracy": 0.7
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401874949",
+      "date": "2026-11-01T19:45:00.000Z",
+      "home": {
+        "id": "111",
+        "name": "Juventus"
+      },
+      "away": {
+        "id": "114",
+        "name": "Napoli"
+      },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 48.7,
+          "shots": 18,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 51.3,
+          "shots": 8,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401874963",
+      "date": "2026-11-02T17:30:00.000Z",
+      "home": {
+        "id": "3997",
+        "name": "Sassuolo"
+      },
+      "away": {
+        "id": "109",
+        "name": "Fiorentina"
+      },
+      "score": {
+        "home": 2,
+        "away": 4
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 58.2,
+          "shots": 7,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 41.8,
+          "shots": 15,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
+      },
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
+    },
+    {
+      "id": "401874971",
+      "date": "2026-11-02T19:45:00.000Z",
+      "home": {
+        "id": "105",
+        "name": "Atalanta"
+      },
+      "away": {
+        "id": "115",
+        "name": "Parma"
+      },
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 69.6,
+          "shots": 20,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 30.4,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
+      },
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
+    },
+    {
+      "id": "401874815",
+      "date": "2026-11-06T19:45:00.000Z",
+      "home": {
+        "id": "17530",
+        "name": "Venezia"
+      },
+      "away": {
+        "id": "118",
+        "name": "Udinese"
+      },
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 46.3,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 53.7,
+          "shots": 13,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261106&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401874791",
+      "date": "2026-11-07T14:00:00.000Z",
+      "home": {
+        "id": "2925",
+        "name": "Cagliari"
+      },
+      "away": {
+        "id": "4057",
+        "name": "Frosinone"
+      },
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 36.3,
+          "shots": 14,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 63.7,
+          "shots": 29,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401874811",
+      "date": "2026-11-07T14:00:00.000Z",
+      "home": {
+        "id": "239",
+        "name": "Torino"
+      },
+      "away": {
+        "id": "113",
+        "name": "Lecce"
+      },
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 64.1,
+          "shots": 9,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 35.9,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401874974",
+      "date": "2026-11-07T17:00:00.000Z",
+      "home": {
+        "id": "115",
+        "name": "Parma"
+      },
+      "away": {
+        "id": "107",
+        "name": "Bologna"
+      },
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 31.5,
+          "shots": 11,
+          "passAccuracy": 0.7
+        },
+        "away": {
+          "possession": 68.5,
+          "shots": 33,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401874803",
+      "date": "2026-11-07T19:45:00.000Z",
+      "home": {
+        "id": "104",
+        "name": "AS Roma"
+      },
+      "away": {
+        "id": "3997",
+        "name": "Sassuolo"
+      },
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 64674,
+      "statistics": {
+        "home": {
+          "possession": 65.1,
+          "shots": 28,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 34.9,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401874810",
+      "date": "2026-11-08T11:30:00.000Z",
+      "home": {
+        "id": "114",
+        "name": "Napoli"
+      },
+      "away": {
+        "id": "112",
+        "name": "Lazio"
+      },
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 49,
+          "shots": 15,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 51,
+          "shots": 15,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401874800",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "4007",
+        "name": "Monza"
+      },
+      "away": {
+        "id": "105",
+        "name": "Atalanta"
+      },
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 48.6,
+          "shots": 22,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 51.4,
+          "shots": 13,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401875018",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "3263",
+        "name": "Genoa"
+      },
+      "away": {
+        "id": "103",
+        "name": "AC Milan"
+      },
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 37.7,
+          "shots": 17,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 62.3,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401874808",
+      "date": "2026-11-08T17:00:00.000Z",
+      "home": {
+        "id": "110",
+        "name": "Internazionale"
+      },
+      "away": {
+        "id": "2572",
+        "name": "Como"
+      },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 43,
+          "shots": 14,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 57,
+          "shots": 5,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401875003",
+      "date": "2026-11-08T19:45:00.000Z",
+      "home": {
+        "id": "109",
+        "name": "Fiorentina"
+      },
+      "away": {
+        "id": "111",
+        "name": "Juventus"
+      },
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 41.3,
+          "shots": 22,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 58.7,
+          "shots": 18,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401874981",
+      "date": "2026-11-21T14:00:00.000Z",
+      "home": {
+        "id": "112",
+        "name": "Lazio"
+      },
+      "away": {
+        "id": "113",
+        "name": "Lecce"
+      },
+      "score": {
         "home": null,
         "away": null
       },
@@ -3154,16 +3984,41 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261121&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
-      "id": "401874990",
-      "date": "2026-10-31T17:00:00.000Z",
+      "id": "401875056",
+      "date": "2026-11-21T14:00:00.000Z",
       "home": {
-        "id": "118",
-        "name": "Udinese"
+        "id": "2572",
+        "name": "Como"
+      },
+      "away": {
+        "id": "2925",
+        "name": "Cagliari"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401874967",
+      "date": "2026-11-21T17:00:00.000Z",
+      "home": {
+        "id": "115",
+        "name": "Parma"
       },
       "away": {
         "id": "104",
@@ -3179,66 +4034,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261121&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
-      "id": "401874795",
-      "date": "2026-10-31T19:45:00.000Z",
+      "id": "401875067",
+      "date": "2026-11-21T19:45:00.000Z",
       "home": {
-        "id": "103",
-        "name": "AC Milan"
-      },
-      "away": {
-        "id": "110",
-        "name": "Internazionale"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261031&limit=500"
-      },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
-    },
-    {
-      "id": "401875002",
-      "date": "2026-11-01T11:30:00.000Z",
-      "home": {
-        "id": "2572",
-        "name": "Como"
-      },
-      "away": {
-        "id": "17530",
-        "name": "Venezia"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
-      },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
-    },
-    {
-      "id": "401874782",
-      "date": "2026-11-01T14:00:00.000Z",
-      "home": {
-        "id": "4057",
-        "name": "Frosinone"
+        "id": "114",
+        "name": "Napoli"
       },
       "away": {
         "id": "239",
@@ -3254,20 +4059,20 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261121&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
-      "id": "401874983",
-      "date": "2026-11-01T14:00:00.000Z",
+      "id": "401875008",
+      "date": "2026-11-22T11:30:00.000Z",
       "home": {
-        "id": "112",
-        "name": "Lazio"
+        "id": "111",
+        "name": "Juventus"
       },
       "away": {
-        "id": "2925",
-        "name": "Cagliari"
+        "id": "17530",
+        "name": "Venezia"
       },
       "score": {
         "home": null,
@@ -3279,16 +4084,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261122&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
-      "id": "401874968",
-      "date": "2026-11-01T17:00:00.000Z",
+      "id": "401874960",
+      "date": "2026-11-22T14:00:00.000Z",
       "home": {
-        "id": "113",
-        "name": "Lecce"
+        "id": "3997",
+        "name": "Sassuolo"
       },
       "away": {
         "id": "3263",
@@ -3304,91 +4109,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261122&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
-      "id": "401874949",
-      "date": "2026-11-01T19:45:00.000Z",
+      "id": "401875047",
+      "date": "2026-11-22T14:00:00.000Z",
       "home": {
-        "id": "111",
-        "name": "Juventus"
-      },
-      "away": {
-        "id": "114",
-        "name": "Napoli"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101&limit=500"
-      },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
-    },
-    {
-      "id": "401874963",
-      "date": "2026-11-02T17:30:00.000Z",
-      "home": {
-        "id": "3997",
-        "name": "Sassuolo"
-      },
-      "away": {
-        "id": "109",
-        "name": "Fiorentina"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
-      },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
-    },
-    {
-      "id": "401874971",
-      "date": "2026-11-02T19:45:00.000Z",
-      "home": {
-        "id": "105",
-        "name": "Atalanta"
-      },
-      "away": {
-        "id": "115",
-        "name": "Parma"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261102&limit=500"
-      },
-      "fetchedAt": "2026-10-21T08:36:15.809Z"
-    },
-    {
-      "id": "401874815",
-      "date": "2026-11-06T19:45:00.000Z",
-      "home": {
-        "id": "17530",
-        "name": "Venezia"
+        "id": "107",
+        "name": "Bologna"
       },
       "away": {
         "id": "118",
@@ -3404,16 +4134,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261106&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261122&limit=500"
       },
-      "fetchedAt": "2026-10-23T08:34:10.994Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
-      "id": "401874791",
-      "date": "2026-11-07T14:00:00.000Z",
+      "id": "401874989",
+      "date": "2026-11-22T17:00:00.000Z",
       "home": {
-        "id": "2925",
-        "name": "Cagliari"
+        "id": "103",
+        "name": "AC Milan"
       },
       "away": {
         "id": "4057",
@@ -3429,20 +4159,20 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261122&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
-      "id": "401874811",
-      "date": "2026-11-07T14:00:00.000Z",
+      "id": "401875001",
+      "date": "2026-11-22T19:45:00.000Z",
       "home": {
-        "id": "239",
-        "name": "Torino"
+        "id": "105",
+        "name": "Atalanta"
       },
       "away": {
-        "id": "113",
-        "name": "Lecce"
+        "id": "110",
+        "name": "Internazionale"
       },
       "score": {
         "home": null,
@@ -3454,16 +4184,41 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261122&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
-      "id": "401874974",
-      "date": "2026-11-07T17:00:00.000Z",
+      "id": "401875009",
+      "date": "2026-11-23T19:45:00.000Z",
       "home": {
-        "id": "115",
-        "name": "Parma"
+        "id": "4007",
+        "name": "Monza"
+      },
+      "away": {
+        "id": "109",
+        "name": "Fiorentina"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261123&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401875004",
+      "date": "2026-11-27T19:45:00.000Z",
+      "home": {
+        "id": "17530",
+        "name": "Venezia"
       },
       "away": {
         "id": "107",
@@ -3479,20 +4234,20 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261127&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     },
     {
-      "id": "401874803",
-      "date": "2026-11-07T19:45:00.000Z",
+      "id": "401875081",
+      "date": "2026-11-28T14:00:00.000Z",
       "home": {
-        "id": "104",
-        "name": "AS Roma"
+        "id": "4057",
+        "name": "Frosinone"
       },
       "away": {
-        "id": "3997",
-        "name": "Sassuolo"
+        "id": "115",
+        "name": "Parma"
       },
       "score": {
         "home": null,
@@ -3504,16 +4259,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261107&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261128&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     },
     {
-      "id": "401874810",
-      "date": "2026-11-08T11:30:00.000Z",
+      "id": "401874826",
+      "date": "2026-11-28T17:00:00.000Z",
       "home": {
-        "id": "114",
-        "name": "Napoli"
+        "id": "239",
+        "name": "Torino"
       },
       "away": {
         "id": "112",
@@ -3529,70 +4284,20 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261128&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     },
     {
-      "id": "401874800",
-      "date": "2026-11-08T14:00:00.000Z",
-      "home": {
-        "id": "4007",
-        "name": "Monza"
-      },
-      "away": {
-        "id": "105",
-        "name": "Atalanta"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
-      },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
-    },
-    {
-      "id": "401875018",
-      "date": "2026-11-08T14:00:00.000Z",
-      "home": {
-        "id": "3263",
-        "name": "Genoa"
-      },
-      "away": {
-        "id": "103",
-        "name": "AC Milan"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
-      },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
-    },
-    {
-      "id": "401874808",
-      "date": "2026-11-08T17:00:00.000Z",
+      "id": "401874977",
+      "date": "2026-11-28T19:45:00.000Z",
       "home": {
         "id": "110",
         "name": "Internazionale"
       },
       "away": {
-        "id": "2572",
-        "name": "Como"
+        "id": "3263",
+        "name": "Genoa"
       },
       "score": {
         "home": null,
@@ -3604,16 +4309,91 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261128&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     },
     {
-      "id": "401875003",
-      "date": "2026-11-08T19:45:00.000Z",
+      "id": "401875031",
+      "date": "2026-11-29T11:30:00.000Z",
       "home": {
+        "id": "118",
+        "name": "Udinese"
+      },
+      "away": {
         "id": "109",
         "name": "Fiorentina"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261129&limit=500"
+      },
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401874992",
+      "date": "2026-11-29T14:00:00.000Z",
+      "home": {
+        "id": "3997",
+        "name": "Sassuolo"
+      },
+      "away": {
+        "id": "114",
+        "name": "Napoli"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261129&limit=500"
+      },
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401874769",
+      "date": "2026-11-29T17:00:00.000Z",
+      "home": {
+        "id": "104",
+        "name": "AS Roma"
+      },
+      "away": {
+        "id": "4007",
+        "name": "Monza"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261129&limit=500"
+      },
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401874994",
+      "date": "2026-11-29T19:45:00.000Z",
+      "home": {
+        "id": "2572",
+        "name": "Como"
       },
       "away": {
         "id": "111",
@@ -3629,9 +4409,59 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "ita.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261108&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261129&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401875095",
+      "date": "2026-11-30T17:30:00.000Z",
+      "home": {
+        "id": "113",
+        "name": "Lecce"
+      },
+      "away": {
+        "id": "105",
+        "name": "Atalanta"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261130&limit=500"
+      },
+      "fetchedAt": "2026-11-16T11:20:43.500Z"
+    },
+    {
+      "id": "401875019",
+      "date": "2026-11-30T19:45:00.000Z",
+      "home": {
+        "id": "2925",
+        "name": "Cagliari"
+      },
+      "away": {
+        "id": "103",
+        "name": "AC Milan"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261130&limit=500"
+      },
+      "fetchedAt": "2026-11-16T11:20:43.500Z"
     }
   ]
 }

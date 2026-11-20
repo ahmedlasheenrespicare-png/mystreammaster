@@ -1,33 +1,35 @@
 import { IconTrophy } from "./Icons";
+import { PRICING_PLANS } from "../data";
 import { ServerLink } from "./ServerIcon";
 import { Reveal, useInViewOnce } from "./motion";
+
+/* صفوف جدول المقارنة — كل صفّ بأربع قيم، وعلامة hidden تُخفي الصفّ من
+   العرض مع إبقاء بياناته في المصدر (لا حذف: يكفي رفع العلامة لإعادته) */
+type ComparisonRow = {
+  feature: string;
+  nova: string;
+  istar: string;
+  moka: string;
+  x: string;
+  hidden?: boolean;
+};
 
 export default function ServersComparison() {
   /* تتابع ظهور الصفوف — مثل جداول Salient */
   const { ref: tableRef, inView: tableIn } = useInViewOnce<HTMLDivElement>(0.1);
-  const comparisonData = [
+  const comparisonData: ComparisonRow[] = [
     {
-      feature: "ثبات البث أثناء المباريات الكبرى",
-      nova: "99.9% (الأعلى)",
-      istar: "99.7%",
-      moka: "99.9%",
-      x: "99.9% (الأعلى)",
+      feature: "الجودة المعروضة في مواصفات الباقة",
+      nova: PRICING_PLANS[0].quality,
+      istar: PRICING_PLANS[1].quality,
+      moka: PRICING_PLANS[2].quality,
+      x: PRICING_PLANS[3].quality,
     },
     {
-      feature: "البث الرياضي بدقة 4K & 50fps لدى المزود",
-      nova: "✓ متاحة بكافة المصادر",
-      istar: "✓ متاحة FHD & 4K",
-      moka: "FHD & HD فقط",
-      x: "✓ متاحة بكافة المصادر",
-    },
-    {
-      feature: "تغطية البطولات العربية والخليجية لدى المزود",
-      nova: "✓ متوفرة كاملة",
-      istar: "✓ متوفرة",
-      moka: "✓ متوفرة HD",
-      x: "✓ متوفرة كاملة",
-    },
-    {
+      /* بطلب المالك: إخفاء عدد الأجهزة/الشاشات من الجدول — كما أُخفي
+         عدد الأجهزة من بطاقات السيرفرات في Pricing.tsx، والبيانات تبقى
+         هنا في المصدر. للإرجاع: احذف hidden: true من هذا الصفّ. */
+      hidden: true,
       feature: "عدد الشاشات في نفس الوقت",
       nova: "حتى 3 أجهزة",
       istar: "حتى جهازين",
@@ -41,27 +43,7 @@ export default function ServersComparison() {
       moka: "+35,000",
       x: "+50,000 فيلم ومسلسل",
     },
-    {
-      feature: "أدنى سرعة إنترنت مطلوبة",
-      nova: "10 - 15 ميجابت",
-      istar: "8 - 12 ميجابت",
-      moka: "4 - 8 ميجابت (اقتصادي)",
-      x: "10 - 15 ميجابت",
-    },
-    {
-      feature: "خاصية التايم شفت والترجمة",
-      nova: "✓ مدعومة بالكامل",
-      istar: "✓ مدعومة",
-      moka: "مدعومة جزئياً",
-      x: "✓ مدعومة بالكامل",
-    },
-    {
-      feature: "سرعة التنقل بين القنوات",
-      nova: "سريعة جداً (< 0.8s)",
-      istar: "سريعة (< 1.2s)",
-      moka: "عادية (< 1.5s)",
-      x: "سريعة جداً (< 0.8s)",
-    },
+
   ];
 
   return (
@@ -71,13 +53,13 @@ export default function ServersComparison() {
         <Reveal variant="up" className="text-center max-w-[700px] mx-auto mb-12 md:mb-16">
           <p className="text-[12px] font-black tracking-[0.25em] uppercase text-[#7c5cff] mb-4 flex items-center justify-center gap-2">
             <span className="w-8 h-[2px] bg-[#7c5cff] inline-block" />
-            <IconTrophy className="w-4 h-4" /> جدول المقارنة الشامل
+            <IconTrophy className="w-4 h-4" /> مقارنة الباقات المعروضة
           </p>
           <h2 className="font-display font-black tracking-tight leading-[1.15] text-[34px] md:text-[52px]">
-            مقارنة <span className="font-serif italic font-normal">دقيقة</span> بين السيرفرات
+            مقارنة <span className="font-serif italic font-normal">أولية</span> بين السيرفرات
           </h2>
           <p className="mt-4 text-[15px] md:text-[16px] text-black/60 font-medium leading-relaxed">
-            اطلع على الفروقات الفنية والتقنية لاختيار السيرفر الأنسب لاحتياجاتك بدقة.
+            المواصفات المعروضة من بيانات الباقات وليست قياسات مستقلة؛ تحقّق من توفر المحتوى وحقوقه وحدود الأجهزة مع المزود قبل الدفع. قد تختلف الجودة والأداء حسب المصدر والاتصال.
           </p>
         </Reveal>
 
@@ -108,7 +90,7 @@ export default function ServersComparison() {
               </tr>
             </thead>
             <tbody className="divide-y divide-black/[0.07] text-[13px]">
-              {comparisonData.map((row, idx) => (
+              {comparisonData.filter((row) => !row.hidden).map((row, idx) => (
                 <tr
                   key={idx}
                   style={{ transitionDelay: `${idx * 70}ms` }}
@@ -132,7 +114,7 @@ export default function ServersComparison() {
 
         {/* ملاحظة أسفل الجدول */}
         <p className="mt-6 text-center text-[12.5px] text-black/40 font-medium">
-          محتار من أين تبدأ؟ جرّب مساعد الاختيار الذكي أعلاه أو اطلب تجربة مجانية وقرر بنفسك.
+          محتار من أين تبدأ؟ جرّب مساعد الاختيار أعلاه، واختبر اتصالك وجهازك قبل اتخاذ القرار. للتقدير العام، راجع <a href="/blog/internet-speed-for-video-streaming/#bandwidth-calculator" className="underline">حاسبة سرعة الفيديو</a>.
         </p>
       </div>
     </section>

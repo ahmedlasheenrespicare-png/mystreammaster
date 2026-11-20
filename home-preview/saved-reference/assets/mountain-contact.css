@@ -1,0 +1,103 @@
+/* A separate review scene, with the reference landscape in front of the original section. */
+.sm-contact{position:relative;isolation:isolate;background:radial-gradient(ellipse at 50% 37%,#29483f 0%,#152b2b 42%,#081617 100%);color:#f4f5ec}
+.sm-contact::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;opacity:.45;background-image:radial-gradient(1px 1px at 12% 22%,#d3ebd7 65%,transparent),radial-gradient(1px 1px at 66% 36%,#c9e4d1 65%,transparent),radial-gradient(1px 1px at 36% 70%,#8db6a4 65%,transparent);background-size:151px 143px,191px 177px,239px 223px}
+.sm-contact__top,.sm-contact h2,.sm-contact__intro,.sm-contact__actions{position:relative;z-index:3}
+.sm-contact__top p,.sm-contact__intro{color:#dfebe0}.sm-contact__top img{filter:brightness(0) invert(1);opacity:.5}.sm-contact h2{color:#f8fbf2}.sm-contact h2 span{color:#b3ddc0}
+.sm-contact__primary{background:#e7f3e8;border-color:#e7f3e8;color:#163529}.sm-contact__secondary{border-color:#dfebe0;color:#f6faf4}.sm-contact__primary:hover,.sm-contact__secondary:hover{background:#b3ddc0;border-color:#b3ddc0;color:#142b20}
+.sm-contact__visual{position:relative;z-index:1}.mountain-foreground{position:absolute;z-index:2;inset:auto 0 0;pointer-events:none;line-height:0;overflow:hidden;direction:ltr}.mountain-foreground img{display:block;width:100%;height:auto;min-height:160px;object-fit:cover;object-position:center bottom}
+@media(max-width:700px){.mountain-foreground img{width:180%;max-width:none;position:relative;left:50%;transform:translateX(-50%);min-height:0}}
+
+.sm-contact .sm-contact__actions .sm-contact__secondary{border-color:#dfebe0;color:#f6faf4}
+.sm-contact .sm-contact__actions .sm-contact__primary{border-color:#e7f3e8;color:#163529}
+
+.sm-contact{padding-bottom:clamp(180px,27vw,380px)}
+@media(max-width:700px){.sm-contact{padding-bottom:clamp(150px,45vw,240px)}}
+/* The landscape is a foreground layer, without intercepting taps on the controls. */
+.mountain-foreground{inset:0;z-index:4;pointer-events:none}
+.mountain-foreground img{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-width:none;object-fit:fill;transform:none}
+@media(max-width:700px){.mountain-foreground img{inset:0;left:0;width:100%;height:100%;transform:none}}
+/* Keep the full landscape's original 3:1 proportions and the copy unobstructed. */
+.mountain-foreground{inset:auto 0 0;z-index:2;direction:ltr}
+.mountain-foreground img{position:static;display:block;width:100%;height:auto;min-height:0;max-width:100%;object-fit:contain;transform:none}
+.sm-contact__top,.sm-contact h2,.sm-contact__intro,.sm-contact__actions{z-index:3}
+.sm-contact{padding-bottom:clamp(190px,29vw,450px)}
+@media(max-width:700px){.mountain-foreground img{position:static;left:auto;width:100%;height:auto;transform:none}.sm-contact{padding-bottom:clamp(170px,45vw,260px)}}
+/* Match the plum and rose tones used in the following footer. */
+.sm-contact{background:radial-gradient(ellipse at 50% 37%,#57304d 0%,#38142f 45%,#280822 100%);color:#f9e9ed}
+.sm-contact::before{background-image:radial-gradient(1px 1px at 12% 22%,#f8dfeb 65%,transparent),radial-gradient(1px 1px at 66% 36%,#eeb4cb 65%,transparent),radial-gradient(1px 1px at 36% 70%,#d792ae 65%,transparent)}
+.sm-contact__top p,.sm-contact__intro{color:#efd5df}.sm-contact h2{color:#fff5f8}.sm-contact h2 span{color:#e89ab8}
+.sm-contact .sm-contact__actions .sm-contact__primary{background:#f3dbe3;border-color:#f3dbe3;color:#280822}.sm-contact .sm-contact__actions .sm-contact__secondary{border-color:#f3dbe3;color:#fff2f7}
+.sm-contact .sm-contact__actions a:hover{background:#e880a1;border-color:#e880a1;color:#280822}
+/* Place the whole animated contact scene behind the existing landscape. */
+.sm-contact{padding-bottom:0}
+.sm-contact .mountain-cta{position:relative;z-index:1;background:transparent;overflow:visible;transform:translateY(clamp(90px,13vw,160px))}
+.sm-contact .mountain-cta .sm-footer__cta{height:min(65svh,580px);min-height:410px}
+.sm-contact .mountain-cta .sm-footer__motion{top:12px;bottom:auto}
+.sm-contact .mountain-foreground{z-index:2}
+@media(max-width:700px){.sm-contact{padding-bottom:0}.sm-contact .mountain-cta{transform:translateY(115px)}.sm-contact .mountain-cta .sm-footer__cta{height:440px;min-height:0}}
+/* Lift the complete contact scene while leaving the landscape fixed. */
+.sm-contact .mountain-cta{transform:translateY(0)}
+@media(max-width:700px){.sm-contact .mountain-cta{transform:translateY(25px)}}
+/* Compact the scene, soften the hand, and keep the contact control readable. */
+.sm-contact .mountain-cta{transform:translateY(-70px);margin-top:0}
+.sm-contact .mountain-cta .sm-footer__cta{height:min(57svh,500px);min-height:350px}
+.sm-contact .footer-hand img{opacity:.78}
+.sm-contact .footer-contact-circle{z-index:5}
+.sm-contact .mountain-cta{z-index:3}
+@media(max-width:700px){.sm-contact .mountain-cta{transform:translateY(-40px)}.sm-contact .mountain-cta .sm-footer__cta{height:360px;min-height:0}}
+/* The hand and lettering remain behind the mountains; only the contact icon is above them. */
+.sm-contact .mountain-cta{z-index:auto;transform:none}
+.sm-contact .mountain-cta .sm-footer__cta{top:-70px}
+@media(max-width:700px){.sm-contact .mountain-cta{transform:none}.sm-contact .mountain-cta .sm-footer__cta{top:-40px}}
+/* Reveal the entire footer, starting with the contact scene, beneath the preceding section. */
+.mountain-footer-reveal{position:sticky;bottom:0;z-index:0}
+.sm-blog{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.mountain-footer-reveal{position:relative;bottom:auto}}
+html[data-motion-reduced="true"] .mountain-footer-reveal{position:relative;bottom:auto}
+/* Pin the beginning, not the end, of a footer taller than the viewport. */
+.mountain-footer-reveal{bottom:calc(100vh - var(--reveal-height, 100vh))}
+@media (prefers-reduced-motion:reduce){.mountain-footer-reveal{bottom:auto}}
+html[data-motion-reduced="true"] .mountain-footer-reveal{bottom:auto}
+/* Keep the sticky reveal within the final blog/footer region, away from the hero. */
+.mountain-reveal-boundary{position:relative;display:flow-root;isolation:isolate}
+/* ScrollSmoother transforms its content on desktop: native sticky pins at the
+   wrong coordinate there. Keep the complete footer in normal flow instead. */
+@media (min-width:701px){.mountain-footer-reveal{position:relative;bottom:auto}}
+/* Continue the water beneath the landscape, with footer content above it. */
+.mountain-footer-reveal > footer.sm-footer{background:linear-gradient(180deg,#280822 0%,#30102d 24%,#260a25 72%,#20071f 100%);isolation:isolate}
+.mountain-footer-reveal > footer.sm-footer::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 68% 32% at 50% 4%,#a65c8530,transparent 72%),repeating-radial-gradient(ellipse 110% 13% at 50% -5%,transparent 0 19px,#e8a6c408 20px 21px,transparent 23px 39px);opacity:.9}
+.mountain-footer-reveal > footer.sm-footer .footer-container{position:relative;z-index:1}
+/* Bring the footer content forward over the empty water, without moving the hills. */
+.mountain-footer-reveal > footer.sm-footer{margin-top:clamp(-115px,-7vw,-65px);background:linear-gradient(180deg,transparent 0%,#30102de8 38%,#260a25 76%,#20071f 100%)}
+@media(max-width:700px){.mountain-footer-reveal > footer.sm-footer{margin-top:-55px}}
+.mountain-footer-reveal > footer.sm-footer{background:linear-gradient(180deg,#280822 0%,#30102d 24%,#260a25 72%,#20071f 100%)}
+/* One continuous water surface under the landscape and footer content. */
+.mountain-footer-reveal{isolation:isolate;background:linear-gradient(180deg,#280822 0%,#30102d 55%,#260a25 83%,#20071f 100%)}
+.mountain-footer-reveal::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 75% 24% at 50% 54%,#a65c8525,transparent 72%),repeating-radial-gradient(ellipse 110% 7% at 50% 45%,transparent 0 19px,#e8a6c408 20px 21px,transparent 23px 39px)}
+.mountain-footer-reveal > footer.sm-footer{background:transparent}
+.mountain-footer-reveal > footer.sm-footer::before{content:none}
+/* The original smooth-scroll engine starts at 600px, so sticky must stop there too. */
+@media(min-width:600px){.mountain-footer-reveal{position:relative;bottom:auto}}
+/* Anchor the real flow position, not the sticky panel temporarily behind the blog. */
+.mountain-contact-anchor{display:block;height:0;scroll-margin-top:0}
+/* Native sticky combined with mobile browser viewport resizing can leave a
+   blank area below the footer. Keep its full height in document flow. */
+.mountain-footer-reveal{position:relative;bottom:auto}
+@media(max-width:599px){.mountain-footer-reveal .sm-footer__settings,.mountain-footer-reveal .sm-footer__copy{padding-inline-start:60px}}
+/* Give the larger landscape enough vertical room to keep the contact scene
+   behind the hills without hiding the lettering. */
+@media (min-width:1200px){
+ .sm-contact .mountain-cta .sm-footer__cta{height:calc(33.333vw + 205px);min-height:0}
+ .sm-contact .mountain-cta .footer-hand{top:15px;bottom:auto;height:475px}
+ .sm-contact .mountain-cta .sm-footer__marquee{top:calc(250px - 50%)}
+ .sm-contact .mountain-cta .footer-contact-circle{top:250px}
+}
+/* Quiet oversized wordmark in the contact scene, behind the hand and controls. */
+.sm-contact .footer-background-brand{position:absolute;z-index:0;top:27%;left:50%;width:100%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;pointer-events:none;user-select:none;font:900 clamp(42px,10vw,180px)/1.25 SMTajawal,Tajawal,sans-serif;letter-spacing:-.035em;color:#f9e9ed;background:linear-gradient(180deg,rgba(249,233,237,.25),rgba(249,233,237,.035));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sm-contact .footer-background-brand sup{font-size:.24em;vertical-align:top;letter-spacing:0;margin-inline-start:.08em}
+.sm-contact .mountain-cta .footer-hand{z-index:1}
+.sm-contact .mountain-cta .sm-footer__marquee{z-index:2}
+@media(min-width:1200px){.sm-contact .footer-background-brand{top:125px}}
+.sm-contact .footer-background-brand{transform:translate(-50%,calc(-50% + var(--brand-rise, 0px)));opacity:var(--brand-opacity,1)}
+html[data-motion-reduced="true"] .sm-contact .footer-background-brand{transform:translate(-50%,-50%);opacity:1}
+@media(max-width:700px){.sm-contact .footer-background-brand{background-image:linear-gradient(180deg,rgba(249,233,237,.34),rgba(249,233,237,.06))}}

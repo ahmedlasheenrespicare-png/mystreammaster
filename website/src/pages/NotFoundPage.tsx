@@ -7,7 +7,7 @@ import { IconArrowUpRight } from "../components/Icons";
 /* صفحة 404 — تُبنى أيضاً كملف dist/404.html ليستخدمها GitHub Pages للمسارات غير الموجودة */
 export default function NotFoundPage() {
   return (
-    <div className="bg-[#faf9f6] pt-[150px] md:pt-[168px] pb-24">
+    <div className="bg-[#faf9f6] pt-[114px] md:pt-[132px] pb-24">
       <div className="max-w-[760px] mx-auto px-5 text-center">
         <p className="font-display font-black text-[70px] md:text-[110px] leading-none text-black/10 font-latin">
           404

@@ -178,7 +178,7 @@ jobs:
         env:
           COLLECTED_SHA: ${{ github.sha }}
         run: test "$(git rev-parse HEAD)" = "$COLLECTED_SHA"
-      - name: Revalidate and publish only archive files
+      - name: Revalidate archive files and keep the derived site in sync
         id: commit
         run: |
           set -euo pipefail
@@ -193,9 +193,34 @@ jobs:
           # أعد بناء المشتقات قبل اختبارات التحقق من تزامنها مع الأرشيف الجديد.
           node website/scripts/build-league-averages.mjs
           node --test website/scripts/test-fixtures-archive.mjs
+          # ── حارس المشتقات ────────────────────────────────────────────────
+          # سجل مركز المباراة مُشتق من ملف الأرشيف نفسه: `match-center-italian.mjs`
+          # يستورد `fixtures-archive/ita.1/2026.json` ويخيط المواعيد، فأّي تشغيل
+          # ليلي يوسّع السجل من غير ما يلمسه أحد — وكل موعد يجرّ معه مشتقين خارج
+          # `website/src`: صورة `public/images/og/match-<slug>.png` (1200×630)
+          # ونسختها الجذرية، وصفحة `matches/<الدرجة>/<slug>/index.html`.
+          # بدون هذه الخطوة ينجح النشر الليلي الهادئ ثم تكسر البوابةَ نفسها
+          # `npm test` بعد نصف ساعة في deploy — وهذا بالضبط ما أنزل
+          # `Deploy to Hostinger` على a265883 (8 نوفمبر 2026، 5 مواعيد `ita.1`
+          # بلا مشتقات). نُعيد التوليد هنا بمولّدات المشروع نفسها وندرجها في
+          # نفس الـcommit؛ ولو بقي نقص بعدها نفشل صراحةً بدل ما نُسقطه على النشر.
+          derivatives_regrown=false
+          if ! node website/scripts/check-match-derivatives.mjs; then
+            derivatives_regrown=true
+            echo '::notice title=مشتقات معاد توليدها::مواعيد مسجّلة بلا صورها/صفحاتها — وُلّدت داخل هذا الـcommit.'
+            npm ci --prefix website --no-audit --no-fund
+            node website/scripts/generate-match-og.mjs --missing-only
+            (cd website && npm run build)
+            node website/scripts/check-match-derivatives.mjs
+          fi
           last_fetched_at="$(node -e 'const r = JSON.parse(require("fs").readFileSync("/tmp/publish-result.json", "utf8")); process.stdout.write(r.lastFetchedAt || "");')"
           echo "last_fetched_at=${last_fetched_at}" >> "$GITHUB_OUTPUT"
           git add -- website/src/content/fixtures-archive website/src/content/league-averages.json
+          # البناء يلمس الجذر كله لأن بصمات `_assets/redesign` تتغيّر مع أي تعديل في
+          # المصدر، و`publish-static` ينظّف المجلد كل بناء. التزامُن الجزئي هنا أخطر
+          # من النقص: صفحات مُلتزَمة تشير لبصمات محذوفة = سايت منشور بلا CSS/JS.
+          # لذلك تُضاف مخرجات البناء كاملة، ولا تُضاف إطلاقًا في الليلة بلا مولّدات.
+          if [ "$derivatives_regrown" = true ]; then git add -A; fi
           # طلب الاسترجاع الموسمي يُستهلك مع النشر — لا يبقى مطلوباً مفتوحاً.
           # git rm --ignore-unmatch ينجح حتى لو لم يكن الملف موجوداً أصلاً
           # (كما في التشغيل المجدول اليومي)، بعكس git add الذي يفشل بـ exit 128.
@@ -208,7 +233,11 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Update verified fixtures archive [skip ci]'
+          if [ "$derivatives_regrown" = true ]; then
+            git commit -m 'Update verified fixtures archive [skip ci]' -m 'صور مركز المباراة واللقطة الثابتة المولّدة لمواعيد أضافها السجل من الأرشيف نفسه (حارس المشتقات).'
+          else
+            git commit -m 'Update verified fixtures archive [skip ci]'
+          fi
           git push origin "HEAD:${GITHUB_REF_NAME}"
           commit_sha="$(git rev-parse HEAD)"
           committed_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"

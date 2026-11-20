@@ -294,16 +294,21 @@ test("player.html تُضمِّن الوسيط على نفس النطاق (بلا
   assert.match(page, /loading="lazy"/);
 });
 
-test("القواعد متفقة بين .htaccess و robots.txt و _headers", async () => {
+test("قواعد المشغّل تبقي noindex قابلاً للقراءة ولا تحجبه في robots.txt", async () => {
   const htaccess = await fs.readFile(path.join(root, ".htaccess"), "utf8");
   assert.match(htaccess, /RewriteRule \^player\/\(\.\*\)\$ embed\.php\?u=player&p=\/\$1 \[L,QSA\]/,
     "قاعدة /player/ يجب أن تمر إلى embed.php");
+  assert.match(htaccess, /<FilesMatch "\^embed\\\.php\$">[\s\S]*?Header always set X-Robots-Tag "noindex, nofollow"/,
+    "استجابة embed.php يجب أن تحمل X-Robots-Tag noindex");
 
   const robots = await fs.readFile(path.join(root, "robots.txt"), "utf8");
   for (const rule of ["Disallow: /player.html", "Disallow: /player/", "Disallow: /embed.php"]) {
-    assert.ok(robots.includes(rule), `robots.txt ينقصه: ${rule}`);
+    assert.ok(!robots.split(/\r?\n/).some((line) => line.trim() === rule),
+      `${rule} يمنع الزاحف من قراءة noindex؛ اترك المسار قابلاً للزحف`);
   }
 
   const headers = await fs.readFile(path.join(root, "_headers"), "utf8");
   assert.match(headers, /^\/embed\.php$/m, "_headers يحتاج قاعدة لـ /embed.php");
+  assert.match(headers, /^\/player\.html\s*\n\s+X-Robots-Tag: noindex/m,
+    "player.html يجب أن يستبعد الفهرسة بترويسة لا بحجب robots.txt");
 });

@@ -8,12 +8,14 @@
      لمحركات البحث، والتنقّل السريع يتم باعتراض الضغط فقط
 ========================================================================== */
 
+import { flushSync } from "react-dom";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -22,6 +24,7 @@ import { BLOG_POSTS } from "./content/posts";
 import { landingRoutes } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { matchCenterRouteIds } from "./content/match-center.mjs";
+import { crossesAdBoundary, isAdFreeRoute } from "./ad-policy.mjs";
 import { BASE } from "./config";
 
 interface RouterValue {
@@ -95,6 +98,8 @@ export function RouterProvider({
       ? { path: normalizePath(initialPath), search: "" }
       : currentLocation()
   );
+  /* سياسة الإعلانات تتبع مستند HTML الذي فُتح، لا آخر حالة للموجّه. */
+  const documentAdFree = useRef(isAdFreeRoute(state.path));
 
   const navigate = useCallback((target: string, opts?: { replace?: boolean }) => {
     if (typeof window === "undefined") return;
@@ -112,7 +117,16 @@ export function RouterProvider({
       return;
     }
     const next = { path: normalizePath(url.pathname), search: url.search };
-    if (next.path === normalizePath(window.location.pathname) && url.hash) {
+    const currentPath = normalizePath(window.location.pathname);
+    /* لا يمكن إلغاء تنفيذ AdSense بعد تحميله بمجرد تبديل مكوّن React.
+       عبور حدود السياسة يفتح المستند المسبق الصحيح بدلاً من الاحتفاظ بإعلانات
+       الصفحة السابقة؛ والانتقال العكسي يعيد تحميل المُحمِّل عند الحاجة. */
+    if (crossesAdBoundary(currentPath, next.path)) {
+      if (opts?.replace) window.location.replace(url.href);
+      else window.location.assign(url.href);
+      return;
+    }
+    if (next.path === currentPath && url.hash) {
       /* نفس الصفحة: تمرير للمرساة فقط */
       history.replaceState(null, "", url.hash);
       if (!scrollToElement(url.hash.slice(1))) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -127,15 +141,48 @@ export function RouterProvider({
     }
 
     const href = `${url.pathname}${url.search}${url.hash}`;
-    if (opts?.replace) history.replaceState(null, "", href);
-    else history.pushState(null, "", href);
-    setState(next);
+    const commitNavigation = () => {
+      if (opts?.replace) history.replaceState(null, "", href);
+      else history.pushState(null, "", href);
+      setState(next);
+    };
+
+    /* Transition is intentionally opt-in only when leaving the Arabic homepage.
+       Other routes keep the current instant SPA navigation behavior. */
+    const fromHomepage = normalizePath(window.location.pathname) === "/";
+    const reducedMotion =
+      document.documentElement.dataset.motion === "off" ||
+      (document.documentElement.dataset.motion !== "on" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const transitionDocument = document as Document & {
+      startViewTransition?: (callback: () => void) => { finished: Promise<unknown> };
+    };
+    if (fromHomepage && !reducedMotion && transitionDocument.startViewTransition) {
+      const root = document.documentElement;
+      root.classList.add("home-route-transition");
+      const clearTransition = () => root.classList.remove("home-route-transition");
+      try {
+        const transition = transitionDocument.startViewTransition(() => flushSync(commitNavigation));
+        void transition.finished.then(clearTransition, clearTransition);
+        window.setTimeout(clearTransition, 1100);
+      } catch {
+        clearTransition();
+        commitNavigation();
+      }
+      return;
+    }
+    commitNavigation();
   }, []);
 
   /* زر الرجوع/التقدم */
   useEffect(() => {
     const onPop = () => {
-      setState(currentLocation());
+      const location = currentLocation();
+      /* حماية رجوع/تقدّم تاريخ ناتج عن جلسة قديمة أو pushState خارجي. */
+      if (isAdFreeRoute(location.path) !== documentAdFree.current) {
+        window.location.reload();
+        return;
+      }
+      setState(location);
       const hash = window.location.hash;
       if (hash) window.setTimeout(() => scrollToElement(hash.slice(1)), 60);
       else window.scrollTo({ top: 0 });

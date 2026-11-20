@@ -58,6 +58,8 @@ ExpiresByType image/jpeg "access plus 1 year"
 ExpiresByType image/png "access plus 1 year"
 ExpiresByType image/webp "access plus 1 year"
 ExpiresByType image/avif "access plus 1 year"
+ExpiresByType image/x-icon "access plus 1 week"
+ExpiresByType image/vnd.microsoft.icon "access plus 1 week"
 ExpiresByType video/mp4 "access plus 1 year"
 ExpiresByType application/vnd.apple.mpegurl "access plus 1 hour"
 </IfModule>

@@ -63,7 +63,7 @@ export default function MatchCenterHubPage() {
   const analysisFixtures = sorted.filter(m => analysisSlugs.includes(m.slug));
 
   return (
-    <section className="pt-[160px] pb-24 px-4 sm:px-5" dir="rtl">
+    <section className="pt-[124px] pb-24 px-4 sm:px-5" dir="rtl">
       <div className="max-w-[1200px] mx-auto">
         {/* مسار التصفح */}
         <nav className="text-[12.5px] font-bold text-black/40 mb-6" aria-label="مسار التصفح">

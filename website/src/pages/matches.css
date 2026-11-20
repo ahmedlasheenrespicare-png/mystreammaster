@@ -1,4 +1,4 @@
-.matches-page { padding: 150px 20px 80px; }
+.matches-page { padding: 114px 20px 80px; }
 .matches-container { max-width: 1180px; margin: auto; }
 .matches-hero { margin-bottom: 18px; }
 .matches-eyebrow { color: #2b4eff; font-weight: 800; margin-bottom: 12px; }
@@ -21,7 +21,7 @@
 .matches-featured-link:hover { transform: translateY(-2px); background: #e4ff7a; }
 .update-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 100%; background: #aaa; margin-inline-end: 6px; }
 .update-indicator.active { background: #d8ff3e; box-shadow: 0 0 0 4px #d8ff3e22; }
-.matches-toolbar { position: sticky; top: 126px; z-index: 40; display: grid; grid-template-columns: minmax(230px, 1.35fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(190px, 1.2fr) auto; align-items: end; gap: 12px; margin-top: 16px; padding: 12px 14px; border-radius: 20px; background: rgba(255, 255, 255, .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(0, 0, 0, .08); box-shadow: 0 12px 40px -14px rgba(0, 0, 0, .22); }
+.matches-toolbar { position: sticky; top: 90px; z-index: 40; display: grid; grid-template-columns: minmax(230px, 1.35fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(190px, 1.2fr) auto; align-items: end; gap: 12px; margin-top: 16px; padding: 12px 14px; border-radius: 20px; background: rgba(255, 255, 255, .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(0, 0, 0, .08); box-shadow: 0 12px 40px -14px rgba(0, 0, 0, .22); }
 .matches-status { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 4px 6px; }
 /* الحالة المخفية بصرياً: تصفير الحشو حتى يبقى صندوقها 1px فعلاً (حشو
    القاعدة الأصلية يتأخر في الترتيب فيغلب تساوي_ SPEC للإخفاء) */
@@ -98,11 +98,11 @@
 .matches-note p { color: #62626b; font-size: .8rem; line-height: 2; margin-top: 8px; }
 .matches-note a { color: #2b4eff; text-decoration: underline; }
 @media (max-width: 700px) {
-  .matches-page { padding: 135px 16px 64px; }
+  .matches-page { padding: 99px 16px 64px; }
   .matches-hero { margin-bottom: 12px; }
   .matches-featured { align-items: stretch; flex-direction: column; gap: 13px; margin: 14px 0 16px; padding: 17px; border-radius: 17px; }
   .matches-featured-link { width: 100%; }
-  .matches-toolbar { top: 118px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 12px; padding: 10px; border-radius: 16px; }
+  .matches-toolbar { top: 82px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 12px; padding: 10px; border-radius: 16px; }
   .matches-status { grid-column: 1 / -1; padding: 0 2px; }
   .matches-status-text small { display: none; }
   .matches-field-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import LeagueIconBadge from "./LeagueIconBadge";
 import { TicketImage } from "./TicketImage";
 import { leagueLandingById } from "../content/competitions";
+import { trackHomeEvent } from "../lib/analytics";
 import { FEATURED_CLASHES, LeagueTicketCarousel, NovaTicketBrand, XtvTicketBrand, IstarTicketBrand, MokaTicketBrand, StreamMasterTicketWordmark, type FeaturedClash } from "./LeagueTicketCard";
 import "./league-ticket.css";
 
@@ -38,6 +39,202 @@ export const INDEX_CLASHES: FeaturedClash[] = [
   { ...FEATURED_CLASHES["eng.1"][0], source: "eng.1" },
   { ...FEATURED_CLASHES["eng.1"][1], source: "eng.1" },
 ];
+
+/* بطاقة مواجهة كأس الرابطة (ليفربول × تشيلسي) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES
+   المشترك مع صفحة المواعيد */
+export const LIVERPOOL_CHELSEA_CUP_CLASH: FeaturedClash = {
+  eyebrow: "كأس الرابطة",
+  home: {
+    name: "ليفربول",
+    crest: "/images/teams/liverpool-badge.webp",
+    mono: "ليفربول",
+    tokens: ["liverpool", "ليفربول"],
+  },
+  away: {
+    name: "تشيلسي",
+    crest: "/images/teams/chelsea-badge.webp",
+    mono: "تشيلسي",
+    tokens: ["chelsea", "تشيلسي"],
+  },
+  source: "eng.league_cup",
+  date: "2026-10-28",
+};
+
+/* بطاقة مواجهة الدوري الألماني (بايرن × دورتموند) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const BAYERN_DORTMUND_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الألماني",
+  home: {
+    name: "بايرن ميونخ",
+    crest: "/images/teams/bayern-munich-badge.webp",
+    mono: "بايرن",
+    tokens: ["bayern", "بايرن"],
+  },
+  away: {
+    name: "بوروسيا دورتموند",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/124.png",
+    mono: "دورتموند",
+    tokens: ["dortmund", "دورتموند"],
+  },
+  source: "ger.1",
+  date: "2026-10-31",
+};
+
+/* بطاقة مواجهة الدوري الإنجليزي (تشيلسي × مانشستر يونايتد) — بلا صور لاعبين،
+   بالشعارين فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const CHELSEA_UNITED_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإنجليزي",
+  home: {
+    name: "تشيلسي",
+    crest: "/images/teams/chelsea-badge.webp",
+    mono: "تشيلسي",
+    tokens: ["chelsea", "تشيلسي"],
+  },
+  away: {
+    name: "مانشستر يونايتد",
+    crest: "/images/teams/manchester-united-badge.webp",
+    mono: "يونايتد",
+    tokens: ["manchester united", "man utd", "مانشستر يونايتد"],
+  },
+  source: "eng.1",
+  date: "2026-10-31",
+};
+
+/* بطاقة مواجهة الدوري الإيطالي (ميلان × إنتر) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const MILAN_INTER_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإيطالي",
+  home: {
+    name: "ميلان",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/103.png",
+    mono: "ميلان",
+    tokens: ["milan", "ac milan", "ميلان"],
+  },
+  away: {
+    name: "إنتر",
+    crest: "/images/teams/internazionale-club-badge.webp",
+    mono: "إنتر",
+    tokens: ["inter", "internazionale", "إنتر"],
+  },
+  source: "ita.1",
+  date: "2026-10-31",
+};
+
+/* بطاقة مواجهة الدوري الإنجليزي (ليفربول × أرسنال) — بلا صور لاعبين، بالشعارين
+   فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها، ولا تغيّر INDEX_CLASHES */
+export const LIVERPOOL_ARSENAL_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإنجليزي",
+  home: {
+    name: "ليفربول",
+    crest: "/images/teams/liverpool-badge.webp",
+    mono: "ليفربول",
+    tokens: ["liverpool", "ليفربول"],
+  },
+  away: {
+    name: "أرسنال",
+    crest: "/images/teams/arsenal-badge.webp",
+    mono: "أرسنال",
+    tokens: ["arsenal", "أرسنال", "ارسنال"],
+  },
+  source: "eng.1",
+  date: "2026-11-01",
+};
+
+/* بطاقات مواجهات دوري أبطال أوروبا (الجولة الرابعة — 3 نوفمبر 2026) — بلا صور
+   لاعبين، بالشعارين فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها ولا تغيّر INDEX_CLASHES */
+export const ATLETICO_BAYERN_UCL_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال أوروبا",
+  home: {
+    name: "أتلتيكو مدريد",
+    crest: "/images/teams/atletico-madrid-club-badge.webp",
+    mono: "أتلتيكو",
+    tokens: ["atletico", "atlético", "أتلتيكو", "اتلتيكو"],
+  },
+  away: {
+    name: "بايرن ميونخ",
+    crest: "/images/teams/bayern-munich-badge.webp",
+    mono: "بايرن",
+    tokens: ["bayern", "بايرن"],
+  },
+  source: "uefa.champions",
+  date: "2026-11-03",
+};
+
+export const BARCELONA_VILLA_UCL_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال أوروبا",
+  home: {
+    name: "برشلونة",
+    crest: "/images/teams/barcelona-club-badge.webp",
+    mono: "برشلونة",
+    tokens: ["barcelona", "برشلونة"],
+  },
+  away: {
+    name: "أستون فيلا",
+    crest: "/images/teams/aston-villa-badge.webp",
+    mono: "فيلا",
+    tokens: ["aston villa", "أستون فيلا", "استون فيلا"],
+  },
+  source: "uefa.champions",
+  date: "2026-11-03",
+};
+
+export const MAN_UTD_ROMA_UCL_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال أوروبا",
+  home: {
+    name: "مانشستر يونايتد",
+    crest: "/images/teams/manchester-united-club-badge.webp",
+    mono: "يونايتد",
+    tokens: ["manchester united", "man utd", "مانشستر يونايتد"],
+  },
+  away: {
+    name: "روما",
+    crest: "/images/teams/as-roma-club-badge.webp",
+    mono: "روما",
+    tokens: ["roma", "روما"],
+  },
+  source: "uefa.champions",
+  date: "2026-11-03",
+};
+
+/* بطاقة مواجهة الدوري الإنجليزي (نيوكاسل × إيفرتون، الجولة 9) — بلا صور لاعبين،
+   بالشعارين فقط؛ تُضاف إلى تذكرة الصفحة الرئيسية وحدها ولا تغيّر INDEX_CLASHES */
+export const NEWCASTLE_EVERTON_CLASH: FeaturedClash = {
+  eyebrow: "الدوري الإنجليزي",
+  home: {
+    name: "نيوكاسل يونايتد",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/361.png",
+    mono: "نيوكاسل",
+    tokens: ["newcastle", "نيوكاسل"],
+  },
+  away: {
+    name: "إيفرتون",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/368.png",
+    mono: "إيفرتون",
+    tokens: ["everton", "إيفرتون", "ايفرتون"],
+  },
+  source: "eng.1",
+  date: "2026-11-02",
+};
+
+/* بطاقة مواجهة دوري أبطال آسيا للنخبة (السد × الأهلي السعودي) — بالشعارين فقط */
+export const AL_SADD_AL_AHLI_CLASH: FeaturedClash = {
+  eyebrow: "دوري أبطال آسيا للنخبة",
+  home: {
+    name: "السد القطري",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/7135.png",
+    mono: "السد",
+    tokens: ["al sadd", "al-sadd", "السد"],
+  },
+  away: {
+    name: "الأهلي السعودي",
+    crest: "https://a.espncdn.com/i/teamlogos/soccer/500/8346.png",
+    mono: "الأهلي",
+    tokens: ["al ahli", "al-ahli", "الأهلي السعودي"],
+  },
+  source: "afc.champions",
+  date: "2026-11-02",
+};
 
 /* الشريحة الأساسية — تذكرة «كل البطولات الكبرى» الزخرفية كما كانت:
    اللوح الداكن، نقطة الضوء، صورة النجوم، وصف أيقونات البطولات الثماني */
@@ -89,7 +286,13 @@ function AllLeaguesTicketBase() {
             المباريات» /matches/ — نقرة فأرة بنفس قاعدة روابط الأعلام
             وأيقونات البطولات (حيّز زخرفي محفوظ بلا تغيير: tabIndex=-1
             وتلميح الاسم عند التحويم) */}
-        <a className="league-ticket-badge-link" href="/matches/" title="مواعيد المباريات" tabIndex={-1}>
+        <a
+          className="league-ticket-badge-link"
+          href="/matches/"
+          title="مواعيد المباريات"
+          tabIndex={-1}
+          onClick={() => trackHomeEvent("hero_competition_open", { league_id: "matches", target_path: "/matches/" })}
+        >
           <LeagueIconBadge leagueId="matches" iconSrc="/images/brand/fifa-ticket.png" size={60} eager />
         </a>
         <StreamMasterTicketWordmark />
@@ -107,8 +310,16 @@ function AllLeaguesTicketBase() {
         {TICKET_LEAGUES.map((id) => {
           /* الثمانية كلها موثّقة في LEAGUE_LANDINGS بلا استثناء */
           const landing = leagueLandingById(id)!;
+          const targetPath = `/matches/${landing.slug}/`;
           return (
-            <a key={id} className="leagues-ticket-icon-link" href={`/matches/${landing.slug}/`} title={landing.shortName} tabIndex={-1}>
+            <a
+              key={id}
+              className="leagues-ticket-icon-link"
+              href={targetPath}
+              title={landing.shortName}
+              tabIndex={-1}
+              onClick={() => trackHomeEvent("hero_competition_open", { league_id: id, target_path: targetPath })}
+            >
               <LeagueIconBadge leagueId={id} size={46} eager />
             </a>
           );
@@ -126,13 +337,15 @@ function AllLeaguesTicketBase() {
   );
 }
 
-export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[] } = {}) {
+export default function AllLeaguesTicket({ slideOverrides, clashes = INDEX_CLASHES, hideBase = false, showArrows = false }: { slideOverrides?: Partial<Record<number, ReactElement>>; clashes?: FeaturedClash[]; hideBase?: boolean; showArrows?: boolean } = {}) {
   return (
     <LeagueTicketCarousel
       leagueId="matches"
       name="كل البطولات الكبرى"
       clashes={clashes}
       slideOverrides={slideOverrides}
+      hideBase={hideBase}
+      showArrows={showArrows}
       basePlayers={[]}
       base={<AllLeaguesTicketBase />}
       showNovaBrand

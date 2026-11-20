@@ -23,6 +23,7 @@ export default function LeagueIconBadge({
   leagueId,
   size,
   eager = false,
+  fetchPriority,
   iconSrc,
 }: {
   leagueId: string;
@@ -30,6 +31,8 @@ export default function LeagueIconBadge({
   size?: number;
   /** تحميل فوري بدل الكسول — لأيقونة رأس الصفحة لأنها فوق الطية */
   eager?: boolean;
+  /** أولوية الشبكة العالية محصورة بعنصر LCP المتوقع */
+  fetchPriority?: "high" | "low" | "auto";
   /** أيقونة صريحة محلية تتقدّم على مخزن المصدر — لشعار FIFA على تذكرة
       الجامعة بطلب المالك (leagueId="matches" بلا شعار موثّق لدى المصدر) */
   iconSrc?: string;
@@ -47,16 +50,26 @@ export default function LeagueIconBadge({
       <IconTrophy className="league-carousel-fallback" />
       {icon ? (
         <img
+          ref={(img) => {
+            if (img && img.complete && img.naturalWidth > 0) {
+              img.dataset.loaded = "true";
+            }
+          }}
           className="league-carousel-logo"
           src={icon}
           alt=""
           width={logoBox}
           height={logoBox}
           loading={eager ? "eager" : "lazy"}
+          fetchPriority={fetchPriority}
           decoding="async"
           draggable={false}
+          onLoad={(event) => {
+            event.currentTarget.dataset.loaded = "true";
+          }}
           onError={(event) => {
             /* الشعار إن غاب أو تعذّر تحميله يبقى البديل المحايد ظاهراً تحته */
+            delete event.currentTarget.dataset.loaded;
             event.currentTarget.style.visibility = "hidden";
           }}
         />

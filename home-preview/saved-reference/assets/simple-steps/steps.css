@@ -1,0 +1,67 @@
+@font-face{font-family:StepsTajawal;src:url('/fonts/tajawal-arabic-400-normal.woff2') format('woff2');font-weight:400 600;font-display:swap}
+@font-face{font-family:StepsTajawal;src:url('/fonts/tajawal-arabic-900-normal.woff2') format('woff2');font-weight:700 900;font-display:swap}
+@font-face{font-family:StepsAccent;src:url('/_assets/redesign/amiri-arabic-400-italic-DBzvBWX2.woff2') format('woff2');font-style:italic;font-display:swap}
+.steps-intro,.steps-intro *,.steps,.steps *{box-sizing:border-box}.steps-intro,.steps{font-family:StepsTajawal,Tajawal,sans-serif}
+.preview-space{height:20vh;min-height:90px;background:#f7f5f1}.preview-space--end{height:60vh}
+.steps{position:relative;background:#fcfaf6;color:#280822;overflow:clip}
+.steps__view{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(32px,5vw,72px) 6vw}
+.steps__header{position:absolute;top:clamp(28px,4vw,56px);left:5vw;right:5vw;text-align:center;color:#9d7b86}
+.steps__header p{margin:0 0 4px;font-size:12px;font-weight:700}.steps__header .steps__header-title{display:block;font-size:15px;line-height:1.4;margin:0;color:#614052}.steps__header span[aria-hidden]{display:block;color:#d99bb0;font-size:21px;margin-top:6px}
+.steps__list{width:100%;max-width:1200px;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;grid-template-rows:1fr}
+.steps__item{grid-column:1;grid-row:1;display:grid;place-items:center;text-align:center;min-width:0}.steps__body{width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;min-width:0}
+.steps__number{font:700 13px/1 StepsTajawal,sans-serif;color:#b77890;direction:ltr;margin-bottom:8px;display:inline-flex;align-items:center;gap:8px}.steps__number svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.steps__item h2{font-size:clamp(46px,10vw,150px);line-height:1.25;letter-spacing:-.035em;margin:0;font-weight:900;color:#280822;max-width:100%;text-wrap:balance}
+.steps__details{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:560px;padding:0 8px}
+.steps__details p{font-size:clamp(16px,1.6vw,21px);line-height:1.7;color:#6d5865;margin:0}
+.steps__details a{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;color:#86435f;text-decoration:none;border:1px solid #d8b5c2;border-radius:999px;background:#fffafc;font-size:15px;font-weight:700;min-height:44px}
+.steps__details a:hover{color:#a94e72;border-color:#a94e72;background:#fff}.steps__details a:focus-visible{outline:2px solid #a34d70;outline-offset:5px}.steps__details small{font-size:12px;color:#ac8994}
+.steps__footer{position:absolute;bottom:clamp(24px,4vw,48px);left:6vw;right:6vw;display:flex;align-items:center;justify-content:space-between;color:#a98996;font-size:12px;font-weight:700;direction:rtl}
+.steps__footer>span:first-child{font:italic 700 clamp(26px,2.6vw,36px)/1.2 StepsAccent,serif;color:#a74369;text-shadow:0 1px 0 rgba(255,255,255,.85)}.steps__counter{direction:ltr;font-variant-numeric:tabular-nums}.steps__dots{display:flex;gap:6px;direction:ltr}.steps__dots i{display:block;width:6px;height:6px;border-radius:50%;background:#e2d5d7;transition:background-color .2s,transform .2s}.steps__dots i.is-current{background:#ae7186;transform:scale(1.35)}
+/* Native sticky keeps the preview editable and matches scroll progress on touch and desktop. */
+.steps.is-enhanced{height:480svh;overflow:clip}.steps.is-enhanced .steps__view{position:relative;top:0;height:100svh;min-height:0;overflow:hidden}.steps.is-enhanced .steps__item{opacity:1;pointer-events:none}.steps.is-enhanced .steps__item[data-current="true"]{pointer-events:auto}.steps.is-enhanced .steps__body>*{opacity:0}
+/* Native sticky tracks touch scrolling on the compositor without waiting for JS.
+   Desktop retains the transform pin required by its smooth-scroll wrapper. */
+@media (pointer:coarse) and (max-width:1023px){.steps.is-enhanced .steps__view{position:sticky;top:0;overflow:clip}}
+@media(max-width:600px){.steps__view{padding:84px 6vw 70px}.steps__item h2{font-size:clamp(40px,11.7vw,66px);line-height:1.3;letter-spacing:-.03em}.steps__number{font-size:11px}.steps__details p{font-size:16px}.steps__header{top:24px}.steps__header .steps__header-title{font-size:14px}.steps__footer{bottom:24px}.steps__footer>span:first-child{font-size:27px}}
+@media(max-height:540px){.steps__header{top:10px}.steps__header p,.steps__header span,.steps__number,.steps__details small{display:none}.steps__footer{bottom:10px}.steps__item h2{font-size:clamp(30px,8vw,65px)}}
+/* With motion disabled or scripts unavailable, all steps remain visible. */
+.steps:not(.is-enhanced) .steps__view{display:block;padding:55px 6vw}.steps:not(.is-enhanced) .steps__header,.steps:not(.is-enhanced) .steps__footer{position:static}.steps:not(.is-enhanced) .steps__list{display:flex;flex-direction:column;gap:36px;margin:55px auto}.steps:not(.is-enhanced) .steps__item h2{font-size:clamp(30px,5vw,60px)}
+@media(max-height:700px) and (min-width:601px){.steps__item h2{font-size:clamp(38px,7vw,95px)}}
+
+/* Original server identities and supported-device symbols, kept lightweight. */
+.steps__server-logos,.steps__devices{display:inline-flex;align-items:center;justify-content:center;gap:8px;direction:ltr;margin-top:4px}
+.steps__server-logos img{display:block;width:32px;height:32px;object-fit:contain}
+.steps__devices{color:#b98294;gap:10px}.steps__devices svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+@media(max-height:540px){.steps__server-logos img{width:25px;height:25px}.steps__devices svg{width:19px;height:19px}}
+
+/* Section heading follows the site's existing server-section typography. */
+@font-face{font-family:StepsIntroHead;src:url('/home-preview/saved-reference/assets/server-title-tajawal.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:StepsIntroAccent;src:url('/home-preview/saved-reference/assets/server-title-amiri.woff2') format('woff2');font-style:italic;font-weight:400;font-display:swap}
+.steps-intro{padding:clamp(90px,10vw,150px) 20px clamp(50px,7vw,95px);background:#fcfaf6;color:#280822;overflow:hidden}
+.steps-intro__inner{position:relative;text-align:center;margin:auto;max-width:800px}
+.steps-intro h2{font:900 clamp(96px,16vw,230px)/.92 StepsIntroHead,StepsTajawal,sans-serif;margin:0}
+.steps-intro h2 span{display:block}
+.steps-intro__script{position:absolute;top:36%;right:23%;color:#e06c8f;font:italic 400 clamp(42px,7vw,100px)/1.4 StepsIntroAccent,serif;transform:rotate(-7deg);white-space:nowrap;pointer-events:none}
+.steps-intro p{font:italic 400 clamp(26px,3.5vw,50px)/1.5 StepsIntroAccent,serif;max-width:650px;margin:30px auto 0;color:#675762}
+@media(max-width:767px){.steps-intro{padding-top:50px}.steps-intro h2{font-size:clamp(86px,23vw,155px);line-height:1}.steps-intro__script{font-size:clamp(36px,10vw,64px);top:36%;right:20%}.steps-intro p{font-size:clamp(25px,7vw,34px);margin-top:18px}}
+
+/* Four lightweight scenes remain loaded; scrolling crossfades them in sync
+   with the titles. The central wash preserves legibility on every screen. */
+.steps__view{isolation:isolate}
+.steps__backgrounds{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#fcfaf6}
+/* The art has true transparency: the fixed backdrop never moves. */
+.steps__scene{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at 30% 25%,#efe0dc 0%,#faf6ef 47%,#fcfaf6 100%)}
+.steps__scene:first-child{opacity:1}.steps__scene:nth-child(2){background:radial-gradient(ellipse at 76% 35%,#eedbd8,#fcfaf6 65%)}
+.steps__scene:nth-child(3){background:radial-gradient(ellipse at 24% 40%,#eadbd7,#fcfaf6 65%)}
+.steps__scene:nth-child(4){background:radial-gradient(ellipse at 76% 35%,#efdfd9,#fcfaf6 65%)}
+/* Reserve a top band for the scroll-driven icon: it never crosses the copy. */
+.steps__scene img{position:absolute;top:2%;left:50%;width:min(29vw,16svh,150px);height:min(29vw,16svh,150px);object-fit:contain;opacity:.72;margin-left:calc(min(29vw,16svh,150px) / -2);transform:translate3d(0,0,0)}
+.steps__backgrounds:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(252,250,246,.70),rgba(252,250,246,0) 65%);pointer-events:none}
+@media(max-height:540px){.steps__scene img{width:min(14svh,70px);height:min(14svh,70px);margin-left:calc(min(14svh,70px) / -2);top:1%}}
+.steps:not(.is-enhanced) .steps__backgrounds{display:none}
+/* Static, accessible layout when motion is disabled. */
+.steps:not(.is-enhanced) .steps__item{padding:32px 12px;border-radius:18px;background:linear-gradient(140deg,#f4e8e5,#fcfaf6 65%);display:flex;flex-direction:column;gap:12px}
+.steps:not(.is-enhanced) .steps__item:before{content:"";display:block;width:76px;height:76px;background:center/contain no-repeat;flex:none}
+.steps:not(.is-enhanced) .steps__item:nth-child(1):before{background-image:url('icons/trial.svg')}.steps:not(.is-enhanced) .steps__item:nth-child(2):before{background-image:url('icons/server.svg')}.steps:not(.is-enhanced) .steps__item:nth-child(3):before{background-image:url('icons/setup.svg')}.steps:not(.is-enhanced) .steps__item:nth-child(4):before{background-image:url('icons/watch.svg')}
+/* Vector arrows are independent of the device's font and cannot shrink away. */
+.steps .steps__details a .steps__action-arrow{display:block;flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

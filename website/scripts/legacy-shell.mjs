@@ -1,5 +1,5 @@
 import { HOME_SECTIONS, NAV_GROUPS, SERVER_PAGES } from '../src/navigation.mjs';
-import { SUPPORT_EMAIL } from '../src/site.mjs';
+import { SUPPORT_EMAIL, WHATSAPP_NUMBER } from '../src/site.mjs';
 import { leagueIcon } from '../src/lib/league-icons.mjs';
 
 /* هيدر الصفحات القديمة — يُبنى من نفس خريطة التنقل التي يستخدمها هيدر React
@@ -29,8 +29,12 @@ function desktopPanel(group) {
   if (group.key === 'matches') {
     const scheduleLink = group.links.slice(0, 1);
     const extraLinks = group.links.slice(1, 6);
-    const leagueLinks = group.links.slice(6, 14);
-    const teamLinks = group.links.slice(14);
+    /* نفس قاعدة التقطيع بالوسم المطبَّقة في Header.tsx: البطولات بـ league،
+       والأندية بـ club، والباقي بعد الستة العامة منتخبات. بغير ذلك يظهر أي
+       رابط جديد تحت عنوان «المنتخبات» ويُزيح آخرها. */
+    const leagueLinks = group.links.filter((l) => l.league);
+    const clubLinks = group.links.filter((l) => l.club);
+    const teamLinks = group.links.filter((l) => !l.league && !l.club).slice(6);
     return `<div class="sm-dd-grid sm-dd-grid-3">${scheduleLink.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
       + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">القنوات والبث</p>`
       + `<div class="sm-dd-grid sm-dd-grid-3">${extraLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
@@ -38,6 +42,12 @@ function desktopPanel(group) {
       + `<div class="sm-dd-grid sm-dd-grid-3">${leagueLinks.map(l => item(page(l.href), l.label, l.desc, l.icon, l.league)).join('')}</div>`
       + `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">المنتخبات</p>`
       + `<div class="sm-dd-grid sm-dd-grid-4">${teamLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
+      /* الأندية قسم مستقل بعنوانه — النادي ليس منتخباً، وحاويته ليست
+         sm-dd-grid-4 حتى لا تُحسب أيقوناته ضمن أيقونات المنتخبات. */
+      + (clubLinks.length
+        ? `<p style="font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.4);margin:8px 12px 4px">الأندية</p>`
+          + `<div class="sm-dd-grid sm-dd-grid-3">${clubLinks.map(l => item(page(l.href), l.label, l.desc, l.icon)).join('')}</div>`
+        : '')
       + `<div class="sm-dd-foot"><a href="/matches/">كل مواعيد المباريات — التقويم الكامل</a><a class="sm-dd-pill" href="/world-cup-2026/">كأس العالم 2026 ↗</a></div>`;
   }
   if (group.key === 'home') {
@@ -47,7 +57,7 @@ function desktopPanel(group) {
   if (group.key === 'servers') {
     return `<div class="sm-dd-cards">${SERVER_PAGES.map(s => `<a class="sm-dd-card sm-card-${s.code}" href="${page(`${s.code}/`)}"><span class="sm-dd-card-art" aria-hidden="true"><img src="${esc(s.logo)}" alt="" width="46" height="46" loading="lazy" decoding="async"></span><b>${esc(s.label)}</b><small>${esc(s.desc)}</small></a>`).join('')}</div>`
       + `<div class="sm-dd-grid sm-dd-grid-3">${group.links.map(l => item(page(l.href), l.label, l.desc)).join('')}</div>`
-      + `<div class="sm-dd-foot"><span>سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</span><a class="sm-dd-pill" href="/#pricing">عرض الأسعار ↗</a></div>`;
+      + `<div class="sm-dd-foot"><span>قارن باقات المزودين وتحقّق من شروط التفعيل والدعم</span><a class="sm-dd-pill" href="/#pricing">عرض الأسعار ↗</a></div>`;
   }
   return `<div class="sm-dd-grid">${group.links.map(l => item(page(l.href), l.label, l.desc)).join('')}</div>`
     + (group.legal ? `<div class="sm-dd-legal">${group.legal.map(l => `<a href="${page(l.href)}">${esc(l.label)}</a>`).join('')}</div>` : '');
@@ -67,12 +77,13 @@ function mobileLinks(group) {
 const desktopNav = NAV_GROUPS.map(g => `<div class="sm-dd" data-group="${g.key}" data-match="${esc(g.match.join(' '))}"><button type="button" class="sm-dd-btn" id="sm-dd-btn-${g.key}" aria-expanded="false" aria-controls="sm-dd-${g.key}">${esc(g.label)}${chevron}</button><div class="sm-dd-panel sm-dd-${g.key}" id="sm-dd-${g.key}"><div class="sm-dd-box">${desktopPanel(g)}</div></div></div>`).join('');
 const mobileNav = NAV_GROUPS.map(g => `<details class="sm-acc" data-group="${g.key}" data-match="${esc(g.match.join(' '))}"><summary>${esc(g.label)}${chevron}</summary>${g.key === 'match-center' ? analysisMenu(g) : g.key === 'matches' ? matchesMobileLinks(g) : mobileLinks(g).map(([href, label, logo]) => `<a href="${esc(href)}"${logo ? ' class="sm-m-row"' : ''}>${logo ? `<span class="sm-m-logo" aria-hidden="true"><img src="${esc(logo)}" alt="" width="24" height="24" loading="lazy" decoding="async"></span>` : ''}${esc(label)}</a>`).join('')}</details>`).join('');
 
+const headerBrand = `<a class="sm-brand" href="/" aria-label="ستريم ماستر — الصفحة الرئيسية"><span class="sm-sr-only">ستريم ماستر — Stream Master Pro</span><span class="sm-crab39" dir="rtl" aria-hidden="true"><span class="sm-crab39__row"><span class="sm-crab39__word"><span class="sm-crab39__tile"><sup class="sm-crab39__sup">4K</sup><span class="sm-crab39__sym">ست</span></span><span class="sm-crab39__rest">ريم</span></span><span class="sm-crab39__word"><span class="sm-crab39__tile"><sup class="sm-crab39__sup">99</sup><span class="sm-crab39__sym">ما</span></span><span class="sm-crab39__rest">ستر</span></span></span><span class="sm-crab39__sub" dir="ltr">Stream Master Pro</span></span></a>`;
+
 export const header = `<a class="sm-skip" href="#main-content">تخطي إلى المحتوى</a>
-<div class="sm-announcement">ستريم ماستر برو — <strong>اشتراك واحد، ترفيه بلا حدود</strong><a href="/?trial=1">اطلب تجربتك المجانية ←</a></div>
 <header class="sm-header"><nav aria-label="القائمة الرئيسية" class="sm-nav">
-<a class="sm-brand" href="/"><span class="sm-mark">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a>
+${headerBrand}
 <div class="sm-desktop">${desktopNav}</div>
 <div class="sm-actions"><a class="sm-cart" href="/cart/" aria-label="سلة المشتريات"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 3h3l3 13h11l3-10H6"/><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/></svg><span data-sm-cart-count>0</span></a><a class="sm-cta" href="/?trial=1">تجربة مجانية ↗</a><button class="sm-menu-toggle" aria-label="فتح القائمة" aria-controls="sm-mobile-nav" aria-expanded="false">☰</button></div>
 </nav><div id="sm-mobile-nav" class="sm-mobile" hidden>${mobileNav}</div></header>`;
 
-export const footer = `<footer class="sm-footer"><div class="sm-footer-top"><div><a class="sm-brand" href="/"><span class="sm-mark">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a><p>المنصة التقنية لخدمات الربط والدعم الفني.<br>سيرفرات المزودين (نوفا وإيستار وموكا وX) — تفعيل سريع ودعم متواصل.</p><a class="sm-cta" href="https://wa.me/201098950879" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب ↗</a></div><div><h2>اكتشف أكثر</h2><a href="/store/">الباقات والأسعار</a><a href="/servers/">مقارنة السيرفرات</a><a href="/channels/">مكتبة القنوات</a><a href="/blog/">مقالات ودلائل</a><a href="/world-cup-2026/">كأس العالم 2026</a><a href="/match-center/">مركز المباراة</a><a href="/predictions/">توقعات المباريات</a></div><div><h2>نحن هنا لمساعدتك</h2><a href="/about/">من نحن</a><a href="/faq/">الأسئلة الشائعة</a><a href="/status/">حالة الخدمة</a><a href="/privacy/">سياسة الخصوصية</a><a href="/terms/">شروط الاستخدام</a><a href="/refund/">سياسة الاسترجاع</a><a href="/watch-legal.html">المشاهدة القانونية</a></div></div><div class="sm-wordmark" aria-hidden="true">ستريم ماستر®</div><div class="sm-footer-disclaimer" style="margin:20px 0 8px;padding:16px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:16px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.6);font-size:12.5px;line-height:1.9"><strong style="display:block;color:#d8ff3e;margin-bottom:4px">⚠️ إخلاء مسؤولية قانوني وسياسة الملكية الفكرية (DMCA):</strong>يعمل موقع <strong style="color:rgba(255,255,255,0.85)">ستريم ماستر برو (Stream Master Pro)</strong> كوسيط تقني ودليل فهرسة فقط، ولا يقوم باستضافة أو تخزين أو رفع أو بث أي ملفات وسائط أو قنوات مرئية على خوادمه الخاصة. كافة العلامات التجارية المذكورة مملوكة لأصحابها الشرعيين، ويتحمل المستخدم وحده مسؤولية استخدامه للخدمة والامتثال للقوانين المحلية في بلده. للإبلاغ عن أي انتهاك لحقوق الطبع والنشر (DMCA) وطلب حذف الروابط خلال 24–72 ساعة، يرجى مراسلتنا عبر البريد الرسمي: <a href="mailto:${SUPPORT_EMAIL}" dir="ltr" style="color:#fff;text-decoration:underline">${SUPPORT_EMAIL}</a> أو مراجعة <a href="/terms/" style="color:#fff;text-decoration:underline">وثيقة الشروط وسياسة DMCA</a>.</div><div class="sm-footer-bottom"><span>© ${new Date().getUTCFullYear()} ستريم ماستر برو — جميع الحقوق محفوظة.</span><a href="#main-content">الرجوع للأعلى ↑</a></div></footer>`;
+export const footer = `<footer class="sm-footer"><div class="sm-footer-top"><div><a class="sm-brand" href="/"><span class="sm-mark">▶</span><span>ستريم ماستر<small>STREAM MASTER PRO</small></span></a><p>المنصة التقنية لخدمات الربط والدعم الفني.<br>سيرفرات المزودين (نوفا وإيستار وموكا وX) — تفعيل سريع ودعم متواصل.</p><a class="sm-cta" href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" rel="noopener noreferrer">تواصل عبر واتساب ↗</a></div><div><h2>اكتشف أكثر</h2><a href="/store/">الباقات والأسعار</a><a href="/servers/">مقارنة السيرفرات</a><a href="/channels/">مكتبة القنوات</a><a href="/blog/">مقالات ودلائل</a><a href="/world-cup-2026/">كأس العالم 2026</a><a href="/match-center/">مركز المباراة</a><a href="/predictions/">توقعات المباريات</a></div><div><h2>نحن هنا لمساعدتك</h2><a href="/about/">من نحن</a><a href="/faq/">الأسئلة الشائعة</a><a href="/status/">حالة الخدمة</a><a href="/privacy/">سياسة الخصوصية</a><a href="/terms/">شروط الاستخدام</a><a href="/refund/">سياسة الاسترجاع</a><a href="/watch-legal.html">المشاهدة القانونية</a></div></div><div class="sm-wordmark" aria-hidden="true">ستريم ماستر®</div><div class="sm-footer-disclaimer" style="margin:20px 0 8px;padding:16px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:16px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.6);font-size:12.5px;line-height:1.9"><strong style="display:block;color:#d8ff3e;margin-bottom:4px">⚠️ إخلاء مسؤولية قانوني وسياسة الملكية الفكرية (DMCA):</strong>يضم موقع <strong style="color:rgba(255,255,255,0.85)">ستريم ماستر برو (Stream Master Pro)</strong> أدوات وروابط قد تقود إلى خدمات ومحتوى من جهات أخرى. تحقّق من مصدر المحتوى وحقوق المشاهدة في بلدك وشروط الخدمة قبل الاشتراك؛ عرض الرابط لا يثبت وجود ترخيص. للإبلاغ عن محتوى أو رابط، يرجى مراسلتنا عبر البريد الرسمي: <a href="mailto:${SUPPORT_EMAIL}" dir="ltr" style="color:#fff;text-decoration:underline">${SUPPORT_EMAIL}</a> أو مراجعة <a href="/terms/" style="color:#fff;text-decoration:underline">وثيقة الشروط وسياسة DMCA</a>.</div><div class="sm-footer-bottom"><span>© ${new Date().getUTCFullYear()} ستريم ماستر برو — جميع الحقوق محفوظة.</span><a href="#main-content">الرجوع للأعلى ↑</a></div></footer>`;

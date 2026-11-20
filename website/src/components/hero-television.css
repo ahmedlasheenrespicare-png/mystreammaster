@@ -266,3 +266,16 @@
   .hero-tv-headline { font-size: 16px; line-height: 1.65; }
   .hero-tv-welcome-copy .hero-tv-eyebrow { font-size: 6px; }
 }
+
+/* Static placement for the decorative WebGL sculpture (no scroll-driven motion). */
+.home-webgl-stage {
+  position: absolute;
+  z-index: 0;
+  inset: -8% -3% -6%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: .48;
+  transition: opacity .35s ease;
+}
+.home-webgl-canvas { display: block; width: 100%; height: 100%; }
+.home-webgl-stage[data-webgl="unavailable"] { opacity: 0; }

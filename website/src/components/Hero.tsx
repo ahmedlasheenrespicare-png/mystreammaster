@@ -1,12 +1,22 @@
-import "./hero-title-holo.css";
+import { novemberCrownClashes, CROWN_LEAGUE_CARDS } from './crown-november-fixtures';
+import { motionReduced } from "../lib/motion-preference";
+import { HeroLaptop } from "./HeroLaptop";
 import { HeroPhone } from "./HeroPhone";
+import HomepageWebGLStage from "./HomepageWebGLStage";
 import { HeroTelevision } from "./HeroTelevision";
-import { useEffect, useState } from "react";
-import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
+import { IconArrow, IconCheck, IconPlay, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
-import AllLeaguesTicket, { INDEX_CLASHES } from "./AllLeaguesTicket";
+import AllLeaguesTicket, { AL_SADD_AL_AHLI_CLASH, NEWCASTLE_EVERTON_CLASH, ATLETICO_BAYERN_UCL_CLASH, BARCELONA_VILLA_UCL_CLASH, MAN_UTD_ROMA_UCL_CLASH, BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
+import type { FeaturedClash } from "./LeagueTicketCard";
+import { FEATURED_NEWS } from "../content/featured-news";
+import { isWithinTicketWindow } from "../lib/ticket-recency";
+
+type HomeTicketSlot = { clash: FeaturedClash; news?: string };
 import { FeaturedNewsTicketSlide } from "./FeaturedNewsCards";
-import { HeroMatchesTicket } from "./HeroSideTickets";
+import { HeroMatchesTicket, useDayMatches, type DayKey } from "./HeroSideTickets";
+import { dayInZone, shiftDay } from "../lib/matches.mjs";
+import HeroLeagueCrownStrip from "./HeroLeagueCrownStrip";
 import { ServerIcon } from "./ServerIcon";
 import { SERVER_MARK_SRC, SERVER_WATERMARKS } from "../lib/server-branding";
 import { PRICING_PLANS } from "../data";
@@ -142,7 +152,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
 
         {/* لوحة العرض */}
         <div className="bg-[#efeee9] p-3 md:p-6 relative min-w-0">
-          {/* شارة عائمة: تفعيل فوري (اختبار storefront يشترط ظهور الشارات الثلاث) */}
+          {/* شارة عائمة لإرشادات التفعيل */}
           <div
             data-hero-badge="activation"
             className="relative z-10 mb-3 md:mb-4 ms-auto w-fit max-w-full bg-white rounded-2xl shadow-lg border border-black/10 px-2.5 py-1.5 md:px-3 md:py-2 flex items-center gap-2 motion-safe:animate-float"
@@ -151,8 +161,8 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
               <IconCheck className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </span>
             <div className="leading-none text-right flex items-baseline gap-1.5">
-              <p className="text-[10.5px] md:text-[11px] font-black">تفعيل فوري</p>
-              <p className="text-[10px] text-black/50">خلال 5 دقائق</p>
+              <p className="text-[10.5px] md:text-[11px] font-black">إرشادات التفعيل</p>
+              <p className="text-[10px] text-black/50">عبر الدعم</p>
             </div>
           </div>
 
@@ -244,7 +254,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
                         سيرفر {tab.name}
                       </p>
                       <p className="text-[10px] md:text-[11.5px] text-white/60 font-medium">
-                        تفعيل خلال دقائق — على كل أجهزتك
+                        إرشادات التفعيل — تحقق من توافق جهازك
                       </p>
                     </div>
                   </div>
@@ -299,7 +309,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
               { label: "مكتبة VOD", value: tab.vodCount },
               { label: "الجودة", value: tab.quality },
               { label: "مانع التقطيع", value: tab.antiFreeze },
-              { label: "الدعم", value: "24/7" },
+              { label: "الدعم", value: "اسأل عن المواعيد" },
             ].map((s) => (
               <li key={s.label}>
                 <p className="text-[10.5px] font-bold text-black/40">{s.label}</p>
@@ -342,20 +352,156 @@ interface HeroProps {
   onOpenTrial: () => void;
 }
 
+/* شرائح تذكرة الصفحة الرئيسية بالترتيب: كل شريحة مواجهة، وإن وُجد news فهي
+   شريحة خبر تحل محلها. تُعرض الشريحة ما دام عمرها 7 أيام أو أقل، ولا تُعرض
+   الشريحة بلا تاريخ، ثم تُخفى تلقائياً (انظر lib/ticket-recency) */
+/* بطاقات المباريات أسفل شريط البطولات تبقى ظاهرة؛ شريط المباريات البارزة مخفي حالياً بطلب المالك. */
+const HOME_MATCH_CARDS_VISIBLE = true;
+const HOME_FEATURED_MATCH_STRIP_VISIBLE = true;
+
+/* تذكرة مباريات أمس/اليوم/غد مخفية حالياً من الصفحة الرئيسية بطلب المالك. */
+const HERO_MATCHES_TICKET_VISIBLE = false;
+
+/* الحد الأقصى لعدد شرائح التذكرة الظاهرة في الصفحة الرئيسية (طلب المالك).
+   تُعرض الأولى بحسب الترتيب في HOME_TICKET_SLOTS، والباقي يُخفى. */
+const HOME_TICKET_MAX_SLIDES = 18;
+
+const HOME_TICKET_SLOTS: HomeTicketSlot[] = [
+  { clash: INDEX_CLASHES[2], news: "news/egypt-hossam-hassan-ali-maher-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/barcelona-atletico-flick-selection-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-kane-contract-2029-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/manchester-city-leipzig-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/real-madrid-aek-athens-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/fenerbahce-liverpool-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/como-lens-9-1-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ronaldo-international-retirement-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bruno-fernandes-al-hilal-january-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/real-madrid-jj-gabriel-agreement-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-villarreal-6-0-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/man-utd-roma-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-atletico-2-0-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/inter-feyenoord-3-0-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/barcelona-villa-3-0-2026/" },
+  { clash: AL_SADD_AL_AHLI_CLASH },
+  { clash: NEWCASTLE_EVERTON_CLASH },
+  { clash: ATLETICO_BAYERN_UCL_CLASH },
+  { clash: BARCELONA_VILLA_UCL_CLASH },
+  { clash: MAN_UTD_ROMA_UCL_CLASH },
+  { clash: INDEX_CLASHES[2], news: "news/hilal-top-qadsiah-3-2-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ivan-toney-tops-roshn-scorers-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ronaldo-985-goals-hat-trick-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/al-ahly-al-sadd-acl-elite-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ahly-umotah-pressure-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/zamalek-gamal-form-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/barcelona-alaves-6-1-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/lazio-best-start-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/milan-beats-inter-derby-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/juventus-beats-napoli-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-saibari-surgery-gnabry-injury-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-munich-top-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/real-madrid-racing-santander-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/arsenal-liverpool-1-0-2026/" },
+  { clash: LIVERPOOL_ARSENAL_CLASH },
+  { clash: MILAN_INTER_CLASH },
+  { clash: CHELSEA_UNITED_CLASH },
+  { clash: BAYERN_DORTMUND_CLASH },
+  { clash: INDEX_CLASHES[2], news: "news/saudi-league-round-12-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/egyptian-league-matchday-8-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/carrick-fernandes-talks-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/liverpool-chelsea-carabao-cup-preview-2026/" },
+  { clash: LIVERPOOL_CHELSEA_CUP_CLASH },
+  { clash: INDEX_CLASHES[2], news: "news/arsenal-fleetwood-carabao-cup-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/mbappe-china-sponsors-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/barcelona-alvarez-fine-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/fenerbahce-kartal-resignation-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/hilal-shamal-first-half-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-lyon-2-0/" },
+  { clash: INDEX_CLASHES[2], news: "news/trabzonspor-rizespor-4-3-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/ballon-dor-2026-winners/" },
+  { clash: INDEX_CLASHES[2], news: "news/ballon-dor-2026-ceremony-preview/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-lyon-tonight/" },
+  { clash: INDEX_CLASHES[2], news: "news/clasico-post-match-reactions-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/clasico-first-half-2026/" },
+  { clash: INDEX_CLASHES[2] },
+  { clash: INDEX_CLASHES[2], news: "news/clasico-preview-absences-predictions/" },
+  { clash: INDEX_CLASHES[2], news: "news/liverpool-brighton-live/" },
+  { clash: INDEX_CLASHES[2], news: "news/man-utd-bournemouth-live/" },
+  { clash: INDEX_CLASHES[2], news: "news/bundesliga-bayern-freiburg-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/inter-fiorentina-2-1/" },
+  { clash: INDEX_CLASHES[2], news: "news/bundesliga-dortmund-frankfurt-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/tottenham-chelsea-2-0/" },
+  { clash: INDEX_CLASHES[3] },
+  { clash: INDEX_CLASHES[4] },
+  { clash: INDEX_CLASHES[2], news: "news/man-city-aston-villa/" },
+  { clash: INDEX_CLASHES[2], news: "news/bundesliga-kompany-hospitalized-2026/" },
+  { clash: INDEX_CLASHES[2], news: "news/bayern-arsenal-2-2/" },
+  { clash: INDEX_CLASHES[2], news: "news/psg-barcelona-4-2/" },
+];
+
+function isHomeSlotVisible(slot: HomeTicketSlot, nowMs: number): boolean {
+  if (slot.news) {
+    const item = FEATURED_NEWS.find(news => news.href === slot.news);
+    return isWithinTicketWindow(item?.dateLabel, nowMs);
+  }
+  return isWithinTicketWindow(slot.clash.date, nowMs);
+}
+
 export default function Hero({ onOpenTrial }: HeroProps) {
   const [heroWord, setHeroWord] = useState(0);
-  const [frontDevice, setFrontDevice] = useState<"phone" | "tv">("phone");
+  const [frontDevice, setFrontDevice] = useState<"phone" | "tv" | "laptop">("phone");
+  const [newsInCrown, setNewsInCrown] = useState(false);
+  const [desktopNews, setDesktopNews] = useState(false);
+  const sourceDays = useMemo<Record<DayKey, string>>(() => {
+    const today = dayInZone(new Date(), "Africa/Cairo");
+    return { yesterday: shiftDay(today, -1), today, tomorrow: shiftDay(today, 1) };
+  }, []);
+  const sourceDayMatches = useDayMatches(sourceDays, "today");
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 701px)");
+    const update = () => setDesktopNews(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   /* تدوير كلمة العنوان الرئيسي */
   useEffect(() => {
     const t = window.setInterval(() => {
+      if (motionReduced() || document.hidden) return;
       setHeroWord((w) => (w + 1) % HERO_TITLE_WORDS.length);
     }, HERO_TITLE_MS);
     return () => window.clearInterval(t);
   }, []);
 
+
+  /* إظهار شرائح التذكرة حسب عمرها (≤ 7 أيام): قبل التحميل تُعرض الكل كما في
+     المطبوع مسبقاً، ثم تُحسب بعد التحميل وتُحدَّث كل ساعة */
+  const [ticketNow, setTicketNow] = useState<number | null>(null);
+  useEffect(() => {
+    setTicketNow(Date.now());
+    const timer = window.setInterval(() => setTicketNow(Date.now()), 60 * 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  /* إخفاء بطاقات المباريات من تذكرة الصفحة الرئيسية مؤقتاً: تبقى الأخبار كما هي.
+     لإعادة البطاقات يكفي ضبط HOME_MATCH_CARDS_VISIBLE على true */
+  const eligibleSlots = HOME_TICKET_SLOTS.filter(slot =>
+    ticketNow === null || isHomeSlotVisible(slot, ticketNow));
+  // Crown matches are independent of the ticket-row visibility switch.
+  const crownClashes = novemberCrownClashes(eligibleSlots.filter(slot => !slot.news).map(slot => slot.clash))
+    .filter(clash => ticketNow === null || isWithinTicketWindow(clash.date, ticketNow));
+  const visibleSlots = eligibleSlots
+    .filter(slot => HOME_MATCH_CARDS_VISIBLE || slot.news)
+    .slice(0, HOME_TICKET_MAX_SLIDES);
+  const visibleClashes = visibleSlots.map(slot => slot.clash);
+  const visibleOverrides: Partial<Record<number, ReactElement>> = {};
+  visibleSlots.forEach((slot, index) => {
+    if (slot.news) visibleOverrides[index] = <FeaturedNewsTicketSlide href={slot.news} />;
+  });
+  const newsTicket = <div className="home-matches-ticket min-w-0" data-home-news-ticket>
+    <AllLeaguesTicket key={visibleSlots.length} hideBase clashes={visibleClashes} slideOverrides={visibleOverrides} showArrows={newsInCrown} />
+  </div>;
   return (
-    <div id="hero" className="relative pt-[150px] md:pt-[168px] pb-16 md:pb-20 overflow-hidden bg-[#faf9f6]">
+    <div id="hero" className="relative pt-[114px] md:pt-[132px] pb-16 md:pb-20 overflow-hidden bg-[#faf9f6]">
       {/* فقاعات الخلفية الملونة — ببارالاكس بطيء */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <Parallax speed={0.06} className="absolute inset-0">
@@ -368,90 +514,15 @@ export default function Hero({ onOpenTrial }: HeroProps) {
       <div className="max-w-[1200px] mx-auto px-5 text-center">
         {/* الشارة العلوية مخفية بناءً على طلب المالك. */}
 
-        {/* صف التذاكر في بداية الهيرو:
-            على الكمبيوتر: المباريات يميناً بعرض 190px، والرئيسية تشغل
-            بقية الصف بما فيه مساحة الأخبار المخفية مؤقتاً.
-            يبقى ترتيب الجوال وأبعاد تذكرة المباريات كما هما. */}
-        <Reveal variant="up" delay={140} className="w-full">
-          <div className="hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[190px_minmax(0,1fr)] lg:gap-0">
-            <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
-            <div className="home-matches-ticket order-2 min-w-0 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1">
-              {/* الصفحة الرئيسية فقط: شريحة الكلاسيكو تُضاف سابعةً في آخر التذكرة كما هي */}
-              <AllLeaguesTicket
-                clashes={[INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[3], INDEX_CLASHES[4], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2], INDEX_CLASHES[2]]}
-                slideOverrides={{
-                  0: <FeaturedNewsTicketSlide href="news/psg-lyon-2-0/" />,
-                  1: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-winners/" />,
-                  2: <FeaturedNewsTicketSlide href="news/ballon-dor-2026-ceremony-preview/" />,
-                  3: <FeaturedNewsTicketSlide href="news/psg-lyon-tonight/" />,
-                  4: <FeaturedNewsTicketSlide href="news/clasico-post-match-reactions-2026/" />,
-                  5: <FeaturedNewsTicketSlide href="news/clasico-first-half-2026/" />,
-                  7: <FeaturedNewsTicketSlide href="news/clasico-preview-absences-predictions/" />,
-                  8: <FeaturedNewsTicketSlide href="news/liverpool-brighton-live/" />,
-                  9: <FeaturedNewsTicketSlide href="news/man-utd-bournemouth-live/" />,
-                  10: <FeaturedNewsTicketSlide href="news/bundesliga-bayern-freiburg-2026/" />,
-                  11: <FeaturedNewsTicketSlide href="news/inter-fiorentina-2-1/" />,
-                  12: <FeaturedNewsTicketSlide href="news/bundesliga-dortmund-frankfurt-2026/" />,
-                  13: <FeaturedNewsTicketSlide href="news/tottenham-chelsea-2-0/" />,
-                  16: <FeaturedNewsTicketSlide href="news/man-city-aston-villa/" />,
-                  17: <FeaturedNewsTicketSlide href="news/bundesliga-kompany-hospitalized-2026/" />,
-                  18: <FeaturedNewsTicketSlide href="news/bayern-arsenal-2-2/" />,
-                  19: <FeaturedNewsTicketSlide href="news/psg-barcelona-4-2/" />,
-                }}
-              />
-            </div>
-            {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
-                الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
-          </div>
-        </Reveal>
-
-        {/* Keep the semantic H1 accessible outside the illustrative button;
-            its visual version now lives inside the television's welcome screen. */}
-        <h1 className="sr-only">{HERO_TITLE_WORDS[heroWord]} كل ما تحب بجودة 4K وبلا تقطيع</h1>
-
-        <Reveal variant="up" delay={320} className="mt-6">
-          <div className="hero-phone-stage" data-front-device={frontDevice}>
-            <HeroTelevision onActivate={() => setFrontDevice("tv")} headline={<span className="hero-tv-headline">
-                  <span>                <span key={heroWord} className="hero-title-holo inline-block animate-word-in">
-                  <span className="hero-title-holo__stack">
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">{HERO_TITLE_WORDS[heroWord]}</span>
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">{HERO_TITLE_WORDS[heroWord]}</span>
-                    <span className="hero-title-holo__layer hero-title-holo__layer--front">{HERO_TITLE_WORDS[heroWord]}</span>
-                  </span>
-                </span>
- كل ما تحب</span>
-                  <span>بجودة                 <span className="hero-title-holo hero-title-holo--quality inline-block" dir="ltr">
-                  <span className="hero-title-holo__stack">
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--back">4K</span>
-                    <span aria-hidden="true" className="hero-title-holo__layer hero-title-holo__layer--mid">4K</span>
-                    <span className="hero-title-holo__layer hero-title-holo__layer--front">4K</span>
-                  </span>
-                </span>{" "}
-</span>
-                  <span className="hero-tv-headline-tagline">وبلا تقطيع</span>
-                </span>} />
-            <HeroPhone onActivate={() => setFrontDevice("phone")} />
-            <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : "الجوال في المقدمة"}</span>
-          </div>
-        </Reveal>
-
-        {/* التقييم */}
-        <Reveal variant="up" delay={380} className="mt-4">
-          <div className="flex items-center justify-center gap-2">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <IconStar key={i} className="w-4 h-4 fill-[#0b0b0f] text-[#0b0b0f]" />
-              ))}
-            </div>
-            <p className="text-[14px] font-bold">
-              <span className="font-black">على شاشتك وجوالك</span>{" "}
-              <span className="text-black/50 font-medium">— ترفيه أينما كنت</span>
-            </p>
-          </div>
-        </Reveal>
+        <div className="hero-story-intro">
+          <h1 className="hero-story-title">
+            <span key={heroWord} className="hero-story-title__word">{HERO_TITLE_WORDS[heroWord]}</span>{" "}
+            كل ما تحب حتى جودة <span dir="ltr">4K</span> حسب المحتوى والجهاز
+          </h1>
+        </div>
 
         {/* الأزرار */}
-        <Reveal variant="up" delay={480} className="mt-8">
+        <Reveal variant="up" delay={160} className="mt-5" initiallyVisible>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={onOpenTrial}
@@ -471,6 +542,45 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
+        <div className="hero-device-picker" role="group" aria-label="اختر جهاز العرض">
+          {([
+            ["tv", "شاشة التلفاز"],
+            ["phone", "الهاتف"],
+            ["laptop", "اللابتوب"],
+          ] as const).map(([device, label]) => (
+            <button
+              key={device}
+              type="button"
+              aria-pressed={frontDevice === device}
+              className={frontDevice === device ? "is-active" : ""}
+              onClick={() => setFrontDevice(device)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <Reveal variant="up" delay={320} className="mt-6" initiallyVisible>
+          <div className="hero-phone-stage hero-phone-stage--laptop hero-phone-stage--retro" data-front-device={frontDevice} data-laptop-placement="left">
+            <HomepageWebGLStage />
+            <HeroTelevision onActivate={() => setFrontDevice("tv")} />
+            <HeroPhone onActivate={() => setFrontDevice("phone")} />
+            <HeroLaptop onActivate={() => setFrontDevice("laptop")} />
+            <span className="sr-only" role="status">{frontDevice === "tv" ? "التلفاز في المقدمة" : frontDevice === "laptop" ? "اللابتوب في المقدمة" : "الجوال في المقدمة"}</span>
+          </div>
+        </Reveal>
+
+        {/* وصف الأجهزة */}
+        <Reveal variant="up" delay={380} className="mt-4" initiallyVisible>
+          <div className="flex items-center justify-center gap-2">
+            <IconCheck className="w-4 h-4 text-[#2b4eff]" />
+            <p className="text-[14px] font-bold">
+              <span className="font-black">على شاشتك وجوالك</span>{" "}
+              <span className="text-black/50 font-medium">— ترفيه أينما كنت</span>
+            </p>
+          </div>
+        </Reveal>
+
         {/* الماكيت + الشارات العائمة ببارالاكس الماوس */}
         <Reveal variant="up" delay={620} duration={950} className="mt-12 md:mt-16 relative">
           <div className="relative z-10 flex flex-wrap items-center justify-center sm:justify-between gap-4 px-2 sm:px-8 py-5 mb-4 md:mb-6" data-hero-badges>
@@ -480,8 +590,8 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                   <IconTrophy className="w-4 h-4" />
                 </span>
                 <div className="text-right leading-none">
-                  <p className="text-[13px] font-black">ثبات 99.9%</p>
-                  <p className="text-[11px] text-black/50 font-medium">في قمة المباريات</p>
+                  <p className="text-[13px] font-black">اختبر اتصالك</p>
+                  <p className="text-[11px] text-black/50 font-medium">وقت مشاهدتك</p>
                 </div>
               </div>
             </MouseParallax>
@@ -499,6 +609,24 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </Parallax>
 
           <div className="absolute -bottom-10 start-1/2 translate-x-1/2 w-[80%] h-16 bg-black/20 blur-[60px] -z-10" />
+        </Reveal>
+
+        {/* بطاقات المباريات والأخبار تأتي بعد عرض الخدمة حتى يبقى الوعد الرئيسي واضحاً. */}
+        <Reveal variant="up" delay={90} className="hero-matches-after-showcase w-full" initiallyVisible>
+          {HOME_FEATURED_MATCH_STRIP_VISIBLE && <HeroLeagueCrownStrip clashes={crownClashes} extraLeagues={CROWN_LEAGUE_CARDS} newsOpen={newsInCrown} onNewsOpenChange={setNewsInCrown} newsTicket={newsInCrown || desktopNews ? newsTicket : null} sidebarNews={desktopNews} sourceDayMatches={sourceDayMatches} />}
+        </Reveal>
+
+        <Reveal variant="up" delay={140} className="w-full" initiallyVisible>
+          {/* الشبكة تتغيّر مع ظهور تذكرة المباريات: بعمودها الأيسر (190px)
+              حين تظهر، وبعمود واحد تمتلئه التذكرة الرئيسية حين تُخفى */}
+          <div className={`hero-ticket-row grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:gap-0 ${HERO_MATCHES_TICKET_VISIBLE ? "lg:grid-cols-[190px_minmax(0,1fr)]" : "lg:grid-cols-1"}`}>
+            {HERO_MATCHES_TICKET_VISIBLE && (
+              <HeroMatchesTicket className="order-1 md:order-2 md:col-span-2 lg:order-1 lg:col-span-1 lg:pe-2.5" />
+            )}
+            {!newsInCrown && !desktopNews && <div data-home-news-below className={`min-w-0 ${HERO_MATCHES_TICKET_VISIBLE ? "order-2 md:order-1 md:col-span-2 lg:order-2 lg:col-span-1" : "order-1 md:order-1 md:col-span-2 lg:col-span-1"}`}>{newsTicket}</div>}
+            {/* تذكرة الأخبار الجانبية مخفية مؤقتاً؛ المكوّن محفوظ في HeroSideTickets.
+                الرئيسية تشغل مساحتها على سطح المكتب حتى إعادتها. */}
+          </div>
         </Reveal>
       </div>
     </div>

@@ -1,0 +1,3604 @@
+/* ==========================================================================
+   1) التاج المداري ثلاثي الأبعاد للبطولات الثماني — أعلى تذكرة الهيرو (/)
+   2) شريط إحصائيات البطولة الحية — أسفل التذكرة الرئيسية مباشرةً
+========================================================================== */
+
+.hero-crown-strip {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: 12px;
+  text-align: start;
+}
+
+/* ── خلفية الشريط: تلوين البطولة النشطة + خطوط ملعب تتفاعل مع السحب ─────────
+   بياض صريح (طلب المالك) وفوقه طبقتا زينة فقط: لا صورة، لا فيديو، لا أنيميشن
+   مستمر. التلوين قيمة واحدة على الغلاف تنتقل بنعومة عند تبديل الشريحة، والخطوط
+   تتحرك بمقدار يد الزائر وحده — فتبقى تكلفة الرسم صفرًا وهو ساكن. */
+
+/* التلوين معرَّف كـ@property بلون حتى يُنتقل إليه؛ ومن يختار السكون
+   (html[data-motion="off"]) تُبطَل الانتقالات عنده بأصل قاعدة الموقع. */
+@property --hs-shell-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(216, 255, 62, 0);
+}
+
+.hs-crown-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px 9px;
+  border-radius: 22px;
+  background: #faf9f6;
+  border: 1.5px solid rgba(216, 255, 62, 0.55);
+  box-shadow:
+    0 18px 36px -26px rgba(11, 11, 15, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+  transition: --hs-shell-glow 0.7s ease;
+}
+
+/* الملعب مقصور داخل جسم بطاقة المواجهة، تحت الشعار والنصوص. */
+.hs-crown-match-pitch {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  background: #fde68a;
+}
+/* خطان أفقيان خلف محتوى بطاقة المباراة. */
+.hs-crown-match-pitch::before,
+.hs-crown-match-pitch::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 51%;
+  height: 1px;
+  z-index: 1;
+  background: rgba(41, 37, 36, .45);
+  pointer-events: none;
+}
+.hs-crown-match-pitch::before { top: 39%; }
+
+/* نمط themrsami (MIT) أعلى الشريط المخطط:
+   https://uiverse.io/themrsami/tall-walrus-4 */
+.hs-crown-upper-pattern {
+  position: absolute;
+  inset: 0 0 49%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(30deg, #10151bb8 12%, transparent 12.5% 87%, #10151bb8 87.5%),
+    linear-gradient(150deg, #10151bb8 12%, transparent 12.5% 87%, #10151bb8 87.5%),
+    linear-gradient(30deg, #10151bb8 12%, transparent 12.5% 87%, #10151bb8 87.5%),
+    linear-gradient(150deg, #10151bb8 12%, transparent 12.5% 87%, #10151bb8 87.5%),
+    linear-gradient(60deg, #ffffff30 25%, transparent 25.5% 75%, #ffffff30 75%),
+    linear-gradient(60deg, #ffffff30 25%, transparent 25.5% 75%, #ffffff30 75%),
+    linear-gradient(to right, #264e83 0% 25%, #975044 25% 50%, #8e753a 50% 75%, #286448 75% 100%);
+  background-position: 0 0, 0 0, 10px 17.5px, 10px 17.5px, 0 0, 10px 17.5px, 0 0;
+  background-color: #132d35;
+  background-size: 20px 35px, 20px 35px, 20px 35px, 20px 35px, 20px 35px, 20px 35px, 160px 100%;
+  box-shadow: inset 0 18px 24px rgba(0, 0, 0, .55), inset 0 -10px 16px rgba(0, 0, 0, .48);
+}
+.hs-crown-upper-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .48), transparent 50%, rgba(0, 0, 0, .32));
+  pointer-events: none;
+}
+
+/* نمط 16alves02 (MIT) محصور بين الخطين:
+   https://uiverse.io/16alves02/sour-impala-15 */
+.hs-crown-pattern-band {
+  position: absolute;
+  inset: 39% 0 49%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(to right,
+    #289a6a 0% 20%, #fff 20% 40%, #ffcd00 40% 60%,
+    #fff 60% 80%, #ef3340 80% 100%);
+  background-size: 160px 100%;
+  background-repeat: repeat;
+  filter: saturate(.6) brightness(.88);
+  box-shadow: 0 -3px 6px rgba(0, 0, 0, .35);
+}
+
+/* Floor perspective inspired by escannord's pretty-eagle-45 (Uiverse, MIT).
+   Grass and markings share the same plane, behind all interactive content. */
+.hs-crown-floor {
+  position: absolute;
+  inset: -22% -18% -24%;
+  z-index: 0;
+  pointer-events: none;
+  transform: perspective(700px) rotateX(48deg);
+  transform-origin: center bottom;
+  background:
+    radial-gradient(ellipse 26% 45% at 24% 45%, rgba(255, 250, 201, .13), transparent 75%),
+    radial-gradient(ellipse 26% 45% at 76% 45%, rgba(255, 250, 201, .13), transparent 75%),
+    linear-gradient(to bottom, rgba(0, 28, 13, .36), transparent 52%, rgba(0, 25, 9, .12)),
+    repeating-linear-gradient(45deg, transparent 0 16px, rgba(152, 192, 130, .035) 20px 36px, transparent 40px),
+    linear-gradient(135deg, #0c6730, #218b41, #0c6730),
+    #0c6730;
+}
+
+/* حبيبات دقيقة فوق التدرج، مرسومة بفلتر SVG ولا تحجب التذاكر. */
+.hs-crown-grass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.hs-crown-grass-grain { opacity: .12; mix-blend-mode: multiply; }
+
+/* إضاءة ثابتة من أسفل الجانبين ووسط الخلفية، خلف محتوى البطاقة. */
+.hs-crown-side-light {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 42% 72% at 100% 100%, rgba(216, 255, 62, .37), rgba(216, 255, 62, .11) 38%, transparent 75%),
+    radial-gradient(ellipse 42% 72% at 0% 100%, rgba(216, 255, 62, .37), rgba(216, 255, 62, .11) 38%, transparent 75%),
+    radial-gradient(ellipse 50% 65% at 50% 85%, rgba(216, 255, 62, .23), rgba(216, 255, 62, .07) 42%, transparent 75%);
+}
+
+/* أشعة ضوء هادئة تصعد من الملعب خلف البطاقات بألوان هوية الموقع. */
+.hs-crown-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+.hs-crown-tint::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 28% at 50% 100%, rgba(216, 255, 62, .22), transparent 75%),
+    conic-gradient(from 305deg at 50% 110%,
+      transparent 0deg, rgba(43, 78, 255, .16) 8deg, transparent 18deg,
+      rgba(124, 92, 255, .16) 30deg, transparent 40deg,
+      rgba(216, 255, 62, .16) 52deg, transparent 64deg,
+      rgba(62, 255, 224, .16) 76deg, transparent 88deg,
+      rgba(43, 78, 255, .14) 101deg, transparent 110deg);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .8) 35%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .8) 35%, transparent 100%);
+  opacity: .72;
+  animation: crown-rays-breathe 14s ease-in-out infinite alternate;
+}
+
+@keyframes crown-rays-breathe {
+  from { opacity: .55; }
+  to { opacity: .85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-crown-tint::before { animation: none; }
+}
+html[data-motion="off"] .hs-crown-tint::before { animation: none !important; }
+
+/* خيط أسفل الشريط من تدرّج البطولة نفسه — صدى شريط الألوان داخل الكروت */
+.hs-crown-tint::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--hs-shell-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+  opacity: 0.65;
+}
+
+/* مخطط الملعب مرسوم بالكود ويتحرك بخفة خلف البطاقات أثناء السحب. */
+.hs-crown-pitch {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: -60px;
+  width: calc(100% + 120px);
+  height: 100%;
+  color: rgba(255, 255, 255, .88);
+  z-index: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--hs-drag-x, 0px) * -0.4), 0, 0);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hs-crown-shell.is-dragging .hs-crown-pitch {
+  transition: none;
+}
+
+.hs-crown-pitch-markings > * {
+  vector-effect: non-scaling-stroke;
+}
+
+/* المحتوى فوق طبقتي الزينة دائماً */
+.hs-crown-shell > .hs-crown-center,
+.hs-crown-shell > .hs-crown-controls {
+  position: relative;
+  z-index: 1;
+}
+
+.hs-crown-shell.is-dragging {
+  cursor: grabbing;
+}
+
+/* ── القلب المداري ثلاثي الأبعاد الواسع (3D Coverflow Arc) ─────────────── */
+.hs-crown-center {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 780px;
+  height: 112px;
+  perspective: 1020px;
+  cursor: grab;
+}
+
+.hs-crown-shell.is-dragging .hs-crown-center {
+  cursor: grabbing;
+}
+
+/* الكرت لا يقصّ نفسه: الأدراج تبرز منه فوق وتحت، تمامًا كما في المرجع حيث
+   .league-carousel-item بلا overflow و.lc-outline هو وحده المَقصوص. الجسم
+   الداكن يحمل الزاوية والـoverflow بدلًا من الكرت، وخط التاج يستدير أسفلَه. */
+.hs-crown-card {
+  position: absolute;
+  width: 248px;
+  border-radius: 18px;
+  border: 1.5px solid #0b0b0f;
+  background: #fcfbf7;
+  text-decoration: none;
+  color: #0b0b0f;
+  box-shadow: 0 16px 30px -16px rgba(11, 11, 15, 0.48);
+  transition:
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.52s ease,
+    filter 0.52s ease,
+    box-shadow 0.52s ease;
+}
+
+.hs-crown-card[data-crown-offset="0"] {
+  z-index: 5;
+  opacity: 1;
+  transform: translate3d(var(--hs-drag-x, 0px), 0, 0) scale(1);
+  box-shadow: 0 20px 36px -16px rgba(11, 11, 15, 0.58);
+}
+
+.hs-crown-card[data-crown-offset="0"]:hover {
+  transform: translate3d(var(--hs-drag-x, 0px), -2px, 0) scale(1.015);
+}
+
+.hs-crown-card[data-crown-offset="1"] {
+  z-index: 3;
+  opacity: 0.84;
+  filter: brightness(0.92);
+  transform: translate3d(calc(-146px + var(--hs-drag-x, 0px) * 0.45), 3px, -64px) rotateY(21deg) scale(0.88);
+}
+
+.hs-crown-card[data-crown-offset="-1"] {
+  z-index: 3;
+  opacity: 0.84;
+  filter: brightness(0.92);
+  transform: translate3d(calc(146px + var(--hs-drag-x, 0px) * 0.45), 3px, -64px) rotateY(-21deg) scale(0.88);
+}
+
+.hs-crown-card[data-crown-offset="2"] {
+  z-index: 2;
+  opacity: 0.5;
+  filter: brightness(0.84);
+  transform: translate3d(-258px, 7px, -132px) rotateY(30deg) scale(0.76);
+}
+
+.hs-crown-card[data-crown-offset="-2"] {
+  z-index: 2;
+  opacity: 0.5;
+  filter: brightness(0.84);
+  transform: translate3d(258px, 7px, -132px) rotateY(-30deg) scale(0.76);
+}
+
+.hs-crown-card[data-crown-offset="hidden"] {
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, -210px) scale(0.6);
+}
+
+.hs-crown-card-top {
+  position: relative;
+  border-radius: 16.5px 16.5px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 11px 8px;
+  background: linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec;
+}
+
+.hs-crown-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hs-crown-league-name {
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #f6f4ec;
+  line-height: 1.2;
+}
+
+.hs-crown-leader-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 5px;
+  border-radius: 999px;
+  background: rgba(252, 251, 247, 0.96);
+  color: #0b0b0f;
+  max-width: 174px;
+}
+
+.hs-crown-leader-name {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hs-crown-split {
+  display: block;
+  height: 2.5px;
+  width: 100%;
+  border-radius: 0 0 16.5px 16.5px;
+  background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+}
+
+/* ── الكؤوس المخصّصة بشعار شفاف وشعارات الأندية المعتمدة ────────────────── */
+.hs-mini-trophy {
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  pointer-events: none;
+}
+
+.hs-mini-trophy .lc-trophy-wrap,
+.hs-stats-identity-trophy .lc-trophy-wrap {
+  position: relative;
+  top: auto;
+  inset-inline-end: auto;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform: none;
+}
+
+.hs-mini-trophy .lc-trophy-svg,
+.hs-stats-identity-trophy .lc-trophy-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.hs-mini-trophy .lc-trophy-emblem {
+  --league-badge-size: 17px;
+}
+
+.hs-stats-identity-trophy .lc-trophy-emblem {
+  --league-badge-size: 14px;
+}
+
+.hs-club-crest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #eef2f6);
+  border: 1px solid rgba(11, 11, 15, 0.12);
+  box-shadow: 0 1px 4px rgba(11, 11, 15, 0.12);
+  overflow: hidden;
+}
+
+.hs-club-crest--md {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.hs-club-initials {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.42rem;
+  font-weight: 900;
+  color: #244859;
+  line-height: 1;
+}
+
+.hs-club-crest--md .hs-club-initials {
+  font-size: 0.54rem;
+}
+
+.hs-club-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.hs-club-logo.is-loaded {
+  opacity: 1;
+}
+
+/* ── شريط أزرار التنقّل والنقاط الدلالية للبطولات الثماني ─────────────────── */
+.hs-crown-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hs-crown-arrow {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(11, 11, 15, 0.16);
+  background: #ffffff;
+  color: #0b0b0f;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.hs-crown-arrow:hover {
+  background: #0b0b0f;
+  border-color: #0b0b0f;
+  color: #d8ff3e;
+}
+
+.hs-crown-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hs-crown-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(11, 11, 15, 0.22);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.28s ease, background 0.28s ease;
+}
+
+.hs-crown-dot.is-active {
+  width: 24px;
+  background: #0b0b0f;
+}
+
+/* ==========================================================================
+   شريط الإحصائيات الحي أسفل التذكرة الرئيسية مباشرةً (.hero-crown-stats-bar)
+   يحاذي على سطح المكتب شبكة .hero-ticket-row (180px يميناً + 1fr تحت الرئيسية)
+========================================================================== */
+
+.hero-crown-stats-bar {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 12px;
+  text-align: start;
+}
+
+.hs-stats-bar-grid {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* بطاقة تعريف البطولة النشطة (180px يميناً تحت تذكرة المواعيد) */
+.hs-stats-identity {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 11px 12px;
+  border-radius: 18px;
+  border: 1.5px solid #0b0b0f;
+  background:
+    radial-gradient(circle at 20% 35%, var(--hs-glow, rgba(216, 255, 62, 0.2)), transparent 65%),
+    linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 12px 24px -18px rgba(11, 11, 15, 0.45);
+  animation: hs-wing-open-inline-start 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.hs-stats-identity:hover {
+  transform: translateY(-1px);
+  border-color: #2b4eff;
+}
+
+.hs-stats-identity-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hs-stats-identity-kicker {
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #d8ff3e;
+  line-height: 1.2;
+}
+
+.hs-stats-identity-title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 112px;
+}
+
+.hs-stats-identity-trophy {
+  position: relative;
+  display: block;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  pointer-events: none;
+}
+
+.hs-stats-identity-split {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2.5px;
+  background: var(--hs-split, linear-gradient(90deg, #d8ff3e, #2b4eff));
+}
+
+/* زوج الإحصائيات المتناظر مباشرةً أسفل التذكرة الرئيسية (.home-matches-ticket) */
+.hs-stats-wings-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hs-crown-wing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 70px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fcfbf7 0%, #f3efe3 100%);
+  border: 1.5px solid #dfd8c6;
+  box-shadow: 0 12px 24px -18px rgba(11, 11, 15, 0.26);
+  min-width: 0;
+  color: #0b0b0f;
+  text-decoration: none;
+  transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+a.hs-crown-wing:hover {
+  border-color: rgba(43, 78, 255, 0.38);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -18px rgba(11, 11, 15, 0.34);
+}
+
+.hs-crown-wing--leader {
+  animation: hs-wing-open-inline-start 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hs-crown-wing--stats {
+  animation: hs-wing-open-inline-end 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hs-wing-open-inline-start {
+  from {
+    opacity: 0;
+    transform: translate3d(-10px, 3px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hs-wing-open-inline-end {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 3px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.hs-leader-wing-main {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.hs-leader-wing-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 0;
+}
+
+.hs-leader-wing-kicker {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #2b4eff;
+  line-height: 1.2;
+}
+
+.hs-leader-wing-club {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 210px;
+}
+
+.hs-leader-wing-numbers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.hs-leader-wing-pts {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1;
+}
+
+.hs-leader-wing-pts small {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.hs-leader-wing-meta {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #6b675e;
+  white-space: nowrap;
+}
+
+/* ── أوسمة الهجوم والدفاع وإجمالي الأهداف ───────────────────────────────── */
+.hs-stat-wing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hs-stat-wing-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+}
+
+.hs-stat-medal {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+
+.hs-stat-kicker {
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #5b5850;
+  white-space: nowrap;
+}
+
+.hs-stat-club {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  min-width: 0;
+  max-width: 145px;
+}
+
+.hs-stat-club-name {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hs-stat-rate {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 900;
+  color: #0b0b0f;
+}
+
+.hs-stat-rate small {
+  font-family: var(--font-sans);
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #2b4eff;
+  margin-inline-start: 2px;
+}
+
+.hs-stat-divider {
+  width: 1px;
+  height: 38px;
+  background: #dfd8c6;
+  flex: 0 0 1px;
+}
+
+.hs-stat-goals-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5px 9px;
+  border-radius: 11px;
+  background: rgba(43, 78, 255, 0.08);
+  border: 1px solid rgba(43, 78, 255, 0.16);
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.hs-stat-goals-num {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.1;
+}
+
+.hs-stat-goals-lbl {
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #2b4eff;
+  white-space: nowrap;
+}
+
+/* ── التجاوب مع الشاشات المتوسطة والجوال وتقليل الحركة ──────────────────── */
+@media (max-width: 1023px) {
+  .hs-stats-bar-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .hs-stats-identity-title {
+    max-width: none;
+  }
+
+  .hs-crown-card[data-crown-offset="2"] {
+    transform: translate3d(-200px, 7px, -132px) rotateY(30deg) scale(0.74);
+  }
+
+  .hs-crown-card[data-crown-offset="-2"] {
+    transform: translate3d(200px, 7px, -132px) rotateY(-30deg) scale(0.74);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-crown-strip {
+    margin-bottom: 10px;
+  }
+
+  .hs-crown-shell {
+    padding: 9px 9px 8px;
+    border-radius: 20px;
+    gap: 6px;
+  }
+
+  .hs-crown-center {
+    height: 102px;
+    max-width: 100%;
+  }
+
+  .hs-crown-card {
+    width: 208px;
+  }
+
+  .hs-crown-card[data-crown-offset="1"] {
+    transform: translate3d(calc(-56px + var(--hs-drag-x, 0px) * 0.35), 4px, -70px) rotateY(22deg) scale(0.84);
+  }
+
+  .hs-crown-card[data-crown-offset="-1"] {
+    transform: translate3d(calc(56px + var(--hs-drag-x, 0px) * 0.35), 4px, -70px) rotateY(-22deg) scale(0.84);
+  }
+
+  .hs-crown-card[data-crown-offset="2"],
+  .hs-crown-card[data-crown-offset="-2"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-crown-stats-bar {
+    margin-top: 10px;
+  }
+
+  .hs-stats-identity {
+    padding: 8px 11px 10px;
+    border-radius: 15px;
+  }
+
+  .hs-stats-wings-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .hs-crown-wing {
+    min-height: 0;
+    padding: 9px 11px;
+    border-radius: 15px;
+  }
+
+  .hs-leader-wing-club {
+    max-width: 145px;
+  }
+
+  .hs-stat-club {
+    max-width: 92px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-crown-card,
+  .hs-crown-dot,
+  .hs-crown-wing,
+  .hs-stats-identity {
+    transition: none;
+  }
+
+  .hs-crown-wing--leader,
+  .hs-crown-wing--stats,
+  .hs-stats-identity {
+    animation: none;
+  }
+}
+
+/* Same league-ticket stars, behind the readable title and authentic trophy. */
+.hs-crown-card-top { isolation: isolate; min-height: 104px; overflow: hidden; }
+.hs-crown-card-meta, .hs-mini-trophy { position: relative; z-index: 1; }
+.hs-crown-league-name { text-shadow: 0 1px 5px #000, 0 0 10px #000b; }
+
+/* Match slides share the crown's frame, coverflow and palette. Reserve enough
+   vertical space for the full pairing/status/countdown, rather than clipping it. */
+.hero-crown-strip[data-has-matches="true"] .hs-crown-center { height: 174px; }
+.hero-crown-strip[data-has-matches="true"] .hs-crown-card-top { min-height: 164px; }
+.hs-crown-match {
+  position: relative; isolation: isolate; min-height: 164px; box-sizing: border-box;
+  border-radius: 16.5px 16.5px 0 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 6px 10px; gap: 3px; overflow: hidden;
+  background: linear-gradient(155deg, #0b0b0f 0%, #191d28 100%);
+  color: #f6f4ec; text-align: center;
+}
+.hs-crown-match-art {
+  position: absolute; inset: 0; z-index: -1; opacity: .32;
+  display: grid; place-items: center; pointer-events: none;
+}
+.hs-crown-match-art .league-carousel-badge {
+  background: transparent; border: 0; border-radius: 0;
+}
+.hs-crown-match-art .league-carousel-logo {
+  inset: 0; width: 100%; height: 100%; background: transparent;
+}
+.hs-crown-match-art .league-carousel-badge:has(img[data-loaded="true"]) .league-carousel-fallback { visibility: hidden; }
+.hs-crown-match-art .league-carousel-fallback { width: 85%; height: 85%; color: #d8ff3e; }
+.hs-crown-match-heading { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10px; font-weight: 800; min-height: 22px; }
+.hs-crown-match-teams { display: grid; grid-template-columns: minmax(0,1fr) 56px minmax(0,1fr); align-items: center; gap: 3px; }
+.hs-crown-match-team { display: flex; align-items: center; flex-direction: column; gap: 3px; font-size: 10px; line-height: 1.4; text-shadow: 0 1px 4px #000; }
+.hs-crown-match-team .league-ticket-crest { position: static; width: 27px; height: 27px; object-fit: contain; }
+.hs-crown-match-team .league-ticket-crest--mono { display: grid; place-items: center; font-size: 9px; }
+.hs-crown-match-result { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; font-size: 15px; }
+.hs-crown-match-result small { font-size: 8px; direction: rtl; }
+.hs-crown-match-state-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,.9);
+  color: #23323a;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  text-align: center;
+  white-space: nowrap;
+}
+.hs-crown-match-state-badge--live {
+  border-color: rgba(255,100,111,.45);
+  background: #a62d3b;
+  color: #fff;
+}
+.hs-crown-match-state-badge--finished {
+  border-color: rgba(32,49,58,.18);
+  background: #e9edf0;
+  color: #273843;
+}
+.hs-crown-match-state-badge--scheduled {
+  border-color: rgba(89,119,11,.26);
+  background: #d8ff3e;
+  color: #17210a;
+}
+.hs-crown-match-state-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.16);
+}
+.hs-crown-match-score { display: flex; align-items: center; justify-content: center; gap: 6px; direction: rtl; }
+.hs-crown-match-status { display: block; font-size: 8px; line-height: 1.5; }
+.hs-crown-match-status.is-live { color: #d8ff3e; }
+.hs-crown-match .league-ticket-countdown { position: static; inset: auto; transform: none; margin: 0; justify-content: center; gap: 4px; }
+.hs-crown-match .ticket-flip__digit { width: 12px; height: 22px; font-size: 14px; }
+.hs-crown-match .ticket-flip__txt { font-size: 14px; line-height: 22px; }
+.hs-crown-match .ticket-flip__label { font-size: 7px; }
+.hs-crown-match-brands { display: flex; justify-content: center; align-items: center; gap: 7px; height: 12px; }
+.hs-crown-match-brands img { width: 24px; max-height: 12px; object-fit: contain; }
+.hs-crown-controls { max-width: 100%; }
+.hs-crown-dots { flex-wrap: wrap; justify-content: center; max-width: 340px; }
+@media (max-width: 640px) { .hs-crown-dots { max-width: 150px; gap: 5px; } }
+
+/* Invisible/background slides must not keep decorative infinite animations
+   running behind the active card, especially on mobile GPUs. */
+.hs-crown-card:not([data-crown-offset="0"]) *,
+.hs-crown-card:not([data-crown-offset="0"]) *::before,
+.hs-crown-card:not([data-crown-offset="0"]) *::after {
+  animation-play-state: paused !important;
+}
+
+/* Preserve every content row instead of squeezing text or countdown digits. */
+.hs-crown-match > :not(.hs-crown-match-art) { flex-shrink: 0; }
+
+/* Compact numeric pagination, matching the match-ticket current/total pattern. */
+.hs-crown-counter {
+  min-width: 42px; text-align: center; font-size: 11px; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: #53594a; white-space: nowrap;
+}
+
+/* نحافظ على ألوان شعارات المصدر، مع تحديد خفيف يبرز الشعارات الداكنة. */
+.hs-crown-match-art[data-match-league-background] .league-carousel-logo {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+}
+
+/* شعار البطولة كعلامة مائية خلف محتوى بطاقة البطولة. */
+.hs-crown-card-top > .hs-crown-league-background { opacity: .3; }
+.hs-crown-league-background .league-carousel-logo {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+}
+
+
+/* ── الشريحة من ثلاث قطع بأبعاد المرجع نفسه ─────────────────────────────────
+   الدرجان نسخة طبق الأصل من .lc-top-drawer و.lc-detail في شريط «أسفل
+   التذكرة» بصفحة المواعيد: نفس الحشو والزوايا والظل وتوقيتات الفتح والإغلاق،
+   ويفتحان على الشريحة الأمامية فقط ثم يُغلقان حين تمرّ. زِيد ارتفاع الدرجين
+   لإتاحة مساحة للنصوص والعدادات الأكبر، مع حجز البروز في حشو الشريط.
+   الشريط يحجز هذه المسافة في حشوه الداخلي، فلا درج يُقصّ ولا ما أسفل
+   الشريط يزيح مليمترًا واحدًا. */
+
+.hs-crown-shell {
+  --hs-core-h: 150px;
+  --hs-band-h: 150px;
+  /* مساحة إضافية لنقاط المتصدّر وتفاصيلها بعد تكبير الخط. */
+  --hs-band-h-b: 120px;
+  --hs-band-peek: 18px;
+  --hs-band-peek-b: 18px;
+  --hs-pad-t: 11px;
+  --hs-pad-b: 9px;
+  --hs-pad-i: 14px;
+  --hs-band-radius: 22px;
+  /* فوق: الحشو يحجز بروز الدرج العلوي. تحت: صف التحكّم يجيء بعد
+     الجسم مباشرة، فالحجز لازم يكون إزاحة للصفّ نفسه لا حشوًا للغلاف — وإلا
+     ارتسم الدرج فوق الأسهم. المسافة الكلية كما هي بالضبط. */
+  padding:
+    calc(var(--hs-pad-t) + var(--hs-band-h) - var(--hs-band-peek)) var(--hs-pad-i)
+    var(--hs-pad-b);
+}
+
+.hs-crown-shell > .hs-crown-center {
+  margin-bottom: calc(var(--hs-band-h-b) - var(--hs-band-peek-b));
+}
+
+/* الجسم وخلفيته في طبقة مستقلة تحت الدرجين الشفافين في البطولات والمباريات. */
+.hs-crown-card > .hs-crown-match,
+.hs-crown-card > .hs-crown-card-top {
+  position: relative;
+  z-index: 0;
+}
+
+/* الجسم = .lc-outline: الارتفاع المحجوز للشريحة نفسها */
+.hs-crown-center {
+  height: calc(var(--hs-core-h) + 6px);
+}
+
+.hs-crown-slide-band {
+  position: absolute;
+  top: var(--hs-band-peek);
+  inset-inline: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--hs-band-h);
+  padding: 10px 9px 25px;
+  border: 0;
+  border-radius: var(--hs-band-radius) var(--hs-band-radius) 0 0;
+  background: transparent;
+  box-shadow: none;
+  color: #0b0b0f;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-20%) scale(0.96);
+  transform-origin: center bottom;
+  transition:
+    opacity 0.28s ease 0s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
+    visibility 0s linear 0.4s;
+}
+
+/* عمق خفيف للحروف وحدها، مع بقاء الدرجين بلا خلفية أو ظل صندوق. */
+.hs-crown-slide-band {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .32), 0 2px 2px rgba(0, 0, 0, .18);
+}
+
+/* أرقام العدّاد فاتحة فوق خانات داكنة؛ يستبدل هذا ظلّها المتوهّج الافتراضي. */
+.hs-crown-slide-band .ticket-flip__digit {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .45);
+}
+
+.hs-crown-slide-band > * {
+  min-width: 0;
+}
+
+.hs-crown-slide-band--bottom {
+  top: calc(100% - var(--hs-band-peek-b));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: var(--hs-band-h-b);
+  /* 10px بدل 14px الجانبية في المرجع: خانة النقاط كانت تفيض 6px عن العرض */
+  padding: 26px 10px 12px;
+  border: 0;
+  border-radius: 0 0 var(--hs-band-radius) var(--hs-band-radius);
+  background: transparent;
+  box-shadow: none;
+  transform: translateY(-58%) scale(0.96);
+  transform-origin: center top;
+}
+
+/* درج المباراة: الموعد فوق الشعارات، وكلاهما في منتصف الدرج. */
+.hs-crown-card--match .hs-crown-slide-band--bottom {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.hs-crown-card--match .hs-crown-slide-band--bottom .hs-crown-slide-when {
+  max-width: 100%;
+  text-align: center;
+}
+
+.hs-crown-card--match .hs-crown-slide-band--bottom .hs-crown-match-brands {
+  justify-content: center;
+}
+
+/* الفتح على الشريحة الأمامية — نفس التوقيتات المرجعية (تأخير 0.18s و0.22s) */
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-100%) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    visibility 0s linear 0s;
+}
+
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band--bottom {
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    visibility 0s linear 0s;
+}
+
+/* الشرائح الجانبية تحتفظ بجسمها الكامل كما كانت اليوم؛ النقل للأعلى/الأسفل
+   يجري على الأمامية وحدها، فلا تكرار للنص ولا سطر يختفي عند التبديل. */
+.hs-crown-slide {
+  min-height: var(--hs-core-h);
+  justify-content: center;
+  gap: 4px;
+}
+
+/* بأسبقية تطابق قاعدة «الشريط فيه مباريات» وإلا بقي الجسم على 164 */
+.hero-crown-strip .hs-crown-card > .hs-crown-card-top {
+  min-height: var(--hs-core-h);
+}
+
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide > .hs-crown-match-heading,
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide .hs-crown-match-result small {
+  display: none;
+}
+
+/* محتوى درج المباريات بنفس سلَّم طباعة المرجع */
+.hs-crown-slide-league {
+  /* سطر مستقل بعرض الدرج كما في .lc-heading المرجعي: لو تركناه في عمود
+     شبكي واحد مع الشارة صار الاسم «الدوري الإسبا…» */
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 900;
+  line-height: 1.32;
+  color: #1f2430;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-league-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* دوران عملة ثلاثية الأبعاد مستوحى من black-rabbit-68 بواسطة JohnnyCSilva، Uiverse (MIT). */
+.hs-crown-league-coin { flex: 0 0 30px; width: 30px; height: 30px; perspective: 140px; }
+.hs-crown-league-coin-rotor { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; }
+.hs-crown-league-coin[data-active="true"] .hs-crown-league-coin-rotor { animation: hs-crown-coin-turn 7s linear infinite; }
+.hs-crown-league-coin-face { position: absolute; inset: 0; display: block; border-radius: 50%; backface-visibility: hidden; }
+.hs-crown-league-coin-front { transform: translateZ(2px); }
+.hs-crown-league-coin-back { transform: rotateY(180deg) translateZ(2px); }
+.hs-crown-league-coin-rotor::before { content: ""; position: absolute; left: 13px; top: 0; width: 4px; height: 30px; background: linear-gradient(#e7d19c, #74643f, #e7d19c); transform: rotateY(90deg); }
+.hs-crown-league-coin .league-carousel-badge:has(img[data-loaded="true"]) .league-carousel-fallback { visibility: hidden; }
+@keyframes hs-crown-coin-turn { to { transform: rotateY(360deg); } }
+@media (prefers-reduced-motion: reduce) { .hs-crown-league-coin[data-active="true"] .hs-crown-league-coin-rotor { animation: none; } }
+html[data-motion="off"] .hs-crown-league-coin-rotor { animation: none !important; }
+
+.hs-crown-slide-chip {
+  justify-self: end;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #0b0b0f;
+  color: #f6f4ec;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-chip.is-live {
+  background: #d8ff3e;
+  color: #0b0b0f;
+}
+
+/* ── مكان سطر التفصيل في درج المباريات: موجَّه بحالة الموعد (بطلب المالك) ──
+   قبل المباراة عدّاد البداية، وأثناءها دقائق وثوانٍ بنفس التصميم، وبعدها ماركة
+   الدوري. الكل في صَفّ الشبكة الأخير بعرض الدرج على الأرضية نفسها (كريمي مثل
+   الدرج السفلي في المرجع)، فلا لون جديد — المقاس فقط ليجمع الخانات الأربع داخل
+   133px من درج المرجع دون أن يفيض. */
+.hs-crown-slide-band--top .league-ticket-countdown {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+}
+
+.hs-crown-slide-band--top .ticket-flip__digit {
+  width: 1rem;
+  height: 1.5rem;
+  font-size: 0.88rem;
+}
+
+.hs-crown-slide-band--top .ticket-flip__label {
+  font-size: 0.58rem;
+}
+
+.hs-crown-drawer-league {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.hs-crown-drawer-league-name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1.3;
+  color: #1f2430;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-band .hs-crown-match-status {
+  grid-column: 1 / -1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin: 0;
+  color: #6b675e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: start;
+  overflow: hidden;
+}
+
+.hs-crown-slide-band .hs-crown-match-status.is-live {
+  color: #7fb100;
+}
+
+.hs-crown-slide-when {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hs-crown-slide-band .league-ticket-countdown {
+  margin-inline-start: auto;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.hs-crown-slide-band .hs-crown-match-brands {
+  justify-content: flex-end;
+  gap: 5px;
+  height: 12px;
+}
+
+.hs-crown-slide-band .hs-crown-match-brands img {
+  width: 26px;
+  max-height: 12px;
+}
+
+/* قبل المباراة وأثناءها: الشارة والعدّاد كلٌّ في منتصف سطر مستقل. */
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-slide-band--top .hs-crown-slide-chip,
+.hs-crown-card[data-crown-state="live"] .hs-crown-slide-band--top .hs-crown-slide-chip {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-slide-band--top .league-ticket-countdown,
+.hs-crown-card[data-crown-state="live"] .hs-crown-slide-band--top .league-ticket-countdown {
+  justify-self: center;
+  justify-content: center;
+  margin-inline: 0;
+}
+
+/* العدّ التنازلي قبل البداية يملأ سطره وتُوزَّع وحداته بالتساوي. */
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-slide-band--top .league-ticket-countdown {
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+/* اسم النادي لا يلتف داخل الدرج: 248px أضيّق من 266px الخاصة بالحلقة،
+   فالاسم الطويل يُقتطع بدل أن يرفع الدرج فوق مقاس المرجع. */
+.hs-crown-slide-band .lc-top-metric-team {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* plaintext: الاسم اللاتيني يُبتر من آخره يمينًا، والعربي من آخره يسارًا —
+     بلا «...aint-Germain» المقصوص من أوله */
+  direction: ltr;
+  unicode-bidi: plaintext;
+}
+
+/* شعار النادي ثابت لا يُضغط، كما في .lc-top-club-crest — لكن 18px لا 22px:
+   الكرت هنا 246px مقابل 266px للحلقة، وبغير هذا التضييق يُبتر اسم مثل
+   «Paris Saint-Germain» من آخره. */
+.hs-crown-slide-band .lc-top-club-row .hs-club-crest {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* محتوى المرجع يملأ عرض الدرج كاملًا: بغير هذا السطر تُضغط البنية في عمود
+   الشبكة الأول فتتلف الأسطر ويزداد الدرج 60px عن مقاس المرجع. */
+.hs-crown-slide-band > .lc-top-twin,
+.hs-crown-slide-band > .lc-grades-box {
+  grid-column: 1 / -1;
+}
+
+.hs-crown-slide-band .lc-grades-copy {
+  min-width: 0;
+}
+
+/* تكبير إحصائيات البطولة داخل التاج فقط، مع إبقاء العمودين مرنين. */
+.hs-crown-slide-band .lc-top-metric-label { font-size: .68rem; }
+.hs-crown-slide-band .lc-top-metric-val { font-size: 1.08rem; }
+.hs-crown-slide-band .lc-top-metric-unit { font-size: .6rem; }
+.hs-crown-slide-band .lc-top-metric-team { font-size: .66rem; }
+.hs-crown-slide-band .lc-top-twin-goals-label { font-size: .65rem; }
+.hs-crown-slide-band .lc-top-twin-goals-val { font-size: .95rem; }
+.hs-crown-slide-band .lc-top-twin-goals-unit { font-size: .61rem; }
+.hs-crown-slide-band .lc-grades-label,
+.hs-crown-slide-band .lc-grades-meta { font-size: .7rem; }
+.hs-crown-slide-band .lc-grades-num { font-size: 1.45rem; }
+.hs-crown-slide-band .lc-grades-num small { font-size: .72rem; }
+.hs-crown-slide-band .lc-grades-rates { font-size: .65rem; }
+
+@media (max-width: 640px) {
+  .hs-crown-shell {
+    --hs-core-h: 135px;
+    --hs-band-h: 135px;
+    --hs-band-h-b: 116px;
+    --hs-band-peek: 16px;
+    --hs-band-peek-b: 11px;
+    --hs-pad-t: 9px;
+    --hs-pad-b: 8px;
+    --hs-pad-i: 9px;
+    --hs-band-radius: 18px;
+  }
+
+  .hs-crown-slide-band {
+    padding: 8px 6px 21px;
+    row-gap: 4px;
+  }
+
+  .hs-crown-slide-band--bottom {
+    padding: 21px 10px 10px;
+    gap: 6px;
+  }
+
+  /* على 208px كان «Paris Saint-Germain» يفقد 4px من آخره */
+  .hs-crown-slide-band .lc-top-club-row {
+    gap: 3px;
+  }
+
+  .hs-crown-slide-band .lc-top-club-row .hs-club-crest {
+    flex-basis: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .hs-crown-slide-league {
+    font-size: 0.92rem;
+  }
+
+  .hs-crown-slide-band .hs-crown-match-brands {
+    display: none;
+  }
+
+  .hs-crown-card--match .hs-crown-slide-band--bottom .hs-crown-match-brands {
+    display: flex;
+  }
+
+  /* على 208px كان سطر «نقاط/م · هجوم/م» يلفّ آخر رقم وحده — يُعرض على
+     الحاسوب حيث يسع الدرج، ويُترك للموبايل النقاط ولعب وفارق */
+  .hs-crown-slide-band .lc-grades-rates {
+    display: none;
+  }
+}
+
+/* أزرار مستقلة عن البطاقة. تصميم مستوحى من modern-husky-6
+   بواسطة augustin_4687 على Uiverse (ترخيص MIT). */
+.hs-crown-shell { padding-top: calc(var(--hs-pad-t) + var(--hs-band-h) - var(--hs-band-peek) + 45px); }
+.hs-crown-tabs {
+  position: absolute;
+  top: calc(-1 * (var(--hs-band-h) - var(--hs-band-peek)) - 42px);
+  left: 50%; transform: translateX(-50%);
+  width: 260px; max-width: 100%; z-index: 10;
+  display: flex; justify-content: center; gap: 7px;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) button {
+  position: relative; flex: 1 1 0; min-width: 0; min-height: 34px; padding: 1px;
+  border: 0; border-radius: 999px; background: #292524; color: #292524;
+  font: 800 .66rem/1.2 var(--font-sans); cursor: pointer;
+  transform: translate(-2px, -2px);
+  box-shadow: 1px 1px #292524, 2px 2px #292524, 3px 3px #292524,
+    0 0 0 2px #fafaf9, 2px 2px 0 2px #fafaf9, 4px 4px 0 2px #fafaf9;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) button:hover, :is(.hs-crown-tabs, .hs-day-tabs) button:active {
+  transform: translate(0, 0); box-shadow: 0 0 0 2px #fafaf9;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) button:focus-visible { outline: 2px dashed #292524; outline-offset: 4px; }
+.hs-crown-tab-content {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  gap: 3px; min-height: 32px; padding: 3px 4px; box-sizing: border-box;
+  border: 2px solid rgba(255,255,255,.3); border-radius: 999px;
+  background: #facc15; overflow: hidden; pointer-events: none;
+}
+.hs-crown-tab-content::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .35;
+  background-image: radial-gradient(rgba(255,255,255,.8) 20%, transparent 20%), radial-gradient(#fff 20%, transparent 20%);
+  background-position: 0 0, 4px 4px; background-size: 8px 8px;
+}
+.hs-crown-tab-content > * { position: relative; }
+.hs-crown-tab-icon { flex: 0 0 13px; width: 13px; height: 13px; }
+@media (max-width: 640px) {
+  .hs-crown-tabs { width: 240px; }
+  :is(.hs-crown-tabs, .hs-day-tabs) button { font-size: .6rem; }
+  .hs-crown-tab-content { gap: 2px; padding-inline: 2px; }
+  .hs-crown-tab-icon { flex-basis: 12px; width: 12px; height: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { :is(.hs-crown-tabs, .hs-day-tabs) button { transition: none; } }
+
+/* وضع الأخبار ينقل التذكرة الفعلية إلى الشريط، دون طبقة فوق الأزرار. */
+.hs-crown-tabs { width: 330px; }
+@media (max-width: 640px) { .hs-crown-tabs { width: min(280px, 100%); } }
+.hs-crown-shell.is-news-open { padding: 14px; background: transparent; }
+.hs-crown-news-panel { position: relative; z-index: 1; width: min(100%, 900px); min-width: 0; }
+.hs-crown-news-back { display: block; margin: 0 auto 12px; padding: 8px 16px; border: 1px solid #292524; border-radius: 999px; background: #facc15; color: #292524; font: 800 .85rem var(--font-sans); cursor: pointer; }
+.hs-crown-news-back:focus-visible { outline: 3px solid #292524; outline-offset: 3px; }
+.hs-crown-news-arrows { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; color: #17251a; font-weight: 800; }
+.hs-crown-news-arrows button { width: 36px; height: 36px; border: 1px solid #292524; border-radius: 50%; background: #fff; color: #292524; font-size: 24px; line-height: 1; cursor: pointer; }
+.hs-crown-news-arrows button:focus-visible { outline: 3px solid #292524; outline-offset: 2px; }
+.hs-crown-news-panel .league-ticket-carousel:has(.hs-crown-news-arrows) .league-ticket-dots { bottom: 56px; }
+
+/* اختيار الأيام أسفل الدرج السفلي، ومباريات المصدر داخل أرض الشريط. */
+.hs-day-tabs { position: relative; z-index: 1; display: flex; justify-content: center; gap: 7px; width: 330px; max-width: 100%; margin-inline: auto; }
+.hs-day-panel-head button { border: 1px solid #405931; border-radius: 999px; background: #fff; color: #1a2b1b; font: 800 .8rem var(--font-sans); padding: 6px 16px; cursor: pointer; }
+.hs-day-tabs button[aria-pressed="true"] .hs-crown-tab-content { box-shadow: inset 0 0 0 3px #292524; }
+.hs-day-panel-head button:focus-visible, .hs-day-match:focus-visible { outline: 3px solid #1a4420; outline-offset: 2px; }
+.hs-day-empty { position: relative; z-index: 1; max-width: 90%; color: #152518; font-weight: 800; text-align: center; }
+.hs-day-clear { position: relative; z-index: 1; border: 0; border-radius: 999px; padding: 5px 14px; background: #20281b; color: #fff; font: 800 .75rem var(--font-sans); cursor: pointer; }
+.hs-day-clear:focus-visible { outline: 2px dashed #20281b; outline-offset: 3px; }
+
+/* زر إلغاء تصفية الدوري المحدد من الشريط الأفقي */
+.hs-crown-clear-league-filter {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 14px;
+  background: #20281b;
+  color: #fff;
+  font: 800 .75rem var(--font-sans);
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hs-crown-clear-league-filter:hover {
+  background: #1a2015;
+}
+.hs-crown-clear-league-filter:focus-visible {
+  outline: 2px dashed #20281b;
+  outline-offset: 3px;
+}
+.hs-day-warning { position: relative; z-index: 1; margin: 0; color: #26341f; font-size: .75rem; font-weight: 800; }
+.hs-crown-tabs { width: 400px; }
+.hs-crown-tabs button[aria-pressed="true"] .hs-crown-tab-content { box-shadow: inset 0 0 0 3px #292524; }
+@media (max-width: 640px) {
+  .hs-crown-shell { padding-top: calc(var(--hs-pad-t) + var(--hs-band-h) - var(--hs-band-peek) + 59px); }
+  .hs-crown-shell.is-news-open { padding-top: 14px; }
+  .hs-crown-tabs { width: min(300px, 100%); top: calc(-1 * (var(--hs-band-h) - var(--hs-band-peek)) - 56px); }
+  .hs-crown-tabs .hs-crown-tab-content { min-height: 46px; flex-direction: column; gap: 1px; }
+}
+
+/* بطاقة واحدة بعرض مساحة التذكرة؛ التنقل يبقى بالأسهم والسحب. */
+.hs-crown-center { max-width: none; }
+.hs-crown-center .hs-crown-card { width: 100%; box-sizing: border-box; }
+.hs-crown-center .hs-crown-card:not([data-crown-offset="0"]) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hs-crown-center .hs-crown-card[data-crown-offset="0"]:hover {
+  transform: translate3d(var(--hs-drag-x, 0px), -2px, 0);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-teams {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(56px, .45fr) minmax(0, 1fr);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team {
+  font-size: clamp(.68rem, 1.4vw, .9rem);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest {
+  width: clamp(32px, 4vw, 48px);
+  height: clamp(32px, 4vw, 48px);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-result {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+}
+
+/* جسم البطاقة شفاف حتى تظهر أرض الملعب من خلفه. */
+.hs-crown-center .hs-crown-card { background: transparent; border: 0; }
+.hs-crown-center .hs-crown-card > :is(.hs-crown-match, .hs-crown-card-top) {
+  background: transparent;
+  color: #0b0b0f;
+}
+.hs-crown-center .hs-crown-league-name {
+  color: #0b0b0f;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, .8);
+}
+.hs-crown-center .hs-crown-match-team {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, .8);
+}
+
+/* إبراز شعار البطولة بألوانه الأصلية خلف محتوى الجسم الشفاف. */
+.hs-crown-center .hs-crown-card .hs-crown-match-art,
+.hs-crown-center .hs-crown-card .hs-crown-league-background { opacity: .72; }
+/* شعار البطولة واضح خلف محتوى المباراة مع الحفاظ على ألوانه. */
+.hs-crown-center .hs-crown-card .hs-crown-match-art[data-match-league-background] { opacity: .72; }
+
+/* تباين محتوى المباراة فوق العشب الغامق، مع الحفاظ على ألوان الشعارات. */
+.hs-crown-center .hs-crown-card > .hs-crown-match { color: #fff; }
+.hs-crown-center .hs-crown-match-team { text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+.hs-crown-center .hs-crown-match-result { text-shadow: 0 1px 4px rgba(0, 0, 0, .9); }
+
+/* نتيجة المباراة تستعمل خانات الفليب نفسها المستخدمة في عدّاد الوقت. */
+.hs-crown-match-score b { display: inline-flex; }
+.hs-crown-match .hs-crown-match-score .ticket-flip__digit {
+  width: 1rem;
+  height: 1.5rem;
+  font-size: .88rem;
+}
+.hs-crown-match .hs-crown-match-score .ticket-flip__txt {
+  font-size: inherit;
+  line-height: normal;
+}
+
+/* في بطاقات المباريات والبطولات: الدرجان جنبًا إلى جنب أسفل الجسم. */
+.hs-crown-shell:has(.hs-crown-card[data-crown-offset="0"]) > .hs-crown-center {
+  margin-bottom: calc(var(--hs-band-h) - var(--hs-band-peek-b));
+}
+.hs-crown-card .hs-crown-slide-band {
+  top: calc(100% - var(--hs-band-peek-b));
+  width: 50%;
+  min-height: var(--hs-band-h);
+  padding: 18px 6px 8px;
+  border-radius: 0;
+  transform-origin: center top;
+}
+.hs-crown-card .hs-crown-slide-band--top { left: 50%; right: auto; }
+.hs-crown-card .hs-crown-slide-band--bottom { left: 0; right: auto; }
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band--top {
+  transform: translateY(0) scale(1);
+}
+.hs-crown-card--match .hs-crown-slide-band--top .hs-crown-slide-league {
+  justify-content: center;
+}
+@media (max-width: 640px) {
+  .hs-crown-card--match .hs-crown-slide-band--top .hs-crown-slide-league { font-size: .75rem; gap: 3px; }
+  .hs-crown-card--match .hs-crown-slide-band--top .league-ticket-countdown { gap: 2px; }
+  .hs-crown-card--match .hs-crown-slide-band--top .ticket-flip__pair { gap: 1px; }
+  .hs-crown-card--match .hs-crown-slide-band--top .ticket-flip__digit { width: .72rem; font-size: .72rem; }
+  .hs-crown-card--match .hs-crown-slide-when { font-size: .72rem; }
+}
+
+/* ضبط محتوى إحصاءات البطولة عندما يتقاسم الدرجان العرض على الهاتف. */
+@media (max-width: 640px) {
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-twin-duel { grid-template-columns: minmax(0,1fr) 8px minmax(0,1fr); gap: 2px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-twin-head { gap: 2px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-medal-icon { width: 13px; height: 13px; flex-basis: 13px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-label { font-size: .52rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-val { font-size: .9rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-unit { font-size: .48rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-top-metric-team { font-size: .55rem; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-box { gap: 3px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-icon { width: 23px; height: 23px; flex-basis: 23px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-medals { width: 25px; height: 25px; flex: 0 0 25px; }
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-label,
+  .hs-crown-card:not(.hs-crown-card--match) .lc-grades-meta { font-size: .59rem; }
+}
+
+/* بعد نقل الدرجين للأسفل لم تعد هناك حاجة لحجز مساحة الدرج العلوي. */
+.hs-crown-shell:not(.is-news-open) { padding-top: calc(var(--hs-pad-t) + 33px); }
+.hs-crown-shell:not(.is-news-open) .hs-crown-tabs { top: -30px; }
+@media (max-width: 640px) {
+  .hs-crown-shell:not(.is-news-open) { padding-top: calc(var(--hs-pad-t) + 46px); }
+  .hs-crown-shell:not(.is-news-open) .hs-crown-tabs { top: -43px; }
+}
+
+/* اسم المتصدر وشعاره داخل درج النقاط الأيسر، دون نسخ داخل جسم البطاقة. */
+.hs-crown-slide-band--bottom .hs-crown-leader-pill {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-bottom: 3px;
+}
+.hs-crown-slide-band--bottom .hs-crown-leader-name { min-width: 0; }
+
+/* الدرج الأيمن ينزلق من جهة اليسار ثم يستقر عند تفعيل البطاقة. */
+.hs-crown-card .hs-crown-slide-band--top {
+  transform: translateX(-28px);
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-slide-band--top {
+  transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hs-crown-card[data-crown-offset] .hs-crown-slide-band--top { transition: none; }
+}
+html[data-motion="off"] .hs-crown-card .hs-crown-slide-band--top { transition: none !important; }
+
+/* وقت المباراة مقروء فوق أرضية الملعب. */
+.hs-crown-center .hs-crown-match-result > strong {
+  display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  border-radius: 7px;
+  background: #faf9f6;
+  color: #0b0b0f;
+  text-shadow: none;
+  overflow-wrap: anywhere;
+}
+/* لا شريط خلف النتيجة النهائية؛ تبقى خانات الأرقام نفسها كما هي. */
+.hs-crown-card[data-crown-state="finished"] .hs-crown-match-result > strong:has(.hs-crown-match-score) {
+  background: transparent;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+}
+
+/* أزرار الأيام مستوحاة من ركن الإجراءات المستدير في بطاقة ilkhoeri:
+   https://uiverse.io/ilkhoeri/curvy-dragonfly-6 */
+.hs-day-tabs > button {
+  transform: none;
+  padding: 3px;
+  background: #faf9f6;
+  color: #292524;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 0 0 1px rgba(41, 37, 36, .18);
+  transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+.hs-day-tabs > button:hover {
+  transform: none;
+  background: #facc15;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .18), 0 0 0 1px rgba(41, 37, 36, .25);
+}
+.hs-day-tabs > button .hs-crown-tab-content {
+  border: 0;
+  min-height: 30px;
+}
+.hs-day-tabs > button .hs-crown-tab-content::before { content: none; }
+.hs-day-tabs {
+  width: min(350px, 100%);
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid rgba(41, 37, 36, .24);
+  border-radius: 24px;
+  background: #f4f3ef;
+  box-shadow: inset 0 1px 2px rgba(11, 11, 15, .08), 0 1px 0 rgba(255, 255, 255, .85);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hs-day-tabs > button { transition: none; }
+}
+html[data-motion="off"] .hs-day-tabs > button { transition: none; }
+
+/* إبراز الفريقين وشعاريهما أمام تفاصيل الخلفية دون تحريك النتيجة. */
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team {
+  position: relative;
+  z-index: 2;
+  transform: scale(1.16);
+  transform-origin: center;
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35));
+}
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team::before {
+  content: "";
+  position: absolute;
+  top: clamp(28px, calc(4vw - 4px), 44px);
+  left: 50%;
+  width: clamp(24px, 3.2vw, 38px);
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .32);
+  filter: blur(3px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* إطار مستوحى من بطاقة دليل المشاهدة، مع إبقاء الملعب وأدوات الشريط. */
+.hs-crown-shell:not(.is-news-open) {
+  padding-top: 0;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 24px;
+  box-shadow: 0 35px 70px -40px rgba(0, 0, 0, .32);
+}
+.hs-crown-browser {
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--hs-pad-i));
+  min-height: 48px;
+  padding: 0 20px;
+  margin-bottom: 33px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: ltr;
+  background: #f7f6f2;
+  border-bottom: 1px solid rgba(11, 11, 15, .1);
+  user-select: none;
+}
+.hs-crown-browser-dots { display: flex; gap: 6px; }
+.hs-crown-browser-dots i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+.hs-crown-browser-dots i:nth-child(2) { background: #febc2e; }
+.hs-crown-browser-dots i:nth-child(3) { background: #28c840; }
+.hs-crown-browser-title {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 30px;
+  background: #fff;
+  color: #666;
+  text-align: center;
+  font-size: .7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  direction: rtl;
+}
+.hs-crown-browser-badge { border-radius: 20px; background: #0b0b0f; color: #fff; font-size: .65rem; font-weight: 800; padding: 4px 10px; }
+@media (max-width: 640px) {
+  .hs-crown-browser { padding-inline: 12px; gap: 8px; margin-bottom: 46px; }
+  .hs-crown-browser-dots { gap: 4px; }
+  .hs-crown-browser-dots i { width: 8px; height: 8px; }
+}
+
+/* أزرار الشريط على نمط عناصر قائمة القنوات في دليل المشاهدة. */
+:is(.hs-crown-tabs, .hs-day-tabs) > button {
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 13px;
+  padding: 2px;
+  color: #0b0b0f;
+  background: #fff;
+  box-shadow: none;
+  transform: none;
+  transition: background-color .2s, border-color .2s;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button:hover,
+:is(.hs-crown-tabs, .hs-day-tabs) > button:active {
+  background: #f6f6f9;
+  box-shadow: none;
+  transform: none;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button:focus-visible { outline: 3px solid #748bff; outline-offset: 3px; }
+:is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] {
+  color: #2b4eff;
+  border-color: rgba(43, 78, 255, .31);
+  background: #eff1ff;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button .hs-crown-tab-content {
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  gap: 5px;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button .hs-crown-tab-content::before { content: none; }
+:is(.hs-crown-tabs, .hs-day-tabs) > button .hs-crown-tab-icon {
+  box-sizing: content-box;
+  padding: 4px;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 7px;
+  background: #f2f1ed;
+  color: #60636e;
+}
+:is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] .hs-crown-tab-icon { background: #0b0b0f; color: #d8ff3e; }
+.hs-day-tabs { background: #faf9f6; border-color: rgba(11, 11, 15, .1); box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  :is(.hs-crown-tabs, .hs-day-tabs) > button { transition: none; }
+}
+html[data-motion="off"] :is(.hs-crown-tabs, .hs-day-tabs) > button { transition: none; }
+:is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] .hs-crown-tab-content { box-shadow: none; }
+
+/* مثل دليل المشاهدة: العرض إلى اليمين والقائمة إلى اليسار. */
+.hs-crown-shell:not(.is-news-open) {
+  display: grid;
+  direction: rtl;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  grid-template-areas: "browser browser" "stage sidebar" "controls sidebar";
+  align-items: start;
+  gap: 0 16px;
+  padding-bottom: 14px;
+}
+.hs-crown-browser { grid-area: browser; margin-bottom: 16px; }
+.hs-crown-shell > .hs-crown-center { grid-area: stage; align-self: start; }
+.hs-crown-shell > .hs-crown-controls { grid-area: controls; justify-self: center; margin: 8px 0 0; }
+.hs-crown-sidebar {
+  grid-area: sidebar;
+  min-width: 0;
+  align-self: stretch;
+  border: 1px solid rgba(11, 11, 15, .1);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 20px 40px -30px #0004;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hs-crown-sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .82rem; }
+.hs-crown-sidebar-heading span { border-radius: 20px; background: #d8ff3e; padding: 3px 9px; font-size: .65rem; }
+.hs-crown-sidebar .hs-crown-tabs {
+  position: static;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+.hs-crown-sidebar .hs-crown-tabs > button { width: 100%; min-height: 38px; }
+.hs-crown-sidebar .hs-crown-tabs .hs-crown-tab-content {
+  min-height: 32px;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding-inline: 8px;
+  gap: 10px;
+  font-size: .75rem;
+}
+.hs-crown-sidebar-label { border-top: 1px solid rgba(11, 11, 15, .1); padding-top: 9px; font-size: .72rem; font-weight: 800; }
+.hs-crown-sidebar .hs-day-tabs { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; border: 0; background: transparent; border-radius: 0; }
+.hs-crown-sidebar .hs-day-tabs .hs-crown-tab-content { min-height: 32px; }
+.hs-crown-sidebar .hs-day-clear { align-self: center; }
+.hs-crown-sidebar .hs-day-warning, .hs-crown-sidebar .hs-day-empty { max-width: 100%; }
+@media (max-width: 700px) {
+  .hs-crown-shell:not(.is-news-open) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "browser" "stage" "controls" "sidebar";
+    gap: 0;
+  }
+  .hs-crown-browser { margin-bottom: 12px; }
+  .hs-crown-shell > .hs-crown-controls { margin: 8px 0 12px; }
+  .hs-crown-sidebar .hs-crown-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* لوحة مدمجة للهاتف: صف قابل للتمرير وأيام متجاورة بلا إخفاء أي خيار. */
+@media (max-width: 700px) {
+  .hs-crown-sidebar { padding: 9px; gap: 7px; border-radius: 14px; }
+  .hs-crown-sidebar-heading { font-size: .75rem; }
+  .hs-crown-sidebar .hs-crown-tabs {
+    display: flex;
+    justify-content: flex-start;
+    gap: 5px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .hs-crown-sidebar .hs-crown-tabs > button { flex: 0 0 auto; width: auto; min-height: 38px; }
+  .hs-crown-sidebar .hs-crown-tabs .hs-crown-tab-content { min-height: 32px; padding-inline: 7px; gap: 5px; white-space: nowrap; font-size: .68rem; }
+  .hs-crown-sidebar-label { padding-top: 7px; }
+  .hs-crown-sidebar .hs-day-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .hs-crown-sidebar .hs-day-tabs > button { min-height: 38px; }
+  .hs-crown-sidebar .hs-day-tabs .hs-crown-tab-content { gap: 2px; padding-inline: 1px; font-size: .6rem; }
+  .hs-crown-sidebar .hs-day-tabs .hs-crown-tab-icon { padding: 3px; }
+}
+
+/* قبل البداية وبعد النهاية تظهر معلومات الدرجين داخل الملعب. */
+.hero-crown-strip:has(.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"])) .hs-crown-center { height: 260px; }
+.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"]) > .hs-crown-match { min-height: 250px; }
+.hs-crown-scheduled-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  max-width: 100%;
+  min-width: 0;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+}
+.hs-crown-scheduled-details .hs-crown-slide-league { justify-content: center; max-width: 100%; color: #fff; font-size: clamp(.75rem, 1.5vw, .95rem); text-shadow: 0 1px 4px #000; }
+.hs-crown-scheduled-details .hs-crown-slide-chip { align-self: center; }
+.hs-crown-match .hs-crown-scheduled-details .league-ticket-countdown { width: auto; max-width: 100%; justify-content: center; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__txt { text-shadow: 0 1px 1px rgba(0, 0, 0, .45); }
+
+.hs-crown-scheduled-when {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  max-width: 100%;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+}
+.hs-crown-scheduled-when .hs-crown-match-brands { justify-content: center; }
+
+.hs-crown-scheduled-details .hs-crown-drawer-league { margin: 0; justify-content: center; color: #fff; text-shadow: 0 1px 4px #000; }
+
+/* إبراز هوية البطولة والعدّ التنازلي والعلامات قبل البداية فقط. */
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-details .hs-crown-slide-league {
+  font-size: clamp(.95rem, 1.8vw, 1.12rem);
+  gap: 8px;
+}
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-details .hs-crown-league-coin {
+  flex-basis: 38px;
+  width: 38px;
+  height: 38px;
+}
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-details .hs-crown-league-coin-rotor::before { left: 17px; height: 38px; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__digit { width: 15px; height: 26px; font-size: 16px; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__txt { font-size: 16px; line-height: 26px; }
+.hs-crown-match .hs-crown-scheduled-details .ticket-flip__label { font-size: 9px; }
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-when .hs-crown-match-brands { height: 20px; gap: 9px; }
+.hs-crown-card[data-crown-state="scheduled"] .hs-crown-scheduled-when .hs-crown-match-brands img { width: 34px; max-height: 20px; }
+
+/* نفس إبراز البطولة والعلامات بعد نهاية المباراة، مع نتيجة أوضح. */
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-drawer-league { gap: 8px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-drawer-league-name { color: #fff; font-size: clamp(.95rem, 1.8vw, 1.12rem); }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-league-coin { flex-basis: 38px; width: 38px; height: 38px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-details .hs-crown-league-coin-rotor::before { left: 17px; height: 38px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-match .hs-crown-match-score .ticket-flip__digit { width: 19px; height: 28px; font-size: 16px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-when .hs-crown-match-brands { height: 20px; gap: 9px; }
+.hs-crown-card[data-crown-state="finished"] .hs-crown-scheduled-when .hs-crown-match-brands img { width: 34px; max-height: 20px; }
+
+/* نبض الشعارات نفسها مستوحى من tricky-turtle-16 بواسطة Smit-Prajapati (MIT). */
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest {
+  transform-origin: center;
+  animation: hs-crown-crest-pulse 1.4s ease-in-out 1 both;
+}
+@keyframes hs-crown-crest-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="on"]) .hs-crown-card[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest { animation: none; }
+}
+html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest { animation: none !important; }
+
+/* تراجع الخلفية إلى عمق البطاقة عند ظهورها، دون تحريك المحتوى أمامها. */
+.hs-crown-card[data-crown-offset="0"] .hs-crown-match-pitch {
+  transform-origin: center;
+  animation: hs-crown-pitch-enter 1.6s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes hs-crown-pitch-enter {
+  from { transform: scale(1.3); }
+  to { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="on"]) .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pitch { animation: none; }
+}
+html[data-motion="off"] .hs-crown-card[data-crown-offset="0"] .hs-crown-match-pitch { animation: none !important; }
+
+/* إبراز شعار البطولة واسمه قبل المباراة وبعدها. */
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin {
+  flex-basis: 50px;
+  width: 50px;
+  height: 50px;
+}
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin-rotor::before { left: 23px; height: 50px; }
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin .league-carousel-badge { width: 100%; height: 100%; box-sizing: border-box; }
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details .hs-crown-league-coin .league-carousel-fallback { width: 50%; height: 50%; }
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-details :is(.hs-crown-slide-league, .hs-crown-drawer-league-name) { font-size: clamp(1.05rem, 2vw, 1.25rem); }
+
+/* الخيارات الإضافية والأيام أسفل شريط الرياضة؛ تبقى البطولات والمباراة في القائمة الجانبية. */
+.hs-crown-shell:not(.is-news-open) { grid-template-areas: "browser browser" "top-options top-options" "stage sidebar" "controls sidebar"; }
+.hs-crown-top-options {
+  grid-area: top-options; min-width: 0; display: flex; align-items: center; gap: 6px;
+  overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin;
+  padding: 7px; margin-bottom: 12px; border: 1px solid rgba(11,11,15,.1); border-radius: 14px; background: #fff;
+}
+.hs-crown-top-options .hs-crown-tabs, .hs-crown-top-options .hs-day-tabs {
+  position: static; transform: none; display: flex; flex: 0 0 auto; width: auto; max-width: none;
+  gap: 4px; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none;
+}
+.hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { flex: 0 0 auto; width: auto; min-height: 38px; }
+.hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content { flex-direction: row; min-height: 32px; padding-inline: 8px; gap: 5px; white-space: nowrap; font-size: .72rem; }
+.hs-crown-top-options .hs-day-clear { flex: 0 0 auto; white-space: nowrap; }
+.hs-crown-top-options .hs-day-warning { flex: 0 0 220px; margin: 0; }
+@media (max-width: 700px) {
+  .hs-crown-shell:not(.is-news-open) { grid-template-areas: "browser" "top-options" "stage" "controls" "sidebar"; }
+  .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content { font-size: .68rem; padding-inline: 7px; }
+}
+
+/* على الهاتف يحل زرا البطولات والمباراة محل عنوان شريط المتصفح فقط. */
+@media (max-width: 700px) {
+  .hs-crown-shell:not(.is-news-open) { grid-template-areas: "browser" "top-options" "stage" "controls"; }
+  .hs-crown-browser-title { visibility: hidden; }
+  .hs-crown-sidebar {
+    grid-area: browser;
+    z-index: 2;
+    align-self: start;
+    justify-self: stretch;
+    min-height: 48px;
+    box-sizing: border-box;
+    margin-inline: 58px 45px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+    justify-content: center;
+  }
+  .hs-crown-sidebar-heading { display: none; }
+  .hs-crown-sidebar .hs-crown-tabs { justify-content: center; overflow: visible; padding: 0; }
+  .hs-crown-sidebar .hs-crown-tabs > button { min-height: 34px; }
+  .hs-crown-sidebar .hs-crown-tabs .hs-crown-tab-content { min-height: 30px; }
+}
+
+/* التذكرة الأصلية للأخبار داخل المساحة الجانبية على الشاشات الكبيرة. */
+.hs-crown-sidebar-news { min-width: 0; width: 100%; }
+.hs-crown-sidebar-news .league-ticket-track { height: 265px; }
+.hs-crown-sidebar-news .league-ticket--in-track { min-width: 0; }
+
+/* علامات الموقع في أقصى أعلى يسار بطاقتي ما قبل المباراة وما بعدها. */
+.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"]) > .hs-crown-match {
+  padding-top: 30px;
+}
+.hs-crown-card[data-crown-offset="0"]:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-scheduled-when {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  z-index: 1;
+}
+
+/* إخفاء الخط الزخرفي السفلي قبل المباراة وبعدها فقط. */
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) > .hs-crown-split,
+.hs-crown-card:is([data-crown-state="scheduled"], [data-crown-state="finished"]) .hs-crown-tint::after {
+  display: none;
+}
+
+/* توسيط شعار البطولة الخلفي على الجزء السفلي الذي يمثل أرضية الملعب. */
+.hs-crown-card .hs-crown-match-art[data-match-league-background] {
+  top: 51%;
+}
+.hs-crown-card .hs-crown-match-art[data-match-league-background] .league-carousel-badge {
+  width: auto;
+  height: min(132px, 90%);
+  aspect-ratio: 1;
+}
+
+/* Quiet section label between tournament navigation and the highlighted match cards. */
+.hs-crown-featured-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(100%, 1120px);
+  margin: 8px auto -2px;
+  padding-inline: 4px;
+  color: #0b0b0f;
+}
+.hs-crown-featured-heading h3 {
+  margin: 0;
+  font: 900 14px/1.4 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: -.02em;
+}
+.hs-crown-featured-heading > span {
+  color: rgba(11,11,15,.48);
+  font: 700 10px/1.4 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .hs-crown-featured-heading { margin-top: 5px; }
+  .hs-crown-featured-heading h3 { font-size: 12px; }
+  .hs-crown-featured-heading > span { font-size: 9px; }
+}
+
+/* Clear previous/next controls for the match-only carousel. */
+.hs-crown-controls .hs-crown-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: auto;
+  min-width: 78px;
+  height: 32px;
+  padding: 0 10px;
+  font: 800 11px/1 "Cairo", "Tajawal", sans-serif;
+}
+.hs-crown-controls .hs-crown-arrow > span[aria-hidden="true"] { font-size: 15px; }
+.hs-crown-controls .hs-crown-arrow:disabled { opacity: .45; cursor: not-allowed; }
+.hs-crown-featured-heading { scroll-margin-top: 90px; }
+.hs-day-empty a {
+  display: inline-flex;
+  margin-top: 8px;
+  padding: 7px 12px;
+  border: 1px solid rgba(11,11,15,.15);
+  border-radius: 999px;
+  background: #fff;
+  color: #0b0b0f;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* Wide match showcase inspired by the reference product carousel:
+   one complete match fills the stage, with explicit navigation below it. */
+#hero .hero-crown-strip {
+  max-width: 1200px;
+  margin: clamp(30px, 5vw, 60px) auto 0;
+}
+#hero .hero-crown-strip .hs-crown-shell:not(.is-news-open) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: clamp(12px, 2.1vw, 24px);
+  border: 1px solid rgba(11,11,15,.09);
+  border-radius: clamp(20px, 3vw, 30px);
+  background: linear-gradient(150deg, #fff 0%, #faf9f6 70%, #f3f2ec 100%);
+  box-shadow: 0 26px 65px -46px rgba(11,11,15,.38), inset 0 1px 0 #fff;
+  overflow: visible;
+}
+#hero .hero-crown-strip .hs-crown-browser,
+#hero .hero-crown-strip .hs-crown-sidebar { display: none; }
+#hero .hero-crown-strip .hs-horizontal-strip { order: 1; margin-bottom: 18px; }
+#hero .hero-crown-strip .hs-crown-featured-heading { order: 2; width: 100%; margin: 0 auto 12px; }
+#hero .hero-crown-strip .hs-crown-center {
+  order: 3;
+  width: 100%;
+  max-width: none;
+  height: clamp(300px, 34vw, 410px) !important;
+  min-height: 300px;
+  margin: 0 !important;
+  padding: 0;
+  overflow: visible;
+  perspective: none;
+  cursor: default;
+}
+#hero .hero-crown-strip .hs-crown-center .hs-crown-card--match {
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px) scale(.99);
+  transition: opacity .32s ease, transform .42s cubic-bezier(.2,.75,.2,1), visibility .32s;
+}
+#hero .hero-crown-strip .hs-crown-center .hs-crown-card--match[data-crown-offset="0"] {
+  z-index: 2;
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  justify-content: center;
+  gap: clamp(14px, 3vw, 28px);
+  padding: clamp(22px, 4vw, 48px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(216,255,62,.15), transparent 52%),
+    linear-gradient(140deg, #11131b 0%, #202431 56%, #101217 100%);
+  color: #fff;
+  box-shadow: 0 24px 55px -32px rgba(11,11,15,.6), inset 0 1px 0 rgba(255,255,255,.1);
+}
+#hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 17px;
+  pointer-events: none;
+}
+#hero .hero-crown-strip .hs-crown-match-art { opacity: .12; }
+#hero .hero-crown-strip .hs-crown-match-art .league-carousel-badge,
+#hero .hero-crown-strip .hs-crown-match-art .league-carousel-logo { width: min(56vw, 440px); height: min(56vw, 440px); }
+#hero .hero-crown-strip .hs-crown-match-heading {
+  min-height: 0;
+  color: rgba(255,255,255,.68);
+  font: 800 clamp(12px, 1.5vw, 15px)/1.4 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .02em;
+}
+#hero .hero-crown-strip .hs-crown-match-teams {
+  width: min(100%, 900px);
+  grid-template-columns: minmax(0,1fr) minmax(90px,.42fr) minmax(0,1fr);
+  align-self: center;
+  gap: clamp(10px, 4vw, 48px);
+}
+#hero .hero-crown-strip .hs-crown-match-team {
+  gap: 12px;
+  color: #fff;
+  font-size: clamp(16px, 2.1vw, 25px);
+  line-height: 1.35;
+  text-shadow: 0 2px 10px rgba(0,0,0,.32);
+}
+#hero .hero-crown-strip .hs-crown-match-team strong { max-width: 100%; text-wrap: balance; }
+#hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest,
+#hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest--mono {
+  width: clamp(56px, 9vw, 96px);
+  height: clamp(56px, 9vw, 96px);
+  padding: 7px;
+  border-radius: 22px;
+  object-fit: contain;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.13);
+  box-shadow: 0 12px 30px rgba(0,0,0,.2);
+}
+#hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest--mono { color: #d8ff3e; font-size: 20px; }
+#hero .hero-crown-strip .hs-crown-match-result { gap: 8px; color: #d8ff3e; font-size: clamp(24px, 4vw, 48px); }
+#hero .hero-crown-strip .hs-crown-match-result small { color: rgba(255,255,255,.62); font-size: clamp(11px, 1.4vw, 15px); }
+#hero .hero-crown-strip .hs-crown-match-status { color: rgba(255,255,255,.7); font-size: clamp(11px, 1.25vw, 14px); }
+#hero .hero-crown-strip .hs-crown-match-status.is-live { color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-match .league-ticket-countdown { gap: 7px; }
+#hero .hero-crown-strip .hs-crown-match .ticket-flip__digit { width: 22px; height: 34px; font-size: 22px; }
+#hero .hero-crown-strip .hs-crown-match .ticket-flip__txt { font-size: 22px; line-height: 34px; }
+#hero .hero-crown-strip .hs-crown-match-brands { height: auto; gap: 12px; }
+#hero .hero-crown-strip .hs-crown-match-brands img { width: 34px; max-height: 20px; }
+#hero .hero-crown-strip .hs-crown-card--match > .hs-crown-split { display: none; }
+#hero .hero-crown-strip .hs-crown-controls {
+  order: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px auto 0;
+  padding: 7px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.82);
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow {
+  min-width: 96px;
+  height: 38px;
+  border-color: rgba(11,11,15,.1);
+  border-radius: 999px;
+  background: #0b0b0f;
+  color: #fff;
+  font-size: 12px;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:hover:not(:disabled) { background: #252832; color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-counter { min-width: 48px; font-size: 12px; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay {
+  min-height: 34px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.58);
+  font: 700 10px/1.2 "Cairo", "Tajawal", sans-serif;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-top-options { order: 5; width: 100%; margin: 14px 0 0; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 6; margin-top: 12px; }
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 5; align-self: center; }
+#hero .hero-crown-strip .hs-day-empty {
+  order: 3;
+  width: 100%;
+  min-height: 180px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 22px;
+  background: linear-gradient(140deg, #fff, #f2f1ec);
+  color: rgba(11,11,15,.72);
+}
+@media (max-width: 680px) {
+  #hero .hero-crown-strip { margin-top: 30px; }
+  #hero .hero-crown-strip .hs-crown-shell:not(.is-news-open) { padding: 10px; border-radius: 20px; }
+  #hero .hero-crown-strip .hs-crown-center { height: 330px !important; min-height: 330px; }
+  #hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match { min-height: 330px; padding: 20px 14px; border-radius: 19px; gap: 14px; }
+  #hero .hero-crown-strip .hs-crown-card--match > .hs-crown-match::after { inset: 9px; border-radius: 14px; }
+  #hero .hero-crown-strip .hs-crown-match-teams { grid-template-columns: minmax(0,1fr) 56px minmax(0,1fr); gap: 8px; }
+  #hero .hero-crown-strip .hs-crown-match-team { gap: 9px; font-size: clamp(12px, 3.4vw, 17px); }
+  #hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest,
+  #hero .hero-crown-strip .hs-crown-match-team .league-ticket-crest--mono { width: clamp(48px, 15vw, 70px); height: clamp(48px, 15vw, 70px); padding: 5px; border-radius: 16px; }
+  #hero .hero-crown-strip .hs-crown-match-result { font-size: 24px; }
+  #hero .hero-crown-strip .hs-crown-controls { gap: 5px; margin-top: 12px; padding: 5px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow { min-width: 76px; height: 36px; padding-inline: 8px; font-size: 11px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay { max-width: 86px; font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-center .hs-crown-card--match { transition: none; }
+}
+
+/* Clear product-style action row beneath the selected match carousel. */
+#hero .hero-crown-strip .hs-crown-match-actions {
+  order: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 10px auto 0;
+}
+#hero .hero-crown-strip .hs-crown-match-details,
+#hero .hero-crown-strip .hs-crown-match-all {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: 1px solid rgba(11,11,15,.13);
+  border-radius: 999px;
+  font: 800 12px/1.2 "Cairo", "Tajawal", sans-serif;
+  text-decoration: none;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+#hero .hero-crown-strip .hs-crown-match-details {
+  border-color: #0b0b0f;
+  background: #0b0b0f;
+  color: #fff;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-match-details:hover { background: #222530; border-color: #222530; color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-match-all { background: rgba(255,255,255,.86); color: #0b0b0f; }
+#hero .hero-crown-strip .hs-crown-match-all:hover { background: #fff; border-color: rgba(11,11,15,.3); }
+#hero .hero-crown-strip .hs-crown-top-options { order: 6; }
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 6; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 7; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-actions { gap: 7px; margin-top: 8px; }
+  #hero .hero-crown-strip .hs-crown-match-details,
+  #hero .hero-crown-strip .hs-crown-match-all { min-height: 38px; padding-inline: 15px; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-details,
+  #hero .hero-crown-strip .hs-crown-match-all { transition: none; }
+}
+
+/* Direct model-style selection rail for the featured matches. */
+#hero .hero-crown-strip .hs-crown-match-progress {
+  order: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: min(100%, 620px);
+  margin: 14px auto 0;
+  padding: 0 8px;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button {
+  flex: 1 1 18px;
+  min-width: 12px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(11,11,15,.14);
+  transition: height .2s ease, background .2s ease;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:hover span { background: rgba(43,78,255,.5); }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active span {
+  height: 5px;
+  background: linear-gradient(90deg, #2b4eff, #d8ff3e);
+  box-shadow: 0 0 12px rgba(43,78,255,.2);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 1px;
+  border-radius: 5px;
+}
+#hero .hero-crown-strip .hs-crown-controls { order: 5; }
+#hero .hero-crown-strip .hs-crown-match-actions { order: 6; }
+#hero .hero-crown-strip .hs-crown-top-options,
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 7; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 8; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-progress { justify-content: flex-start; gap: 4px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+  #hero .hero-crown-strip .hs-crown-match-progress::-webkit-scrollbar { display: none; }
+  #hero .hero-crown-strip .hs-crown-match-progress button { flex: 0 0 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-progress button span { transition: none; }
+}
+
+/* Match chooser: a compact, numbered selector inspired by a premium product configurator. */
+#hero .hero-crown-strip .hs-crown-match-picker {
+  order: 4;
+  width: min(100%, 980px);
+  margin: 16px auto 0;
+}
+#hero .hero-crown-strip .hs-crown-match-picker-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 2px 8px;
+  color: rgba(11,11,15,.62);
+  font: 800 10px/1.3 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .05em;
+}
+#hero .hero-crown-strip .hs-crown-match-picker-heading > :last-child {
+  color: #0b0b0f;
+  font: 700 11px/1 "Space Grotesk", "Cairo", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-picker-heading i { margin: 0 4px; color: rgba(11,11,15,.35); font-style: normal; }
+#hero .hero-crown-strip .hs-crown-match-progress {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(180px, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 2px 2px 8px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(11,11,15,.24) transparent;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  gap: 7px 9px;
+  min-width: 0;
+  min-height: 74px;
+  padding: 11px 12px;
+  overflow: hidden;
+  border: 1px solid rgba(11,11,15,.11);
+  border-radius: 14px;
+  background: rgba(255,255,255,.74);
+  color: #0b0b0f;
+  text-align: start;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-picker-index {
+  grid-column: 1;
+  grid-row: 1;
+  color: rgba(11,11,15,.45);
+  font: 700 10px/1 "Space Grotesk", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-picker-league {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(11,11,15,.57);
+  font: 700 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-picker-teams {
+  grid-column: 1 / 4;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-picker-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-picker-side:last-child { justify-content: flex-end; }
+#hero .hero-crown-strip .hs-crown-picker-side img {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.12));
+}
+#hero .hero-crown-strip .hs-crown-picker-side strong {
+  overflow: hidden;
+  font: 800 10px/1.35 "Cairo", "Tajawal", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-picker-teams i { color: rgba(11,11,15,.38); font: 700 8px/1 "Space Grotesk", sans-serif; font-style: normal; letter-spacing: .05em; }
+#hero .hero-crown-strip .hs-crown-picker-indicator {
+  grid-column: 3;
+  grid-row: 1;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(11,11,15,.16);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:hover { border-color: rgba(11,11,15,.32); background: #fff; }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+  box-shadow: 0 8px 22px -16px rgba(11,11,15,.6);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-index,
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-league { color: rgba(255,255,255,.64); }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-teams i { color: #d8ff3e; }
+#hero .hero-crown-strip .hs-crown-match-progress button.is-active .hs-crown-picker-indicator {
+  background: #d8ff3e;
+  box-shadow: 0 0 0 4px rgba(216,255,62,.13);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button:focus-visible {
+  outline: 2px solid #2b4eff;
+  outline-offset: 2px;
+}
+#hero .hero-crown-strip .hs-crown-controls { order: 5; }
+#hero .hero-crown-strip .hs-crown-match-actions { order: 6; }
+#hero .hero-crown-strip .hs-crown-top-options,
+#hero .hero-crown-strip .hs-crown-clear-league-filter { order: 7; }
+#hero .hero-crown-strip .hs-league-stats-ticker { order: 8; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-picker { margin-top: 12px; }
+  #hero .hero-crown-strip .hs-crown-match-progress { grid-auto-columns: minmax(164px, 72vw); gap: 7px; }
+  #hero .hero-crown-strip .hs-crown-match-progress button { min-height: 68px; padding: 9px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-progress button { transition: none; }
+}
+
+/* Visually connect the league and match stages like a refined guided selector. */
+#hero .hero-crown-strip .hs-crown-featured-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+#hero .hero-crown-strip .hs-crown-step-number {
+  display: inline-grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(11,11,15,.16);
+  border-radius: 50%;
+  background: #d8ff3e;
+  color: #11131b;
+  font: 700 10px/1 "Space Grotesk", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-featured-title {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  text-align: start;
+}
+#hero .hero-crown-strip .hs-crown-featured-title small {
+  color: rgba(11,11,15,.48);
+  font: 700 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .04em;
+}
+#hero .hero-crown-strip .hs-crown-featured-title h3 { margin: 0; }
+#hero .hero-crown-strip .hs-crown-featured-count { margin-inline-start: auto; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-featured-heading { gap: 8px; }
+  #hero .hero-crown-strip .hs-crown-step-number { flex-basis: 27px; width: 27px; height: 27px; }
+}
+
+/* A split docking rail places the two directions at opposite ends of the match width. */
+#hero .hero-crown-strip .hs-crown-controls {
+  order: 5;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: clamp(10px, 2vw, 24px);
+  width: min(100%, 980px);
+  margin: 16px auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  direction: ltr;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  width: max-content;
+  min-width: 126px;
+  height: 48px;
+  padding: 5px 7px;
+  border: 1px solid rgba(11,11,15,.12);
+  border-radius: 999px;
+  background: #fff;
+  color: #11131b;
+  font: 800 11px/1 "Cairo", "Tajawal", sans-serif;
+  direction: rtl;
+  box-shadow: 0 8px 20px -18px rgba(11,11,15,.45);
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow--next { grid-column: 1; justify-self: start; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow--prev { grid-column: 3; justify-self: end; }
+#hero .hero-crown-strip .hs-crown-arrow-glyph {
+  display: inline-grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #11131b;
+  color: #d8ff3e;
+  font: 700 19px/1 "Cairo", sans-serif;
+  transition: background .18s ease, color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:hover:not(:disabled) {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+  box-shadow: 0 10px 22px -16px rgba(11,11,15,.72);
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:hover:not(:disabled) .hs-crown-arrow-glyph { background: #d8ff3e; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:disabled { opacity: .42; cursor: not-allowed; }
+#hero .hero-crown-strip .hs-crown-controls-center {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 112px;
+  direction: rtl;
+}
+#hero .hero-crown-strip .hs-crown-controls-center::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: #d8ff3e;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-counter {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  color: #11131b;
+  font: 700 15px/1 "Space Grotesk", "Cairo", sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-counter i { color: rgba(11,11,15,.34); font-size: 10px; font-style: normal; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 0 9px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.68);
+  color: rgba(11,11,15,.58);
+  font: 700 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-autoplay-mark { color: #11131b; font: 800 8px/1 Arial, sans-serif; }
+#hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay:hover { border-color: rgba(11,11,15,.24); background: #fff; color: #11131b; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-controls { gap: 5px; margin-top: 12px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow { min-width: 0; height: 42px; gap: 5px; padding: 4px; font-size: 10px; }
+  #hero .hero-crown-strip .hs-crown-arrow-glyph { flex-basis: 32px; width: 32px; height: 32px; }
+  #hero .hero-crown-strip .hs-crown-controls-center { min-width: 88px; gap: 4px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-counter { font-size: 13px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-autoplay { min-height: 23px; padding-inline: 6px; font-size: 8px; }
+}
+@media (max-width: 390px) {
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow:not(:disabled) { max-width: 92px; }
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow span:not(.hs-crown-arrow-glyph) { font-size: 9px; }
+  #hero .hero-crown-strip .hs-crown-controls-center { min-width: 76px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-controls .hs-crown-arrow,
+  #hero .hero-crown-strip .hs-crown-arrow-glyph { transition: none; }
+}
+
+/* Second control deck: league intelligence and date filters become two intentional groups. */
+#hero .hero-crown-strip .hs-crown-top-options {
+  order: 7;
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  align-items: center;
+  gap: clamp(12px, 2vw, 22px);
+  width: min(100%, 980px);
+  margin: 18px auto 0;
+  padding: 14px clamp(12px, 2vw, 20px);
+  overflow: visible;
+  border: 1px solid rgba(11,11,15,.1);
+  border-radius: 18px;
+  background: linear-gradient(125deg, rgba(255,255,255,.94), rgba(246,245,239,.88));
+  box-shadow: 0 12px 28px -24px rgba(11,11,15,.45), inset 0 1px 0 #fff;
+}
+#hero .hero-crown-strip .hs-crown-option-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-option-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(11,11,15,.55);
+  font: 800 9px/1.3 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .035em;
+}
+#hero .hero-crown-strip .hs-crown-option-label i {
+  display: inline-grid;
+  width: 19px;
+  height: 19px;
+  place-items: center;
+  border-radius: 50%;
+  background: #11131b;
+  color: #d8ff3e;
+  font: 700 8px/1 "Space Grotesk", sans-serif;
+  font-style: normal;
+}
+#hero .hero-crown-strip .hs-crown-option-divider {
+  align-self: stretch;
+  width: 1px;
+  min-height: 54px;
+  background: linear-gradient(transparent, rgba(11,11,15,.14), transparent);
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) {
+  position: static;
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  gap: 3px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 999px;
+  background: rgba(11,11,15,.035);
+  box-shadow: none;
+  transform: none;
+  scrollbar-width: none;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs)::-webkit-scrollbar { display: none; }
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 38px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.7);
+  box-shadow: none;
+  white-space: nowrap;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button:hover { background: #fff; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 29px;
+  padding: 0;
+  color: inherit;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-top-options .hs-crown-tab-icon {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: 50%;
+  background: rgba(11,11,15,.06);
+  color: inherit;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button[aria-pressed="true"] .hs-crown-tab-icon {
+  background: #d8ff3e;
+  color: #11131b;
+}
+#hero .hero-crown-strip .hs-crown-day-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-tabs { flex: 1 1 auto; }
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-clear {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid rgba(11,11,15,.12);
+  border-radius: 999px;
+  background: #fff;
+  color: rgba(11,11,15,.64);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-clear:hover { border-color: #11131b; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-top-options .hs-day-tabs > button:last-child[aria-pressed="true"] {
+  border-color: #b4233d;
+  background: #b4233d;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-top-options .hs-day-tabs > button:last-child[aria-pressed="true"] .hs-crown-tab-icon { background: #fff; color: #b4233d; }
+#hero .hero-crown-strip .hs-crown-top-options .hs-day-warning {
+  flex: 0 0 auto;
+  margin: 0;
+  color: #9a4b1e;
+  font: 700 8px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button:focus-visible,
+#hero .hero-crown-strip .hs-crown-day-tools .hs-day-clear:focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
+@media (max-width: 760px) {
+  #hero .hero-crown-strip .hs-crown-top-options {
+    grid-template-columns: minmax(0,1fr);
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+  #hero .hero-crown-strip .hs-crown-option-group { gap: 6px; }
+  #hero .hero-crown-strip .hs-crown-option-divider { width: 100%; min-height: 1px; height: 1px; background: linear-gradient(90deg, transparent, rgba(11,11,15,.12), transparent); }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) { width: 100%; }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { flex: 1 0 auto; }
+}
+@media (max-width: 390px) {
+  #hero .hero-crown-strip .hs-crown-top-options { padding: 10px; }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { padding-inline: 7px; }
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) .hs-crown-tab-content { gap: 4px; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-top-options :is(.hs-crown-tabs, .hs-day-tabs) > button { transition: none; }
+}
+
+/* A featured editorial ticket shares the exact same carousel stage as match cards. */
+#hero .hero-crown-strip .hs-crown-card--news > .hs-crown-news-ticket-shell {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  background: #11131b;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-news-ticket-shell > .league-ticket {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  border: 0;
+  border-radius: inherit;
+}
+#hero .hero-crown-strip .hs-crown-news-ticket-shell > .league-ticket > a { border-radius: inherit; }
+#hero .hero-crown-strip .hs-crown-card--news .league-ticket-ray { opacity: .22; }
+#hero .hero-crown-strip .hs-crown-card--news .league-ticket-line { opacity: .3; }
+#hero .hero-crown-strip .hs-crown-card--news .league-ticket-bg { border-radius: inherit; }
+#hero .hero-crown-strip .hs-crown-match-picker .hs-crown-picker-teams--news {
+  grid-template-columns: minmax(0,1fr);
+  grid-column: 1 / 4;
+  gap: 0;
+}
+#hero .hero-crown-strip .hs-crown-match-picker .hs-crown-picker-teams--news strong {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.is-news .hs-crown-picker-indicator { border-radius: 2px; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-card--news > .hs-crown-news-ticket-shell { min-height: 330px; border-radius: 19px; }
+}
+
+/* Shared content switch keeps the match stage and its tournament/news rail in sync. */
+#hero .hero-crown-strip .hs-crown-featured-mode {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: auto;
+  padding: 3px;
+  border: 1px solid rgba(11,11,15,.1);
+  border-radius: 999px;
+  background: rgba(11,11,15,.045);
+}
+#hero .hero-crown-strip .hs-crown-featured-mode button {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.62);
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+#hero .hero-crown-strip .hs-crown-featured-mode button[aria-pressed="true"] {
+  background: #11131b;
+  color: #d8ff3e;
+  box-shadow: 0 2px 8px rgba(11,11,15,.14);
+}
+#hero .hero-crown-strip .hs-crown-featured-mode button:focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-featured-heading { flex-wrap: wrap; }
+  #hero .hero-crown-strip .hs-crown-featured-mode { margin-inline-start: auto; }
+  #hero .hero-crown-strip .hs-crown-featured-mode button { min-height: 27px; padding-inline: 9px; font-size: 8px; }
+  #hero .hero-crown-strip .hs-crown-featured-count { flex-basis: 100%; text-align: end; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-featured-mode button { transition: none; }
+}
+
+/* In news mode, keep every story in one intentional horizontal picker rail. */
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 236px);
+  grid-template-columns: none;
+  justify-content: start;
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  padding: 3px 2px 9px;
+  scroll-snap-type: inline mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(11,11,15,.3) transparent;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button {
+  min-width: 0;
+  min-height: 78px;
+  scroll-snap-align: start;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button.is-news {
+  border-color: rgba(11,11,15,.1);
+  background: linear-gradient(145deg, #fff, #f3f1e9);
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button.is-news.is-active {
+  border-color: #11131b;
+  background: #11131b;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker .hs-crown-picker-index {
+  display: inline-grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(11,11,15,.07);
+  color: #11131b;
+}
+#hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button.is-active .hs-crown-picker-index {
+  background: #d8ff3e;
+  color: #11131b;
+}
+@media (max-width: 600px) {
+  #hero .hero-crown-strip .hs-crown-match-progress.is-news-picker { grid-auto-columns: minmax(190px, 76vw); }
+  #hero .hero-crown-strip .hs-crown-match-progress.is-news-picker button { min-height: 76px; padding: 8px; }
+}
+
+/* Hide the legacy standalone news ticket beneath the showcase on mobile; news now lives inside the shared featured-content switch. */
+@media (max-width: 700px) {
+  #hero [data-home-news-below] { display: none !important; }
+}
+
+/* Date shortcuts sit inside the featured-match header instead of a detached options panel. */
+#hero .hero-crown-strip .hs-crown-featured-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+}
+#hero .hero-crown-strip .hs-crown-featured-heading-main {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(11,11,15,.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.64);
+}
+#hero .hero-crown-strip .hs-crown-featured-date-label {
+  flex: 0 0 auto;
+  color: rgba(11,11,15,.52);
+  font: 800 9px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs {
+  position: static;
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 3px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid rgba(11,11,15,.09);
+  border-radius: 999px;
+  background: rgba(11,11,15,.04);
+  box-shadow: none;
+  transform: none;
+  scrollbar-width: none;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs::-webkit-scrollbar { display: none; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 34px;
+  padding: 2px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(11,11,15,.67);
+  box-shadow: none;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button:hover { background: #fff; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button[aria-pressed="true"] {
+  border-color: #11131b;
+  background: #11131b;
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs .hs-crown-tab-content {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 0;
+  color: inherit;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-crown-tab-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgba(11,11,15,.06);
+  color: inherit;
+}
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button[aria-pressed="true"] .hs-crown-tab-icon { background: #d8ff3e; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button:last-child[aria-pressed="true"] { border-color: #b4233d; background: #b4233d; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button:last-child[aria-pressed="true"] .hs-crown-tab-icon { background: #fff; color: #b4233d; }
+#hero .hero-crown-strip .hs-crown-featured-clear {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(11,11,15,.12);
+  border-radius: 999px;
+  background: #fff;
+  color: rgba(11,11,15,.68);
+  font: 700 8px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+#hero .hero-crown-strip .hs-crown-featured-clear:hover { border-color: #11131b; color: #11131b; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-warning { flex: 0 0 auto; margin: 0; font-size: 8px; }
+#hero .hero-crown-strip .hs-crown-featured-date-tools :is(.hs-day-tabs > button, .hs-crown-featured-clear):focus-visible { outline: 2px solid #2b4eff; outline-offset: 2px; }
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-featured-heading-main { flex-wrap: wrap; gap: 8px; }
+  #hero .hero-crown-strip .hs-crown-featured-count { flex-basis: auto; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools { gap: 6px; padding: 7px; }
+  #hero .hero-crown-strip .hs-crown-featured-date-label { flex-basis: 100%; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs { width: 100%; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools .hs-day-tabs > button { flex: 1 0 auto; padding-inline: 7px; }
+  #hero .hero-crown-strip .hs-crown-featured-date-tools .hs-crown-tab-content { gap: 3px; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-featured-date-tools :is(.hs-day-tabs > button, .hs-crown-featured-clear) { transition: none; }
+}
+
+/* Match card refresh: a clean broadcast-style score board, replacing the
+   translucent pitch treatment on the selected homepage match. */
+#hero .hero-crown-strip .hs-crown-center:has(.hs-crown-card--match[data-crown-offset="0"]) {
+  height: 252px;
+}
+#hero .hero-crown-strip .hs-crown-center .hs-crown-card--match[data-crown-offset="0"] {
+  overflow: visible;
+  border: 1px solid rgba(19, 33, 44, .12);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 28px 60px -34px rgba(5, 18, 28, .6), 0 3px 12px rgba(5, 18, 28, .08);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard {
+  min-height: 252px;
+  justify-content: center;
+  gap: 15px;
+  padding: 22px clamp(18px, 4vw, 42px) 18px;
+  border: 0;
+  border-radius: 27px;
+  background: linear-gradient(145deg, #fff 0%, #f5f7f6 100%);
+  color: #14232d;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 6px;
+  border-radius: 27px 27px 0 0;
+  background: linear-gradient(90deg, #d8ff3e 0 26%, #13232d 26% 100%);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard::after {
+  content: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-art {
+  opacity: .035;
+  filter: grayscale(1);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-heading {
+  display: flex;
+  min-height: 24px;
+  color: #50606a;
+  font: 800 11px/1.3 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 11px 3px 5px;
+  border: 1px solid rgba(19, 35, 45, .1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-league-badge > .league-carousel-badge {
+  flex: 0 0 auto;
+  border-color: rgba(19, 35, 45, .08);
+  border-radius: 50%;
+  background: #fff;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-league-badge > span:last-child {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #334a57;
+  font: 800 10px/1.25 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-teams {
+  width: min(100%, 760px);
+  grid-template-columns: minmax(0, 1fr) minmax(126px, .55fr) minmax(0, 1fr);
+  gap: clamp(12px, 4vw, 42px);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team {
+  gap: 8px;
+  color: #172832;
+  font: 800 clamp(14px, 1.8vw, 20px)/1.3 "Cairo", "Tajawal", sans-serif;
+  text-shadow: none;
+  transform: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team::before {
+  content: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest,
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest--mono {
+  width: clamp(56px, 7vw, 76px);
+  height: clamp(56px, 7vw, 76px);
+  padding: 11px;
+  border: 1px solid rgba(19, 35, 45, .09);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(18, 35, 45, .09);
+  object-fit: contain;
+  filter: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest--mono {
+  display: grid;
+  place-items: center;
+  color: #59700b;
+  font-size: 20px;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result {
+  align-items: center;
+  gap: 7px;
+  color: #14232d;
+  font: 900 clamp(22px, 3.2vw, 38px)/1 "Space Grotesk", "Cairo", sans-serif;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result-caption {
+  color: #77858d;
+  font: 800 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  letter-spacing: .04em;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-state-badge {
+  max-width: min(100%, 190px);
+  font: 900 10px/1.2 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result > strong {
+  display: flex;
+  min-width: 112px;
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  border: 1px solid rgba(19, 35, 45, .08);
+  border-radius: 18px;
+  background: #13232d;
+  color: #d8ff3e;
+  box-shadow: 0 8px 18px rgba(19, 35, 45, .16);
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result small {
+  display: block;
+  color: #7b898f;
+  font: 700 10px/1.3 "Cairo", "Tajawal", sans-serif;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-status {
+  max-width: min(100%, 620px);
+  color: #62727a;
+  font: 700 10px/1.45 "Cairo", "Tajawal", sans-serif;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-status.is-live {
+  color: #a42436;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match .league-ticket-countdown {
+  justify-content: center;
+  gap: 5px;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match .ticket-flip__digit {
+  border-radius: 6px;
+  background: #13232d;
+  color: #d8ff3e;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band {
+  border: 1px solid rgba(19, 35, 45, .08);
+  background: #13232d;
+  color: #fff;
+  text-shadow: none;
+  box-shadow: 0 14px 28px -18px rgba(7, 20, 29, .45);
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--top {
+  border-radius: 0 0 0 20px;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--bottom {
+  border-radius: 0 0 20px 0;
+  background: #f1f4f2;
+  color: #172832;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band .hs-crown-slide-league,
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band .hs-crown-slide-when,
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band .hs-crown-drawer-league-name {
+  color: inherit;
+  text-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-chip {
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"][data-crown-state="live"] .hs-crown-slide-chip {
+  background: #b4233d;
+  color: #fff;
+}
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-center:has(.hs-crown-card--match[data-crown-offset="0"]) {
+    height: 300px !important;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] > .hs-crown-match--scoreboard {
+    min-height: 300px;
+    padding: 27px 14px 18px;
+    gap: 17px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-teams {
+    grid-template-columns: minmax(0, 1fr) 78px minmax(0, 1fr);
+    gap: 6px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team {
+    gap: 9px;
+    font-size: clamp(12px, 3.5vw, 16px);
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest,
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-team .league-ticket-crest--mono {
+    width: clamp(48px, 14vw, 64px);
+    height: clamp(48px, 14vw, 64px);
+    padding: 8px;
+    border-radius: 18px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-state-badge {
+    max-width: 100%;
+    padding: 3px 6px;
+    font-size: 8px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-match-result > strong {
+    min-width: 76px;
+    min-height: 50px;
+    padding: 6px 8px;
+    border-radius: 15px;
+    font-size: 22px;
+  }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--top { padding-inline: 4px; }
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] .hs-crown-slide-band--bottom { padding-inline: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-card--match[data-crown-offset="0"] { transition: none; }
+}
+
+/* Match picker cards: compact fixture tiles that echo the new scoreboard. */
+#hero .hero-crown-strip .hs-crown-match-progress:not(.is-news-picker) {
+  direction: rtl;
+  justify-content: start;
+  grid-auto-columns: minmax(220px, 1fr);
+  scrollbar-color: rgba(19, 35, 45, .35) transparent;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) {
+  direction: rtl;
+  grid-template-columns: 28px minmax(0, 1fr) 8px;
+  grid-template-rows: 22px minmax(48px, 1fr) auto;
+  align-content: center;
+  gap: 7px 8px;
+  min-height: 122px;
+  padding: 11px 12px;
+  border: 1px solid rgba(19, 35, 45, .12);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f2f5f3 100%);
+  color: #172832;
+  box-shadow: 0 5px 14px rgba(19, 35, 45, .055);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) span {
+  display: flex;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news):hover {
+  transform: translateY(-2px);
+  border-color: rgba(19, 35, 45, .3);
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(19, 35, 45, .1);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-index {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 8px;
+  background: #e9eeeb;
+  color: #52636b;
+  font: 800 9px/1 "Space Grotesk", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-league {
+  grid-column: 2;
+  grid-row: 1;
+  color: #75838a;
+  font: 800 9px/1.25 "Cairo", "Tajawal", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-indicator {
+  display: block;
+  grid-column: 3;
+  grid-row: 1;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #aab5b0;
+  box-shadow: none;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-teams {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
+  gap: 5px;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  color: #596a71;
+  font: 700 9px/1.2 "Cairo", "Tajawal", sans-serif;
+  white-space: nowrap;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: inherit;
+  font: inherit;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status strong::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #90a09b;
+  content: "";
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status.is-live strong { color: #c52840; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status.is-live strong::before { background: #e53950; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status.is-finished strong::before { background: #76867f; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-status b {
+  color: #172832;
+  font: 800 10px/1 "Space Grotesk", "Cairo", sans-serif;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side {
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side:last-child {
+  justify-content: center;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side img {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  border: 1px solid rgba(19, 35, 45, .08);
+  border-radius: 9px;
+  box-shadow: 0 2px 5px rgba(19, 35, 45, .08);
+  filter: none;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side strong {
+  width: 100%;
+  color: #172832;
+  font: 800 9px/1.25 "Cairo", "Tajawal", sans-serif;
+  text-align: center;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-teams i {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid rgba(19, 35, 45, .1);
+  border-radius: 50%;
+  background: #fff;
+  color: #7b8a90;
+  font-size: 7px;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active {
+  transform: translateY(-2px);
+  border-color: #13232d;
+  background: linear-gradient(145deg, #1a303d 0%, #10222d 100%);
+  color: #fff;
+  box-shadow: 0 12px 24px -12px rgba(19, 35, 45, .6), inset 0 0 0 1px rgba(216, 255, 62, .35);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-index {
+  background: #d8ff3e;
+  color: #13232d;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-league {
+  color: rgba(255, 255, 255, .68);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-side strong {
+  color: #fff;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status,
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status b { color: rgba(255, 255, 255, .82); }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status.is-live strong { color: #ff8794; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-status.is-live strong::before { background: #ff6578; }
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news).is-active .hs-crown-picker-teams i {
+  border-color: rgba(216, 255, 62, .4);
+  background: rgba(216, 255, 62, .12);
+  color: #d8ff3e;
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news)[data-picker-state="live"] .hs-crown-picker-indicator {
+  background: #e53950;
+  box-shadow: 0 0 0 4px rgba(229, 57, 80, .12);
+}
+#hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news):focus-visible {
+  outline: 3px solid #d8ff3e;
+  outline-offset: 3px;
+}
+@media (max-width: 680px) {
+  #hero .hero-crown-strip .hs-crown-match-progress:not(.is-news-picker) {
+    grid-auto-columns: minmax(230px, 74vw);
+  }
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) {
+    min-height: 118px;
+    padding: 10px;
+  }
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) .hs-crown-picker-side img {
+    flex-basis: 26px;
+    width: 26px;
+    height: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news) { transition: none; }
+  #hero .hero-crown-strip .hs-crown-match-progress button.hs-crown-picker-card:not(.is-news):hover { transform: none; }
+}

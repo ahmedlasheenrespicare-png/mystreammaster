@@ -18,6 +18,8 @@ interface Props {
   /** وسما الزرّين — يُخصَّصان بحسب محتوى الشريط */
   nextLabel?: string;
   prevLabel?: string;
+  /** في الدوّارة الدائرية المغلقة (360°) يبقى السهمان مفعّلين دائماً للالتفاف المستمر */
+  loop?: boolean;
 }
 
 export default function CarouselControls({
@@ -28,6 +30,7 @@ export default function CarouselControls({
   dotsLabel,
   nextLabel = "الصفحة التالية",
   prevLabel = "الصفحة السابقة",
+  loop = false,
 }: Props) {
   return (
     <div className="league-carousel-controls">
@@ -35,7 +38,7 @@ export default function CarouselControls({
         type="button"
         className="league-carousel-nav"
         onClick={() => onStep(1)}
-        disabled={pages < 2 || page >= pages - 1}
+        disabled={pages < 2 || (!loop && page >= pages - 1)}
         aria-label={nextLabel}
       >
         <IconArrowBack className="w-[18px] h-[18px]" />
@@ -56,7 +59,7 @@ export default function CarouselControls({
         type="button"
         className="league-carousel-nav"
         onClick={() => onStep(-1)}
-        disabled={pages < 2 || page === 0}
+        disabled={pages < 2 || (!loop && page === 0)}
         aria-label={prevLabel}
       >
         <IconArrow className="w-[18px] h-[18px]" />

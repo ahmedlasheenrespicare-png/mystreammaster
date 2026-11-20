@@ -1,0 +1,467 @@
+{
+  "probedAt": "2026-10-28",
+  "base": "https://site.api.espn.com",
+  "tool": "website/scripts/probe-matches-leagues.mjs",
+  "note": "إثبات أن المصدر يخدم معرّف البطولة في جدول المواعيد. لا يثبت الترتيب (بوابته probe-standings.mjs) ولا الأرشيف (بوابته docs/fixtures-archive.md). اليوم يُطلب مفرداً لأن ESPN يرفض نطاق التواريخ — انظر rangeFinding.",
+  "rangeFinding": {
+    "claim": "ESPN لا يقبل نطاق تواريخ في معامل dates؛ الطلب ?dates=YYYYMMDD-YYYYMMDD يُرجع HTTP 400 «Failed to get events endpoint.»",
+    "verifiedOn": [
+      {
+        "league": "eng.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20261020-20261103&limit=500",
+        "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+      },
+      {
+        "league": "caf.champions",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/caf.champions/scoreboard?dates=20261020-20261103&limit=500",
+        "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+      }
+    ],
+    "consequence": "الفشل برمز 400 على نطاق تواريخ ليس علامة على معرّف خاطئ. لذلك يسأل المسبار يوماً واحداً في كل طلب ويدمج النتائج — وهو نفس سلوك scoreboard.php عبر sm_espn_days → single_day_upstream_url."
+  },
+  "probe": [
+    {
+      "league": "caf.champions",
+      "ok": true,
+      "name": "دوري أبطال أفريقيا",
+      "slugEchoedBySource": "caf.champions",
+      "leagueIdAtSource": "2391",
+      "uid": "s:600~l:2391",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 CAF Champions League",
+      "sampledDay": "2026-10-25",
+      "sample": [
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "Simba SC",
+          "away": "15 de Agosto",
+          "score": "3-0",
+          "state": "finished",
+          "venue": "Uhuru Stadium"
+        },
+        {
+          "date": "2026-10-25T15:00Z",
+          "home": "Colombe Sportiv Du Dja Et Lobo",
+          "away": "Teungueth",
+          "state": "finished",
+          "venue": "Stade Omnisport Ahmadou Ahidjo"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2391.png",
+      "currentPhase": "Second Preliminary Round (Oct 16-25) ثم Group (Oct 27-Jan 25)"
+    },
+    {
+      "league": "caf.confed",
+      "ok": true,
+      "name": "كأس الكونفدرالية الأفريقية",
+      "slugEchoedBySource": "caf.confed",
+      "leagueIdAtSource": "18000",
+      "uid": "s:600~l:18000",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 CAF Confederation Cup",
+      "sampledDay": "2026-10-25",
+      "sample": [
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "AS Maniema Union",
+          "away": "Kabuscorp",
+          "score": "4-1",
+          "state": "finished",
+          "venue": "Stade des Martyrs"
+        },
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "ASPL 2000",
+          "away": "Durban City",
+          "state": "finished",
+          "venue": "Cote d'Or National Sports Complex"
+        }
+      ],
+      "leagueLogoAtSource": null,
+      "logoNote": "المصدر يُرجع شعاراً عاماً (default-team-logo-500 عبر combiner) لا شعار بطولة، فلا يُضاف إلى src/lib/league-icons.mjs — البديل المحايد يظهر بدله.",
+      "currentPhase": "Second Preliminary Round (Oct 16-25) ثم Group (Oct 26-Feb 21)"
+    },
+    {
+      "league": "afc.champions",
+      "ok": true,
+      "name": "دوري أبطال آسيا للنخبة",
+      "slugEchoedBySource": "afc.champions",
+      "leagueIdAtSource": "3902",
+      "uid": "s:600~l:3902",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 AFC Champions League Elite",
+      "sampledDay": "2026-10-28",
+      "sample": [
+        {
+          "date": "2026-10-28T10:00Z",
+          "home": "Gamba Osaka",
+          "away": "Buriram United",
+          "state": "scheduled",
+          "venue": "Suita City Football Stadium"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2200.png",
+      "currentPhase": "League Stage (Sep 14-Feb 16) — East/West Region"
+    },
+    {
+      "league": "eng.league_cup",
+      "ok": true,
+      "name": "كأس الرابطة الإنجليزية",
+      "slugEchoedBySource": "eng.league_cup",
+      "leagueIdAtSource": "3920",
+      "uid": "s:600~l:3920",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 English Carabao Cup",
+      "sampledDay": "2026-10-28",
+      "sample": [
+        {
+          "date": "2026-10-28T19:30Z",
+          "home": "Manchester City",
+          "away": "Brighton & Hove Albion",
+          "state": "scheduled",
+          "venue": "Etihad Stadium"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/41.png",
+      "currentPhase": "Fourth Round (Oct 27-29) ثم Quarterfinals (Nov 3-Dec 28)"
+    },
+    {
+      "league": "eng.fa",
+      "ok": true,
+      "name": "كأس الاتحاد الإنجليزي",
+      "slugEchoedBySource": "eng.fa",
+      "leagueIdAtSource": "3918",
+      "uid": "s:600~l:3918",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 English FA Cup",
+      "sampledDay": "2026-11-07",
+      "sample": [
+        {
+          "date": "2026-11-07T15:00Z",
+          "home": "Accrington Stanley",
+          "away": "Wycombe Wanderers",
+          "state": "scheduled",
+          "venue": "Wham Stadium"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/40.png",
+      "currentPhase": "First Round (Nov 6-9) ثم Second Round (Dec 1-Jan 2)",
+      "emptyDaysNote": "يوم 2026-10-28 أعاد مصفوفة أحداث فارغة — وهذا متوقّع لا فشل: الجولة الأولى تبدأ 6 نوفمبر. أُثبت المعرّف بيوم من جولته الأولى بدل الاكتفاء بنافذة فارغة."
+    },
+    {
+      "league": "tur.1",
+      "ok": true,
+      "name": "الدوري التركي",
+      "slugEchoedBySource": "tur.1",
+      "leagueIdAtSource": "3946",
+      "uid": "s:600~l:3946",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 Turkish Super Lig",
+      "sampledDay": "2026-10-25",
+      "sample": [
+        {
+          "date": "2026-10-25T13:00Z",
+          "home": "Konyaspor",
+          "away": "Genclerbirligi",
+          "score": "2-0",
+          "state": "finished",
+          "venue": "Medas Konya Büyüksehir Stadyumu"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/18.png",
+      "currentPhase": "الموسم جارٍ بتقويم يومي (calendarType=day) من 14 أغسطس 2026 إلى 23 مايو 2027",
+      "addedFor": "صفحة نادي طرابزون سبور — /teams/طرابزون-سبور"
+    },
+    {
+      "league": "uefa.europa.conf",
+      "ok": true,
+      "name": "دوري المؤتمر الأوروبي",
+      "slugEchoedBySource": "uefa.europa.conf",
+      "leagueIdAtSource": "20296",
+      "uid": "s:600~l:20296",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 UEFA Conference League",
+      "sampledDay": "2026-11-05",
+      "sample": [
+        {
+          "date": "2026-11-05T17:45Z",
+          "home": "AGF",
+          "away": "Braga",
+          "state": "scheduled",
+          "venue": "Cepheus Park Randers"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/20296.png",
+      "currentPhase": "League Phase (Oct 15-Dec 17) ثم Knockout Round Playoffs (Dec 19-Feb 26)",
+      "slugNote": "المعرّف uefa.europa.conf لا uefa.europa_conf — الأخير يُرجع HTTP 400 كما يُثبته notCovered.wrongSlug أدناه",
+      "addedFor": "صفحة نادي طرابزون سبور — /teams/طرابزون-سبور"
+    },
+    {
+      "league": "uefa.nations",
+      "ok": true,
+      "name": "دوري الأمم الأوروبية",
+      "slugEchoedBySource": "uefa.nations",
+      "leagueIdAtSource": "2395",
+      "uid": "s:600~l:2395",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 UEFA Nations League",
+      "sampledDay": "2026-09-26",
+      "sample": [
+        {
+          "date": "2026-09-26T13:00Z",
+          "home": "Slovenia",
+          "away": "Scotland",
+          "score": "0-0",
+          "state": "finished",
+          "venue": "Stadion Stozice",
+          "group": "Group B1"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2395.png",
+      "currentPhase": "League Phase (Sep 24-Nov 17) ثم Quarterfinals (Nov 19-Mar 31) والنهائي يونيو 2027",
+      "upcomingSample": {
+        "sampledDay": "2026-11-14",
+        "date": "2026-11-14T14:00Z",
+        "home": "Kosovo",
+        "away": "Israel",
+        "state": "scheduled",
+        "venue": "Stadiumi Fadil Vokrri",
+        "group": "Group B3"
+      },
+      "emptyDaysNote": "أيام 2026-10-09 و 10-11 و 10-23 و 10-24 و 10-26 كلها بلا أحداث: أكتوبر 2026 بين فترتين دوليتين لا بين جولات. النافذة القادمة 12-17 نوفمبر. نافذة فارغة حالة مشروعة في هذا المسبار لا فشل، لكن أثرها عملي: قسم البطولة في الجدول يظهر فارغاً حتى يقترب مدى الأيام الخمسة عشر المعروض من نوفمبر.",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    },
+    {
+      "league": "concacaf.nations.league",
+      "ok": true,
+      "name": "دوري أمم كونكاكاف",
+      "slugEchoedBySource": "concacaf.nations.league",
+      "leagueIdAtSource": "19267",
+      "uid": "s:600~l:19267",
+      "season": 2026,
+      "seasonDisplayName": "2026-27 Concacaf Nations League",
+      "sampledDay": "2026-10-06",
+      "sample": [
+        {
+          "date": "2026-10-06T20:00Z",
+          "home": "Montserrat",
+          "away": "Turks and Caicos Islands",
+          "score": "4-1",
+          "state": "finished",
+          "venue": "TCIFA National Stadium, Providenciales",
+          "group": "League C, Group A"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/i/leaguelogos/soccer/500/2406.png",
+      "currentPhase": "Group (Sep 23-Nov 17) ثم Quarterfinals وGold Cup Prelims (Nov 12-17 2026) ثم Semifinals (Dec 1-Mar 26) والنهائي والمركز الثالث (Mar 27-31 2027)",
+      "upcomingSample": {
+        "sampledDay": "2026-11-14",
+        "date": "2026-11-14T19:00Z",
+        "home": "Sint Maarten",
+        "away": "French Guiana",
+        "state": "scheduled",
+        "venue": "Arnos Vale Stadium",
+        "group": "League B, Group D"
+      },
+      "wrongSlug": "concacaf.nations وconcacaf.nations_league وconcacaf.cnl كلها HTTP 400؛ المعرّف الصحيح concacaf.nations.league بنقطتين. المُراقِب concacaf.gold يستجيب 200 (المعرّف 4004)، فالـ400 خاص بالاسم لا بالبادئة",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    },
+    {
+      "league": "caf.nations_qual",
+      "ok": true,
+      "name": "تصفيات كأس أمم أفريقيا",
+      "slugEchoedBySource": "caf.nations_qual",
+      "leagueIdAtSource": "8315",
+      "uid": "s:600~l:8315",
+      "season": 2026,
+      "seasonDisplayName": "2027 Africa Cup of Nations Qualifying",
+      "sampledDay": "2026-09-25",
+      "sample": [
+        {
+          "date": "2026-09-25T13:00Z",
+          "home": "Mozambique",
+          "away": "Senegal",
+          "score": "1-1",
+          "state": "finished",
+          "venue": "Estádio do Zimpeto, Maputo",
+          "group": "Group J"
+        },
+        {
+          "date": "2026-10-06T19:00Z",
+          "home": "Angola",
+          "away": "Malawi",
+          "score": "3-1",
+          "state": "finished",
+          "venue": "Estádio 11 de Novembro, Luanda",
+          "group": "Group B"
+        }
+      ],
+      "leagueLogoAtSource": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/default-team-logo-500.png&w=100&h=100",
+      "currentPhase": "Preliminary Round (Mar 25-31، لُعبت) ثم Group (Sep 24 2026 - Mar 28 2027): الجولة الثالثة 12-14 نوفمبر 2026 والرابعة 16-17 نوفمبر، ثم الخامسة والسادسة مارس 2027",
+      "upcomingSample": {
+        "sampledDay": "2026-11-12",
+        "date": "2026-11-12T15:00Z",
+        "home": "Ghana",
+        "away": "Somalia",
+        "state": "scheduled",
+        "venue": "Ohene Djan Stadium, Accra",
+        "group": "Group C"
+      },
+      "emptyDaysNote": "لا مباريات في 2026-10-05: المسابقة تعمل بنوافذ دولية (جولتان في نافذة واحدة) لا أسبوعياً، فاليوم الخالي بين النوافذ حالة مشروعة لا فشل. أثرها العملي أن قسم البطولة يظهر فارغاً بين النوافذ ثم يمتلئ مع النافذة القادمة.",
+      "logoNote": "المصدر لا يوفّر شعاراً خاصاً بهذه المسابقة: الحقل logos يُرجع صورة بديلة عامة (default-team-logo). يُذكر ذلك حتى لا يُظنّ الشعار العام خطأً في الإسناد.",
+      "wrongSlug": "caf.qual يُرجع HTTP 400؛ المعرّف الصحيح caf.nations_qual (بـnations_ لا qual وحدها)",
+      "addedFor": "جدول المواعيد والتصفية — بلا صفحة هبوط مخصصة"
+    }
+  ],
+  "outOfScope": {
+    "standings": "لم يُفحص. إدخال جدول ترتيب لأي من هذه البطولات يستلزم مسبار probe-standings.mjs مستقلاً وإدراجاً في standings.php، ولا يُستنتج من نجاح مسبار المباريات.",
+    "archive": "ARCHIVE_LEAGUES يبقى اثنتي عشرة بطولة؛ إدراج بطولة قارية في الأرشيف يستلزم بوابة docs/fixtures-archive.md.",
+    "landingPages": "لا صفحة /matches/<slug>/ لهذه البطولات. الشعاران الموثّقان أعلاه (caf.champions → 2391، afc.champions → 2200) محفوظان هنا لوقت بناء صفحة هبوط، ولم يُضافا إلى league-icons.mjs لأنهما لا يُستخدمان في الجدول."
+  },
+  "clubPresence": {
+    "claim": "طرابزون سبور (معرّف الفريق 997 عند المصدر) يشارك هذا الموسم في tur.1 و uefa.europa.conf بحسب صفحة مباريات النادي على ESPN",
+    "source": "https://www.espn.com/soccer/team/fixtures/_/id/997/trabzonspor",
+    "fixturesListed": [
+      {
+        "date": "2026-11-01",
+        "match": "Trabzonspor v Gaziantep FK",
+        "competition": "Turkish Super Lig"
+      },
+      {
+        "date": "2026-11-05",
+        "match": "Trabzonspor v SC Freiburg",
+        "competition": "UEFA Conference League"
+      },
+      {
+        "date": "2026-11-08",
+        "match": "Alanyaspor v Trabzonspor",
+        "competition": "Turkish Super Lig"
+      },
+      {
+        "date": "2026-11-26",
+        "match": "CSKA Sofia v Trabzonspor",
+        "competition": "UEFA Conference League"
+      }
+    ],
+    "note": "صفحة المباريات على ESPN لا تُدرج أي مباراة للنادي في كأس تركيا — اتساقاً مع عدم تغطية المصدر لها (notCovered)."
+  },
+  "notCovered": {
+    "turkishCup": {
+      "claim": "المصدر لا يوفّر كأس تركيا (Türkiye Kupası) ولا الكأس السوبر التركي: كل مرشح معرّف مُختبَر يُرجع HTTP 400، بينما البادئة tur. نفسها تعمل",
+      "tested": [
+        {
+          "league": "tur.turkey_cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.turkey_cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "league": "tur.cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "league": "tur.turkish_cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.turkish_cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "league": "tur.super_cup",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.super_cup/scoreboard?dates=20261028&limit=1",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        }
+      ],
+      "control": {
+        "league": "tur.2",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.2/scoreboard?dates=20261028&limit=1",
+        "result": "HTTP 200 — استجابة سليمة بصيغة مجرّدة (بلا معرّف ولا موسم ولا أحداث)، ما يُثبت أن البادئة tur. مقبولة وأن الـ400 أعلاه خاص بتلك المسابقات لا بالبادئة"
+      },
+      "consequence": "لا تُذكر هاتان المسابقتان في صفحة النادي ولا تُسألان من اللوحة: طلب بطولة غير مسموحة يُرجع INVALID_LEAGUE وتظهر اللوحة فارغة. يُراجَع هذا متى أضافها المصدر."
+    },
+    "wrongSlug": {
+      "league": "uefa.europa_conf",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_conf/scoreboard?dates=20261105&limit=1",
+      "result": "HTTP 400 — المعرّف الصحيح uefa.europa.conf (بنقطة قبل conf لا بشرطة سفلية)"
+    },
+    "egyptCup": {
+      "claim": "كأس مصر (Egypt Cup) غير متاحة من أيّ مصدر يعتمده الموقع: لا معرّف لها في TheSportsDB، وليست في فهرس ESPN لكرة القدم.",
+      "tested": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/egy.cup/scoreboard?dates=20261108",
+          "result": "HTTP 400 — {\"code\":400,\"message\":\"Failed to get events endpoint.\"}"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/egy.egypt_cup/scoreboard?dates=20261108",
+          "result": "HTTP 400 — نفس الخطأ"
+        },
+        {
+          "url": "https://sports.core.api.espn.com/v2/sports/soccer/leagues?limit=400",
+          "result": "HTTP 200 — 220 بطولة كرة قدم، لا معرّف egy.* واحد فيها (ولا الدوري المصري نفسه)"
+        },
+        {
+          "url": "https://www.thesportsdb.com/api/v1/json/123/search_all_leagues.php?c=Egypt",
+          "result": "بطولتان فقط: 4829 الدوري المصري، و5185 كأس الرابطة — لا بطولة باسم Egypt Cup"
+        }
+      ],
+      "falseLead": {
+        "claim": "نتائج البحث على الويب تُظهر أن المعرّف 4830 هو كأس مصر",
+        "verification": "https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=4830",
+        "result": "4830 = Korean KBO League (بيسبول، كوريا الجنوبية)، وeventsround.php?id=4830 يرجّع events: null. قاعدة: لا يُعتمد معرّف من طرف ثالث دون تحقّق lookupleague."
+      },
+      "resolution": "بقرار من صاحب المشروع أُضيفت كأس الرابطة المصرية (egy.league_cup = 5185) بدلاً منها: بياناتها مؤكدة من المصدر، وهي بطولة كأس مصرية فعلية. متى أضافت المصادر كأس مصر تُدرج حينها."
+    }
+  },
+  "sportsdb": {
+    "purpose": "مصدر بديل للبطولات التي لا يوفّرها ESPN: يجلب scoreboard.php جولة كاملة من eventsround.php ثم يطبّعها إلى نفس بنية ESPN (php-lib/sportsdb_source.php).",
+    "probedAt": "2026-11-09",
+    "key": {
+      "value": "123",
+      "note": "المفتاح العام المعلن؛ المفتاح المجاني القديم 3 أُوقف نهائياً ويرجّع رسالة تعطيل صريحة. قابل للتغيير عبر متغير البيئة SM_SPORTSDB_KEY."
+    },
+    "whyNotEventsday": "eventsday.php يقتصر على 3 أحداث لليوم، بينما يبحث الموقع عن يوم كامل من جولة؛ وeventsseason.php يقتطع الموسم إلى 15 حدثاً.",
+    "leagues": [
+      {
+        "league": "egy.1",
+        "id": 4829,
+        "name": "Egyptian Premier League",
+        "nameAr": "الدوري المصري الممتاز",
+        "season": "2026-2027",
+        "note": "قائم قبل هذا التغيير؛ يُذكر للمقارنة فقط."
+      },
+      {
+        "league": "egy.league_cup",
+        "id": 5185,
+        "name": "Egypt League Cup",
+        "nameAr": "كأس الرابطة المصرية",
+        "season": "2026-2027",
+        "verifiedBy": [
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/search_all_leagues.php?c=Egypt",
+            "result": "بطولتان مصريتان فقط: 4829 و5185 — لا توجد بطولة باسم Egypt Cup"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=5185",
+            "result": "5185 = Egypt League Cup، بديل الاسم «Cup of the Capital of Egypt، كأس الرابطة المصرية»، idCup: 1، الموسم الحالي 2026-2027"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/eventsround.php?id=5185&r=1&s=2026-2027",
+            "result": "HTTP 200 — 8 أحداث بحالة FT"
+          },
+          {
+            "url": "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=5185",
+            "result": "HTTP 200 — الحدث التالي National Bank of Egypt ضد Smouha، 2026-12-01، الجولة 3، الحالة NS"
+          }
+        ],
+        "roundSizeGuard": "ROUND_TRUNCATE_AT = 15: أي جولة يبلغ عدد أحداثها 15 أو أكثر تُرفق بـ UPSTREAM_TRUNCATED بدل أن تُنشر ناقصة. الجولة الأولى لكأس الرابطة 8 أحداث، فهي داخل الحد؛ ويُراجَع الحد متى وصلت البطولة إلى أدوار تزيد مبارياتها على ذلك.",
+        "seasonAlignment": "موسم المصدر 2026-2027 يطابق ناتج season_label() لأي يوم من 2026-07 إلى 2027-06، وهو ما يبحث عنه البحث الثنائي على الجولات.",
+        "sample": [
+          "2026-10-07 Pyramids 3-2 El Qanah (FT)",
+          "2026-10-07 Asyut Petroleum 0-5 Al Ahly (FT)",
+          "2026-10-08 Zamalek 0-3 ZED (FT)",
+          "2026-10-08 Ceramica 0-1 Al Masry (FT)",
+          "2026-10-08 Ghazl El Mahalla 1-1 Abou Qir Fertilizers (FT)",
+          "2026-10-08 Modern Sport 2-0 National Bank of Egypt (FT)"
+        ]
+      }
+    ]
+  }
+}

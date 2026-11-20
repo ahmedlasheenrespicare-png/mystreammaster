@@ -57,7 +57,7 @@ export default function FaqPage({
   const [openKey, setOpenKey] = useState<string | null>("0-0");
 
   return (
-    <div className="pt-[140px]">
+    <div className="pt-[104px]">
       <nav
         className="max-w-[860px] mx-auto px-5 text-[12.5px] font-bold text-black/40 pt-6"
         aria-label={copy.navLabel}
@@ -96,7 +96,7 @@ export default function FaqPage({
 
           {/* الأقسام */}
           {sections.map((section, sIdx) => (
-            <section key={section.id} id={`faq-${section.id}`} className="scroll-mt-[150px] mt-14 first:mt-4">
+            <section key={section.id} id={`faq-${section.id}`} className="scroll-mt-[114px] mt-14 first:mt-4">
               <h2 className="font-display font-black tracking-tight text-[26px] md:text-[34px] leading-snug">
                 {section.title}
               </h2>

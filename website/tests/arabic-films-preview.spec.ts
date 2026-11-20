@@ -1,0 +1,31 @@
+import {test,expect} from '@playwright/test';
+for (const width of [390,1440]) test(`Arabic films have moving foreground and stationary backdrop at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:850}); await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/home-preview/arabic-films-preview/');
+ await expect(page.locator('.smcin-track > .smcin-panel')).toHaveCount(18);
+ await expect(page.locator('#films option')).toHaveText(['التسلسل الكامل','أسد','صقر وكناريا','برشامة','مطلوب عائلياً','الجواهرجي','إيجي بست']);
+ const images=page.locator('.smcin-track > .smcin-panel img');
+ await expect.poll(async()=>images.evaluateAll(imgs=>imgs.filter(i=>!(i as HTMLImageElement).complete || !(i as HTMLImageElement).naturalWidth).length)).toBe(0);
+ await page.selectOption('#films','3'); const active=page.locator('.smcin-active');
+ await expect(active).toHaveAttribute('data-scene-id','3'); await expect(active).toHaveClass(/smcin-layers-ready/);
+ const person=active.locator('.smcin-person'),back=active.locator('.smcin-backdrop');
+ await expect(person).toBeVisible(); await expect(back).toBeVisible();
+ await person.evaluate(el=>el.getAnimations().forEach(animation=>animation.finish()));
+ await expect.poll(async()=>person.evaluate(el=>parseFloat(getComputedStyle(el).transform.split('(')[1])) ,{timeout:6000}).toBeGreaterThan(1.1);
+ expect(await back.evaluate(el=>getComputedStyle(el).transform)).toBe('none');
+});
+for (const width of [390,1440]) test(`characters return before next film at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:850}); await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.clock.install(); await page.goto('/home-preview/arabic-films-preview/');
+ await page.locator('.smcin-stage').scrollIntoViewIfNeeded();
+ await expect.poll(async()=>page.locator('.smcin-person').first().evaluate((img:HTMLImageElement)=>img.complete && img.naturalWidth>0)).toBe(true);
+ await page.clock.fastForward(800);
+ const first=page.locator('.smcin-active'); await expect(first).toHaveCount(1); const id=await first.getAttribute('data-scene-id');
+ await page.clock.fastForward(6000);
+ await expect(first).toHaveAttribute('data-scene-id',id!); await expect(first).toHaveClass(/smcin-returning/);
+ const person=first.locator('.smcin-person'); await person.evaluate(el=>el.getAnimations().forEach(a=>a.finish()));
+ await expect.poll(async()=>person.evaluate(el=>getComputedStyle(el).transform)).toMatch(/matrix\(1, 0, 0, 1, 0, 0\)|none/);
+ await page.clock.fastForward(2800); await expect(first).toHaveAttribute('data-scene-id',id!);
+ await page.clock.fastForward(500); await expect(page.locator('.smcin-active')).not.toHaveAttribute('data-scene-id',id!);
+ await expect(page.locator('.smcin-returning')).toHaveCount(0);
+});

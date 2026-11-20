@@ -1,0 +1,211 @@
+@font-face{font-family:OverlayArabic;src:url('/_assets/redesign/tajawal-arabic-400-normal-CyCXRvzh.woff2');font-weight:400}@font-face{font-family:OverlayArabic;src:url('/_assets/redesign/tajawal-arabic-700-normal-D2-eand5.woff2');font-weight:700}@font-face{font-family:OverlayArabic;src:url('/_assets/redesign/tajawal-arabic-900-normal-MgmkhdPX.woff2');font-weight:900}
+.league-overlay[hidden]{display:none!important}.league-overlay{position:fixed;inset:0;z-index:40;color:#fff;font-family:OverlayArabic,sans-serif;user-select:text;overflow:hidden}.league-overlay *{box-sizing:border-box}.league-overlay__backdrop{position:absolute;inset:0;background:rgba(12,11,22,.72);backdrop-filter:blur(18px);opacity:0;transition:opacity .55s ease}.league-overlay.is-open .league-overlay__backdrop{opacity:1}.league-overlay__scroller{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;padding:65px clamp(20px,5vw,76px) 45px}.league-overlay__close{position:fixed;top:22px;right:clamp(20px,4vw,60px);z-index:3;width:48px;height:48px;color:#fff;border:1px solid #fff9;border-radius:50%;background:#21192799;font-size:24px;cursor:pointer}.league-overlay__close:hover{background:#fff;color:#211927}.league-overlay__layout{min-height:calc(100% - 20px);max-width:1360px;margin:auto;display:grid;grid-template-columns:minmax(350px,1fr) minmax(300px,420px);direction:ltr;gap:clamp(35px,6vw,100px);align-items:center}.league-overlay__card-wrap{grid-column:2;grid-row:1;position:relative;display:flex;justify-content:center;align-items:center;min-height:540px;perspective:1200px}.league-overlay__card{position:relative;z-index:1;transform:translateY(85vh) rotate(0);opacity:0;transition:transform .85s cubic-bezier(.16,1,.3,1),opacity .65s ease}.is-open .league-overlay__card{transform:translateY(0) rotate(-6deg);opacity:1}.league-overlay__card .card{--width:clamp(260px,25vw,360px);--height:calc(var(--width) * 1.547);--scale:1;--gap:16px;--large-radius:42px;--small-radius:32px;--translate-y:0px;--translate-x:0px;top:0;left:0;cursor:default;transform:none!important}.league-overlay__card .explore-button{display:none}.league-overlay__card .card-values__content{padding:24px}.league-overlay__card .card-values__values{font-size:clamp(25px,2.4vw,40px)}.league-overlay__shape{position:absolute;width:clamp(70px,10vw,140px);opacity:0;transition:opacity .7s .35s}.league-overlay__shape img{width:100%;animation:league-shape-spin 32s linear infinite}.is-open .league-overlay__shape{opacity:.8}.shape-one{top:0;left:-22px}.shape-two{bottom:-10px;right:-15px;width:100px}@keyframes league-shape-spin{to{transform:rotate(360deg)}}.league-overlay__content{grid-column:1;grid-row:1;direction:rtl;min-width:0;transform:translateY(65px);opacity:0;transition:transform .85s .08s cubic-bezier(.16,1,.3,1),opacity .75s .08s ease}.is-open .league-overlay__content{transform:none;opacity:1}.league-overlay__eyebrow{font-size:12px;color:#d8c2d5;margin:0 0 10px}.league-overlay__content h2{font-size:clamp(34px,4vw,62px);line-height:1.2;margin:0;color:white;font-weight:900}.league-overlay__intro{font-size:15px;line-height:1.7;color:#e1d6df;margin:14px 0 22px}.league-overlay__tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.league-overlay__tabs button{cursor:pointer;border:1px solid #ffffff87;border-radius:99px;color:#fff;background:#ffffff0d;font:700 14px OverlayArabic,sans-serif;padding:10px 18px}.league-overlay__tabs button[aria-pressed=true]{background:#fff;color:#271728}.league-overlay__tabs button:focus-visible,.league-overlay__close:focus-visible{outline:3px solid #ffd98c;outline-offset:3px}.league-overlay .replace-view{width:100%;display:block}.league-overlay .replace-view[hidden]{display:none!important}.league-overlay .table-panel{width:100%;margin:0;max-height:none;color:#392921}.league-overlay .table-panel .table-wrap{max-height:35vh}.league-overlay .table-panel .match-list{max-height:30vh}.league-overlay .table-panel button{font-family:OverlayArabic,sans-serif}.league-overlay__note{color:#dfcdda;font-size:12px;line-height:1.6;margin:14px 0}.league-overlay__backstage{display:none!important}@media(max-width:750px){.league-overlay__scroller{padding:68px 18px 40px}.league-overlay__layout{display:flex;flex-direction:column;gap:22px;align-items:stretch}.league-overlay__card-wrap{min-height:0;padding:0 0 10px}.league-overlay__card .card{--width:min(58vw,230px);--height:calc(var(--width) * 1.547);--gap:12px;--large-radius:32px}.league-overlay__card .card-values__content{padding:16px}.league-overlay__card .card-values__top{font-size:13px}.league-overlay__card .card-values__values{font-size:22px}.league-overlay__shape{display:none}.league-overlay__content h2{font-size:30px}.league-overlay__intro{font-size:14px;margin:8px 0 15px}.league-overlay__tabs{gap:6px}.league-overlay__tabs button{font-size:13px;padding:9px 14px}.league-overlay .table-panel .table-wrap{max-height:45vh}}html[data-motion-reduced="true"] .league-overlay *{transition:none!important;animation:none!important}
+/* Individual data screens adapt the reference's card-and-media overlay to live tables. */
+.league-screen[hidden]{display:none!important}.league-screen{position:absolute;inset:0;z-index:10;overflow:hidden;color:#fff;direction:rtl}.league-screen__backdrop{position:absolute;inset:0;background:rgba(14,11,22,.92);backdrop-filter:blur(22px);opacity:0;transition:opacity .5s ease}.league-screen.is-open .league-screen__backdrop{opacity:1}.league-screen__scroll{position:absolute;inset:0;overflow:auto;overscroll-behavior:contain;padding:80px clamp(20px,5vw,75px) 55px}.league-screen__back{position:fixed;top:22px;right:clamp(20px,4vw,60px);z-index:3;color:#fff;background:#2b1d30;border:1px solid #ffffffa0;border-radius:100px;padding:11px 19px;cursor:pointer;font:700 14px OverlayArabic,sans-serif}.league-screen__back:focus-visible,.league-screen__tabs button:focus-visible{outline:3px solid #ffd98c;outline-offset:3px}.league-screen__layout{max-width:1400px;margin:auto;min-height:calc(100% - 20px);display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,310px);gap:clamp(28px,4vw,65px);direction:ltr;align-items:center}.league-screen__visual{grid-column:2;grid-row:1;position:relative;display:grid;place-items:center;perspective:1200px}.league-screen__card{position:relative;z-index:1;opacity:0;transform:translateY(80vh);transition:transform .85s cubic-bezier(.16,1,.3,1),opacity .7s ease}.league-screen.is-open .league-screen__card{transform:translateY(0) rotate(-6deg);opacity:1}.league-screen__card .card{--width:clamp(210px,20vw,295px);--height:calc(var(--width) * 1.547);--scale:1;--gap:15px;--large-radius:38px;--small-radius:30px;--translate-y:0px;--translate-x:0px;transform:none!important;top:0;left:0;cursor:default}.league-screen__card .card-values__content{padding:20px}.league-screen__card .card-values__values{font-size:clamp(22px,2vw,32px)}.league-screen__shape{position:absolute;width:135px;left:-42px;top:-40px;opacity:.7}.league-screen__shape img{width:100%;animation:league-shape-spin 32s linear infinite}.league-screen__content{direction:rtl;min-width:0;opacity:0;transform:translateY(70px);transition:transform .85s .08s cubic-bezier(.16,1,.3,1),opacity .75s .08s ease}.league-screen.is-open .league-screen__content{opacity:1;transform:none}.league-screen__eyebrow{color:#dbcada;font-size:13px;margin:0 0 10px}.league-screen__content h2{margin:0 0 22px;color:#fff;font:900 clamp(31px,4vw,58px)/1.25 OverlayArabic,sans-serif}.league-screen__tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.league-screen__tabs button{color:#fff;background:#ffffff12;border:1px solid #fff8;border-radius:40px;padding:9px 18px;font:700 14px OverlayArabic,sans-serif;cursor:pointer}.league-screen__tabs button[aria-pressed=true]{background:white;color:#26172a}.league-screen .replace-view{display:block;width:100%;min-width:0}.league-screen .table-panel{width:100%;max-height:none;margin:0}.league-screen .table-panel .close{display:none}.league-screen .table-panel .table-wrap{max-height:48vh}.league-screen .table-panel .match-list{max-height:42vh}.league-screen__error{color:#392921;background:#fff9ed;padding:24px;line-height:1.7}@media(max-width:750px){.league-screen__scroll{padding:75px 16px 40px}.league-screen__layout{display:flex;flex-direction:column;gap:20px;align-items:stretch}.league-screen__visual{min-height:0}.league-screen__card .card{--width:min(42vw,165px);--height:calc(var(--width) * 1.547);--gap:10px;--large-radius:25px}.league-screen__card .card-values__content{padding:12px}.league-screen__card .card-values__top{font-size:10px}.league-screen__card .card-values__values{font-size:16px}.league-screen__shape{display:none}.league-screen__content h2{font-size:28px;margin-bottom:14px}.league-screen__tabs button{font-size:12px;padding:8px 13px}.league-screen .table-panel .table-wrap{max-height:45vh}}html[data-motion-reduced="true"] .league-screen *{transition:none!important;animation:none!important}
+/* KOTA's opened-card language: broad, rounded gradient slides, not the site's beige table panel.
+   The content remains a real, scrollable and sortable table rather than an image. */
+.league-screen[data-view=standings]{--slide-top:#e7dcff;--slide-bottom:#86d5e5;--slide-ink:#1e2849;--slide-head:#ecf7fa;--slide-line:#30416b39;--slide-accent:#3941a1}
+.league-screen[data-view=rates]{--slide-top:#f6e8e7;--slide-bottom:#49d9be;--slide-ink:#163c41;--slide-head:#e0f6f1;--slide-line:#204b4e36;--slide-accent:#087d73}
+.league-screen[data-view=matches]{--slide-top:#ffe7a1;--slide-bottom:#f4b87d;--slide-ink:#4c2f24;--slide-head:#fff1cd;--slide-line:#6a3b2638;--slide-accent:#a05220}
+.league-overlay .league-screen .replace-view .table-panel{background:linear-gradient(135deg,var(--slide-top),var(--slide-bottom));color:var(--slide-ink);border:1px solid #ffffff90;border-radius:clamp(22px,3vw,42px);box-shadow:0 22px 60px #0005,inset 0 1px 0 #fff9;padding:clamp(18px,2.3vw,34px);max-width:none;overflow:hidden}
+.league-overlay .league-screen .table-panel .panel-head{margin-bottom:17px;align-items:center}
+.league-overlay .league-screen .table-panel .panel-head h3{color:var(--slide-ink);font:900 clamp(23px,2.4vw,36px)/1.25 OverlayArabic,sans-serif;letter-spacing:0}
+.league-overlay .league-screen .table-panel .panel-head p,.league-overlay .league-screen .table-note,.league-overlay .league-screen .analysis-intro,.league-overlay .league-screen .match-date,.league-overlay .league-screen .match-status{color:var(--slide-ink);opacity:.82;line-height:1.6}
+.league-overlay .league-screen .table-panel .active-view-indicator{background:#ffffff9c;color:var(--slide-ink);font-size:12px;padding:7px 14px;margin-bottom:10px}
+.league-overlay .league-screen .table-panel .table-wrap{border-radius:20px;background:#ffffff65;border:1px solid #ffffffb0;box-shadow:inset 0 1px 0 #fff9;scrollbar-color:var(--slide-accent) #ffffff70}
+.league-overlay .league-screen .table-panel table{color:var(--slide-ink);font:700 14px/1.4 OverlayArabic,sans-serif}
+.league-overlay .league-screen .table-panel th,.league-overlay .league-screen .table-panel td{border-bottom:1px solid var(--slide-line);padding:14px 11px}
+.league-overlay .league-screen .table-panel thead th{background:var(--slide-head);color:var(--slide-ink);font-weight:900;font-size:12px}
+.league-overlay .league-screen .table-panel td:last-child{color:var(--slide-accent)}
+.league-overlay .league-screen .table-panel tbody tr:nth-child(even){background:#ffffff33}
+.league-overlay .league-screen .table-panel .sort-button{color:var(--slide-ink);font-weight:900}
+.league-overlay .league-screen .table-panel .sort-button:focus-visible,.league-overlay .league-screen .table-panel .leader-chip:focus-visible{outline:3px solid var(--slide-accent);outline-offset:-2px}
+.league-overlay .league-screen .table-panel .leaders{scrollbar-color:var(--slide-accent) #ffffff66}
+.league-overlay .league-screen .table-panel .leader-chip{background:#ffffff80;border:1px solid #ffffffbb;border-radius:100px;color:var(--slide-ink);padding:9px 13px}
+.league-overlay .league-screen .table-panel .leader-chip[aria-pressed=true]{background:var(--slide-accent);border-color:var(--slide-accent);color:#fff}
+.league-overlay .league-screen .table-panel tfoot{background:#ffffff9c;color:var(--slide-ink)}
+.league-overlay .league-screen .table-panel .crest-fallback{background:#ffffffb3;color:var(--slide-ink)}
+.league-overlay .league-screen .table-panel .match-tabs button,.league-overlay .league-screen .table-panel .match-retry{background:#ffffff90;border:1px solid #ffffffd9;border-radius:50px;color:var(--slide-ink)}
+.league-overlay .league-screen .table-panel .match-tabs button[aria-pressed=true]{background:var(--slide-accent);border-color:var(--slide-accent);color:#fff}
+.league-overlay .league-screen .table-panel .match-row{border-radius:15px;border:1px solid #ffffffb0;background:#ffffff80;color:var(--slide-ink)}
+.league-overlay .league-screen .table-panel .match-score small{color:var(--slide-ink)}
+@media(max-width:750px){.league-overlay .league-screen .replace-view .table-panel{padding:18px 14px;border-radius:24px}.league-overlay .league-screen .table-panel .panel-head h3{font-size:23px}.league-overlay .league-screen .table-panel .table-wrap{border-radius:15px}.league-overlay .league-screen .table-panel table{font-size:12px}.league-overlay .league-screen .table-panel th,.league-overlay .league-screen .table-panel td{padding:11px 8px}}
+/* Refinements keep the animated KOTA-style slide legible as actual data. */
+.league-screen__content h2{letter-spacing:-.03em}
+.league-screen__eyebrow{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.01em}.league-screen__eyebrow::before{content:'';display:block;flex:none;width:9px;height:9px;border-radius:50%;background:#b5f5df;box-shadow:0 0 18px #94ffe9}
+.league-screen__tabs{gap:7px}.league-screen__tabs button{transition:background .25s,color .25s,transform .25s,border-color .25s}.league-screen__tabs button:hover{transform:translateY(-2px);border-color:#fff}.league-screen__tabs button[aria-pressed=true]{box-shadow:0 5px 20px #0003}
+.league-overlay .league-screen .replace-view .table-panel{position:relative;isolation:isolate;box-shadow:0 25px 65px #0005,inset 0 1px 0 #fff9}.league-overlay .league-screen .replace-view .table-panel::before{content:'';position:absolute;z-index:-1;width:45%;aspect-ratio:1;inset:-23% auto auto -12%;border-radius:50%;background:radial-gradient(circle,#ffffff80,#ffffff00 70%);pointer-events:none}
+.league-overlay .league-screen .table-panel .panel-head h3{letter-spacing:-.025em}.league-overlay .league-screen .table-panel .panel-head p{margin-top:5px;font-size:12px}
+.league-overlay .league-screen .table-swipe-hint{display:flex;align-items:center;gap:4px;margin:0 0 10px;color:var(--slide-ink);font:700 11px/1.5 OverlayArabic,sans-serif;opacity:.76}
+.league-overlay .league-screen .table-panel .table-wrap{overscroll-behavior:contain;scrollbar-width:thin}.league-overlay .league-screen .table-panel thead th{box-shadow:0 1px 0 var(--slide-line)}
+.league-overlay .league-screen .table-panel tbody tr{transition:background .2s}.league-overlay .league-screen .table-panel tbody tr:hover{background:#ffffff75}
+.league-overlay .league-screen .table-panel .team-cell{gap:9px}.league-overlay .league-screen .table-panel .crest,.league-overlay .league-screen .table-panel .crest-fallback{width:29px;height:29px;object-fit:contain;flex:none}.league-overlay .league-screen .table-panel .crest-fallback{border-radius:50%;display:grid;place-items:center;font:900 9px/1 OverlayArabic,sans-serif}
+.league-overlay .league-screen .table-panel .table-note{padding-top:12px;margin:4px 2px 0;font:700 11px/1.7 OverlayArabic,sans-serif}
+.league-overlay .league-screen .table-panel .sort-button small{font-size:10px;opacity:.65}.league-overlay .league-screen .table-panel .sort-button:hover{color:var(--slide-accent)}
+.league-overlay .league-screen .table-panel .match-row{padding:14px}.league-overlay .league-screen .table-panel .match-retry{font-weight:700}
+@media(max-width:750px){.league-screen__scroll{padding-top:70px}.league-screen__layout{gap:13px}.league-screen__card .card{--width:min(39vw,150px)}.league-screen__content h2{font-size:32px;margin:0 0 13px}.league-screen__eyebrow{font-size:12px;margin-bottom:7px}.league-screen__tabs{margin-bottom:14px}.league-overlay .league-screen .replace-view .table-panel{padding:18px 14px 15px}.league-overlay .league-screen .table-panel .panel-head{margin-bottom:10px}.league-overlay .league-screen .table-panel .panel-head h3{font-size:20px}.league-overlay .league-screen .table-swipe-hint{font-size:10px;margin-bottom:8px}.league-overlay .league-screen .table-panel .crest,.league-overlay .league-screen .table-panel .crest-fallback{width:25px;height:25px}}
+/* Keep the first column visible during horizontal scrolling in both data tables. */
+.league-screen[data-view=standings]{--slide-pinned:#d2e5f2;--slide-pinned-alt:#e1eef5}
+.league-screen[data-view=rates]{--slide-pinned:#c5ece0;--slide-pinned-alt:#daf3eb}
+.league-overlay .league-screen .table-panel table{border-collapse:separate;border-spacing:0}
+.league-overlay .league-screen .table-panel table tr > :first-child{position:sticky;inset-inline-start:0;z-index:2;background:var(--slide-pinned);box-shadow:-3px 0 8px #19293724}
+.league-overlay .league-screen .table-panel table tbody tr:nth-child(even) > :first-child{background:var(--slide-pinned-alt)}
+.league-overlay .league-screen .table-panel table thead tr > :first-child{top:0;z-index:4;background:var(--slide-head)}
+.league-overlay .league-screen .table-panel table tfoot tr > :first-child{z-index:2;background:var(--slide-head)}
+/* On the standings table the crest has its own compact second column, so the
+   rank and crest stay visible while the team name and other columns scroll. */
+.league-overlay .league-screen .table-panel .table-with-pinned-crest tr > .pinned-crest-heading,
+.league-overlay .league-screen .table-panel .table-with-pinned-crest tr > .pinned-crest-cell{position:sticky;inset-inline-start:var(--rank-column-width,44px);z-index:2;min-width:46px;width:46px;padding:10px 8px;text-align:center;background:var(--slide-pinned);box-shadow:-3px 0 8px #19293724}
+.league-overlay .league-screen .table-panel .table-with-pinned-crest thead tr > .pinned-crest-heading{top:0;z-index:4;background:var(--slide-head);font-size:10px}
+.league-overlay .league-screen .table-panel .table-with-pinned-crest tbody tr:nth-child(even) > .pinned-crest-cell{background:var(--slide-pinned-alt)}
+.league-overlay .league-screen .table-panel .table-with-pinned-crest .pinned-crest-cell .crest,
+.league-overlay .league-screen .table-panel .table-with-pinned-crest .pinned-crest-cell .crest-fallback{display:inline-grid;vertical-align:middle;margin:0;object-fit:contain}
+/* Data stays sourced from the site's panel; presentation makes provenance and metrics clearer. */
+.league-overlay .league-screen .table-panel .data-provenance{display:block;margin:2px 0 13px;padding:9px 12px;background:#ffffff80;border:1px solid #ffffffa8;border-radius:13px;font:700 11px/1.65 OverlayArabic,sans-serif;opacity:1;overflow-wrap:anywhere}
+.league-overlay .league-screen .standings-leader{display:flex;gap:11px;align-items:center;background:#ffffff82;border:1px solid #ffffffba;border-radius:17px;padding:10px 13px;margin:0 0 13px;color:var(--slide-ink)}
+.league-overlay .league-screen .standings-leader>img,.league-overlay .league-screen .standings-leader>.crest-fallback{width:38px;height:38px;flex:none;object-fit:contain}.league-overlay .league-screen .standings-leader>div{min-width:0;display:flex;flex-direction:column;gap:2px;flex:1}.league-overlay .league-screen .standings-leader span{font-size:10px;opacity:.75;font-weight:700}.league-overlay .league-screen .standings-leader strong{font-size:15px;line-height:1.3;overflow-wrap:anywhere;direction:auto}.league-overlay .league-screen .standings-leader>b{white-space:nowrap;font-size:13px;background:#fff9;border-radius:40px;padding:7px 10px;color:var(--slide-accent)}
+.league-overlay .league-screen .table-panel tbody tr.is-leader td{font-weight:900}.league-overlay .league-screen .table-panel tbody tr.is-leader{background:#ffffff85}
+.league-overlay .league-screen .rates-glossary{background:#ffffff73;border:1px solid #ffffffa8;border-radius:14px;padding:10px 13px;margin:10px 0 14px;color:var(--slide-ink)}.league-overlay .league-screen .rates-glossary summary{cursor:pointer;font:900 13px OverlayArabic,sans-serif}.league-overlay .league-screen .rates-glossary p{font:700 12px/1.9 OverlayArabic,sans-serif;margin:10px 0 2px}.league-overlay .league-screen .rates-glossary summary:focus-visible{outline:3px solid var(--slide-accent);outline-offset:3px}
+.league-overlay .league-screen .match-row[data-state=live]{border-inline-start:4px solid #c83246}.league-overlay .league-screen .match-row[data-state=finished]{border-inline-start:4px solid #5d6976}.league-overlay .league-screen .match-row[data-state=scheduled]{border-inline-start:4px solid #187f61}.league-overlay .league-screen .match-row[data-state=live] .match-score small{color:#9b1328;font-weight:900}.league-overlay .league-screen .match-row[data-state=live] .match-score small::before{content:'● ';color:#d7243c}.league-overlay .league-screen .match-row[data-state=finished] .match-score small{color:#485463;font-weight:700}.league-overlay .league-screen .match-row[data-state=scheduled] .match-score small{color:#176545;font-weight:700}
+@media(max-width:750px){.league-overlay .league-screen .table-panel .data-provenance{font-size:10px;padding:8px 10px;margin-bottom:10px}.league-overlay .league-screen .standings-leader{padding:8px 10px;margin-bottom:10px}.league-overlay .league-screen .standings-leader>img,.league-overlay .league-screen .standings-leader>.crest-fallback{width:30px;height:30px}.league-overlay .league-screen .standings-leader strong{font-size:13px}.league-overlay .league-screen .standings-leader>b{font-size:11px}}
+/* Additional highlights use the same per-match calculations as the original section. */
+.league-overlay .league-screen .standings-highlights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 13px;direction:rtl}
+.league-overlay .league-screen .standings-highlight{min-width:0;display:flex;align-items:flex-start;gap:8px;background:#ffffff82;border:1px solid #ffffffba;border-radius:15px;padding:11px 10px;color:var(--slide-ink)}
+.league-overlay .league-screen .standings-highlight svg{width:23px;height:23px;flex:none;fill:#d05242}.league-overlay .league-screen .standings-highlight--defence svg{fill:#287ea9}.league-overlay .league-screen .standings-highlight--goals svg{fill:#398c58}
+.league-overlay .league-screen .standings-highlight>div{min-width:0;display:flex;flex-direction:column;gap:3px}.league-overlay .league-screen .standings-highlight span{font:700 11px/1.25 OverlayArabic,sans-serif;opacity:.78}.league-overlay .league-screen .standings-highlight strong{font:900 13px/1.4 OverlayArabic,sans-serif;overflow-wrap:anywhere;direction:auto}.league-overlay .league-screen .standings-highlight small{font:700 10px/1.5 OverlayArabic,sans-serif;opacity:.8}
+@media(max-width:750px){.league-overlay .league-screen .standings-highlights{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:10px}.league-overlay .league-screen .standings-highlight{padding:9px 8px;gap:7px}.league-overlay .league-screen .standings-highlight--goals{grid-column:1/-1}.league-overlay .league-screen .standings-highlight svg{width:20px;height:20px}.league-overlay .league-screen .standings-highlight strong{font-size:12px}}
+/* Tournament trophies remain upright; other decorative shapes keep their motion. */
+.cards .shape-trophy img,.league-overlay__shape.shape-two img{animation:none}
+/* Compact, accessible icons for both sets of league navigation buttons. */
+.league-overlay__tabs button,.league-screen__tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.league-tab-icon{display:block;flex:none;width:17px;height:17px;color:#ffd276}
+.league-tab-icon--rates{color:#8cdbef}.league-tab-icon--matches{color:#a4e6b2}
+@media(max-width:750px){.league-screen__tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.league-screen__tabs button{min-height:44px;padding:7px 4px;font-size:12px;gap:4px}.league-overlay__tabs button{gap:4px}.league-tab-icon{width:15px;height:15px}}
+/* League navigation: compact rounded tiles echo the cards' softened corners. */
+.league-overlay .league-overlay__tabs button,.league-overlay .league-screen__tabs button{--tab-accent:#f1c875;--tab-tint:rgba(245,194,91,.15);position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:52px;padding:8px 15px;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.045));box-shadow:inset 0 1px 0 #ffffff1a,0 6px 18px #08071324;color:#f9f5fa;font-weight:900;white-space:nowrap;transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease}
+.league-overlay .league-overlay__tabs button:is([data-overlay-view=rates]),.league-overlay .league-screen__tabs button:is([data-screen-view=rates]){--tab-accent:#94e4d5;--tab-tint:rgba(111,209,191,.15)}
+.league-overlay .league-overlay__tabs button:is([data-overlay-view=matches]),.league-overlay .league-screen__tabs button:is([data-screen-view=matches]){--tab-accent:#a6cbff;--tab-tint:rgba(133,175,248,.16)}
+.league-overlay .league-tab-icon-wrap{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:10px;background:var(--tab-tint);color:var(--tab-accent)}
+.league-overlay .league-tab-icon{width:19px;height:19px;color:inherit}
+.league-overlay .league-overlay__tabs button[aria-pressed=true],.league-overlay .league-screen__tabs button[aria-pressed=true]{color:#211c30;background:linear-gradient(135deg,#fff 5%,#ece5f4 100%);border-color:#fff;box-shadow:0 8px 22px #08071342,inset 0 1px 0 #fff}
+.league-overlay .league-overlay__tabs button[aria-pressed=true] .league-tab-icon-wrap,.league-overlay .league-screen__tabs button[aria-pressed=true] .league-tab-icon-wrap{background:#ece1d0;color:#a35c1e}
+.league-overlay .league-screen__tabs button[data-screen-view=rates][aria-pressed=true] .league-tab-icon-wrap{background:#d7eee8;color:#217869}
+.league-overlay .league-screen__tabs button[data-screen-view=matches][aria-pressed=true] .league-tab-icon-wrap{background:#dbe8fa;color:#365f9e}
+.league-overlay .league-overlay__tabs button:hover,.league-overlay .league-screen__tabs button:hover{border-color:#ffffffa8;transform:translateY(-2px)}
+@media(max-width:750px){.league-overlay .league-overlay__tabs button,.league-overlay .league-screen__tabs button{min-width:0;min-height:48px;padding:6px 3px;gap:4px;border-radius:13px;font-size:12px}.league-overlay .league-tab-icon-wrap{width:24px;height:24px;border-radius:8px}.league-overlay .league-tab-icon{width:16px;height:16px}}
+html[data-motion-reduced="true"] .league-overlay .league-overlay__tabs button,html[data-motion-reduced="true"] .league-overlay .league-screen__tabs button{transition:none}html[data-motion-reduced="true"] .league-overlay .league-overlay__tabs button:hover,html[data-motion-reduced="true"] .league-overlay .league-screen__tabs button:hover{transform:none}
+@media(max-width:350px){.league-overlay .league-overlay__tabs button,.league-overlay .league-screen__tabs button{font-size:11px;gap:3px;padding-inline:2px}.league-overlay .league-tab-icon-wrap{width:21px;height:21px;border-radius:7px}.league-overlay .league-tab-icon{width:15px;height:15px}}
+/* Quiet provenance and optional help keep data visible without crowding it. */
+.league-overlay .league-screen .table-panel .data-provenance{display:block;margin:0 1px 11px;padding:0;background:none;border:0;border-radius:0;color:var(--slide-ink);font:700 11px/1.6 OverlayArabic,sans-serif;opacity:.8}
+.league-overlay .league-screen .rates-glossary{width:fit-content;max-width:100%;margin:0 0 11px;padding:0;background:none;border:0;border-radius:0}
+.league-overlay .league-screen .rates-glossary summary{display:list-item;cursor:pointer;width:fit-content;padding:7px 11px;background:#ffffff72;border:1px solid #ffffffad;border-radius:11px;font:900 12px/1.5 OverlayArabic,sans-serif}
+.league-overlay .league-screen .rates-glossary[open]{width:100%;padding:0 0 5px}.league-overlay .league-screen .rates-glossary p{margin:8px 2px 0;font:700 12px/1.8 OverlayArabic,sans-serif}
+@media(max-width:750px){.league-overlay .league-screen .table-panel .data-provenance{font-size:10px;margin-bottom:9px;padding:0}.league-overlay .league-screen .rates-glossary summary{font-size:11px;padding:6px 10px}}
+/* A still, gently tilted strip of destinations, inspired by the reference slider. */
+.league-overlay .league-overlay__layout{max-width:1100px;display:flex;flex-direction:column;justify-content:center;gap:0;direction:rtl}
+.league-overlay .league-overlay__card-wrap{min-height:0;padding:0;z-index:2}
+.league-overlay .league-overlay__card .card{--width:clamp(190px,19vw,260px);--height:calc(var(--width)*1.547)}
+.league-overlay .league-overlay__content{width:100%;text-align:center;position:relative;z-index:1}
+.league-overlay .league-overlay__content h2{font-size:clamp(24px,3vw,38px);margin:0}
+.league-overlay .league-overlay__eyebrow{margin:10px 0 3px}
+.league-overlay .league-overlay__intro{margin:5px 0 20px;font-size:13px}
+.league-overlay .league-overlay__tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px auto 27px;transform:rotate(-2deg);width:min(100%,1000px)}
+.league-overlay .league-overlay__tabs button{min-height:clamp(105px,14vw,170px);padding:16px;flex-direction:column;gap:10px;border-radius:22px;background:linear-gradient(145deg,#705778,#392840);border:1px solid #ffffff52;box-shadow:0 15px 35px #100a1b55;color:#fff;font-size:clamp(14px,1.6vw,20px)}
+.league-overlay .league-overlay__tabs button[data-overlay-view=rates]{background:linear-gradient(145deg,#427c83,#233f55)}
+.league-overlay .league-overlay__tabs button[data-overlay-view=matches]{background:linear-gradient(145deg,#956d58,#523e51)}
+.league-overlay .league-overlay__tabs .league-tab-icon-wrap{width:48px;height:48px;border-radius:15px;background:#ffffff24;color:#fff}
+.league-overlay .league-overlay__tabs .league-tab-icon{width:27px;height:27px}
+.league-overlay .league-overlay__note{margin:0;font-size:11px}
+@media(max-width:750px){
+ .league-overlay .league-overlay__scroller{padding:65px 18px 36px}
+ .league-overlay .league-overlay__layout{justify-content:flex-start;gap:0}
+ .league-overlay .league-overlay__card .card{--width:min(45vw,185px);--height:calc(var(--width)*1.547)}
+ .league-overlay .league-overlay__tabs{gap:6px;margin:19px auto 22px;transform:rotate(-2deg)}
+ .league-overlay .league-overlay__tabs button{min-height:96px;padding:8px 2px;gap:7px;border-radius:14px;font-size:12px}
+ .league-overlay .league-overlay__tabs .league-tab-icon-wrap{width:33px;height:33px;border-radius:10px}
+ .league-overlay .league-overlay__tabs .league-tab-icon{width:19px;height:19px}
+}
+/* Decorative objects flank the selected card on all screen sizes. */
+.league-overlay .league-overlay__card-wrap{width:100%;overflow:visible}
+.league-overlay .league-overlay__shape{display:block;z-index:0;pointer-events:none;filter:drop-shadow(0 12px 14px #05030a66)}
+.league-overlay .league-overlay__shape.shape-one{width:clamp(65px,10vw,125px);top:15%;left:calc(50% - clamp(190px,24vw,300px));right:auto;bottom:auto}
+.league-overlay .league-overlay__shape.shape-two{width:clamp(65px,9vw,115px);top:auto;bottom:9%;left:auto;right:calc(50% - clamp(190px,24vw,300px))}
+/* Landscape panels echo the separate images in the reference's tilted strip. */
+.league-overlay .league-overlay__tabs{gap:clamp(8px,1.4vw,18px);transform:rotate(-2deg)}
+.league-overlay .league-overlay__tabs button{position:relative;overflow:hidden;min-height:0;aspect-ratio:1.55;align-items:flex-start;justify-content:flex-end;text-align:right;padding:clamp(12px,2vw,24px);border-radius:clamp(14px,2vw,25px);isolation:isolate}
+.league-overlay .league-overlay__tabs button::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 75% 18%,#ffffff42,transparent 44%),linear-gradient(165deg,transparent 33%,#120d1d80);pointer-events:none}
+.league-overlay .league-overlay__tabs .league-tab-icon-wrap{position:absolute;top:13%;left:10%;width:clamp(42px,6vw,72px);height:clamp(42px,6vw,72px);border-radius:50%;background:#ffffff20;color:#fff;box-shadow:inset 0 0 0 1px #ffffff32}
+.league-overlay .league-overlay__tabs .league-tab-icon{width:55%;height:55%}
+.league-overlay .league-overlay__tabs button>span:last-child{position:relative;z-index:1}
+@media(max-width:750px){
+ .league-overlay .league-overlay__shape.shape-one{width:62px;left:calc(50% - min(45vw,185px)/2 - 70px);top:17%}
+ .league-overlay .league-overlay__shape.shape-two{width:62px;right:calc(50% - min(45vw,185px)/2 - 70px);bottom:10%}
+ .league-overlay .league-overlay__tabs{gap:7px}
+ .league-overlay .league-overlay__tabs button{aspect-ratio:1.12;padding:9px 7px;font-size:clamp(10px,3vw,12px);border-radius:14px}
+ .league-overlay .league-overlay__tabs .league-tab-icon-wrap{width:30px;height:30px;top:10%;left:9%}
+}
+/* A quiet watermark of the selected league and its trophy behind each data view. */
+.league-screen__backdrop{overflow:hidden;pointer-events:none}
+.league-screen__background-logo,.league-screen__background-trophy{position:absolute;object-fit:contain;pointer-events:none;user-select:none;filter:drop-shadow(0 18px 35px #0008)}
+.league-screen__background-logo{width:min(60vw,680px);height:min(75vh,680px);right:-6vw;top:50%;transform:translateY(-50%) rotate(-8deg);opacity:.16}
+.league-screen__background-trophy{width:min(29vw,320px);height:min(52vh,490px);left:1vw;bottom:-5vh;opacity:.19}
+@media(max-width:750px){.league-screen__background-logo{width:85vw;height:48vh;right:-18vw;top:19%;transform:rotate(-8deg);opacity:.15}.league-screen__background-trophy{width:42vw;height:34vh;left:-5vw;bottom:1vh;opacity:.18}}
+/* Keep the league identity visible on the dark data screen, behind its content. */
+.league-screen__backdrop{background:radial-gradient(ellipse at 18% 30%,#6f789255,transparent 34%),radial-gradient(ellipse at 87% 63%,#746a8055,transparent 32%),rgba(14,11,22,.96)}
+.league-screen__background-logo{width:min(48vw,570px);height:min(65vh,570px);left:0;right:auto;top:39%;opacity:.30;filter:drop-shadow(0 0 24px #e1e5ff99)}
+.league-screen__background-trophy{width:min(27vw,300px);height:min(48vh,430px);left:auto;right:1vw;bottom:0;opacity:.34;filter:drop-shadow(0 0 22px #e9e5ff88)}
+@media(max-width:750px){.league-screen__backdrop{background:radial-gradient(ellipse at 14% 24%,#8d9bb077,transparent 31%),radial-gradient(ellipse at 89% 29%,#91839c77,transparent 30%),rgba(14,11,22,.97)}.league-screen__background-logo{width:38vw;height:25vh;left:-2vw;right:auto;top:14%;transform:rotate(-8deg);opacity:.43}.league-screen__background-trophy{width:34vw;height:27vh;left:auto;right:-2vw;top:16%;bottom:auto;opacity:.46}}
+/* The screen heading already identifies the standings; retain season and source date. */
+.league-screen[data-view=standings] .table-panel .panel-head .active-view-indicator,
+.league-screen[data-view=standings] .table-panel .panel-head h3{display:none}
+.league-screen[data-view=rates] .table-panel .panel-head .active-view-indicator,
+.league-screen[data-view=rates] .table-panel .panel-head h3{display:none}
+/* League identity lives in the backdrop of the exploration screen. */
+.league-overlay__backdrop{overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 15% 30%,#8d9bb066,transparent 34%),radial-gradient(ellipse at 88% 45%,#91839c66,transparent 34%),rgba(12,11,22,.9)}
+.league-overlay__background-logo,.league-overlay__background-trophy{position:absolute;object-fit:contain;pointer-events:none;user-select:none;filter:drop-shadow(0 0 24px #e1e5ff99)}
+.league-overlay__background-logo{width:min(45vw,520px);height:min(60vh,520px);left:2vw;top:8%;transform:rotate(-8deg);opacity:.32}
+.league-overlay__background-trophy{width:min(29vw,300px);height:min(45vh,420px);right:3vw;top:24%;opacity:.36}
+.league-overlay .league-overlay__shape.shape-two{display:none}
+@media(max-width:750px){.league-overlay__background-logo{width:40vw;height:25vh;left:-3vw;top:12%;opacity:.44}.league-overlay__background-trophy{width:35vw;height:27vh;right:-2vw;top:17%;opacity:.46}}
+/* The trophy enters once when the exploration screen opens, then remains still. */
+.league-overlay__background-trophy{opacity:0;transform:translateY(40px) scale(.88);transition:opacity .8s .15s ease,transform 1s .15s cubic-bezier(.16,1,.3,1)}
+.league-overlay.is-open .league-overlay__background-trophy{opacity:.36;transform:translateY(0) scale(1)}
+@media(max-width:750px){.league-overlay.is-open .league-overlay__background-trophy{opacity:.46}}
+html[data-motion-reduced="true"] .league-overlay__background-trophy{transition:none}
+/* Enter first, make one full turn, and settle upright. */
+.league-overlay.is-open .league-overlay__background-trophy{transition:none;animation:trophy-entrance 1.9s .15s both}
+@keyframes trophy-entrance{0%{opacity:0;transform:perspective(800px) translateY(105px) scale(.65) rotateY(0deg)}38%{opacity:var(--trophy-opacity,.36);transform:perspective(800px) translateY(0) scale(1) rotateY(0deg)}100%{opacity:var(--trophy-opacity,.36);transform:perspective(800px) translateY(0) scale(1) rotateY(360deg)}}
+@media(max-width:750px){.league-overlay__background-trophy{--trophy-opacity:.46}}
+html[data-motion-reduced="true"] .league-overlay.is-open .league-overlay__background-trophy{animation:none;transform:none;opacity:.36}html[data-motion-reduced="true"] .league-overlay__background-trophy{transition:none}
+@media(max-width:750px){html[data-motion-reduced="true"] .league-overlay.is-open .league-overlay__background-trophy{opacity:.46}}
+.league-screen .table-panel .standings-sort{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;white-space:nowrap;cursor:pointer}
+.league-screen .table-panel .standings-sort:focus-visible{outline:2px solid var(--slide-accent);outline-offset:2px}
+.league-screen__back{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.league-screen__back .world-arrow{display:block;flex:none;width:16px;height:16px}
+.league-screen .table-panel .sort-arrows{display:inline-block;vertical-align:middle;width:13px;height:16px;margin-inline:3px;overflow:visible}
+.league-screen .table-panel .sort-arrows path{opacity:.48}
+.league-screen .table-panel th[aria-sort=ascending] .sort-arrows .sort-up,.league-screen .table-panel th[aria-sort=descending] .sort-arrows .sort-down{opacity:1;stroke-width:2.4}
+.league-screen .table-swipe-hint .swipe-arrow{display:inline-block;width:15px;height:15px;vertical-align:middle}
+/* The reference slides enter from the side with a slight tilt and short stagger.
+   These destination panels settle once, without the reference's ongoing carousel. */
+.league-overlay__scroller{overflow-x:hidden}
+.league-overlay.is-open .league-overlay__tabs button{animation:league-strip-enter 1s cubic-bezier(.76,0,.24,1) backwards}
+.league-overlay.is-open .league-overlay__tabs button:nth-child(2){animation-delay:.04s}
+.league-overlay.is-open .league-overlay__tabs button:nth-child(3){animation-delay:.08s}
+@keyframes league-strip-enter{from{opacity:0;transform:translateX(min(75vw,500px)) rotate(3deg)}to{opacity:1;transform:translateX(0) rotate(0)}}
+html[data-motion-reduced="true"] .league-overlay.is-open .league-overlay__tabs button{animation:none}
+
+/* The approved stadium is a single static image beneath the three destinations. */
+.league-overlay__stadium{width:min(100%,380px);margin:20px auto 6px;pointer-events:none}.league-overlay__stadium img{display:block;width:100%;height:auto;object-fit:contain}
+@media(max-width:750px){.league-overlay__stadium{width:min(85%,300px);margin:15px auto 8px}}
+/* Make room for the illustration within the original mobile page height. */
+@media(max-width:750px){
+ .league-overlay .league-overlay__card .card{--width:min(32vw,115px)}
+ .league-overlay .league-overlay__tabs{margin:10px auto 12px}
+ .league-overlay .league-overlay__tabs button{aspect-ratio:1.55}
+ .league-overlay__stadium{width:min(58%,180px);margin:4px auto}
+}
+@media(max-width:350px){
+ .league-overlay .league-overlay__card .card{--width:min(29vw,100px)}
+ .league-overlay__stadium{width:min(55%,160px)}
+}

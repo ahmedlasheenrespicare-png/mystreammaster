@@ -1,7 +1,11 @@
+import { MATCH_CENTER_ALL_MATCHES, matchCenterPath } from "./content/match-center.mjs";
+import { isVerified } from "./lib/match-center.mjs";
+
 /* ==========================================================================
    خريطة الكلمات المستهدفة — مصدر واحد لقصد كل مسار
    --------------------------------------------------------------------------
-   • مسار واحد = كلمة أساسية واحدة = قصد واحد.
+   • مسار واحد = كلمة أساسية واحدة = قصد واحد؛ وصفحات المباريات المؤكدة
+     تُشتق كلماتها من الفريقين في سجل المصدر.
    • primary = null إعلان صريح: صفحة قانونية/وظيفية لا تستهدف كلمة.
    • لا تكرّر primary بين مسارين — الحارس في scripts/seo-guard.mjs يرفض.
    • المفاتيح مكتوبة في صيغتها المُطبَّعة (بلا شرطة ختامية) لأن normalizeRoute
@@ -10,7 +14,7 @@
      وفي Vite (تطبيق React) بلا خطوة بناء خاصة — نفس نمط site.mjs/navigation.mjs.
 ========================================================================== */
 
-export const KEYWORDS = {
+const STATIC_KEYWORDS = {
   "/": {
     primary: "ربط تقني",
     secondary: ["دليل المشاهدة", "إعداد مشغلات", "M3U"],
@@ -99,7 +103,7 @@ export const KEYWORDS = {
   "/roma-real-madrid/watch": { primary: "متابعة روما", intent: "editorial" },
   "/servers": { primary: "مقارنة السيرفرات", intent: "comparison" },
   "/status": { primary: "حالة الخدمة", intent: "navigational" },
-  "/store": { primary: "سعر باقات التفعيل", intent: "transactional" },
+  "/store": { primary: "اشتراك IPTV", intent: "transactional" },
   "/trial": { primary: "تجربة IPTV مجانية", intent: "transactional" },
   "/watch-legal.html": { primary: "المشاهدة القانونية", intent: "informational" },
   "/world-cup-2026": { primary: "كأس العالم FIFA 2026", intent: "informational" },
@@ -112,7 +116,23 @@ export const KEYWORDS = {
   "/world-cup-2026/تونس": { primary: "منتخب تونس", intent: "informational" },
   "/world-cup-2026/قطر": { primary: "منتخب قطر", intent: "informational" },
   "/world-cup-2026/مصر": { primary: "منتخب مصر", intent: "informational" },
+  "/teams/طرابزون-سبور": { primary: "مباريات طرابزون سبور", intent: "informational" },
 };
+
+/* كلمات صفحات تفاصيل المباريات تُشتق من أسماء الفريقين في سجلّ المباراة
+   المؤكّد، لا من قائمة يدوية منفصلة. السجلات غير المؤكدة تظل noindex ولا
+   تدخل خريطة الكلمات حتى لا توحي بفهرسة بيانات لم يثبتها المصدر. */
+const MATCH_DETAIL_KEYWORDS = Object.fromEntries(
+  MATCH_CENTER_ALL_MATCHES.filter(isVerified).map((match) => {
+    const home = typeof match.home?.name === "string" ? match.home.name.trim() : "";
+    const away = typeof match.away?.name === "string" ? match.away.name.trim() : "";
+    const primary = [home, away].filter(Boolean).join(" ضد ");
+    const route = matchCenterPath(match).replace(/\/$/, "");
+    return [route, { primary: primary || null, intent: "informational" }];
+  }),
+);
+
+export const KEYWORDS = { ...STATIC_KEYWORDS, ...MATCH_DETAIL_KEYWORDS };
 
 /**
  * تطبيع المسار: بلا شرطة ختامية، مع فك ترميز السلاجات العربية.

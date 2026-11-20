@@ -1,0 +1,43 @@
+/* Three-row reel behind the about introduction. */
+.sm-about .about-ribbons-scene{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(440px,42vw,620px);display:flex;align-items:center}
+.sm-about .about-ribbons-scene .rose-strip{top:0;left:50%;width:100vw;height:100%;z-index:0;opacity:1}
+.sm-about .about-ribbons-scene .rose-strip__track{opacity:.32}
+.sm-about .about-ribbons-scene .hero-brand-row{opacity:.36}
+.sm-about .about-ribbons-scene::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#280822bd 0%,#28082237 32%,#28082240 65%,#280822e8 100%)}
+.sm-about .about-ribbons-scene .abt__top__text{position:relative;z-index:2;width:100%;padding:28px 4vw;box-sizing:border-box;text-shadow:0 2px 14px #280822,0 1px 5px #280822}
+.sm-about .about-ribbons-scene .abt__top__text>p{opacity:1;color:#fff8fa;max-width:250px}
+@media(max-width:700px){
+ .sm-about .about-ribbons-scene{min-height:420px}
+ .sm-about .about-ribbons-scene .abt__top__text{flex-direction:column;justify-content:center;gap:14px;padding:28px 22px}
+ .sm-about .about-ribbons-scene .abt__top__text>p{display:block;font-size:12px;line-height:1.6;text-align:center;margin:0}
+}
+.sm-about .about-ribbons-scene .rose-strip{direction:ltr}
+/* Scroll-responsive image reel and logo rows. */
+.sm-about .about-ribbons-scene{height:clamp(520px,75svh,750px);min-height:520px}
+.sm-about .about-ribbons-scene .rose-strip{overflow:hidden;perspective:1200px}
+.sm-about .about-ribbons-scene .rose-strip__perspective{transform:translate3d(0,var(--reel-y,0px),0) rotate(var(--reel-angle,-9deg)) rotateY(var(--reel-depth,24deg));transform-style:preserve-3d;opacity:var(--reel-opacity,1);transform-origin:center;will-change:auto}
+.sm-about .about-ribbons-scene .rose-strip.is-visible .rose-strip__perspective{will-change:transform,opacity}
+html[data-motion-reduced="true"] .sm-about .about-ribbons-scene .rose-strip__perspective{transform:rotate(-9deg) rotateY(24deg);opacity:1}
+@media(max-width:700px){.sm-about .about-ribbons-scene{height:65svh;min-height:480px}html[data-motion-reduced="true"] .sm-about .about-ribbons-scene .rose-strip__perspective{transform:rotate(-9deg) rotateY(18deg)}}
+/* Reference image-marquee planes are landscape (~1.86:1), not framed posters. */
+.sm-about .about-ribbons-scene .rose-strip__perspective{--preview-card-width:clamp(220px,31vw,446px);--preview-card-gap:calc(var(--preview-card-width) * .0833)}
+.sm-about .about-ribbons-scene .rose-strip__group{gap:var(--preview-card-gap);padding-right:var(--preview-card-gap)}
+.sm-about .about-ribbons-scene .rose-strip__card{width:var(--preview-card-width);aspect-ratio:1.861/1;padding:0;background:transparent;box-shadow:none;gap:0;overflow:hidden}
+.sm-about .about-ribbons-scene .rose-strip__card img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;position:relative;z-index:1}
+.sm-about .about-ribbons-scene .rose-strip__card span{display:none}
+@media(max-width:600px){.sm-about .about-ribbons-scene .rose-strip__perspective{--preview-card-width:clamp(200px,64vw,280px)}}
+
+/* Keep full vertical posters visible inside the reference's horizontal frames. */
+.sm-about .about-ribbons-scene .rose-strip__track{opacity:.85}
+.sm-about .about-ribbons-scene .rose-strip__card{position:relative;background:#2d1028}
+.sm-about .about-ribbons-scene .rose-strip__card::before{content:"";position:absolute;inset:0;background-image:linear-gradient(#28082233,#28082266),var(--poster-background,none);background-position:center 28%;background-size:cover;opacity:.85}
+
+/* Lighter central veil keeps the posters legible without losing contrast on the intro. */
+.sm-about .about-ribbons-scene::after{background:linear-gradient(180deg,#280822bd 0%,#28082218 32%,#28082224 65%,#280822e8 100%)}
+/* Quieter, consistent logo tiles without changing the original logo colors. */
+.sm-about .about-ribbons-scene .hero-brand-row{opacity:.58}
+.sm-about .about-ribbons-scene .hero-brand-group{align-items:center}
+.sm-about .about-ribbons-scene .hero-brand-card{box-sizing:border-box;height:clamp(34px,3.4vw,50px);padding:7px 12px;border-radius:7px;background:rgba(255,249,246,.80);box-shadow:none}
+.sm-about .about-ribbons-scene .hero-brand-card--dark{background:rgba(23,19,26,.85)}
+.sm-about .about-ribbons-scene .hero-brand-card img{width:100%;height:100%;object-fit:contain}
+@media(max-width:600px){.sm-about .about-ribbons-scene .hero-brand-card{height:33px;padding:6px 10px;border-radius:6px}}

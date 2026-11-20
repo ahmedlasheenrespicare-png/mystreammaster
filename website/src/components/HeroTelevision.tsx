@@ -2,6 +2,8 @@ import { useState, type ReactNode } from 'react';
 import { IconPlay } from './Icons';
 import { ServerIcon } from './ServerIcon';
 import './hero-television.css';
+import './brand-newt35.css';
+import './hero-tv-retro.css';
 import { to } from '../config';
 
 const TV_SERVERS = [
@@ -15,7 +17,8 @@ const TV_SERVERS = [
 export function HeroTelevision({ onActivate, headline }: { onActivate?: () => void; headline?: ReactNode }) {
   const [apps, setApps] = useState(false);
   return (
-    <div className="hero-tv" data-hero-tv="">
+    <div className="hero-tv hero-tv--retro" data-hero-tv="" data-tv-design="lime">
+      <span className="hero-tv-retro-antenna" aria-hidden="true"><i /><i /></span>
       <button
         type="button"
         className="hero-tv-frame"
@@ -32,17 +35,31 @@ export function HeroTelevision({ onActivate, headline }: { onActivate?: () => vo
           <span className="hero-tv-aurora" />
           <span className="hero-tv-orbit hero-tv-orbit--one" />
           <span className="hero-tv-orbit hero-tv-orbit--two" />
-          <span className="hero-tv-topbar"><span className="hero-tv-wordmark"><IconPlay /> ستريم ماستر</span><span className="hero-tv-demo">واجهة توضيحية</span></span>
+          <span className="hero-tv-topbar">
+            <span className="hero-tv-wordmark">
+              <span className="sm-tv-crab-mini">
+                <span className="sm-tv-crab-mini__word">
+                  <span className="sm-tv-crab-mini__tile" data-sup="4K">ست</span>
+                  <span className="sm-tv-crab-mini__rest">ريم</span>
+                </span>{" "}
+                <span className="sm-tv-crab-mini__word">
+                  <span className="sm-tv-crab-mini__tile" data-sup="99">ما</span>
+                  <span className="sm-tv-crab-mini__rest">ستر</span>
+                </span>
+              </span>
+            </span>
+            <span className="hero-tv-demo">واجهة توضيحية</span>
+          </span>
           <span className="hero-tv-welcome">
             <span className="hero-tv-welcome-gallery">
               <span className="hero-tv-football-art">
                 <img src={to('images/players/esp-mbappe.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
-                <img src={to('images/players/eng-haaland-header.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={to('images/players/eng-haaland-header.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/esp-yamal.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/ger-kane.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
                 <img src={to('images/players/fra-dembele.webp')} alt="" loading="lazy" decoding="async" draggable={false} />
               </span>
-            <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.png')} alt="" loading="lazy" decoding="async" draggable={false} />
+            <img className="hero-tv-welcome-art" src={to('images/cinema/superman-batman-stark.webp')} alt="" loading="eager" fetchPriority="high" decoding="async" draggable={false} />
             </span>
             <span className="hero-tv-welcome-copy">
             <span className="hero-tv-eyebrow">عالمك على شاشة أكبر</span>
@@ -66,8 +83,13 @@ export function HeroTelevision({ onActivate, headline }: { onActivate?: () => vo
           <span className="hero-tv-bottom"><span>STREAM MASTER PRO</span><span className="hero-tv-pagination"><i className={!apps ? 'is-active' : ''} /><i className={apps ? 'is-active' : ''} /></span></span>
           <span className="hero-tv-reflection" />
         </span>
+        <span className="hero-tv-retro-controls" aria-hidden="true">
+          <span className="hero-tv-retro-dial" /><span className="hero-tv-retro-dial hero-tv-retro-dial--small" />
+          <span className="hero-tv-retro-speaker" /><span className="hero-tv-retro-power" />
+        </span>
         <span className="hero-tv-chin" aria-hidden="true"><span>STREAM MASTER</span><i /></span>
       </button>
+      <span className="hero-tv-retro-feet" aria-hidden="true" />
       <span className="hero-tv-neck" aria-hidden="true" />
       <span className="hero-tv-base" aria-hidden="true" />
       <span className="hero-tv-floor-shadow" aria-hidden="true" />

@@ -16,6 +16,9 @@ import { keywordsFor, hasKeywordEntry } from '../src/keywords.mjs';
 import { assertKeywordInTitle, assertTitleLength, noteBrandInTitle } from './seo-guard.mjs';
 import { assertAdsAllowed } from './ads-guard.mjs';
 import { optimizeHtmlImages } from './html-images.mjs';
+import { syncReferenceSources } from './sync-reference-sources.mjs';
+import { versionReferenceAssets } from './version-reference-assets.mjs';
+import { syncReferencePaths } from './sync-reference-paths.mjs';
 
 /* حرّاس SEO على الصفحات القديمة (لا تمر عبر getSeo) — الصفحات المفهرسة
    فقط، وتحوّل المخالفات المانعة إلى فشل بناء عند SEO_STRICT=1. */
@@ -31,6 +34,10 @@ let legacyCoverageGaps = 0;
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
+// Publish the same standings snapshot and parser sources as the homepage.
+await syncReferenceSources(website, path.join(root, 'home-preview/saved-reference/assets'));
+await syncReferencePaths(website, path.join(root, 'home-preview/saved-reference'));
+await versionReferenceAssets(path.join(root, 'home-preview/saved-reference'));
 async function files(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   return (await Promise.all(entries.map(e => e.isDirectory() ? files(path.join(dir, e.name)) : path.join(dir, e.name)))).flat();
@@ -89,6 +96,21 @@ const NO_ADS_PAGES = new Set([
   'roma-real-madrid/watch/index.html',
 ]);
 
+const BRAND_ICON_LINKS = [
+  '<link rel="icon" href="/favicon.ico" sizes="48x48">',
+  '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">',
+  '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">',
+  '<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">',
+  '<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">',
+  '<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">',
+  '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">',
+].join('');
+
+function applyBrandIcons($) {
+  $('head link[rel="icon"], head link[rel="shortcut icon"], head link[rel="apple-touch-icon"]').remove();
+  if ($('head').length) $('head').append(BRAND_ICON_LINKS);
+}
+
 function stripAdsense($, relative) {
   if (!NO_ADS_PAGES.has(relative)) return;
   $('script[src]').each((_, el) => {
@@ -102,6 +124,7 @@ function stripAdsense($, relative) {
 
 async function publishStandalone(file, relative) {
   const $ = load(await fs.readFile(file, 'utf8'));
+  applyBrandIcons($);
   stripAdsense($, relative);
   const destination = path.join(root, relative);
   await fs.mkdir(path.dirname(destination), { recursive: true });
@@ -203,7 +226,8 @@ for (const file of await files(path.join(website, 'legacy'))) {
   $('link[href*="3d-effects"], link[href*="pricing-minimal"], link[href*="fonts.googleapis"], link[href*="fonts.gstatic"]').remove();
   // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.
   if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#faf9f6');
-  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261013b"><script src="/_assets/storefront.js?v=20261013b" defer></script>');
+  applyBrandIcons($);
+  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261028a"><script src="/_assets/storefront.js?v=20261028a" defer></script>');
 
   /* فحص SEO للصفحة القديمة بصيغتها النهائية: نحوّل مسار الملف إلى مسار تطبيع
      (about/index.html → /about، watch-legal.html → /watch-legal.html) ثم

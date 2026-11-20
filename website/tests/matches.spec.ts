@@ -45,6 +45,23 @@ async function mockSource(page: Page, options: { fail?: boolean; partial?: boole
   return { get calls() { return calls; }, setScore: (next: number) => { score = next; }, setFailure: (next: boolean, nextCode = code) => { fail = next; code = nextCode; } };
 }
 
+test('Morocco warns when browser time-zone data does not reflect the 2026 change', async ({ page }) => {
+  await mockSource(page);
+  await page.goto('/matches/');
+  const zone = page.getByLabel('المنطقة الزمنية');
+  await zone.selectOption('Africa/Casablanca');
+  const deviceIsOutdated = await page.evaluate(() => {
+    const date = new Date();
+    const hour = (timeZone: string) => new Intl.DateTimeFormat('en-US', { timeZone, hour: '2-digit', hourCycle: 'h23' }).format(date);
+    return hour('Africa/Casablanca') !== hour('UTC');
+  });
+  const warning = page.getByText('قد تكون بيانات توقيت المغرب في جهازك قديمة', { exact: false });
+  if (deviceIsOutdated) await expect(warning).toBeVisible();
+  else await expect(warning).toHaveCount(0);
+  await zone.selectOption('UTC');
+  await expect(warning).toHaveCount(0);
+});
+
 test('matches hub carries the all-leagues ticket above the calendar', async ({ page }) => {
   await mockSource(page);
   await page.goto('/matches/');

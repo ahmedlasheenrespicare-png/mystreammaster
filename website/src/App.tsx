@@ -1,3 +1,5 @@
+import "./mobile-rendering.css";
+import MotionSettings from "./components/MotionSettings";
 import { useCallback, useEffect, useState } from "react";
 import { readCart, saveCart } from "./cart-storage";
 import Pricing from "./components/Pricing";
@@ -7,6 +9,7 @@ import FloatingActions from "./components/FloatingActions";
 import Footer from "./components/Footer";
 import TrialModal from "./components/TrialModal";
 import CartModal, { CartItem } from "./components/CartModal";
+import WelcomeSplash from "./components/WelcomeSplash";
 import { useRouter } from "./router";
 import { applySeoToDocument } from "./seo";
 import HomePage from "./pages/HomePage";
@@ -17,6 +20,7 @@ import LeagueLandingPage from "./pages/LeagueLandingPage";
 import MatchCenterPage from "./pages/MatchCenterPage";
 import MatchCenterHubPage from "./pages/MatchCenterHubPage";
 import TeamLandingPage from "./pages/TeamLandingPage";
+import ClubLandingPage from "./pages/ClubLandingPage";
 import PlanPage from "./pages/PlanPage";
 import BlogIndexPage from "./pages/BlogIndexPage";
 import BlogPostPage from "./pages/BlogPostPage";
@@ -30,11 +34,12 @@ import EnHeader from "./components/EnHeader";
 import EnFooter from "./components/EnFooter";
 import { isEnPath } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
-import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
+import { CLUB_LANDINGS, LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
 import { matchByRoute } from "./content/match-center.mjs";
 import { PRICING_PLANS, PricingPlan } from "./data";
 import { ScrollProgress, SmoothScroll } from "./components/motion";
+import { trackSiteEvent } from "./lib/analytics";
 
 export default function App() {
   const { path } = useRouter();
@@ -60,8 +65,62 @@ export default function App() {
     applySeoToDocument(path);
   }, [path]);
 
+  /* قياس انتقال زائر المباريات/الأخبار إلى صفحات التجربة أو الباقات، دون
+     تغيير أي نص أو معرّف GA4. يُسجَّل المسار المصدر فقط، بلا query strings. */
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const target = event.target instanceof Element
+        ? event.target
+        : event.target instanceof Node
+          ? event.target.parentElement
+          : null;
+      const link = target?.closest<HTMLAnchorElement>("a[href]");
+      if (!link) return;
+
+      let destination: URL;
+      try {
+        destination = new URL(link.href, window.location.href);
+      } catch {
+        return;
+      }
+      if (destination.origin !== window.location.origin) return;
+
+      const destinationPath = destination.pathname.replace(/\/+$/, "") || "/";
+      const plan = PRICING_PLANS.find(({ serverCode }) =>
+        destinationPath === `/${serverCode}` || destinationPath === `/en/${serverCode}`
+      );
+      const ctaType = destinationPath === "/trial"
+        ? "trial"
+        : plan
+          ? "plan"
+          : destinationPath === "/store" || destination.hash === "#pricing"
+            ? "pricing"
+            : null;
+      if (!ctaType) return;
+
+      trackSiteEvent("commercial_cta_click", {
+        cta_type: ctaType,
+        cta_location: "link",
+        source_path: path,
+        target_path: `${destinationPath}${destination.hash}`,
+        ...(plan ? { plan_code: plan.serverCode } : {}),
+      });
+    };
+
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [path]);
+
   /* مرجع ثابت للدوال — يمنع إعادة رسم الأقسام الثقيلة (المشغلات) عند كل تغيير حالة */
-  const openTrial = useCallback(() => setIsTrialOpen(true), []);
+  const openTrial = useCallback(() => {
+    trackSiteEvent("commercial_cta_click", {
+      cta_type: "trial",
+      cta_location: "trial_modal",
+      source_path: path,
+      target_path: "trial_modal",
+    });
+    setIsTrialOpen(true);
+  }, [path]);
   const closeTrial = useCallback(() => setIsTrialOpen(false), []);
   const openCart = useCallback(() => setIsCartOpen(true), []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
@@ -101,6 +160,7 @@ export default function App() {
   const matchCenter = matchByRoute(path);
   const leagueLanding = LEAGUE_LANDINGS.find((l) => path === `/matches/${l.slug}`);
   const teamLanding = TEAM_LANDINGS.find((t) => path === `/world-cup-2026/${t.slug}`);
+  const clubLanding = CLUB_LANDINGS.find((c) => path === `/teams/${c.slug}`);
   const channelCategory = CHANNEL_CATEGORY_PAGES.find((category) => path === `/channels/${category.slug}`);
 
   let page;
@@ -122,13 +182,13 @@ export default function App() {
       />
     );
   } else if (path === "/store" || path === "/servers") {
-    page = <div className="pt-[140px]"><nav className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">{path === "/store" ? "المتجر" : "السيرفرات والباقات"}</span></nav><h1 className="text-center font-display text-4xl font-black pt-8">باقات ستريم ماستر</h1><Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />{path === "/servers" && <ServersComparison />}</div>;
+    page = <div className="pt-[104px]"><nav className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">{path === "/store" ? "المتجر" : "السيرفرات والباقات"}</span></nav><h1 className="text-center font-display text-4xl font-black pt-8">باقات ستريم ماستر</h1><Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />{path === "/servers" && <ServersComparison />}</div>;
   } else if (path === "/faq") {
     page = <FaqPage />;
   } else if (path === "/trial") {
     page = <TrialPage onOpenTrial={openTrial} />;
   } else if (path === "/cart") {
-    page = <section className="pt-[180px] pb-24 px-5 text-center max-w-3xl mx-auto"><p className="text-[#2b4eff] font-bold mb-4">طلب التفعيل التقني يبدأ هنا</p><h1 className="font-display text-5xl font-black">سلة المشتريات</h1><p className="my-6 text-black/60">راجع الباقات المختارة وأكمل طلبك مع فريقنا عبر واتساب.</p><button onClick={openCart} className="rounded-full bg-[#0b0b0f] text-[#d8ff3e] font-bold px-8 py-4">عرض السلة ({cartItems.length})</button><a href="/store/" className="inline-block mx-4 font-bold underline">متابعة التسوق</a></section>;
+    page = <section className="pt-[144px] pb-24 px-5 text-center max-w-3xl mx-auto"><p className="text-[#2b4eff] font-bold mb-4">طلب التفعيل التقني يبدأ هنا</p><h1 className="font-display text-5xl font-black">سلة المشتريات</h1><p className="my-6 text-black/60">راجع الباقات المختارة وأكمل طلبك مع فريقنا عبر واتساب.</p><button onClick={openCart} className="rounded-full bg-[#0b0b0f] text-[#d8ff3e] font-bold px-8 py-4">عرض السلة ({cartItems.length})</button><a href="/store/" className="inline-block mx-4 font-bold underline">متابعة التسوق</a></section>;
   } else if (matchCenter) {
     page = <MatchCenterPage match={matchCenter} />;
   } else if (path === "/match-center") {
@@ -137,6 +197,8 @@ export default function App() {
     page = <LeagueLandingPage landing={leagueLanding} />;
   } else if (teamLanding) {
     page = <TeamLandingPage landing={teamLanding} />;
+  } else if (clubLanding) {
+    page = <ClubLandingPage landing={clubLanding} />;
   } else if (path === "/matches") {
     page = <MatchesPage />;
   } else if (channelCategory) {
@@ -169,8 +231,10 @@ export default function App() {
       className="min-h-screen bg-[#faf9f6] text-[#0b0b0f] flex flex-col font-sans selection:bg-[#0b0b0f] selection:text-[#d8ff3e]"
       dir={isEnPath(path) ? "ltr" : "rtl"}
     >
+      <MotionSettings english={isEnPath(path)} />
       <ScrollProgress />
       <SmoothScroll />
+      {!isEnPath(path) && <WelcomeSplash activeRoute={path} />}
 
       {isEnPath(path) ? (
         <EnHeader />

@@ -5,7 +5,6 @@ import {
   IconCheck,
   IconClock,
   IconShieldCheck,
-  IconStar,
   IconZap,
 } from "./Icons";
 import { CURRENCIES, getWhatsAppUrl, PRICING_PLANS, AVAILABLE_DURATIONS, PlanDuration, PricingPlan } from "../data";
@@ -66,7 +65,7 @@ export default function Pricing({
             اختر باقتك و<span className="font-serif italic font-normal">سيرفرك</span> المفضل
           </h2>
           <p className="mt-4 text-[15px] md:text-[16.5px] text-black/60 font-medium leading-relaxed">
-            باقات ربط تقني مع أبرز سيرفرات المزودين الخارجيين، مع تفعيل فوري ودعم فني لضبط الإعدادات
+            باقات ربط تقني مع سيرفرات مزودين خارجيين، مع إرشادات لإعداد المشغّل ودعم فني
             طوال مدة الاشتراك.
           </p>
 
@@ -174,7 +173,7 @@ export default function Pricing({
                     <div className="srv-card-badges">
                       {plan.isPopular && (
                         <span className="bg-[#d8ff3e] text-black text-[11px] font-black px-3 py-1 rounded-full shadow-sm">
-                          🔥 الأكثر طلباً
+                          خيار للمباريات
                         </span>
                       )}
                       {plan.isVip && (
@@ -264,7 +263,7 @@ export default function Pricing({
                           dark ? "text-[#3effe0]" : "text-[#16a34a]"
                         }`}
                       >
-                        ✓ تفعيل فوري بدون رسوم
+                        ✓ راجع السعر والشروط قبل الطلب
                       </span>
                     </div>
                   </div>
@@ -358,13 +357,13 @@ export default function Pricing({
             },
             {
               icon: <IconZap className="w-[22px] h-[22px] text-[#ff5c4d]" />,
-              t: "تفعيل خلال 5 دقائق",
-              d: "آلي بالكامل عبر واتساب والبريد",
+              t: "خطوات التفعيل",
+              d: "اسأل عن موعد استلام بياناتك",
             },
             {
               icon: <IconClock className="w-[22px] h-[22px] text-[#2b4eff]" />,
-              t: "دعم فني 24/7",
-              d: "متوسط الرد أقل من 3 دقائق",
+              t: "الدعم الفني",
+              d: "تحقّق من أوقات وطرق التواصل",
             },
           ].map((b, i) => (
             <Reveal key={b.t} variant="start" delay={i * 110}>
@@ -379,15 +378,9 @@ export default function Pricing({
           ))}
         </div>
 
-        {/* تقييم صغير أسفل الباقات */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-[13px] font-bold text-black/50">
-          <div className="flex gap-0.5">
-            {[...Array(5)].map((_, i) => (
-              <IconStar key={i} className="w-3.5 h-3.5 fill-[#0b0b0f] text-[#0b0b0f]" />
-            ))}
-          </div>
-          4.95 من 5 — 4,820+ تقييم موثق من مشتركين حقيقيين
-        </div>
+        <p className="mt-6 text-center text-[13px] font-bold text-black/50">
+          راجع السعر والشروط وحقوق المحتوى في بلدك قبل الاشتراك.
+        </p>
       </div>
     </section>
   );

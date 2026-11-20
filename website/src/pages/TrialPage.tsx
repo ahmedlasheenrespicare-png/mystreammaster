@@ -18,7 +18,7 @@ import { Reveal } from "../components/motion";
    • تستهدف نية «تجربة IPTV مجانية 6 ساعات»: فوائد وشروط وخطوات ظاهرة كلها
      في HTML المُرسَل من الخادم (لا نص يظهر بعد ضغطة أو خلف JavaScript).
    • حقائق الصفحة من نموذج طلب التجربة نفسه: كود فحص يصدره المزود الخارجي،
-     استلام عبر واتساب خلال دقائق، بدون أي دفع قبل الفحص.
+     التواصل عبر واتساب، بدون أي دفع قبل الفحص.
    • زر الطلب يفتح نموذج التجربة الحالي نفسه (App/TrialModal) — لا جمع
      بيانات جديداً: الجهاز والسيرفر يصلاننا برسالة واتساب يرسلها الزائر.
 ========================================================================== */
@@ -59,7 +59,7 @@ const TRIAL_STEPS = [
   },
   {
     title: "استلم بيانات التجربة",
-    text: "يُصدر المزود الخارجي كود التجربة، وتصلك بياناته (رابط M3U أو بيانات Xtream Codes) عبر واتساب خلال دقائق — عادة أقل من 5 دقائق — مع شرح إعداد المشغّل خطوة بخطوة.",
+    text: "يُصدر المزود الخارجي كود التجربة، وتُنسّق طريقة استلام بياناته عبر واتساب مع شرح إعداد المشغّل. اسأل عن موعد الاستلام قبل الطلب.",
   },
   {
     title: "شغّل وافحص 6 ساعات",
@@ -75,7 +75,7 @@ const TRIAL_STEPS = [
 const TRIAL_CONDITIONS = [
   "المدة: 6 ساعات كاملة من إصدار كود التجربة، وتنتهي صلاحيته بعدها تلقائياً.",
   "الإصدار: كود التجربة وبياناته صادرة عن المزود الخارجي المستقل لكل سيرفر؛ دور ستريم ماستر برو هو الربط التقني ومساعدتك في إعداد المشغّل.",
-  "الاستلام: عبر واتساب خلال دقائق من إرسال الطلب (عادة أقل من 5 دقائق)، مع إرشادات الإعداد المناسبة لجهازك.",
+  "الاستلام: يُنسَّق عبر واتساب مع إرشادات الإعداد؛ اسأل عن المدة المتوقعة عند الطلب.",
   "الدفع: لا يُطلب أي مبلغ ولا بطاقة ائتمانية قبل التجربة أو خلالها، ولا يوجد أي تجديد تلقائي بعد انتهائها.",
   "التوافق: جرّب على الجهاز الذي ستعتمد عليه فعلياً، وفي أوقات الذروة إن أمكن، لتصل إلى نتيجة واقعية عن الأداء على اتصالك.",
   "المحتوى المشفّر يُشاهد عبر اشتراكات الجهات الرسمية المالكة له فقط — راجع دليل المشاهدة الرسمية لخيارات الاشتراك الرسمي.",
@@ -86,7 +86,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
   const waTrialText = encodeURIComponent("مرحباً، أود طلب كود تجربة مجانية 6 ساعات لفحص التوافق على جهازي");
 
   return (
-    <div className="pt-[140px]">
+    <div className="pt-[104px]">
       <nav
         className="max-w-[860px] mx-auto px-5 text-[12.5px] font-bold text-black/40 pt-6"
         aria-label="مسار التصفح"
@@ -106,8 +106,8 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
             تجربة IPTV مجانية <span className="font-serif italic font-normal">6 ساعات</span>
           </h1>
           <p className="mt-4 text-[15px] md:text-[16px] text-black/55 font-medium leading-[1.9] max-w-[680px] mx-auto">
-            يُصدر المزود الخارجي كود فحص وتجربة مجانياً لمدة 6 ساعات كاملة، يصلك عبر واتساب
-            خلال دقائق من طلبك مع إرشادات إعداد المشغّل، لتفحص توافق جهازك وثبات البث وجودة
+            يُصدر المزود الخارجي كود فحص وتجربة مجانياً لمدة 6 ساعات كاملة، وتُنسّق طريقة استلامه
+            عبر واتساب مع إرشادات إعداد المشغّل، لتفحص توافق جهازك وثبات البث وجودة
             الصورة على سرعة اتصالك — قبل دفع أي مبلغ ودون أي التزام. دورنا في ستريم ماستر برو
             هو الربط التقني ومساعدتك في الإعداد خطوة بخطوة.
           </p>
@@ -132,7 +132,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
           <dl className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 text-start">
             {[
               { k: "6 ساعات", v: "مدة التجربة كاملة من إصدار الكود" },
-              { k: "أقل من 5 دقائق", v: "لاستلام الكود عبر واتساب عادة" },
+              { k: "عبر واتساب", v: "اسأل عن موعد استلام الكود" },
               { k: "3 سيرفرات", v: "نوفا وإيستار وموكا — اختر واحداً للفحص" },
               { k: "0 دفع مقدم", v: "لا مبلغ ولا بطاقة قبل التجربة" },
             ].map((f) => (
@@ -200,7 +200,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
       </section>
 
       {/* ===== الشروط ===== */}
-      <section id="trial-conditions" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[150px]">
+      <section id="trial-conditions" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[114px]">
         <div className="max-w-[860px] mx-auto px-5">
           <h2 className="font-display font-black tracking-tight text-[26px] md:text-[34px] leading-snug">
             شروط التجربة باختصار
@@ -262,7 +262,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
       </section>
 
       {/* ===== أسئلة التجربة ===== */}
-      <section id="trial-faq" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[150px]">
+      <section id="trial-faq" className="py-14 md:py-20 bg-white border-y border-black/[0.06] scroll-mt-[114px]">
         <div className="max-w-[860px] mx-auto px-5">
           <h2 className="font-display font-black tracking-tight text-[26px] md:text-[34px] leading-snug text-center">
             أسئلة شائعة عن التجربة المجانية

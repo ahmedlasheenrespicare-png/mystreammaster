@@ -1,0 +1,12 @@
+/* A lightweight interpretation of the reference marquee, behind the actual flower. */
+.rose-strip{position:absolute;left:50%;top:var(--flower-after-title,100%);width:100vw;height:var(--flower-title-height,400px);transform:translateX(-50%);z-index:4;overflow:hidden;pointer-events:none;display:flex;align-items:center;perspective:1200px;opacity:.65}
+.rose-strip__perspective{width:100%;transform:rotate(-7deg) rotateY(24deg);transform-style:preserve-3d}
+.rose-strip__track{display:flex;width:max-content;animation:rose-strip-scroll 184.5s linear infinite;animation-play-state:paused;will-change:transform}
+.rose-strip.is-visible .rose-strip__track{animation-play-state:running}
+.rose-strip__group{display:flex;gap:clamp(10px,1.5vw,24px);padding-right:clamp(10px,1.5vw,24px)}
+.rose-strip__card{flex:none;width:clamp(112px,15vw,220px);aspect-ratio:220/292;padding:clamp(5px,.65vw,9px);background:#eee9e3;box-shadow:0 8px 30px #190b1555;color:#342b31;display:flex;flex-direction:column;gap:8px}
+.rose-strip__card img{width:100%;height:76%;object-fit:cover;object-position:center 35%;display:block}
+.rose-strip__card span{font:700 clamp(8px,.8vw,13px)/1.25 Arial,sans-serif;text-transform:uppercase;padding:2px 1px;white-space:normal}
+@keyframes rose-strip-scroll{to{transform:translateX(-50%)}}
+:where(html[data-motion-reduced="true"]) .rose-strip__track{animation:none}
+@media(max-width:600px){.rose-strip{opacity:.64}.rose-strip__perspective{transform:rotate(-7deg) rotateY(18deg)}.rose-strip__card{width:112px}}

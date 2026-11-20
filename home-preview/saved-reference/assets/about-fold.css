@@ -1,0 +1,6 @@
+/* An independent preview: the existing horizontal Arabic copy is never split into letters. */
+.sm-about .abt__who .abt__who__text p.fold-about-text{position:relative;opacity:1!important;transform:none!important}
+.sm-about .abt__who .abt__who__text p.fold-about-text .fold-about-base{display:block;color:#ffffff38}
+.sm-about .abt__who .abt__who__text p.fold-about-text .fold-about-fill{position:absolute;inset:24px 0;color:#fff;clip-path:inset(0 0 0 calc((1 - var(--fold-progress,1))*100%));pointer-events:none}
+@media(max-width:700px){.sm-about .abt__who .abt__who__text p.fold-about-text .fold-about-fill{inset:22px 4%}}
+html[data-motion-reduced="true"] .sm-about .abt__who .abt__who__text p.fold-about-text .fold-about-fill{clip-path:none}

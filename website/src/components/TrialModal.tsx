@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { IconChat, IconClose, IconZap } from "./Icons";
 import { useDialogA11y } from "./useDialogA11y";
 import { getWhatsAppUrl } from "../data";
+import { to } from "../config";
 
 interface TrialModalProps {
   isOpen: boolean;
@@ -10,7 +11,7 @@ interface TrialModalProps {
 
 export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
   const [device, setDevice] = useState("شاشة سامسونج أو LG Smart TV");
-  const [server, setServer] = useState("سيرفر نوفا (Nova Server) — الأعلى ثباتاً وقت الذروة");
+  const [server, setServer] = useState("سيرفر نوفا (Nova Server)");
   const [phone, setPhone] = useState("");
 
   /* إتاحة: Escape + حبس التركيز داخل النافذة + قفل تمرير الخلفية + إعادة التركيز */
@@ -92,8 +93,8 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
               onChange={(e) => setServer(e.target.value)}
               className="w-full rounded-2xl border border-black/10 bg-[#faf9f6] px-3.5 py-3 text-[14px] font-bold focus:border-[#2b4eff] focus:outline-none focus:bg-white transition cursor-pointer"
             >
-              <option value="سيرفر نوفا (Nova Server) — الأعلى ثباتاً وقت الذروة">
-                سيرفر نوفا (Nova) — الأعلى ثباتاً وقت الذروة ⚡
+              <option value="سيرفر نوفا (Nova Server)">
+                سيرفر نوفا (Nova) ⚡
               </option>
               <option value="سيرفر إيستار (iStar Pro) — المتوازن للأجهزة الذكية">
                 سيرفر إيستار (iStar) — المتوازن للأجهزة الذكية 📺
@@ -126,7 +127,7 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
           <p className="text-[11.5px] text-black/50 text-center leading-relaxed">
             بإرسال هذا الطلب، فإنك تقرّ باطلاعك وموافقتك على{" "}
             <a
-              href="https://arena.ai/terms/"
+              href={to("terms/")}
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-[#2b4eff] underline underline-offset-2"
@@ -135,7 +136,7 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
             </a>{" "}
             و
             <a
-              href="https://arena.ai/refund/"
+              href={to("refund/")}
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-[#2b4eff] underline underline-offset-2"
@@ -147,7 +148,7 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
         </form>
 
         <p className="text-[11.5px] text-black/40 text-center mt-4 font-medium">
-          يتم إصدار كود التجربة من المزود مع إرشادات إعداد التطبيق خلال أقل من 5 دقائق عبر واتساب.
+          اسأل عن موعد إصدار كود التجربة وإرشادات إعداد التطبيق عبر واتساب.
         </p>
       </div>
     </div>

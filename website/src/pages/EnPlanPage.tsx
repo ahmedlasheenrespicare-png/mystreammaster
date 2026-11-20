@@ -24,7 +24,7 @@ export default function EnPlanPage({ plan }: { plan: PricingPlan }) {
   ];
 
   return (
-    <div className="pt-[140px]">
+    <div className="pt-[120px]">
       <nav
         className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6"
         aria-label="Breadcrumb"

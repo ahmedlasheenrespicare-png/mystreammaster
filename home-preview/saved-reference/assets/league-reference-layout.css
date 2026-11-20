@@ -1,0 +1,107 @@
+/* Independent study of the reference's open selector, retaining the section palette. */
+.sm-leagues__stage{padding:clamp(26px,4vw,55px) 3vw 30px;gap:clamp(14px,2vh,22px);background:linear-gradient(180deg,#f6dcae 0%,#efcc92 43%,#e5b875 100%)}
+.sm-leagues__top{width:min(100%,1100px);padding-bottom:30px}
+.sm-leagues__top h2{font-size:clamp(32px,5vw,62px)}
+.sm-leagues__top .sm-leagues__globes{opacity:.28}
+.sm-leagues.is-ready .sm-leagues__cards{width:min(36vw,420px);height:clamp(470px,65svh,680px);overflow:visible;flex-shrink:0}
+.sm-leagues.is-ready .sm-leagues__cards::before{width:min(96vw,1200px);height:min(96vw,690px);top:43%;border-color:#9f642e55}
+.sm-leagues.is-ready .sm-leagues__cards::after{width:94vw;max-width:1320px;top:17%;height:52%;border-color:#9f642e45}
+.sm-leagues.is-ready .sm-leagues__card:not([hidden]){bottom:112px;background:transparent;border:0;box-shadow:none;color:#713904}
+.sm-leagues.is-ready .sm-leagues__card:not([hidden]) h3{color:#713904;text-shadow:none;position:absolute;top:1%;left:0;right:0;margin:0;font-size:clamp(17px,2vw,24px);z-index:1}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__image{inset:14% 5% 8%;background:transparent!important;overflow:visible}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__image img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 12px #63380b22)}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a{top:auto;left:0;right:0;bottom:-108px;width:100%;height:46px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff2d6;color:#713904;border:1px solid #ae773d;text-shadow:none;font-size:12px}
+.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a:hover,.sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a:focus-visible{background:#fbe6bd;color:#713904}
+.league-fixed-actions{bottom:58px}
+.sm-leagues.is-ready .sm-leagues__neighbour:not([hidden]){top:18%;bottom:29%;width:60%;opacity:.48}
+.sm-leagues.is-ready .sm-leagues__neighbour.is-previous{right:calc(100% + clamp(30px,8vw,125px))}
+.sm-leagues.is-ready .sm-leagues__neighbour.is-next{left:calc(100% + clamp(30px,8vw,125px))}
+.sm-leagues.is-ready .sm-leagues__neighbour .sm-leagues__image{inset:10% 4% 15%;opacity:1}
+.sm-leagues.is-ready .sm-leagues__neighbour .sm-leagues__image img{width:85%;height:85%;filter:saturate(.5)}
+.section-carousel-nav{top:43%}
+.sm-leagues .sm-leagues__stats{margin-top:8px}
+@media(max-width:700px){
+ .sm-leagues__stage{padding:24px 4vw 28px;gap:13px}
+ .sm-leagues__top{padding-bottom:36px}
+ .sm-leagues__top h2{font-size:clamp(30px,9vw,44px)}
+ .sm-leagues.is-ready .sm-leagues__cards{width:min(48vw,220px);height:clamp(365px,62svh,480px)}
+ .sm-leagues.is-ready .sm-leagues__cards::before{width:98vw;height:98vw;top:37%}
+ .sm-leagues.is-ready .sm-leagues__cards::after{top:14%;height:48%}
+ .sm-leagues.is-ready .sm-leagues__card:not([hidden]){bottom:106px}
+ .sm-leagues.is-ready .sm-leagues__card:not([hidden]) h3{font-size:clamp(16px,4.5vw,20px);top:1%}
+ .sm-leagues.is-ready .sm-leagues__card .sm-leagues__image{inset:16% 0 10%}
+ .sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a{bottom:-103px;height:44px;font-size:11px}
+ .league-fixed-actions{bottom:55px;left:50%;right:auto;width:min(88vw,380px);transform:translateX(-50%)}
+ .sm-leagues.is-ready .sm-leagues__neighbour:not([hidden]){width:45%;top:21%;bottom:33%}
+ .sm-leagues.is-ready .sm-leagues__neighbour.is-previous{right:calc(100% + 12px)}
+ .sm-leagues.is-ready .sm-leagues__neighbour.is-next{left:calc(100% + 12px)}
+ .section-carousel-nav{top:42%}
+}
+@media(max-height:650px){.sm-leagues.is-ready .sm-leagues__cards{height:360px}.sm-leagues.is-ready .sm-leagues__card:not([hidden]) h3{font-size:16px;margin:0}.sm-leagues.is-ready .sm-leagues__card .sm-leagues__image{top:16%}}
+@media(min-width:701px){
+ .sm-leagues.is-ready .sm-leagues__neighbour:not([hidden]){width:40%}
+ .sm-leagues.is-ready .sm-leagues__neighbour.is-previous{right:calc(100% + clamp(18px,3vw,45px))}
+ .sm-leagues.is-ready .sm-leagues__neighbour.is-next{left:calc(100% + clamp(18px,3vw,45px))}
+}
+@media(max-width:700px){
+ .section-carousel-nav{top:62%}
+ .sm-leagues.is-ready .sm-leagues__card .sm-leagues__actions a{left:50%;right:auto;width:min(88vw,380px);transform:translateX(-50%)}
+}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch{position:absolute;z-index:10;left:0;right:0;bottom:4px;width:100%;height:46px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff2d6;color:#713904;border:1px solid #ae773d;border-radius:0;box-shadow:none;padding:0;text-shadow:none;font:700 12px/1 SMTajawal,Tajawal,sans-serif;cursor:pointer}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch span{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;margin:0;background:transparent;color:inherit;border:1px solid currentColor;border-radius:50%}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch .world-launch__arrow{width:12px;height:12px}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch:hover,.sm-leagues.is-ready .sm-leagues__cards > .world-launch:focus-visible{background:#fbe6bd;color:#713904}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch:focus-visible{outline:3px solid #7f3b00;outline-offset:2px}
+@media(max-width:700px){.sm-leagues.is-ready .sm-leagues__cards > .world-launch{left:50%;right:auto;width:min(88vw,380px);height:44px;transform:translateX(-50%);font-size:11px}}
+/* Movement stays subordinate to the reference's quiet product presentation. */
+.sm-leagues__cards{touch-action:pan-y;user-select:none}
+.sm-leagues.is-ready .sm-leagues__cards.is-switching::before{animation:selector-orbit 1.2s cubic-bezier(.215,.61,.355,1)}
+.sm-leagues.is-ready .sm-leagues__cards.is-switching::after{animation:selector-lines 1.2s cubic-bezier(.215,.61,.355,1)}
+@keyframes selector-orbit{0%{transform:translate(-50%,-50%) scale(1);opacity:.65}45%{transform:translate(-50%,-50%) scale(1.018);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@keyframes selector-lines{0%{transform:translateX(-50%) scaleX(1);opacity:.65}45%{transform:translateX(-50%) scaleX(.97);opacity:1}100%{transform:translateX(-50%) scaleX(1);opacity:1}}
+.league-fixed-actions .league-action-label{display:inline-block;transition:transform .22s ease}
+@media(hover:hover){.league-fixed-actions button:hover .league-action-label{transform:translateY(-1px)}.sm-leagues.is-ready .sm-leagues__cards > .world-launch:hover .world-launch__arrow{transform:translate(2px,-2px)}}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch .world-launch__arrow{transition:transform .22s ease}
+.league-fixed-actions button:active .league-action-label,.league-fixed-actions button.is-activating .league-action-label{transform:translateY(-1px)}
+.sm-leagues.is-ready .sm-leagues__cards > .world-launch:active .world-launch__arrow{transform:translate(2px,-2px)}
+html[data-motion-reduced="true"] .sm-leagues.is-ready .sm-leagues__cards.is-switching::before,html[data-motion-reduced="true"] .sm-leagues.is-ready .sm-leagues__cards.is-switching::after{animation:none}
+html[data-motion-reduced="true"] .league-fixed-actions .league-action-label,html[data-motion-reduced="true"] .sm-leagues.is-ready .sm-leagues__cards > .world-launch .world-launch__arrow{transition:none;transform:none!important}
+/* Single entrance, then quiet feedback on the neighbouring emblems. */
+.sm-leagues.is-ready .sm-leagues__cards.reference-entered:not(.is-switching)::before{animation:reference-ring-in .85s cubic-bezier(.215,.61,.355,1) backwards}
+.sm-leagues.is-ready .sm-leagues__cards.reference-entered:not(.is-switching)::after{animation:reference-lines-in .8s .12s cubic-bezier(.215,.61,.355,1) backwards}
+@keyframes reference-ring-in{from{opacity:0;transform:translate(-50%,-50%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes reference-lines-in{from{opacity:0;transform:translateX(-50%) scaleX(.9)}to{opacity:1;transform:translateX(-50%) scaleX(1)}}
+.sm-leagues.is-ready .sm-leagues__neighbour .sm-leagues__image img{transition:transform .3s cubic-bezier(.215,.61,.355,1),filter .3s ease}
+@media(hover:hover){.sm-leagues.is-ready .sm-leagues__neighbour:hover .sm-leagues__image img,.sm-leagues.is-ready .sm-leagues__neighbour:focus-visible .sm-leagues__image img{transform:scale(1.08);filter:saturate(.85)}}
+.sm-leagues.is-ready .sm-leagues__neighbour:active .sm-leagues__image img{transform:scale(.96);filter:saturate(.85)}
+html[data-motion-reduced="true"] .sm-leagues.is-ready .sm-leagues__cards.reference-entered::before,html[data-motion-reduced="true"] .sm-leagues.is-ready .sm-leagues__cards.reference-entered::after{animation:none!important}
+html[data-motion-reduced="true"] .sm-leagues.is-ready .sm-leagues__neighbour .sm-leagues__image img{transition:none;transform:none!important}
+/* Compact logo-only league navigation below the stats. */
+.sm-leagues .sm-leagues__mini{width:min(100%,760px);gap:8px;padding:5px 4px 8px;scrollbar-width:thin;scrollbar-color:#a96430 transparent}
+.sm-leagues .sm-leagues__mini button,.sm-leagues .sm-leagues__mini button:nth-child(n){flex:0 0 78px;min-height:66px;padding:5px 7px 10px;border:0;border-radius:0;background:transparent;box-shadow:none;color:#713904;opacity:.58}
+.sm-leagues .sm-leagues__mini button > span:last-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.sm-leagues .sm-leagues__mini button .sm-leagues__image,.sm-leagues .sm-leagues__mini button[aria-pressed=true] .sm-leagues__image,.sm-leagues .sm-leagues__mini button:nth-child(8) .sm-leagues__image:not(.is-failed){width:46px;height:42px;background:transparent;padding:0}
+.sm-leagues .sm-leagues__mini button .sm-leagues__image img{object-fit:contain}
+.sm-leagues .sm-leagues__mini button[aria-pressed=true]{opacity:1;background:transparent;outline:0;border-radius:0;box-shadow:none}
+.sm-leagues .sm-leagues__mini button[aria-pressed=true]::after{bottom:2px;left:22%;right:22%;height:3px;background:#8a4b15}
+.sm-leagues .sm-leagues__mini button:focus-visible{opacity:1;outline:2px solid #7f3b00;outline-offset:-2px}
+@media(hover:hover){.sm-leagues .sm-leagues__mini button:hover{opacity:1}}
+@media(max-width:700px){.sm-leagues .sm-leagues__mini button,.sm-leagues .sm-leagues__mini button:nth-child(n){flex-basis:66px;min-height:60px}.sm-leagues .sm-leagues__mini button .sm-leagues__image,.sm-leagues .sm-leagues__mini button[aria-pressed=true] .sm-leagues__image,.sm-leagues .sm-leagues__mini button:nth-child(8) .sm-leagues__image:not(.is-failed){width:39px;height:37px}}
+/* A quiet information strip immediately after the reference-style controls. */
+.sm-leagues .sm-leagues__stats{width:min(100%,860px);margin-top:0;padding:12px 0 8px;border-block:1px solid #9a622b48;gap:0;color:#713904}
+.sm-leagues .sm-leagues__stat{min-height:78px;padding:2px 10px 4px;gap:3px;border-inline-start:1px solid #9a622b48;justify-content:center}
+.sm-leagues .sm-leagues__stat:nth-child(4){border-inline-start:0}
+.sm-leagues .sm-leagues__stat .league-stat-icon{width:18px;height:18px;margin:0 0 1px}
+.sm-leagues .sm-leagues__stat span{font-size:10px;font-weight:600;color:#815027}
+.sm-leagues .sm-leagues__stat strong{font-size:clamp(12px,1.2vw,16px);line-height:1.25}
+.sm-leagues .sm-leagues__stat small{font-size:10px}
+.sm-leagues .sm-leagues__stat-source{padding-top:7px;font-size:10px}
+@media(max-width:700px){
+ .sm-leagues .sm-leagues__stats{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:8px;padding:9px 0 7px}
+ .sm-leagues .sm-leagues__stat{min-height:68px;padding:1px 5px;gap:2px}
+ .sm-leagues .sm-leagues__stat:nth-child(2){border-inline-start:0}
+ .sm-leagues .sm-leagues__stat:nth-child(3){border-inline-start:1px solid #9a622b48}
+ .sm-leagues .sm-leagues__stat .league-stat-icon{width:17px;height:17px}
+ .sm-leagues .sm-leagues__stat strong{font-size:12px}
+ .sm-leagues .sm-leagues__stat-source{font-size:9px}
+}

@@ -10,10 +10,11 @@
        التنقّل الظاهر، وOrganization/WebSite في الرئيسية فقط
      • FAQPage لا يحمل إلا أسئلة ظاهرة فعلاً، وProduct لا يعرض إلا
        أسعاراً ظاهرة فعلاً (القاعدة الذهبية: لا بيانات لا يراها المستخدم)
-     • كل مسار قابل للفهرسة موجود في sitemap (مع lastmod/priority)،
+     • كل مسار قابل للفهرسة موجود في sitemap (مع lastmod موثوق عند توفره)،
        وغير محظور في robots.txt، ومربوط من صفحة أخرى (لا صفحات يتيمة)
    الصفحات المستثناة صفحات وظيفية noindex بطبيعتها (404، البحث، السلة،
-   مشغّل الويب الذكي المحظور في robots.txt، وصفحة عدم الاتصال).
+   مشغّل الويب الذكي، وصفحة عدم الاتصال)، إضافةً إلى
+   تفاصيل المباريات التي لم تُؤكّد معرّفاتها بعد من المصدر.
 ========================================================================== */
 
 import test from 'node:test';
@@ -21,6 +22,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { MATCH_CENTER_ALL_MATCHES, matchCenterPath } from '../src/content/match-center.mjs';
+import { isVerified } from '../src/lib/match-center.mjs';
+import { optimizeHtmlImages } from './html-images.mjs';
 
 const website = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.dirname(website);
@@ -28,17 +32,40 @@ const SITE = 'https://streammasterstore.com';
 
 const NOINDEX = new Set([
   '404.html',
+  'home-preview/index.html', // مسودة مستقلة غير مفهرسة وليست صفحة إنتاجية
+  'home-preview/saved-reference/assets/league-world/world.html', // شاشة تفاعلية داخل المعاينة
+  'home-preview/saved-reference/index.html', // معاينة مستقلة قيد التطوير وليست صفحة مفهرسة
+  'home-preview/inactive-league-options/index.html', // معاينة خيارات التصميم غير مفهرسة
+  'home-preview/standings-options/index.html', // معاينة خيارات الترتيب غير مفهرسة
+  'home-preview/cinema-library-preview/index.html', // معاينة مكتبة الأفلام والمسلسلات غير مفهرسة
+  'home-preview/arabic-films-preview/index.html', // معاينة الأفلام العربية غير مفهرسة
+  'home-preview/cinema-frame-preview/index.html', // خيارات إطار المكتبة غير مفهرسة
+  'home-preview/cinema-frame-preview/reel.html', // مشغل خيارات الإطار غير مفهرس
+  'home-preview/hero-flower-preview/index.html', // تجربة فيديو الهيرو خلف الوردة غير مفهرسة
+  'home-preview/video-controls-preview/index.html', // معاينة التحكم غير مفهرسة
+  'home-preview/hero-video-preview/index.html', // معاينة فيديو الهيرو غير مفهرسة
   'offline.html',
   'live-free.html',
   'player.html',
   'search/index.html',
   'cart/index.html',
 ]);
-/* صفحات تفاصيل المباريات الفردية داخل أي بطولة — noindex مقصود */
+/* صفحة تفاصيل المباراة تتبع حالة توثيقها وحدها: المؤكدة قابلة للفهرسة،
+   وغير المؤكدة تبقى noindex. لا تحجب سجلات معلّقة بقية صفحات المباريات. */
+const matchVerificationByFile = new Map(MATCH_CENTER_ALL_MATCHES.map((match) => [
+  `${matchCenterPath(match).replace(/^\/+|\/+$/g, '')}/index.html`,
+  isVerified(match),
+]));
 const isMatchDetailPage = (rel) => {
   // matches/{competition}/{match-slug}/index.html  (3+ segments after matches/)
   const parts = rel.replace(/\/index\.html$/, '').split('/');
   return parts[0] === 'matches' && parts.length >= 3;
+};
+const isExpectedNoindex = (rel) => {
+  if (NOINDEX.has(rel)) return true;
+  if (!isMatchDetailPage(rel)) return false;
+  assert.ok(matchVerificationByFile.has(rel), `${rel}: مسار مباراة غير موجود في مصدر المباريات`);
+  return !matchVerificationByFile.get(rel);
 };
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'website', 'admin-dashboard', 'dist', 'dist-ssr']);
 
@@ -105,13 +132,59 @@ const sitemapUrls = async (file) => {
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => decodeURIComponent(m[1]));
 };
 
+function parseRobotsGroups(text) {
+  const groups = [];
+  let current = null;
+  let hasRules = false;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.replace(/#.*$/, '').trim();
+    if (!line) continue;
+    const agent = line.match(/^User-agent:\s*(.+)$/i);
+    if (agent) {
+      if (!current || hasRules) {
+        current = { agents: [], rules: [] };
+        groups.push(current);
+        hasRules = false;
+      }
+      current.agents.push(agent[1].trim().toLowerCase());
+      continue;
+    }
+    const rule = line.match(/^(Allow|Disallow):\s*(.*)$/i);
+    if (rule && current) {
+      current.rules.push({ directive: rule[1].toLowerCase(), path: rule[2].trim() });
+      hasRules = true;
+    }
+  }
+  return groups;
+}
+
+/* Minimal path-prefix evaluator for this file's literal Allow/Disallow rules.
+   Select the most-specific user-agent group; do not merge it with `*`. */
+function robotsAllows(groups, userAgent, pathname) {
+  const token = userAgent.toLowerCase();
+  const specific = groups.filter((group) => group.agents.some((agent) => agent !== '*' && token.startsWith(agent)));
+  const specificity = specific.length
+    ? Math.max(...specific.flatMap((group) => group.agents
+      .filter((agent) => agent !== '*' && token.startsWith(agent))
+      .map((agent) => agent.length)))
+    : 0;
+  const selected = specific.length
+    ? specific.filter((group) => group.agents.some((agent) => agent !== '*' && token.startsWith(agent) && agent.length === specificity))
+    : groups.filter((group) => group.agents.includes('*'));
+  const rules = selected.flatMap((group) => group.rules)
+    .filter((rule) => rule.path && pathname.startsWith(rule.path));
+  if (!rules.length) return true;
+  const longest = Math.max(...rules.map((rule) => rule.path.length));
+  return rules.some((rule) => rule.path.length === longest && rule.directive === 'allow');
+}
+
 test('بيانات <head> كاملة وفريدة لكل صفحة قابلة للفهرسة', async () => {
   const pages = await loadPages();
   const titles = new Map();
   const descriptions = new Map();
   for (const [rel, html] of pages) {
-    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) {
-      assert.match(meta(html, 'name', 'robots') || '', /noindex/i, `${rel}: صفحة وظيفية يجب أن تكون noindex`);
+    if (isExpectedNoindex(rel)) {
+      assert.match(meta(html, 'name', 'robots') || '', /noindex/i, `${rel}: صفحة غير مؤهلة للفهرسة يجب أن تبقى noindex`);
       continue;
     }
     const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.replace(/\s+/g, ' ').trim();
@@ -154,7 +227,7 @@ test('بيانات <head> كاملة وفريدة لكل صفحة قابلة ل�
 test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المنظمة في الرئيسية فقط', async () => {
   const pages = await loadPages();
   for (const [rel, html] of pages) {
-    if (NOINDEX.has(rel)) continue;
+    if (isExpectedNoindex(rel)) continue;
     const nodes = ldNodes(html, rel);
     const types = nodes.flatMap(typesOf);
     const isHome = rel === 'index.html';
@@ -166,11 +239,13 @@ test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المن�
 
     const webPage = nodes.find((n) => typesOf(n).includes('WebPage'));
     assert.ok(webPage, `${rel}: بلا كيان WebPage`);
-    for (const field of ['@id', 'url', 'name', 'description', 'inLanguage', 'datePublished', 'dateModified', 'primaryImageOfPage']) {
+    for (const field of ['@id', 'url', 'name', 'description', 'inLanguage', 'datePublished', 'primaryImageOfPage']) {
       assert.ok(webPage[field], `${rel}: WebPage ينقصه ${field}`);
     }
     assert.match(String(webPage.datePublished), /^\d{4}-\d{2}-\d{2}/, `${rel}: datePublished`);
-    assert.match(String(webPage.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
+    if (webPage.dateModified != null) {
+      assert.match(String(webPage.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
+    }
 
     if (!isHome) {
       const crumb = nodes.find((n) => typesOf(n).includes('BreadcrumbList'));
@@ -206,12 +281,14 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
   for (const file of ['sitemap.xml', 'sitemap-0.xml']) {
     const xml = await fs.readFile(path.join(root, file), 'utf8');
     for (const block of xml.matchAll(/<url>([\s\S]*?)<\/url>/g)) {
-      assert.match(block[1], /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/, `${file}: رابط بلا lastmod: ${block[1].slice(0, 90)}`);
+      const lastmod = block[1].match(/<lastmod>([^<]+)<\/lastmod>/);
+      if (lastmod) assert.match(lastmod[1], /^\d{4}-\d{2}-\d{2}$/, `${file}: lastmod غير صالح: ${lastmod[1]}`);
       assert.match(block[1], /<priority>[\d.]+<\/priority>/, `${file}: رابط بلا priority`);
     }
   }
 
   const robots = await fs.readFile(path.join(root, 'robots.txt'), 'utf8');
+  const robotsGroups = parseRobotsGroups(robots);
   const starBlock = robots.split(/User-agent:/i).find((b) => b.trim().startsWith('*')) || '';
   const disallowed = [...starBlock.matchAll(/^Disallow:\s*(\S+)/gim)].map((m) => m[1]);
 
@@ -223,11 +300,13 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
   }
 
   for (const rel of pages.keys()) {
-    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) continue;
+    if (isExpectedNoindex(rel)) continue;
     const url = urlOf(rel);
     assert.ok(inSitemap.has(url), `${rel}: غير موجود في أي sitemap`);
     const route = routeOf(rel);
     assert.ok(!disallowed.some((d) => d !== '/' && route.startsWith(d)), `${rel}: محظور في robots.txt (${route})`);
+    assert.ok(robotsAllows(robotsGroups, 'Googlebot', route), `${rel}: محظور على Googlebot فعلياً (${route})`);
+    assert.ok(robotsAllows(robotsGroups, 'Bingbot', route), `${rel}: محظور على Bingbot فعلياً (${route})`);
     if (rel !== 'index.html') {
       assert.ok(allHrefs.has(route), `${rel}: صفحة يتيمة — لا رابط داخلي إليها (${route})`);
     }
@@ -236,7 +315,7 @@ test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم
     const route = decodeURIComponent(new URL(url).pathname);
     const rel = route === '/' ? 'index.html' : route.endsWith('/') ? `${route.slice(1)}index.html` : route.slice(1);
     assert.ok(pages.has(rel), `sitemap يشير إلى صفحة غير موجودة: ${url}`);
-    assert.ok(!NOINDEX.has(rel) && !isMatchDetailPage(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
+    assert.ok(!isExpectedNoindex(rel), `sitemap يشير إلى صفحة noindex: ${url}`);
   }
 });
 
@@ -250,6 +329,26 @@ test('الخريطتان لا تتنازعان رابطاً واحداً (لا �
   const manual = await sitemapUrls('sitemap-0.xml');
   const duplicates = manual.filter((url) => generated.has(url));
   assert.deepEqual(duplicates, [], `رابط مكرر في sitemap.xml وsitemap-0.xml: ${duplicates.join(' · ')}`);
+});
+
+test('robots.txt يطبق حجب الإدارة ويبقي صفحات noindex قابلة للزحف', async () => {
+  const robots = await fs.readFile(path.join(root, 'robots.txt'), 'utf8');
+  const groups = parseRobotsGroups(robots);
+  const functionalNoindex = [
+    '/cart/', '/search/', '/live-free', '/live-free.html',
+    '/player.html', '/player/test', '/embed.php', '/proxy.php',
+  ];
+  for (const agent of ['Googlebot', 'Bingbot', 'Otherbot']) {
+    for (const route of functionalNoindex) {
+      assert.ok(robotsAllows(groups, agent, route), `${agent} محظور من مسار noindex يجب أن يزحف إليه: ${route}`);
+    }
+    for (const route of ['/admin/', '/admin-dashboard/private/']) {
+      assert.ok(!robotsAllows(groups, agent, route), `${agent} يستطيع زحف مسار الإدارة: ${route}`);
+    }
+  }
+  for (const agent of ['GPTBot', 'ClaudeBot', 'CCBot', 'anthropic-ai', 'Bytespider']) {
+    assert.ok(!robotsAllows(groups, agent, '/'), `${agent} لم يعد محظوراً من الجذر`);
+  }
 });
 
 /* ==========================================================================
@@ -332,8 +431,11 @@ test('صفحات الأخبار: كل بذرة مُعلنة في خريطة، و
     const article = nodes.find((n) => typesOf(n).includes('NewsArticle'));
     /* author وpublisher من خصائص Article المطلوبة لدى Google — بلا أحدهما
        لا يظهر الخبر كنتيجة مقال غنية حتى لو فُهرس. */
-    for (const field of ['headline', 'description', 'datePublished', 'dateModified', 'image', 'author', 'publisher']) {
+    for (const field of ['headline', 'description', 'datePublished', 'image', 'author', 'publisher']) {
       assert.ok(article[field], `${rel}: NewsArticle ينقصه ${field}`);
+    }
+    if (article.dateModified != null) {
+      assert.match(String(article.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
     }
   }
 
@@ -351,6 +453,16 @@ test('صفحات الأخبار: كل بذرة مُعلنة في خريطة، و
   }
 });
 
+test('محسّن الصور يعلن أبعاد النسخة الحديثة بعد تبديل الصيغة', () => {
+  for (const src of [
+    '/images/players/eng-liv-goal-scene.webp',
+    'images/articles/world-cup.webp',
+  ]) {
+    const optimized = optimizeHtmlImages(`<img src="${src}" alt="">`);
+    assert.match(optimized, /\swidth="[1-9]\d*"\sheight="[1-9]\d*"/, `${src}: أبعاد الصيغة المختارة غائبة`);
+  }
+});
+
 /* ── صور الصفحات المفهرسة: لا صورة مكسورة، ولا صورة بلا أبعاد، ولا صورة
    ثقيلة بلا نسخة حديثة ─────────────────────────────────────────────────
    هذا الحارس يحمي مكسبين: (١) نقل الصور من PNG ثقيل إلى WebP/AVIF خفّض
@@ -365,7 +477,7 @@ test('صور الصفحات المفهرسة: موجودة، بأبعاد معل
   let checked = 0;
 
   for (const rel of files) {
-    if (NOINDEX.has(rel) || isMatchDetailPage(rel)) continue;
+    if (isExpectedNoindex(rel)) continue;
     const html = await fs.readFile(path.join(root, rel), 'utf8');
 
     for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
@@ -429,7 +541,7 @@ test('hreflang بلا تكديس أكواد دول على الرابط نفسه'
 /* ── sitemap المولّد: lastmod تاريخي لا «اليوم» ──────────────────────────
    كتابة تاريخ البناء في كل تشغيل تعلّم محركات البحث تجاهل الوسم. الفحص:
    لا lastmod في المستقبل، والوسم إمّا غائب (بناء بلا تاريخ git) أو صادق. */
-test('sitemap.xml: lastmod ليس تاريخ بناء متجدداً', async () => {
+test('sitemap.xml: lastmod اختياري ولا يقع في المستقبل', async () => {
   const xml = await fs.readFile(path.join(root, 'sitemap.xml'), 'utf8');
   const urlBlocks = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((m) => m[1]);
   assert.ok(urlBlocks.length > 50, `عدد مسارات الخريطة المولّدة صغير (${urlBlocks.length})`);
@@ -438,9 +550,50 @@ test('sitemap.xml: lastmod ليس تاريخ بناء متجدداً', async () 
   const future = [];
   for (const block of urlBlocks) {
     const lastmod = (block.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1];
-    if (lastmod && lastmod > today) future.push(`${block.match(/<loc>([^<]+)<\/loc>/)[1]} → ${lastmod}`);
+    if (!lastmod) continue;
+    assert.match(lastmod, /^\d{4}-\d{2}-\d{2}$/, `lastmod غير صالح: ${lastmod}`);
+    if (lastmod > today) future.push(`${block.match(/<loc>([^<]+)<\/loc>/)[1]} → ${lastmod}`);
   }
   assert.deepEqual(future, [], 'lastmod في المستقبل — خطأ في حساب التاريخ');
+});
+
+test('lastmod في الخريطة يُشتق من تاريخ WebPage الخاص بكل مسار', async () => {
+  const { pageLastmod, sitemap } = await import('./prerender.mjs');
+  const { renderPage } = await import('../dist-ssr/entry-server.js');
+  const store = renderPage('/store').seo;
+  const channels = renderPage('/channels').seo;
+
+  assert.equal(pageLastmod(store), '2026-11-04');
+  assert.equal(pageLastmod(channels), '2026-10-15');
+  assert.equal(pageLastmod({ jsonLd: [] }), null, 'غياب تاريخ موثوق يجب أن يحذف الوسم');
+  assert.equal(pageLastmod({ jsonLd: [{ '@type': 'WebPage', dateModified: '2999-01-01' }] }), null,
+    'تاريخ المستقبل يجب ألا يصل إلى sitemap');
+  assert.equal(pageLastmod({ jsonLd: [{ '@type': 'WebPage', dateModified: '2026-02-31' }] }), null,
+    'تاريخ تقويمي غير صالح يجب ألا يصل إلى sitemap');
+
+  const xml = sitemap(['/store', '/channels', '/unknown'], {
+    '/store': pageLastmod(store),
+    '/channels': pageLastmod(channels),
+  });
+  const blocks = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((m) => m[1]);
+  assert.match(blocks[0], /<lastmod>2026-11-04<\/lastmod>/);
+  assert.match(blocks[1], /<lastmod>2026-10-15<\/lastmod>/);
+  assert.doesNotMatch(blocks[2], /<lastmod>/, 'المسار بلا تاريخ يجب أن يبقى بلا lastmod');
+});
+
+test('صفحة 404 noindex بلا canonical أو عناوين مشاركة تشير إلى الرئيسية', async () => {
+  const { renderPage } = await import('../dist-ssr/entry-server.js');
+  const { applyHead } = await import('./prerender.mjs');
+  const { seo } = renderPage('/missing-seo-audit-route');
+  assert.match(seo.robots, /^noindex/);
+  assert.equal(seo.canonical, '');
+
+  const template = '<html><head><title>Template</title><meta name="description" content="Template description"><link rel="canonical" href="https://streammasterstore.com/"><meta property="og:url" content="https://streammasterstore.com/"><meta name="twitter:url" content="https://streammasterstore.com/"></head><body><div id="root"></div></body></html>';
+  const html = applyHead(template, seo);
+  assert.doesNotMatch(html, /<link\b[^>]*\brel=["']canonical["']/i);
+  assert.doesNotMatch(html, /<meta\b[^>]*\bproperty=["']og:url["']/i);
+  assert.doesNotMatch(html, /<meta\b[^>]*\bname=["']twitter:url["']/i);
+  assert.match(html, /<meta name="robots" content="noindex, follow"\s*\/>/);
 });
 
 test('الصور ذات الشفافية لا تُقدّم بصيغة AVIF المعتمة', async () => {

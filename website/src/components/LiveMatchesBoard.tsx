@@ -1,3 +1,4 @@
+import { motionReduced, motionMedia } from "../lib/motion-preference";
 import { useEffect, useRef, useState } from 'react';
 import { matchByFixtureId } from '../lib/match-center.mjs';
 import { matchCenterPath, MATCH_CENTER_ALL_MATCHES } from '../content/match-center.mjs';
@@ -10,6 +11,7 @@ import {
   hasCompleteScore,
   kickoff,
   matchesForDay,
+  moroccoTimeZoneWarning,
   readScoreboardResponse,
   scoreboardUrl,
   weekDays,
@@ -183,7 +185,7 @@ function useRaceAutoScroll(enabled: boolean) {
       const card = node.querySelector('.match-card');
       const step = (card ? card.getBoundingClientRect().width : 400) + 14;
       const sign = towardEnd ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduced = motionReduced();
       node.scrollBy({ left: sign * step, behavior: reduced ? 'auto' : 'smooth' });
     }
     resumeSoon(4000);
@@ -193,8 +195,11 @@ function useRaceAutoScroll(enabled: boolean) {
 
   useEffect(() => {
     if (!el || !enabled) return;
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const observer = new IntersectionObserver(entries => { visible.current = entries[0]?.isIntersecting ?? true; }, { threshold: 0.15 });
+    const media = motionMedia();
+    const observer = new IntersectionObserver(entries => {
+      visible.current = entries[0]?.isIntersecting ?? true;
+      syncAnimation();
+    }, { threshold: 0.15 });
     observer.observe(el);
     let raf = 0;
     let holdUntil = 0;
@@ -208,10 +213,12 @@ function useRaceAutoScroll(enabled: boolean) {
     const onPointerUp = () => resumeSoon(4000);
     const onWheel = () => resumeSoon(4000);
     const onTouchMove = () => resumeSoon(4000);
-    const onVisibility = () => { if (document.hidden) stop(); };
+    const onVisibility = () => { if (document.hidden) stop(); syncAnimation(); };
     const tick = (now: number) => {
+      raf = 0;
+      if (media.matches || document.hidden || !visible.current) return;
       raf = requestAnimationFrame(tick);
-      if (paused.current || media.matches || document.hidden || !visible.current) return;
+      if (paused.current) return;
       const max = el.scrollWidth - el.clientWidth;
       if (max <= 1) return;
       /* RTL: التمرير يتقدّم نحو القيم السالبة */
@@ -233,6 +240,15 @@ function useRaceAutoScroll(enabled: boolean) {
         acc -= step;
       }
     };
+    function syncAnimation() {
+      if (media.matches || document.hidden || !visible.current) {
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0;
+      } else if (!raf) {
+        raf = requestAnimationFrame(tick);
+      }
+    }
+    media.addEventListener('change', syncAnimation);
     el.addEventListener('mouseenter', stopAuto);
     el.addEventListener('mouseleave', onMouseLeave);
     el.addEventListener('focusin', onFocusIn);
@@ -242,11 +258,12 @@ function useRaceAutoScroll(enabled: boolean) {
     el.addEventListener('wheel', onWheel, { passive: true });
     el.addEventListener('touchmove', onTouchMove, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
-    raf = requestAnimationFrame(tick);
+    syncAnimation();
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(resumeTimer.current);
       observer.disconnect();
+      media.removeEventListener('change', syncAnimation);
       el.removeEventListener('mouseenter', stopAuto);
       el.removeEventListener('mouseleave', onMouseLeave);
       el.removeEventListener('focusin', onFocusIn);
@@ -390,6 +407,7 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
           <select value={zone} onChange={e => setZone(e.target.value)}>
             {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
           </select>
+          {moroccoTimeZoneWarning(zone) && <small role="status">قد تكون بيانات توقيت المغرب في جهازك قديمة؛ حدّث الجهاز أو اختر UTC للمواعيد الحالية، وتحقّق من الموعد لدى المصدر.</small>}
         </label>
         <button className="matches-refresh" hidden={layout === 'race'} disabled={loading || !online} onClick={() => refreshNow.current()}>
           {loading ? 'جارٍ التحديث…' : '↻ تحديث الآن'}

@@ -1,4 +1,5 @@
 import { ServerIcon } from "./ServerIcon";
+import "./header-brand-crab39.css";
 import type { PricingPlan } from "../data";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
@@ -8,8 +9,6 @@ import {
   IconChevronDown,
   IconClose,
   IconMenu,
-  IconPlay,
-  IconStar,
   IconZap,
 } from "./Icons";
 import { leagueIcon } from "../lib/league-icons.mjs";
@@ -35,7 +34,7 @@ interface HeaderProps {
 }
 
 /* =========================================================================
-   الهيدر: شريط إعلان علوي + كبسولة عائمة بخمس قوائم منسدلة
+   الهيدر: كبسولة عائمة من أعلى الصفحة بقوائم منسدلة
    --------------------------------------------------------------------------
    الروابط كلها من src/navigation.mjs — نفس المصدر الذي يبني هيدر الصفحات
    القديمة، فتظهر كل صفحات الموقع في الهيدر أينما كان الزائر.
@@ -137,28 +136,9 @@ export default function Header({
 
   return (
     <>
-      {/* الشريط الإعلاني العلوي */}
-      <div className="fixed top-0 inset-x-0 z-[60] bg-[#0b0b0f] text-white text-[12.5px] font-medium">
-        <div className="max-w-[1400px] mx-auto px-5 h-9 flex items-center justify-center gap-2">
-          <span className="hidden sm:inline-flex items-center gap-1 bg-[#d8ff3e] text-black text-[11px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide">
-            <IconZap className="w-3 h-3" /> عرض 2026
-          </span>
-          <p className="tracking-tight opacity-90 truncate">
-            تغطية كأس العالم 2026 والدوريات الكبرى —{" "}
-            <span className="text-[#d8ff3e] font-bold">خصومات على باقات التفعيل التقني</span> + فحص تجريبي مجاني
-          </p>
-          <button
-            onClick={onOpenTrial}
-            className="hidden md:inline-flex items-center gap-1 underline underline-offset-4 decoration-[#d8ff3e] hover:text-[#d8ff3e] transition cursor-pointer"
-          >
-            طلب كود تجريبي <IconArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* شريط التنقل الرئيسي — كبسولة عائمة */}
+      {/* شريط التنقل الرئيسي — كبسولة عائمة من أعلى الصفحة */}
       <header
-        className={`storefront-header fixed top-9 inset-x-0 z-[55] transition-all duration-500 ${
+        className={`storefront-header fixed top-0 inset-x-0 z-[55] transition-all duration-500 ${
           scrolled ? "py-2" : "py-4"
         }`}
       >
@@ -171,14 +151,31 @@ export default function Header({
                 : "bg-white/60 backdrop-blur-md border-white/60 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.15)] h-[68px]"
             }`}
           >
-            {/* الشعار */}
-            <a href={to("")} className="flex items-center gap-2.5 shrink-0 group" aria-label="ستريم ماستر — الصفحة الرئيسية">
-              <span className="w-9 h-9 rounded-xl bg-[#0b0b0f] text-[#d8ff3e] grid place-items-center group-hover:rotate-[10deg] transition-transform">
-                <IconPlay className="w-4 h-4 mr-0.5" />
-              </span>
-              <span className="font-display font-black text-[21px] tracking-tight leading-none">
-                ستريم ماستر
-                <span className="block text-[9.5px] font-sans font-bold tracking-[0.22em] uppercase text-black/50">
+            {/* الشعار — مستوحى من uiverse.io/strav_5159/popular-crab-39 مكيّفاً بهوية ستريم ماستر */}
+            <a
+              href={to("")}
+              className="inline-flex items-center shrink-0 group"
+              aria-label="ستريم ماستر — الصفحة الرئيسية"
+            >
+              <span className="sr-only">ستريم ماستر — Stream Master Pro</span>
+              <span className="sm-crab39" dir="rtl" aria-hidden="true">
+                <span className="sm-crab39__row">
+                  <span className="sm-crab39__word">
+                    <span className="sm-crab39__tile">
+                      <sup className="sm-crab39__sup">4K</sup>
+                      <span className="sm-crab39__sym">ست</span>
+                    </span>
+                    <span className="sm-crab39__rest">ريم</span>
+                  </span>
+                  <span className="sm-crab39__word">
+                    <span className="sm-crab39__tile">
+                      <sup className="sm-crab39__sup">99</sup>
+                      <span className="sm-crab39__sym">ما</span>
+                    </span>
+                    <span className="sm-crab39__rest">ستر</span>
+                  </span>
+                </span>
+                <span className="sm-crab39__sub" dir="ltr">
                   Stream Master Pro
                 </span>
               </span>
@@ -322,7 +319,7 @@ export default function Header({
         >
           <div
             id="storefront-mobile-nav"
-            className="absolute right-3 top-[125px] bottom-3 w-[88%] max-w-sm bg-[#faf9f6] rounded-3xl p-5 flex flex-col overflow-y-auto overscroll-contain animate-scale-in"
+            className="absolute right-3 top-[89px] bottom-3 w-[88%] max-w-sm bg-[#faf9f6] rounded-3xl p-5 flex flex-col overflow-y-auto overscroll-contain animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-[11px] font-black tracking-[0.2em] uppercase text-black/40 mb-2 px-1">
@@ -382,10 +379,9 @@ export default function Header({
             >
               <IconZap className="w-4 h-4 text-[#d8ff3e]" /> طلب كود تجريبي
             </button>
-            <div className="mt-4 flex items-center justify-center gap-1 text-[13px] text-black/60 font-bold">
-              <IconStar className="w-3.5 h-3.5 fill-[#0b0b0f] text-[#0b0b0f]" /> 4.95/5 من
-              4,820+ تقييم موثق
-            </div>
+            <a href={sectionHref("reviews")} onClick={() => setMobileOpen(false)} className="mt-4 flex items-center justify-center gap-1 text-[13px] text-black/60 font-bold hover:text-black">
+              قائمة فحص قبل الاشتراك <IconArrowUpRight className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       )}
@@ -495,7 +491,7 @@ function DesktopPanel({
           ))}
         </div>
         <PanelFooter>
-          <p className="text-[13px] font-bold">سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</p>
+          <p className="text-[13px] font-bold">قارن باقات المزودين وتحقّق من شروط التفعيل والدعم</p>
           <a
             href={sectionHref("pricing")}
             onClick={onNavigate}
@@ -533,8 +529,14 @@ function DesktopPanel({
     /* لوحة المباريات: مواعيد المباريات + القنوات + البطولات + المنتخبات */
     const scheduleLink = group.links.slice(0, 1);
     const extraLinks = group.links.slice(1, 6); /* القنوات والبث */
-    const leagueLinks = group.links.slice(6, 14); /* أبطال أوروبا + 7 دوريات */
-    const teamLinks = group.links.slice(14); /* 8 منتخبات */
+    /* التقطيع بالوسم لا بالموضع: البطولات بـ league والأندية بـ club، وما
+       تبقّى بعد الستة العامة فهو المنتخبات. التقطيع بالموضع كان يضع أي رابط
+       جديد في قسم «المنتخبات» ويُزيح آخرها — وهو ما وقع عند إضافة نادٍ. */
+    const leagueLinks = group.links.filter((l) => l.league); /* أبطال أوروبا + 7 دوريات */
+    const clubLinks = group.links.filter((l) => l.club); /* صفحات الأندية */
+    const teamLinks = group.links
+      .filter((l) => !l.league && !l.club)
+      .slice(6); /* 8 منتخبات — بعد الستة العامة */
     return (
       <div className="w-[640px]">
         {/* مواعيد المباريات */}
@@ -564,6 +566,17 @@ function DesktopPanel({
             <PanelLink key={l.href} href={pageHref(l)} label={l.label} icon={l.icon} onNavigate={onNavigate} />
           ))}
         </div>
+        {/* الأندية — قسم مستقل بعنوانه: النادي ليس منتخباً ولا يندرج تحته */}
+        {clubLinks.length > 0 && (
+          <>
+            <p className="text-[11px] font-black tracking-[0.15em] uppercase text-black/40 mb-1 mt-2 px-3">الأندية</p>
+            <div className="grid grid-cols-3 gap-1">
+              {clubLinks.map((l) => (
+                <PanelLink key={l.href} href={pageHref(l)} label={l.label} desc={l.desc} icon={l.icon} onNavigate={onNavigate} />
+              ))}
+            </div>
+          </>
+        )}
         <PanelFooter>
           <a href={to("matches/")} onClick={onNavigate} className="text-[13px] font-bold hover:text-[#d8ff3e] transition">
             كل مواعيد المباريات — التقويم الكامل

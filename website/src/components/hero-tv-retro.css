@@ -1,0 +1,82 @@
+/* Preview concepts inspired by Sophiek9h / black-pug-58, Uiverse.io (MIT),
+   variation of Praashoo7's TV, inspired by Stefan Devai.
+   https://uiverse.io/Sophiek9h/black-pug-58
+   Retain the existing live illustration content; no static/error-screen effect. */
+.hero-phone-stage--retro { margin-top: 48px; }
+.hero-tv--retro {
+  --retro-shell: #91a633;
+  --retro-lit: #e1ed90;
+  --retro-edge: #353d17;
+  --retro-panel: #b8cb68;
+  --retro-dial: #414c21;
+}
+.hero-tv--retro .hero-tv-frame {
+  padding: 12px 18% 19px 12px;
+  border: 2px solid var(--retro-edge);
+  border-radius: 26px;
+  background: var(--retro-shell);
+  box-shadow: inset 3px 3px 0 var(--retro-lit), inset -4px -4px 0 #0002,
+    5px 6px 0 var(--retro-edge), 0 20px 30px -10px #17200d55;
+}
+.hero-tv--retro .hero-tv-display {
+  border: 3px solid #1b2014;
+  border-radius: 18px / 24px;
+  box-shadow: 3px 3px 0 var(--retro-lit), inset 0 0 16px #0009;
+}
+.hero-tv--retro .hero-tv-reflection {
+  border-radius: inherit;
+  background: linear-gradient(120deg,#ffffff12,transparent 40%,transparent 65%,#ffffff06);
+}
+.hero-tv-retro-controls {
+  position: absolute; right: 3%; top: 5%; bottom: 8%; width: 12%;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+  gap: 6px; padding: 7% 3px 5%; border: 2px solid var(--retro-edge);
+  border-radius: 13px; background: var(--retro-panel);
+  box-shadow: 2px 2px 0 var(--retro-lit); pointer-events: none;
+}
+.hero-tv-retro-dial {
+  position: relative; display: block; flex-shrink: 0; width: 62%; aspect-ratio: 1;
+  border: 2px solid var(--retro-edge); border-radius: 50%;
+  background: var(--retro-dial);
+  box-shadow: inset 2px 2px 0 #ffffff4d, -2px 1px 0 var(--retro-edge);
+}
+.hero-tv-retro-dial::after {
+  content: ''; position: absolute; left: 45%; top: 10%; width: 10%; height: 80%;
+  border-radius: 3px; background: var(--retro-lit); transform: rotate(35deg);
+  box-shadow: 1px 0 0 #0004;
+}
+.hero-tv-retro-dial--small { width: 51%; }
+.hero-tv-retro-dial--small::after { transform: rotate(-35deg); }
+.hero-tv-retro-speaker {
+  width: 77%; height: 28%; min-height: 12px; border-radius: 5px;
+  background: repeating-linear-gradient(0deg,var(--retro-edge) 0 2px,transparent 2px 5px);
+}
+.hero-tv-retro-power { width: 4px; height: 4px; border-radius: 50%; background: #e4ff9c; box-shadow: 0 0 4px #d8ff3e; }
+.hero-tv-retro-antenna {
+  position: absolute; left: 44%; top: -14px; width: 13%; height: 25px;
+  border: 2px solid var(--retro-edge); border-radius: 50% 50% 0 0;
+  background: var(--retro-shell); box-shadow: inset 2px 2px 0 var(--retro-lit);
+  pointer-events: none;
+}
+.hero-tv-retro-antenna i {
+  position: absolute; bottom: 70%; left: 48%; height: 58px; width: 3px;
+  transform-origin: bottom center; transform: rotate(-38deg);
+  background: linear-gradient(90deg,#20231c,#92978a,#252b1d); border-radius: 99px;
+}
+.hero-tv-retro-antenna i + i { transform: rotate(38deg); height: 52px; }
+.hero-tv-retro-antenna i::before { content: ''; position: absolute; top: -3px; left: -2px; width: 7px; height: 7px; border: 1px solid #24271d; border-radius: 50%; background: #abb0a2; }
+.hero-tv--retro .hero-tv-neck, .hero-tv--retro .hero-tv-base { display: none; }
+.hero-tv-retro-feet { position: absolute; top: 87%; left: 12%; right: 12%; height: 8%; z-index: -1; pointer-events: none; }
+.hero-tv-retro-feet::before, .hero-tv-retro-feet::after { content: ''; position: absolute; top: 0; bottom: 0; width: 10%; border-radius: 0 0 5px 5px; background: var(--retro-edge); }
+.hero-tv-retro-feet::before { left: 0; transform: skewX(-12deg); }
+.hero-tv-retro-feet::after { right: 0; transform: skewX(12deg); }
+.hero-tv--retro .hero-tv-chin { color: var(--retro-edge); }
+@media (max-width: 767px) {
+  .hero-phone-stage--retro { margin-top: 12px; }
+  .hero-tv--retro .hero-tv-frame { padding: 8px 18% 15px 8px; border-radius: 20px; }
+  .hero-tv--retro .hero-tv-display { border-width: 2px; border-radius: 13px / 18px; }
+  .hero-tv-retro-controls { border-radius: 10px; padding-block: 12px; }
+  .hero-tv-retro-antenna i { height: 44px; }
+  .hero-tv-retro-antenna i + i { height: 40px; }
+}
+

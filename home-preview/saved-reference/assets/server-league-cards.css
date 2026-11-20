@@ -1,0 +1,1492 @@
+@font-face{font-family:FlowHead;src:url('./server-title-tajawal.woff2');font-weight:900;font-display:swap}@font-face{font-family:FlowAccent;src:url('./server-title-amiri.woff2');font-style:italic;font-display:swap}@font-face{font-family:FlowCairo;src:url('./server-cairo.woff2');font-weight:700;font-display:swap}
+.flow-servers{position:relative;background:#f7f7f7;color:#280822;overflow:hidden;padding:clamp(90px,10vw,150px) 20px 100px;isolation:isolate}.flow-intro{position:relative;text-align:center;margin:0 auto clamp(70px,12vw,170px);max-width:800px}.flow-intro h2{font:900 clamp(96px,16vw,230px)/.92 FlowHead,Tajawal,sans-serif;margin:0}.flow-intro h2 span{display:block}.flow-intro__script{position:absolute;top:36%;right:23%;color:#e06c8f;font:italic 400 clamp(42px,7vw,100px)/1.4 FlowAccent,serif;transform:rotate(-7deg)}.flow-intro p{font:italic 400 clamp(26px,3.5vw,50px)/1.5 FlowAccent,serif;max-width:700px;margin:30px auto 0}.flow-servers__items{max-width:1250px;margin:auto;perspective:1400px}.flow-server{display:grid;grid-template-columns:minmax(200px,.8fr) minmax(0,1.2fr);align-items:center;gap:clamp(25px,5vw,80px);padding:clamp(60px,8vw,120px) 0}.flow-server:nth-child(even) .flow-server__name{order:2}.flow-server__name{text-align:center;will-change:transform,opacity}.flow-server__name img{display:block;width:min(55%,200px);height:130px;object-fit:contain;margin:0 auto}.flow-server__name h3{font:900 clamp(50px,7vw,95px)/1.2 FlowHead,Tajawal,sans-serif;margin:10px 0;color:#280822}.flow-server .live-card{position:relative;width:100%;height:auto;visibility:visible;pointer-events:auto;transform-origin:center;will-change:transform,opacity;backface-visibility:visible;background:#352334;color:#fff4ec;font:700 14px/1.7 FlowCairo,Arial,sans-serif;box-shadow:0 20px 50px #35132627;overflow:hidden;display:flex;flex-direction:column}.flow-server .live-card *{box-sizing:border-box}.flow-server .live-card__main{padding:clamp(20px,3vw,40px);display:block}.flow-server .live-card__top{display:flex;justify-content:space-between;gap:10px;font-size:12px}.flow-server .live-card__identity{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:15px}.flow-server .live-card__identity h2{font:900 clamp(30px,4vw,50px)/1.3 FlowHead,Tajawal,sans-serif;margin:0}.flow-server .live-card__identity p{font-size:13px;margin:0}.flow-server .live-card__identity img{width:clamp(90px,15vw,150px);height:95px;object-fit:contain}.flow-server .live-card__desc{font-size:13px;line-height:1.8;margin:15px 0}.flow-server dl{margin:0;border-top:1px solid #ffffff55}.flow-server .live-card__row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:9px 0;border-bottom:1px solid #ffffff55;font-size:13px}.flow-server .live-card__row dt{display:flex;align-items:center;gap:8px}.flow-server .live-card__row svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6}.flow-server .live-card__row dd{margin:0;font:700 15px Arial,sans-serif;white-space:nowrap}.flow-server .live-card__actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.flow-server .live-card__actions a{display:inline-block;border:1px solid #f3efe3;background:#f3efe3;color:#352334;border-radius:30px;padding:8px 14px;font-size:12px;text-decoration:none}.flow-server .live-card__actions a+a{background:transparent;color:#fff4ec}.flow-server .live-card__footer{background:#f3efe3;color:#352334;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:18px clamp(20px,3vw,40px);font-size:13px}.flow-server .live-card__footer strong{font:700 25px Arial,sans-serif}.flow-server .live-card__footer small{font:700 12px FlowCairo,Arial}.flow-servers__note{text-align:center;font:700 12px/1.8 FlowCairo,Arial;margin:60px auto 0;color:#675861;max-width:700px}@media(max-width:767px){.flow-intro h2{font-size:clamp(86px,23vw,155px);line-height:1}.flow-intro__script{font-size:clamp(36px,10vw,64px);top:36%;right:20%}.flow-intro p{font-size:clamp(25px,7vw,34px)}.flow-server{display:flex;flex-direction:column;gap:20px;padding:50px 0}.flow-server:nth-child(even) .flow-server__name{order:0}.flow-server__name img{height:90px}.flow-server__name h3{font-size:52px}.flow-server .live-card__identity h2{font-size:36px}.flow-server .live-card__row{font-size:12px}.flow-server .live-card__row dd{font-size:13px}.flow-server .live-card__actions a{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.flow-server .live-card,.flow-server__name{transform:none!important;opacity:1!important}}
+
+/* ==========================================================================
+   شريط روابط صفحات البطولات — حلقة دائرية ثلاثية الأبعاد (3D Circular Ring)
+   --------------------------------------------------------------------------
+   • هندسة الحلقة الدائرية مقتبسة من قالب Uiverse المفتوح:
+     https://uiverse.io/ilkhoeri/swift-panda-38 — المؤلف ilkhoeri — رخصة MIT
+     مع دوران خطوي تلقائي كل 5 ثوانٍ (5000ms) وسحب تفاعلي باللمس والفأرة.
+   • بطاقات البطولات مقتبسة من قالب Uiverse المفتوح:
+     https://uiverse.io/sohoning/ugly-horse-87 — المؤلف sohoning — رخصة MIT
+   • قواعد الرأس والنافذة والمسار والشارات والأزرار الأساسية تبقى مشتركة دون
+     مساس مع شريط «إحصائيات البطولات» (LeagueStatsCarousel).
+========================================================================== */
+
+.flow-servers .matches-league-links.league-carousel {
+  display: block;
+  padding: 16px 16px 18px;
+}
+
+/* الروابط داخل الدوّارة ولوحة المعاينة بطاقات، لا نصاً مسطّراً */
+.flow-servers .league-carousel a,
+.flow-servers .matches-league-links.league-carousel a,
+.flow-servers .lc-preview-grid a {
+  color: #0b0b0f;
+  font-weight: 800;
+  text-decoration: none;
+  min-height: 0;
+}
+
+.flow-servers .lc-preview-grid .league-carousel-item {
+  width: 100%;
+}
+
+.flow-servers .league-carousel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.flow-servers .league-carousel-head strong {
+  font-weight: 800;
+}
+
+.flow-servers .lc-ring-head-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.flow-servers .lc-ring-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(11, 11, 15, 0.06);
+  color: #5b5850;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.flow-servers .lc-ring-hint::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #2b4eff;
+  box-shadow: 0 0 0 2px rgba(43, 78, 255, 0.18);
+}
+
+.flow-servers .league-carousel-count {
+  flex-shrink: 0;
+  color: #8a8578;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.flow-servers .league-carousel-viewport {
+  margin-top: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* فسحة رأسية خفيفة قبل التشغيل (No-JS) حتى لا تُقصّ ظلال الكرت */
+.flow-servers .matches-league-links .league-carousel-viewport {
+  padding: 4px 2px 10px;
+}
+
+.flow-servers .league-carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+/* بعد القياس تُدار الصفحة بالإزاحة: التمرير الأصلي يُلغى لئلا يجتمع
+   مصدران للموضع (التمرير والإزاحة) فيتضاعف الانتقال. */
+.flow-servers .league-carousel[data-ready="true"] .league-carousel-viewport {
+  overflow: hidden;
+}
+
+.flow-servers .league-carousel-track {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: max-content;
+  touch-action: pan-y;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.flow-servers .matches-league-links .league-carousel-track {
+  align-items: flex-start;
+}
+
+/* أثناء السحب لا انتقال: الشريط يتبع الإصبع لحظة بلحظة */
+.flow-servers .league-carousel[data-dragging="true"] .league-carousel-track {
+  transition: none;
+}
+
+/* ==========================================================================
+   مسرح الحلقة الدائرية ثلاثية الأبعاد (ilkhoeri/swift-panda-38)
+========================================================================== */
+
+.flow-servers .lc-ring-orbit {
+  display: none;
+}
+
+.flow-servers .lc-card-back {
+  display: none;
+}
+
+.flow-servers .lc-card-front {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-scene {
+  --w: 256px;
+  --h: 162px;
+  --translateZ: 356px;
+  --rotateX: -11deg;
+  --perspective: 1160px;
+  position: relative;
+  width: 100%;
+  height: 414px;
+  margin-top: 8px;
+  padding: 0;
+  overflow-x: clip;
+  overflow-y: visible;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 56% 42% at 50% 50%, rgba(216, 255, 62, 0.1), transparent 72%),
+    radial-gradient(ellipse 64% 34% at 50% 62%, rgba(43, 78, 255, 0.06), transparent 76%);
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"][data-dragging="true"] .lc-ring-scene {
+  cursor: grabbing;
+}
+
+/* الهالة المدارية الأرضية تحت الحلقة لإبراز العمق الدائري ثلاثي الأبعاد */
+.flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-orbit {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 138px;
+  width: min(740px, 92%);
+  height: 124px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px dashed rgba(11, 11, 15, 0.12);
+  box-shadow:
+    inset 0 0 36px rgba(11, 11, 15, 0.04),
+    0 20px 36px -28px rgba(11, 11, 15, 0.32);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* الأسطوانة الدوّارة الداخلية (.inner في swift-panda-38):
+   تُعوَّض إزاحة translateZ(-R) حتى تستقرّ البطاقة المواجهة عند z = 0 بدقّة 1:1 */
+.flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-inner {
+  position: absolute;
+  top: 78px;
+  left: calc(50% - (var(--w) / 2));
+  width: var(--w);
+  height: var(--h);
+  z-index: 2;
+  display: block;
+  transform-style: preserve-3d;
+  transform:
+    perspective(var(--perspective))
+    translateZ(calc(var(--translateZ) * -1))
+    rotateX(var(--rotateX))
+    rotateY(var(--ring-angle, 0deg));
+  transition: transform 0.78s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"][data-dragging="true"] .lc-ring-inner {
+  transition: none;
+}
+
+/* تموضع كل بطاقة على محيط الدائرة بزاوية 360deg / --quantity */
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w);
+  transform-style: preserve-3d;
+  transform:
+    rotateY(calc(-1 * (360deg / var(--quantity, 8)) * var(--index, 0)))
+    translateZ(var(--translateZ));
+  transition: none;
+}
+
+/* منع تجاوز transform ثلاثي الأبعاد عند التحويم؛ الرفع الطفيف يتم على الوجه الأمامي */
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item:hover,
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item:focus-visible {
+  transform:
+    rotateY(calc(-1 * (360deg / var(--quantity, 8)) * var(--index, 0)))
+    translateZ(var(--translateZ));
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="back"] {
+  pointer-events: none;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="near"],
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="side"] {
+  cursor: pointer;
+}
+
+/* الوجه الأمامي للبطاقة مع إخفاء الظهر وتدرّج الإضاءة حسب العمق */
+.flow-servers .lc-ring-carousel[data-ready="true"] .lc-card-front {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 0.45s ease;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:hover .lc-card-front,
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:focus-visible .lc-card-front {
+  transform: translateY(-3px);
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-outline {
+  border-color: color-mix(in srgb, var(--lc-ring-accent, #d8ff3e) 58%, #0b0b0f);
+  box-shadow:
+    0 18px 34px -14px rgba(11, 11, 15, 0.48),
+    0 0 0 1px color-mix(in srgb, var(--lc-ring-accent, #d8ff3e) 28%, transparent);
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="near"] .lc-card-front {
+  filter: brightness(0.94);
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="side"] .lc-card-front {
+  filter: brightness(0.84);
+}
+
+/* الظهر المعدني الفاخر للبطاقات على القوس الخلفي للحلقة (يظهر معتدلاً بلا انعكاس) */
+.flow-servers .lc-ring-carousel[data-ready="true"] .lc-card-back {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--h);
+  padding: 14px 16px;
+  border-radius: 22px;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background:
+    radial-gradient(circle 125px at 50% 25%, var(--lc-stage-glow, rgba(216, 255, 62, 0.22)), transparent 74%),
+    linear-gradient(145deg, #0b0b0f 0%, #171c29 100%);
+  border: 1.5px solid color-mix(in srgb, var(--lc-ring-accent, #d8ff3e) 62%, rgba(255, 255, 255, 0.22));
+  box-shadow: 0 10px 24px -14px rgba(11, 11, 15, 0.5);
+  overflow: hidden;
+  text-align: center;
+  filter: brightness(0.86);
+}
+
+.flow-servers .lc-card-back-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.1) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.flow-servers .lc-back-ornament {
+  width: 44px;
+  height: 44px;
+  color: var(--lc-ring-accent, #d8ff3e);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+}
+
+.flow-servers .lc-back-label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #f6f4ec;
+  line-height: 1.25;
+}
+
+.flow-servers .lc-back-sub {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #a9b1c2;
+  line-height: 1.2;
+}
+
+/* ==========================================================================
+   شارة الأيقونة الموحّدة (مشتركة عبر الموقع — لا تُحذف ولا يتغيّر سلوكها)
+========================================================================== */
+
+.flow-servers .league-carousel-badge {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: var(--league-badge-size, 36px);
+  height: var(--league-badge-size, 36px);
+  border: 1px solid #ece9df;
+  border-radius: calc(var(--league-badge-size, 36px) * 11 / 36);
+  background: #f6f4ec;
+  overflow: hidden;
+}
+
+.flow-servers .league-carousel-fallback {
+  width: calc(var(--league-badge-size, 36px) * 17 / 36);
+  height: calc(var(--league-badge-size, 36px) * 17 / 36);
+  color: #b8b3a4;
+}
+
+.flow-servers .league-carousel-logo {
+  position: absolute;
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  object-fit: contain;
+  background: #f6f4ec;
+}
+
+/* ==========================================================================
+   بطاقة البطولة — الهجين المزدوج (قالب sohoning/ugly-horse-87 بهوية الموقع)
+========================================================================== */
+
+.flow-servers .league-carousel-item {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 266px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.flow-servers .league-carousel-item:hover,
+.flow-servers .league-carousel-item:focus-visible {
+  transform: translateY(-3px);
+}
+
+/* الوجه العلوي (.outlinePage في القالب): صدر حبري داكن + قاعدة متصدّر كريمية */
+.flow-servers .lc-outline {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 162px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle 135px at 85% 18%, var(--lc-stage-glow, rgba(216, 255, 62, 0.15)), transparent 72%),
+    linear-gradient(135deg, #0b0b0f 0%, #181c28 100%);
+  border: 1px solid #d8d2c3;
+  box-shadow: 0 10px 24px -16px rgba(11, 11, 15, 0.42);
+  overflow: hidden;
+  transition: box-shadow 0.35s ease, border-color 0.28s ease;
+}
+
+.flow-servers .league-carousel-item:hover .lc-outline,
+.flow-servers .league-carousel-item:focus-visible .lc-outline {
+  border-color: #0b0b0f;
+  box-shadow: 0 14px 28px -12px rgba(11, 11, 15, 0.45);
+}
+
+/* المسرح العلوي: اسم البطولة يميناً (RTL) والكأس بشعار البطولة يساراً */
+.flow-servers .lc-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 110px;
+  padding: 14px 16px 12px;
+  padding-inline-end: 114px;
+}
+
+.flow-servers .lc-heading {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.flow-servers .league-carousel-label {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.08rem;
+  line-height: 1.32;
+  color: #f6f4ec;
+  overflow-wrap: break-word;
+}
+
+/* ── الكأس الذهبية + شعار البطولة مكان النجمة ── */
+.flow-servers .lc-trophy-wrap {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+  width: 106px;
+  height: 106px;
+  z-index: 2;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.flow-servers .league-carousel-item:hover .lc-trophy-wrap,
+.flow-servers .league-carousel-item:focus-visible .lc-trophy-wrap {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.flow-servers .lc-trophy-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.22));
+}
+
+.flow-servers .lc-trophy-stem {
+  fill: #e08e14;
+}
+
+.flow-servers .lc-trophy-base {
+  fill: #68452d;
+}
+
+.flow-servers .lc-trophy-handles {
+  fill: #f6e04d;
+}
+
+.flow-servers .lc-trophy-cup {
+  fill: #f2be45;
+}
+
+.flow-servers .lc-trophy-sheen {
+  fill: rgba(255, 252, 230, 0.28);
+}
+
+/* شعار البطولة الشفاف مباشرةً على معدن الكأس/الدرع (بلا أي خلفية بيضاء) */
+.flow-servers .lc-trophy-emblem {
+  position: absolute;
+  left: 50%;
+  top: var(--lc-emblem-top, 36.5%);
+  transform: translate(-50%, -50%);
+  --league-badge-size: 36px;
+  display: grid;
+  place-items: center;
+}
+
+.flow-servers .lc-trophy-emblem .league-carousel-badge {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.flow-servers .lc-trophy-emblem[data-emblem-style="engraved"] .league-carousel-badge {
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.28);
+  background: radial-gradient(circle, rgba(11, 11, 15, 0.18) 0%, rgba(11, 11, 15, 0.08) 100%);
+  box-shadow:
+    inset 0 1.5px 3px rgba(0, 0, 0, 0.34),
+    0 1px 0 rgba(255, 255, 255, 0.36);
+}
+
+.flow-servers .lc-trophy-emblem .league-carousel-logo {
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  border-radius: 0;
+  background: transparent;
+  filter:
+    drop-shadow(0 2px 3px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.28));
+}
+
+.flow-servers .lc-trophy-emblem[data-emblem-style="engraved"] .league-carousel-logo {
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+}
+
+/* إخفاء أيقونة البديل المحايدة فور تحقّق تحميل الشعار الشفاف كي لا تشفّ خلفه */
+.flow-servers .lc-trophy-emblem .league-carousel-badge:has(> img.league-carousel-logo[data-loaded="true"]) .league-carousel-fallback {
+  opacity: 0;
+}
+
+.flow-servers .lc-trophy-emblem .league-carousel-fallback {
+  width: calc(var(--league-badge-size, 36px) * 21 / 36);
+  height: calc(var(--league-badge-size, 36px) * 21 / 36);
+  color: #451a03;
+  filter: drop-shadow(0 1px 0 rgba(255, 250, 220, 0.55));
+  transition: opacity 0.15s ease;
+}
+
+.flow-servers .lc-trophy-wrap[data-trophy-metal="silver"] .lc-trophy-emblem .league-carousel-fallback {
+  color: #1e293b;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.65));
+}
+
+/* ── الخط الفاصل المضيء (.splitLine في القالب) ── */
+.flow-servers .lc-split-line {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--lc-split-gradient, linear-gradient(90deg, #d8ff3e 0%, #f2be45 55%, #7c5cff 100%));
+  z-index: 2;
+}
+
+/* ── شريط المتصدّر الكريمي (شعار الفريق المتصدّر بجانب اسمه) ── */
+.flow-servers .lc-leader-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  padding: 7px 14px 9px;
+  margin-top: auto;
+  background: linear-gradient(90deg, #fcfbf7 0%, #f4ecda 100%);
+}
+
+/* قرص شعار المتصدّر بجانب اسمه (مع بقاء البديل الحرفي تحته دائماً) */
+.flow-servers .league-carousel-banner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #e9eef2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.flow-servers .league-carousel-monogram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #244859;
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.flow-servers .league-carousel-monogram small {
+  font-size: 0.44rem;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+.flow-servers .league-carousel-leader-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.flow-servers .league-carousel-leader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.24;
+}
+
+.flow-servers .lc-leader-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #2b4eff;
+}
+
+.flow-servers .lc-leader-name {
+  display: block;
+  max-width: 100%;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0b0b0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   القائمة المنسدلة العلوية (.lc-top-drawer) — المقترح (د) المعتمد:
+   التوأم المتناظر بالأوسمة وأيقونات الفرق، تنزلق بسلاسة للأعلى من خلف البطاقة
+   تلقائياً عندما يأتي الدور على البطاقة في مقدمة الدوران (data-ring-pos="front")
+========================================================================== */
+
+.flow-servers .lc-top-drawer {
+  position: absolute;
+  top: 18px;
+  inset-inline: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  padding: 10px 9px 25px;
+  border-radius: 22px 22px 0 0;
+  background: linear-gradient(180deg, #f3efe3 0%, #fcfbf7 100%);
+  border: 1px solid #dfd8c6;
+  border-bottom: 0;
+  box-shadow: 0 -12px 24px -14px rgba(11, 11, 15, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-20%) scale(0.96);
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+  transition:
+    opacity 0.28s ease 0s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
+    visibility 0s linear 0.4s;
+}
+
+/* خيط تاجي ناعم بلون البطولة أعلى الدرج الكريمي */
+.flow-servers .lc-top-drawer-crown {
+  position: absolute;
+  top: 0;
+  inset-inline: 18px;
+  height: 2.5px;
+  border-radius: 0 0 999px 999px;
+  background: var(--lc-split-gradient, linear-gradient(90deg, #2b4eff 0%, #f59e0b 100%));
+  opacity: 0.85;
+}
+
+/* تنفتح تلقائياً بسلاسة فور وصول البطاقة إلى مقدمة الدوران (أو عند التحويم خارج الحلقة) */
+.flow-servers .league-carousel-item:not([data-ring-pos]):hover .lc-top-drawer,
+.flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible .lc-top-drawer,
+.flow-servers .league-carousel-item[data-ring-pos="front"] .lc-top-drawer,
+.flow-servers .lc-preview-open-drawers .league-carousel-item .lc-top-drawer {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-100%) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+    visibility 0s linear 0s;
+}
+
+.flow-servers .lc-top-twin {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.flow-servers .lc-top-twin-duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+  align-items: start;
+  gap: 4px;
+  width: 100%;
+}
+
+.flow-servers .lc-top-twin-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.flow-servers .lc-top-twin-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.flow-servers .lc-top-medal-icon {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+}
+
+.flow-servers .lc-top-metric-label {
+  color: #5b5850;
+  font-size: 0.57rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.flow-servers .lc-top-twin-val-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding-inline-start: 2px;
+}
+
+.flow-servers .lc-top-metric-val {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  line-height: 1.12;
+}
+
+.flow-servers .lc-top-metric-unit {
+  font-family: var(--font-sans);
+  color: #2b4eff;
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.flow-servers .lc-top-metric-unit.is-coral {
+  color: #c2410c;
+}
+
+.flow-servers .lc-top-metric-unit.is-emerald {
+  color: #047857;
+}
+
+/* صف أيقونة النادي + اسم النادي في كل جناح */
+.flow-servers .lc-top-club-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 1px;
+}
+
+.flow-servers .lc-top-club-crest {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffffff, #eef2f6);
+  border: 1px solid rgba(11, 11, 15, 0.12);
+  box-shadow: 0 1px 4px rgba(11, 11, 15, 0.1);
+  overflow: hidden;
+}
+
+.flow-servers .lc-top-club-initials {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.45rem;
+  font-weight: 900;
+  color: #244859;
+  line-height: 1;
+}
+
+.flow-servers .lc-top-club-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.flow-servers .lc-top-metric-team {
+  display: block;
+  min-width: 0;
+  flex: 1;
+  color: #1f2430;
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: start;
+  overflow-wrap: break-word;
+}
+
+.flow-servers .lc-duel-diamond {
+  width: 14px;
+  height: 44px;
+  align-self: center;
+}
+
+.flow-servers .lc-top-twin-goals {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 3.5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid #e5dfd0;
+  line-height: 1.2;
+}
+
+.flow-servers .lc-top-twin-net {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.flow-servers .lc-top-twin-goals-label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: #5b5850;
+}
+
+.flow-servers .lc-top-twin-goals-val {
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 0.79rem;
+  font-weight: 900;
+  color: #0b0b0f;
+}
+
+.flow-servers .lc-top-twin-goals-unit {
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.flow-servers .lc-top-twin-goals-sep {
+  color: #b5ae9e;
+  font-weight: 900;
+}
+
+.flow-servers .lc-top-twin-goals-season {
+  font-size: 0.53rem;
+  font-weight: 700;
+  color: #6b675e;
+}
+
+/* ==========================================================================
+   الدرج السفلي المنزلق (.lc-detail): ينفتح بسلاسة بالتزامن مع العلوية
+   عندما يأتي الدور على البطاقة في مقدمة الدوران (data-ring-pos="front")
+========================================================================== */
+
+.flow-servers .lc-detail {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 0 14px;
+  margin-top: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  border-radius: 0 0 22px 22px;
+  background: #fcfbf7;
+  border: 1px solid #dfd8c6;
+  border-top: 0;
+  box-shadow: 0 12px 24px -14px rgba(11, 11, 15, 0.25);
+  transform: translateY(-10px);
+  transition:
+    max-height 0.42s cubic-bezier(0.22, 0.61, 0.36, 1),
+    padding 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    margin-top 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.28s ease,
+    transform 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.flow-servers .league-carousel-item:not([data-ring-pos]):hover .lc-detail,
+.flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible .lc-detail,
+.flow-servers .lc-preview-open-drawers .league-carousel-item .lc-detail {
+  margin-top: -18px;
+  padding: 26px 14px 12px;
+  max-height: 146px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* داخل الحلقة ثلاثية الأبعاد يتحرّك الدرج السفلي بـ transform + opacity الخالصة (60fps)
+   بالتزامن السلس مع الدرج العلوي كلما وصلت البطاقة إلى المقدمة */
+.flow-servers .lc-ring-carousel[data-ready="true"] .lc-detail {
+  position: absolute;
+  top: calc(100% - 18px);
+  inset-inline: 0;
+  margin-top: 0;
+  padding: 26px 14px 12px;
+  max-height: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-58%) scale(0.96);
+  transform-origin: center top;
+  will-change: transform, opacity;
+  transition:
+    opacity 0.28s ease 0s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s,
+    visibility 0s linear 0.4s;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-detail {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    transform 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    visibility 0s linear 0s;
+}
+
+.flow-servers .lc-grades-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+
+.flow-servers .lc-grades-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+}
+
+.flow-servers .lc-bar-peak {
+  fill: #2b4eff;
+}
+
+.flow-servers .lc-bar-side {
+  fill: #f2be45;
+}
+
+.flow-servers .lc-grades-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  min-width: 0;
+  line-height: 1.22;
+}
+
+.flow-servers .lc-grades-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #5b5850;
+}
+
+.flow-servers .lc-grades-num {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-latin), var(--font-sans);
+  font-size: 1.28rem;
+  font-weight: 900;
+  color: #0b0b0f;
+  margin-top: 1px;
+}
+
+.flow-servers .lc-grades-num small {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: #2b4eff;
+}
+
+.flow-servers .lc-grades-meta {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #6b675e;
+  margin-top: 2px;
+}
+
+.flow-servers .lc-grades-rates {
+  font-size: 0.59rem;
+  font-weight: 800;
+  color: #2b4eff;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* الميدالية المنزلقة من الأعلى (.medals.slide-in-top في القالب) */
+.flow-servers .lc-medals {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  transform: translateY(-24px);
+  opacity: 0;
+  transition: transform 0.3s ease 0s, opacity 0.22s ease 0s;
+}
+
+.flow-servers .league-carousel-item:not([data-ring-pos]):hover .lc-medals,
+.flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible .lc-medals,
+.flow-servers .league-carousel-item[data-ring-pos="front"] .lc-medals,
+.flow-servers .lc-preview-open-drawers .league-carousel-item .lc-medals {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s, opacity 0.42s ease 0.28s;
+}
+
+.flow-servers .lc-ribbon-a {
+  fill: var(--lc-ribbon-a, #2b4eff);
+}
+
+.flow-servers .lc-ribbon-b {
+  fill: var(--lc-ribbon-b, #7c5cff);
+}
+
+.flow-servers .lc-ribbon-c {
+  fill: var(--lc-ribbon-c, #d8ff3e);
+}
+
+/* ===== أدوات التنقّل: سهمان + مؤشرات نقطية ===== */
+
+.flow-servers .league-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.flow-servers .league-carousel-nav {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  background: #fff;
+  color: #0b0b0f;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.flow-servers .league-carousel-nav:hover:not(:disabled) {
+  background: #0b0b0f;
+  color: #fff;
+}
+
+.flow-servers .league-carousel-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.flow-servers .league-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flow-servers .league-carousel-dot {
+  position: relative;
+  height: 8px;
+  width: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  overflow: hidden;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.flow-servers .league-carousel-dot:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.flow-servers .league-carousel-dot.is-active {
+  width: 32px;
+  background: #0b0b0f;
+}
+
+/* مؤشر زمني أنيق (5 ثوانٍ) داخل النقطة النشطة للحلقة الدائرية */
+@keyframes lc-ring-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active {
+  background: #0b0b0f;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #d8ff3e;
+  transform-origin: right center;
+  animation: lc-ring-progress 5s linear forwards;
+}
+
+.flow-servers .lc-ring-carousel[data-ready="true"]:hover .league-carousel-dot.is-active::after,
+.flow-servers .lc-ring-carousel[data-ready="true"]:focus-within .league-carousel-dot.is-active::after,
+.flow-servers .lc-ring-carousel[data-ready="true"][data-dragging="true"] .league-carousel-dot.is-active::after {
+  animation-play-state: paused;
+}
+
+.flow-servers .league-carousel :is(a, button, [tabindex]):focus-visible {
+  outline: 3px solid #2b4eff;
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+/* ==========================================================================
+   تجاوب الشاشات الضيقة وتقليل الحركة
+========================================================================== */
+
+@media (max-width: 640px) {
+  .flow-servers .league-carousel-item {
+    width: calc(50vw - 40px);
+  }
+
+  .flow-servers .lc-ring-hint {
+    font-size: 0.62rem;
+    padding: 2px 7px;
+  }
+
+  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-scene {
+    --w: 210px;
+    --h: 146px;
+    --translateZ: 252px;
+    --rotateX: -11deg;
+    --perspective: 860px;
+    height: 386px;
+  }
+
+  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-orbit {
+    top: 134px;
+    height: 98px;
+  }
+
+  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-inner {
+    top: 82px;
+  }
+
+  .flow-servers .lc-top-drawer {
+    top: 16px;
+    width: 100%;
+    padding: 8px 6px 21px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .flow-servers .lc-top-twin {
+    gap: 5px;
+  }
+
+  .flow-servers .lc-top-twin-duel {
+    grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .flow-servers .lc-top-medal-icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .flow-servers .lc-top-metric-label {
+    font-size: 0.49rem;
+  }
+
+  .flow-servers .lc-top-metric-val {
+    font-size: 0.8rem;
+  }
+
+  .flow-servers .lc-top-metric-unit {
+    font-size: 0.45rem;
+  }
+
+  .flow-servers .lc-top-club-row {
+    gap: 4px;
+  }
+
+  .flow-servers .lc-top-club-crest {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .flow-servers .lc-top-club-initials {
+    font-size: 0.39rem;
+  }
+
+  .flow-servers .lc-top-metric-team {
+    font-size: 0.49rem;
+  }
+
+  .flow-servers .lc-duel-diamond {
+    width: 12px;
+    height: 36px;
+  }
+
+  .flow-servers .lc-top-twin-goals {
+    padding: 2.5px 6px;
+    gap: 3px;
+  }
+
+  .flow-servers .lc-top-twin-net {
+    width: 14px;
+    height: 14px;
+    flex-basis: 14px;
+  }
+
+  .flow-servers .lc-top-twin-goals-label,
+  .flow-servers .lc-top-twin-goals-season {
+    font-size: 0.48rem;
+  }
+
+  .flow-servers .lc-top-twin-goals-val {
+    font-size: 0.7rem;
+  }
+
+  .flow-servers .lc-top-twin-goals-unit {
+    font-size: 0.46rem;
+  }
+
+  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-card-back {
+    border-radius: 18px;
+    padding: 10px 12px;
+  }
+
+  .flow-servers .lc-back-ornament {
+    width: 34px;
+    height: 34px;
+  }
+
+  .flow-servers .lc-back-label {
+    font-size: 0.72rem;
+  }
+
+  .flow-servers .lc-back-sub {
+    font-size: 0.56rem;
+  }
+
+  .flow-servers .lc-outline {
+    min-height: 146px;
+    border-radius: 18px;
+  }
+
+  .flow-servers .lc-stage {
+    min-height: 96px;
+    padding: 11px 10px 8px;
+    padding-inline-end: 66px;
+  }
+
+  .flow-servers .lc-trophy-wrap {
+    width: 68px;
+    height: 68px;
+    top: 8px;
+    inset-inline-end: 1px;
+  }
+
+  .flow-servers .lc-trophy-emblem {
+    --league-badge-size: 24px;
+  }
+
+  .flow-servers .league-carousel-label {
+    font-size: 0.88rem;
+    line-height: 1.28;
+  }
+
+  .flow-servers .lc-leader-row {
+    gap: 6px;
+    min-height: 44px;
+    padding: 6px 10px 8px;
+  }
+
+  .flow-servers .league-carousel-banner {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .flow-servers .lc-leader-name {
+    font-size: 0.68rem;
+  }
+
+  .flow-servers .lc-detail {
+    border-radius: 0 0 18px 18px;
+  }
+
+  .flow-servers .league-carousel-item:not([data-ring-pos]):hover .lc-detail,
+  .flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible .lc-detail,
+  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-detail {
+    padding: 21px 10px 10px;
+  }
+
+  .flow-servers .lc-ring-carousel[data-ready="true"] .lc-detail {
+    top: calc(100% - 16px);
+  }
+
+  .flow-servers .lc-grades-icon {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .flow-servers .lc-grades-num {
+    font-size: 1.02rem;
+  }
+
+  .flow-servers .lc-grades-rates {
+    font-size: 0.54rem;
+    white-space: normal;
+  }
+
+  .flow-servers .lc-medals {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+}
+
+@media all {
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-track,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-inner,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .lc-ring-scene,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-dot,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item,
+  html[data-motion-reduced="true"] .flow-servers .lc-card-front,
+  html[data-motion-reduced="true"] .flow-servers .lc-top-drawer,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item[data-ring-pos="front"] .lc-top-drawer,
+  html[data-motion-reduced="true"] .flow-servers .lc-outline,
+  html[data-motion-reduced="true"] .flow-servers .lc-trophy-wrap,
+  html[data-motion-reduced="true"] .flow-servers .lc-detail,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .lc-detail,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"] .lc-detail,
+  html[data-motion-reduced="true"] .flow-servers .lc-medals,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item[data-ring-pos="front"] .lc-medals {
+    transition: none;
+    transition-delay: 0s;
+  }
+
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-dot.is-active::after {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:not([data-ring-pos]):hover,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:not([data-ring-pos]):focus-visible,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:hover .lc-card-front,
+  html[data-motion-reduced="true"] .flow-servers .lc-ring-carousel[data-ready="true"] .league-carousel-item[data-ring-pos="front"]:focus-visible .lc-card-front,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:hover .lc-trophy-wrap,
+  html[data-motion-reduced="true"] .flow-servers .league-carousel-item:focus-visible .lc-trophy-wrap {
+    transform: none;
+  }
+}
+
+
+@font-face{font-family:Cairo;src:url('/home-preview/kota-servers-reference-preview/server-cards/cairo.woff2')}@font-face{font-family:Tajawal;src:url('/home-preview/kota-servers-reference-preview/server-cards/title-tajawal.woff2');font-weight:900}@font-face{font-family:Amiri;src:url('/home-preview/kota-servers-reference-preview/server-cards/title-amiri.woff2');font-style:italic}.flow-servers *{box-sizing:border-box}.flow-servers body{margin:0;background:#f7f7f5;color:#0b0b0f;font-family:Cairo,sans-serif;--font-display:Tajawal,Cairo,sans-serif;--font-sans:Cairo,sans-serif;--font-latin:Arial}.flow-servers main{max-width:1100px;margin:auto;padding:48px 18px 35px}.flow-servers .intro{text-align:center}.flow-servers .intro h1{font-family:Tajawal;font-size:clamp(38px,6vw,68px);line-height:1.1;margin:0}.flow-servers .intro em{font:italic 29px Amiri;color:#bf6689}.flow-servers .intro p{color:#6a6761;font-size:14px}.flow-servers .preview{margin:42px auto 0;max-width:900px}.flow-servers .league-carousel-head h2{margin:0;font-size:20px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-scene{height:500px;--w:270px;--h:162px;--translateZ:230px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-inner{top:160px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-orbit{top:220px}.flow-servers .lc-stage{min-height:110px}.flow-servers .server-logo{position:absolute;inset-inline-end:14px;top:16px;width:82px;height:78px;object-fit:contain}.flow-servers .server-sub{font-size:10px;color:#bbc2d2;margin-top:5px}.flow-servers .lc-leader-row{justify-content:space-between}.flow-servers .price{font:bold 23px Arial;color:#10131a}.flow-servers .price small{font:700 10px Cairo}.flow-servers .lc-top-drawer{padding:10px 12px 26px}.flow-servers .stats{display:flex;justify-content:space-between;gap:5px;text-align:center}.flow-servers .stat{flex:1}.flow-servers .stat b{display:block;color:#0b0b0f;font:900 17px Arial}.flow-servers .stat span{font-size:10px;color:#666;font-weight:bold}.flow-servers .lc-ring-carousel[data-ready=true] .lc-detail{display:block;text-align:center;padding:26px 10px 11px}.flow-servers .description{font-size:10px;color:#656159;margin:0 0 7px;line-height:1.5}.flow-servers .actions{display:flex;gap:5px}.flow-servers .actions a{flex:1;display:block;border-radius:999px;background:#121722;color:#fff;text-decoration:none;font-weight:800;font-size:10px;padding:8px 3px;white-space:nowrap}.flow-servers .matches-league-links .actions a{color:#fff}.flow-servers .matches-league-links .actions a+a{background:#e4ebff;color:#2445c9}.flow-servers .lc-card-back img{width:60px;height:55px;object-fit:contain}.flow-servers .lc-card-back .lc-back-sub{color:#c9d0dd}.flow-servers button{font:inherit;cursor:pointer}.flow-servers .league-carousel-dot{padding:0;border:0}.flow-servers .league-carousel-controls{display:flex;align-items:center;justify-content:center;gap:12px}.flow-servers .note{text-align:center;color:#77736a;font-size:11px;margin-top:30px}@media(max-width:640px){.flow-servers main{padding:32px 12px}.flow-servers .preview{margin-top:30px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-scene{--w:225px;--h:146px;--translateZ:155px;height:440px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-inner{top:147px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-orbit{top:200px}.flow-servers .lc-stage{min-height:98px}.flow-servers .server-logo{width:67px;height:66px}.flow-servers .lc-top-drawer{padding:8px 8px 22px}.flow-servers .stat b{font-size:14px}.flow-servers .stat span{font-size:9px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-detail{padding:23px 8px 10px}.flow-servers .description{font-size:9px}.flow-servers .actions a{font-size:9px}.flow-servers .price{font-size:20px}}
+
+/* صقل البطاقة مع الإبقاء على هيكل ومسرح بطاقات البطولات */
+.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-scene{height:480px;--w:300px;--h:176px;--translateZ:250px}
+.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-inner{top:145px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-orbit{top:220px}
+.flow-servers .lc-outline{min-height:176px}.flow-servers .lc-stage{min-height:120px;padding-inline-end:105px}.flow-servers .server-logo{width:82px;height:82px;top:19px}.flow-servers .league-carousel-label{font-size:1.3rem}.flow-servers .server-badge{display:inline-block;color:#d8ff3e;font-size:10px;font-weight:800;margin-top:4px}.flow-servers .server-sub{color:#c7ccd6;font-size:10px;margin-top:3px}.flow-servers .lc-leader-row{min-height:54px}.flow-servers .lc-leader-tag{font-size:10px}.flow-servers .lc-leader-name{font-size:10px;margin-top:3px}.flow-servers .price{font-size:25px}.flow-servers .lc-top-drawer{padding:11px 12px 26px}.flow-servers .stats{gap:8px}.flow-servers .stat{display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto auto;column-gap:6px;align-items:center;text-align:start}.flow-servers .stat .stat-icon{grid-row:1/3;display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:#e8ebfb;color:#2b4eff;font-size:15px}.flow-servers .stat b{font-size:16px;direction:ltr;text-align:start}.flow-servers .stat span:not(.stat-icon){font-size:10px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-detail{padding:28px 12px 12px}.flow-servers .description{font-size:11px;margin:0 0 9px}.flow-servers .actions a{font-size:11px;padding:9px 4px}.flow-servers .note{line-height:1.8}
+@media(max-width:640px){.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-scene{--w:265px;--h:160px;--translateZ:165px;height:420px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-inner{top:133px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-ring-orbit{top:202px}.flow-servers .lc-outline{min-height:160px}.flow-servers .lc-stage{min-height:105px;padding-inline-end:88px}.flow-servers .server-logo{width:68px;height:68px;top:17px;inset-inline-end:12px}.flow-servers .league-carousel-label{font-size:1.15rem}.flow-servers .server-badge{font-size:9px}.flow-servers .server-sub{font-size:9px}.flow-servers .stat .stat-icon{width:25px;height:25px;border-radius:8px;font-size:12px}.flow-servers .stat{grid-template-columns:25px 1fr;column-gap:4px}.flow-servers .stat b{font-size:14px}.flow-servers .stat span:not(.stat-icon){font-size:9px}.flow-servers .lc-ring-carousel[data-ready=true] .lc-detail{padding:25px 10px 10px}.flow-servers .description{font-size:10px}.flow-servers .actions a{font-size:10px}.flow-servers .intro p{font-size:12px}.flow-servers .preview{margin-top:24px}}
+
+.flow-servers .preview{--font-display:FlowHead,Arial,sans-serif;--font-sans:FlowCairo,Arial,sans-serif;--font-latin:Arial;font-family:FlowCairo,Arial,sans-serif;color:#0b0b0f;letter-spacing:0;max-width:900px;margin:0 auto}.flow-servers .preview *{box-sizing:border-box}.flow-servers .league-carousel-item{margin:0}.flow-servers .actions a{position:relative}.flow-servers__note{margin-top:25px}.flow-intro{margin-bottom:20px}
+
+/* Larger, easier-to-read server cards in the full-page preview. */
+.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{--w:420px;--h:226px;--translateZ:340px;height:590px}
+.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-inner{top:170px}
+.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-orbit{top:275px;width:min(900px,95%);height:155px}
+.flow-servers .preview .lc-outline{min-height:226px;border-radius:26px}
+.flow-servers .preview .lc-stage{min-height:155px;padding:20px 22px;padding-inline-end:150px}
+.flow-servers .preview .league-carousel-label{font-size:1.75rem;line-height:1.3}
+.flow-servers .preview .server-badge{font-size:13px;margin-top:7px}
+.flow-servers .preview .server-sub{font-size:13px;margin-top:5px}
+.flow-servers .preview .server-logo{width:115px;height:112px;top:20px;inset-inline-end:20px}
+.flow-servers .preview .lc-leader-row{min-height:70px;padding:10px 20px}
+.flow-servers .preview .lc-leader-tag,.flow-servers .preview .lc-leader-name{font-size:12px}
+.flow-servers .preview .price{font-size:34px}
+.flow-servers .preview .price small{font-size:13px}
+.flow-servers .preview .lc-top-drawer{padding:14px 18px 28px}
+.flow-servers .preview .stat{grid-template-columns:38px 1fr;column-gap:9px}
+.flow-servers .preview .stat .stat-icon{width:38px;height:38px;font-size:17px}
+.flow-servers .preview .stat b{font-size:21px}
+.flow-servers .preview .stat span:not(.stat-icon){font-size:12px}
+.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-detail{padding:30px 17px 15px}
+.flow-servers .preview .description{font-size:13px;line-height:1.7;margin-bottom:10px}
+.flow-servers .preview .actions{gap:8px}
+.flow-servers .preview .actions a{font-size:13px;padding:11px 6px}
+@media(max-width:640px){
+ .flow-servers{padding-inline:12px}
+ .flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{--w:min(320px,calc(100vw - 54px));--h:190px;--translateZ:190px;height:470px}
+ .flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-inner{top:145px}
+ .flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-orbit{top:230px;height:105px}
+ .flow-servers .preview .lc-outline{min-height:190px;border-radius:22px}
+ .flow-servers .preview .lc-stage{min-height:132px;padding:15px 16px;padding-inline-end:105px}
+ .flow-servers .preview .league-carousel-label{font-size:1.45rem}
+ .flow-servers .preview .server-badge{font-size:11px;margin-top:5px}
+ .flow-servers .preview .server-sub{font-size:11px}
+ .flow-servers .preview .server-logo{width:86px;height:86px;top:21px;inset-inline-end:13px}
+ .flow-servers .preview .lc-leader-row{min-height:58px;padding:7px 14px}
+ .flow-servers .preview .lc-leader-tag,.flow-servers .preview .lc-leader-name{font-size:10px}
+ .flow-servers .preview .price{font-size:27px}
+ .flow-servers .preview .price small{font-size:11px}
+ .flow-servers .preview .lc-top-drawer{padding:10px 10px 23px}
+ .flow-servers .preview .stat{grid-template-columns:29px 1fr;column-gap:5px}
+ .flow-servers .preview .stat .stat-icon{width:29px;height:29px;font-size:13px}
+ .flow-servers .preview .stat b{font-size:16px}
+ .flow-servers .preview .stat span:not(.stat-icon){font-size:10px}
+ .flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-detail{padding:26px 10px 11px}
+ .flow-servers .preview .description{font-size:11px;margin-bottom:8px}
+ .flow-servers .preview .actions a{font-size:11px;padding:10px 3px}
+}
+
+/* تحسين التوازن البصري وإمكانية اللمس مع الحفاظ على الدرجين والدوران */
+.flow-servers{background:radial-gradient(ellipse at 50% 46%,#eeeae4 0%,#f7f7f7 49%);padding-top:68px}
+.flow-intro{margin-bottom:0}.flow-intro p{color:#675762;max-width:650px}
+.flow-servers .preview .lc-ring-scene{margin-top:0}
+.flow-servers .preview .lc-outline{border-color:#d7cebf;box-shadow:0 22px 44px -25px #28101fa1}
+.flow-servers .preview .lc-stage{background:radial-gradient(circle at 20% 30%,rgba(216,255,62,.10),transparent 45%)}
+.flow-servers .preview .league-carousel-label{letter-spacing:0}
+.flow-servers .preview .server-badge{color:#d8ff3e}
+.flow-servers .preview .lc-top-drawer{background:linear-gradient(180deg,#f2efe7,#fffdf8)}
+.flow-servers .preview .stat .stat-icon{background:#e2e9ff;color:#2b4eff}
+.flow-servers .preview .stat b{font-variant-numeric:tabular-nums}
+.flow-servers .preview .lc-leader-row{background:linear-gradient(100deg,#fffdf8,#f3ebd9)}
+.flow-servers .preview .lc-leader-tag{color:#3453d9}
+.flow-servers .preview .actions a{min-height:44px;display:flex;align-items:center;justify-content:center;line-height:1.25;transition:transform .2s,background .2s}
+.flow-servers .preview .actions a:first-child{background:#2b4eff;color:white}
+.flow-servers .preview .actions a+a{background:#e9edfc;color:#2445c9}
+.flow-servers .preview .actions a:hover{transform:translateY(-2px)}
+.flow-servers .preview .league-carousel-nav{width:44px;height:44px;cursor:pointer}
+.flow-servers .preview .league-carousel-dot{border:0;min-height:8px;padding:0}
+.flow-servers .preview .lc-card-back img{width:85px;height:80px;object-fit:contain}
+.flow-servers .preview .lc-back-label{font-size:1rem}
+@media(max-width:640px){.flow-servers{padding-top:50px}.flow-intro p{margin-top:18px}.flow-servers .preview .lc-ring-scene{height:480px}.flow-servers .preview .actions a{min-height:44px;font-size:11px}.flow-servers .preview .lc-detail{padding-bottom:12px}}
+.flow-servers .preview .stat-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}@media(max-width:640px){.flow-servers .preview .stat-icon svg{width:17px;height:17px}}
+.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-inner{top:145px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:565px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-orbit{top:250px}@media(max-width:640px){.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-inner{top:110px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-scene{height:445px}.flow-servers .preview.lc-ring-carousel[data-ready="true"] .lc-ring-orbit{top:195px}}
+/* Vector arrows stay crisp and independent of font coverage on phones. */
+.flow-servers .league-carousel-nav svg{display:block;width:20px;height:20px;flex:none}
+.flow-servers .actions .server-action-arrow{display:block;width:14px;height:14px;flex:none;margin-inline-start:4px}
+
+/* A quiet ruled caption echoes the path heading, with the four server marks. */
+.flow-intro .flow-intro__meta{display:flex;align-items:center;justify-content:space-between;gap:16px;width:min(82%,650px);margin:26px auto 0;border-top:1px solid #28082226;padding-top:12px;direction:rtl}
+.flow-intro .flow-intro__count{font:700 11px/1.7 SMTajawal,Tajawal,sans-serif;color:#806d79;white-space:nowrap}
+.flow-intro .flow-intro__logos{display:flex;align-items:center;gap:clamp(8px,1.5vw,18px);min-width:0}
+.flow-intro .flow-intro__logos img{display:block;width:clamp(32px,3.5vw,44px);height:32px;object-fit:contain}
+@media(max-width:700px){.flow-intro .flow-intro__meta{width:100%;margin-top:20px;padding-top:11px}.flow-intro .flow-intro__count{font-size:10px}.flow-intro .flow-intro__logos{gap:8px}.flow-intro .flow-intro__logos img{width:32px;height:28px}}

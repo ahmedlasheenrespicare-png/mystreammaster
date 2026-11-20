@@ -17,10 +17,10 @@ import { absolute, BRAND_EN, BRAND_NAME, SITE_URL, WHATSAPP_DISPLAY } from "./co
 import { AVAILABLE_DURATIONS, EN_HOME_FAQS, EN_PLAN_FAQS, FAQ_SECTIONS, FAQ_SECTIONS_EN, FAQS, PRICING_PLANS, TRIAL_FAQS } from "./data";
 import { LOCALE_PAIRS } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
-import { LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
+import { CLUB_LANDINGS, LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
 import { CHANNEL_CATEGORY_PAGES } from "./content/channel-categories";
-import { allMatchesVerified, matchByRoute } from "./content/match-center.mjs";
-import { dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
+import { matchByRoute } from "./content/match-center.mjs";
+import { isVerified, dayLabelInZone, kickoffLabel } from "./lib/match-center.mjs";
 import { keywordsFor } from "./keywords.mjs";
 
 export interface SeoMeta {
@@ -47,8 +47,6 @@ export interface SeoMeta {
   secondaryKeywords?: string[];
   intent?: "transactional" | "comparison" | "informational" | "editorial" | "legal" | "navigational";
 }
-
-const OG_IMAGE = `${SITE_URL}/images/og-default.png`;
 
 /* ==========================================================================
    صورة المشاركة الخاصة بكل صفحة — 1200×630
@@ -245,6 +243,8 @@ interface WebPageOpts {
   description: string;
   published?: string;
   modified?: string;
+  /** إغفال تاريخ التعديل غير الموثّق بدلاً من اختراعه. */
+  omitModifiedDate?: boolean;
   /** لغة الصفحة (inLanguage) — الافتراضي العربية */
   lang?: string;
   /** معرّف الكيان الرئيسي في الصفحة (منتج/مقال/أسئلة) إن وُجد */
@@ -270,7 +270,7 @@ function webPageLd(o: WebPageOpts) {
     inLanguage: o.lang ?? "ar",
     isPartOf: { "@id": WEBSITE_ID },
     datePublished: o.published ?? PAGES_DATE,
-    dateModified: o.modified ?? o.published ?? PAGES_DATE,
+    ...(o.omitModifiedDate ? {} : { dateModified: o.modified ?? o.published ?? PAGES_DATE }),
     primaryImageOfPage: {
       "@type": "ImageObject",
       url: ogImageFromCanonical(o.canonical),
@@ -358,9 +358,9 @@ export function getSeo(path: string): SeoMeta {
     );
     return {
       ...base,
-      title: `متجر الاشتراكات | ${BRAND_NAME}`,
+      title: `اشتراك IPTV وباقات التفعيل | ${BRAND_NAME}`,
       description:
-        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX، وقارن الأسعار والشروط وطرق التواصل قبل الطلب.",
       canonical,
       ogImageAlt: `متجر اشتراكات ${BRAND_NAME} — باقات نوفا وإيستار وموكا وX`,
       jsonLd: [
@@ -368,7 +368,8 @@ export function getSeo(path: string): SeoMeta {
           canonical,
           name: `متجر الاشتراكات | ${BRAND_NAME}`,
           description:
-            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX، وقارن الأسعار والشروط وطرق التواصل قبل الطلب.",
+          modified: "2026-11-04",
           mainEntityId: `${canonical}#plans`,
         }),
         crumbs,
@@ -376,6 +377,9 @@ export function getSeo(path: string): SeoMeta {
           "@type": "ItemList",
           "@id": `${canonical}#plans`,
           name: "باقات التفعيل والربط التقني",
+          url: canonical,
+          numberOfItems: PRICING_PLANS.length,
+          itemListOrder: "https://schema.org/ItemListUnordered",
           itemListElement: PRICING_PLANS.map((p, i) => ({
             "@type": "ListItem",
             position: i + 1,
@@ -528,7 +532,7 @@ export function getSeo(path: string): SeoMeta {
             brand: { "@type": "Brand", name: BRAND_EN },
             category: "Technical setup and activation service",
             url: canonical,
-            image: OG_IMAGE,
+            image: ogImageFromCanonical(canonical),
             offers: AVAILABLE_DURATIONS.flatMap((months) => {
               const price = enPlan.prices[months];
               return price ? [{
@@ -538,6 +542,7 @@ export function getSeo(path: string): SeoMeta {
                 priceCurrency: "USD",
                 availability: "https://schema.org/InStock",
                 url: canonical,
+                seller: { "@id": ORG_ID },
               }] : [];
             }),
           },
@@ -631,9 +636,10 @@ export function getSeo(path: string): SeoMeta {
   const centerMatch = matchByRoute(clean);
   if (centerMatch) {
     const canonical = absolute(`matches/${centerMatch.competitionSlug}/${centerMatch.slug}`);
-    /* البوابة: كيان الحدث والفهرسة معاً معلقان على تأكيد المعرّفات من المصدر.
-       مباراة غير مطابَقة لا تُفهرس ولا تُنشر بكيان حدث ناقص (البندان 2 و13). */
-    const verified = allMatchesVerified();
+    /* بوابة مستقلة لكل مباراة: لا تجعل سجلاً غير مؤكّد يحجب الصفحات الأخرى.
+       المباراة التي ثبتت معرّفاتها من المصدر وحدها تصبح قابلة للفهرسة؛ غير
+       المطابقة تبقى noindex حتى التحقق منها (البندان 2 و13). */
+    const verified = isVerified(centerMatch);
     const cleanMeta = (value: unknown): string | null => typeof value === 'string' && value.trim() ? value.trim() : null;
     const homeName = cleanMeta(centerMatch.home?.name);
     const awayName = cleanMeta(centerMatch.away?.name);
@@ -763,6 +769,39 @@ export function getSeo(path: string): SeoMeta {
     };
   }
 
+  /* ===== صفحات الأندية — /teams/{النادي} ===== */
+  const clubLanding = CLUB_LANDINGS.find((c) => clean === `/teams/${c.slug}`);
+  if (clubLanding) {
+    const canonical = absolute(`teams/${clubLanding.slug}`);
+    return {
+      ...base,
+      title: clubLanding.title,
+      description: clubLanding.description,
+      canonical,
+      ogImageAlt: `${clubLanding.h1} — ${BRAND_NAME}`,
+      jsonLd: [
+        webPageLd({
+          canonical,
+          name: clubLanding.title,
+          description: clubLanding.description,
+          published: LANDING_DATE,
+          modified: LANDING_DATE,
+          mainEntityId: `${canonical}#faq`,
+        }),
+        breadcrumbs(
+          [
+            { name: "الرئيسية", path: "" },
+            { name: "مواعيد المباريات", path: "matches" },
+            { name: clubLanding.h1, path: `teams/${clubLanding.slug}` },
+          ],
+          canonical
+        ),
+        /* الأسئلة ظاهرة فعلاً في الصفحة (عناصر details) */
+        faqLd(canonical, clubLanding.faq),
+      ],
+    };
+  }
+
   /* ===== الصفحة الرئيسية ===== */
   if (clean === "/") {
     const canonical = absolute("");
@@ -785,7 +824,7 @@ export function getSeo(path: string): SeoMeta {
           "@id": `${SITE_URL}/#product`,
           name: "باقة ربط تقني وتفعيل لمشغلات البث 2026",
           description:
-            "باقات ربط تقني وتفعيل مع سيرفرات المزودين الخارجيين ودعم فني لإعداد الأجهزة الذكية على مدار الساعة. المواصفات الفنية للسيرفر (عدد القنوات والمكتبة والجودة) يوفّرها المزود الخارجي، والموقع لا يستضيف المحتوى ولا يبثّه ولا يعيد بثّه.",
+            "باقات ربط تقني وتفعيل مع سيرفرات المزودين الخارجيين، مع مساعدة فنية لإعداد الأجهزة الذكية. المواصفات الفنية للسيرفر (عدد القنوات والمكتبة والجودة) يوفّرها المزود الخارجي، والموقع لا يستضيف المحتوى ولا يبثّه ولا يعيد بثّه.",
           brand: { "@type": "Brand", name: BRAND_EN },
           category: "Technical setup and activation service",
           offers: {
@@ -799,9 +838,10 @@ export function getSeo(path: string): SeoMeta {
             ),
             offerCount: String(PRICING_PLANS.length),
             availability: "https://schema.org/InStock",
+            seller: { "@id": ORG_ID },
           },
           url: absolute(""),
-          image: OG_IMAGE,
+          image: ogImageFromCanonical(canonical),
         },
         /* الأسئلة الثمانية ظاهرة كلها في قسم الأسئلة بالرئيسية */
         faqLd(canonical, FAQS),
@@ -845,7 +885,7 @@ export function getSeo(path: string): SeoMeta {
           brand: { "@type": "Brand", name: BRAND_EN },
           category: "Technical setup and activation service",
           url: canonical,
-          image: OG_IMAGE,
+          image: ogImageFromCanonical(canonical),
           offers: AVAILABLE_DURATIONS.flatMap((months) => {
             const price = plan.prices[months];
             return price ? [{
@@ -855,6 +895,7 @@ export function getSeo(path: string): SeoMeta {
               priceCurrency: "USD",
               availability: "https://schema.org/InStock",
               url: canonical,
+              seller: { "@id": ORG_ID },
             }] : [];
           }),
         },
@@ -1044,6 +1085,7 @@ export function getSeo(path: string): SeoMeta {
         description: post.description,
         published: post.date,
         modified: post.updated ?? post.date,
+        omitModifiedDate: post.modificationDateUnverified,
         mainEntityId: `${canonical}#article`,
       }),
       breadcrumbs(
@@ -1060,7 +1102,7 @@ export function getSeo(path: string): SeoMeta {
         headline: post.title,
         description: post.description,
         datePublished: post.date,
-        dateModified: post.updated ?? post.date,
+        ...(post.modificationDateUnverified ? {} : { dateModified: post.updated ?? post.date }),
         inLanguage: "ar",
         mainEntityOfPage: { "@id": `${canonical}#webpage` },
         author: { "@type": "Organization", name: BRAND_NAME, url: `${SITE_URL}/` },
@@ -1109,7 +1151,8 @@ export function getSeo(path: string): SeoMeta {
     ...base,
     title: `الصفحة غير موجودة | ${BRAND_NAME}`,
     description: "الصفحة التي تبحث عنها غير متوفرة — تصفّح الباقات أو القنوات من الصفحة الرئيسية.",
-    canonical: absolute(""),
+    /* لا canonical لصفحة 404: الصفحة الرئيسية ليست بديلاً عن أي مسار مفقود. */
+    canonical: "",
     robots: "noindex, follow",
     jsonLd: [],
   };
@@ -1143,7 +1186,13 @@ export function applySeoToDocument(path: string) {
   setMeta('meta[name="robots"]', "content", seo.robots);
   setMeta('meta[property="og:title"]', "content", seo.title);
   setMeta('meta[property="og:description"]', "content", seo.description);
-  setMeta('meta[property="og:url"]', "content", seo.canonical);
+  if (seo.canonical) {
+    setMeta('meta[property="og:url"]', "content", seo.canonical);
+    setMeta('meta[name="twitter:url"]', "content", seo.canonical);
+  } else {
+    document.head.querySelector('meta[property="og:url"]')?.remove();
+    document.head.querySelector('meta[name="twitter:url"]')?.remove();
+  }
   setMeta('meta[property="og:type"]', "content", seo.ogType);
   /* صورة المشاركة تتغيّر مع الصفحة مثل باقي الوسوم — وإلا بقيت صورة الصفحة
      الأولى ظاهرة عند التنقّل داخل الموقع */
@@ -1157,12 +1206,16 @@ export function applySeoToDocument(path: string) {
   setMeta('meta[name="twitter:image:alt"]', "content", seo.ogImageAlt);
 
   let link = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "canonical";
-    document.head.appendChild(link);
+  if (!seo.canonical) {
+    link?.remove();
+  } else {
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "canonical";
+      document.head.appendChild(link);
+    }
+    link.href = seo.canonical;
   }
-  link.href = seo.canonical;
 
   /* لغة المستند واتجاهه وروابط hreflang تتبع لغة الصفحة الحالية */
   document.documentElement.lang = seo.lang;

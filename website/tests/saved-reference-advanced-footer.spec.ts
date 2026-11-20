@@ -1,0 +1,43 @@
+import {test,expect} from '@playwright/test';
+for(const size of [{width:320,height:568},{width:390,height:844},{width:768,height:900},{width:1440,height:900},{width:1920,height:1080},{width:2560,height:1440}])test(`footer animation and layout are responsive at ${size.width}px`,async({browser})=>{
+ test.setTimeout(100000);const context=await browser.newContext({viewport:size,isMobile:size.width<700,hasTouch:size.width<700,reducedMotion:'no-preference'});const page=await context.newPage(),errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','on'));// Isolate the footer on desktop: the site's existing smooth-scroll engine can delay synthetic jumps.
+ if(size.width>=700)await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({contentType:'text/javascript',body:''}));await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await page.addStyleTag({content:'.loader{display:none!important}'});
+ const footer=page.locator('.mountain-cta'),stage=page.locator('.sm-footer__cta'),hand=page.locator('.footer-hand img'),circle=page.locator('.footer-contact-circle'),track=page.locator('.sm-footer__track');await expect.poll(async()=>{await stage.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));return stage.evaluate(e=>{const r=e.getBoundingClientRect();return r.top<innerHeight&&r.bottom>0})},{timeout:30000,intervals:[500,1000]}).toBe(true);await expect(footer).not.toHaveClass(/is-offscreen/,{timeout:30000});await expect.poll(()=>hand.evaluate((img:HTMLImageElement)=>img.naturalWidth),{timeout:30000}).toBeGreaterThan(0);
+ await expect(hand).toHaveCSS('animation-name','sm-footer-hand');await expect(hand).toHaveCSS('animation-play-state','running');await expect(track).toHaveCSS('animation-play-state','running');if(size.width>=1200){const separation=await page.evaluate(()=>{const marquee=document.querySelector('.sm-footer__marquee')!.getBoundingClientRect();const mountain=document.querySelector('.mountain-foreground')!.getBoundingClientRect();return mountain.top-marquee.bottom});expect(separation).toBeGreaterThan(-70)}const layout=await stage.evaluate(e=>{const r=e.getBoundingClientRect(),b=e.querySelector('.footer-contact-circle')!.getBoundingClientRect();return{stageLeft:r.left,stageRight:r.right,buttonLeft:b.left,buttonRight:b.right,buttonTop:b.top,buttonBottom:b.bottom,stageTop:r.top,stageBottom:r.bottom,viewport:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth}});expect(layout.overflow).toBeFalsy();expect(layout.buttonLeft).toBeGreaterThanOrEqual(layout.stageLeft);expect(layout.buttonRight).toBeLessThanOrEqual(layout.stageRight);expect(layout.buttonTop).toBeGreaterThanOrEqual(layout.stageTop);expect(layout.buttonBottom).toBeLessThanOrEqual(layout.stageBottom);await expect(circle).toHaveAttribute('href',/wa\.me\/201090415657/);await expect(page.locator('.sm-footer__nav a')).toHaveCount(15);
+ await expect(page.locator('.sm-footer__motion')).toHaveCount(0);await expect(page.locator('.sm-contact__actions')).toHaveCount(0);await expect(page.locator('.mountain-foreground img')).toHaveJSProperty('naturalWidth',1920);await page.locator('#about').evaluate(e=>e.scrollIntoView({block:'start',behavior:'instant'}));await expect(footer).toHaveClass(/is-offscreen/,{timeout:15000});await expect(hand).toHaveCSS('animation-play-state','paused');await stage.evaluate(e=>e.scrollIntoView({block:'center',behavior:'instant'}));await expect(footer).not.toHaveClass(/is-offscreen/,{timeout:15000});await expect(hand).toHaveCSS('animation-play-state','running');await expect(track).toHaveCSS('animation-play-state','running');expect(errors).toEqual([]);await context.close();
+});
+test('footer respects the site motion setting',async({page})=>{test.setTimeout(60000);await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','off'));await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});await expect(page.locator('.footer-hand img')).toHaveCSS('animation-name','none');await expect(page.locator('.sm-footer__track')).toHaveCSS('animation-name','none')});
+test('mobile footer reaches the bottom with the original scrolling engine', async ({browser}) => {
+ test.setTimeout(100000);
+ const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'no-preference'});
+ const page=await context.newPage();await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','on'));
+ await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+ await expect.poll(()=>page.locator('footer.sm-footer').evaluate(e=>Math.abs(e.getBoundingClientRect().bottom-innerHeight)),{timeout:25000}).toBeLessThan(3);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await context.close();
+});
+
+for (const width of [390,1440]) test(`footer wordmark rises and reverses with scrolling at ${width}px`,async({browser})=>{
+ test.setTimeout(90000);
+ const context=await browser.newContext({viewport:{width,height:900},isMobile:width<600,hasTouch:width<600});
+ await context.addInitScript(()=>localStorage.setItem('sm-motion-preference','on'));
+ const page=await context.newPage();
+ if(width>=600)await page.route('**/main-D5MQsYQ6.js*',r=>r.fulfill({body:'',contentType:'text/javascript'}));
+ await page.route('https://**',r=>r.abort());await page.route('**/*.mp4*',r=>r.abort());
+ await page.goto('/home-preview/saved-reference/',{waitUntil:'domcontentloaded'});
+ const stage=page.locator('.sm-contact .sm-footer__cta'), brand=page.locator('.footer-background-brand');
+ const place=async(top:number)=>{await stage.evaluate((el,top)=>window.scrollTo(0,window.scrollY+el.getBoundingClientRect().top-top),top);};
+ const rise=()=>brand.evaluate(el=>parseFloat(el.style.getPropertyValue('--brand-rise')));
+ await place(850);await expect.poll(rise,{timeout:20000}).toBeGreaterThan(60);
+ await expect.poll(()=>brand.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeLessThan(.25);
+ await place(300);await expect.poll(rise,{timeout:20000}).toBeLessThan(1);
+ await expect.poll(()=>brand.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.99);
+ await place(850);await expect.poll(rise,{timeout:20000}).toBeGreaterThan(60);
+ await expect.poll(()=>brand.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeLessThan(.25);
+ await page.evaluate(()=>{const select=document.querySelector<HTMLSelectElement>('#sm-motion-setting')!;select.value='off';select.dispatchEvent(new Event('change'))});
+ await expect.poll(()=>brand.evaluate(el=>el.style.getPropertyValue('--brand-rise'))).toBe('');
+ await expect(brand).toHaveCSS('opacity','1');
+ await context.close();
+});

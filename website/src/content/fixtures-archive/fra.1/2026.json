@@ -1275,18 +1275,65 @@
         "name": "Lyon"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 68.3,
+          "shots": 17,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 31.7,
+          "shots": 8,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261026&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-10-27T09:01:19.880Z"
+    },
+    {
+      "id": "401876416",
+      "date": "2026-10-30T18:00:00.000Z",
+      "home": {
+        "id": "2502",
+        "name": "Nice"
+      },
+      "away": {
+        "id": "169",
+        "name": "Stade Rennais"
+      },
+      "score": {
+        "home": 5,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 47.5,
+          "shots": 17,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 52.5,
+          "shots": 18,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261030&limit=500"
+      },
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
     },
     {
       "id": "401876421",
@@ -1300,18 +1347,29 @@
         "name": "Paris Saint-Germain"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 5
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 29.3,
+          "shots": 14,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 70.7,
+          "shots": 15,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261030&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
     },
     {
       "id": "401876420",
@@ -1325,43 +1383,29 @@
         "name": "Lens"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 1,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 62.3,
+          "shots": 16,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 37.7,
+          "shots": 5,
+          "passAccuracy": 0.7
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261030&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
-    },
-    {
-      "id": "401876416",
-      "date": "2026-10-31T16:15:00.000Z",
-      "home": {
-        "id": "2502",
-        "name": "Nice"
-      },
-      "away": {
-        "id": "169",
-        "name": "Stade Rennais"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261031&limit=500"
-      },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-10-31T09:40:14.239Z"
     },
     {
       "id": "401876413",
@@ -1375,22 +1419,105 @@
         "name": "Le Mans"
       },
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 0
       },
-      "status": "scheduled",
+      "status": "finished",
       "attendance": 0,
-      "statistics": null,
+      "statistics": {
+        "home": {
+          "possession": 39.1,
+          "shots": 14,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 60.9,
+          "shots": 3,
+          "passAccuracy": 0.9
+        }
+      },
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261031&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-01T10:29:01.813Z"
+    },
+    {
+      "id": "401876414",
+      "date": "2026-11-01T14:00:00.000Z",
+      "home": {
+        "id": "180",
+        "name": "Strasbourg"
+      },
+      "away": {
+        "id": "172",
+        "name": "AJ Auxerre"
+      },
+      "score": {
+        "home": 5,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 64.3,
+          "shots": 19,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 35.7,
+          "shots": 6,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401876415",
+      "date": "2026-11-01T16:15:00.000Z",
+      "home": {
+        "id": "6851",
+        "name": "Paris FC"
+      },
+      "away": {
+        "id": "174",
+        "name": "AS Monaco"
+      },
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 44.4,
+          "shots": 19,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 55.6,
+          "shots": 9,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
     },
     {
       "id": "401876418",
-      "date": "2026-10-31T19:45:00.000Z",
+      "date": "2026-11-01T16:15:00.000Z",
       "home": {
         "id": "167",
         "name": "Lyon"
@@ -1398,6 +1525,438 @@
       "away": {
         "id": "7868",
         "name": "Angers"
+      },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 63.8,
+          "shots": 21,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 36.2,
+          "shots": 8,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401876417",
+      "date": "2026-11-01T19:45:00.000Z",
+      "home": {
+        "id": "176",
+        "name": "Marseille"
+      },
+      "away": {
+        "id": "179",
+        "name": "Toulouse"
+      },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 43.6,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 56.4,
+          "shots": 14,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+      },
+      "fetchedAt": "2026-11-02T11:09:53.734Z"
+    },
+    {
+      "id": "401876419",
+      "date": "2026-11-02T19:45:00.000Z",
+      "home": {
+        "id": "273",
+        "name": "Lorient"
+      },
+      "away": {
+        "id": "6997",
+        "name": "Brest"
+      },
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 51.9,
+          "shots": 15,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 48.1,
+          "shots": 12,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261102&limit=500"
+      },
+      "fetchedAt": "2026-11-04T10:56:52.373Z"
+    },
+    {
+      "id": "401876405",
+      "date": "2026-11-06T19:45:00.000Z",
+      "home": {
+        "id": "179",
+        "name": "Toulouse"
+      },
+      "away": {
+        "id": "180",
+        "name": "Strasbourg"
+      },
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 47.3,
+          "shots": 10,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 52.7,
+          "shots": 9,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261106&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401876411",
+      "date": "2026-11-07T18:00:00.000Z",
+      "home": {
+        "id": "172",
+        "name": "AJ Auxerre"
+      },
+      "away": {
+        "id": "6851",
+        "name": "Paris FC"
+      },
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 35.2,
+          "shots": 7,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 64.8,
+          "shots": 10,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401876407",
+      "date": "2026-11-07T20:05:00.000Z",
+      "home": {
+        "id": "160",
+        "name": "Paris Saint-Germain"
+      },
+      "away": {
+        "id": "170",
+        "name": "Troyes"
+      },
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 73,
+          "shots": 15,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 27,
+          "shots": 8,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401876406",
+      "date": "2026-11-08T14:00:00.000Z",
+      "home": {
+        "id": "169",
+        "name": "Stade Rennais"
+      },
+      "away": {
+        "id": "166",
+        "name": "Lille"
+      },
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 55.5,
+          "shots": 15,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 44.5,
+          "shots": 8,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401876408",
+      "date": "2026-11-08T16:15:00.000Z",
+      "home": {
+        "id": "2697",
+        "name": "Le Mans"
+      },
+      "away": {
+        "id": "174",
+        "name": "AS Monaco"
+      },
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 48.2,
+          "shots": 19,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 51.8,
+          "shots": 5,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401876409",
+      "date": "2026-11-08T16:15:00.000Z",
+      "home": {
+        "id": "3236",
+        "name": "Le Havre AC"
+      },
+      "away": {
+        "id": "273",
+        "name": "Lorient"
+      },
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 53.9,
+          "shots": 21,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 46.1,
+          "shots": 7,
+          "passAccuracy": 0.8
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401876410",
+      "date": "2026-11-08T16:15:00.000Z",
+      "home": {
+        "id": "6997",
+        "name": "Brest"
+      },
+      "away": {
+        "id": "167",
+        "name": "Lyon"
+      },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 31.1,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 68.9,
+          "shots": 10,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401876412",
+      "date": "2026-11-08T16:15:00.000Z",
+      "home": {
+        "id": "7868",
+        "name": "Angers"
+      },
+      "away": {
+        "id": "2502",
+        "name": "Nice"
+      },
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 51.6,
+          "shots": 12,
+          "passAccuracy": 0.9
+        },
+        "away": {
+          "possession": 48.4,
+          "shots": 16,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401876404",
+      "date": "2026-11-08T19:45:00.000Z",
+      "home": {
+        "id": "175",
+        "name": "Lens"
+      },
+      "away": {
+        "id": "176",
+        "name": "Marseille"
+      },
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "status": "finished",
+      "attendance": 0,
+      "statistics": {
+        "home": {
+          "possession": 41.3,
+          "shots": 13,
+          "passAccuracy": 0.8
+        },
+        "away": {
+          "possession": 58.7,
+          "shots": 16,
+          "passAccuracy": 0.9
+        }
+      },
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+      },
+      "fetchedAt": "2026-11-09T11:33:52.699Z"
+    },
+    {
+      "id": "401876395",
+      "date": "2026-11-20T19:45:00.000Z",
+      "home": {
+        "id": "170",
+        "name": "Troyes"
+      },
+      "away": {
+        "id": "3236",
+        "name": "Le Havre AC"
       },
       "score": {
         "home": null,
@@ -1409,16 +1968,41 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261031&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261120&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-06T10:54:23.718Z"
     },
     {
-      "id": "401876419",
-      "date": "2026-10-31T19:45:00.000Z",
+      "id": "401876398",
+      "date": "2026-11-21T16:15:00.000Z",
       "home": {
-        "id": "273",
-        "name": "Lorient"
+        "id": "2502",
+        "name": "Nice"
+      },
+      "away": {
+        "id": "160",
+        "name": "Paris Saint-Germain"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401876396",
+      "date": "2026-11-21T19:45:00.000Z",
+      "home": {
+        "id": "180",
+        "name": "Strasbourg"
       },
       "away": {
         "id": "6997",
@@ -1434,16 +2018,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261031&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261121&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
-      "id": "401876414",
-      "date": "2026-11-01T14:00:00.000Z",
+      "id": "401876399",
+      "date": "2026-11-21T19:45:00.000Z",
       "home": {
-        "id": "180",
-        "name": "Strasbourg"
+        "id": "174",
+        "name": "AS Monaco"
       },
       "away": {
         "id": "172",
@@ -1459,20 +2043,20 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261121&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
-      "id": "401876415",
-      "date": "2026-11-01T16:15:00.000Z",
+      "id": "401876402",
+      "date": "2026-11-21T19:45:00.000Z",
       "home": {
-        "id": "6851",
-        "name": "Paris FC"
+        "id": "166",
+        "name": "Lille"
       },
       "away": {
-        "id": "174",
-        "name": "AS Monaco"
+        "id": "167",
+        "name": "Lyon"
       },
       "score": {
         "home": null,
@@ -1484,20 +2068,95 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261121&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
     },
     {
-      "id": "401876417",
-      "date": "2026-11-01T19:45:00.000Z",
+      "id": "401876403",
+      "date": "2026-11-21T19:45:00.000Z",
+      "home": {
+        "id": "175",
+        "name": "Lens"
+      },
+      "away": {
+        "id": "179",
+        "name": "Toulouse"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261121&limit=500"
+      },
+      "fetchedAt": "2026-11-07T10:12:01.539Z"
+    },
+    {
+      "id": "401876397",
+      "date": "2026-11-22T14:00:00.000Z",
+      "home": {
+        "id": "6851",
+        "name": "Paris FC"
+      },
+      "away": {
+        "id": "7868",
+        "name": "Angers"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261122&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401876401",
+      "date": "2026-11-22T16:15:00.000Z",
+      "home": {
+        "id": "273",
+        "name": "Lorient"
+      },
+      "away": {
+        "id": "169",
+        "name": "Stade Rennais"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261122&limit=500"
+      },
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
+    },
+    {
+      "id": "401876400",
+      "date": "2026-11-22T19:45:00.000Z",
       "home": {
         "id": "176",
         "name": "Marseille"
       },
       "away": {
-        "id": "179",
-        "name": "Toulouse"
+        "id": "2697",
+        "name": "Le Mans"
       },
       "score": {
         "home": null,
@@ -1509,41 +2168,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261101&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261122&limit=500"
       },
-      "fetchedAt": "2026-10-18T08:03:24.305Z"
+      "fetchedAt": "2026-11-08T10:24:41.240Z"
     },
     {
-      "id": "401876405",
-      "date": "2026-11-06T19:45:00.000Z",
+      "id": "401876392",
+      "date": "2026-11-27T19:45:00.000Z",
       "home": {
-        "id": "179",
-        "name": "Toulouse"
-      },
-      "away": {
-        "id": "180",
-        "name": "Strasbourg"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261106&limit=500"
-      },
-      "fetchedAt": "2026-10-23T08:34:10.994Z"
-    },
-    {
-      "id": "401876411",
-      "date": "2026-11-07T16:15:00.000Z",
-      "home": {
-        "id": "172",
-        "name": "AJ Auxerre"
+        "id": "6997",
+        "name": "Brest"
       },
       "away": {
         "id": "6851",
@@ -1559,16 +2193,66 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261127&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-13T11:00:02.719Z"
     },
     {
-      "id": "401876407",
-      "date": "2026-11-07T19:45:00.000Z",
+      "id": "401876394",
+      "date": "2026-11-28T16:15:00.000Z",
+      "home": {
+        "id": "7868",
+        "name": "Angers"
+      },
+      "away": {
+        "id": "175",
+        "name": "Lens"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261128&limit=500"
+      },
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
+    },
+    {
+      "id": "401876387",
+      "date": "2026-11-28T19:45:00.000Z",
       "home": {
         "id": "160",
         "name": "Paris Saint-Germain"
+      },
+      "away": {
+        "id": "273",
+        "name": "Lorient"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261128&limit=500"
+      },
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
+    },
+    {
+      "id": "401876388",
+      "date": "2026-11-28T19:45:00.000Z",
+      "home": {
+        "id": "2502",
+        "name": "Nice"
       },
       "away": {
         "id": "170",
@@ -1584,16 +2268,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261107&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261128&limit=500"
       },
-      "fetchedAt": "2026-10-24T08:09:04.391Z"
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     },
     {
-      "id": "401876406",
-      "date": "2026-11-08T14:00:00.000Z",
+      "id": "401876390",
+      "date": "2026-11-28T19:45:00.000Z",
       "home": {
-        "id": "169",
-        "name": "Stade Rennais"
+        "id": "2697",
+        "name": "Le Mans"
       },
       "away": {
         "id": "166",
@@ -1609,45 +2293,20 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261128&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     },
     {
-      "id": "401876408",
-      "date": "2026-11-08T16:15:00.000Z",
-      "home": {
-        "id": "2697",
-        "name": "Le Mans"
-      },
-      "away": {
-        "id": "174",
-        "name": "AS Monaco"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
-      },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
-    },
-    {
-      "id": "401876409",
-      "date": "2026-11-08T16:15:00.000Z",
+      "id": "401876391",
+      "date": "2026-11-28T19:45:00.000Z",
       "home": {
         "id": "3236",
         "name": "Le Havre AC"
       },
       "away": {
-        "id": "273",
-        "name": "Lorient"
+        "id": "180",
+        "name": "Strasbourg"
       },
       "score": {
         "home": null,
@@ -1659,66 +2318,16 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261128&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-14T10:27:43.327Z"
     },
     {
-      "id": "401876410",
-      "date": "2026-11-08T16:15:00.000Z",
+      "id": "401876393",
+      "date": "2026-11-29T14:00:00.000Z",
       "home": {
-        "id": "6997",
-        "name": "Brest"
-      },
-      "away": {
-        "id": "167",
-        "name": "Lyon"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
-      },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
-    },
-    {
-      "id": "401876412",
-      "date": "2026-11-08T16:15:00.000Z",
-      "home": {
-        "id": "7868",
-        "name": "Angers"
-      },
-      "away": {
-        "id": "2502",
-        "name": "Nice"
-      },
-      "score": {
-        "home": null,
-        "away": null
-      },
-      "status": "scheduled",
-      "attendance": 0,
-      "statistics": null,
-      "source": {
-        "provider": "ESPN",
-        "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
-      },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
-    },
-    {
-      "id": "401876404",
-      "date": "2026-11-08T19:45:00.000Z",
-      "home": {
-        "id": "175",
-        "name": "Lens"
+        "id": "172",
+        "name": "AJ Auxerre"
       },
       "away": {
         "id": "176",
@@ -1734,9 +2343,59 @@
       "source": {
         "provider": "ESPN",
         "leagueId": "fra.1",
-        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261108&limit=500"
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261129&limit=500"
       },
-      "fetchedAt": "2026-10-25T08:26:33.492Z"
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401876386",
+      "date": "2026-11-29T16:15:00.000Z",
+      "home": {
+        "id": "179",
+        "name": "Toulouse"
+      },
+      "away": {
+        "id": "169",
+        "name": "Stade Rennais"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261129&limit=500"
+      },
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401876389",
+      "date": "2026-11-29T19:45:00.000Z",
+      "home": {
+        "id": "167",
+        "name": "Lyon"
+      },
+      "away": {
+        "id": "174",
+        "name": "AS Monaco"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261129&limit=500"
+      },
+      "fetchedAt": "2026-11-15T10:55:21.696Z"
     }
   ]
 }

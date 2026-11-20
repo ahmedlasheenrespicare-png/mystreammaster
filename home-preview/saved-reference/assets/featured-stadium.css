@@ -1,0 +1,14 @@
+/* A lightweight recorded view of the approved stadium, not a live WebGL scene. */
+.sm-matches__header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr) minmax(150px,.65fr);align-items:end;gap:clamp(12px,2vw,30px)}
+.sm-matches__stadium{position:relative;width:100%;aspect-ratio:601/338;align-self:center;overflow:hidden;pointer-events:none;direction:ltr;background:#fff}
+.sm-matches__stadium img,.sm-matches__stadium video{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.sm-matches__stadium video{opacity:0}.sm-matches__stadium.is-playing video{opacity:1}
+@media(max-width:950px){.sm-matches__header{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}.sm-matches__aside{grid-column:1/-1;max-width:none}.sm-matches__aside img{width:42px;height:42px}}
+@media(max-width:700px){.sm-matches__header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:10px;align-items:center}.sm-matches__header h2{font-size:clamp(42px,11vw,75px)}.sm-matches__stadium{align-self:center}.sm-matches__aside{grid-column:1/-1;margin-top:10px}.sm-matches__script{left:0;font-size:clamp(18px,4.8vw,22px)}}
+@media(min-width:951px){.sm-matches__header h2{font-size:clamp(65px,7.2vw,110px)}}
+/* Keep the actual Arabic glyphs and the handwritten accent inside their column. */
+.sm-matches__header .sm-matches__title{min-width:0}
+.sm-matches__header .sm-matches__script{left:0}
+@media (min-width:951px){.sm-matches__header h2{font-size:clamp(55px,6.1vw,91px)}}
+@media (min-width:701px) and (max-width:950px){.sm-matches__header h2{font-size:8.4vw}}
+@media (max-width:700px){.sm-matches__header h2{font-size:clamp(30px,9vw,63px)}}

@@ -14,7 +14,7 @@ import ChannelShowcase from "../components/ChannelShowcase";
 import SetupGuide from "../components/SetupGuide";
 import ShowcaseGrid from "../components/ShowcaseGrid";
 import BlogTeaser from "../components/BlogTeaser";
-import Testimonials from "../components/Testimonials";
+import BeforeSubscribe from "../components/BeforeSubscribe";
 import FAQ from "../components/FAQ";
 import { PricingPlan } from "../data";
 
@@ -68,11 +68,8 @@ export default function HomePage({
   return (
     <>
       <Hero onOpenTrial={onOpenTrial} />
-      {/* أقسام خرجت من الهيرو في إعادة هيكلته: بطاقات القيمة ثم قسم المكتبة
-          الداكن — بنفس ترتيبهما السابق (البطاقات قبل القسم الداكن) */}
       <HeroValueCards onOpenTrial={onOpenTrial} />
-      {/* مؤقتاً: قسم الأخبار مخفي — أعد السطر التالي لإظهاره */}
-      {/* <FeaturedNewsCards /> */}
+      {/* قسم الأخبار مخفي كما هو في النسخة الحالية. */}
       <LibrarySection />
       <ContentTicker />
       <WordBand />
@@ -91,7 +88,7 @@ export default function HomePage({
       <SetupGuide />
       <ShowcaseGrid />
       <BlogTeaser />
-      <Testimonials />
+      <BeforeSubscribe />
       <FAQ />
     </>
   );

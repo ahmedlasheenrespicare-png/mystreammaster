@@ -10,6 +10,17 @@
    ملف JS خالص (مع أنواع في navigation.d.mts) ليعمل في Node و Vite بلا بناء.
 ========================================================================== */
 
+/* Destinations for the approved reference home. Keep old section IDs as
+   stable keys for menus, but never emit links to removed homepage anchors. */
+const HOME_DESTINATIONS = {
+  'live-player': 'channels/', xtream: 'xtream-player.html', pricing: '#works',
+  'server-finder': '#path-section', 'servers-compare': 'servers/',
+  channels: 'channels/', setup: '#journey', showcase: '#cinema-library',
+};
+export function homeSectionPath(id) {
+  return HOME_DESTINATIONS[id] || `#${id}`;
+}
+
 /** أقسام الصفحة الرئيسية بنفس ترتيب ظهورها في الصفحة */
 export const HOME_SECTIONS = [
   { id: "live-player", label: "دليل المشاهدة الرسمية", desc: "روابط القنوات والمنصات الرسمية", icon: "📡" },
@@ -21,7 +32,7 @@ export const HOME_SECTIONS = [
   { id: "setup", label: "طريقة التشغيل", desc: "على كل الشاشات", icon: "🛠️" },
   { id: "showcase", label: "مكتبة المحتوى", desc: "أفلام ومسلسلات ورياضة", icon: "🎬" },
   { id: "blog-teaser", label: "أحدث المقالات", desc: "اعرف قبل أن تشترك", icon: "📰" },
-  { id: "reviews", label: "قبل الاشتراك", desc: "قائمة فحص عملية", icon: "✅" },
+  { id: "reviews", label: "آراء المستخدمين", desc: "تجارب المستخدمين", icon: "✅" },
   { id: "faq", label: "الأسئلة الشائعة", desc: "إجابات سريعة", icon: "❓" },
 ];
 

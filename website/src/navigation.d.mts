@@ -57,6 +57,7 @@ export interface NavSection {
 }
 
 export declare const HOME_SECTIONS: HomeSection[];
+export declare function homeSectionPath(id: string): string;
 export declare const CHANNEL_CATEGORY_LINKS: ChannelCategoryLink[];
 export declare const SERVER_PAGES: ServerPage[];
 export declare const NAV_GROUPS: NavGroup[];

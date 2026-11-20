@@ -18,6 +18,7 @@ import { counterpartHref } from "../i18n";
 import { useRouter } from "../router";
 import {
   HOME_SECTIONS,
+  homeSectionPath,
   NAV_GROUPS,
   SERVER_PAGES,
   activeGroupKey,
@@ -51,9 +52,8 @@ interface HeaderProps {
 
 type GroupKey = NavGroup["key"];
 
-/* أقسام الرئيسية روابط "/#pricing" — تعمل من أي صفحة (الموجّه ينقل ثم يمرّر)
-   وتعمل أيضاً بلا JavaScript لأنها روابط حقيقية */
-const sectionHref = (id: string) => to(`#${id}`);
+/* Use current destinations on every page, including without JavaScript. */
+const sectionHref = (id: string) => to(homeSectionPath(id));
 const pageHref = (link: NavLink) => to(link.href);
 
 export default function Header({
@@ -380,7 +380,7 @@ export default function Header({
               <IconZap className="w-4 h-4 text-[#d8ff3e]" /> طلب كود تجريبي
             </button>
             <a href={sectionHref("reviews")} onClick={() => setMobileOpen(false)} className="mt-4 flex items-center justify-center gap-1 text-[13px] text-black/60 font-bold hover:text-black">
-              قائمة فحص قبل الاشتراك <IconArrowUpRight className="w-3.5 h-3.5" />
+              آراء المستخدمين <IconArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>

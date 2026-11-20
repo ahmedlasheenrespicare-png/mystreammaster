@@ -258,10 +258,10 @@ export default function PlanPage({
 
                 <ul className="mt-5 space-y-2 text-[12.5px] font-bold text-white/60">
                   <li className="flex items-center gap-2">
-                    <IconShieldCheck className="w-4 h-4 text-[#3effe0]" /> تفعيل فوري خلال 5 دقائق
+                    <IconShieldCheck className="w-4 h-4 text-[#3effe0]" /> اسأل عن موعد التفعيل
                   </li>
                   <li className="flex items-center gap-2">
-                    <IconStar className="w-4 h-4 text-[#d8ff3e]" /> دعم فني 24/7 وضمان طوال المدة
+                    <IconStar className="w-4 h-4 text-[#d8ff3e]" /> تواصل مع الدعم وراجع سياسة الاسترجاع
                   </li>
                   <li className="flex items-center gap-2">
                     <IconZap className="w-4 h-4 text-[#ff5c4d]" /> تقنية المزود: {plan.antiFreeze}

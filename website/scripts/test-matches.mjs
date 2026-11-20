@@ -11,6 +11,7 @@ import {
   dayInZone,
   describeDiagnostic,
   matchesForDay,
+  moroccoTimeZoneWarning,
   parseScoreboard,
   readScoreboardResponse,
   scoreboardUrl,
@@ -65,6 +66,16 @@ test('IANA zones apply Egypt summer/winter rules and do not use a hard-coded off
   assert.equal(dayInZone(new Date('2026-01-12T21:30:00Z'), 'Africa/Cairo'), '2026-01-12');
   assert.equal(dayInZone(new Date('2026-07-12T21:30:00Z'), 'Africa/Cairo'), '2026-07-13');
   assert.equal(dayInZone(new Date('2026-01-12T21:30:00Z'), 'Asia/Riyadh'), '2026-01-13');
+});
+test('Morocco warning detects outdated device time-zone data without rewriting historic times', () => {
+  const historical = new Date('2026-07-01T12:00:00Z');
+  const afterChange = new Date('2026-10-27T18:00:00Z');
+  assert.equal(moroccoTimeZoneWarning('Africa/Casablanca', historical), false);
+  assert.equal(moroccoTimeZoneWarning('Africa/Cairo', afterChange), false);
+  const formatter = zone => new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' });
+  const deviceIsOutdated = formatter('Africa/Casablanca').format(afterChange) !== formatter('UTC').format(afterChange);
+  assert.equal(moroccoTimeZoneWarning('Africa/Casablanca', afterChange), deviceIsOutdated);
+  assert.equal(dayInZone(historical, 'Africa/Casablanca'), '2026-07-01');
 });
 test('day membership uses selected timezone, including UTC midnight and extreme offsets', () => {
   const matches = parseScoreboard({ events: [event()] }, league);

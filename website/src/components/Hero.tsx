@@ -5,7 +5,7 @@ import { HeroPhone } from "./HeroPhone";
 import HomepageWebGLStage from "./HomepageWebGLStage";
 import { HeroTelevision } from "./HeroTelevision";
 import { useEffect, useMemo, useState, type ReactElement } from "react";
-import { IconArrow, IconCheck, IconPlay, IconStar, IconTrophy, IconZap } from "./Icons";
+import { IconArrow, IconCheck, IconPlay, IconTrophy, IconZap } from "./Icons";
 import { MouseParallax, Parallax, Reveal } from "./motion";
 import AllLeaguesTicket, { AL_SADD_AL_AHLI_CLASH, NEWCASTLE_EVERTON_CLASH, ATLETICO_BAYERN_UCL_CLASH, BARCELONA_VILLA_UCL_CLASH, MAN_UTD_ROMA_UCL_CLASH, BAYERN_DORTMUND_CLASH, CHELSEA_UNITED_CLASH, INDEX_CLASHES, LIVERPOOL_ARSENAL_CLASH, LIVERPOOL_CHELSEA_CUP_CLASH, MILAN_INTER_CLASH } from "./AllLeaguesTicket";
 import type { FeaturedClash } from "./LeagueTicketCard";
@@ -152,7 +152,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
 
         {/* لوحة العرض */}
         <div className="bg-[#efeee9] p-3 md:p-6 relative min-w-0">
-          {/* شارة عائمة: تفعيل فوري (اختبار storefront يشترط ظهور الشارات الثلاث) */}
+          {/* شارة عائمة لإرشادات التفعيل */}
           <div
             data-hero-badge="activation"
             className="relative z-10 mb-3 md:mb-4 ms-auto w-fit max-w-full bg-white rounded-2xl shadow-lg border border-black/10 px-2.5 py-1.5 md:px-3 md:py-2 flex items-center gap-2 motion-safe:animate-float"
@@ -161,8 +161,8 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
               <IconCheck className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </span>
             <div className="leading-none text-right flex items-baseline gap-1.5">
-              <p className="text-[10.5px] md:text-[11px] font-black">تفعيل فوري</p>
-              <p className="text-[10px] text-black/50">خلال 5 دقائق</p>
+              <p className="text-[10.5px] md:text-[11px] font-black">إرشادات التفعيل</p>
+              <p className="text-[10px] text-black/50">عبر الدعم</p>
             </div>
           </div>
 
@@ -254,7 +254,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
                         سيرفر {tab.name}
                       </p>
                       <p className="text-[10px] md:text-[11.5px] text-white/60 font-medium">
-                        تفعيل خلال دقائق — على كل أجهزتك
+                        إرشادات التفعيل — تحقق من توافق جهازك
                       </p>
                     </div>
                   </div>
@@ -309,7 +309,7 @@ function TvMockup({ onOpenTrial }: { onOpenTrial: () => void }) {
               { label: "مكتبة VOD", value: tab.vodCount },
               { label: "الجودة", value: tab.quality },
               { label: "مانع التقطيع", value: tab.antiFreeze },
-              { label: "الدعم", value: "24/7" },
+              { label: "الدعم", value: "اسأل عن المواعيد" },
             ].map((s) => (
               <li key={s.label}>
                 <p className="text-[10.5px] font-bold text-black/40">{s.label}</p>
@@ -517,7 +517,7 @@ export default function Hero({ onOpenTrial }: HeroProps) {
         <div className="hero-story-intro">
           <h1 className="hero-story-title">
             <span key={heroWord} className="hero-story-title__word">{HERO_TITLE_WORDS[heroWord]}</span>{" "}
-            كل ما تحب بجودة <span dir="ltr">4K</span> وبلا تقطيع
+            كل ما تحب حتى جودة <span dir="ltr">4K</span> حسب المحتوى والجهاز
           </h1>
         </div>
 
@@ -570,14 +570,10 @@ export default function Hero({ onOpenTrial }: HeroProps) {
           </div>
         </Reveal>
 
-        {/* التقييم */}
+        {/* وصف الأجهزة */}
         <Reveal variant="up" delay={380} className="mt-4" initiallyVisible>
           <div className="flex items-center justify-center gap-2">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <IconStar key={i} className="w-4 h-4 fill-[#0b0b0f] text-[#0b0b0f]" />
-              ))}
-            </div>
+            <IconCheck className="w-4 h-4 text-[#2b4eff]" />
             <p className="text-[14px] font-bold">
               <span className="font-black">على شاشتك وجوالك</span>{" "}
               <span className="text-black/50 font-medium">— ترفيه أينما كنت</span>
@@ -594,8 +590,8 @@ export default function Hero({ onOpenTrial }: HeroProps) {
                   <IconTrophy className="w-4 h-4" />
                 </span>
                 <div className="text-right leading-none">
-                  <p className="text-[13px] font-black">ثبات 99.9%</p>
-                  <p className="text-[11px] text-black/50 font-medium">في قمة المباريات</p>
+                  <p className="text-[13px] font-black">اختبر اتصالك</p>
+                  <p className="text-[11px] text-black/50 font-medium">وقت مشاهدتك</p>
                 </div>
               </div>
             </MouseParallax>

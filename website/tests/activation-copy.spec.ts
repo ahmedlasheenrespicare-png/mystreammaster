@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
 
 function messageFrom(href: string) {
   const url = new URL(href);
-  expect(url.origin + url.pathname).toBe('https://wa.me/201098950879');
+  expect(url.origin + url.pathname).toBe('https://wa.me/201090415657');
   return url.searchParams.get('text');
 }
 
@@ -43,8 +43,8 @@ test('homepage activation and trial CTAs use technical-service wording', async (
   await expect(activation).toBeVisible();
   expect(messageFrom((await activation.getAttribute('href'))!)).toBe('مرحبًا ستريم ماستر، أود الاستفسار عن باقات التفعيل التقني لدى المزود');
   await expect(page.getByText('فحص تجريبي مجاني', { exact: true })).toBeVisible();
-  await expect(page.locator('footer').getByRole('button', { name: 'انضم الآن', exact: true })).toBeVisible();
-  await page.locator('footer').getByRole('button', { name: 'طلب كود فحص تجريبي (6 ساعات)', exact: true }).click();
+  await expect(page.locator('footer').getByRole('button', { name: 'أرسل الطلب', exact: true })).toBeVisible();
+  await page.locator('footer').getByRole('button', { name: 'طلب فحص تجريبي', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'طلب تجربة مجانية', exact: true })).toBeVisible();
 });
 
@@ -82,12 +82,12 @@ for (const custom of [false, true]) {
   test(`trial sends technical compatibility wording with ${custom ? 'custom' : 'default'} selections`, async ({ page }) => {
     await page.goto('/');
     await captureWhatsApp(page);
-    await page.locator('footer').getByRole('button', { name: 'طلب كود فحص تجريبي (6 ساعات)', exact: true }).click();
+    await page.locator('footer').getByRole('button', { name: 'طلب فحص تجريبي', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية', exact: true });
     await expect(dialog.getByRole('heading')).toHaveText('طلب كود فحص وتجربة من المزود (6 ساعات)');
     await expect(dialog).toContainText('اختبر توافق التطبيق على جهازك واستقرار اتصال سيرفر المزود قبل طلب التفعيل.');
-    await expect(dialog).toContainText('يتم إصدار كود التجربة من المزود مع إرشادات إعداد التطبيق خلال أقل من 5 دقائق عبر واتساب.');
-    await expect(dialog.getByRole('option', { name: 'سيرفر نوفا (Nova) — الأعلى ثباتاً وقت الذروة ⚡', exact: true })).toHaveCount(1);
+    await expect(dialog).toContainText('اسأل عن موعد إصدار كود التجربة وإرشادات إعداد التطبيق عبر واتساب.');
+    await expect(dialog.getByRole('option', { name: 'سيرفر نوفا (Nova) ⚡', exact: true })).toHaveCount(1);
     await expect(dialog.getByRole('option', { name: 'سيرفر إيستار (iStar) — المتوازن للأجهزة الذكية 📺', exact: true })).toHaveCount(1);
     if (custom) {
       await dialog.getByLabel('نوع جهازك:').selectOption('جوال أندرويد');
@@ -96,7 +96,7 @@ for (const custom of [false, true]) {
     }
     await dialog.getByRole('button', { name: 'طلب كود الفحص التجريبي عبر واتساب', exact: true }).click();
     expect(await capturedMessage(page)).toBe(
-      `مرحبًا ستريم ماستر، أود طلب كود تجربة تقنية من المزود لفحص التوافق على جهازي:\n- نوع الجهاز: ${custom ? 'جوال أندرويد' : 'شاشة سامسونج أو LG Smart TV'}\n- السيرفر المطلوب: ${custom ? 'سيرفر إيستار (iStar Pro) — المتوازن للأجهزة الذكية' : 'سيرفر نوفا (Nova Server) — الأعلى ثباتاً وقت الذروة'}\n- رقم الواتساب: ${custom ? '0500000000' : 'نفس الرقم الحالي'}`,
+      `مرحبًا ستريم ماستر، أود طلب كود تجربة تقنية من المزود لفحص التوافق على جهازي:\n- نوع الجهاز: ${custom ? 'جوال أندرويد' : 'شاشة سامسونج أو LG Smart TV'}\n- السيرفر المطلوب: ${custom ? 'سيرفر إيستار (iStar Pro) — المتوازن للأجهزة الذكية' : 'سيرفر نوفا (Nova Server)'}\n- رقم الواتساب: ${custom ? '0500000000' : 'نفس الرقم الحالي'}`,
     );
     await expect(dialog).not.toBeVisible();
   });

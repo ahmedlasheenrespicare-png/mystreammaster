@@ -21,7 +21,7 @@ export const HOME_SECTIONS = [
   { id: "setup", label: "طريقة التشغيل", desc: "على كل الشاشات", icon: "🛠️" },
   { id: "showcase", label: "مكتبة المحتوى", desc: "أفلام ومسلسلات ورياضة", icon: "🎬" },
   { id: "blog-teaser", label: "أحدث المقالات", desc: "اعرف قبل أن تشترك", icon: "📰" },
-  { id: "reviews", label: "آراء العملاء", desc: "تقييمات المشتركين", icon: "⭐" },
+  { id: "reviews", label: "قبل الاشتراك", desc: "قائمة فحص عملية", icon: "✅" },
   { id: "faq", label: "الأسئلة الشائعة", desc: "إجابات سريعة", icon: "❓" },
 ];
 
@@ -152,7 +152,7 @@ export const NAV_GROUPS = [
     match: ["faq", "about", "status", "search", "privacy", "terms", "refund"],
     links: [
       { href: "faq/", label: "الأسئلة الشائعة", desc: "كل ما يسأل عنه المشتركون" },
-      { href: "status/", label: "حالة الخدمة", desc: "حالة السيرفرات الآن" },
+      { href: "status/", label: "حالة الخدمة", desc: "خطوات التشخيص وطرق التواصل" },
       { href: "search/", label: "البحث في الموقع", desc: "ابحث في الصفحات والمقالات" },
       { href: "about/", label: "من نحن", desc: "تعرّف على ستريم ماستر" },
     ],

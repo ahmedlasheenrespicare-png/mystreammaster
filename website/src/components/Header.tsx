@@ -9,7 +9,6 @@ import {
   IconChevronDown,
   IconClose,
   IconMenu,
-  IconStar,
   IconZap,
 } from "./Icons";
 import { leagueIcon } from "../lib/league-icons.mjs";
@@ -380,10 +379,9 @@ export default function Header({
             >
               <IconZap className="w-4 h-4 text-[#d8ff3e]" /> طلب كود تجريبي
             </button>
-            <div className="mt-4 flex items-center justify-center gap-1 text-[13px] text-black/60 font-bold">
-              <IconStar className="w-3.5 h-3.5 fill-[#0b0b0f] text-[#0b0b0f]" /> 4.95/5 من
-              4,820+ تقييم موثق
-            </div>
+            <a href={sectionHref("reviews")} onClick={() => setMobileOpen(false)} className="mt-4 flex items-center justify-center gap-1 text-[13px] text-black/60 font-bold hover:text-black">
+              قائمة فحص قبل الاشتراك <IconArrowUpRight className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       )}
@@ -493,7 +491,7 @@ function DesktopPanel({
           ))}
         </div>
         <PanelFooter>
-          <p className="text-[13px] font-bold">سيرفرات مزودين عالية الثبات — تفعيل ودعم فوري خلال 5 دقائق</p>
+          <p className="text-[13px] font-bold">قارن باقات المزودين وتحقّق من شروط التفعيل والدعم</p>
           <a
             href={sectionHref("pricing")}
             onClick={onNavigate}

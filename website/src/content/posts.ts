@@ -32,6 +32,8 @@ export interface BlogPost {
   description: string;
   date: string;
   updated?: string;
+  /** لا نخترع تاريخ تحديث إذا لم يكن موثّقاً. */
+  modificationDateUnverified?: boolean;
   readingMinutes: number;
   category: string;
   intro: string;
@@ -58,6 +60,10 @@ export interface BlogPost {
   deviceStage?: boolean;
   /** "guide" = دليل تعريفي محايد بدون صندوق بيع */
   kind?: "guide";
+  /** أداة اختيارية تُعرض في الدليل الذي يشرحها. */
+  tool?: "streaming-bandwidth";
+  /** مراجع قابلة للتحقق للحقائق المذكورة في المقال. */
+  sources?: { label: string; href: string }[];
 }
 
 import { GUIDE_POSTS } from "./guide-posts";

@@ -13,6 +13,7 @@ import { to } from "../config";
 import { ServerLink } from "../components/ServerIcon";
 import ServerDeck from "../components/ServerDeck";
 import DeviceStage from "../components/DeviceStage";
+import StreamingBandwidthCalculator from "../components/StreamingBandwidthCalculator";
 import { IconArrowUpRight, IconChat, IconClock } from "../components/Icons";
 
 /* صفحة مقال — يُرسم نصها بالكامل وقت البناء ليقرأها محرك البحث كما يراها الزائر.
@@ -134,6 +135,8 @@ export default function BlogPostPage({
               </p>
             )}
           </header>
+
+          {post.tool === "streaming-bandwidth" && <StreamingBandwidthCalculator />}
 
           {post.hero && (
             <div className="mt-8 overflow-hidden rounded-[28px] border border-black/10 bg-[#f4f3ef]">
@@ -272,7 +275,7 @@ export default function BlogPostPage({
                                   textClassName="hover:text-[#2b4eff] underline underline-offset-4 decoration-black/20"
                                 />
                                 {p.isPopular && (
-                                  <span className="mt-1 block text-[10.5px] font-black text-[#2b4eff]">الأكثر طلباً</span>
+                                  <span className="mt-1 block text-[10.5px] font-black text-[#2b4eff]">خيار للمشاهدة</span>
                                 )}
                               </th>
                               <td className="p-4 text-[13px] font-medium text-black/70">{p.tag}</td>
@@ -504,9 +507,20 @@ export default function BlogPostPage({
               </div>
             </section>
           )}
+          {post.sources && post.sources.length > 0 && (
+            <section className="mt-10 rounded-2xl border border-black/10 bg-white p-5" aria-labelledby="article-sources-title">
+              <h2 id="article-sources-title" className="font-display text-[20px] font-black">المراجع</h2>
+              <p className="mt-2 text-[13px] leading-[1.8] text-black/60">مراجع المعلومات الواردة في هذا المقال؛ قد تتغيّر التوصيات والأنظمة بمرور الوقت.</p>
+              <ul className="mt-3 space-y-2 text-[14px] font-bold">
+                {post.sources.map(source => (
+                  <li key={source.href}><a className="text-[#1e3bbf] underline underline-offset-4" href={source.href}>{source.label} ↗</a></li>
+                ))}
+              </ul>
+            </section>
+          )}
               {/* تنبيه قانوني للمقالات */}
               <div className="mt-10 rounded-2xl border border-black/10 bg-white px-5 py-4 text-[13px] leading-[1.85] text-black/60">
-                <strong className="text-black/80">تنبيه تقني وقانوني:</strong> المقالات المنشورة في هذا القسم هي لأغراض الشرح التقني وإرشادات إعداد الأجهزة فقط. جميع السيرفرات المذكورة تُدار من قِبل مزوديها الخارجيين المستقلين، ولا يستضيف الموقع أو يبث أي محتوى مرئي على خوادمه الخاصة.
+                <strong className="text-black/80">تنبيه تقني وقانوني:</strong> المقالات للشرح وإرشادات إعداد الأجهزة. تحقّق من مصدر المحتوى وحقوق المشاهدة في بلدك وشروط الخدمة؛ ذكر مزوّد أو رابط لا يثبت وجود ترخيص.
               </div>
         </article>
 
@@ -537,7 +551,7 @@ export default function BlogPostPage({
             </h2>
             <p className="mt-3 text-white/60 text-[14.5px] font-medium leading-relaxed max-w-[560px]">
               اطلب تجربة مجانية صادرة من المزود لاختبار استقرار الاتصال وتوافق التطبيق على جهازك قبل الاشتراك —
-              التفعيل والدعم الفني فوري خلال دقائق.
+              واسأل عن تفاصيل التفعيل والدعم الفني قبل الاشتراك.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a

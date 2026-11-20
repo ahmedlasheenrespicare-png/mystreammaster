@@ -36,8 +36,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
             </div>
             <div className="relative">
               <p className="inline-flex items-center gap-2 text-[11.5px] sm:text-[12px] font-black tracking-[0.16em] uppercase bg-white/10 border border-[#d8ff3e]/30 rounded-full px-4 py-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-[#d8ff3e] animate-pulse-soft" /> انضم
-                لأكثر من 45,000 مشترك
+                <span className="w-2 h-2 rounded-full bg-[#d8ff3e] animate-pulse-soft" /> تعرّف على خياراتك
               </p>
               <BrandNewtStage variant="cta" hold observeViewport />
               <h2 className="font-display font-black tracking-tight leading-[1.15] text-[30px] sm:text-[38px] md:text-[56px] max-w-4xl mx-auto">
@@ -53,7 +52,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 />
               </h2>
               <p className="mt-6 text-white/55 text-[15.5px] md:text-[17px] max-w-xl mx-auto font-medium">
-                فحص تجريبي مجاني 6 ساعات — تفعيل فوري خلال 5 دقائق — ضمان كامل طوال مدة الاشتراك.
+                قارن الباقات، وتحقّق من توافق جهازك وشروط الاسترجاع قبل الدفع.
               </p>
               <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
@@ -63,14 +62,14 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                   <IconZap className="w-4 h-4" /> اطلب تجربتك المجانية
                 </button>
                 <a
-                  href="#pricing"
+                  href={to("#pricing")}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/25 font-black text-[15px] px-9 py-4 rounded-full hover:bg-white hover:text-black transition-all"
                 >
                   اختر باقتك الآن
                 </a>
               </div>
               <p className="mt-6 text-[12.5px] text-white/40 font-medium">
-                دعم 24/7 • ضمان استرجاع • بدون التزام مسبق
+                راجع شروط الخدمة وسياسة الاسترجاع قبل الاشتراك.
               </p>
             </div>
           </div>
@@ -84,7 +83,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
           {/* الأعمدة */}
           <div className="grid lg:grid-cols-[1.2fr_2fr] gap-12 pb-14 border-b border-white/10">
             <div>
-              <a href="#hero" className="flex items-center gap-2.5">
+              <a href={to("")} className="flex items-center gap-2.5">
                 <span className="w-10 h-10 rounded-xl bg-[#d8ff3e] text-black grid place-items-center">
                   <IconPlay className="w-5 h-5 mr-0.5" />
                 </span>
@@ -93,8 +92,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 </span>
               </a>
               <p className="mt-5 text-white/50 text-[14px] leading-[1.9] max-w-sm">
-                المنصة التقنية الرائدة لخدمات الربط والدعم الفني لاشتراكات وسيرفرات المزودين في
-                السعودية والخليج ومصر والعالم العربي. ثبات 99.9% مع دعم فني متواصل على مدار الساعة.
+                منصة لإرشادات إعداد الأجهزة وخدمات الربط التقني والدعم لاشتراكات مزودين خارجيين.
               </p>
 
               <a
@@ -122,13 +120,13 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 {
                   h: "روابط سريعة",
                   l: [
-                    { t: "الرئيسية", href: "#hero" },
-                    { t: "الباقات والأسعار", href: "#pricing" },
-                    { t: "مساعد الاختيار", href: "#server-finder" },
-                    { t: "مقارنة السيرفرات", href: "#servers-compare" },
-                    { t: "مكتبة القنوات", href: "#channels" },
+                    { t: "الرئيسية", href: to("") },
+                    { t: "الباقات والأسعار", href: to("#pricing") },
+                    { t: "مساعد الاختيار", href: to("#server-finder") },
+                    { t: "مقارنة السيرفرات", href: to("#servers-compare") },
+                    { t: "مكتبة القنوات", href: to("#channels") },
                     { t: "كل القنوات (صفحة)", href: to("channels/") },
-                    { t: "دليل التشغيل", href: "#setup" },
+                    { t: "دليل التشغيل", href: to("#setup") },
                     { t: "مقالات ودلائل", href: to("blog/") },
                   ],
                 },
@@ -139,7 +137,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                     { t: "سيرفر إيستار (iStar)", href: to("istar/"), server: "istar" as const },
                     { t: "سيرفر موكا (Moka)", href: to("moka/"), server: "moka" as const },
                     { t: "سيرفر X (XTV)", href: to("x/"), server: "x" as const },
-                    { t: "البث المباشر", href: "#live-player" },
+                    { t: "دليل المشاهدة الرسمية", href: to("#live-player") },
                   ],
                 },
                 { h: "عن الموقع", l: [
@@ -195,21 +193,21 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                 <div className="space-y-3.5 text-[13px]">
                   <div className="flex items-center gap-2.5 text-white/65">
                     <IconShieldCheck className="w-5 h-5 text-[#3effe0] shrink-0" />
-                    <span>ضمان ثبات كامل طوال المدة</span>
+                    <a href={to("refund/")} className="hover:underline">راجع سياسة الاسترجاع</a>
                   </div>
                   <div className="flex items-center gap-2.5 text-white/65">
                     <IconZap className="w-5 h-5 text-[#d8ff3e] shrink-0" />
-                    <span>تفعيل فوري خلال 5 دقائق</span>
+                    <span>اسأل عن خطوات التفعيل</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-white/65">
                     <IconClock className="w-5 h-5 text-[#7c5cff] shrink-0" />
-                    <span>دعم فني متواصل 24/7</span>
+                    <span>تواصل مع الدعم الفني</span>
                   </div>
                   <button
                     onClick={onOpenTrial}
                     className="mt-2 text-[#d8ff3e] font-black hover:underline cursor-pointer text-[13px]"
                   >
-                    طلب كود فحص تجريبي (6 ساعات)
+                    طلب فحص تجريبي
                   </button>
                 </div>
               </div>
@@ -219,10 +217,9 @@ export default function Footer({ onOpenTrial }: FooterProps) {
           {/* النشرة البريدية — على نمط Salient */}
           <div className="py-12 border-b border-white/10">
             <div className="max-w-md mx-auto text-center">
-              <p className="font-display font-black text-[20px]">ابقَ على اطلاع</p>
+              <p className="font-display font-black text-[20px]">استفسر عن العروض</p>
               <p className="mt-2 text-[13.5px] text-white/45 font-medium leading-relaxed">
-                أحدث العروض والقنوات الجديدة وأخبار كأس العالم 2026 — رسالة واحدة أسبوعياً، بلا
-                إزعاج.
+                أرسل طلبك عبر واتساب؛ لا يضيف هذا النموذج بريدك تلقائياً إلى نشرة بريدية.
               </p>
 
               {done ? (
@@ -244,13 +241,13 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="بريدك الإلكتروني"
                     className="flex-1 bg-transparent outline-none text-[14px] font-medium placeholder:text-white/30 min-w-0 text-right"
-                    aria-label="البريد الإلكتروني للنشرة"
+                    aria-label="بريد التواصل في طلب واتساب"
                   />
                   <button
                     type="submit"
                     className="btn-slide slide-white shrink-0 bg-[#d8ff3e] text-black font-black text-[13.5px] px-6 py-2.5 rounded-full cursor-pointer"
                   >
-                    انضم الآن
+                    أرسل الطلب
                   </button>
                 </form>
               )}
@@ -270,7 +267,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
               ⚠️ إخلاء مسؤولية قانوني وسياسة الملكية الفكرية (DMCA):
             </p>
             <p>
-              يعمل موقع <strong className="text-white/80">ستريم ماستر برو (Stream Master Pro)</strong> كوسيط تقني ودليل فهرسة فقط، ولا يقوم باستضافة أو تخزين أو رفع أو بث أي ملفات وسائط أو قنوات مرئية على خوادمه الخاصة. كافة العلامات التجارية المذكورة مملوكة لأصحابها الشرعيين، ويتحمل المستخدم وحده مسؤولية استخدامه للخدمة والامتثال للقوانين المحلية في بلده. للإبلاغ عن أي انتهاك لحقوق الطبع والنشر (DMCA) وطلب حذف الروابط خلال 24–72 ساعة، يرجى مراسلتنا عبر البريد الرسمي:{" "}
+              يضم موقع <strong className="text-white/80">ستريم ماستر برو (Stream Master Pro)</strong> أدوات وروابط قد تقود إلى خدمات ومحتوى من جهات أخرى. تحقّق من مصدر المحتوى وحقوق المشاهدة في بلدك وشروط الخدمة قبل الاشتراك؛ عرض الرابط لا يثبت وجود ترخيص. للإبلاغ عن محتوى أو رابط، يرجى مراسلتنا عبر البريد الرسمي:{" "}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-white/80 underline hover:text-[#d8ff3e]"
@@ -293,11 +290,9 @@ export default function Footer({ onOpenTrial }: FooterProps) {
               محفوظة.
             </p>
             <div className="flex items-center gap-5">
-              <span>ثبات 99.9%</span>
-              <span className="hidden sm:inline">•</span>
-              <span className="hidden sm:inline">بث 4K بدون تقطيع</span>
+              <span>تختلف الجودة بحسب الجهاز والاتصال</span>
               <a
-                href="#hero"
+                href="#main-content"
                 className="w-11 h-11 rounded-full bg-white text-black grid place-items-center hover:bg-[#d8ff3e] transition ml-2"
                 aria-label="الرجوع للأعلى"
               >

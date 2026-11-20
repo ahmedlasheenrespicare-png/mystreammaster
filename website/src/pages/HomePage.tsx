@@ -14,7 +14,7 @@ import ChannelShowcase from "../components/ChannelShowcase";
 import SetupGuide from "../components/SetupGuide";
 import ShowcaseGrid from "../components/ShowcaseGrid";
 import BlogTeaser from "../components/BlogTeaser";
-import Testimonials from "../components/Testimonials";
+import BeforeSubscribe from "../components/BeforeSubscribe";
 import FAQ from "../components/FAQ";
 import { PricingPlan } from "../data";
 
@@ -88,7 +88,7 @@ export default function HomePage({
       <SetupGuide />
       <ShowcaseGrid />
       <BlogTeaser />
-      <Testimonials />
+      <BeforeSubscribe />
       <FAQ />
     </>
   );

@@ -12,7 +12,7 @@ const DISPLAY_NAME: Record<PricingPlan["serverCode"], string> = {
 };
 
 const SUBTITLE: Record<PricingPlan["serverCode"], string> = {
-  nova: "الأكثر طلباً للمباريات ⚽",
+  nova: "خيار لمتابعة المباريات ⚽",
   istar: "باقة الترفيه الشاملة 🎬",
   moka: "للمشاهدة الطويلة والسرعات المحدودة ⚡",
   x: "اختيار جديد للمباريات ⚡",

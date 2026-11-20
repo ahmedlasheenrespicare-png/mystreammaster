@@ -17,6 +17,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertAdsAllowed } from "./ads-guard.mjs";
+import { isAdFreeRoute } from "../src/ad-policy.mjs";
 import {
   assertKeywordInTitle,
   assertTitleLength,
@@ -161,11 +162,8 @@ export function applyHead(template, seo) {
   return out;
 }
 
-/* صفحات مستثناة من إعلانات AdSense نهائياً: 404 والسلة (والبحث وصفحة عدم
-   الاتصال صفحتان قديمتان تُستثنيان من مصدريهما في website/legacy).
-   جوجل يعتبر هذه الصفحات مواضع إعلانية غير صالحة ووجود الإعلانات عليها
-   يعرّض حساب الناشر للخطر، فيُحذف مُحمِّل adsbygoogle من HTML المُسلَّم
-   لها فقط — بينما يبقى GA4 كما هو دون أي مساس (قاعدة مطلقة). */
+/* صفحات وظيفية مستثناة من الإعلانات. تُضاف إليها السلة وتفاصيل المباريات
+   من ad-policy.mjs المشترك مع الموجّه؛ يبقى GA4 بلا تغيير. */
 const NO_ADS_ROUTES = new Set([
   "/cart",
   "/__notfound__",
@@ -190,7 +188,7 @@ function writeRouteHtml(template, route, body) {
   const withBody = template.includes('<div id="root"></div>')
     ? template.replace('<div id="root"></div>', `<div id="root">${body}</div>`)
     : template;
-  /* حارس AdSense: لا إعلانات على صفحة نصّها أقل من الحد (سياسة Google) */
+  /* فحص احترازي محلي للطول فقط؛ لا يقيس الأصالة ولا يضمن موافقة Google. */
   assertAdsAllowed(withBody, route);
   const dir = route === "/" ? DIST : path.join(DIST, route);
   return fs.mkdir(dir, { recursive: true }).then(() =>
@@ -296,7 +294,9 @@ async function main() {
       if (brandNote) brandNotes.push(brandNote);
     }
     const headed = applyHead(template, seo);
-    const withAds = NO_ADS_ROUTES.has(route) ? stripAdsense(headed, route) : headed;
+    const withAds = NO_ADS_ROUTES.has(route) || isAdFreeRoute(route)
+      ? stripAdsense(headed, route)
+      : headed;
     /* الصفحات الإنجليزية تُسلَّم بـ lang="en" dir="ltr" بدل قالب العربية */
     const page =
       route === "/en" || route.startsWith("/en/")

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, hasCompleteScore, kickoff, matchesForDay, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
+import { LEAGUES, TIME_ZONES, classifyFetchError, dayInZone, dayLabel, describeDiagnostic, hasCompleteScore, kickoff, matchesForDay, moroccoTimeZoneWarning, readScoreboardResponse, scoreboardUrl, weekDays, type Match, type MatchTeam } from '../lib/matches.mjs';
 import { matchCenterLink } from '../lib/match-center-link';
 import { leagueLandingsInPageOrder } from '../content/competitions';
 import LeagueLinksCarousel from '../components/LeagueLinksCarousel';
@@ -181,7 +181,7 @@ export default function MatchesPage() {
           <span className={`update-indicator ${online ? 'active' : ''}`} aria-hidden="true" />
           <div className="matches-status-text"><strong>{online ? 'تحديث تلقائي كل دقيقة' : 'التحديث التلقائي متوقف مؤقتًا — لا يوجد اتصال'}</strong><small>{updated ? `آخر بيانات: ${kickoff(updated, zone)} — ${selectedZoneName}` : 'في انتظار بيانات المصدر'}{loading && updated ? ' · جارٍ التحديث' : ''}</small></div>
         </div>
-        <label className="matches-field"><span className="matches-field-label">المنطقة الزمنية</span><select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select></label>
+        <label className="matches-field"><span className="matches-field-label">المنطقة الزمنية</span><select value={zone} onChange={e => setZone(e.target.value)}>{zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}</select>{moroccoTimeZoneWarning(zone) && <small role="status">قد تكون بيانات توقيت المغرب في جهازك قديمة؛ حدّث الجهاز أو اختر UTC للمواعيد الحالية، وتحقّق من الموعد لدى المصدر.</small>}</label>
         <label className="matches-field"><span className="matches-field-label">البطولة</span><select value={league} onChange={e => setLeague(e.target.value)}><option value="all">كل البطولات المتاحة</option>{LEAGUES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></label>
         <label className="matches-field matches-search"><span className="matches-field-label">ابحث عن فريق</span><input type="search" placeholder="اسم الفريق…" value={query} onChange={e => setQuery(e.target.value)} /></label>
         <button className="matches-refresh" disabled={loading || !online} onClick={() => refreshNow.current()}>{loading ? 'جارٍ التحديث…' : '↻ تحديث الآن'}</button>

@@ -170,13 +170,13 @@ test('English catalog includes X at $20/year without exposing its device count o
 
 test('trial modal is above navigation, supports keyboard dismissal, and uses existing contact', async ({ page }) => {
   await page.goto('/');
-  await page.locator('footer').getByRole('button', { name: 'طلب كود فحص تجريبي (6 ساعات)', exact: true }).click();
+  await page.locator('footer').getByRole('button', { name: 'طلب فحص تجريبي', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByLabel('نوع جهازك:')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
-  await expect(page.locator('a[href^="https://wa.me/201098950879"]').first()).toHaveAttribute('href', /201098950879/);
+  await expect(page.locator('a[href^="https://wa.me/201090415657"]').first()).toHaveAttribute('href', /201090415657/);
 });
 
 test('cart persists on refresh, recalculates currency, and removes items', async ({ page }) => {
@@ -855,18 +855,17 @@ test('clicking devices brings TV forward straight and restores the tilted TV beh
   }
 });
 
-test('preview headline appears inside the TV welcome with animated word and 4K', async ({ page }) => {
+test('homepage headline qualifies the advertised 4K quality', async ({ page }) => {
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/');
     const tv = page.locator('[data-hero-tv]');
     await tv.scrollIntoViewIfNeeded();
-    const title = tv.locator('.hero-tv-headline');
+    const title = page.locator('#hero h1');
     await expect(title).toBeVisible();
     await expect(title).toContainText('كل ما تحب');
-    await expect(title).toContainText('وبلا تقطيع');
-    await expect(title.locator('.hero-title-holo__layer--front')).toHaveCount(2);
-    await expect(title.locator('.hero-title-holo--quality .hero-title-holo__layer--front')).toHaveText('4K');
+    await expect(title).toContainText('4K');
+    await expect(title).toContainText('حسب المحتوى والجهاز');
     await expect(page.locator('#hero h1')).toHaveCount(1);
     await expect(tv.locator('.hero-tv-welcome-gallery')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -975,7 +974,7 @@ test('classic lime television keeps content and interactions without preview con
     await expect(page.getByRole('group', { name: 'اقتراحات تصميم التلفاز في المعاينة' })).toHaveCount(0);
     await expect(tv).toHaveAttribute('data-tv-design', 'lime');
     await expect(tv.locator('.hero-tv-retro-dial')).toHaveCount(2);
-    await expect(tv.locator('.hero-tv-headline')).toContainText('كل ما تحب');
+    await expect(page.locator('#hero h1')).toContainText('كل ما تحب');
     await expect(tv.locator('.hero-tv-welcome-gallery img')).toHaveCount(6);
     await expect(tv.locator('[data-tv-server]')).toHaveCount(4);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

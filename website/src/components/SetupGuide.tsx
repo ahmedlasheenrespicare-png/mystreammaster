@@ -7,11 +7,9 @@ import {
   IconDevices,
   IconMonitor,
   IconPlay,
-  IconQuote,
   IconTv,
 } from "./Icons";
 import { Reveal } from "./motion";
-import { TESTIMONIALS } from "../data";
 
 /* أيقونات الأجهزة */
 const DEVICE_ICONS = [IconTv, IconDevices, IconApple, IconMonitor];
@@ -154,7 +152,7 @@ export default function SetupGuide() {
 
                 <div className="p-5">
                   <div className="bg-[#d8ff3e] text-[9px] font-black px-2 py-1 rounded-full inline-block mb-3">
-                    تفعيل فوري
+                    إرشادات الإعداد
                   </div>
                   <div className="font-display font-black leading-[1.2] tracking-tight text-2xl">
                     تطبيقاتك على
@@ -198,28 +196,14 @@ export default function SetupGuide() {
           {/* شارة عائمة */}
           <div className="absolute -bottom-5 -start-5 bg-white border border-black/10 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-2 rotate-[-4deg]">
             <IconPlay className="w-4 h-4 text-[#2b4eff]" />
-            <p className="text-[13px] font-black">بدون فني — 3 دقائق فقط</p>
+            <p className="text-[13px] font-black">إرشادات إعداد الجهاز</p>
           </div>
         </div>
       </div>
 
-      {/* اقتباس مدمج — على نمط اقتباسات الأصل داخل الأقسام */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <Reveal variant="up" className="max-w-[760px] mx-auto">
-          <div className="flex items-start gap-4 bg-[#0b0b0f] text-white rounded-2xl p-5 text-right grain relative overflow-hidden">
-            <IconQuote className="w-8 h-8 opacity-20 fill-white shrink-0 mt-1" />
-            <div>
-              <p className="text-[14.5px] font-bold leading-[1.8] text-white/80">
-                "{TESTIMONIALS[3].review}"
-              </p>
-              <p className="mt-3 text-[13px] font-black">
-                {TESTIMONIALS[3].name}
-                <span className="text-white/45 font-bold"> — {TESTIMONIALS[3].city}</span>
-              </p>
-            </div>
-          </div>
-        </Reveal>
-      </div>
+      <p className="mt-12 px-5 text-center text-[13px] font-bold text-black/55">
+        تختلف خطوات الإعداد حسب الجهاز والتطبيق؛ تحقّق من توافقهما قبل شراء الباقة.
+      </p>
     </section>
   );
 }

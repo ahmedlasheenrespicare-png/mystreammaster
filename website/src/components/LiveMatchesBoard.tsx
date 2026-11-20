@@ -11,6 +11,7 @@ import {
   hasCompleteScore,
   kickoff,
   matchesForDay,
+  moroccoTimeZoneWarning,
   readScoreboardResponse,
   scoreboardUrl,
   weekDays,
@@ -406,6 +407,7 @@ export default function LiveMatchesBoard({ leagues, teamFilter, heading, note, d
           <select value={zone} onChange={e => setZone(e.target.value)}>
             {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
           </select>
+          {moroccoTimeZoneWarning(zone) && <small role="status">قد تكون بيانات توقيت المغرب في جهازك قديمة؛ حدّث الجهاز أو اختر UTC للمواعيد الحالية، وتحقّق من الموعد لدى المصدر.</small>}
         </label>
         <button className="matches-refresh" hidden={layout === 'race'} disabled={loading || !online} onClick={() => refreshNow.current()}>
           {loading ? 'جارٍ التحديث…' : '↻ تحديث الآن'}

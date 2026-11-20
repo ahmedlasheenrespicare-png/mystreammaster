@@ -6,6 +6,7 @@ export interface ScoreboardResult { id: string; matches: Match[]; updated: strin
 export const LEAGUES: League[];
 export const TIME_ZONES: { id: string; name: string }[];
 export const DIAGNOSTIC_LABELS: Record<string, string>;
+export function moroccoTimeZoneWarning(zone: string, date?: Date | string | number): boolean;
 export function dayInZone(date: Date, zone: string): string;
 export function shiftDay(day: string, offset: number): string;
 export function weekDays(today: string): string[];

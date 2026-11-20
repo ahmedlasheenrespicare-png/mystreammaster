@@ -1,7 +1,7 @@
 import { ServerLink } from "./ServerIcon";
 import { useState } from "react";
-import { IconArrow, IconCheck, IconQuote, IconSparkles, IconZap } from "./Icons";
-import { PRICING_PLANS, TESTIMONIALS } from "../data";
+import { IconArrow, IconCheck, IconSparkles, IconZap } from "./Icons";
+import { PRICING_PLANS } from "../data";
 import { Reveal } from "./motion";
 
 interface ServerFinderProps {
@@ -22,7 +22,7 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
     {
       key: "speed",
       title: "ما هي سرعة اتصال الإنترنت لديك تقريباً؟",
-      subtitle: "نحدد ذلك لاقتراح السيرفر الأكثر استقراراً دون أي تقطيع",
+      subtitle: "نستخدم إجابتك لترشيح أولي؛ يعتمد الأداء الفعلي على اتصالك والمزود.",
       options: [
         { label: "سرعة عالية (أكثر من 30 ميجا)", value: "fast", icon: "⚡" },
         { label: "سرعة متوسطة (15 - 30 ميجا)", value: "medium", icon: "🚀" },
@@ -228,21 +228,9 @@ export default function ServerFinder({ onSelectPlan, onOpenTrial }: ServerFinder
           مجرد ترشيح مبدئي — يمكنك دائماً طلب كود تجريبي قبل اتخاذ القرار
         </p>
 
-        {/* اقتباس مدمج — كما يوزّعها الأصل داخل أقسامه */}
-        <Reveal variant="up" delay={100} className="mt-8 max-w-[760px] mx-auto">
-          <div className="flex items-start gap-4 bg-white border border-black/10 rounded-2xl p-5 text-right">
-            <IconQuote className="w-8 h-8 opacity-15 fill-black shrink-0 mt-1" />
-            <div>
-              <p className="text-[14.5px] font-bold leading-[1.8] text-black/75">
-                "{TESTIMONIALS[2].review}"
-              </p>
-              <p className="mt-3 text-[13px] font-black">
-                {TESTIMONIALS[2].name}
-                <span className="text-black/45 font-bold"> — {TESTIMONIALS[2].city}</span>
-              </p>
-            </div>
-          </div>
-        </Reveal>
+        <p className="mt-8 max-w-[760px] mx-auto text-center text-[13px] font-bold text-black/55">
+          لا يثبت الترشيح توفر المحتوى أو حقوقه؛ تحقّق منهما ومن شروط الباقة في بلدك قبل الاشتراك.
+        </p>
       </div>
     </section>
   );

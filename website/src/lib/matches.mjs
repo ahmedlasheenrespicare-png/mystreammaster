@@ -92,6 +92,25 @@ export const DIAGNOSTIC_LABELS = {
   NETWORK_ERROR: 'تعذر الوصول إلى خادم الموقع أو قُطع الاتصال',
 };
 
+/** Morocco changed its legal time in September 2026 (IANA tzdb 2026c).
+ * For instants after the change, a device with older tzdata might still use
+ * UTC+1. Do not silently substitute UTC for Casablanca: that would corrupt
+ * historical results and mask future changes. Surface a warning and let the
+ * visitor choose UTC explicitly if their device needs an update.
+ * https://www.timeanddate.com/news/time/morocco-abolish-dst.html
+ */
+export function moroccoTimeZoneWarning(zone, date = new Date()) {
+  if (zone !== 'Africa/Casablanca') return false;
+  const instant = new Date(date);
+  // The legal change was at 02:00 local summer time, i.e. 01:00 UTC.
+  if (!Number.isFinite(instant.getTime()) || instant < new Date('2026-09-20T01:00:00Z')) return false;
+  // Probe the requested instant, not just one autumn date: old tzdata might
+  // coincidentally report UTC+0 during its predicted Ramadan interval.
+  const zoneHour = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' }).format(instant);
+  const utcHour = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', hour: '2-digit', hourCycle: 'h23' }).format(instant);
+  return zoneHour !== utcHour;
+}
+
 export function dayInZone(date, zone) {
   const parts = new Intl.DateTimeFormat('en-US', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
   const part = type => parts.find(p => p.type === type)?.value;

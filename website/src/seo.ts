@@ -243,6 +243,8 @@ interface WebPageOpts {
   description: string;
   published?: string;
   modified?: string;
+  /** إغفال تاريخ التعديل غير الموثّق بدلاً من اختراعه. */
+  omitModifiedDate?: boolean;
   /** لغة الصفحة (inLanguage) — الافتراضي العربية */
   lang?: string;
   /** معرّف الكيان الرئيسي في الصفحة (منتج/مقال/أسئلة) إن وُجد */
@@ -268,7 +270,7 @@ function webPageLd(o: WebPageOpts) {
     inLanguage: o.lang ?? "ar",
     isPartOf: { "@id": WEBSITE_ID },
     datePublished: o.published ?? PAGES_DATE,
-    dateModified: o.modified ?? o.published ?? PAGES_DATE,
+    ...(o.omitModifiedDate ? {} : { dateModified: o.modified ?? o.published ?? PAGES_DATE }),
     primaryImageOfPage: {
       "@type": "ImageObject",
       url: ogImageFromCanonical(o.canonical),
@@ -358,7 +360,7 @@ export function getSeo(path: string): SeoMeta {
       ...base,
       title: `اشتراك IPTV وباقات التفعيل | ${BRAND_NAME}`,
       description:
-        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+        "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX، وقارن الأسعار والشروط وطرق التواصل قبل الطلب.",
       canonical,
       ogImageAlt: `متجر اشتراكات ${BRAND_NAME} — باقات نوفا وإيستار وموكا وX`,
       jsonLd: [
@@ -366,7 +368,7 @@ export function getSeo(path: string): SeoMeta {
           canonical,
           name: `متجر الاشتراكات | ${BRAND_NAME}`,
           description:
-            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX: أسعار سنوية واضحة، تفعيل فوري خلال دقائق، ودعم فني بالعربية على مدار الساعة.",
+            "تصفّح باقات التفعيل والربط التقني لسيرفرات نوفا وإيستار وموكا وX، وقارن الأسعار والشروط وطرق التواصل قبل الطلب.",
           modified: "2026-11-04",
           mainEntityId: `${canonical}#plans`,
         }),
@@ -822,7 +824,7 @@ export function getSeo(path: string): SeoMeta {
           "@id": `${SITE_URL}/#product`,
           name: "باقة ربط تقني وتفعيل لمشغلات البث 2026",
           description:
-            "باقات ربط تقني وتفعيل مع سيرفرات المزودين الخارجيين ودعم فني لإعداد الأجهزة الذكية على مدار الساعة. المواصفات الفنية للسيرفر (عدد القنوات والمكتبة والجودة) يوفّرها المزود الخارجي، والموقع لا يستضيف المحتوى ولا يبثّه ولا يعيد بثّه.",
+            "باقات ربط تقني وتفعيل مع سيرفرات المزودين الخارجيين، مع مساعدة فنية لإعداد الأجهزة الذكية. المواصفات الفنية للسيرفر (عدد القنوات والمكتبة والجودة) يوفّرها المزود الخارجي، والموقع لا يستضيف المحتوى ولا يبثّه ولا يعيد بثّه.",
           brand: { "@type": "Brand", name: BRAND_EN },
           category: "Technical setup and activation service",
           offers: {
@@ -1083,6 +1085,7 @@ export function getSeo(path: string): SeoMeta {
         description: post.description,
         published: post.date,
         modified: post.updated ?? post.date,
+        omitModifiedDate: post.modificationDateUnverified,
         mainEntityId: `${canonical}#article`,
       }),
       breadcrumbs(
@@ -1099,7 +1102,7 @@ export function getSeo(path: string): SeoMeta {
         headline: post.title,
         description: post.description,
         datePublished: post.date,
-        dateModified: post.updated ?? post.date,
+        ...(post.modificationDateUnverified ? {} : { dateModified: post.updated ?? post.date }),
         inLanguage: "ar",
         mainEntityOfPage: { "@id": `${canonical}#webpage` },
         author: { "@type": "Organization", name: BRAND_NAME, url: `${SITE_URL}/` },

@@ -80,7 +80,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: "plan-nova",
     serverName: "سيرفر نوفا (Nova Server)",
     serverCode: "nova",
-    tag: "الأكثر طلباً للمباريات ⚽",
+    tag: "خيار لمتابعة المباريات ⚽",
     isPopular: true,
     description:
       "يُعلن المزود الخارجي لهذا السيرفر ثباتاً مرتفعاً وقت ضغط المباريات وتعدداً في مصادر البث لكل قناة.",
@@ -88,11 +88,11 @@ export const PRICING_PLANS: PricingPlan[] = [
       USD: 25, SAR: 92.59, EGP: 1189.81, AED: 90.74, KWD: 7.59
     }])) as PricingPlan["prices"],
     features: [
-      "تفعيل بيانات الاشتراك الصادرة من المزود وإرسالها خلال دقائق",
+      "طلب تفعيل بيانات الاشتراك الصادرة من المزود",
       "إعداد المشغّل على شاشتك أو جهازك خطوة بخطوة (Smart TV، أندرويد، Apple، كمبيوتر)",
       "ربط قوائم التشغيل M3U / Xtream Codes في التطبيق الذي تختاره",
       "اختبار الجودة والثبات على سرعة اتصالك قبل الالتزام بمدة أطول",
-      "دعم فني بالعربية على مدار الساعة ومتابعة حتى حل المشكلة",
+      "مساعدة فنية بالعربية؛ اسأل عن أوقات الدعم",
       "مساعدة في ضبط الترجمة والدبلجة وإعادة البث (TimeShift) متى دعمها سيرفر المزود",
       "دليل خيارات المشاهدة الرسمية للمحتوى المشفّر في صفحة المشاهدة القانونية",
     ],
@@ -103,15 +103,15 @@ export const PRICING_PLANS: PricingPlan[] = [
     devices: "حتى 3 أجهزة",
     en: {
       name: "Nova Server",
-      tag: "Most popular for live matches ⚽",
+      tag: "An option for live matches ⚽",
       description:
         "The external provider of this server announces high stability during match-time pressure and multiple broadcast sources per channel.",
       features: [
-        "Activation of the provider-issued subscription data, sent to you within minutes",
+        "Request activation of the provider-issued subscription data",
         "Player setup on your TV or device, step by step (Smart TV, Android, Apple, computer)",
         "Linking M3U playlists / Xtream Codes in the player app you choose",
         "Quality and stability testing on your connection speed before you commit to a longer term",
-        "Technical support in Arabic around the clock, following up until your issue is resolved",
+        "Technical assistance in Arabic; ask about support hours",
         "Help with subtitles, audio tracks and catch-up (TimeShift) whenever the provider's server supports it",
         "A guide to official viewing options for encrypted content on the Legal Viewing page",
       ],
@@ -176,7 +176,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       USD: 45, SAR: 166.67, EGP: 2141.67, AED: 163.33, KWD: 13.67
     }])) as PricingPlan["prices"],
     features: [
-      "تفعيل فوري ودعم إعداد المشغّل على جهازك من أول مرة",
+      "طلب التفعيل والمساعدة في إعداد المشغّل على جهازك",
       "ضبط الجودات المنخفضة (SD / Low-Bitrate) لمن لديه سرعة إنترنت محدودة",
       "متابعة الثبات أثناء المشاهدة الطويلة وإبلاغك بالبدائل المتاحة لدى المزود",
       "دعم فني ذو أولوية ومتابعة حتى الحل",
@@ -219,11 +219,11 @@ export const PRICING_PLANS: PricingPlan[] = [
       "12": { USD: 20, SAR: 74.07, EGP: 951.85, AED: 72.59, KWD: 6.07 },
     },
     features: [
-      "تفعيل بيانات الاشتراك الصادرة من المزود وإرسالها خلال دقائق",
+      "طلب تفعيل بيانات الاشتراك الصادرة من المزود",
       "إعداد المشغّل على شاشتك أو جهازك خطوة بخطوة (Smart TV، أندرويد، Apple، كمبيوتر)",
       "ربط قوائم التشغيل M3U / Xtream Codes في التطبيق الذي تختاره",
       "اختبار الجودة والثبات على سرعة اتصالك قبل الالتزام بمدة أطول",
-      "دعم فني بالعربية على مدار الساعة ومتابعة حتى حل المشكلة",
+      "مساعدة فنية بالعربية؛ اسأل عن أوقات الدعم",
       "مساعدة في ضبط الترجمة والدبلجة وإعادة البث (TimeShift) متى دعمها سيرفر المزود",
       "دليل خيارات المشاهدة الرسمية للمحتوى المشفّر في صفحة المشاهدة القانونية",
     ],
@@ -238,11 +238,11 @@ export const PRICING_PLANS: PricingPlan[] = [
       description:
         "The external provider of this server announces high stability during match-time pressure and multiple broadcast sources per channel.",
       features: [
-        "Activation of the provider-issued subscription data, sent to you within minutes",
+        "Request activation of the provider-issued subscription data",
         "Player setup on your TV or device, step by step (Smart TV, Android, Apple, computer)",
         "Linking M3U playlists / Xtream Codes in the player app you choose",
         "Quality and stability testing on your connection speed before you commit to a longer term",
-        "Technical support in Arabic around the clock, following up until your issue is resolved",
+        "Technical assistance in Arabic; ask about support hours",
         "Help with subtitles, audio tracks and catch-up (TimeShift) whenever the provider's server supports it",
         "A guide to official viewing options for encrypted content on the Legal Viewing page",
       ],
@@ -353,11 +353,11 @@ export const APPS_AND_DEVICES = [
 export const FAQS = [
   {
     q: "هل السيرفر مستقر وبدون تقطيع أثناء المباريات الكبيرة؟",
-    a: "نعم، سيرفرات المزود مزودة بتقنية الحماية من الضغط (Anti-Freeze Tech) وشبكة خوادم CDN موزعة جغرافياً في السعودية والخليج وأوروبا لضمان ثبات 99.9% حتى مع ذروة المشاهدات في نهائيات دوري الأبطال وكأس العالم.",
+    a: "لا يمكن ضمان غياب التقطيع؛ يعتمد الأداء على اتصالك والجهاز والمزوّد والضغط وقت المشاهدة. اختبر الاتصال على جهازك في وقت الاستخدام، واسأل عن شروط الخدمة قبل الدفع.",
   },
   {
     q: "كيف أستلم بيانات الاشتراك بعد الشراء؟",
-    a: "التفعيل فوري وآلي بالكامل! بمجرد تأكيد الطلب، يتم إصدار وإرسال بيانات الاشتراك الصادرة من المزود (رابط M3U + بيانات Xtream: المستخدم وكلمة السر والسيرفر) عبر واتساب والبريد الإلكتروني خلال 5 دقائق مع شرح كامل لطريقة التشغيل.",
+    a: "بعد تأكيد الطلب تُنسَّق طريقة استلام بيانات الاشتراك الصادرة من المزود وإرشادات إعداد المشغّل. اسأل عن وسيلة الاستلام والموعد المتوقع قبل الدفع.",
   },
   {
     q: "هل يمكنني طلب تجربة مجانية قبل الاشتراك؟",
@@ -365,7 +365,7 @@ export const FAQS = [
   },
   {
     q: "ما هي سرعة الإنترنت المطلوبة لتشغيل القنوات بدون تقطيع؟",
-    a: "لتشغيل قنوات SD/HD تحتاج إلى 4-8 ميجابت. لقنوات FHD تحتاج 15-20 ميجابت. ولقنوات 4K الحقيقية يُفضل 25-30 ميجابت فما فوق.",
+    a: "تختلف السرعة المطلوبة بحسب الخدمة والجودة وعدد الشاشات؛ راجع دليل سرعة الإنترنت وحاسبة الشاشات، واختبر اتصالك وقت المشاهدة. لا تضمن السرعة وحدها غياب التقطيع.",
   },
   {
     q: "هل يعمل الاشتراك على أكثر من جهاز؟",
@@ -388,13 +388,13 @@ export const FAQS = [
 /* ==========================================================================
    أسئلة صفحة التجربة المجانية (/trial) — مصدر واحد لعرض الصفحة وبيانات
    FAQPage المنظّمة معاً (القاعدة الذهبية). حقائقها من نموذج طلب التجربة
-   نفسه: كود يصدره المزود الخارجي، 6 ساعات، استلام عبر واتساب خلال دقائق،
+   نفسه: كود يصدره المزود الخارجي، 6 ساعات، والتواصل عبر واتساب،
    وبدون أي دفع قبل التجربة. الأسئلة العامة تُعاد بالمرجع من FAQS.
 ========================================================================== */
 export const TRIAL_FAQS: FaqItem[] = [
   {
     q: "كيف أطلب تجربة IPTV مجانية لمدة 6 ساعات؟",
-    a: "اضغط زر طلب التجربة في هذه الصفحة، واختر جهازك والسيرفر الذي تريد فحصه (نوفا أو إيستار أو موكا)، ثم أرسل الطلب عبر واتساب. يُصدر المزود الخارجي كود التجربة وتصلك بياناته عبر واتساب خلال دقائق — عادة أقل من 5 دقائق — مع إرشادات إعداد المشغّل على جهازك خطوة بخطوة.",
+    a: "اضغط زر طلب التجربة في هذه الصفحة، واختر جهازك والسيرفر الذي تريد فحصه (نوفا أو إيستار أو موكا)، ثم أرسل الطلب عبر واتساب. يُصدر المزود الخارجي كود التجربة؛ تُنسّق طريقة استلامه عبر واتساب مع إرشادات إعداد المشغّل. اسأل عن موعد الاستلام قبل الطلب.",
   },
   FAQS[2],
   {
@@ -473,7 +473,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       FAQS[5],
       {
         q: "كيف أطلب باقة التفعيل وأكمل الدفع خطوة بخطوة؟",
-        a: "اختر السيرفر والباقة المناسبة من صفحة الباقات، أضفها إلى السلة، ثم أكمل الطلب عبر واتساب حيث يؤكد لك فريقنا تفاصيل الباقة وطريقة الدفع المتاحة لبلدك. بعد تأكيد الدفع تُصدر بيانات الاشتراك من المزود الخارجي وتصلك عبر واتساب والبريد الإلكتروني خلال دقائق، مع شرح إعداد المشغّل على جهازك خطوة بخطوة.",
+        a: "اختر السيرفر والباقة المناسبة من صفحة الباقات، أضفها إلى السلة، ثم أكمل الطلب عبر واتساب حيث يؤكد لك فريقنا تفاصيل الباقة وطريقة الدفع المتاحة لبلدك. بعد تأكيد الدفع تُصدر بيانات الاشتراك من المزود الخارجي وتُنسّق طريقة استلامها مع الدعم، مع إرشادات إعداد المشغّل على جهازك.",
         links: [{ href: "store/", label: "صفحة الباقات والأسعار الحالية" }],
       },
       {
@@ -587,11 +587,11 @@ export const FAQ_SECTIONS_EN: FaqSection[] = [
     faqs: [
       {
         q: "How do I receive my subscription details after ordering?",
-        a: "Activation is instant and fully automated. Once your order is confirmed, the subscription data issued by the provider (an M3U link plus Xtream Codes credentials: server address, username and password) is sent to you via WhatsApp and email within 5 minutes, together with a full explanation of how to set everything up.",
+        a: "After your order is confirmed, delivery of the provider-issued subscription details and setup instructions is arranged with support. Ask about the delivery method and expected timing before paying.",
       },
       {
         q: "Is the server stable during big matches, without freezing?",
-        a: "Yes. The provider's servers are equipped with anti-freeze technology and a geographically distributed CDN network across Saudi Arabia, the Gulf and Europe, announcing 99.9% stability even at peak viewing times such as Champions League finals and the World Cup. You can verify this yourself with the free trial before paying anything.",
+        a: "Uninterrupted playback cannot be guaranteed: performance depends on your connection, device, provider and demand. Test on your own device at your usual viewing time and check the service terms before paying.",
         links: [{ href: "blog/test-iptv-server-stability/", label: "How to test server stability before you pay" }],
       },
       {
@@ -634,7 +634,7 @@ export const FAQ_SECTIONS_EN: FaqSection[] = [
       },
       {
         q: "How do I order an activation package and pay, step by step?",
-        a: "Choose the right server and package, add it to the cart, then complete your order via WhatsApp, where our team confirms the package details and the payment method available in your country. Once payment is confirmed, the subscription data is issued by the external provider and reaches you via WhatsApp and email within minutes, with a step-by-step walkthrough of setting up the player on your device.",
+        a: "Choose the right server and package, add it to the cart, then complete your order via WhatsApp, where our team confirms the package details and the payment method available in your country. Once payment is confirmed, the subscription data is issued by the external provider and delivery of the details is arranged with support, together with player setup instructions.",
         links: [{ href: "store/", label: "Current packages and prices" }],
       },
       {
@@ -755,41 +755,6 @@ export const EN_PLAN_FAQS: FaqItem[] = [
   FAQ_SECTIONS_EN[0].faqs[3],
   FAQ_SECTIONS_EN[1].faqs[0],
   FAQ_SECTIONS_EN[3].faqs[2],
-];
-
-export const TESTIMONIALS = [
-  {
-    name: "سلطان القحطاني",
-    city: "الرياض، السعودية",
-    avatar: "🇸🇦",
-    rating: 5,
-    server: "سيرفر نوفا الأصلي (سنة)",
-    review: "تجربة تعامل ممتازة، استلمت بيانات التفعيل من المزود في دقائق، وساعدني فريق الدعم الفني في ضبط التطبيق على الشاشة بخطوات واضحة وأداء مستقر جداً وقت الذروة.",
-  },
-  {
-    name: "محمد العوضي",
-    city: "دبي، الإمارات",
-    avatar: "🇦🇪",
-    rating: 5,
-    server: "سيرفر موكا (سنة)",
-    review: "جودة العرض 4K لدى المزود ممتازة والتنقل بين القوائم سريع جداً، وميزة دعم أكثر من جهاز في الباقة وفّرت علينا الكثير في البيت مع استجابة فورية من الدعم.",
-  },
-  {
-    name: "د. هاني الشريف",
-    city: "القاهرة، مصر",
-    avatar: "🇪🇬",
-    rating: 5,
-    server: "سيرفر إيستار برو (سنة)",
-    review: "كنت متردداً في البداية لكن التجربة المجانية قبل الشراء وضّحت لي استقرار السيرفر على جهازي، والتفعيل تم خلال 3 دقائق بالضبط وطريقة الدفع بفودافون كاش كانت سهلة جداً.",
-  },
-  {
-    name: "بدر الشمري",
-    city: "الكويت",
-    avatar: "🇰🇼",
-    rating: 5,
-    server: "سيرفر نوفا الأصلي (سنة)",
-    review: "للعام الثاني على التوالي أجدد اشتراكي عبر المنصة، مصداقية عالية في إصدار الأكواد ومتابعة مستمرة من الدعم الفني لتشغيل التطبيق بأفضل إعدادات على شاشة سامسونج سمارت.",
-  },
 ];
 
 /* ==========================================================================

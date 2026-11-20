@@ -239,11 +239,13 @@ test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المن�
 
     const webPage = nodes.find((n) => typesOf(n).includes('WebPage'));
     assert.ok(webPage, `${rel}: بلا كيان WebPage`);
-    for (const field of ['@id', 'url', 'name', 'description', 'inLanguage', 'datePublished', 'dateModified', 'primaryImageOfPage']) {
+    for (const field of ['@id', 'url', 'name', 'description', 'inLanguage', 'datePublished', 'primaryImageOfPage']) {
       assert.ok(webPage[field], `${rel}: WebPage ينقصه ${field}`);
     }
     assert.match(String(webPage.datePublished), /^\d{4}-\d{2}-\d{2}/, `${rel}: datePublished`);
-    assert.match(String(webPage.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
+    if (webPage.dateModified != null) {
+      assert.match(String(webPage.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
+    }
 
     if (!isHome) {
       const crumb = nodes.find((n) => typesOf(n).includes('BreadcrumbList'));
@@ -429,8 +431,11 @@ test('صفحات الأخبار: كل بذرة مُعلنة في خريطة، و
     const article = nodes.find((n) => typesOf(n).includes('NewsArticle'));
     /* author وpublisher من خصائص Article المطلوبة لدى Google — بلا أحدهما
        لا يظهر الخبر كنتيجة مقال غنية حتى لو فُهرس. */
-    for (const field of ['headline', 'description', 'datePublished', 'dateModified', 'image', 'author', 'publisher']) {
+    for (const field of ['headline', 'description', 'datePublished', 'image', 'author', 'publisher']) {
       assert.ok(article[field], `${rel}: NewsArticle ينقصه ${field}`);
+    }
+    if (article.dateModified != null) {
+      assert.match(String(article.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
     }
   }
 

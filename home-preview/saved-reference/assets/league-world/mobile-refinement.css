@@ -39,3 +39,10 @@ html[data-motion-reduced="true"] .world .cards .card-decor-ball{animation:none}
 .world .cards .explore-button{min-height:42px;font-size:12px;padding:7px 12px;margin-top:8px}
 @media(max-width:750px){.world .cards .card-values__content{padding:14px}.world .cards .card-values__values{font-size:19px}.world .cards .card-values__top{font-size:12px}.world .cards .explore-button{min-height:42px;font-size:12px;padding:7px 12px}}
 @media(max-width:750px){.world .cards .card-decor-ball{display:block}}
+/* English league names need to fit the existing card proportions without covering the crest. */
+html[data-reference-language="en"] .card-values__top{direction:ltr;gap:4px}
+html[data-reference-language="en"] .card-values__bottom{direction:ltr;text-align:left}
+html[data-reference-language="en"] .world .cards .card-values__values{font-size:clamp(12px,1.45vw,19px);line-height:1.08;white-space:normal;overflow-wrap:normal}
+html[data-reference-language="en"] .league-overlay__card .card-values__values,html[data-reference-language="en"] .league-screen__card .card-values__values{font-size:clamp(10px,1.15vw,20px);line-height:1.05;overflow-wrap:normal}
+html[data-reference-language="en"] .league-overlay__content,html[data-reference-language="en"] .league-screen__content{direction:ltr}
+@media(max-width:750px){html[data-reference-language="en"] .league-overlay__card .card-values__top,html[data-reference-language="en"] .league-screen__card .card-values__top{font-size:8px}html[data-reference-language="en"] .league-overlay__card .card-values__values,html[data-reference-language="en"] .league-screen__card .card-values__values{font-size:10px}}

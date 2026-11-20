@@ -17,7 +17,7 @@
   rankObserver?.disconnect();const box=panel.querySelector('.table-panel');if(!box)return;
   if(screen.dataset.view==='matches'){
    const matchStatus=box.querySelector('.match-status');if(matchStatus?.textContent.includes('تعذّر تحميل مباريات'))matchStatus.textContent='تعذّر تحميل المباريات. الاتصال المباشر غير متاح في خادم المعاينة الثابت؛ يمكنك إعادة المحاولة.';
-   box.querySelectorAll('.match-row').forEach(row=>{const status=row.querySelector('.match-score small')?.textContent||'';row.dataset.state=status.includes('مباشر')?'live':status.includes('انتهت')?'finished':status.includes('بتوقيت القاهرة')?'scheduled':'other'});
+   box.querySelectorAll('.match-row').forEach(row=>{const status=row.querySelector('.match-score small')?.textContent||'';row.dataset.state=(status.includes('مباشر')||status.includes('Live'))?'live':(status.includes('انتهت')||status.includes('Finished'))?'finished':(status.includes('بتوقيت القاهرة')||status.includes('Cairo time'))?'scheduled':'other'});
    return;
   }
   const wrap=box.querySelector('.table-wrap');if(!wrap)return;

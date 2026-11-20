@@ -1,0 +1,5 @@
+html[data-reference-language="en"] .ban__title.sm-hero-copy{font-size:clamp(25px,6vw,90px)}
+html[data-reference-language="en"] .sm-hero-copy h1,html[data-reference-language="en"] .sm-hero-copy p{direction:ltr;text-align:center}
+html[data-reference-language="en"] .sm-hero-copy h1 .sm-hero-line[data-accent]::after{font-family:serif;font-size:clamp(17px,2vw,30px)}
+html[data-reference-language="en"] .sm-hero-info__main,html[data-reference-language="en"] .sm-hero-info__detail{direction:ltr;white-space:normal;line-height:1.15}
+@media(max-width:450px){.nav{padding-inline:8px}.nav .nav__logo{flex:0 0 auto}.nav .nav__menu-btn{width:26px;flex:0 0 26px}.nav .sm-cart-tools{margin-inline:0;gap:2px}.sm-cart-tools button,.sm-cart-tools select,.sm-cart-tools #sm-language{font-size:10px;padding:5px;min-height:32px}.sm-cart-tools select{width:53px}.sm-cart-open span{min-width:16px;height:16px;margin-right:2px}}

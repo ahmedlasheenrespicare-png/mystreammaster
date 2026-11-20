@@ -16,3 +16,4 @@ html,body,#root{margin:0;width:100%;min-width:0;overflow-x:hidden}
 #xtream .sm-player-form [data-testid="player-legal-note"] strong{color:#280822;font-weight:900;margin-bottom:5px}
 @media(max-width:600px){#xtream[data-player-phase="form"],#xtream[data-player-phase="loading"]{padding:72px 0}#xtream[data-player-phase="form"] h2,#xtream[data-player-phase="loading"] h2{font-size:clamp(42px,10vw,56px)}#xtream .sm-player-form{padding:22px}}
 html[data-motion-reduced=true] #xtream .sm-player-upload{transition:none}
+html[data-reference-language="en"] #xtream[data-player-phase="form"] h2,html[data-reference-language="en"] #xtream[data-player-phase="form"] .rv>p,html[data-reference-language="en"] #xtream .sm-player-form{direction:ltr}

@@ -42,8 +42,7 @@ test('الانتقال من فهرس المباريات إلى التفاصيل 
 });
 
 test('روابط السياسات في نافذتي التجربة والسلة تشير للموقع نفسه', async ({ page }) => {
-  await page.goto('/');
-  await page.locator('footer').getByRole('button', { name: 'طلب فحص تجريبي', exact: true }).click();
+  await page.goto('/trial/?trial=1', { waitUntil: 'domcontentloaded' });
   let dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية' });
   await expect(dialog.getByRole('link', { name: 'شروط الاستخدام وإخلاء المسؤولية' })).toHaveAttribute('href', '/terms/');
   await expect(dialog.getByRole('link', { name: 'سياسة الاسترجاع' })).toHaveAttribute('href', '/refund/');
@@ -71,19 +70,22 @@ test.describe('المحتوى الأساسي دون JavaScript', () => {
 
   test('روابط أقسام الرئيسية تعمل كرابط حقيقي من الصفحات الأخرى', async ({ page }) => {
     const links = [
-      ['الباقات والأسعار', 'pricing'],
-      ['مساعد الاختيار', 'server-finder'],
-      ['مقارنة السيرفرات', 'servers-compare'],
-      ['مكتبة القنوات', 'channels'],
-      ['دليل التشغيل', 'setup'],
-      ['دليل المشاهدة الرسمية', 'live-player'],
+      ['الباقات والأسعار', '/#works'],
+      ['مساعد الاختيار', '/#path-section'],
+      ['مقارنة السيرفرات', '/servers/'],
+      ['مكتبة القنوات', '/channels/'],
+      ['دليل التشغيل', '/#journey'],
+      ['دليل المشاهدة الرسمية', '/channels/'],
     ];
     await page.goto('/blog/internet-speed-for-video-streaming/');
-    for (const [label, hash] of links) {
-      await expect(page.locator('footer').getByRole('link', { name: label, exact: true })).toHaveAttribute('href', `/#${hash}`);
+    for (const [label, href] of links) {
+      await expect(page.locator('footer').getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
     }
     await page.locator('footer').getByRole('link', { name: 'الباقات والأسعار', exact: true }).click();
-    await expect(page).toHaveURL(/\/#pricing$/);
-    for (const [, hash] of links) await expect(page.locator(`#${hash}`)).toHaveCount(1);
+    await expect(page).toHaveURL(/\/#works$/);
+    for (const [, href] of links.filter(([, href]) => href.startsWith('/#'))) {
+      await expect(page.locator(href.slice(1))).toHaveCount(1);
+    }
+    for (const href of ['/servers/', '/channels/']) expect((await page.request.get(href)).status()).toBe(200);
   });
 });

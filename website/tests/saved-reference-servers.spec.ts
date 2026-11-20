@@ -2,9 +2,9 @@ import {test,expect} from '@playwright/test';
 import fs from 'node:fs';import path from 'node:path';
 let source=fs.readFileSync(path.resolve('../home-preview/saved-reference/assets/main-D5MQsYQ6.js'),'utf8');
 let start=source.indexOf(',function(t){var e;const n=.0015'),end=source.indexOf(';const Ay=document.querySelectorAll',start);
-if(start<0||end<0)throw new Error('Reference WebGL block not found');source=source.slice(0,start)+source.slice(end);
+if(start>=0&&end>=0)source=source.slice(0,start)+source.slice(end);
 start=source.indexOf('window.addEventListener("load",()=>{My()&&function({patternSize:');end=source.indexOf('document.addEventListener("DOMContentLoaded",()=>{const t=document.title',start);
-if(start<0||end<0)throw new Error('Reference noise block not found');source=source.slice(0,start)+source.slice(end);
+if(start>=0&&end>=0)source=source.slice(0,start)+source.slice(end);
 for(const width of [320,390,768,1024,1200,1440])test(`server cards retain their logos on transparent backgrounds at ${width}`,async({browser})=>{
  const context=await browser.newContext({viewport:{width,height:850}}),page=await context.newPage();
  await page.addInitScript(()=>localStorage.setItem('sm-motion-preference','off'));

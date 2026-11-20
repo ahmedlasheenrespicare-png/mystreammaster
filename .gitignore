@@ -15,3 +15,9 @@ website/docs/match-center-shots/
 
 # Staged archive candidates/reports are Actions artifacts, never tracked.
 website/.fixtures-out/
+
+# Temporary, reproducible migration candidate; never published as source.
+home-preview/release-candidate/
+
+# Generated approved home snapshot assets, rebuilt during publish.
+_assets/reference-home/

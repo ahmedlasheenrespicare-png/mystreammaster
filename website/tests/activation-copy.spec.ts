@@ -38,13 +38,13 @@ async function capturedMessage(page: Page) {
 }
 
 test('homepage activation and trial CTAs use technical-service wording', async ({ page }) => {
-  await page.goto('/');
-  const activation = page.getByRole('link', { name: 'اطلب التفعيل — من $20', exact: true });
-  await expect(activation).toBeVisible();
-  expect(messageFrom((await activation.getAttribute('href'))!)).toBe('مرحبًا ستريم ماستر، أود الاستفسار عن باقات التفعيل التقني لدى المزود');
-  await expect(page.getByText('فحص تجريبي مجاني', { exact: true })).toBeVisible();
-  await expect(page.locator('footer').getByRole('button', { name: 'أرسل الطلب', exact: true })).toBeVisible();
-  await page.locator('footer').getByRole('button', { name: 'طلب فحص تجريبي', exact: true }).click();
+  await page.route('**/*.mp4*', route => route.abort());
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const trial = page.locator('.sm-quick-action--trial');
+  await expect(trial).toBeVisible();
+  expect(messageFrom((await trial.getAttribute('href'))!)).toBe('مرحبا ستريم ماستر اريد مساعدتي لتجربه الخدمه');
+  await expect(page.locator('#steps-stage .steps__item').first().locator('a')).toHaveAttribute('href', '/trial/');
+  await page.goto('/trial/?trial=1', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('dialog', { name: 'طلب تجربة مجانية', exact: true })).toBeVisible();
 });
 
@@ -80,9 +80,8 @@ for (const plan of PRICING_PLANS) {
 
 for (const custom of [false, true]) {
   test(`trial sends technical compatibility wording with ${custom ? 'custom' : 'default'} selections`, async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/trial/?trial=1', { waitUntil: 'domcontentloaded' });
     await captureWhatsApp(page);
-    await page.locator('footer').getByRole('button', { name: 'طلب فحص تجريبي', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'طلب تجربة مجانية', exact: true });
     await expect(dialog.getByRole('heading')).toHaveText('طلب كود فحص وتجربة من المزود (6 ساعات)');
     await expect(dialog).toContainText('اختبر توافق التطبيق على جهازك واستقرار اتصال سيرفر المزود قبل طلب التفعيل.');

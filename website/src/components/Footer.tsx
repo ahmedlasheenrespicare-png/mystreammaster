@@ -62,7 +62,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                   <IconZap className="w-4 h-4" /> اطلب تجربتك المجانية
                 </button>
                 <a
-                  href={to("#pricing")}
+                  href={to("#works")}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/25 font-black text-[15px] px-9 py-4 rounded-full hover:bg-white hover:text-black transition-all"
                 >
                   اختر باقتك الآن
@@ -121,12 +121,12 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                   h: "روابط سريعة",
                   l: [
                     { t: "الرئيسية", href: to("") },
-                    { t: "الباقات والأسعار", href: to("#pricing") },
-                    { t: "مساعد الاختيار", href: to("#server-finder") },
-                    { t: "مقارنة السيرفرات", href: to("#servers-compare") },
-                    { t: "مكتبة القنوات", href: to("#channels") },
+                    { t: "الباقات والأسعار", href: to("#works") },
+                    { t: "مساعد الاختيار", href: to("#path-section") },
+                    { t: "مقارنة السيرفرات", href: to("servers/") },
+                    { t: "مكتبة القنوات", href: to("channels/") },
                     { t: "كل القنوات (صفحة)", href: to("channels/") },
-                    { t: "دليل التشغيل", href: to("#setup") },
+                    { t: "دليل التشغيل", href: to("#journey") },
                     { t: "مقالات ودلائل", href: to("blog/") },
                   ],
                 },
@@ -137,7 +137,7 @@ export default function Footer({ onOpenTrial }: FooterProps) {
                     { t: "سيرفر إيستار (iStar)", href: to("istar/"), server: "istar" as const },
                     { t: "سيرفر موكا (Moka)", href: to("moka/"), server: "moka" as const },
                     { t: "سيرفر X (XTV)", href: to("x/"), server: "x" as const },
-                    { t: "دليل المشاهدة الرسمية", href: to("#live-player") },
+                    { t: "دليل المشاهدة الرسمية", href: to("channels/") },
                   ],
                 },
                 { h: "عن الموقع", l: [

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { HOME_SECTIONS, NAV_GROUPS, SERVER_PAGES } from '../src/navigation.mjs';
+import { HOME_SECTIONS, NAV_GROUPS, SERVER_PAGES, homeSectionPath } from '../src/navigation.mjs';
 
 // Every page reachable from the header (React and legacy headers share src/navigation.mjs).
 const ALL_PAGES = [
@@ -14,9 +14,37 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('every home section listed in the header exists on the homepage', async ({ page }) => {
-  await page.goto('/');
-  for (const s of HOME_SECTIONS) await expect(page.locator(`#${s.id}`), s.id).toHaveCount(1);
+test('home menu destinations exist without relying on legacy hash redirects', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  for (const s of HOME_SECTIONS) {
+    const target = homeSectionPath(s.id);
+    if (target.startsWith('#')) await expect(page.locator(target), s.id).toHaveCount(1);
+    else expect((await page.request.get(`/${target}`)).status(), s.id).toBe(200);
+  }
+});
+
+for (const url of ['/about/']) {
+  test(`header destinations work without JavaScript on ${url}`, async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    for (const section of HOME_SECTIONS) {
+      const href = `/${homeSectionPath(section.id)}`;
+      await expect(page.locator('header').getByRole('link', { name: new RegExp(section.label), includeHidden: true }).first(), section.id).toHaveAttribute('href', href);
+    }
+    await context.close();
+  });
+}
+
+test('reference homepage menu exposes its current navigation groups', async ({ page }) => {
+  await page.route('**/*.mp4*', route => route.abort());
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.loader')).toBeHidden({ timeout: 60000 });
+  await page.locator('.nav__menu-btn').click();
+  const menu = page.locator('.nav__menu');
+  await expect(menu).toHaveClass(/open/);
+  await expect(menu.locator('.preview-menu-group h2')).toHaveText(['اكتشف', 'ابدأ المشاهدة', 'المساعدة والمزيد']);
+  for (const id of ['journey', 'reviews', 'faq']) await expect(menu.locator(`a[href="#${id}"]`)).toHaveCount(1);
 });
 
 test('every page linked from the header responds', async ({ request }) => {
@@ -26,7 +54,7 @@ test('every page linked from the header responds', async ({ request }) => {
   }
 });
 
-for (const url of ['/', '/channels/', '/privacy/']) {
+for (const url of ['/channels/', '/privacy/']) {
   test(`desktop header on ${url} groups all pages in five dropdowns`, async ({ page }) => {
     await page.goto(url);
     const nav = page.locator('header nav').first();
@@ -44,7 +72,7 @@ for (const url of ['/', '/channels/', '/privacy/']) {
       await expect(panel).toBeHidden();
     }
     for (const p of ALL_PAGES) expect(hrefs, p).toContain(p);
-    for (const s of HOME_SECTIONS) expect(hrefs, s.id).toContain(`/#${s.id}`);
+    for (const s of HOME_SECTIONS) expect(hrefs, s.id).toContain(`/${homeSectionPath(s.id)}`);
   });
 }
 

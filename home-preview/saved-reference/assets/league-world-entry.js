@@ -4,7 +4,7 @@
  let beforeOverflow='',returnFocus=launch;
  function open(index=null,view=null,trigger=launch){
   beforeOverflow=document.documentElement.style.overflow;returnFocus=trigger;document.documentElement.style.overflow='hidden';
-  const url=new URL('/home-preview/saved-reference/assets/league-world/world.html?v=12c8fd5692dc609d',location.origin);
+  const url=new URL('/home-preview/saved-reference/assets/league-world/world.html?v=6681c52f01f49deb',location.origin);
   if(Number.isInteger(index)&&index>=0&&index<8&&['standings','rates','matches'].includes(view)){url.searchParams.set('league',index);url.searchParams.set('view',view)}
   world.src=url.pathname+url.search;world.hidden=false;
  }

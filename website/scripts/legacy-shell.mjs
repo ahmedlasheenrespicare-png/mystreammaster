@@ -1,4 +1,4 @@
-import { HOME_SECTIONS, NAV_GROUPS, SERVER_PAGES } from '../src/navigation.mjs';
+import { HOME_SECTIONS, NAV_GROUPS, SERVER_PAGES, homeSectionPath } from '../src/navigation.mjs';
 import { SUPPORT_EMAIL, WHATSAPP_NUMBER } from '../src/site.mjs';
 import { leagueIcon } from '../src/lib/league-icons.mjs';
 
@@ -6,7 +6,7 @@ import { leagueIcon } from '../src/lib/league-icons.mjs';
    (src/navigation.mjs)، فتظهر كل صفحات الموقع وأقسام الرئيسية في القوائم المنسدلة. */
 const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const page = (href) => `/${href}`;
-const section = (id) => `/#${id}`;
+const section = (id) => `/${homeSectionPath(id)}`;
 const chevron = '<svg class="sm-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 
 /* شعار البطولة داخل صندوق الأيقونة نفسه (.sm-dd-icon 32×32) — مصدره src/lib/league-icons.mjs

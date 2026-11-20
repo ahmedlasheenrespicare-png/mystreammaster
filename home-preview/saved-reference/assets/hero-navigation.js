@@ -18,7 +18,9 @@
   if(link.getAttribute('href')==='#servers-compare')return;
   const target=document.querySelector(link.getAttribute('href'));if(!target)return;
   event.preventDefault();history.pushState(null,'',link.getAttribute('href'));
-  if(innerWidth>=600&&window.smScrollToSection)window.smScrollToSection(target);
+  // ScrollSmoother owns the fixed wrapper on mobile too. Native scrollIntoView
+  // can scroll that wrapper instead of the document and be reset by the smoother.
+  if(window.smScrollToSection)window.smScrollToSection(target);
   else target.scrollIntoView({behavior:window.smMotion?.matches?'instant':'smooth',block:'start'});
  });
 })();

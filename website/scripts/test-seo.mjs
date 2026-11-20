@@ -36,6 +36,10 @@ const NOINDEX = new Set([
   'home-preview/saved-reference/assets/league-world/world.html', // شاشة تفاعلية داخل المعاينة
   'home-preview/saved-reference/index.html', // معاينة مستقلة قيد التطوير وليست صفحة مفهرسة
   'home-preview/saved-reference/en/index.html', // النسخة الإنجليزية للمعاينة، وليست صفحة إنتاجية
+  'home-preview/release-candidate/index.html', // مرشّح محلي مؤقت لا يُفهرس أو يُنشر
+  'home-preview/release-candidate/en/index.html',
+  'home-preview/release-candidate/m3u-player.html',
+  'home-preview/release-candidate/assets/league-world/world.html',
   'home-preview/inactive-league-options/index.html', // معاينة خيارات التصميم غير مفهرسة
   'home-preview/standings-options/index.html', // معاينة خيارات الترتيب غير مفهرسة
   'home-preview/cinema-library-preview/index.html', // معاينة مكتبة الأفلام والمسلسلات غير مفهرسة
@@ -49,6 +53,7 @@ const NOINDEX = new Set([
   'live-free.html',
   'player.html',
   'm3u-player.html', // مشغّل مضمّن وظيفي غير مفهرس
+  'xtream-player.html', // مدخل مشغّل الاشتراك السابق غير مفهرس
   'search/index.html',
   'cart/index.html',
 ]);
@@ -65,6 +70,7 @@ const isMatchDetailPage = (rel) => {
 };
 const isExpectedNoindex = (rel) => {
   if (NOINDEX.has(rel)) return true;
+  if (/^_assets\/reference-home\/[a-f0-9]{40}\/league-world\/world\.html$/.test(rel)) return true;
   if (!isMatchDetailPage(rel)) return false;
   assert.ok(matchVerificationByFile.has(rel), `${rel}: مسار مباراة غير موجود في مصدر المباريات`);
   return !matchVerificationByFile.get(rel);
@@ -249,7 +255,7 @@ test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المن�
       assert.match(String(webPage.dateModified), /^\d{4}-\d{2}-\d{2}/, `${rel}: dateModified`);
     }
 
-    if (!isHome) {
+    if (!isHome && rel !== 'en/index.html') { // النسخة الإنجليزية للصفحة الرئيسية ليست صفحة فرعية
       const crumb = nodes.find((n) => typesOf(n).includes('BreadcrumbList'));
       assert.ok(crumb, `${rel}: بلا BreadcrumbList`);
       assert.ok(webPage.breadcrumb, `${rel}: WebPage لا يشير إلى breadcrumb`);
@@ -503,7 +509,7 @@ test('صور الصفحات المفهرسة: موجودة، بأبعاد معل
       if (/\.(png|jpe?g)$/i.test(urlPath)) {
         const stem = urlPath.replace(/\.(png|jpe?g)$/i, '');
         const variant = await Promise.all(['.webp', '.avif'].map((ext) =>
-          fs.access(path.join(website, 'public', decodeURIComponent(stem + ext).replace(/^\//, ''))).then(() => true, () => false)));
+          Promise.any([website + '/public', root].map(dir => fs.access(path.join(dir, decodeURIComponent(stem + ext).replace(/^\//, ''))))).then(() => true, () => false)));
         if (!variant.some(Boolean)) noVariant.push(`${rel}: ${src}`);
       }
     }

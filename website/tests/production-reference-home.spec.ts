@@ -103,3 +103,18 @@ for (const width of [320, 390, 1440]) for (const motion of ['off', 'on']) {
     await expect(page.locator('#reviews')).toBeInViewport({ timeout: 15000 });
   });
 }
+
+for (const path of ['/', '/en/']) for (const width of [390, 1440]) {
+  test(`deferred home images load while scrolling ${path} at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'on'));
+    await page.route('https://**', r => r.abort());
+    await page.route('**/*.mp4*', r => r.abort());
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.loader')).toBeHidden({ timeout: 60000 });
+    const image = page.locator('#path-section .sm-fan--sport > img');
+    await expect(image).toHaveAttribute('loading', 'lazy');
+    await page.evaluate(() => { const el = document.querySelector('#path-section')!; (window as any).smScrollToSection ? (window as any).smScrollToSection(el) : el.scrollIntoView(); });
+    await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { timeout: 30000 }).toBe(true);
+  });
+}

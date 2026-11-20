@@ -507,7 +507,9 @@ test('صور الصفحات المفهرسة: موجودة، بأبعاد معل
 
       /* الصور داخل <picture> تختار الصيغة بنفسها عبر <source> */
       if (new RegExp(src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s\\S]{0,400}<\\/picture>').test(html)) continue;
-      if (/\.(png|jpe?g)$/i.test(urlPath)) {
+      // The approved home publisher keeps the original when lossless WebP
+      // would increase transfer size; its dedicated production test covers it.
+      if (/\.(png|jpe?g)$/i.test(urlPath) && !urlPath.startsWith('/_assets/reference-home/')) {
         const stem = urlPath.replace(/\.(png|jpe?g)$/i, '');
         const variant = await Promise.all(['.webp', '.avif'].map((ext) =>
           Promise.any([website + '/public', root].map(dir => fs.access(path.join(dir, decodeURIComponent(stem + ext).replace(/^\//, ''))))).then(() => true, () => false)));

@@ -1,0 +1,12 @@
+/* Homepage footer content in the approved plum footer. */
+.sm-footer .sm-footer__main{display:block}
+.sm-footer .sm-footer__brand-logo{display:inline-flex;align-items:center;gap:10px}.sm-footer__play{width:40px;height:40px;display:grid;place-items:center;background:#d8ff3e;color:#0b0b0f;border-radius:12px;flex:none}.sm-footer__play svg{width:20px;height:20px}
+.sm-footer .sm-footer__whatsapp{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid #16a34a4d;background:#16a34a26;color:#3effe0;border-radius:999px;font-weight:900;font-size:13px;text-decoration:none}.sm-footer__whatsapp svg{width:16px;height:16px}
+.sm-footer .sm-footer__nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 24px}.sm-footer .sm-footer__nav a{overflow-wrap:anywhere}.sm-footer .sm-footer__nav a.sm-footer__server{display:flex;align-items:center;gap:6px}.sm-footer__server img{width:22px;height:22px;object-fit:contain;flex:none}.sm-footer__guarantee p{display:flex;gap:10px;align-items:center;font-size:13px;line-height:1.6;margin:0 0 14px;color:#f1dce4}.sm-footer__guarantee svg{width:20px;height:20px;flex:none;color:#3effe0}.sm-footer__guarantee p:nth-of-type(2) svg{color:#d8ff3e}.sm-footer__guarantee p:nth-of-type(3) svg{color:#a58cfb}.sm-footer .sm-footer__guarantee a{color:#d8ff3e;font-weight:900}
+.sm-footer__legal{margin:0 5vw 32px;padding:20px;border:1px solid #ffffff1a;border-radius:16px;background:#ffffff08;font-size:12.5px;line-height:1.9;color:#e4cbd4}.sm-footer__legal strong{color:#d8ff3e}.sm-footer__legal p{margin:4px 0 0}.sm-footer__legal a{color:#fff;text-decoration:underline;overflow-wrap:anywhere}
+@media(max-width:900px){.sm-footer .sm-footer__main{grid-template-columns:1fr}.sm-footer .sm-footer__nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.sm-footer .sm-footer__nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 18px}.sm-footer__newsletter-form button{padding:12px 16px}}
+.sm-footer__nav>div:not(:first-child):not(.sm-footer__guarantee) a::after{content:'↗';display:inline-block;font-size:12px;opacity:0;transition:opacity .2s;margin-inline-start:4px}.sm-footer__nav>div:not(:first-child) a:hover::after,.sm-footer__nav>div:not(:first-child) a:focus-visible::after{opacity:1}
+@media(max-width:700px){.sm-footer .sm-footer__copy span:nth-child(2){display:inline}}
+
+.sm-quick-action--top[hidden]{display:none}.sm-quick-action--top{border:1px solid #d9bac8;background:#fff;color:#280822;cursor:pointer;font-family:inherit}

@@ -11,6 +11,7 @@
   {anchor:'#path-section .sm-path__heading',direction:'right',items:['.sm-path__eyebrow','h2','.sm-path__meta']},
   {anchor:'#works .flow-intro',direction:'up',items:['h2','.flow-intro__meta','p']},
   {anchor:'#journey .steps-intro__inner',direction:'left',items:['h2','p']},
+  {anchor:'#reviews .sm-reviews__head',direction:'up',items:['h2']},
   {anchor:'#faq .sm-faq__heading',direction:'down',items:['.sm-faq__eyebrow','h2','.sm-faq__intro']},
   {anchor:'#blog-teaser .sm-blog__title',direction:'right',items:['.sm-blog__eyebrow','h2','.sm-blog__intro']},
   {anchor:'.sm-footer .sm-footer__main',direction:'up',items:['.sm-footer__brand','.sm-footer__nav']}

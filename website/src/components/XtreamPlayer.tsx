@@ -344,7 +344,7 @@ function DiagBox({
 /*  المكوّن الرئيسي                                                            */
 /* ========================================================================= */
 
-function XtreamPlayerInner() {
+function XtreamPlayerInner({ m3uOnly = false }: { m3uOnly?: boolean }) {
   const storage = useMemo(getStorage, []);
   const workerBase = useMemo(
     () =>
@@ -474,6 +474,7 @@ function XtreamPlayerInner() {
 
   /* استرجاع الحسابات المحفوظة (مع هجرة الجلسة القديمة) وفتح أول حساب */
   useEffect(() => {
+    if (m3uOnly) return;
     const saved = loadAccounts(storage);
     if (saved.length === 0) return;
     setAccounts(saved);
@@ -1689,6 +1690,7 @@ function XtreamPlayerInner() {
   return (
     <section
       id="xtream"
+      data-player-phase={m3uOnly ? phase : undefined}
       className="py-20 md:py-28 bg-[#0b0b0f] text-white relative overflow-hidden grain"
     >
       <div className="absolute inset-0 pointer-events-none">
@@ -1701,17 +1703,19 @@ function XtreamPlayerInner() {
         <Reveal variant="up" className="text-center max-w-[760px] mx-auto mb-10">
           <p className="text-[12px] font-black tracking-[0.25em] uppercase text-[#d8ff3e] mb-4 flex items-center justify-center gap-2">
             <span className="w-8 h-[2px] bg-[#d8ff3e] inline-block" />
-            <IconTv className="w-4 h-4" /> مشغّل اشتراكك الشخصي
+            <IconTv className="w-4 h-4" /> {m3uOnly ? "قوائم اشتراكك الشخصي" : "مشغّل اشتراكك الشخصي"}
           </p>
           <h2 className="font-display font-black tracking-tight leading-[1.15] text-[36px] md:text-[56px]">
-            باقتك الخاصة…{" "}
-            <span className="font-serif italic font-normal text-white/80">على موقعنا</span>
+            {m3uOnly ? <>مشغّل قوائم <span dir="ltr">M3U</span></> : <>باقتك الخاصة…{" "}
+            <span className="font-serif italic font-normal text-white/80">على موقعنا</span></>}
           </h2>
+          {!m3uOnly && (
           <p className="mt-4 text-white/55 text-[15px] md:text-[16.5px] font-medium leading-relaxed">
             مشترك بالفعل؟ أدخل بيانات اشتراكك (السيرفر + اسم المستخدم + كلمة السر) لتحميل قائمة
             تشغيلك من مزوّدك وعرضها في مشغّل يعمل داخل متصفحك — بياناتك تُحفظ على جهازك فقط ولا
             تصل لأي طرف آخر.
           </p>
+          )}
           <p className="mt-3 text-white/35 text-[12.5px] md:text-[13px] font-medium leading-relaxed">
             المشغّل أداة عرض برمجية على المتصفح (Client-side Web Player) تعمل محلياً على جهازك،
             والموقع لا يستضيف القنوات ولا يعيد بثّها.
@@ -1719,7 +1723,7 @@ function XtreamPlayerInner() {
         </Reveal>
 
         {/* شرائح الحسابات المحفوظة — تبديل فوري بين الاشتراكات */}
-        {accounts.length > 0 && (
+        {!m3uOnly && accounts.length > 0 && (
           <div className="flex flex-wrap items-center justify-center gap-2 mb-6" data-testid="account-chips">
             {accounts.map((acc) => (
               <span
@@ -1762,7 +1766,7 @@ function XtreamPlayerInner() {
         )}
 
         {/* ============ شاشة عرض المشغّل السينمائية في وضع الاستعداد ============ */}
-        {(phase === "form" || phase === "loading") && (
+        {!m3uOnly && (phase === "form" || phase === "loading") && (
           <div className="max-w-[520px] mx-auto mb-5">
             <BrandNewtStage variant="player-banner" observeViewport />
           </div>
@@ -1776,10 +1780,17 @@ function XtreamPlayerInner() {
                 وكلمة السر في الرابط وسجلّات الخادم. الآن النقر قبل التحميل بلا أثر. */}
             <div
               role="form"
-              aria-label="تسجيل دخول المشتركين"
+              aria-label={m3uOnly ? "رفع ملف القنوات" : "تسجيل دخول المشتركين"}
               onKeyDown={handleFormKeyDown}
-              className="bg-white text-[#0b0b0f] rounded-[28px] border border-black/10 p-7 sm:p-9 shadow-2xl space-y-4"
+              className={`${m3uOnly ? "sm-player-form " : ""}bg-white text-[#0b0b0f] rounded-[28px] border border-black/10 p-7 sm:p-9 shadow-2xl space-y-4`}
             >
+              {m3uOnly ? <>
+                {errorMsg && <div data-testid="login-error" role="alert" className="bg-[#ff5c4d]/10 border border-[#ff5c4d]/30 text-[#c0392b] rounded-2xl px-4 py-3 text-[13px] font-bold">{errorMsg}</div>}
+                <label className="sm-player-upload" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.querySelector("input")?.click(); } }} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
+                  <IconArrowUp className="w-4 h-4" /> ارفع ملف القنوات
+                  <input type="file" accept=".m3u,.m3u8,.txt,text/plain" className="hidden" onChange={handleM3UFile} />
+                </label>
+              </> : <>
               <div className="text-center mb-2">
                 <span className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#d8ff3e] mb-3">
                   <IconShieldCheck className="w-6 h-6" />
@@ -1922,6 +1933,8 @@ function XtreamPlayerInner() {
                 <DiagBox entries={diag} report={diagReport} token={shareToken} tone="light" />
               )}
 
+              </>}
+
               {/* ==== إيضاح تقني وقانوني لصفة المشغّل ==== */}
               <div
                 data-testid="player-legal-note"
@@ -1933,7 +1946,7 @@ function XtreamPlayerInner() {
                 مشغّل عرض برمجية على المتصفح (Client-side Web Player) يعمل محلياً على جهازك أنت:
                 يقرأ قائمة التشغيل الخاصة باشتراكك (M3U / Xtream Codes) من سيرفر مزوّدك ويعرضها في
                 المتصفح، تماماً كما تفعل تطبيقات المشغّلات الأخرى. الموقع لا يخزّن بيانات الدخول على
-                أي خادم ولا يطّلع عليها أحد، ولا يستضيف المحتوى المُشغَّل ولا يعيد بثّه — القنوات
+                أي خادم ولا يطّلع عليها أحد، ولا يستضيف المحتوى المُشغَّل ولا يعيد بثّه{m3uOnly ? "." : <> — القنوات
                 والمكتبات ملك لمزوّدك ولمالكي الحقوق، ومسؤولية حقوق ما تشاهده تقع على المزود
                 والمستخدم. للقنوات والمنصات المشفّرة استخدم اشتراكها الرسمي عبر{" "}
                 <a
@@ -1943,12 +1956,15 @@ function XtreamPlayerInner() {
                   دليل المشاهدة الرسمية
                 </a>
                 .
+</>}
               </div>
 
+              {!m3uOnly && (
               <p className="text-[11.5px] text-black/40 text-center font-medium leading-relaxed">
                 بتسجيل الدخول تُحفظ بياناتك في متصفحك فقط (localStorage) — احذفها بزر «خروج» في أي
                 وقت.
               </p>
+              )}
             </div>
           </Reveal>
         ) : (

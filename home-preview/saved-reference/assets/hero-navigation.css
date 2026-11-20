@@ -13,3 +13,12 @@ html[data-motion-reduced="true"] .nav{transition:none}
 .nav__menu .links li a:after{content:none}.nav__menu .links li a:hover{color:#b55176}
 .nav__menu .links .preview-menu-compare a{font-size:14px;color:#a35676;padding-inline-start:18px}
 html[data-motion-reduced="true"] .nav__menu .content{transition:none}
+
+/* Group the menu while preserving the original header motion. */
+.nav__menu .content .preview-menu-title{margin-bottom:15px;min-height:36px}
+.nav__menu .links li.preview-menu-group{margin:20px 0 4px!important;padding:0!important}.nav__menu .links li.preview-menu-group h2{font:900 12px/1.5 SMTajawal,Tajawal,sans-serif;color:#a35676;letter-spacing:0}
+.nav__menu .links li a,.nav__menu .links li:nth-child(n) a{padding:9px 2px;min-height:44px;font-size:clamp(15px,4vw,17px)}.nav__menu .links li a>span{font:600 16px/1 sans-serif;color:#b68598;flex:none;margin-inline-start:12px}.nav__menu .links .preview-menu-compare a{font-size:clamp(15px,4vw,17px);padding-inline-start:2px}
+@media(max-height:550px){.nav__menu .content{padding-top:76px}}
+/* The original hides the menu trigger on desktop; keep the full menu accessible there too. */
+@media(min-width:1024px){.nav .nav__menu-btn{display:block;flex:none;margin-inline-start:12px}}
+.nav:has(.nav__menu-btn.open){pointer-events:none}.nav .nav__menu-btn.open{pointer-events:auto}

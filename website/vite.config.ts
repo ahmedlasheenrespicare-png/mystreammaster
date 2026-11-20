@@ -2,6 +2,7 @@ import motionPreferenceCss from './scripts/motion-css.mjs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import path from 'node:path';
 
 const isSsr = process.argv.includes('--ssr');
 export default defineConfig({
@@ -13,6 +14,7 @@ export default defineConfig({
   build: {
     assetsDir: '_assets/redesign',
     rollupOptions: isSsr ? {} : {
+      input: { main: path.resolve('index.html'), m3uPlayer: path.resolve('m3u-player.html') },
       output: {
         manualChunks(id) {
           if (id.includes('/node_modules/react-dom/')) return 'vendor-react-dom';

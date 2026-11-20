@@ -35,6 +35,7 @@ const NOINDEX = new Set([
   'home-preview/index.html', // مسودة مستقلة غير مفهرسة وليست صفحة إنتاجية
   'home-preview/saved-reference/assets/league-world/world.html', // شاشة تفاعلية داخل المعاينة
   'home-preview/saved-reference/index.html', // معاينة مستقلة قيد التطوير وليست صفحة مفهرسة
+  'home-preview/saved-reference/en/index.html', // النسخة الإنجليزية للمعاينة، وليست صفحة إنتاجية
   'home-preview/inactive-league-options/index.html', // معاينة خيارات التصميم غير مفهرسة
   'home-preview/standings-options/index.html', // معاينة خيارات الترتيب غير مفهرسة
   'home-preview/cinema-library-preview/index.html', // معاينة مكتبة الأفلام والمسلسلات غير مفهرسة
@@ -47,6 +48,7 @@ const NOINDEX = new Set([
   'offline.html',
   'live-free.html',
   'player.html',
+  'm3u-player.html', // مشغّل مضمّن وظيفي غير مفهرس
   'search/index.html',
   'cart/index.html',
 ]);

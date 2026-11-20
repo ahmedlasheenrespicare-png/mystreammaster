@@ -52,14 +52,23 @@ function productionHead(existing) {
   return tags.join('\n');
 }
 
-// Give local images intrinsic dimensions and retain pixels with lossless WebP.
-// Cache each conversion for both languages; CSS and existing image layout are
-// untouched. Some images are site-wide rather than part of the snapshot.
+// Give local images intrinsic dimensions. A lossless WebP can be several
+// times larger than an already-compressed JPEG, so retain the original whenever
+// the conversion does not save bytes. Both choices preserve the original pixels.
+// Cache each conversion for both languages; existing layouts are untouched.
 const conversions = new Map();
 async function imageTag(tag) {
   const match = tag.match(/\ssrc="([^"]+)"/i);
   if (!match || !/^\/(?!\/)/.test(match[1])) return tag;
   const pathname = decodeURIComponent(match[1].split(/[?#]/)[0]);
+  // These assets belong to sections well below the first screen on both
+  // layouts. Native lazy loading keeps HTML src available to crawlers and
+  // no-JavaScript visitors while reducing competition with the opening scene.
+  const belowFold = /\/path-(?:sport|cinema|value)\.jpg$/i.test(pathname);
+  if (belowFold) {
+    tag = /\sloading\s*=/i.test(tag) ? tag.replace(/\sloading\s*=\s*"[^"]*"/i, ' loading="lazy"') : tag.replace(/\s*\/?\s*>$/, m => ` loading="lazy"${m}`);
+    if (!/\sdecoding\s*=/i.test(tag)) tag = tag.replace(/\s*\/?\s*>$/, m => ` decoding="async"${m}`);
+  }
   if (!/\.(png|jpe?g|webp|avif)$/i.test(pathname)) return tag;
   const file = path.join(root, pathname.slice(1));
   let item = conversions.get(file);
@@ -71,10 +80,13 @@ async function imageTag(tag) {
     if (/\.(png|jpe?g)$/i.test(pathname)) {
       const bytes = await fs.readFile(file);
       const id = createHash('sha256').update(bytes).digest('hex').slice(0, 24);
-      const dir = path.join(output, 'optimized');
-      await fs.mkdir(dir, { recursive: true });
-      await image.webp({ lossless: true }).toFile(path.join(dir, `${id}.webp`));
-      item.src = `${assetUrl}optimized/${id}.webp`;
+      const optimized = await image.webp({ lossless: true }).toBuffer();
+      if (optimized.length < bytes.length) {
+        const dir = path.join(output, 'optimized');
+        await fs.mkdir(dir, { recursive: true });
+        await fs.writeFile(path.join(dir, `${id}.webp`), optimized);
+        item.src = `${assetUrl}optimized/${id}.webp`;
+      }
     }
     conversions.set(file, item);
   }

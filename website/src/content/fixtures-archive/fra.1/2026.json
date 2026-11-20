@@ -2396,6 +2396,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261129&limit=500"
       },
       "fetchedAt": "2026-11-15T10:55:21.696Z"
+    },
+    {
+      "id": "401876378",
+      "date": "2026-12-04T19:45:00.000Z",
+      "home": {
+        "id": "179",
+        "name": "Toulouse"
+      },
+      "away": {
+        "id": "160",
+        "name": "Paris Saint-Germain"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "fra.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard?dates=20261204&limit=500"
+      },
+      "fetchedAt": "2026-11-20T11:41:30.531Z"
     }
   ]
 }

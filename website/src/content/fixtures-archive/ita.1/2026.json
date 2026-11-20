@@ -4462,6 +4462,31 @@
         "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261130&limit=500"
       },
       "fetchedAt": "2026-11-16T11:20:43.500Z"
+    },
+    {
+      "id": "401874984",
+      "date": "2026-12-04T19:45:00.000Z",
+      "home": {
+        "id": "107",
+        "name": "Bologna"
+      },
+      "away": {
+        "id": "104",
+        "name": "AS Roma"
+      },
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "status": "scheduled",
+      "attendance": 0,
+      "statistics": null,
+      "source": {
+        "provider": "ESPN",
+        "leagueId": "ita.1",
+        "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261204&limit=500"
+      },
+      "fetchedAt": "2026-11-20T11:41:30.531Z"
     }
   ]
 }

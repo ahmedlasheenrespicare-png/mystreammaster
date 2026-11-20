@@ -85,3 +85,21 @@ test('existing homepage section and player links keep working', async ({ page })
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   await expect(page.getByRole('form', { name: 'تسجيل دخول المشتركين' })).toBeVisible({ timeout: 30000 });
 });
+
+for (const width of [320, 390, 1440]) for (const motion of ['off', 'on']) {
+  test(`production menu reaches reviews at ${width}px with motion ${motion}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 850 });
+    await page.addInitScript(value => localStorage.setItem('sm-motion-preference', value), motion);
+    await page.route('https://**', r => r.abort());
+    await page.route('**/*.mp4*', r => r.abort());
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.loader')).toBeHidden({ timeout: 60000 });
+    const menu = page.locator('.nav__menu');
+    await page.locator('.nav__menu-btn').click();
+    await expect(menu).toHaveClass(/open/);
+    await menu.locator('a[href="#reviews"]').click();
+    await expect(menu).not.toHaveClass(/open/);
+    await expect(page).toHaveURL(/#reviews$/);
+    await expect(page.locator('#reviews')).toBeInViewport({ timeout: 15000 });
+  });
+}

@@ -55,43 +55,34 @@ test('every page linked from the header responds', async ({ request }) => {
 });
 
 for (const url of ['/channels/', '/privacy/']) {
-  test(`desktop header on ${url} groups all pages in five dropdowns`, async ({ page }) => {
-    await page.goto(url);
-    const nav = page.locator('header nav').first();
-    const triggers = nav.locator('button[aria-expanded]:visible');
-    await expect(triggers).toHaveCount(NAV_GROUPS.length);
-    const hrefs = new Set<string>();
-    for (const group of NAV_GROUPS) {
-      const trigger = nav.getByRole('button', { name: group.label, exact: true });
-      await trigger.click();
-      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-      const panel = page.locator(`#${await trigger.getAttribute('aria-controls')}`);
-      await expect(panel).toBeVisible();
-      for (const href of await panel.locator('a').evaluateAll(as => as.map(a => new URL((a as HTMLAnchorElement).href).pathname + new URL((a as HTMLAnchorElement).href).hash))) hrefs.add(decodeURI(href));
-      await page.keyboard.press('Escape');
-      await expect(panel).toBeHidden();
-    }
+  test(`unified desktop menu on ${url} exposes the current groups and all destinations`, async ({ page }) => {
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await page.locator('.us-menu-toggle').click();
+    const menu = page.locator('.us-menu-panel');
+    await expect(menu.locator('section h2')).toHaveText(['اكتشف', 'ابدأ المشاهدة', 'المساعدة والمزيد']);
+    await menu.locator('.us-more summary').click();
+    const hrefs = new Set(await page.locator('header a').evaluateAll(as => as.map(a => new URL((a as HTMLAnchorElement).href).pathname + new URL((a as HTMLAnchorElement).href).hash).map(decodeURI)));
     for (const p of ALL_PAGES) expect(hrefs, p).toContain(p);
     for (const s of HOME_SECTIONS) expect(hrefs, s.id).toContain(`/${homeSectionPath(s.id)}`);
+    await page.keyboard.press('Escape');
+    await expect(menu).toBeHidden();
   });
 }
 
-test('home section link in the dropdown scrolls from another page', async ({ page }) => {
-  await page.goto('/channels/');
-  await page.getByRole('button', { name: 'الرئيسية', exact: true }).click();
-  await page.locator('#nav-panel-home').getByRole('link', { name: /الأسئلة الشائعة/ }).click();
-  await expect(page).toHaveURL(/\/#faq$/);
-  await expect(page.locator('#faq')).toBeInViewport();
+test('home section link in the menu reaches the approved homepage', async ({ page }) => {
+  await page.goto('/channels/', { waitUntil: 'domcontentloaded' });
+  await page.locator('.us-menu-toggle').click();
+  await page.locator('.us-menu-panel').getByRole('link', { name: 'الأسئلة الشائعة', exact: true }).click();
+  await expect(page).toHaveURL(/\/faq\/$/);
 });
 
-test('legacy mobile menu opens the current page group', async ({ page }) => {
+test('legacy mobile menu opens and navigates between pages', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
-  await page.goto('/about/');
-  await page.locator('.sm-menu-toggle').click();
-  const menu = page.locator('#sm-mobile-nav');
+  await page.goto('/about/', { waitUntil: 'domcontentloaded' });
+  await page.locator('.us-menu-toggle').click();
+  const menu = page.locator('.us-menu-panel');
   await expect(menu).toBeVisible();
-  await expect(menu.locator('details[data-group="help"]')).toHaveAttribute('open', '');
-  await menu.locator('details[data-group="matches"] summary').click();
-  await menu.getByRole('link', { name: 'مكتبة القنوات' }).click();
+  await menu.locator('.us-more summary').click();
+  await menu.getByRole('link', { name: 'مكتبة القنوات', exact: true }).click();
   await expect(page).toHaveURL(/\/channels\/$/);
 });

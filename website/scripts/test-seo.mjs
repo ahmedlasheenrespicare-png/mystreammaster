@@ -36,6 +36,7 @@ const NOINDEX = new Set([
   'home-preview/saved-reference/assets/league-world/world.html', // شاشة تفاعلية داخل المعاينة
   'home-preview/saved-reference/index.html', // معاينة مستقلة قيد التطوير وليست صفحة مفهرسة
   'home-preview/saved-reference/en/index.html', // النسخة الإنجليزية للمعاينة، وليست صفحة إنتاجية
+  'home-preview/unified-site-preview/index.html', // معاينة مستقلة للهيدر والتذييل، لا تُفهرس
   'home-preview/release-candidate/index.html', // مرشّح محلي مؤقت لا يُفهرس أو يُنشر
   'home-preview/release-candidate/en/index.html',
   'home-preview/release-candidate/m3u-player.html',

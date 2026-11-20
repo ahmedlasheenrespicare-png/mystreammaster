@@ -69,7 +69,8 @@ body.pp-body{
   .pp-btn{padding:8px 13px;font-size:12.5px}
   .pp-frame{min-height:56vh}
 }
-@media (prefers-reduced-motion:reduce){.pp-dot,.pp-spinner{animation:none}}
+@media (prefers-reduced-motion:reduce){html:not([data-motion="on"]) .pp-dot,html:not([data-motion="on"]) .pp-spinner{animation:none}}
+html[data-motion="off"] .pp-dot,html[data-motion="off"] .pp-spinner{animation:none}
 </style>
 </head>
 <body class="pp-body">

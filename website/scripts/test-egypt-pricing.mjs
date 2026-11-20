@@ -159,7 +159,10 @@ test('لا يُذكر عدد الأجهزة المتزامنة في الصفحة
 });
 
 test('الأسئلة المنظّمة (FAQPage) مطابقة لأسئلة ظاهرة فعلاً', () => {
-  const visibleQuestions = [...egyptHtml.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/g)].length;
+  // Navigation also uses <details>; only count the article's FAQs, not menu controls.
+  const main = egyptHtml.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] ?? '';
+  assert.ok(main, 'محتوى المقال الرئيسي موجود');
+  const visibleQuestions = [...main.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/g)].length;
   const faqLd = (egyptSeo.jsonLd ?? []).find((node) => node['@type'] === 'FAQPage');
   assert.ok(faqLd, 'FAQPage موجود');
   assert.equal(faqLd.mainEntity.length, visibleQuestions, 'عدد الأسئلة في JSON-LD يطابق الأسئلة الظاهرة');

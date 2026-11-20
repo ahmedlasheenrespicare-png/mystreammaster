@@ -4,9 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { readCart, saveCart } from "./cart-storage";
 import Pricing from "./components/Pricing";
 import ServersComparison from "./components/ServersComparison";
-import Header from "./components/Header";
+import { UnifiedHeader, UnifiedFooter } from "./components/UnifiedShell";
 import FloatingActions from "./components/FloatingActions";
-import Footer from "./components/Footer";
 import TrialModal from "./components/TrialModal";
 import CartModal, { CartItem } from "./components/CartModal";
 import WelcomeSplash from "./components/WelcomeSplash";
@@ -30,8 +29,6 @@ import TrialPage from "./pages/TrialPage";
 import EnHomePage from "./pages/EnHomePage";
 import EnPlanPage from "./pages/EnPlanPage";
 import EnFaqPage from "./pages/EnFaqPage";
-import EnHeader from "./components/EnHeader";
-import EnFooter from "./components/EnFooter";
 import { isEnPath } from "./i18n";
 import { BLOG_POSTS } from "./content/posts";
 import { CLUB_LANDINGS, LEAGUE_LANDINGS, TEAM_LANDINGS } from "./content/competitions";
@@ -44,6 +41,7 @@ import { trackSiteEvent } from "./lib/analytics";
 export default function App() {
   const { path } = useRouter();
   const [currency, setCurrency] = useState<string>("USD");
+  const [currencyReady, setCurrencyReady] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartReady, setCartReady] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -59,6 +57,17 @@ export default function App() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
   useEffect(() => { if (cartReady) saveCart(cartItems); }, [cartItems, cartReady]);
+  useEffect(() => {
+    try {
+      const value = localStorage.getItem('sm-reference-currency');
+      if (value && ['USD', 'SAR', 'EGP', 'AED', 'KWD'].includes(value)) setCurrency(value);
+    } catch { /* Storage may be unavailable. */ }
+    setCurrencyReady(true);
+  }, []);
+  useEffect(() => {
+    if (!currencyReady) return;
+    try { localStorage.setItem('sm-reference-currency', currency); } catch { /* Use this session only. */ }
+  }, [currency, currencyReady]);
 
   /* تحديث وسوم الرأس (العنوان والوصف وcanonical) مع كل تنقّل داخل الموقع */
   useEffect(() => {
@@ -228,7 +237,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen bg-[#faf9f6] text-[#0b0b0f] flex flex-col font-sans selection:bg-[#0b0b0f] selection:text-[#d8ff3e]"
+      className="min-h-screen bg-[#f5ece8] text-[#0b0b0f] flex flex-col font-sans selection:bg-[#0b0b0f] selection:text-[#d8ff3e]"
       dir={isEnPath(path) ? "ltr" : "rtl"}
     >
       <MotionSettings english={isEnPath(path)} />
@@ -236,22 +245,12 @@ export default function App() {
       <SmoothScroll />
       {!isEnPath(path) && <WelcomeSplash activeRoute={path} />}
 
-      {isEnPath(path) ? (
-        <EnHeader />
-      ) : (
-        <Header
-          currentCurrency={currency}
-          onCurrencyChange={setCurrency}
-          cartCount={cartItems.length}
-          onOpenCart={openCart}
-          onOpenTrial={openTrial}
-        />
-      )}
+      <UnifiedHeader path={path} currency={currency} onCurrencyChange={setCurrency} cartCount={cartItems.length} onOpenCart={openCart} />
 
       <a href="#main-content" className="skip-link">{isEnPath(path) ? "Skip to content" : "تخطي إلى المحتوى"}</a>
       <main id="main-content" className="flex-1">{page}</main>
 
-      {isEnPath(path) ? <EnFooter /> : <Footer onOpenTrial={openTrial} />}
+      <UnifiedFooter english={isEnPath(path)} />
       <FloatingActions onOpenTrial={openTrial} />
 
       <TrialModal isOpen={isTrialOpen} onClose={closeTrial} />

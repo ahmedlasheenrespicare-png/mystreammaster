@@ -209,7 +209,7 @@ export const GUIDE_POSTS: BlogPost[] = [
   {
     slug: "android-tv-boxes-buying-guide",
     kind: "guide",
-    title: "Android TV وصناديق البث: كيف تختار جهازاً موثوقاً؟",
+    title: "صناديق Android TV: كيف تختار جهاز بث موثوقاً؟",
     description:
       "معايير عملية لاختيار صندوق Android TV أو جهاز بث آمن، وأهم العلامات التي تدل على جهاز غير موثوق.",
     date: "2026-10-14",
@@ -272,7 +272,7 @@ export const GUIDE_POSTS: BlogPost[] = [
   {
     slug: "phone-and-computer-viewing-setup",
     kind: "guide",
-    title: "الهاتف والكمبيوتر: إعدادات أساسية لمشاهدة أفضل وبطارية أطول",
+    title: "المشاهدة على الهاتف والكمبيوتر: إعدادات أساسية",
     description:
       "خطوات عملية لتحسين تجربة مشاهدة الفيديو على الهاتف والكمبيوتر، تشمل التحديثات والشبكة واستهلاك البطارية.",
     date: "2026-10-14",
@@ -323,7 +323,7 @@ export const GUIDE_POSTS: BlogPost[] = [
   {
     slug: "risks-of-unverified-apps",
     kind: "guide",
-    title: "التطبيقات غير الموثوقة: لماذا تشكّل خطراً على جهازك وبياناتك؟",
+    title: "التطبيقات غير الموثوقة: مخاطرها على الجهاز والبيانات",
     description:
       "أبرز مخاطر تثبيت التطبيقات من مصادر غير رسمية، وعلامات التحذير، وخطوات عملية إذا كنت قد ثبّتّ تطبيقاً مشبوهاً.",
     date: "2026-10-14",

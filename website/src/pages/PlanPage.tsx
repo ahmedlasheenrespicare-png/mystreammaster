@@ -10,7 +10,7 @@ import {
   type PricingPlan,
 } from "../data";
 import { to } from "../config";
-import { ServerLink } from "../components/ServerIcon";
+import { ServerIcon, ServerLink } from "../components/ServerIcon";
 import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-branding";
 import { IconArrowUpRight, IconChat, IconCheck, IconShieldCheck, IconStar, IconZap } from "../components/Icons";
 import FAQ from "../components/FAQ";
@@ -325,12 +325,10 @@ export default function PlanPage({
                 href={to(`${p.serverCode}/`)}
                 className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
               >
-                <ServerLink
-                  code={p.serverCode}
-                  label={p.serverName.split("(")[0].trim()}
-                  size={26}
-                  textClassName="font-black text-[15px] group-hover:text-[#2b4eff] transition"
-                />
+                <span className="inline-flex items-center gap-2">
+                  <ServerIcon code={p.serverCode} size={26} />
+                  <span className="font-black text-[15px] group-hover:text-[#2b4eff] transition">{p.serverName.split("(")[0].trim()}</span>
+                </span>
                 <span className="mt-1 block text-[12.5px] text-black/50 font-medium">{p.tag}</span>
                 <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-black text-[#2b4eff]">
                   تفاصيل الباقة <IconArrowUpRight className="w-3.5 h-3.5" />

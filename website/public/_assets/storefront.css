@@ -110,7 +110,7 @@ body.sm-page{background:var(--sm-cream)!important;color:var(--sm-ink)!important;
 .sm-player .player-wrap,.sm-player .video-container{background:#0b0b0f;color:white}
 @media(max-width:1279px){.sm-desktop{display:none}.sm-menu-toggle{display:block}.sm-footer-top{gap:32px}}
 @media(max-width:600px){.sm-header{padding:10px 12px}.sm-nav{padding:12px;gap:8px}.sm-brand{font-size:18px}.sm-mark{width:32px;height:32px}.sm-brand small{font-size:7px}.sm-header .sm-cta{display:none}.sm-footer{padding:40px 22px 24px}.sm-footer-top{grid-template-columns:1fr 1fr;gap:32px 18px}.sm-footer-top>div:first-child{grid-column:1/-1}.sm-footer-bottom{flex-direction:column;gap:10px}.sm-legacy{padding-top:94px!important}.sm-legacy h1{font-size:34px!important}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]){scroll-behavior:auto}html:not([data-motion="on"]) *,html:not([data-motion="on"]) *::before,html:not([data-motion="on"]) *::after{animation:none!important;transition:none!important}}
 
 .sm-legacy .prose p,.sm-legacy .prose li,.sm-legacy .prose td,.sm-legacy .prose th{color:#494952!important}
 .sm-legacy .prose h1,.sm-legacy .prose h2,.sm-legacy .prose h3{color:#0b0b0f!important}
@@ -191,4 +191,4 @@ body.sm-page{background:var(--sm-cream)!important;color:var(--sm-ink)!important;
 @keyframes smCrab39Flicker{0%,15%,61%,65%,92%,100%{opacity:1}9%,63%{opacity:.62}96%,100%{opacity:.42}}
 @keyframes smCrab39Line{0%,8%{transform:scaleX(0);opacity:0}20%,84%{transform:scaleX(1.02);opacity:.92}94%,100%{transform:scaleX(0);opacity:0}}
 @keyframes smCrab39Sub{0%,18%{opacity:0}28%,84%{opacity:1}94%,100%{opacity:0}}
-@media(prefers-reduced-motion:reduce){.sm-crab39::before,.sm-crab39::after,.sm-crab39__tile,.sm-crab39__rest,.sm-crab39__sub{animation:none!important;filter:none!important;transform:none!important;opacity:1!important}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .sm-crab39::before,html:not([data-motion="on"]) .sm-crab39::after,html:not([data-motion="on"]) .sm-crab39__tile,html:not([data-motion="on"]) .sm-crab39__rest,html:not([data-motion="on"]) .sm-crab39__sub{animation:none!important;filter:none!important;transform:none!important;opacity:1!important}}

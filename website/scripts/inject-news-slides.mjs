@@ -5,7 +5,9 @@
    تذكرة الصفحة الرئيسية: شارة التصنيف، التاريخ، العنوان، الوصف، وصورة اللاعب
    المقصوصة) داخل صفحته `/news/<slug>/`.
 
-   - المصدر الوحيد للبيانات: `src/content/featured-news.ts` (لا نسخ يدوي).
+   - المصدران: `src/content/featured-news.ts` (FEATURED_NEWS) وخبرات قسم
+     «أخبار الرياضة» في `home-preview/saved-reference/assets/sports-news-extra.json`
+     — لكلٍّ مجموعته من الصفحات، بلا نسخ يدوي في أي صفحة.
    - الصفحات ثابتة في `public/news/<slug>/index.html`؛ يُحقن القالب بين
      علامتَي `news-slide:start` و`news-slide:end` وتُستبدل عند إعادة التشغيل،
      فلا تتكرر الشرائح أبداً.
@@ -229,6 +231,20 @@ export function injectSlide(html, item) {
   return out;
 }
 
+/* --------------------------------------------------------------------------
+   خبرات قسم «أخبار الرياضة»: تُكتب صفحاتها في `home-preview/saved-reference/news`
+   ثم تُنشر عبر `publishHomeSportsNews` — فتُحقن شرائحها هناك أيضاً بالنص والصورة
+   نفسيهما (نفس قاعدة الأخبار المميزة).
+-------------------------------------------------------------------------- */
+export function readSportsNewsExtra() {
+  const file = path.join(website, "..", "home-preview/saved-reference/assets/sports-news-extra.json");
+  const items = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (!Array.isArray(items) || items.length === 0) throw new Error("sports-news-extra.json is empty");
+  return items;
+}
+
+const savedNewsDir = path.join(website, "..", "home-preview/saved-reference/news");
+
 export function main() {
   const items = readFeaturedNews();
   let updated = 0;
@@ -244,9 +260,24 @@ export function main() {
       updated += 1;
     }
   }
-  console.log(`news slides: ${items.length} entries, ${updated} page(s) updated, ${missing.length} missing page(s)`);
-  if (missing.length) console.log(`  missing: ${missing.join(", ")}`);
-  return { total: items.length, updated, missing };
+  /* الشريحة الثانية: خبرات قسم «أخبار الرياضة» في صفحات saved-reference */
+  const sportsItems = readSportsNewsExtra();
+  const sportsMissing = [];
+  for (const item of sportsItems) {
+    const slug = slugOf(item.href);
+    const file = path.join(savedNewsDir, slug, "index.html");
+    if (!fs.existsSync(file)) { sportsMissing.push(slug); continue; }
+    const before = fs.readFileSync(file, "utf8");
+    const after = injectSlide(before, item);
+    if (after !== before) {
+      fs.writeFileSync(file, after);
+      updated += 1;
+    }
+  }
+  console.log(`news slides: ${items.length} featured + ${sportsItems.length} sports-news entries, ${updated} page(s) updated, ${missing.length + sportsMissing.length} missing page(s)`);
+  if (missing.length) console.log(`  missing featured: ${missing.join(", ")}`);
+  if (sportsMissing.length) console.log(`  missing sports-news: ${sportsMissing.join(", ")}`);
+  return { total: items.length + sportsItems.length, updated, missing: [...missing, ...sportsMissing] };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

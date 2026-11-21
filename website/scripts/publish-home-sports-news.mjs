@@ -29,8 +29,18 @@ export async function publishHomeSportsNews(root, html) {
   const extra = data.filter(item => item.previewOnly);
   const imageDir = path.join(root, 'images/sports-news');
   await fs.mkdir(imageDir, { recursive: true });
+  /* أصول مُدارة في `images/players/*` (مقصّة بشفافية + مفتاح manifest) تُبقى
+     كما هي — لا تُعاد کتابتها ولا تُحوَّل، وأبعادها من manifest الصور. */
+  const manifest = JSON.parse(await fs.readFile(path.join(root, 'website/src/image-manifest.json'), 'utf8'));
   for (const item of extra) {
     for (const image of item.images || []) {
+      if (image.src.startsWith('images/players/')) {
+        if (image.src.includes('..')) throw new Error('Unsafe sports news image path');
+        const dimensions = manifest['/' + image.src];
+        if (!dimensions) throw new Error(`Sports news image missing from manifest: ${image.src}`);
+        image.width = dimensions[0]; image.height = dimensions[1];
+        continue;
+      }
       const prefix = 'home-preview/saved-reference/images/';
       if (!image.src.startsWith(prefix) || image.src.includes('..')) throw new Error('Unsafe sports news image path');
       const original = image.src.slice(prefix.length);

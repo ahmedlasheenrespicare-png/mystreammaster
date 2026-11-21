@@ -118,3 +118,61 @@ for (const path of ['/', '/en/']) for (const width of [390, 1440]) {
     await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { timeout: 30000 }).toBe(true);
   });
 }
+
+for (const language of ['/', '/en/']) for (const dpr of [1, 2]) {
+  test(`responsive cinema and path images preserve lazy reel ${language} DPR ${dpr}`, async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: dpr });
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'on'));
+    await page.route('https://**', route => route.abort());
+    await page.route('**/*.mp4*', route => route.abort());
+    await page.goto(language, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.loader')).toBeHidden({ timeout: 60000 });
+    const dormant = page.locator('#cinema-library .smcin-panel > img:first-child[srcset]');
+    await expect(dormant).toHaveCount(0);
+    await page.evaluate(() => { const el = document.querySelector('#cinema-library')!; (window as any).smScrollToSection ? (window as any).smScrollToSection(el) : el.scrollIntoView(); });
+    const active = page.locator('#cinema-library .smcin-panel.smcin-active > img:first-child');
+    await expect(active).toHaveAttribute('srcset', /responsive\//, { timeout: 30000 });
+    await expect.poll(() => active.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { timeout: 30000 }).toBe(true);
+    const first = await page.locator('#cinema-library .smcin-panel.smcin-active').getAttribute('data-scene-id');
+    // Let the existing animation advance naturally; its cycle includes the
+    // character's return animation before the next poster is activated.
+    await expect.poll(async () => page.locator('#cinema-library .smcin-panel.smcin-active').getAttribute('data-scene-id'), { timeout: 20000 }).not.toBe(first);
+    await expect(active).toHaveAttribute('srcset', /responsive\//);
+    const pathImage = page.locator('#path-section .sm-fan--sport > img');
+    await page.evaluate(() => { const el = document.querySelector('#path-section')!; (window as any).smScrollToSection ? (window as any).smScrollToSection(el) : el.scrollIntoView(); });
+    await expect(pathImage).toHaveAttribute('srcset', /responsive\//);
+    await expect.poll(() => pathImage.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { timeout: 30000 }).toBe(true);
+    if (dpr === 1) expect(await pathImage.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain('/responsive/');
+    expect(errors).toEqual([]);
+    await context.close();
+  });
+}
+
+test('responsive posters keep full resolution on desktop and normal sources without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  await page.addInitScript(() => { localStorage.setItem('sm-motion-preference', 'on'); Math.random = () => 0; });
+  // Isolate the reel from the inherited desktop smooth-scroll controller, as
+  // in the dedicated cinema tests, so native test scrolling is deterministic.
+  await page.route('**/main-D5MQsYQ6.js*', r => r.fulfill({ body: '', contentType: 'text/javascript' }));
+  await page.route('https://**', r => r.abort());
+  await page.route('**/*.mp4*', r => r.abort());
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.addStyleTag({ content: '.loader,.nav{display:none!important}' });
+  await page.locator('#cinema-library .smcin-stage').scrollIntoViewIfNeeded();
+  const active = page.locator('#cinema-library .smcin-panel.smcin-active');
+  await expect(active).toHaveClass(/smcin-layers-ready/, { timeout: 30000 });
+  await expect(active.locator('> img:first-child')).toHaveAttribute('srcset', /responsive\//);
+  await expect.poll(() => active.locator('> img:first-child').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { timeout: 30000 }).toBe(true);
+  await context.close();
+  const noJs = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
+  const plain = await noJs.newPage();
+  await plain.goto('/en/', { waitUntil: 'domcontentloaded' });
+  const poster = plain.locator('#cinema-library .smcin-panel > img').first();
+  await expect(poster).toHaveAttribute('src', /cinema-1\.jpg/);
+  await expect(plain.locator('#path-section .sm-fan--sport > img')).toHaveAttribute('srcset', /responsive\//);
+  await noJs.close();
+});

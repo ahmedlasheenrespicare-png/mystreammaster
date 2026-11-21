@@ -38,6 +38,51 @@ async function rewriteAssets(dir) {
 }
 await rewriteAssets(output);
 
+// Generate conservative, high-quality derivatives only where they save bytes.
+// Originals stay available for high-density screens and as a crawler fallback.
+const responsiveImages = new Map();
+async function responsiveVariants(relative, widths) {
+  const file = path.join(output, relative);
+  const bytes = await fs.readFile(file);
+  const metadata = await sharp(bytes).metadata();
+  if (!metadata.width || !metadata.height) throw new Error(`Missing image dimensions: ${relative}`);
+  const variants = [];
+  for (const width of widths.filter(width => width < metadata.width)) {
+    const resized = await sharp(bytes).resize({ width, withoutEnlargement: true }).webp({ quality: 94, effort: 4 }).toBuffer();
+    if (resized.length >= bytes.length) continue;
+    const id = createHash('sha256').update(resized).digest('hex').slice(0, 24);
+    await fs.mkdir(path.join(output, 'responsive'), { recursive: true });
+    await fs.writeFile(path.join(output, 'responsive', `${id}.webp`), resized);
+    variants.push(`${assetUrl}responsive/${id}.webp ${width}w`);
+  }
+  if (variants.length) variants.push(`${assetUrl}${relative} ${metadata.width}w`);
+  const srcset = variants.join(', ');
+  responsiveImages.set(assetUrl + relative, srcset);
+  return srcset;
+}
+for (const name of ['sport', 'cinema', 'value']) {
+  await responsiveVariants(`path-${name}.jpg`, [768, 1024]);
+}
+// Cinema posters are managed by the approved reel's visibility controller.
+// Do not attach srcset until that controller activates a poster: otherwise
+// the browser could fetch all the cloned/off-screen slides immediately.
+for (let i = 1; i <= 5; i++) await responsiveVariants(`cinema-${i}.jpg`, [480, 720]);
+const cinemaDir = path.join(output, 'cinema-layers');
+for (const name of await fs.readdir(cinemaDir)) {
+  if (/^(?:scene-|film-|series-|arabic-film-)\S+\.jpg$/.test(name)) {
+    await responsiveVariants(`cinema-layers/${name}`, [480, 720]);
+  }
+}
+const cinemaMap = Object.fromEntries([...responsiveImages].filter(([key, value]) => value && /\/(?:cinema-\d+\.jpg|cinema-layers\/)/.test(key)));
+const cinemaScript = path.join(output, 'cinema-showcase.js');
+let cinemaCode = await fs.readFile(cinemaScript, 'utf8');
+const activatePoster = "if(visible&&near&&!poster.hasAttribute('src')&&poster.dataset.src)poster.src=poster.dataset.src;else if(!near&&poster.hasAttribute('src'))poster.removeAttribute('src')";
+if (!cinemaCode.includes(activatePoster)) throw new Error('Approved cinema poster activation has changed; review responsive integration');
+cinemaCode = cinemaCode.replace(activatePoster, `if(visible&&near&&!poster.hasAttribute('src')&&poster.dataset.src){const set=smCinemaResponsive[new URL(poster.dataset.src,location.href).pathname];if(set){poster.sizes='100vw';poster.srcset=set}poster.src=poster.dataset.src}else if(!near&&poster.hasAttribute('src')){poster.removeAttribute('src');poster.removeAttribute('srcset')}`);
+cinemaCode = `const smCinemaResponsive=${JSON.stringify(cinemaMap)};\n` + cinemaCode;
+await fs.writeFile(cinemaScript, cinemaCode);
+const cinemaRevision = createHash('sha256').update(cinemaCode).digest('hex').slice(0, 12);
+
 // Preserve existing production metadata and analytics. The old React home
 // FAQ/Product schema no longer describes this page, so it is not reused.
 function productionHead(existing) {
@@ -91,6 +136,12 @@ async function imageTag(tag) {
     conversions.set(file, item);
   }
   tag = tag.replace(match[0], ` src="${item.src}"`);
+  const srcset = belowFold && responsiveImages.get(pathname);
+  if (srcset && !/\ssrcset\s*=/.test(tag)) {
+    // The landscape source is cover-cropped into a portrait card, so its
+    // rendered pixel width is larger than the card itself (roughly 2.3x).
+    tag = tag.replace(/\s*\/?\s*>$/, m => ` srcset="${srcset}" sizes="(max-width: 1023px) 190vw, 80vw"${m}`);
+  }
   if (!/\swidth\s*=/.test(tag)) tag = tag.replace(/\s*\/?\s*>$/, m => ` width="${item.width}"${m}`);
   if (!/\sheight\s*=/.test(tag)) tag = tag.replace(/\s*\/?\s*>$/, m => ` height="${item.height}"${m}`);
   return tag;
@@ -103,6 +154,9 @@ async function renderPage(name, destination, language) {
     .replaceAll(staging + 'en/', '/en/')
     .replaceAll(staging, '/')
     .replaceAll('/home-preview/index.html', '/');
+  // The snapshot path is stable, but this publish-time integration changes the
+  // reel script. Version its URL so a cached older script cannot mask it.
+  html = html.replace(/(cinema-showcase\.js\?[^"']+)/g, `$1&responsive=${cinemaRevision}`);
   html = html.replace(/<html\s+lang="(?:ar|en)"/, `<html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}"`);
   // Preserve the approved preview's default LTR layout; its Arabic text and
   // components already specify their own direction. Setting html dir alone

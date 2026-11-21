@@ -1,0 +1,156 @@
+/* Saved-reference only: a quieter, cinematic editorial opening inspired by Prägen Hätlen. */
+.ban#top{padding:0;background:#0c1114;animation:none;isolation:isolate}
+.ban#top:before,.ban#top:after,.ban#top .clouds{display:none}
+.editorial-hero-media{position:absolute;inset:0 0 auto;height:max(680px,100svh);overflow:hidden;background:#141d24 url('./featured-stadium.jpg') center/cover no-repeat;pointer-events:none}
+.editorial-hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,17,20,.54),rgba(12,17,20,.3) 38%,rgba(12,17,20,.85)),linear-gradient(90deg,rgba(12,17,20,.15),rgba(12,17,20,.55));}
+.editorial-hero-video{display:block;width:100%;height:100%;object-fit:cover;opacity:.66}
+.ban#top .ban__oval,.ban#top .hero-flower-spacer{display:none!important}
+.ban#top .ban__title.sm-hero-copy{box-sizing:border-box;min-height:max(680px,100svh);padding:clamp(130px,18vh,190px) clamp(24px,6vw,100px) 90px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#f1eee6;font-family:SMHero,Tajawal,sans-serif;line-height:1.25;font-size:clamp(42px,6.8vw,96px)}
+.ban#top .ban__title:before,.ban#top .ban__title:after{display:none}
+.ban#top .sm-hero-copy h1{display:flex;justify-content:center;align-items:baseline;flex-wrap:wrap;gap:0 .18em;max-width:960px;font:inherit;color:inherit;margin:0}
+.ban#top .sm-hero-copy h1 .sm-hero-line{display:inline-block;position:static;transform:none;opacity:1}
+.ban#top .sm-hero-copy h1 [data-accent]:after{display:none}
+.ban#top .sm-hero-copy p{font:500 clamp(15px,1.2vw,18px)/1.9 SMTajawal,Tajawal,sans-serif;max-width:520px;color:#f1eee6d9;margin:24px auto 0;padding:0}
+.editorial-hero-kicker{display:flex;align-items:center;gap:14px;margin-bottom:28px;color:#f1eee6b8;font:600 11px/1.5 SMTajawal,Tajawal,sans-serif;letter-spacing:.08em}
+.editorial-hero-kicker span+span:before{content:"/";margin-inline-end:14px;opacity:.5}
+.editorial-hero-actions{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:32px;flex-wrap:wrap}
+.editorial-hero-actions a{min-height:48px;display:inline-flex;align-items:center;justify-content:space-between;gap:30px;padding:0 19px;border:1px solid #f1eee690;color:#f1eee6;text-decoration:none;font:700 13px/1.4 SMTajawal,Tajawal,sans-serif;transition:background .25s,color .25s}
+.editorial-hero-actions a:first-child{background:#f1eee6;color:#141d24}.editorial-hero-actions a:hover,.editorial-hero-actions a:focus-visible{background:#52667e;color:white;border-color:#52667e}
+.editorial-hero-scroll{position:absolute;bottom:32px;inset-inline-start:clamp(24px,6vw,100px);display:flex;gap:14px;align-items:center;color:#f1eee6;text-decoration:none;font:600 11px/1.4 SMTajawal,Tajawal,sans-serif}
+.editorial-hero-scroll span:last-child{display:grid;place-items:center;width:32px;height:32px;border:1px solid #f1eee680;border-radius:50%;font-size:17px}
+.editorial-hero-actions a:focus-visible,.editorial-hero-scroll:focus-visible{outline:2px solid #fff;outline-offset:4px}
+@media(max-width:700px){.editorial-hero-media{height:max(620px,100svh)}.ban#top .ban__title.sm-hero-copy{min-height:max(620px,100svh);padding:130px 24px 90px;font-size:clamp(38px,10vw,65px)}.editorial-hero-kicker{font-size:10px;gap:8px;margin-bottom:22px}.editorial-hero-kicker span+span:before{margin-inline-end:8px}.ban#top .sm-hero-copy p{font-size:15px;max-width:340px}.editorial-hero-actions{gap:8px;margin-top:26px}.editorial-hero-actions a{gap:16px;padding-inline:14px}.editorial-hero-scroll{bottom:24px}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .editorial-hero-video{display:none}html:not([data-motion="on"]) .editorial-hero-actions a{transition:none}}
+html[data-motion-reduced="true"] .editorial-hero-video{display:none}
+/* Override the saved design's vertical headline stack for a compact editorial lockup. */
+.ban#top .sm-hero-copy h1{flex-direction:row;align-items:baseline}
+.ban#top .sm-hero-copy h1 .sm-hero-line{width:auto;margin:0;white-space:nowrap}
+/* Keep the navigation legible over both the opening and the sections below it. */
+.nav{mix-blend-mode:normal;background:rgba(12,17,20,.9);color:#f1eee6;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.nav .nav__links a,.nav .nav__socials a,.nav .nav__contact a{color:#f1eee6}
+.nav .nav__links>span,.nav .nav__socials>span,.nav .nav__contact>span{font-size:12px;line-height:1.6}
+.noise-overlay{display:none}
+.ban#top .sm-hero-copy h1{column-gap:.24em;row-gap:0}
+.editorial-hero-scroll{left:clamp(24px,6vw,100px);right:auto;inset-inline-start:auto}
+@media(max-width:700px){.nav{padding:18px 4vw}.editorial-hero-scroll{left:24px;right:auto}}
+@media(max-width:360px){.editorial-hero-media{height:max(720px,100svh)}.ban#top .ban__title.sm-hero-copy{min-height:max(720px,100svh)}}
+
+/* A more restrained visual rhythm, using the reference's slate and ivory palette. */
+.editorial-hero-media{background-color:#111c26}
+.editorial-hero-media:after{background:linear-gradient(180deg,rgba(12,17,20,.54) 0%,rgba(15,24,33,.66) 48%,#0c1114 100%),linear-gradient(90deg,rgba(31,49,66,.35),rgba(9,16,23,.42))}
+.editorial-hero-video{opacity:.48;filter:saturate(.65)}
+.ban#top .ban__title.sm-hero-copy{font-size:clamp(45px,5.8vw,82px);padding-top:clamp(150px,19vh,190px)}
+.ban#top .sm-hero-copy h1{max-width:850px;line-height:1.28;column-gap:.23em}
+.ban#top .sm-hero-copy p{color:#f1eee6;max-width:485px;margin-top:20px;font-weight:500}
+.editorial-hero-kicker{color:#e5e8e8;gap:12px;letter-spacing:.12em;margin-bottom:25px}
+.editorial-hero-kicker:before{content:"";width:28px;height:1px;background:#d0d7de}
+.editorial-hero-actions{margin-top:30px}
+.editorial-hero-actions a{min-height:52px;min-width:166px;box-sizing:border-box;gap:24px;font-size:14px}
+.editorial-hero-scroll{color:#f1eee6d9}
+.ban .ban__desc.hero-wordband{background:#17232e;border-block:1px solid #ffffff20;transform:none;width:100%;margin:0;padding:clamp(16px,2vw,26px) 0}
+.ban .hero-wordband .hero-wordband__item{font-size:clamp(25px,3.7vw,55px);font-weight:700}
+.hero-wordband__row--outline .hero-wordband__item{-webkit-text-stroke:1px #c9d3db;color:transparent}
+.hero-wordband__row--lime .hero-wordband__item{color:#dce3e6}
+.nav .sm-cart-tools button,.nav .sm-cart-tools select,.nav .sm-cart-tools #sm-language{background:#17232e;border-color:#d5dde566}
+.nav .sm-cart-open span{background:#e7ecea;color:#17232e}
+@media(max-width:700px){
+ .ban#top .ban__title.sm-hero-copy{font-size:clamp(36px,9vw,54px);padding-top:130px}
+ .ban#top .sm-hero-copy h1{line-height:1.35;column-gap:.2em}
+ .editorial-hero-actions a{min-width:140px;min-height:48px;font-size:13px}
+ .editorial-hero-kicker{letter-spacing:.04em}
+}
+@media(max-width:360px){.editorial-hero-actions a{min-width:0;gap:12px}}
+@media(max-width:360px){
+ .editorial-hero-kicker{font-size:9px;gap:6px;white-space:nowrap;letter-spacing:0}
+ .editorial-hero-kicker:before{width:14px}
+ .editorial-hero-kicker span+span:before{margin-inline-end:6px}
+ .editorial-hero-actions{width:100%;gap:6px}
+ .editorial-hero-actions a{flex:1;min-width:0;padding-inline:10px;gap:6px;font-size:12px}
+ .nav .sm-cart-tools{gap:2px;margin-inline:2px}
+ .nav .sm-cart-tools button,.nav .sm-cart-tools select,.nav .sm-cart-tools #sm-language{font-size:10px;padding-inline:5px}
+}
+
+/* The stadium remains in view while the visitor moves through it. */
+.editorial-hero-stage{--cinematic-height:max(680px,100svh);position:relative}
+.editorial-hero-media{position:sticky;top:0;height:var(--cinematic-height);margin-bottom:calc(-1 * var(--cinematic-height));z-index:0;isolation:isolate}
+.editorial-field-visual{position:absolute;inset:0;background:#141d24 url('./featured-stadium.jpg') center/cover no-repeat;transform:scale(var(--field-zoom,1));transform-origin:50% 55%;will-change:transform}
+.editorial-hero-media:after{z-index:1;background:linear-gradient(180deg,rgba(12,17,20,.54) 0%,rgba(15,24,33,.53) 48%,#0c1114 100%);opacity:var(--field-shade,1)}
+.editorial-field-runway{position:relative;height:85svh;pointer-events:none}
+.ban .ban__desc.hero-wordband{position:relative;z-index:2;width:104%;margin:-4vw -2% 0;transform:rotate(-1deg);transform-origin:center center}
+@media(max-width:700px){.editorial-hero-stage{--cinematic-height:max(620px,100svh)}.editorial-field-runway{height:70svh}}
+@media(max-width:360px){.editorial-hero-stage{--cinematic-height:max(720px,100svh)}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .editorial-hero-media{position:absolute;top:0;margin:0}html:not([data-motion="on"]) .editorial-field-visual{transform:none;will-change:auto}html:not([data-motion="on"]) .editorial-field-runway{height:0}}
+html[data-motion-reduced="true"] .editorial-hero-media{position:absolute;top:0;margin:0}
+html[data-motion-reduced="true"] .editorial-field-visual{transform:none;will-change:auto}
+html[data-motion-reduced="true"] .editorial-field-runway{height:0}
+/* The existing smooth-scroll wrapper clips sticky elements; pin within the stage instead. */
+.editorial-hero-media{position:absolute;top:0;left:0;right:0;margin:0;transform:translate3d(0,var(--field-offset,0px),0)}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .editorial-hero-media{transform:none}}
+html[data-motion-reduced="true"] .editorial-hero-media{transform:none}
+
+/* Fade gently into the ribbon instead of cutting away from the pitch. */
+.editorial-field-runway{height:100svh}
+.editorial-hero-media:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 5%,#0c1114 85%);opacity:var(--field-fade,0)}
+.ban .ban__desc.hero-wordband{transform:translate3d(0,var(--band-lift,0px),0) rotate(-1deg);opacity:var(--band-reveal,1)}
+@media(max-width:700px){.editorial-field-runway{height:82svh}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .editorial-field-runway{height:0}html:not([data-motion="on"]) .editorial-hero-media:before{opacity:0}html:not([data-motion="on"]) .ban .ban__desc.hero-wordband{transform:rotate(-1deg);opacity:1}}
+html[data-motion-reduced="true"] .editorial-field-runway{height:0}
+html[data-motion-reduced="true"] .editorial-hero-media:before{opacity:0}
+html[data-motion-reduced="true"] .ban .ban__desc.hero-wordband{transform:rotate(-1deg);opacity:1}
+/* Use the sharper, transparent render of the same stadium instead of the small video poster. */
+.editorial-hero-media{background:#101922}
+.editorial-field-visual{background: url('./league-world/featured-stadium-static.png') center 54% / min(92vw, 1380px) auto no-repeat, radial-gradient(ellipse at 50% 45%, #536474 0%, #273746 42%, #101922 100%)}
+@media(max-width:700px){.editorial-field-visual{background-size:150% auto, cover;background-position:center 51%, center}}
+
+/* Keep each section's original scroll direction and rotation; remove only fading. */
+html:not([data-motion-reduced="true"]) .flow-entry{translate:var(--entry-x,0px) var(--entry-y,0px);rotate:var(--entry-rotate,0deg);opacity:1;transition:translate 1.05s cubic-bezier(.22,1,.36,1),rotate 1.05s cubic-bezier(.22,1,.36,1)}
+.ban#top .sm-hero-copy h1 .sm-hero-line{transform:translateY(var(--hero-drift,0px));opacity:1;transition:transform 1.05s cubic-bezier(.22,1,.36,1)}
+.sm-about .abt__who .sm-about-reveal-pending,.sm-about .abt__who .abt__who__text>div .sm-about__devices.sm-about-reveal-pending,.sm-path .sm-path-pending,.sm-path__heading h2.sm-path-pending span,.sm-path__heading h2.sm-path-pending ~ .sm-path__meta,.sm-path__heading h2.sm-path-pending + .sm-path__script,.sm-journey .sm-journey__text>.sm-journey__headline.sm-journey-pending,.sm-journey .sm-journey__heading.sm-journey-heading-pending h2 span,.sm-journey .sm-journey__heading.sm-journey-heading-pending .sm-journey__stars{opacity:1}
+.sm-path__heading h2.sm-path-pending + .sm-path__script{filter:none}
+.sm-about .about-ribbons-scene .rose-strip__perspective,.sm-contact .footer-background-brand{opacity:1}
+html.sm-mobile-motion .sm-servers .sm-server__card{opacity:1}
+.sm-journey .sm-journey__stage[data-scroll-active="true"] .sm-journey__steps li[data-revealed="false"]{opacity:1}
+.ban .ban__desc.hero-wordband{opacity:1}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .ban#top .sm-hero-copy h1 .sm-hero-line{transform:none;transition:none}}
+html[data-motion-reduced="true"] .ban#top .sm-hero-copy h1 .sm-hero-line{transform:none;transition:none}
+/* Scroll-triggered entrances keep their movement without opacity or blur fades. */
+@keyframes smJourneyReveal{from{clip-path:inset(8% 0 8% 0);transform:scale(1.09)}to{clip-path:inset(0);transform:scale(1.045)}}
+@keyframes sm-server-logo-reveal{from{filter:blur(0)}to{filter:blur(0)}}
+@keyframes sm-server-copy-reveal{from{transform:translateY(20px)}to{transform:translateY(0)}}
+@keyframes sm-server-detail-in{from{transform:translateY(14px)}to{transform:translateY(0)}}
+@keyframes sm-server-heading-in{from{filter:blur(0)}to{filter:blur(0)}}
+@keyframes sm-welcome-arrive{from{transform:translate(var(--dx),var(--dy))}to{transform:translate(0,0)}}
+@keyframes sm-entry-side-wide{from{transform:translateX(60px)}to{transform:translateX(0)}}
+@keyframes sm-phrase-side{from{transform:translate(var(--phrase-slide-distance,-24px),-50%) rotate(-5deg)}to{transform:translateY(-50%) rotate(-5deg)}}
+@keyframes sm-phrase-side-mobile{from{transform:translateX(var(--phrase-slide-distance,-24px)) rotate(-5deg)}to{transform:translateX(0) rotate(-5deg)}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .flow-entry{translate:none;transition:none}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]):not([data-motion-reduced="true"]) .flow-entry{translate:none;transition:none}}
+
+/* Use the hero's easing for entrance transitions while keeping their paths intact. */
+.sm-about .abt__who .a-text,.sm-path__heading h2 span,.sm-path__intro>div,.sm-path__trial,.sm-journey .sm-journey__text>.sm-journey__headline,.sm-journey .sm-journey__heading h2 span,.sm-journey .sm-journey__stars{transition:transform 1.05s cubic-bezier(.22,1,.36,1)}
+:where(html[data-motion-reduced="false"]) .sm-server.is-visible :is(.sm-server__image,.sm-server__body,.sm-server__specs,.sm-server__bottom,.sm-server__name,.sm-server__price){animation-duration:1.05s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+/* The section moves as one layer, independently of its existing inner animations. */
+html:not([data-motion-reduced="true"]) .sm-section-motion{translate:0 var(--section-shift,0px);transition:translate 1.05s cubic-bezier(.22,1,.36,1)}
+html:not([data-motion-reduced="true"]) .sm-section-motion:focus-within{translate:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]):not([data-motion-reduced="true"]) .sm-section-motion{translate:none;transition:none}}
+
+/* Cinematic perspective as the camera approaches the still stadium. */
+.editorial-field-visual{transform:perspective(1800px) translate3d(0,var(--field-pan,0px),0) scale(var(--field-zoom,1)) rotateX(var(--field-tilt,0deg));backface-visibility:hidden}
+/* Background gradients follow a slower track than foreground content. */
+#works.sm-section-motion,.sm-contact.sm-section-motion{background-size:100% 120%;background-position:center calc(50% + var(--section-depth,0px));background-repeat:no-repeat}
+/* Independent title settling adds to existing flow translations, not replaces them. */
+html:not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry){
+  translate:var(--entry-x,0px) calc(var(--entry-y,0px) + var(--title-settle,0px));
+  transition:translate 1.35s cubic-bezier(.22,1,.36,1),rotate 1.05s cubic-bezier(.22,1,.36,1);
+}
+html:not([data-motion-reduced="true"]) :is(#services .sm-sports__heading,#sports-news .sm-news__header h2,#about h2.small_title,#m3u-player h2,.sm-contact h2){
+  translate:0 var(--title-settle,0px);
+  transition:translate 1.35s cubic-bezier(.22,1,.36,1);
+}
+html:not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry):focus-within{translate:none}
+@media(prefers-reduced-motion:reduce){
+  html:not([data-motion="on"]) .editorial-field-visual{transform:none}
+  html:not([data-motion="on"]):not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry),
+  html:not([data-motion="on"]):not([data-motion-reduced="true"]) :is(#services .sm-sports__heading,#sports-news .sm-news__header h2,#about h2.small_title,#m3u-player h2,.sm-contact h2){translate:none;transition:none}
+}
+html[data-motion-reduced="true"] .editorial-field-visual{transform:none}

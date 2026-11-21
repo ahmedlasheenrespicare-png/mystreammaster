@@ -118,3 +118,19 @@ test('responsive path and cinema variants retain originals and meet a quality an
   }
   assert.ok(checked >= 30);
 });
+
+test('approved production flower renderer uses the guarded optimization and cache version', async () => {
+  const { optimizeReferenceFlower } = await import('./optimize-reference-flower.mjs');
+  const staged = await read('home-preview/release-candidate/assets/main-D5MQsYQ6.js');
+  const assetUrl = `/_assets/reference-home/${APPROVED_HOME_SNAPSHOT}/`;
+  const original = staged.replaceAll('/home-preview/release-candidate/assets/', assetUrl);
+  const published = await read(`${assetUrl.slice(1)}main-D5MQsYQ6.js`);
+  assert.equal(published, optimizeReferenceFlower(original));
+  assert.throws(() => optimizeReferenceFlower('unrecognized renderer'), /renderer changed/);
+  const { createHash } = await import('node:crypto');
+  const revision = createHash('sha256').update(published).digest('hex').slice(0, 12);
+  for (const page of ['index.html', 'en/index.html']) {
+    const doc = load(await read(page));
+    assert.match(doc('script[src*="main-D5MQsYQ6.js"]').attr('src'), new RegExp(`flower=${revision}`));
+  }
+});

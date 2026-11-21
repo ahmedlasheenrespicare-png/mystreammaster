@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import sharp from 'sharp';
 import { APPROVED_HOME_SNAPSHOT } from './approved-home-snapshot.mjs';
+import { optimizeReferenceFlower } from './optimize-reference-flower.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const website = path.join(root, 'website');
@@ -37,6 +38,13 @@ async function rewriteAssets(dir) {
   }
 }
 await rewriteAssets(output);
+
+// Optimize only the production renderer; keep the immutable approved model,
+// reference preview, materials and animations intact.
+const mainScript = path.join(output, 'main-D5MQsYQ6.js');
+const mainCode = optimizeReferenceFlower(await fs.readFile(mainScript, 'utf8'));
+await fs.writeFile(mainScript, mainCode);
+const flowerRevision = createHash('sha256').update(mainCode).digest('hex').slice(0, 12);
 
 // Generate conservative, high-quality derivatives only where they save bytes.
 // Originals stay available for high-density screens and as a crawler fallback.
@@ -157,6 +165,7 @@ async function renderPage(name, destination, language) {
   // The snapshot path is stable, but this publish-time integration changes the
   // reel script. Version its URL so a cached older script cannot mask it.
   html = html.replace(/(cinema-showcase\.js\?[^"']+)/g, `$1&responsive=${cinemaRevision}`);
+  html = html.replace(/(main-D5MQsYQ6\.js\?[^"']+)/g, `$1&flower=${flowerRevision}`);
   html = html.replace(/<html\s+lang="(?:ar|en)"/, `<html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}"`);
   // Preserve the approved preview's default LTR layout; its Arabic text and
   // components already specify their own direction. Setting html dir alone

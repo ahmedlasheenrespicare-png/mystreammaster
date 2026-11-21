@@ -8,8 +8,10 @@
     "imageCredit": "صورة أرشيفية: Simon Walker / UK Prime Minister / CC BY 2.0",
     "images": [
       {
-        "src": "images/sports-news/harry-kane-2023.jpg",
-        "alt": "صورة أرشيفية لهاري كين أثناء تدريبات منتخب إنجلترا في 2023"
+        "src": "images/sports-news/harry-kane-2023.webp",
+        "alt": "صورة أرشيفية لهاري كين أثناء تدريبات منتخب إنجلترا في 2023",
+        "width": 500,
+        "height": 666
       }
     ]
   },
@@ -21,8 +23,10 @@
     "href": "news/barcelona-atletico-fermin-nov8-2026/",
     "images": [
       {
-        "src": "images/sports-news/fermin-lopez-2025.jpg",
-        "alt": "صورة أرشيفية لفيرمين لوبيز مع منتخب إسبانيا"
+        "src": "images/sports-news/fermin-lopez-2025.webp",
+        "alt": "صورة أرشيفية لفيرمين لوبيز مع منتخب إسبانيا",
+        "width": 500,
+        "height": 743
       }
     ],
     "imageCredit": "صورة أرشيفية: Biso / CC BY 4.0"
@@ -36,8 +40,10 @@
     "imageCredit": "صورة أرشيفية: Timmy96 / Wikimedia Commons / CC0 1.0",
     "images": [
       {
-        "src": "images/sports-news/wirtz-2026.jpg",
-        "alt": "فلوريان فيرتس في صورة أرشيفية"
+        "src": "images/sports-news/wirtz-2026.webp",
+        "alt": "فلوريان فيرتس في صورة أرشيفية",
+        "width": 500,
+        "height": 748
       }
     ]
   },
@@ -50,8 +56,10 @@
     "imageCredit": "صورة أرشيفية: Bryan Berlin / WikiPortraits / CC BY-SA 4.0",
     "images": [
       {
-        "src": "images/sports-news/fernandes-2026.jpg",
-        "alt": "برونو فرنانديز في صورة أرشيفية مع البرتغال"
+        "src": "images/sports-news/fernandes-2026.webp",
+        "alt": "برونو فرنانديز في صورة أرشيفية مع البرتغال",
+        "width": 500,
+        "height": 749
       }
     ]
   },
@@ -64,8 +72,10 @@
     "imageCredit": "صورة أرشيفية: Bryan Berlin / WikiPortraits / CC BY-SA 4.0",
     "images": [
       {
-        "src": "images/sports-news/burn-2026.jpg",
-        "alt": "دان بيرن مع إنجلترا في صورة أرشيفية"
+        "src": "images/sports-news/burn-2026.webp",
+        "alt": "دان بيرن مع إنجلترا في صورة أرشيفية",
+        "width": 500,
+        "height": 750
       }
     ]
   },
@@ -78,8 +88,10 @@
     "imageCredit": "صورة أرشيفية: Arne Müseler / arne-mueseler.com / CC BY-SA 3.0 DE",
     "images": [
       {
-        "src": "images/sports-news/city-stadium-2023.jpg",
-        "alt": "ملعب أكاديمية مانشستر سيتي في صورة أرشيفية"
+        "src": "images/sports-news/city-stadium-2023.webp",
+        "alt": "ملعب أكاديمية مانشستر سيتي في صورة أرشيفية",
+        "width": 960,
+        "height": 719
       }
     ]
   },
@@ -92,8 +104,10 @@
     "imageCredit": "صورة أرشيفية: Pierre-Yves Beaudouin / Wikimedia Commons / CC BY-SA 4.0",
     "images": [
       {
-        "src": "images/sports-news/katoto-2014.jpg",
-        "alt": "ماري أنطوانيت كاتوتو في صورة أرشيفية مع باريس سان جيرمان"
+        "src": "images/sports-news/katoto-2014.webp",
+        "alt": "ماري أنطوانيت كاتوتو في صورة أرشيفية مع باريس سان جيرمان",
+        "width": 500,
+        "height": 750
       }
     ]
   },
@@ -106,8 +120,10 @@
     "imageCredit": "صورة أرشيفية 2026: Bryan Berlin / WikiPortraits / CC BY-SA 4.0",
     "images": [
       {
-        "src": "images/sports-news/tchouameni-2026.jpg",
-        "alt": "صورة أرشيفية لأوريلين تشواميني مع منتخب فرنسا في 2026"
+        "src": "images/sports-news/tchouameni-2026.webp",
+        "alt": "صورة أرشيفية لأوريلين تشواميني مع منتخب فرنسا في 2026",
+        "width": 500,
+        "height": 749
       }
     ]
   },

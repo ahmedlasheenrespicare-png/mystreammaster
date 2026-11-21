@@ -287,6 +287,7 @@ await fs.writeFile(path.join(root, 'sitemap-index.xml'), `<?xml version="1.0" en
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap><loc>https://streammasterstore.com/sitemap-0.xml</loc></sitemap>
   <sitemap><loc>https://streammasterstore.com/sitemap.xml</loc></sitemap>
+  <sitemap><loc>https://streammasterstore.com/sitemap-sports-news.xml</loc></sitemap>
 </sitemapindex>\n`);
 
 // إلحاق نتائج فحص الصفحات القديمة بتقرير prerender (ترتيب أبجدي/نقطي ثابت

@@ -9,6 +9,8 @@
   <script src="./assets/motion-settings.js?v=6681c52f01f49deb"></script>
   <link rel="stylesheet" href="./assets/league-panels.css?v=6681c52f01f49deb">
   <link rel="stylesheet" href="./assets/cinema-showcase.css?v=6681c52f01f49deb">
+  <link rel="stylesheet" href="./assets/sports-news.css?v=5">
+  <script defer src="./assets/sports-news.js?v=16"></script>
   <style>
 /* Render decorative flowers as monochrome vectors across platforms. */
 .sm-flower-icon{display:inline-block;width:1em;height:1em;vertical-align:middle;overflow:visible}.sm-path__number i,.sm-footer__track i{line-height:1}
@@ -1747,6 +1749,22 @@ html[data-motion-reduced="true"] .sm-matches__watch-label,html[data-motion-reduc
       </section>
       </div>
       <!-- SPORTS END -->
+      <!-- SPORTS NEWS: saved-reference preview only -->
+      <section id="sports-news" class="sm-news" lang="ar" dir="rtl" aria-labelledby="sports-news-title">
+        <div class="sm-news__inner">
+          <header class="sm-news__header">
+            <div><p class="sm-news__eyebrow">من الملعب إلى الخبر</p><h2 id="sports-news-title">أخبار <em>الرياضة</em></h2></div>
+            <div class="sm-news__intro"><span aria-hidden="true">✳</span><p>أبرز الأحداث والقصص الرياضية في تذاكر سريعة، لتبقى قريبًا من كل جديد.</p></div>
+          </header>
+          <p class="sm-news__status" role="status">جارٍ تحميل الأخبار…</p>
+          <div class="sm-news__rail" aria-label="تذاكر الأخبار الرياضية" tabindex="0"></div>
+          <div class="sm-news__bottom" hidden>
+
+            <div class="sm-news__controls" aria-label="التنقل بين الأخبار"><button type="button" data-news-direction="previous" aria-label="الأخبار السابقة">→</button><button type="button" data-news-direction="next" aria-label="الأخبار التالية">←</button></div>
+          </div>
+          <noscript><p class="sm-news__status">فعّل JavaScript لعرض تذاكر الأخبار.</p></noscript>
+        </div>
+      </section>
       <!-- CINEMA LIBRARY -->
       <section id="cinema-library" class="sm-cinema" lang="ar" dir="rtl" aria-label="الأفلام والمسلسلات"><div class="smcin-works" aria-labelledby="showcase-title"><div class="smcin-head"><p class="smcin-kicker">مكتبة المشاهدة</p><h2 id="showcase-title"><span>أفلام</span><span>ومسلسلات</span></h2><span class="smcin-script" aria-hidden="true">عالم من الحكايات</span><img class="smcin-aster" src="./assets/aster-rose.svg" alt="" loading="lazy" decoding="async"></div><div class="smcin-intro"><span>حكايات لكل مزاج</span><p>من التشويق إلى المغامرة، عوالم من الأفلام والمسلسلات تنتظر اكتشافك.</p></div><div class="smcin-project"><div class="smcin-stage" aria-label="صور سينمائية توضيحية متحركة"><button class="preview-touch preview-touch--cinema" type="button" aria-label="إيقاف الانتقال مؤقتاً وإظهار أسهم الأفلام"></button><div class="preview-controls preview-controls--cinema" hidden role="group" aria-label="التنقل بين أفلام المكتبة"><button type="button" data-cinema-step="-1" aria-label="الفيلم السابق">❮</button><button type="button" data-cinema-step="1" aria-label="الفيلم التالي">❯</button></div><div class="smcin-rail" aria-hidden="true"><div class="smcin-track">
 <div class="smcin-panel"><img src="./assets/cinema-1.jpg?v=6681c52f01f49deb" alt="" loading="lazy" decoding="async"><div class="smcin-overlay"><div class="smcin-mini-top"><b>ستريم ماستر</b><span>أفلام &nbsp; مسلسلات</span><i aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93 4.93 19.07" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></i></div><div class="smcin-mini-content"><small>حكايات بلا حدود</small><strong>كل قصة<br><em>عالم جديد</em></strong><span class="smcin-mini-line"></span><p>أفلام ومسلسلات<br>لكل لحظة مشاهدة</p></div></div></div>

@@ -67,3 +67,54 @@ test('retained snapshot raster originals are smaller than lossless WebP', async 
     assert.ok(bytes.length <= webp.length, `${src}: original should not exceed lossless WebP`);
   }
 });
+
+test('responsive path and cinema variants retain originals and meet a quality and size budget', async () => {
+  const base = `/_assets/reference-home/${APPROVED_HOME_SNAPSHOT}/`;
+  const script = await read(`${base.slice(1)}cinema-showcase.js`);
+  const map = JSON.parse(script.match(/^const smCinemaResponsive=(.*);/)[1]);
+  assert.ok(Object.keys(map).length >= 30, 'cinema poster variants are published');
+  for (const page of ['index.html', 'en/index.html']) {
+    const doc = load(await read(page));
+    assert.match(doc('script[src*="cinema-showcase.js"]').attr('src'), /responsive=[a-f0-9]{12}/);
+    for (const image of doc('#path-section .sm-fan-card > img').toArray()) {
+      const src = doc(image).attr('src').split('?')[0];
+      const set = doc(image).attr('srcset');
+      assert.ok(set, `${page}: ${src} has candidates`);
+      assert.match(doc(image).attr('sizes'), /190vw/); // cover-cropped landscape image
+      if (map[src]) assert.equal(map[src], set);
+      map[src] = set;
+    }
+    for (const image of doc('#cinema-library .smcin-panel > img').toArray()) {
+      assert.ok(doc(image).attr('src'), 'the unenhanced HTML keeps a normal source');
+      assert.equal(doc(image).attr('srcset'), undefined, 'reel script owns poster activation');
+    }
+  }
+  let checked = 0;
+  for (const [src, srcset] of Object.entries(map)) {
+    const original = await fs.readFile(new URL(src.slice(1), root));
+    const metadata = await sharp(original).metadata();
+    const candidates = srcset.split(', ').map(entry => {
+      const match = entry.match(/^(\S+) (\d+)w$/);
+      assert.ok(match, `invalid srcset: ${entry}`);
+      return { url: match[1], width: Number(match[2]) };
+    });
+    assert.deepEqual(candidates.at(-1), { url: src, width: metadata.width });
+    for (const candidate of candidates.slice(0, -1)) {
+      assert.ok(candidate.width < metadata.width);
+      const variant = await fs.readFile(new URL(candidate.url.slice(1), root));
+      assert.ok(variant.length < original.length, `${candidate.url} saves bytes`);
+      assert.equal((await sharp(variant).metadata()).width, candidate.width);
+      // Compare codec output with the same Lanczos-resized source, not the
+      // larger original; the original remains available at full resolution.
+      const reference = await sharp(original).resize({ width: candidate.width }).removeAlpha().raw().toBuffer();
+      const actual = await sharp(variant).removeAlpha().raw().toBuffer();
+      assert.equal(actual.length, reference.length);
+      let squaredError = 0;
+      for (let i = 0; i < reference.length; i++) squaredError += (reference[i] - actual[i]) ** 2;
+      const psnr = 10 * Math.log10(255 ** 2 / (squaredError / reference.length));
+      assert.ok(psnr >= 38, `${candidate.url} PSNR ${psnr.toFixed(2)}dB`);
+      checked++;
+    }
+  }
+  assert.ok(checked >= 30);
+});

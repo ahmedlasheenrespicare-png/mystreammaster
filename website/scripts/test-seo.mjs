@@ -71,6 +71,7 @@ const isMatchDetailPage = (rel) => {
 };
 const isExpectedNoindex = (rel) => {
   if (NOINDEX.has(rel)) return true;
+  if (/^home-preview\/saved-reference\/news\/[a-z0-9-]+\/index\.html$/.test(rel)) return true;
   if (/^_assets\/reference-home\/[a-f0-9]{40}\/league-world\/world\.html$/.test(rel)) return true;
   if (!isMatchDetailPage(rel)) return false;
   assert.ok(matchVerificationByFile.has(rel), `${rel}: مسار مباراة غير موجود في مصدر المباريات`);
@@ -286,8 +287,8 @@ test('JSON-LD: WebPage كامل + Breadcrumb مطابق للظاهر + المن�
 
 test('الاكتشاف: sitemap كامل بـ lastmod/priority، ولا يتيم، ولا محظور في robots', async () => {
   const pages = await loadPages();
-  const inSitemap = new Set([...(await sitemapUrls('sitemap.xml')), ...(await sitemapUrls('sitemap-0.xml'))]);
-  for (const file of ['sitemap.xml', 'sitemap-0.xml']) {
+  const inSitemap = new Set([...(await sitemapUrls('sitemap.xml')), ...(await sitemapUrls('sitemap-0.xml')), ...(await sitemapUrls('sitemap-sports-news.xml'))]);
+  for (const file of ['sitemap.xml', 'sitemap-0.xml', 'sitemap-sports-news.xml']) {
     const xml = await fs.readFile(path.join(root, file), 'utf8');
     for (const block of xml.matchAll(/<url>([\s\S]*?)<\/url>/g)) {
       const lastmod = block[1].match(/<lastmod>([^<]+)<\/lastmod>/);

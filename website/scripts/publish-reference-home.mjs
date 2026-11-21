@@ -10,6 +10,7 @@ import { load } from 'cheerio';
 import sharp from 'sharp';
 import { APPROVED_HOME_SNAPSHOT } from './approved-home-snapshot.mjs';
 import { optimizeReferenceFlower } from './optimize-reference-flower.mjs';
+import { publishHomeSportsNews } from './publish-home-sports-news.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const website = path.join(root, 'website');
@@ -162,6 +163,7 @@ async function renderPage(name, destination, language) {
     .replaceAll(staging + 'en/', '/en/')
     .replaceAll(staging, '/')
     .replaceAll('/home-preview/index.html', '/');
+  if (language === 'ar') html = await publishHomeSportsNews(root, html);
   // The snapshot path is stable, but this publish-time integration changes the
   // reel script. Version its URL so a cached older script cannot mask it.
   html = html.replace(/(cinema-showcase\.js\?[^"']+)/g, `$1&responsive=${cinemaRevision}`);

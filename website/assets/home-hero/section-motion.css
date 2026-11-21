@@ -1,5 +1,5 @@
 /* Keep each section's original scroll direction and rotation; remove only fading. */
-html:not([data-motion-reduced="true"]) .flow-entry{translate:var(--entry-x,0px) var(--entry-y,0px);rotate:var(--entry-rotate,0deg);opacity:1;transition:translate 1.05s cubic-bezier(.22,1,.36,1),rotate 1.05s cubic-bezier(.22,1,.36,1)}
+html:not([data-motion-reduced="true"]) .flow-entry{translate:var(--entry-x,0px) var(--entry-y,0px);rotate:var(--entry-rotate,0deg);opacity:1;transition:none}
 .sm-about .abt__who .sm-about-reveal-pending,.sm-about .abt__who .abt__who__text>div .sm-about__devices.sm-about-reveal-pending,.sm-path .sm-path-pending,.sm-path__heading h2.sm-path-pending span,.sm-path__heading h2.sm-path-pending ~ .sm-path__meta,.sm-path__heading h2.sm-path-pending + .sm-path__script,.sm-journey .sm-journey__text>.sm-journey__headline.sm-journey-pending,.sm-journey .sm-journey__heading.sm-journey-heading-pending h2 span,.sm-journey .sm-journey__heading.sm-journey-heading-pending .sm-journey__stars{opacity:1}
 .sm-path__heading h2.sm-path-pending + .sm-path__script{filter:none}
 .sm-about .about-ribbons-scene .rose-strip__perspective,.sm-contact .footer-background-brand{opacity:1}
@@ -31,11 +31,11 @@ html:not([data-motion-reduced="true"]) .sm-section-motion:focus-within{translate
 /* Independent title settling adds to existing flow translations, not replaces them. */
 html:not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry){
   translate:var(--entry-x,0px) calc(var(--entry-y,0px) + var(--title-settle,0px));
-  transition:translate 1.35s cubic-bezier(.22,1,.36,1),rotate 1.05s cubic-bezier(.22,1,.36,1);
+  transition:none;
 }
 html:not([data-motion-reduced="true"]) :is(#services .sm-sports__heading,#sports-news .sm-news__header h2,#about h2.small_title,#m3u-player h2,.sm-contact h2){
   translate:0 var(--title-settle,0px);
-  transition:translate 1.35s cubic-bezier(.22,1,.36,1);
+  transition:none;
 }
 html:not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry):focus-within{translate:none}
 @media(prefers-reduced-motion:reduce){

@@ -126,7 +126,12 @@
     "description": "تقارير تتحدث عن مفاوضات لاستثمار محدود في تشيلسي بعد خروج نجم كرة القدم الأمريكية من برمنغهام سيتي، دون إعلان إتمام الصفقة.",
     "href": "news/tom-brady-chelsea-investment-2026/",
     "previewOnly": true,
-    "images": []
+    "images": [
+      {
+        "src": "images/players/spl-brady-chelsea-stake.webp",
+        "alt": "توم برادي ببدلة داكنة في ظهور إعلامي بعد تقارير مفاوضاته لشراء حصة في تشيلسي"
+      }
+    ]
   },
   {
     "category": "كرة القدم العالمية",
@@ -135,7 +140,12 @@
     "description": "تقرير عن تلقي فيفا ترشيحات جياني إنفانتينو وفيليب ديالو وكوزو تاشيما للانتخابات، مع إحالتها لفحص الأهلية.",
     "href": "news/fifa-presidential-election-nominations-2027/",
     "previewOnly": true,
-    "images": []
+    "images": [
+      {
+        "src": "images/players/fifa-infantino-election-2027.webp",
+        "alt": "جياني إنفانتينو رئيس فيفا أحد المرشحين الثلاثة لانتخابات الرئاسة 2027"
+      }
+    ]
   },
   {
     "category": "تصنيف فيفا",
@@ -144,7 +154,12 @@
     "description": "تقرير عن وصول منتخب المغرب إلى أعلى مركز في تاريخه بتصنيف الرجال، متقدمًا على البرتغال والبرازيل.",
     "href": "news/morocco-fifa-ranking-fifth-november-2026/",
     "previewOnly": true,
-    "images": []
+    "images": [
+      {
+        "src": "images/players/fifa-morocco-fifth-ranking.webp",
+        "alt": "لاعب منتخب المغرب يرفع ذراعيه احتفالاً بعد بلوغ الفريق المركز الخامس في تصنيف فيفا"
+      }
+    ]
   },
   {
     "category": "الدوري الأمريكي",
@@ -153,7 +168,12 @@
     "description": "تقرير عن بيانات رابطة اللاعبين يضع تعويض ميسي المضمون عند نحو 28.33 مليون دولار سنويًا، أكثر من رواتب لاعبي كل فريق من 25 فريقًا على حدة.",
     "href": "news/messi-mls-salary-report-2026/",
     "previewOnly": true,
-    "images": []
+    "images": [
+      {
+        "src": "images/players/mls-messi-salary-record.webp",
+        "alt": "ليونيل ميسي بقميص إنتر ميامي الوردي بعد تصدره أجور الدوري الأمريكي"
+      }
+    ]
   },
   {
     "category": "الدوري السعودي",
@@ -162,7 +182,12 @@
     "description": "مهاجم الأهلي الإنجليزي يحافظ على صدارة ترتيب هدافي دوري روشن برصيد 13 هدفًا، وفق جدول الهدافين المنشور في 11 نوفمبر.",
     "href": "news/ivan-toney-saudi-top-scorer-november-2026/",
     "previewOnly": true,
-    "images": []
+    "images": [
+      {
+        "src": "images/players/spl-toney-top-scorer.webp",
+        "alt": "إيفان توني بقميص الأهلي الأخضر يحمل الكرة ويرفع إبهامه بعد تصدره هدافي دوري روشن"
+      }
+    ]
   },
   {
     "category": "الدوريات الأوروبية",
@@ -171,6 +196,11 @@
     "description": "جدول مباريات السبت 21 نوفمبر يتضمن مانشستر سيتي وفولهام، ونيوكاسل وأرسنال، وريال مدريد وسيلتا فيجو.",
     "href": "news/european-leagues-return-21-november-2026/",
     "previewOnly": true,
-    "images": []
+    "images": [
+      {
+        "src": "images/players/esp-mbappe-celta-return.webp",
+        "alt": "كيليان مبابي بقميص ريال مدريد الأبيض يجري بالكرة قبل مواجهة سيلتا فيجو"
+      }
+    ]
   }
 ]

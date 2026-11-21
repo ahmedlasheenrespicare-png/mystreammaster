@@ -16,7 +16,7 @@ export async function publishHomeSportsNews(root, html) {
   const preview = path.join(root, 'home-preview/saved-reference');
   const saved = await fs.readFile(path.join(preview, 'index.html'), 'utf8');
   const match = saved.match(/\s*<section id="sports-news"[\s\S]*?<\/section>\s*(?=<!-- CINEMA LIBRARY -->)/);
-  if (!match || (html.match(/<!-- CINEMA LIBRARY -->/g) || []).length !== 1 || html.includes('id="sports-news"')) {
+  if (!match || (html.match(/<!-- CINEMA LIBRARY -->/g) || []).length !== 1 || (html.match(/id="sports-news"/g) || []).length > 1) {
     throw new Error('Cannot safely integrate sports news between matches and cinema');
   }
   const assetDir = path.join(root, '_assets/sports-news');
@@ -90,6 +90,11 @@ export async function publishHomeSportsNews(root, html) {
   ]);
   const crawlLinks = `<noscript><ul>${data.map(item => `<li><a href="/${item.href}">${escapeHtml(item.title)}</a></li>`).join('')}</ul></noscript>`;
   const section = match[0].replace('</section>', `${crawlLinks}</section>`);
+  // Newer approved snapshots already contain the preview news section/assets.
+  // Replace them once with the production data-backed integration.
+  html = html.replace(/\s*<section id="sports-news"[\s\S]*?<\/section>\s*(?=<!-- CINEMA LIBRARY -->)/, '\n');
+  html = html.replace(/\s*<link\b[^>]*href="[^"]*\/sports-news\.css(?:\?[^"]*)?"[^>]*>/g, '')
+    .replace(/\s*<script\b[^>]*src="[^"]*\/sports-news\.js(?:\?[^"]*)?"[^>]*><\/script>/g, '');
   html = html.replace('</head>', '<link rel="stylesheet" href="/_assets/sports-news/sports-news.css?v=1"><script defer src="/_assets/sports-news/sports-news.js?v=1"></script>\n</head>');
   return html.replace('<!-- CINEMA LIBRARY -->', `${section}<!-- CINEMA LIBRARY -->`);
 }

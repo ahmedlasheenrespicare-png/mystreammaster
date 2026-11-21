@@ -40,6 +40,17 @@ async function rewriteAssets(dir) {
 }
 await rewriteAssets(output);
 
+// The user approved the section animations but explicitly retained the live
+// hero. Keep its frozen Arabic/English markup and scope the new CSS to sections.
+const sectionCss = await fs.readFile(path.join(website, 'assets/home-hero/section-motion.css'), 'utf8');
+const sectionRevision = createHash('sha256').update(sectionCss).digest('hex').slice(0, 16);
+await fs.writeFile(path.join(output, 'production-section-motion.css'), sectionCss);
+const sectionScript = path.join(output, 'section-motion.js');
+let sectionCode = await fs.readFile(sectionScript, 'utf8');
+sectionCode = sectionCode.replace("'#101922 0px'", "'#ddc8c5 0px'").replace("let previous = '#101922'", "let previous = '#ddc8c5'");
+await fs.writeFile(sectionScript, sectionCode);
+
+
 // Optimize only the production renderer; keep the immutable approved model,
 // reference preview, materials and animations intact.
 const mainScript = path.join(output, 'main-D5MQsYQ6.js');
@@ -163,6 +174,13 @@ async function renderPage(name, destination, language) {
     .replaceAll(staging + 'en/', '/en/')
     .replaceAll(staging, '/')
     .replaceAll('/home-preview/index.html', '/');
+  // Swap only the hero; the rest remains the explicitly approved snapshot.
+  const bannerPattern = /<!-- BANNER -->[\s\S]*?<!-- BANNER END -->/;
+  const hero = (await fs.readFile(path.join(website, 'assets/home-hero', `${language}.html`), 'utf8')).replaceAll('__REFERENCE_ASSET_URL__', assetUrl);
+  if (!bannerPattern.test(html)) throw new Error(`Missing ${language} banner for preserved hero`);
+  html = html.replace(bannerPattern, () => hero.trim());
+  html = html.replace(/<link\b[^>]*href="[^"]*\/editorial-preview\.css(?:\?[^"]*)?"[^>]*>/, `<link rel="stylesheet" href="${assetUrl}production-section-motion.css?v=${sectionRevision}">`)
+    .replace(/<script\b[^>]*src="[^"]*\/editorial-preview\.js(?:\?[^"]*)?"[^>]*><\/script>/, '');
   if (language === 'ar') html = await publishHomeSportsNews(root, html);
   // The snapshot path is stable, but this publish-time integration changes the
   // reel script. Version its URL so a cached older script cannot mask it.

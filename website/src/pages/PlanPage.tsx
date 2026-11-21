@@ -77,7 +77,7 @@ export default function PlanPage({
               <IconZap className="w-4 h-4" /> {plan.tag}
             </span>
             <h1 className="mt-4 font-display font-black tracking-tight leading-[1.15] text-[34px] md:text-[50px]">
-              <ServerLink
+              باقة <ServerLink
                 code={plan.serverCode}
                 label={nameOnly}
                 size={46}
@@ -137,28 +137,23 @@ export default function PlanPage({
             </h2>
             <p className="mt-3 text-[14.5px] leading-[1.9] text-black/60">
               {plan.serverCode === "moka" &&
-                "مناسبة لمن لديه سرعة إنترنت محدودة (من 4 ميجابت) أو يستخدم بيانات الهاتف، وللباحثين عن أفضل قيمة مقابل السعر مع مكتبة متنوعة وقنوات بديلة للمباريات."}
+                "قد تناسب من يبحث عن باقة اقتصادية؛ راجع المواصفات المعروضة واختبر الأداء على جهازك واتصالك قبل الاختيار."}
               {plan.serverCode === "nova" &&
-                "مناسبة لعشّاق المباريات والدوريات الكبرى الذين يشاهدون في أوقات الذروة، ولمن يريد ثباتاً عالياً مع تنويع مصادر البث لكل قناة رياضية."}
+                "قد تناسب المهتمين بالمحتوى الرياضي؛ راجع مواصفات المزود وتأكد من توفر المحتوى وحقوقه على جهازك وفي بلدك."}
               {plan.serverCode === "x" &&
-                "مناسبة لعشّاق المباريات والدوريات الكبرى الذين يبحثون عن ثبات مرتفع وتعدد مصادر البث لكل قناة، وفق المواصفات المعلنة لباقة X."}
+                "يمكنك مراجعة مواصفات باقة X وسعرها ثم مقارنتها بالباقات الأخرى، وطلب تجربة على جهازك قبل الاختيار."}
               {plan.serverCode === "istar" &&
-                "مناسبة للعائلات ولمن يشاهد الأفلام والمسلسلات أكثر من الرياضة، مع توازن بين المكتبة والسعر واستهلاك بيانات متوسط."}
+                "قد تناسب المهتمين بالأفلام والمسلسلات؛ راجع المكتبة المعلنة وتأكد من توفر المحتوى وحقوقه قبل الاختيار."}
             </p>
             <p className="mt-3 text-[14.5px] leading-[1.9] text-black/60">
-              إن لم تكن متأكداً من الأنسب لجهازك وسرعة اتصالك، استخدم{" "}
-              <a href={to("#server-finder")} className="font-black text-[#2b4eff] underline underline-offset-4">
-                مساعد اختيار السيرفر
+              إن لم تكن متأكداً من الأنسب لجهازك وسرعة اتصالك، راجع{" "}
+              <a href={to("servers/#servers-compare")} className="font-black text-[#2b4eff] underline underline-offset-4">
+                جدول مقارنة السيرفرات
               </a>{" "}
               أو{" "}
               <a href={to("blog/choose-iptv-server/")} className="font-black text-[#2b4eff] underline underline-offset-4">
-                اقرأ دليل المقارنة
-              </a>
-              {" "}أو راجع{" "}
-              <a href={to("blog/افضل-اشتراك-iptv-2026/")} className="font-black text-[#2b4eff] underline underline-offset-4">
-                جدول مقارنة الباقات والأسعار
-              </a>
-              ، ويمكنك دائماً طلب كود تجريبي قبل الدفع.
+                اقرأ دليل اختيار السيرفر
+              </a>. اسأل الفريق عن توفر التجربة للباقة التي تهمك قبل الدفع.
             </p>
           </div>
 

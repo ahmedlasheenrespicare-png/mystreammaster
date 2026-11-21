@@ -7,11 +7,19 @@ import { to } from "../config";
 interface TrialModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialServer?: "nova" | "istar" | "moka" | "x";
 }
 
-export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
+const SERVER_VALUES = {
+  nova: "سيرفر نوفا (Nova Server)",
+  istar: "سيرفر إيستار (iStar Pro) — المتوازن للأجهزة الذكية",
+  moka: "سيرفر موكا (Moka) — الاقتصادي للنت الضعيف",
+  x: "سيرفر X (XTV Server)",
+} as const;
+
+export default function TrialModal({ isOpen, onClose, initialServer = "nova" }: TrialModalProps) {
   const [device, setDevice] = useState("شاشة سامسونج أو LG Smart TV");
-  const [server, setServer] = useState("سيرفر نوفا (Nova Server)");
+  const [server, setServer] = useState<string>(SERVER_VALUES[initialServer]);
   const [phone, setPhone] = useState("");
 
   /* إتاحة: Escape + حبس التركيز داخل النافذة + قفل تمرير الخلفية + إعادة التركيز */
@@ -102,6 +110,7 @@ export default function TrialModal({ isOpen, onClose }: TrialModalProps) {
               <option value="سيرفر موكا (Moka) — الاقتصادي للنت الضعيف">
                 سيرفر موكا (Moka) — الاقتصادي ⚡
               </option>
+              <option value="سيرفر X (XTV Server)">سيرفر X (XTV)</option>
             </select>
           </div>
 

@@ -105,7 +105,7 @@ export const NAV_GROUPS = [
       /* القنوات والبث */
       { href: "channels/", label: "مكتبة القنوات", desc: "ابحث في كل القنوات", icon: "📺" },
       { href: "live-free.html", label: "مشغّل الويب الذكي", desc: "شغّل اشتراكك واستعرض المميزات", icon: "▶️" },
-      { href: "world-cup-2026/", label: "كأس العالم 2026", desc: "المواعيد والقنوات الناقلة", icon: "🌍" },
+      { href: "world-cup-2026/", label: "كأس العالم 2026", desc: "أرشيف البطولة", icon: "🌍" },
       { href: "predictions/", label: "توقعات المباريات", desc: "تحليلات قبل كل مباراة", icon: "🔮" },
       { href: "watch-legal.html", label: "المشاهدة القانونية", desc: "الاشتراكات الرسمية", icon: "⚖️" },
       /* البطولات — ترتيب موحّد يطابق LEAGUE_PAGE_ORDER */

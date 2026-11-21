@@ -114,7 +114,7 @@ export default function ServersComparison() {
 
         {/* ملاحظة أسفل الجدول */}
         <p className="mt-6 text-center text-[12.5px] text-black/40 font-medium">
-          محتار من أين تبدأ؟ جرّب مساعد الاختيار أعلاه، واختبر اتصالك وجهازك قبل اتخاذ القرار. للتقدير العام، راجع <a href="/blog/internet-speed-for-video-streaming/#bandwidth-calculator" className="underline">حاسبة سرعة الفيديو</a>.
+          تختلف التجربة حسب المصدر والاتصال والجهاز. يمكنك <a href="/trial/" className="underline">طلب تجربة مجانية</a>، أو مراجعة <a href="/blog/internet-speed-for-video-streaming/#bandwidth-calculator" className="underline">حاسبة سرعة الفيديو</a> للتقدير العام قبل الاختيار.
         </p>
       </div>
     </section>

@@ -397,7 +397,7 @@ export function getSeo(path: string): SeoMeta {
       ...base,
       title: `مقارنة السيرفرات والباقات | ${BRAND_NAME}`,
       description:
-        "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
+        "قارن سيرفرات نوفا وإيستار وموكا وX من حيث الجودة والمكتبة وفق المواصفات المعروضة، وراجع أسعار الباقات وتفاصيلها قبل الاختيار.",
       canonical,
       ogImageAlt: `مقارنة سيرفرات ${BRAND_NAME} — نوفا وإيستار وموكا وX`,
       jsonLd: [
@@ -405,7 +405,7 @@ export function getSeo(path: string): SeoMeta {
           canonical,
           name: `مقارنة السيرفرات والباقات | ${BRAND_NAME}`,
           description:
-            "قارن سيرفرات نوفا وإيستار وموكا وX: عدد القنوات والمكتبة والجودة والأجهزة المدعومة والأسعار، واختر باقة التفعيل والربط التقني المناسبة لسرعتك وجهازك.",
+            "قارن سيرفرات نوفا وإيستار وموكا وX من حيث الجودة والمكتبة وفق المواصفات المعروضة، وراجع أسعار الباقات وتفاصيلها قبل الاختيار.",
         }),
         breadcrumbs(
           [
@@ -805,16 +805,21 @@ export function getSeo(path: string): SeoMeta {
   /* ===== الصفحة الرئيسية ===== */
   if (clean === "/") {
     const canonical = absolute("");
+    const title = `${BRAND_NAME} | باقات IPTV وإعداد المشغلات`;
+    const description =
+      "تعرّف على باقات نوفا وإيستار وموكا وX، وقارن السيرفرات واطلب تجربة مجانية، مع المساعدة في الربط التقني وإعداد مشغلات M3U على أجهزتك.";
     return {
       ...base,
+      title,
+      description,
       canonical,
       jsonLd: [
         organizationLd,
         websiteLd,
         webPageLd({
           canonical,
-          name: base.title,
-          description: base.description,
+          name: title,
+          description,
           modified: "2026-10-15",
           mainEntityId: `${SITE_URL}/#product`,
           withBreadcrumb: false,

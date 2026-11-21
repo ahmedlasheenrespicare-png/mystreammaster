@@ -191,7 +191,27 @@ export default function App() {
       />
     );
   } else if (path === "/store" || path === "/servers") {
-    page = <div className="pt-[104px]"><nav className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح"><a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">{path === "/store" ? "المتجر" : "السيرفرات والباقات"}</span></nav><h1 className="text-center font-display text-4xl font-black pt-8">باقات ستريم ماستر</h1><Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />{path === "/servers" && <ServersComparison />}</div>;
+    const isComparison = path === "/servers";
+    page = (
+      <div className="pt-[104px]">
+        <nav className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-[12.5px] font-bold text-black/40 pt-6" aria-label="مسار التصفح">
+          <a href="/" className="hover:text-black transition">الرئيسية</a><span className="mx-2">/</span><span className="text-black/70">{isComparison ? "السيرفرات والباقات" : "المتجر"}</span>
+        </nav>
+        <div className="text-center max-w-3xl mx-auto px-5 pt-8">
+          <h1 className="font-display text-4xl font-black">{isComparison ? "مقارنة السيرفرات والباقات" : "اشتراك IPTV وباقات التفعيل"}</h1>
+          <p className="mt-4 text-black/60 leading-relaxed">
+            {isComparison
+              ? "قارن نوفا وإيستار وموكا وX بحسب المواصفات المعروضة، ثم راجع تفاصيل الباقة والسعر المناسبين لك قبل الطلب."
+              : "تصفّح باقات نوفا وإيستار وموكا وX، واختر المدة والعملة لمراجعة السعر قبل إضافة الباقة إلى السلة."}
+          </p>
+          <a className="inline-block mt-4 text-[#2b4eff] font-bold underline underline-offset-4" href={isComparison ? "#servers-compare" : "/servers/"}>
+            {isComparison ? "انتقل إلى جدول المقارنة" : "قارن السيرفرات قبل اختيار الباقة"}
+          </a>
+        </div>
+        <Pricing currentCurrency={currency} onCurrencyChange={setCurrency} onAddToCart={handleAddToCart} />
+        {isComparison && <ServersComparison />}
+      </div>
+    );
   } else if (path === "/faq") {
     page = <FaqPage />;
   } else if (path === "/trial") {
@@ -253,7 +273,7 @@ export default function App() {
       <UnifiedFooter english={isEnPath(path)} />
       <FloatingActions onOpenTrial={openTrial} />
 
-      <TrialModal isOpen={isTrialOpen} onClose={closeTrial} />
+      <TrialModal key={plan?.serverCode ?? "default"} initialServer={plan?.serverCode} isOpen={isTrialOpen} onClose={closeTrial} />
 
       <CartModal
         isOpen={isCartOpen}

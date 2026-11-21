@@ -51,7 +51,7 @@ const TRIAL_CHECKS = [
 const TRIAL_STEPS = [
   {
     title: "اختر جهازك والسيرفر",
-    text: "حدّد نوع جهازك، والسيرفر الأقرب لاحتياجك: نوفا للمباريات والرياضة، إيستار للأفلام والمسلسلات والترفيه، وموكا للسرعات المحدودة واستهلاك البيانات الاقتصادي.",
+    text: "حدّد نوع جهازك واختر السيرفر الذي تريد تجربته: نوفا أو إيستار أو موكا أو X. راجع مواصفاتها وقارنها قبل اختيارك.",
   },
   {
     title: "أرسل الطلب عبر واتساب",
@@ -133,7 +133,7 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
             {[
               { k: "6 ساعات", v: "مدة التجربة كاملة من إصدار الكود" },
               { k: "عبر واتساب", v: "اسأل عن موعد استلام الكود" },
-              { k: "3 سيرفرات", v: "نوفا وإيستار وموكا — اختر واحداً للفحص" },
+              { k: "4 سيرفرات", v: "نوفا وإيستار وموكا وX — اختر واحداً للفحص" },
               { k: "0 دفع مقدم", v: "لا مبلغ ولا بطاقة قبل التجربة" },
             ].map((f) => (
               <div key={f.k} className="rounded-2xl bg-white border border-black/10 px-5 py-4">
@@ -238,8 +238,8 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
             أي سيرفر تجرّبه؟
           </h2>
           <p className="mt-3 mb-9 text-[14.5px] md:text-[15.5px] text-black/55 font-medium leading-[1.9] text-center max-w-[640px] mx-auto">
-            اختر الأقرب لاستخدامك واطلب تجربته أولاً — يمكنك مراجعة مواصفات كل سيرفر كما
-            يعلنها مزوده الخارجي في صفحة باقته قبل الطلب.
+            راجع مواصفات كل سيرفر كما يعلنها مزوده الخارجي في صفحة باقته قبل الطلب.
+            يتيح نموذج التجربة الاختيار بين نوفا وإيستار وموكا وX.
           </p>
           <div className="grid md:grid-cols-3 gap-4">
             {SERVER_PAGES.map((s, i) => (
@@ -250,9 +250,9 @@ export default function TrialPage({ onOpenTrial }: { onOpenTrial: () => void }) 
                 >
                   <span className="text-[26px]" aria-hidden="true">{s.emoji}</span>
                   <h3 className="mt-3 font-display font-black text-[19px] tracking-tight">{s.label}</h3>
-                  <p className="mt-1.5 text-[13.5px] text-black/55 font-medium leading-[1.9]">{s.desc}</p>
+                  <p className="mt-1.5 text-[13.5px] text-black/55 font-medium leading-[1.9]">راجع مواصفات الباقة قبل طلب التجربة.</p>
                   <span className="mt-4 inline-block text-[13px] font-black text-[#2b4eff] group-hover:text-black transition underline underline-offset-4">
-                    مواصفات وباقة {s.label} قبل التجربة
+                    تفاصيل باقة {s.label}
                   </span>
                 </a>
               </Reveal>

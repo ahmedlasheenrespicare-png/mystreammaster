@@ -18,8 +18,29 @@ test('built home pages use the approved isolated snapshot and retain production 
     assert.equal(doc('html').attr('lang'), lang);
     assert.match(doc('meta[name="robots"]').attr('content'), /^index, follow/);
     assert.equal(doc('link[rel="canonical"]').attr('href'), canonical);
+    if (lang === 'ar') {
+      const title = 'ستريم ماستر برو | باقات IPTV وإعداد المشغلات';
+      const description = 'تعرّف على باقات نوفا وإيستار وموكا وX، وقارن السيرفرات واطلب تجربة مجانية، مع المساعدة في الربط التقني وإعداد مشغلات M3U على أجهزتك.';
+      assert.equal(doc('head title').text(), title);
+      assert.equal(doc('meta[name="description"]').attr('content'), description);
+      assert.equal(doc('meta[property="og:title"]').attr('content'), title);
+      assert.equal(doc('meta[property="og:description"]').attr('content'), description);
+      const page = JSON.parse(doc('script[type="application/ld+json"]').text())['@graph'].find(node => node['@type'] === 'WebPage');
+      assert.equal(page.name, title);
+      assert.equal(page.description, description);
+    }
     assert.equal(doc('#sm-language').attr('href'), other);
     assert.equal(doc('h1').length, 1);
+    const loader = doc('.sm-home-loader');
+    assert.equal(loader.length, 1);
+    assert.equal(loader.attr('aria-hidden'), 'true');
+    assert.match(loader.attr('style'), /display:\s*none/);
+    assert.equal(loader.find('.loader__images .blur-mask').length, 1);
+    assert.equal(loader.find('.overlay__path').length, 1);
+    assert.equal(loader.find('#progressBar').length, 1);
+    assert.equal(loader.find('img').length, 0);
+    assert.ok(!loader.text().includes('Abhishek Jha'));
+    assert.ok(loader.text().includes(lang === 'ar' ? 'جارٍ تجهيز الصفحة' : 'Preparing your page'));
     assert.ok(html.includes(`/_assets/reference-home/${APPROVED_HOME_SNAPSHOT}/`));
     assert.ok(!html.includes('/home-preview/'));
     assert.ok(html.includes('googletagmanager.com/gtag/js'));

@@ -16,14 +16,15 @@ import { isVerified } from "./lib/match-center.mjs";
 
 const STATIC_KEYWORDS = {
   "/": {
-    primary: "ربط تقني",
-    secondary: ["دليل المشاهدة", "إعداد مشغلات", "M3U"],
+    primary: "ستريم ماستر",
+    secondary: ["باقات IPTV", "ربط تقني", "إعداد مشغلات", "M3U"],
     intent: "transactional",
   },
   "/about": { primary: "من نحن", intent: "navigational" },
   "/blog": { primary: "أدلة تشغيل", intent: "informational" },
   "/blog/android-tv-boxes-buying-guide": { primary: "صناديق Android TV", intent: "informational" },
   "/blog/choose-iptv-server": { primary: "اختيار سيرفر IPTV", intent: "informational" },
+  "/blog/m3u-playlist-guide": { primary: "قائمة M3U", intent: "informational" },
   "/blog/hdr-and-frame-rate-explained": { primary: "HDR", intent: "informational" },
   /* صفحة تحريرية بلا استهداف كلمي — قرار مصيرها (حذف/نقل/إبقاء) بيد المالك */
   "/blog/http-protocols": { primary: null, intent: "editorial" },

@@ -1,0 +1,46 @@
+<!-- BANNER -->
+      <div class="ban" id="top">
+        <div class="clouds">
+          <div class="clouds-1"></div>
+          <div class="clouds-2"></div>
+          <div class="clouds-3"></div>
+        </div>
+        <div class="ban__oval">
+          <div class="ban__oval__3d">
+            <img class="ban__oval__bg --mobile" src="__REFERENCE_ASSET_URL__oval_mobile_top.svg" alt="">
+            <img class="ban__oval__bg --tablet --top" src="__REFERENCE_ASSET_URL__oval_desktop_top.svg" alt="">
+            <canvas id="bannerCanvas" data-engine="three.js r172" width="3078" height="3654"></canvas>
+            <img class="ban__oval__bg --tablet --bottom" src="__REFERENCE_ASSET_URL__oval_desktop_bot.svg" alt="">
+            <img class="ban__oval__bg --mobile --bottom" src="__REFERENCE_ASSET_URL__oval_mobile_bot.svg" alt="">
+          </div>
+          <div class="ban__oval__box sm-hero-info" dir="rtl" lang="en" aria-label="Unlimited entertainment, activation assistance and Arabic support">
+            <span class="sm-hero-info__main" aria-hidden="true">Unlimited entertainment</span><span class="sm-hero-info__star" aria-hidden="true">✦</span><span class="sm-hero-info__mark" dir="ltr" aria-hidden="true">4K</span><span class="sm-hero-info__detail" aria-hidden="true">Activation assistance <b>✦</b> Arabic-language support</span><span class="sm-hero-info__mobile" aria-hidden="true">Unlimited entertainment <b>✦</b> Activation assistance and Arabic support</span>
+          </div>
+          <a class="arrow_btn ban__oval__btn" href="#about" aria-label="Scroll to explore"><p>Scroll to explore</p><span aria-hidden="true"><svg class="sm-reference-arrow sm-reference-arrow--down" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v17M5 13l7 7 7-7"/></svg></span></a>
+        </div>
+        <div class="ban__title sm-hero-copy" id="sm-hero-copy" dir="rtl" lang="en">
+          <h1 aria-label="Watch everything you love in 4K without interruptions"><span class="sm-hero-line" data-accent="Your world"><span class="sm-hero-verb" aria-hidden="true">Watch</span></span> <span class="sm-hero-line" data-accent="Without limits">everything you love</span> <span class="sm-hero-line">in</span> <span class="sm-hero-line sm-hero-quality" dir="ltr" data-accent="Clarity">4K</span> <span class="sm-hero-line" data-accent="Every moment">without interruptions</span></h1>
+          <p>Explore your viewing options, service details and playback requirements before choosing a plan.</p>
+        </div>
+        <div class="hero-flower-spacer" aria-hidden="true"></div>
+        <div class="ban__desc hero-wordband" role="region" aria-label="Content and service options: channels, movies and series, activation assistance and four servers">
+          <div class="hero-wordband__row hero-wordband__row--outline" aria-hidden="true"><div class="hero-wordband__track" data-words="stats"></div></div>
+          <div class="hero-wordband__row hero-wordband__row--lime" aria-hidden="true"><div class="hero-wordband__track" data-words="service"></div></div>
+        </div>
+        <script>
+        (function(){
+          const title=document.querySelector('#sm-hero-copy'), spacer=document.querySelector('.hero-flower-spacer'), oval=document.querySelector('.ban__oval');
+          if(!title||!spacer||!oval)return;
+          function positionFlower(){
+            const heading=title.getBoundingClientRect();
+            const offset=heading.top-oval.getBoundingClientRect().top;
+            oval.style.setProperty('--flower-after-title',`${offset}px`);
+            oval.style.setProperty('--flower-title-height',`${heading.height}px`);
+          }
+          window.addEventListener('resize',positionFlower,{passive:true});
+          if('ResizeObserver' in window){const observer=new ResizeObserver(positionFlower);observer.observe(title);observer.observe(oval)}
+          document.fonts?.ready.then(positionFlower);positionFlower();
+        })();
+        </script>
+      </div>
+      <!-- BANNER END -->

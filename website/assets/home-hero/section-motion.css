@@ -1,0 +1,44 @@
+/* Keep each section's original scroll direction and rotation; remove only fading. */
+html:not([data-motion-reduced="true"]) .flow-entry{translate:var(--entry-x,0px) var(--entry-y,0px);rotate:var(--entry-rotate,0deg);opacity:1;transition:translate 1.05s cubic-bezier(.22,1,.36,1),rotate 1.05s cubic-bezier(.22,1,.36,1)}
+.sm-about .abt__who .sm-about-reveal-pending,.sm-about .abt__who .abt__who__text>div .sm-about__devices.sm-about-reveal-pending,.sm-path .sm-path-pending,.sm-path__heading h2.sm-path-pending span,.sm-path__heading h2.sm-path-pending ~ .sm-path__meta,.sm-path__heading h2.sm-path-pending + .sm-path__script,.sm-journey .sm-journey__text>.sm-journey__headline.sm-journey-pending,.sm-journey .sm-journey__heading.sm-journey-heading-pending h2 span,.sm-journey .sm-journey__heading.sm-journey-heading-pending .sm-journey__stars{opacity:1}
+.sm-path__heading h2.sm-path-pending + .sm-path__script{filter:none}
+.sm-about .about-ribbons-scene .rose-strip__perspective,.sm-contact .footer-background-brand{opacity:1}
+html.sm-mobile-motion .sm-servers .sm-server__card{opacity:1}
+.sm-journey .sm-journey__stage[data-scroll-active="true"] .sm-journey__steps li[data-revealed="false"]{opacity:1}
+/* Scroll-triggered entrances keep their movement without opacity or blur fades. */
+@keyframes smJourneyReveal{from{clip-path:inset(8% 0 8% 0);transform:scale(1.09)}to{clip-path:inset(0);transform:scale(1.045)}}
+@keyframes sm-server-logo-reveal{from{filter:blur(0)}to{filter:blur(0)}}
+@keyframes sm-server-copy-reveal{from{transform:translateY(20px)}to{transform:translateY(0)}}
+@keyframes sm-server-detail-in{from{transform:translateY(14px)}to{transform:translateY(0)}}
+@keyframes sm-server-heading-in{from{filter:blur(0)}to{filter:blur(0)}}
+@keyframes sm-welcome-arrive{from{transform:translate(var(--dx),var(--dy))}to{transform:translate(0,0)}}
+@keyframes sm-entry-side-wide{from{transform:translateX(60px)}to{transform:translateX(0)}}
+@keyframes sm-phrase-side{from{transform:translate(var(--phrase-slide-distance,-24px),-50%) rotate(-5deg)}to{transform:translateY(-50%) rotate(-5deg)}}
+@keyframes sm-phrase-side-mobile{from{transform:translateX(var(--phrase-slide-distance,-24px)) rotate(-5deg)}to{transform:translateX(0) rotate(-5deg)}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]) .flow-entry{translate:none;transition:none}}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]):not([data-motion-reduced="true"]) .flow-entry{translate:none;transition:none}}
+
+/* Use the hero's easing for entrance transitions while keeping their paths intact. */
+.sm-about .abt__who .a-text,.sm-path__heading h2 span,.sm-path__intro>div,.sm-path__trial,.sm-journey .sm-journey__text>.sm-journey__headline,.sm-journey .sm-journey__heading h2 span,.sm-journey .sm-journey__stars{transition:transform 1.05s cubic-bezier(.22,1,.36,1)}
+:where(html[data-motion-reduced="false"]) .sm-server.is-visible :is(.sm-server__image,.sm-server__body,.sm-server__specs,.sm-server__bottom,.sm-server__name,.sm-server__price){animation-duration:1.05s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+/* The section moves as one layer, independently of its existing inner animations. */
+html:not([data-motion-reduced="true"]) .sm-section-motion{translate:0 var(--section-shift,0px);transition:translate 1.05s cubic-bezier(.22,1,.36,1)}
+html:not([data-motion-reduced="true"]) .sm-section-motion:focus-within{translate:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="on"]):not([data-motion-reduced="true"]) .sm-section-motion{translate:none;transition:none}}
+
+/* Background gradients follow a slower track than foreground content. */
+#works.sm-section-motion,.sm-contact.sm-section-motion{background-size:100% 120%;background-position:center calc(50% + var(--section-depth,0px));background-repeat:no-repeat}
+/* Independent title settling adds to existing flow translations, not replaces them. */
+html:not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry){
+  translate:var(--entry-x,0px) calc(var(--entry-y,0px) + var(--title-settle,0px));
+  transition:translate 1.35s cubic-bezier(.22,1,.36,1),rotate 1.05s cubic-bezier(.22,1,.36,1);
+}
+html:not([data-motion-reduced="true"]) :is(#services .sm-sports__heading,#sports-news .sm-news__header h2,#about h2.small_title,#m3u-player h2,.sm-contact h2){
+  translate:0 var(--title-settle,0px);
+  transition:translate 1.35s cubic-bezier(.22,1,.36,1);
+}
+html:not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry):focus-within{translate:none}
+@media(prefers-reduced-motion:reduce){
+  html:not([data-motion="on"]):not([data-motion-reduced="true"]) .sm-section-motion :is(h2.flow-entry,.sm-matches__title.flow-entry),
+  html:not([data-motion="on"]):not([data-motion-reduced="true"]) :is(#services .sm-sports__heading,#sports-news .sm-news__header h2,#about h2.small_title,#m3u-player h2,.sm-contact h2){translate:none;transition:none}
+}

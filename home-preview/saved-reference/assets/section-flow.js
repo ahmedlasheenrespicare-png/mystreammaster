@@ -50,7 +50,7 @@
    const overall=Math.min(clamp((innerHeight+Math.min(innerHeight*.12,180)-top)/(innerHeight*.84)),clamp(bottom/(innerHeight*.18)));
    group.anchor.dataset.flowOverall=overall.toFixed(3);
    group.items.forEach((item,index)=>{
-    const duration=1+Math.max(0,group.items.length-1)*.04,start=index*.04/duration,end=(index*.04+1)/duration,progress=clamp((overall-start)/(end-start)),eased=progress===0?0:progress===1?1:ease(progress),amount=1-eased-(item.large?.025:.055)*Math.sin(Math.PI*clamp((progress-.55)/.45));
+    const duration=1+Math.max(0,group.items.length-1)*.04,start=index*.04/duration,end=(index*.04+1)/duration,progress=clamp((overall-start)/(end-start)),eased=progress===0?0:progress===1?1:ease(progress),amount=1-eased;
     const direction=item.direction||'right',horizontal=Math.min(innerWidth*.75,500),vertical=Math.min(innerHeight*.35,280);
     const target={x:(direction==='right'?horizontal:direction==='left'?-horizontal:0)*amount,y:(direction==='up'?vertical:direction==='down'?-vertical:0)*amount,rotate:(direction==='left'||direction==='down'?-3:3)*amount};
     let state=states.get(item.el);

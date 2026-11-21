@@ -166,6 +166,36 @@ async function renderPage(name, destination, language) {
   // reel script. Version its URL so a cached older script cannot mask it.
   html = html.replace(/(cinema-showcase\.js\?[^"']+)/g, `$1&responsive=${cinemaRevision}`);
   html = html.replace(/(main-D5MQsYQ6\.js\?[^"']+)/g, `$1&flower=${flowerRevision}`);
+  // The archived snapshot contains a hidden reference loader. Replace only that
+  // element in production, keeping the hooks used by the existing home script.
+  // It remains hidden as in the approved home; the site's logo is untouched.
+  const loaderPattern = /<!-- LOADER -->[\s\S]*?<!-- LOADER END -->/;
+  if ((html.match(/<!-- LOADER -->/g) || []).length !== 1 || !loaderPattern.test(html)) {
+    throw new Error(`Approved ${language} loader markup changed; review the production replacement`);
+  }
+  const loadingLabel = language === 'ar' ? 'جارٍ تجهيز الصفحة' : 'Preparing your page';
+  html = html.replace(loaderPattern, `<!-- Stream Master loading element -->
+  <div class="loader done sm-home-loader" style="display: none;" aria-hidden="true">
+    <div class="sm-home-loader__content">
+      <span class="sm-home-loader__indicator" aria-hidden="true"></span>
+      <p>${loadingLabel}</p>
+      <div class="progress"><span class="number">100%</span><div class="sm-home-loader__track"><div id="progressBar" style="transform: scaleX(1);"></div></div></div>
+    </div>
+    <div class="loader__images done"><div class="blur-mask"></div></div>
+    <svg class="overlay" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="overlay__path" fill="#0b0b0f" vector-effect="non-scaling-stroke" d="M 0 0 V 0 Q 50 0 100 0 V 0 z"></path></svg>
+  </div>
+  <style>
+    .sm-home-loader{background:#0b0b0f;color:#fff;font-family:system-ui,sans-serif}
+    .sm-home-loader__content{position:relative;z-index:2;display:grid;justify-items:center;gap:18px}
+    .sm-home-loader__content p{margin:0;font-size:16px;font-weight:700}
+    .sm-home-loader__indicator{width:32px;height:32px;border:3px solid #ffffff33;border-top-color:#d8ff3e;border-radius:50%;animation:sm-home-loader-spin 1s linear infinite}
+    .sm-home-loader .progress{position:static;display:grid;justify-items:center;gap:8px;color:#fff}
+    .sm-home-loader__track{width:160px;height:3px;background:#ffffff33;overflow:hidden;border-radius:4px}
+    .sm-home-loader #progressBar{height:100%;background:#d8ff3e;transform-origin:left}
+    .sm-home-loader .loader__images{display:none}
+    @keyframes sm-home-loader-spin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.sm-home-loader__indicator{animation:none}}
+  </style>`);
   html = html.replace(/<html\s+lang="(?:ar|en)"/, `<html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}"`);
   // Preserve the approved preview's default LTR layout; its Arabic text and
   // components already specify their own direction. Setting html dir alone

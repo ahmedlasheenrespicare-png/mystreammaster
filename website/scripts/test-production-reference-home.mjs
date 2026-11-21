@@ -31,6 +31,16 @@ test('built home pages use the approved isolated snapshot and retain production 
     }
     assert.equal(doc('#sm-language').attr('href'), other);
     assert.equal(doc('h1').length, 1);
+    const loader = doc('.sm-home-loader');
+    assert.equal(loader.length, 1);
+    assert.equal(loader.attr('aria-hidden'), 'true');
+    assert.match(loader.attr('style'), /display:\s*none/);
+    assert.equal(loader.find('.loader__images .blur-mask').length, 1);
+    assert.equal(loader.find('.overlay__path').length, 1);
+    assert.equal(loader.find('#progressBar').length, 1);
+    assert.equal(loader.find('img').length, 0);
+    assert.ok(!loader.text().includes('Abhishek Jha'));
+    assert.ok(loader.text().includes(lang === 'ar' ? 'جارٍ تجهيز الصفحة' : 'Preparing your page'));
     assert.ok(html.includes(`/_assets/reference-home/${APPROVED_HOME_SNAPSHOT}/`));
     assert.ok(!html.includes('/home-preview/'));
     assert.ok(html.includes('googletagmanager.com/gtag/js'));

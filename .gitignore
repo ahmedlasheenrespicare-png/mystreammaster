@@ -21,3 +21,6 @@ home-preview/release-candidate/
 
 # Generated approved home snapshot assets, rebuilt during publish.
 _assets/reference-home/
+
+# Generated interactive world for the indexable league pages.
+_assets/league-page-world/

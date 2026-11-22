@@ -11,6 +11,8 @@ import sharp from 'sharp';
 import { APPROVED_HOME_SNAPSHOT } from './approved-home-snapshot.mjs';
 import { optimizeReferenceFlower } from './optimize-reference-flower.mjs';
 import { publishHomeSportsNews } from './publish-home-sports-news.mjs';
+import { publishLeaguePages } from './publish-league-pages.mjs';
+import { leagues, leaguePath } from './league-pages-data.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const website = path.join(root, 'website');
@@ -39,6 +41,19 @@ async function rewriteAssets(dir) {
   }
 }
 await rewriteAssets(output);
+const leagueMenuCss = await fs.readFile(path.join(website, 'assets/league-pages/header-menu.css'));
+const leagueMenuJs = await fs.readFile(path.join(website, 'assets/league-pages/header-menu.js'));
+const leagueMenuRevision = createHash('sha256').update(leagueMenuCss).update(leagueMenuJs).digest('hex').slice(0, 16);
+await fs.writeFile(path.join(output, 'league-header-menu.css'), leagueMenuCss);
+await fs.writeFile(path.join(output, 'league-header-menu.js'), leagueMenuJs);
+const leagueCards = leagues.map((league, index) => {
+  const logo = `${assetUrl}league-world/logos/${index + 1}.${index === 7 ? 'webp' : 'png'}`;
+  const links = [['standings', 'الترتيب'], ['stats', 'الإحصائيات'], ['matches', 'المباريات']]
+    .map(([slug, label]) => `<a href="${leaguePath(league, slug)}">${label}</a>`).join('');
+  return `<div class="league-menu-card"><a class="league-menu-main" href="${leaguePath(league)}"><span class="league-menu-icon"><img src="${logo}" alt="" width="42" height="42" loading="lazy"></span><span>${league.name}</span></a><div class="league-menu-sub">${links}</div></div>`;
+}).join('');
+const leagueMenu = `<section id="league-header-panel" class="league-menu-panel" aria-label="قائمة البطولات" hidden><div class="league-menu-head"><strong>استكشف البطولات</strong><button class="league-menu-close" type="button" aria-label="إغلاق قائمة البطولات">×</button></div><div class="league-menu-list">${leagueCards}</div><a class="league-menu-all" href="/leagues/">كل البطولات ←</a><p class="league-menu-world"><a href="/#league-strip">الذهاب إلى عالم البطولات التفاعلي</a></p></section>`;
+
 
 // The user approved the section animations but explicitly retained the live
 // hero. Keep its frozen Arabic/English markup and scope the new CSS to sections.
@@ -181,7 +196,19 @@ async function renderPage(name, destination, language) {
   html = html.replace(bannerPattern, () => hero.trim());
   html = html.replace(/<link\b[^>]*href="[^"]*\/editorial-preview\.css(?:\?[^"]*)?"[^>]*>/, `<link rel="stylesheet" href="${assetUrl}production-section-motion.css?v=${sectionRevision}">`)
     .replace(/<script\b[^>]*src="[^"]*\/editorial-preview\.js(?:\?[^"]*)?"[^>]*><\/script>/, '');
-  if (language === 'ar') html = await publishHomeSportsNews(root, html);
+  if (language === 'ar') {
+    html = await publishHomeSportsNews(root, html);
+    const desktopLeagueLink = '<a href="#league-strip" data-nav-section>البطولات</a>';
+    const mobileLeagueLink = '<li><a href="#services" data-nav-section>عالم الرياضة والبطولات</a></li>';
+    if (!html.includes(desktopLeagueLink) || !html.includes(mobileLeagueLink)) throw new Error('Missing header league links');
+    html = html.replace(desktopLeagueLink, '<button type="button" class="league-menu-trigger" data-league-menu-trigger aria-expanded="false" aria-controls="league-header-panel">البطولات ▾</button>');
+    html = html.replace(mobileLeagueLink, `${mobileLeagueLink}<li><button type="button" class="league-mobile-trigger" data-league-menu-trigger aria-expanded="false" aria-controls="league-header-panel">البطولات <span aria-hidden="true">▾</span></button></li>`);
+    html = html.replace('</head>', `<link rel="stylesheet" href="${assetUrl}league-header-menu.css?v=${leagueMenuRevision}"></head>`);
+    html = html.replace('</body>', `${leagueMenu}<script src="${assetUrl}league-header-menu.js?v=${leagueMenuRevision}" defer></script></body>`);
+    if (!html.includes('class="world-launch"')) throw new Error('Missing league discovery control');
+    html = html.replace('</head>', '<style>.world-index-link{display:inline-flex;margin-inline:12px;color:inherit;font-size:13px;text-decoration:underline;text-underline-offset:4px}</style></head>');
+    html = html.replace(/(<button class="world-launch"[\s\S]*?<\/button>)/, '$1<a class="world-index-link" href="/leagues/">صفحات البطولات</a>');
+  }
   // The snapshot path is stable, but this publish-time integration changes the
   // reel script. Version its URL so a cached older script cannot mask it.
   html = html.replace(/(cinema-showcase\.js\?[^"']+)/g, `$1&responsive=${cinemaRevision}`);
@@ -239,4 +266,5 @@ async function renderPage(name, destination, language) {
 }
 await renderPage('index.html', path.join(root, 'index.html'), 'ar');
 await renderPage('en/index.html', path.join(root, 'en/index.html'), 'en');
-console.log('Published isolated approved Arabic and English home snapshots.');
+await publishLeaguePages(root, assetUrl);
+console.log('Published isolated approved Arabic and English home snapshots and league pages.');

@@ -15,6 +15,7 @@ import { SERVER_WATERMARKS, SERVER_WATERMARK_CLASS } from "../lib/server-brandin
 import { IconArrowUpRight, IconChat, IconCheck, IconShieldCheck, IconStar, IconZap } from "../components/Icons";
 import FAQ from "../components/FAQ";
 import { Reveal } from "../components/motion";
+import ServerModel from "../components/ServerModel";
 
 /* =========================================================================
    صفحة هبوط لكل باقة — /nova  /istar  /moka  /x
@@ -86,6 +87,7 @@ export default function PlanPage({
               />
               <span className="font-serif italic font-normal">تفعيل وربط تقني</span>
             </h1>
+            {(plan.serverCode === "nova" || plan.serverCode === "x") && <ServerModel server={plan.serverCode} />}
             <p className="mt-4 text-[15.5px] md:text-[17px] text-black/60 font-medium leading-relaxed">
               {plan.description}
             </p>

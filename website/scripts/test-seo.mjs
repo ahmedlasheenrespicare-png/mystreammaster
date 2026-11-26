@@ -73,6 +73,8 @@ const isExpectedNoindex = (rel) => {
   if (NOINDEX.has(rel)) return true;
   if (/^home-preview\/(?:saved-reference|release-candidate)\/news\/[a-z0-9-]+\/index\.html$/.test(rel)) return true;
   if (/^_assets\/reference-home\/[a-f0-9]{40}\/league-world\/world\.html$/.test(rel)) return true;
+  if (/^_assets\/reference-home\/[a-f0-9]{40}\/server-3d\/[a-f0-9]{16}\/card\.html$/.test(rel)) return true; // إطار المجسّم الزخرفي غير قابل للفهرسة
+  if (rel === '_assets/server-3d/card.html') return true; // وسيط المجسّم الداخلي
   if (/^_assets\/league-page-world\/[a-f0-9]{16}\/league-world\/world\.html$/.test(rel)) return true; // إطار تفاعلي؛ صفحات البطولات الخارجية هي المفهرسة
   if (!isMatchDetailPage(rel)) return false;
   assert.ok(matchVerificationByFile.has(rel), `${rel}: مسار مباراة غير موجود في مصدر المباريات`);

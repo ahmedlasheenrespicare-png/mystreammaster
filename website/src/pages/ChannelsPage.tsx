@@ -277,7 +277,7 @@ export default function ChannelsPage() {
             </span>
           </a>
           <a
-            href={to("#live-player")}
+            href={to("watch-legal.html")}
             className="group rounded-2xl border border-black/10 bg-white p-5 hover:border-black transition"
           >
             <span className="block font-black text-[15px]">دليل المشاهدة الرسمية</span>

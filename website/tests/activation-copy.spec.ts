@@ -123,3 +123,16 @@ test('channels trial link requests a provider compatibility check', async ({ pag
   const link = page.locator('main').getByRole('link', { name: 'طلب كود تجريبي', exact: true });
   expect(messageFrom((await link.getAttribute('href'))!)).toBe('مرحبًا، أود طلب كود فحص تجريبي من المزود لاختبار التوافق على جهازي');
 });
+
+test('cart remains accessible after dismissing the drawer on a mobile screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/store/');
+  await page.getByRole('button', { name: /أضف إلى السلة/ }).first().click();
+  const cart = page.getByRole('dialog', { name: 'سلة المشتريات' });
+  await expect(cart).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(cart).toBeHidden();
+  await page.getByRole('button', { name: 'سلة المشتريات', exact: true }).click();
+  await expect(cart).toBeVisible();
+  await expect(cart.getByRole('button', { name: 'إتمام طلب التفعيل عبر واتساب' })).toBeVisible();
+});

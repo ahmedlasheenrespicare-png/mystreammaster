@@ -161,3 +161,29 @@ test('تذييلات الصفحات القديمة لا تؤكد ترخيصاً 
     assert.match(html, /تحقّق من ترخيص الجهة المزوّدة وحقها في التوزيع/);
   }
 });
+
+test('دليل HTTP المنشور مقروء ويشرح HTTP/3 عبر QUIC مع مراجع', async () => {
+  const $ = load(await read('blog/http-protocols/index.html'));
+  const article = $('main article');
+  const text = article.text();
+  assert.equal(article.find('h1').length, 1);
+  assert.doesNotMatch(text, /\*\*|التطبيcation|وهوprotocol|her[self]+/);
+  assert.match(text, /QUIC فوق UDP/);
+  assert.match(text, /لا يلغي كل أسباب التأخير/);
+  for (const rfc of [9000, 9110, 9113, 9114]) assert.equal(article.find(`a[href="https://www.rfc-editor.org/rfc/rfc${rfc}"]`).length, 1);
+});
+
+test('روابط الدليل والمشغّل في الصفحات المنشورة تشير مباشرة لوجهاتها', async () => {
+  const channels = load(await read('channels/index.html'));
+  const guide = channels('main a').filter((_, el) => channels(el).text().includes('دليل المشاهدة الرسمية'));
+  assert.equal(guide.attr('href'), '/watch-legal.html');
+  const article = load(await read('blog/http-protocols/index.html'));
+  for (const target of ['/#xtream', '/#live-player', '/#server-finder', '/#channels', '/#setup', '/#showcase']) {
+    assert.equal(article(`a[href="${target}"]`).length, 0, target);
+  }
+  for (const slug of ['iptv-على-apple-tv', 'أهمية-الدعم-الفني-في-اشتراكات-iptv', 'افضل-قنوات-iptv-الرياضية', 'تثبيت-iptv-على-samsung-smart-tv', 'هل-iptv-آمن']) {
+    const page = load(await read(`blog/${slug}/index.html`));
+    assert.equal(page('main a[href="/#xtream"]').length, 0, slug);
+    assert.ok(page('main a[href="/xtream-player.html"]').length > 0, slug);
+  }
+});

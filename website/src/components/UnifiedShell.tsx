@@ -1,25 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { HOME_SECTIONS, NAV_GROUPS, homeSectionPath } from '../navigation.mjs';
+import { HEADER_GROUPS } from '../header-floorplan.mjs';
 import { counterpartHref } from '../i18n';
 import { CURRENCIES } from '../data';
 import './header-brand-crab39.css';
 import { motionReduced } from '../lib/motion-preference';
 
 type Link = { label: string; href: string };
-const groups: { title: string; links: Link[] }[] = [
-  { title: 'اكتشف', links: [
-    { label: 'عن ستريم ماستر', href: '/#about' }, { label: 'عالم الرياضة والبطولات', href: '/#services' },
-    { label: 'المباريات البارزة', href: '/#featured-matches' }, { label: 'الأفلام والمسلسلات', href: '/#cinema-library' },
-  ] },
-  { title: 'ابدأ المشاهدة', links: [
-    { label: 'اختر مسارك', href: '/#path-section' }, { label: 'اختر سيرفرك', href: '/#works' },
-    { label: 'قارن السيرفرات', href: '/servers/' }, { label: 'خطوات بسيطة', href: '/#journey' },
-  ] },
-  { title: 'المساعدة والمزيد', links: [
-    { label: 'آراء المستخدمين', href: '/#reviews' }, { label: 'الأسئلة الشائعة', href: '/faq/' },
-    { label: 'المقالات', href: '/blog/' }, { label: 'تواصل معنا', href: '/#contact' },
-  ] },
-];
 const englishGroups: { title: string; links: Link[] }[] = [
   { title: 'Discover', links: [{ label: 'About Stream Master', href: '/en/#about' }, { label: 'Sports and leagues', href: '/en/#services' }, { label: 'Movies and series', href: '/en/#cinema-library' }] },
   { title: 'Start watching', links: [{ label: 'Choose your path', href: '/en/#path-section' }, { label: 'Choose your server', href: '/en/#works' }, { label: 'Simple steps', href: '/en/#journey' }] },
@@ -37,30 +24,30 @@ function Logo({ english }: { english: boolean }) {
   </a>;
 }
 
-export function UnifiedHeader({ path = '/', currency = 'USD', cartCount = 0, onCurrencyChange, onOpenCart }: {
-  path?: string; currency?: string; cartCount?: number; onCurrencyChange?: (value: string) => void; onOpenCart?: () => void;
+export function UnifiedHeader({ path = '/', currency = 'USD', cartCount = 0, cartOpen = false, onCurrencyChange, onOpenCart }: {
+  path?: string; currency?: string; cartCount?: number; cartOpen?: boolean; onCurrencyChange?: (value: string) => void; onOpenCart?: () => void;
 }) {
   const english = path === '/en' || path.startsWith('/en/');
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   useEffect(() => { setOpen(false); }, [path]);
+  // Keep the cart control reachable after the drawer closes, without changing scroll position.
+  useEffect(() => { if (cartOpen) setHidden(false); }, [cartOpen]);
   useEffect(() => {
     let previous = window.scrollY;
-    const scroll = () => { const y = window.scrollY, delta = y - previous; if (y < 80 || open) setHidden(false); else if (Math.abs(delta) >= 5) setHidden(delta > 0); if (Math.abs(delta) >= 5 || y < 80) previous = y; };
+    const scroll = () => { const y = window.scrollY, delta = y - previous; if (y < 80 || open || cartOpen) setHidden(false); else if (Math.abs(delta) >= 5) setHidden(delta > 0); if (Math.abs(delta) >= 5 || y < 80) previous = y; };
     const key = (event: KeyboardEvent) => { if (event.key === 'Escape' && open) { setOpen(false); document.querySelector<HTMLButtonElement>('.us-menu-toggle')?.focus(); } };
     window.addEventListener('scroll', scroll, { passive: true }); document.addEventListener('keydown', key);
     return () => { window.removeEventListener('scroll', scroll); document.removeEventListener('keydown', key); };
-  }, [open]);
+  }, [open, cartOpen]);
   const direct = english ? [
     {label:'Leagues',href:'/en/#league-strip'}, {label:'Movies and series',href:'/en/#cinema-library'}, {label:'Choose your path',href:'/en/#path-section'}, {label:'Servers',href:'/en/#works'},
   ] : [
     {label:'البطولات',href:'/#league-strip'}, {label:'الأفلام والمسلسلات',href:'/#cinema-library'}, {label:'اختر مسارك',href:'/#path-section'}, {label:'السيرفرات',href:'/#works'},
   ];
-  return <header className={`us-header${hidden && !open ? ' us-scrolled-away' : ''}`} data-unified-shell dir="ltr">
+  return <header className={`us-header${hidden && !open && !cartOpen ? ' us-scrolled-away' : ''}`} data-unified-shell dir="ltr">
     <div className="us-header-bar"><Logo english={english} />
-      <nav className="us-numbered" dir={english ? 'ltr' : 'rtl'} aria-label={english ? 'Homepage sections' : 'أقسام الرئيسية'}>{direct.map((item,i) => <span key={item.href}>{num[i]} <a href={item.href}>{item.label}</a></span>)}</nav>
-      <nav className="us-server-links" dir="rtl" aria-label={english ? 'Servers' : 'السيرفرات'}>{servers.map((item,i)=><span key={item.href}>{num[i]} <a href={english ? `/en${item.href}` : item.href}>{english ? ['Nova','iStar','Moka','X'][i] : item.label}</a></span>)}</nav>
-      <div className="us-contact-links" dir={english ? 'ltr' : 'rtl'}><span>{english ? 'Support' : 'دعم بالعربية'}</span><a href="https://wa.me/201090415657" target="_blank" rel="noopener noreferrer">{english ? 'Contact on WhatsApp' : 'تواصل عبر واتساب'}</a><a href="/trial/">{english ? 'Free trial' : 'جرّب مجانًا'}</a></div>
+      {english ? <><nav className="us-numbered" dir="ltr" aria-label="Homepage sections">{direct.map((item,i) => <span key={item.href}>{num[i]} <a href={item.href}>{item.label}</a></span>)}</nav><nav className="us-server-links" dir="rtl" aria-label="Servers">{servers.map((item,i)=><span key={item.href}>{num[i]} <a href={`/en${item.href}`}>{['Nova','iStar','Moka','X'][i]}</a></span>)}</nav></> : <nav className="floor-nav floor-nav--desktop" dir="rtl" aria-label="التنقل الرئيسي"><a className="floor-home" href="/">الرئيسية</a>{HEADER_GROUPS.map(group => <details className="floor-group" key={group.key}><summary>{group.label}</summary><div className="floor-group-links">{group.links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div></details>)}</nav>}
       <div className="us-tools" dir="rtl"><a href={counterpartHref(path)} lang={english ? 'ar' : 'en'} aria-label={english ? 'التبديل إلى العربية' : 'Switch to English'}>{english ? 'العربية' : 'EN'}</a>
         <select className="us-currency" aria-label={english ? 'Select currency' : 'اختر العملة'} value={currency} onChange={e => onCurrencyChange?.(e.target.value)}>{['USD','SAR','EGP','AED','KWD'].map(code=><option key={code} value={code}>{code} {CURRENCIES[code].symbol}</option>)}</select>
         {onOpenCart ? <button className="us-cart" type="button" onClick={onOpenCart} aria-label={english ? 'Shopping cart' : 'سلة المشتريات'}>{english ? 'Cart' : 'السلة'} <span data-us-cart-count>{cartCount}</span></button> : <a className="us-cart" href="/cart/" aria-label={english ? 'Shopping cart' : 'سلة المشتريات'}>{english ? 'Cart' : 'السلة'} <span data-us-cart-count>{cartCount}</span></a>}
@@ -72,8 +59,8 @@ export function UnifiedHeader({ path = '/', currency = 'USD', cartCount = 0, onC
       <div className="us-menu-backdrop" onClick={() => setOpen(false)}></div>
       <nav className="us-menu-panel" dir={english ? 'ltr' : 'rtl'} aria-label={english ? 'Page menu' : 'قائمة أقسام الصفحة'}>
         <p className="us-menu-title">{english ? 'Discover Stream Master' : 'اكتشف ستريم ماستر'} <span>✦</span></p>
-        {(english ? englishGroups : groups).map(group=><section key={group.title}><h2>{group.title}</h2>{group.links.map(link=><a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>)}</section>)}
-        <details className="us-more"><summary>{english ? 'More pages' : 'صفحات الموقع'}</summary><div><h3>{english ? 'Homepage sections' : 'أقسام الرئيسية'}</h3>{HOME_SECTIONS.map(section=><a href={'/' + homeSectionPath(section.id)} key={section.id}>{section.label}</a>)}</div>{NAV_GROUPS.filter(group => group.key !== 'home').map(group=><div key={group.key}><h3>{group.label}</h3>{group.links.map(link=><a key={link.href} href={'/' + link.href}>{link.label}</a>)}{group.legal?.map(link=><a key={link.href} href={'/' + link.href}>{link.label}</a>)}</div>)}</details>
+        {english ? englishGroups.map(group=><section key={group.title}><h2>{group.title}</h2>{group.links.map(link=><a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>)}</section>) : <nav className="floor-nav floor-nav--mobile" aria-label="أقسام الموقع"><a className="floor-home" href="/">الرئيسية</a>{HEADER_GROUPS.map(group=><details className="floor-group" key={group.key}><summary>{group.label}</summary><div className="floor-group-links">{group.links.map(([label,href])=><a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}</div></details>)}</nav>}
+        {english && <details className="us-more"><summary>{english ? 'More pages' : 'صفحات الموقع'}</summary><div><h3>{english ? 'Homepage sections' : 'أقسام الرئيسية'}</h3>{HOME_SECTIONS.map(section=><a href={'/' + homeSectionPath(section.id)} key={section.id}>{section.label}</a>)}</div>{NAV_GROUPS.filter(group => group.key !== 'home').map(group=><div key={group.key}><h3>{group.label}</h3>{group.links.map(link=><a key={link.href} href={'/' + link.href}>{link.label}</a>)}{group.legal?.map(link=><a key={link.href} href={'/' + link.href}>{link.label}</a>)}</div>)}</details>}
       </nav>
     </div>
   </header>;

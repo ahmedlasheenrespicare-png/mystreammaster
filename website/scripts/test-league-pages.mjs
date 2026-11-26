@@ -18,6 +18,8 @@ test('all eight competitions have crawlable, distinct and linked pages', async (
   assert.ok((await read('sitemap-index.xml')).includes(`${site}/sitemap-leagues.xml`));
   const home = load(await read('index.html'));
   assert.equal(home('a.world-index-link').attr('href'), '/leagues/');
+  assert.equal(home('#pricing').length, 1);
+  assert.equal(home('#pricing').closest('#works').length, 1);
   assert.equal(home('[data-league-menu-trigger]').length, 2);
   assert.equal(home('#league-header-panel .league-menu-card').length, 8);
   assert.equal(home('#league-header-panel .league-menu-icon img').length, 8);
@@ -28,7 +30,7 @@ test('all eight competitions have crawlable, distinct and linked pages', async (
   assert.equal(hub('.league-card').length, leagues.length);
   const titleSet = new Set();
   for (const league of leagues) {
-    assert.equal(hub(`a[href="${leaguePath(league)}"]`).length, 1);
+    assert.equal(hub(`main a[href="${leaguePath(league)}"]`).length, 1);
     for (const view of leagueViews) {
       const route = leaguePath(league, view.slug);
       const doc = load(await read(`${route.slice(1)}index.html`));
@@ -41,6 +43,10 @@ test('all eight competitions have crawlable, distinct and linked pages', async (
       assert.equal(doc('.tabs a').length, 4);
       for (const destination of leagueViews) assert.equal(doc(`.tabs a[href="${leaguePath(league, destination.slug)}"]`).length, 1);
       assert.match(doc('.world-copy iframe').attr('src'), new RegExp(`league=${leagues.indexOf(league)}&view=${view.view}`));
+      assert.ok(doc('main').text().includes(league.context));
+      assert.equal(doc('.league-readable').attr('data-league'), league.table);
+      assert.equal(doc('.league-readable').attr('data-match-league'), league.matches || league.table);
+      assert.equal(doc('.league-readable').attr('data-view'), view.view);
       assert.ok(doc('main').text().length > 150);
       assert.doesNotMatch(doc.html(), /league-archive-|لقطة الترتيب/);
     }

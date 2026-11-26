@@ -8,11 +8,13 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import sharp from 'sharp';
+import { build as bundle } from 'esbuild';
 import { APPROVED_HOME_SNAPSHOT } from './approved-home-snapshot.mjs';
 import { optimizeReferenceFlower } from './optimize-reference-flower.mjs';
 import { publishHomeSportsNews } from './publish-home-sports-news.mjs';
 import { publishLeaguePages } from './publish-league-pages.mjs';
 import { leagues, leaguePath } from './league-pages-data.mjs';
+import { HEADER_GROUPS } from '../src/header-floorplan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const website = path.join(root, 'website');
@@ -41,6 +43,32 @@ async function rewriteAssets(dir) {
   }
 }
 await rewriteAssets(output);
+
+// Isolated, lazy 3D artwork for the existing Arabic server carousel. The
+// original logos remain visible if WebGL, scripts or the model fail.
+const modelSource = path.join(website, 'nova-logo-preview');
+const modelIntegration = path.join(website, 'assets/server-3d');
+const hash3d = createHash('sha256');
+for (const name of ['card.html', 'main.js', 'nova-vector.svg', 'x-vector.svg']) hash3d.update(await fs.readFile(path.join(modelSource, name)));
+for (const name of ['server-cards.js', 'server-cards.css']) hash3d.update(await fs.readFile(path.join(modelIntegration, name)));
+const server3dRevision = hash3d.digest('hex').slice(0,16);
+const modelOutput = path.join(output, 'server-3d', server3dRevision);
+await fs.mkdir(modelOutput, { recursive: true });
+for (const name of ['card.html', 'nova-vector.svg', 'x-vector.svg']) {
+  await fs.copyFile(path.join(modelSource, name), path.join(modelOutput, name));
+}
+for (const name of ['server-cards.js', 'server-cards.css']) {
+  await fs.copyFile(path.join(modelIntegration, name), path.join(modelOutput, name));
+}
+await bundle({ entryPoints: [path.join(modelSource, 'main.js')], outdir: modelOutput,
+  bundle: true, splitting: true, format: 'esm', platform: 'browser', target: ['es2020'], minify: true,
+  entryNames: '[name]', chunkNames: 'chunk-[hash]', logLevel: 'warning' });
+// Stable page embed address redirects to a content-versioned asset directory.
+// Only local, known logo values are accepted; the original plan logo is the fallback.
+const modelRedirectDir = path.join(root, '_assets/server-3d');
+await fs.mkdir(modelRedirectDir, { recursive: true });
+await fs.writeFile(path.join(modelRedirectDir, 'card.html'), `<!doctype html><html lang="ar"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><script>var p=new URLSearchParams(location.search),logo=p.get('logo')==='x'?'x':'nova';location.replace('${assetUrl}server-3d/${server3dRevision}/card.html?logo='+logo+'&card=1');</script></head><body></body></html>`);
+
 const leagueMenuCss = await fs.readFile(path.join(website, 'assets/league-pages/header-menu.css'));
 const leagueMenuJs = await fs.readFile(path.join(website, 'assets/league-pages/header-menu.js'));
 const leagueMenuRevision = createHash('sha256').update(leagueMenuCss).update(leagueMenuJs).digest('hex').slice(0, 16);
@@ -57,6 +85,7 @@ const leagueMenu = `<section id="league-header-panel" class="league-menu-panel" 
 
 // The user approved the section animations but explicitly retained the live
 // hero. Keep its frozen Arabic/English markup and scope the new CSS to sections.
+const preloaderCss = await fs.readFile(path.join(website, 'assets/home-hero/creative-preloader.css'), 'utf8');
 const sectionCss = await fs.readFile(path.join(website, 'assets/home-hero/section-motion.css'), 'utf8');
 const sectionRevision = createHash('sha256').update(sectionCss).digest('hex').slice(0, 16);
 await fs.writeFile(path.join(output, 'production-section-motion.css'), sectionCss);
@@ -198,12 +227,20 @@ async function renderPage(name, destination, language) {
     .replace(/<script\b[^>]*src="[^"]*\/editorial-preview\.js(?:\?[^"]*)?"[^>]*><\/script>/, '');
   if (language === 'ar') {
     html = await publishHomeSportsNews(root, html);
-    const desktopLeagueLink = '<a href="#league-strip" data-nav-section>البطولات</a>';
-    const mobileLeagueLink = '<li><a href="#services" data-nav-section>عالم الرياضة والبطولات</a></li>';
-    if (!html.includes(desktopLeagueLink) || !html.includes(mobileLeagueLink)) throw new Error('Missing header league links');
-    html = html.replace(desktopLeagueLink, '<button type="button" class="league-menu-trigger" data-league-menu-trigger aria-expanded="false" aria-controls="league-header-panel">البطولات ▾</button>');
-    html = html.replace(mobileLeagueLink, `${mobileLeagueLink}<li><button type="button" class="league-mobile-trigger" data-league-menu-trigger aria-expanded="false" aria-controls="league-header-panel">البطولات <span aria-hidden="true">▾</span></button></li>`);
-    html = html.replace('</head>', `<link rel="stylesheet" href="${assetUrl}league-header-menu.css?v=${leagueMenuRevision}"></head>`);
+    // Preserve existing deep links to the pricing section after the homepage redesign.
+    const pricingTarget = '<span id="servers-compare" aria-hidden="true"></span>';
+    if (!html.includes(pricingTarget)) throw new Error('Missing homepage server section anchor');
+    html = html.replace(pricingTarget, '<span id="pricing" aria-hidden="true"></span>' + pricingTarget);
+    // Replace navigation only; the approved hero and league-world controls remain untouched.
+    const renderGroups = (mobile = false) => `<nav class="floor-nav floor-nav--${mobile ? 'mobile' : 'desktop'}" aria-label="${mobile ? 'أقسام الموقع' : 'التنقل الرئيسي'}" dir="rtl"><a class="floor-home" href="/">الرئيسية</a>${HEADER_GROUPS.map(group => `<details class="floor-group"><summary>${group.label}</summary><div class="floor-group-links">${group.links.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}${group.key === 'sports' ? `<button type="button" class="floor-league-trigger ${mobile ? 'league-mobile-trigger' : 'league-menu-trigger'}" data-league-menu-trigger aria-expanded="false" aria-controls="league-header-panel">تفاصيل البطولات ▾</button>` : ''}</div></details>`).join('')}</nav>`;
+    const desktopNav = /<div class="nav__links" dir="rtl">[\s\S]*?<\/div>\s*<div class="nav__socials"/;
+    const mobileNav = /<ul class="links">[\s\S]*?<\/ul>/;
+    if (!desktopNav.test(html) || !mobileNav.test(html)) throw new Error('Missing reference header navigation');
+    html = html.replace(desktopNav, `<div class="nav__links" dir="rtl">${renderGroups()}</div><div class="nav__socials"`);
+    html = html.replace(mobileNav, `<ul class="links"><li>${renderGroups(true)}</li></ul>`);
+    // Native details keep mobile navigation usable when scripts are disabled.
+    html = html.replace('<div class="nav__menu" id="sm-menu">', `<noscript><style>.nav__menu-btn{display:none!important}.floor-noscript{position:fixed;z-index:1004;top:68px;right:10px;color:#280822;background:#fcf8f4;border-radius:12px;padding:8px;max-height:70vh;overflow:auto}.floor-noscript>summary{cursor:pointer;font-weight:800;padding:6px}.floor-noscript .floor-league-trigger{display:none}</style><details class="floor-noscript"><summary>تصفح الموقع</summary>${renderGroups(true)}</details></noscript><div class="nav__menu" id="sm-menu">`);
+    html = html.replace('</head>', `<link rel="stylesheet" href="/_assets/header-floorplan.css"><link rel="stylesheet" href="${assetUrl}league-header-menu.css?v=${leagueMenuRevision}"></head>`);
     html = html.replace('</body>', `${leagueMenu}<script src="${assetUrl}league-header-menu.js?v=${leagueMenuRevision}" defer></script></body>`);
     if (!html.includes('class="world-launch"')) throw new Error('Missing league discovery control');
     html = html.replace('</head>', '<style>.world-index-link{display:inline-flex;margin-inline:12px;color:inherit;font-size:13px;text-decoration:underline;text-underline-offset:4px}</style></head>');
@@ -243,6 +280,32 @@ async function renderPage(name, destination, language) {
     @keyframes sm-home-loader-spin{to{transform:rotate(360deg)}}
     @media(prefers-reduced-motion:reduce){.sm-home-loader__indicator{animation:none}}
   </style>`);
+  // Separate from the preserved GSAP loader hooks: never block the home animation
+  // or require remote media. A hard deadline protects failed/slow resources.
+  const preloaderLabel = language === 'ar' ? 'نجهّز تجربتك' : 'Getting things ready';
+  // Reuse the exact approved homepage logo rather than a lookalike or a new asset.
+  const preloaderDoc = load(html);
+  const approvedLogo = preloaderDoc('.nav__logo .sm-crab39').first();
+  if (!approvedLogo.length) throw new Error(`Missing approved ${language} header logo for preloader`);
+  const preloaderLogo = preloaderDoc.html(approvedLogo);
+  const preloaderHeading = language === 'ar' ? 'عالم من الخيارات <span>لك</span>' : 'A world of choices <span>for you</span>';
+  const preloaderCaption = language === 'ar' ? 'سيرفراتك في مكان واحد' : 'Your servers, together in one place';
+  const serverCards = [['nova', 'NOVA'], ['istar', 'iSTAR'], ['moka', 'MOKA'], ['xtv', 'X']].map(([file, name], index) => `<div class="sm-preloader__card" style="--i:${index}"><img src="/images/brand/${file}-ticket.webp" alt="" width="72" height="72" loading="lazy"><span>${name}</span></div>`).join('');
+  const preloader = `<div class="sm-preloader" role="status" aria-live="polite"><div class="sm-preloader__content"><div class="sm-preloader__brand" role="img" aria-label="${language === 'ar' ? 'شعار ستريم ماستر برو' : 'Stream Master Pro logo'}">${preloaderLogo}</div><p class="sm-preloader__heading">${preloaderHeading}</p><p class="sm-preloader__caption">${preloaderCaption}</p><div class="sm-preloader__cards" aria-hidden="true">${serverCards}</div><p class="sm-preloader__label">${preloaderLabel}</p><div class="sm-preloader__line" aria-hidden="true"></div></div></div>`;
+  html = html.replace('<body dir="ltr">', '<body dir="ltr">' + preloader);
+  // The original body direction is set below, so insert immediately after its
+  // opening tag when the snapshot still contains the unmodified <body>.
+  if (!html.includes('class="sm-preloader"')) html = html.replace('<body>', '<body>' + preloader);
+  const preloaderScript = `<style>${preloaderCss}</style><script>(function(){
+    var root=document.documentElement,done=false;
+    root.classList.add('sm-preloading');
+    function finish(){if(done)return;done=true;clearTimeout(deadline);root.classList.remove('sm-preloading');root.classList.add('sm-preloader-exit');var element=document.querySelector('.sm-preloader');if(element)element.setAttribute('aria-hidden','true');setTimeout(function(){root.classList.remove('sm-preloader-exit')},350)}
+    var deadline=setTimeout(finish,4000);
+    function ready(){var fonts=document.fonts&&document.fonts.ready;var fontDeadline=new Promise(function(resolve){setTimeout(resolve,1200)});Promise.race([fonts||Promise.resolve(),fontDeadline]).then(function(){requestAnimationFrame(function(){requestAnimationFrame(finish)})},finish)}
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
+    window.addEventListener('pageshow',function(event){if(event.persisted)finish()});
+  })();</script>`;
+  html = html.replace('</head>', preloaderScript + '</head>');
   html = html.replace(/<html\s+lang="(?:ar|en)"/, `<html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}"`);
   // Preserve the approved preview's default LTR layout; its Arabic text and
   // components already specify their own direction. Setting html dir alone
@@ -253,11 +316,28 @@ async function renderPage(name, destination, language) {
     if(new URLSearchParams(location.search).has('trial')) location.replace('/trial/?trial=1');
     else {
       const aliases={pricing:'#works','server-finder':'#path-section',setup:'#journey',showcase:'#cinema-library',xtream:'/xtream-player.html',channels:'/channels/','live-player':'/channels/'};
-      function followOldSection(){const target=aliases[decodeURIComponent(location.hash.slice(1))];if(target)location.replace(target)}
-      window.addEventListener('hashchange',followOldSection);followOldSection();
+      const sections=new Set(['works','path-section','journey','cinema-library','league-strip','sports-news','blog-teaser','reviews','faq','about','services','featured-matches','contact']);
+      function scrollToRequestedSection(){
+        const id=decodeURIComponent(location.hash.slice(1));
+        if(!sections.has(id)) return;
+        const target=document.getElementById(id);
+        if(!target) return;
+        if(typeof window.smScrollToSection==='function') window.smScrollToSection(target);
+        else target.scrollIntoView({block:'start'});
+      }
+      function followOldSection(){const target=aliases[decodeURIComponent(location.hash.slice(1))];if(target)location.replace(target);else requestAnimationFrame(scrollToRequestedSection)}
+      window.addEventListener('hashchange',followOldSection);
+      window.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(scrollToRequestedSection),{once:true});
+      followOldSection();
     }
   </script>` : '';
   html = html.replace('</head>', `${productionHead(existing)}\n${trialRedirect}\n</head>`);
+  if (language === 'ar') {
+    html = html.replace('</head>', `<link rel="stylesheet" href="${assetUrl}server-3d/${server3dRevision}/server-cards.css"></head>`);
+    const carouselScript = /<script\b[^>]*src="[^"]*server-league-cards\.js[^"]*"[^>]*><\/script>/;
+    if (!carouselScript.test(html)) throw new Error('Missing approved server carousel script; cannot attach 3D models safely');
+    html = html.replace(carouselScript, match => `${match}<script defer src="${assetUrl}server-3d/${server3dRevision}/server-cards.js"></script>`);
+  }
   const matches = [...html.matchAll(/<img\b[^>]*>/gi)];
   let result = '', pos = 0;
   for (const match of matches) { result += html.slice(pos, match.index) + await imageTag(match[0]); pos = match.index + match[0].length; }

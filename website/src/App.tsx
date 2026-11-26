@@ -265,7 +265,7 @@ export default function App() {
       <SmoothScroll />
       {!isEnPath(path) && <WelcomeSplash activeRoute={path} />}
 
-      <UnifiedHeader path={path} currency={currency} onCurrencyChange={setCurrency} cartCount={cartItems.length} onOpenCart={openCart} />
+      <UnifiedHeader path={path} currency={currency} onCurrencyChange={setCurrency} cartCount={cartItems.length} cartOpen={isCartOpen} onOpenCart={openCart} />
 
       <a href="#main-content" className="skip-link">{isEnPath(path) ? "Skip to content" : "تخطي إلى المحتوى"}</a>
       <main id="main-content" className="flex-1">{page}</main>

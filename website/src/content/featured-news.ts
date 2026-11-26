@@ -679,7 +679,7 @@ images: [
     score: "2 - 2",
     backgroundImage: "images/news/bayern-arsenal-2-2.jpg",
     images: [
-      { src: "images/players/ger-kane.webp", alt: "هاري كين بقميص بايرن ميونخ خلال مواجهة أرسنال في دوري أبطال أوروبا" },
+      { src: "images/players/ger-kane.webp", alt: "هاري كين بقميص بايرن ميونخ" },
       { src: "images/players/eng-rice.webp", alt: "ديكلان رايس" },
     ],
   },

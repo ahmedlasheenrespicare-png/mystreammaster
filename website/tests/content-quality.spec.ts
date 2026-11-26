@@ -69,23 +69,55 @@ test.describe('المحتوى الأساسي دون JavaScript', () => {
   });
 
   test('روابط أقسام الرئيسية تعمل كرابط حقيقي من الصفحات الأخرى', async ({ page }) => {
+    // The published unified footer, not the retired React footer.
     const links = [
-      ['الباقات والأسعار', '/#works'],
-      ['مساعد الاختيار', '/#path-section'],
-      ['مقارنة السيرفرات', '/servers/'],
-      ['مكتبة القنوات', '/channels/'],
-      ['دليل التشغيل', '/#journey'],
-      ['دليل المشاهدة الرسمية', '/channels/'],
+      ['السيرفرات', '/#works'],
+      ['عالم البطولات', '/#league-strip'],
+      ['القنوات', '/channels/'],
+      ['مواعيد المباريات', '/matches/'],
+      ['المقالات', '/blog/'],
+      ['المشاهدة القانونية', '/watch-legal.html'],
     ];
     await page.goto('/blog/internet-speed-for-video-streaming/');
     for (const [label, href] of links) {
       await expect(page.locator('footer').getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href);
     }
-    await page.locator('footer').getByRole('link', { name: 'الباقات والأسعار', exact: true }).click();
+    await page.locator('footer').getByRole('link', { name: 'السيرفرات', exact: true }).click();
     await expect(page).toHaveURL(/\/#works$/);
     for (const [, href] of links.filter(([, href]) => href.startsWith('/#'))) {
       await expect(page.locator(href.slice(1))).toHaveCount(1);
     }
-    for (const href of ['/servers/', '/channels/']) expect((await page.request.get(href)).status()).toBe(200);
+    for (const href of ['/channels/', '/matches/', '/blog/', '/watch-legal.html']) expect((await page.request.get(href)).status()).toBe(200);
   });
 });
+
+for (const javascriptEnabled of [false, true]) {
+  test(`دليل المشاهدة ينتقل لصفحة مستقلة على الجوال (JavaScript ${javascriptEnabled})`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: javascriptEnabled, viewport: { width: 390, height: 844 } });
+    const page = await context.newPage();
+    await page.goto('/channels/');
+    const guide = page.locator('main a').filter({ hasText: 'دليل المشاهدة الرسمية' }).last();
+    await expect(guide).toHaveAttribute('href', '/watch-legal.html');
+    await guide.click();
+    await expect(page).toHaveURL(/\/watch-legal\.html$/);
+    await expect(page.locator('h1')).toContainText('مشاهدة قانونية');
+    await context.close();
+  });
+}
+
+for (const id of ['path-section', 'journey', 'cinema-library']) for (const javascriptEnabled of [false, true]) {
+  test(`رابط القسم ${id} يُظهره فعليًا على الهاتف (JavaScript ${javascriptEnabled})`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: javascriptEnabled, viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    await page.route('**/*.mp4*', route => route.abort());
+    await page.goto('/#' + id, { waitUntil: 'domcontentloaded' });
+    await expect.poll(async () => page.locator('#' + id).evaluate(el => {
+      const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0;
+    }), { timeout: 15000 }).toBe(true);
+    // The loader can reset scroll after the first paint; verify it stays visible.
+    await page.waitForTimeout(7000);
+    const rect = await page.locator('#' + id).boundingBox();
+    expect(rect && rect.y < 844 && rect.y + rect.height > 0).toBeTruthy();
+    await context.close();
+  });
+}

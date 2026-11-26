@@ -1,0 +1,24 @@
+/* Shared site-map navigation; preserves each existing header and hero. */
+.floor-nav{font-family:SMTajawal,Tajawal,Arial,sans-serif;direction:rtl}
+.floor-nav a,.floor-nav summary{color:inherit;text-decoration:none}
+.floor-nav--desktop{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1vw,18px);font-size:clamp(11px,.9vw,14px);font-weight:800;line-height:1.3}
+.floor-nav--desktop .floor-group{position:relative}
+.floor-nav summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.floor-nav summary::-webkit-details-marker{display:none}
+.floor-nav summary::after{content:'⌄';font-size:13px}
+.floor-nav--desktop .floor-group-links{position:absolute;top:calc(100% + 12px);right:0;width:250px;max-height:min(70vh,520px);overflow:auto;overscroll-behavior:contain;background:#fcf8f4;color:#280822;border:1px solid #e9d8dc;border-radius:14px;padding:8px;box-shadow:0 18px 55px #18071350;z-index:1003}
+.floor-nav .floor-group-links a{display:block;padding:9px 10px;border-radius:7px;font-size:14px;line-height:1.4;font-weight:700}
+.floor-nav .floor-group-links a:hover,.floor-nav .floor-group-links a:focus-visible{background:#f5e9eb;color:#9f3e68}
+.floor-nav :is(a,summary,button):focus-visible{outline:2px solid #b14e76;outline-offset:3px}
+.floor-nav--mobile{display:block;color:#280822}
+.floor-nav--mobile .floor-home,.floor-nav--mobile summary{display:flex;min-height:48px;align-items:center;padding:10px 3px;border-bottom:1px solid #e4d6d9;font-size:16px;font-weight:800}
+.floor-nav--mobile .floor-group-links{padding:4px 8px 10px}
+.floor-nav--mobile .floor-group-links a{border-bottom:1px solid #eee1e4}
+.floor-nav .floor-league-trigger{display:block;width:100%;text-align:right;border:0;background:none;color:#8e3d61;padding:10px;font:800 14px SMTajawal,Tajawal,Arial,sans-serif;cursor:pointer}
+.nav .floor-nav--desktop{flex:1;color:inherit}
+.nav:has(.floor-nav--desktop) .nav__socials,.nav:has(.floor-nav--desktop) .nav__contact{display:none}
+.nav__menu .links .floor-nav--mobile a{display:block;width:auto;min-height:0;margin:0;padding:9px 10px;color:inherit;font-size:14px;line-height:1.4}
+.nav__menu .links .floor-nav--mobile .floor-home{display:flex;min-height:48px;font-size:16px}
+.us-header-bar:has(.floor-nav--desktop){gap:12px;padding-inline:2vw}
+@media(max-width:1100px){.floor-nav--desktop{display:none!important}}
+@media(min-width:1101px){.floor-nav--desktop{display:flex!important}}

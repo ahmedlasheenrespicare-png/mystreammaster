@@ -1,0 +1,4 @@
+.flow-servers .preview .lc-stage .preview-3d{position:absolute;inset-inline-end:8px;top:8px;width:150px;height:150px;border:0;background:transparent;pointer-events:none;z-index:3}.flow-servers .preview .lc-stage.has-3d .server-logo{visibility:hidden}
+@media(max-width:640px){.flow-servers .preview .lc-stage .preview-3d{width:116px;height:116px;inset-inline-end:0;top:8px}}
+.flow-servers .preview .lc-stage.has-3d[data-model="nova"]{background:radial-gradient(ellipse 130px 105px at 17% 50%,rgba(255,167,58,.21),transparent 80%),radial-gradient(circle at 20% 30%,rgba(216,255,62,.1),transparent 45%)}
+.flow-servers .preview .lc-stage.has-3d[data-model="x"]{background:radial-gradient(ellipse 130px 105px at 17% 50%,rgba(241,33,60,.24),transparent 80%),radial-gradient(circle at 20% 30%,rgba(216,255,62,.1),transparent 45%)}

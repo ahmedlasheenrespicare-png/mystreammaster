@@ -75,6 +75,7 @@ for (const width of [390, 1440]) test(`header league menu provides competition i
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const trigger = width < 1024 ? page.locator('.league-mobile-trigger') : page.locator('.nav__links .league-menu-trigger');
   if (width < 1024) await page.locator('.nav__menu-btn').click();
+  await trigger.locator('xpath=ancestor::details').locator('summary').click();
   await trigger.click();
   const menu = page.locator('#league-header-panel');
   await expect(menu).toBeVisible();
@@ -91,4 +92,88 @@ for (const width of [390, 1440]) test(`header league menu provides competition i
   await trigger.click();
   await menu.locator('a[href="/leagues/premier-league/"]').click();
   await expect(page).toHaveURL(/\/leagues\/premier-league\/$/);
+});
+
+
+test('readable standings outside the world use live data, show staleness and recover after failure', async ({ page }) => {
+  await page.route('**/standings.php?*', route => route.fulfill({ status: 503, json: { ok: false } }));
+  await page.goto('/leagues/premier-league/standings/');
+  const readable = page.locator('.league-readable');
+  await expect(readable.locator('.league-data-status')).toContainText('تعذّر');
+  await expect(readable.locator('.live-retry')).toBeVisible();
+  await page.unroute('**/standings.php?*');
+  await page.route('**/standings.php?*', route => route.fulfill({ json: { ...standings, stale: true } }));
+  await readable.locator('.live-retry').click();
+  await expect(readable.locator('tbody tr')).toHaveCount(20);
+  await expect(readable).toContainText('Test Team 1');
+  await expect(readable.locator('.league-data-status')).toContainText('قديمة');
+});
+
+test('last successful browser data remains visible if a later refresh fails', async ({ page }) => {
+  let requests = 0;
+  await page.route('**/standings.php?*', route => {
+    requests++;
+    return requests === 1 ? route.fulfill({ json: standings }) : route.fulfill({ status: 503, json: { ok: false } });
+  });
+  await page.goto('/leagues/premier-league/standings/');
+  const readable = page.locator('.league-readable');
+  await expect(readable.locator('tbody tr')).toHaveCount(20);
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(readable.locator('.league-data-status')).toContainText('قديمة');
+  await expect(readable.locator('tbody tr')).toHaveCount(20);
+  await expect(readable.locator('.live-retry')).toBeVisible();
+});
+
+test('server-rendered data stays visible and is marked when the browser refresh fails', async ({ page }) => {
+  await page.route('**/leagues/premier-league/standings/', async route => {
+    const response = await route.fetch();
+    const html = await response.text();
+    const fallback = '<!--SM_LEAGUE_DATA--><noscript><p>لا تتوفر البيانات المباشرة في النسخة الثابتة. أعد المحاولة لاحقًا.</p></noscript>';
+    const rendered = '<div data-server-league-data="true"><p>آخر قراءة من المصدر</p><table><tbody><tr><td>Server Team</td></tr></tbody></table></div>';
+    expect(html).toContain(fallback);
+    await route.fulfill({ response, body: html.replace(fallback, rendered) });
+  });
+  await page.route('**/standings.php?*', route => route.fulfill({ status: 503, json: { ok: false } }));
+  await page.goto('/leagues/premier-league/standings/');
+  const readable = page.locator('.league-readable');
+  await expect(readable.locator('.league-data-status')).toContainText('قديمة');
+  await expect(readable.locator('tbody')).toContainText('Server Team');
+});
+
+test('readable rates and Saudi matches use the world source identifiers', async ({ page }) => {
+  await page.route('**/standings.php?*', route => route.fulfill({ json: standings }));
+  await page.goto('/leagues/premier-league/stats/');
+  await expect(page.locator('.league-readable tbody tr')).toHaveCount(20);
+  await expect(page.locator('.league-readable')).toContainText('2.00');
+  let league = '';
+  await page.route('**/scoreboard.php?*', route => { league = new URL(route.request().url()).searchParams.get('league') || ''; return route.fulfill({ json: { events: [] } }); });
+  await page.goto('/leagues/saudi-pro-league/matches/');
+  await expect(page.locator('.league-data-status')).toContainText('لا توجد مباريات مؤكدة');
+  expect(league).toBe('sau.1');
+});
+
+for (const width of [390, 1440]) for (const javascriptEnabled of [false, true]) {
+  test(`pricing link reaches visible server section at ${width}px (JavaScript ${javascriptEnabled})`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, viewport: { width, height: 844 }, javaScriptEnabled: javascriptEnabled, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    await page.route('**/*.mp4*', route => route.abort());
+    await page.goto('/nova/', { waitUntil: 'domcontentloaded' });
+    await page.locator('a[href="/#pricing"]').first().click();
+    await expect(page).toHaveURL(/\/#(?:pricing|works)$/, { timeout: 15000 });
+    await expect(page.locator('#works #pricing')).toHaveCount(1);
+    // Assert actual on-screen position, not merely the URL or element existence.
+    await expect.poll(async () => page.locator('#works').evaluate(el => { const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }), { timeout: 30000 }).toBe(true);
+    await context.close();
+  });
+}
+
+test.describe('league content without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+  test('does not show an endless loading message or claim live data is present', async ({ page }) => {
+    await page.goto('/leagues/premier-league/standings/');
+    await expect(page.locator('.league-data-status')).toBeHidden();
+    await expect(page.locator('.league-readable > noscript p')).toBeVisible();
+    await expect(page.locator('.league-readable > noscript p')).toHaveText(/يلزم JavaScript لتحديث البيانات تلقائيًا/);
+    await expect(page.locator('.league-readable tbody tr')).toHaveCount(0);
+  });
 });

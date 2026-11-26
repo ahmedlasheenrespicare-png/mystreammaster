@@ -1,3 +1,4 @@
+@import url('/_assets/header-floorplan.css');
 /* Shared reference-inspired shell. Selectors are deliberately scoped so page
    content, players, charts and their contrasting surfaces keep working. */
 .us-header{position:fixed;inset:0 0 auto;z-index:1000;color:#280822;transition:transform .32s ease;font-family:Tajawal,Arial,sans-serif}

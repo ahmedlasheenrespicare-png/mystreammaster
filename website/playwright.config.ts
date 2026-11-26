@@ -21,5 +21,8 @@ export default defineConfig({
       env: { ...process.env, LD_LIBRARY_PATH: `${libraries}/lib:${process.env.LD_LIBRARY_PATH || ''}` },
     },
   },
-  webServer: { command: 'node scripts/serve.mjs', port: 3000, reuseExistingServer: true },
+  webServer: [
+    { command: 'node scripts/serve.mjs', port: 3000, reuseExistingServer: true },
+    { command: 'npx vite --config nova-logo-preview/vite.config.mjs --port 5174 --strictPort', port: 5174, reuseExistingServer: true },
+  ],
 });

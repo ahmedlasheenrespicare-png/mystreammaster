@@ -131,7 +131,7 @@ async function publishStandalone(file, relative) {
     $('body').prepend(renderUnifiedHeader('/player.html'));
     $('.pp-note').after(renderUnifiedFooter());
     $('.pp-brand').remove(); // The unified header already contains the brand.
-    $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261112b"><link rel="stylesheet" href="/_assets/unified-shell.css"><script src="/_assets/unified-shell.js" defer></script>');
+    $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261112b"><link rel="stylesheet" href="/_assets/unified-shell.css?v=20261126-header2"><script src="/_assets/unified-shell.js" defer></script>');
   }
   applyBrandIcons($);
   stripAdsense($, relative);
@@ -242,7 +242,7 @@ for (const file of await files(path.join(website, 'legacy'))) {
   // الصفحات ذات الخلفية الداكنة تحتفظ بلون شريط المتصفح الداكن بدل الفاتح.
   if (!DARK_PAGES.has(relative)) $('meta[name="theme-color"]').attr('content', '#f5ece8');
   applyBrandIcons($);
-  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261112b"><link rel="stylesheet" href="/_assets/unified-shell.css"><script src="/_assets/storefront.js?v=20261028a" defer></script><script src="/_assets/unified-shell.js" defer></script>');
+  $('head').append('<link rel="stylesheet" href="/_assets/storefront.css?v=20261112b"><link rel="stylesheet" href="/_assets/unified-shell.css?v=20261126-header2"><script src="/_assets/storefront.js?v=20261028a" defer></script><script src="/_assets/unified-shell.js" defer></script>');
 
   /* فحص SEO للصفحة القديمة بصيغتها النهائية: نحوّل مسار الملف إلى مسار تطبيع
      (about/index.html → /about، watch-legal.html → /watch-legal.html) ثم

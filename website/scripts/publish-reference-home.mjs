@@ -240,7 +240,7 @@ async function renderPage(name, destination, language) {
     html = html.replace(mobileNav, `<ul class="links"><li>${renderGroups(true)}</li></ul>`);
     // Native details keep mobile navigation usable when scripts are disabled.
     html = html.replace('<div class="nav__menu" id="sm-menu">', `<noscript><style>.nav__menu-btn{display:none!important}.floor-noscript{position:fixed;z-index:1004;top:68px;right:10px;color:#280822;background:#fcf8f4;border-radius:12px;padding:8px;max-height:70vh;overflow:auto}.floor-noscript>summary{cursor:pointer;font-weight:800;padding:6px}.floor-noscript .floor-league-trigger{display:none}</style><details class="floor-noscript"><summary>تصفح الموقع</summary>${renderGroups(true)}</details></noscript><div class="nav__menu" id="sm-menu">`);
-    html = html.replace('</head>', `<link rel="stylesheet" href="/_assets/header-floorplan.css"><link rel="stylesheet" href="${assetUrl}league-header-menu.css?v=${leagueMenuRevision}"></head>`);
+    html = html.replace('</head>', `<link rel="stylesheet" href="/_assets/header-floorplan.css?v=20261126-header2"><link rel="stylesheet" href="${assetUrl}league-header-menu.css?v=${leagueMenuRevision}"></head>`);
     html = html.replace('</body>', `${leagueMenu}<script src="${assetUrl}league-header-menu.js?v=${leagueMenuRevision}" defer></script></body>`);
     if (!html.includes('class="world-launch"')) throw new Error('Missing league discovery control');
     html = html.replace('</head>', '<style>.world-index-link{display:inline-flex;margin-inline:12px;color:inherit;font-size:13px;text-decoration:underline;text-underline-offset:4px}</style></head>');

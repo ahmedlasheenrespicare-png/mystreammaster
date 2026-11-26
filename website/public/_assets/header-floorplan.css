@@ -20,5 +20,13 @@
 .nav__menu .links .floor-nav--mobile a{display:block;width:auto;min-height:0;margin:0;padding:9px 10px;color:inherit;font-size:14px;line-height:1.4}
 .nav__menu .links .floor-nav--mobile .floor-home{display:flex;min-height:48px;font-size:16px}
 .us-header-bar:has(.floor-nav--desktop){gap:12px;padding-inline:2vw}
-@media(max-width:1100px){.floor-nav--desktop{display:none!important}}
-@media(min-width:1101px){.floor-nav--desktop{display:flex!important}}
+/* The legacy homepage shifted its links left by 5vw, underneath the logo.
+   Keep the full navigation only when all header controls fit comfortably. */
+.floor-nav--desktop .floor-group:last-child .floor-group-links{right:auto;left:0}
+.nav:has(.floor-nav--desktop) .nav__links{margin-left:0;min-width:0;flex:1}
+@media(max-width:1279px){.floor-nav--desktop{display:none!important}.nav:has(.floor-nav--desktop) .nav__links{display:none!important}}
+@media(min-width:1280px){.floor-nav--desktop{display:flex!important}.nav:has(.floor-nav--desktop) .nav__links{display:flex;align-items:center}}
+@media(max-width:700px){.us-header-bar:has(.floor-nav--desktop){padding-inline:8px;gap:6px}.us-tools{gap:3px}.us-tools>a,.us-tools select,.us-tools button{font-size:10px;padding-inline:5px}.us-tools select{max-width:76px}}
+/* The menu entrance should not leave the drawer off-screen for reduced-motion users. */
+@media(prefers-reduced-motion:reduce){html:not([data-motion=on]) .nav__menu .content{transition:none!important}}
+html[data-motion=off] .nav__menu .content{transition:none!important}

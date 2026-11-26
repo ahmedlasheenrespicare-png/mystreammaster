@@ -42,3 +42,10 @@ body.pp-body{height:auto;min-height:100dvh;background:#f5ece8}
 .pp-body .pp-note{background:#0b0b0f;margin:0}
 .pp-body.pp-fullscreen .us-header,.pp-body.pp-fullscreen .us-footer,.pp-body.pp-fullscreen .us-top{display:none}
 @media(max-width:700px){.pp-body .pp-bar{padding-top:88px}}
+
+/* Center both bars on the same point before rotation, including narrow screens. */
+.us-menu-toggle span:first-child,.us-menu-toggle span:last-child{top:50%;bottom:auto;transform-origin:center}
+.us-menu-toggle span:first-child{transform:translateY(-6px)}
+.us-menu-toggle span:last-child{transform:translateY(6px)}
+.us-menu-toggle[aria-expanded=true] span:first-child{transform:rotate(45deg)}
+.us-menu-toggle[aria-expanded=true] span:last-child{transform:rotate(-45deg)}

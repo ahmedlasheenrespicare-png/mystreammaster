@@ -8,8 +8,8 @@ for (const route of ['/', '/store/', '/about/']) for (const width of [390, 1440]
     await page.route('**/*.mp4*', r => r.abort());
     await page.goto(route, { waitUntil: 'domcontentloaded' });
     const home = route === '/';
-    if (width < 1101) await page.locator(home ? '.nav__menu-btn' : '.us-menu-toggle').click();
-    const nav = page.locator(width < 1101 ? '.floor-nav--mobile' : '.floor-nav--desktop');
+    if (width < 1280) await page.locator(home ? '.nav__menu-btn' : '.us-menu-toggle').click();
+    const nav = page.locator(width < 1280 ? '.floor-nav--mobile' : '.floor-nav--desktop');
     await expect(nav).toBeVisible();
     for (const label of groups) await expect(nav.locator('summary', { hasText: label })).toHaveCount(1);
     await nav.locator('summary', { hasText: 'البطولات والمباريات' }).click();
@@ -49,11 +49,38 @@ for (const width of [390, 1440]) test(`league readable header uses the same navi
   await page.goto('/leagues/premier-league/');
   const header = page.locator('.site-head');
   await header.scrollIntoViewIfNeeded();
-  if (width < 1101) await header.locator('.floor-league-mobile > summary').click();
-  const nav = header.locator(width < 1101 ? '.floor-nav--mobile' : '.floor-nav--desktop');
+  if (width < 1280) await header.locator('.floor-league-mobile > summary').click();
+  const nav = header.locator(width < 1280 ? '.floor-nav--mobile' : '.floor-nav--desktop');
   await expect(nav).toBeVisible();
   await nav.locator('summary', { hasText: 'السيرفرات والباقات' }).click();
   await expect(nav.locator('a[href="/nova/"]')).toBeVisible();
   await nav.locator('a[href="/nova/"]').click();
   await expect(page).toHaveURL(/\/nova\/$/);
 });
+
+for (const route of ['/', '/nova/', '/leagues/premier-league/']) for (const width of [320, 768, 1101, 1280, 1440]) {
+  test(`header stays inside viewport without overlapping on ${route} at ${width}`, async ({ page }) => {
+    await page.setViewportSize({width, height:800});
+    await page.addInitScript(() => localStorage.setItem('sm-motion-preference', 'off'));
+    await page.route('**/*.mp4*', r => r.abort());
+    await page.goto(route,{waitUntil:'domcontentloaded'});
+    const isHome = route === '/', league = route.startsWith('/leagues/');
+    const bar = page.locator(isHome ? '.nav' : league ? '.site-head' : '.us-header-bar');
+    const elements = bar.locator(isHome ? ':scope > .nav__logo, :scope > .nav__links, :scope > .sm-cart-tools, :scope > .nav__menu-btn' : league ? ':scope > a, :scope > .floor-nav--desktop, :scope > .floor-league-mobile' : ':scope > .us-logo, :scope > .floor-nav--desktop, :scope > .us-tools, :scope > .us-menu-toggle');
+    const boxes = await elements.evaluateAll(els => els.filter(el => {const r=el.getBoundingClientRect(); return r.width>0 && r.height>0 && getComputedStyle(el).visibility==='visible'}).map(el => {const r=el.getBoundingClientRect();return {left:r.left,right:r.right}}).sort((a,b)=>a.left-b.left));
+    for (const [index, box] of boxes.entries()) {
+      expect(box.left).toBeGreaterThanOrEqual(-1);
+      expect(box.right).toBeLessThanOrEqual(width+1);
+      if (index) expect(box.left).toBeGreaterThanOrEqual(boxes[index-1].right-1);
+    }
+    if (width < 1280) {
+      const button = bar.locator(isHome ? '.nav__menu-btn' : league ? '.floor-league-mobile > summary' : '.us-menu-toggle');
+      await button.click();
+      const nav = league ? bar.locator('.floor-nav--mobile') : page.locator('.floor-nav--mobile').filter({visible:true});
+      await expect(nav).toBeVisible();
+      const rect = await nav.boundingBox();
+      expect(rect!.x).toBeGreaterThanOrEqual(-1);
+      expect(rect!.x+rect!.width).toBeLessThanOrEqual(width+1);
+    }
+  });
+}
